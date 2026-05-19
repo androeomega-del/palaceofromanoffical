@@ -204,7 +204,7 @@ function QaCard({ row }: { row: Row }) {
       <div className="aspect-[4/3] bg-muted overflow-hidden relative">
         <img
           src={imageSrc}
-          alt={collectionImageAlt({ handle: c.handle, title: c.title })}
+          alt={collectionImageAlt({ handle: c.handle, title: c.title, description: c.description })}
           loading="lazy"
           style={{ objectPosition: collectionImageFocal({ handle: c.handle, title: c.title }) }}
           className="absolute inset-0 w-full h-full object-cover"
