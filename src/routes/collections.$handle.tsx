@@ -360,29 +360,6 @@ function CollectionPage() {
         </div>
       </section>
 
-      {/* Refine drawer — available at all breakpoints */}
-      {mobileFiltersOpen && (
-        <div className="fixed inset-0 z-50 flex">
-          <button
-            aria-label="Close filters"
-            onClick={() => setMobileFiltersOpen(false)}
-            className="flex-1 bg-ink/40 backdrop-blur-sm"
-          />
-          <div className="w-80 max-w-[85vw] bg-canvas h-full overflow-y-auto p-6">
-            <div className="flex items-center justify-between mb-6">
-              <span className="text-[11px] uppercase tracking-[0.25em]">Refine</span>
-              <button onClick={() => setMobileFiltersOpen(false)} aria-label="Close">
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            {filters.length === 0 ? (
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                No additional refinements available for this collection. Use sort to reorder.
-              </p>
-            ) : sidebar}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
