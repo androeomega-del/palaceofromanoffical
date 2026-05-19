@@ -50,20 +50,15 @@ const ENTRIES: JournalEntry[] = [
 ];
 
 export const Route = createFileRoute("/journal")({
-  head: () => ({
-    meta: [
-      { title: "The Journal — Palace of Roman" },
-      {
-        name: "description",
-        content:
-          "Editorials, house notes and seasonal studies from Palace of Roman — a quiet record of how the season is being worn.",
-      },
-      { property: "og:title", content: "The Journal — Palace of Roman" },
-      { property: "og:description", content: "Editorials and house notes from Palace of Roman." },
-      { property: "og:url", content: "/journal" },
-    ],
-    links: [{ rel: "canonical", href: "/journal" }],
-  }),
+  head: () => {
+    const title = "The Journal — Palace of Roman";
+    const desc = "Editorials, house notes and seasonal studies from Palace of Roman — a quiet record of how the season is being worn.";
+    const rh = routeHead({ path: "/journal", title, description: desc, image: editorialMayHero });
+    return {
+      meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
+      links: rh.links,
+    };
+  },
   component: JournalPage,
 });
 
