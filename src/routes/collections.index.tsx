@@ -16,6 +16,14 @@ const FILTERS: { key: FilterKey; label: string }[] = [
 
 const FILTER_KEYS: FilterKey[] = FILTERS.map((f) => f.key);
 
+type SortKey = "popular" | "newest" | "alpha";
+const SORTS: { key: SortKey; label: string }[] = [
+  { key: "popular", label: "Popularity" },
+  { key: "newest", label: "Newest" },
+  { key: "alpha", label: "A–Z" },
+];
+const SORT_KEYS: SortKey[] = SORTS.map((s) => s.key);
+
 export const Route = createFileRoute("/collections/")({
   validateSearch: (search: Record<string, unknown>): { filter: FilterKey; sort: SortKey } => {
     const rawFilter = typeof search.filter === "string" ? (search.filter as FilterKey) : "all";
