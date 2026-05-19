@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { fetchCollections, fetchVendorIndex } from "@/lib/shopify";
 import { collectionImage } from "@/lib/collection-image";
 import {
@@ -13,17 +13,27 @@ import {
 } from "@/lib/nav-config";
 
 /**
- * Desktop hover/focus megamenu.
+ * Desktop megamenu.
  *
- * - Structure for Women / Men is generated live from Shopify Smart
- *   Collections via `buildDepartments()` — new collections appear in the
- *   right column automatically.
- * - The Brands panel is generated live from product vendor data, filtered
- *   to a curated luxury house allowlist.
+ * Accessibility — implements the WAI-ARIA "disclosure" pattern:
+ *   - Each trigger is a <button> with aria-haspopup="true", aria-expanded,
+ *     and aria-controls pointing at the panel.
+ *   - Mouse: hover opens, leave (with grace timer) closes.
+ *   - Keyboard: Enter/Space/ArrowDown opens and moves focus into the panel.
+ *     Escape closes the panel and returns focus to the trigger.
+ *     ArrowLeft / ArrowRight moves between triggers in the menubar.
+ *   - Focus-out: when keyboard focus leaves the entire trigger+panel group,
+ *     the panel closes automatically.
+ *   - A "Shop all" link is added as the first item in each panel so users who
+ *     activated the trigger via keyboard can still reach the root collection.
+ *
+ * Structure is generated live from Shopify Smart Collections / vendor data.
  */
 export function DesktopMegamenu() {
   const [openKey, setOpenKey] = useState<string | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const triggerRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
 
   const { data: liveCollections } = useQuery({
     queryKey: ["collections-all"],
@@ -40,24 +50,71 @@ export function DesktopMegamenu() {
     ? new Set(liveCollections.map((c) => c.handle))
     : null;
 
-  function openNow(key: string) {
+  const triggerKeys = useMemo(
+    () => [...departments.map((d) => d.key as string), "brands"],
+    [departments],
+  );
+
+  const openNow = useCallback((key: string) => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
     setOpenKey(key);
-  }
-  function scheduleClose() {
+  }, []);
+  const scheduleClose = useCallback(() => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
     closeTimer.current = setTimeout(() => setOpenKey(null), 120);
-  }
+  }, []);
 
+  const closeAndFocusTrigger = useCallback((key: string | null) => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    setOpenKey(null);
+    if (key) triggerRefs.current.get(key)?.focus();
+  }, []);
+
+  // Global Escape closes any open panel.
   useEffect(() => {
     if (!openKey) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpenKey(null);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeAndFocusTrigger(openKey);
+    };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [openKey]);
+  }, [openKey, closeAndFocusTrigger]);
+
+  // Close when focus leaves the menubar group entirely.
+  const onWrapperBlur = (e: React.FocusEvent<HTMLDivElement>) => {
+    if (!wrapperRef.current) return;
+    const next = e.relatedTarget as Node | null;
+    if (!next || !wrapperRef.current.contains(next)) {
+      if (closeTimer.current) clearTimeout(closeTimer.current);
+      setOpenKey(null);
+    }
+  };
+
+  // ArrowLeft / ArrowRight rove between triggers.
+  const onTriggerArrow = (e: React.KeyboardEvent, currentKey: string) => {
+    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+    e.preventDefault();
+    const idx = triggerKeys.indexOf(currentKey);
+    if (idx < 0) return;
+    const delta = e.key === "ArrowRight" ? 1 : -1;
+    const nextKey = triggerKeys[(idx + delta + triggerKeys.length) % triggerKeys.length];
+    triggerRefs.current.get(nextKey)?.focus();
+  };
+
+  const registerTrigger = (key: string) => (el: HTMLButtonElement | null) => {
+    if (el) triggerRefs.current.set(key, el);
+    else triggerRefs.current.delete(key);
+  };
 
   return (
-    <div className="flex items-center gap-8" onMouseLeave={scheduleClose}>
+    <div
+      ref={wrapperRef}
+      role="menubar"
+      aria-label="Primary"
+      className="flex items-center gap-8"
+      onMouseLeave={scheduleClose}
+      onBlur={onWrapperBlur}
+    >
       {departments.map((dept) => {
         const isOpen = openKey === dept.key;
         return (
@@ -67,6 +124,9 @@ export function DesktopMegamenu() {
             isOpen={isOpen}
             onOpen={() => openNow(dept.key)}
             onScheduleClose={scheduleClose}
+            onCloseAndFocus={() => closeAndFocusTrigger(dept.key)}
+            onArrow={(e) => onTriggerArrow(e, dept.key)}
+            registerTrigger={registerTrigger(dept.key)}
             liveHandles={liveHandles}
           />
         );
@@ -75,9 +135,24 @@ export function DesktopMegamenu() {
         isOpen={openKey === "brands"}
         onOpen={() => openNow("brands")}
         onScheduleClose={scheduleClose}
+        onCloseAndFocus={() => closeAndFocusTrigger("brands")}
+        onArrow={(e) => onTriggerArrow(e, "brands")}
+        registerTrigger={registerTrigger("brands")}
       />
     </div>
   );
+}
+
+const TRIGGER_CLASS =
+  "hover:text-bronze transition-colors whitespace-nowrap py-2 bg-transparent border-0 p-0 m-0 font-inherit text-inherit cursor-pointer focus-visible:outline-none focus-visible:text-bronze";
+
+function focusFirstLinkInPanel(panelId: string) {
+  // Defer so the panel is mounted before we query it.
+  requestAnimationFrame(() => {
+    const panel = document.getElementById(panelId);
+    const first = panel?.querySelector<HTMLElement>("a, button");
+    first?.focus();
+  });
 }
 
 function MegaTrigger({
@@ -85,38 +160,61 @@ function MegaTrigger({
   isOpen,
   onOpen,
   onScheduleClose,
+  onCloseAndFocus,
+  onArrow,
+  registerTrigger,
   liveHandles,
 }: {
   dept: MegaDepartment;
   isOpen: boolean;
   onOpen: () => void;
   onScheduleClose: () => void;
+  onCloseAndFocus: () => void;
+  onArrow: (e: React.KeyboardEvent) => void;
+  registerTrigger: (el: HTMLButtonElement | null) => void;
   liveHandles: Set<string> | null;
 }) {
   const panelId = useId();
+
+  const onKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (e.key === "Enter" || e.key === " " || e.key === "ArrowDown") {
+      e.preventDefault();
+      onOpen();
+      focusFirstLinkInPanel(panelId);
+      return;
+    }
+    if (e.key === "Escape" && isOpen) {
+      e.preventDefault();
+      onCloseAndFocus();
+      return;
+    }
+    onArrow(e);
+  };
+
   return (
-    <div className="relative" onMouseEnter={onOpen} onFocus={onOpen}>
-      <Link
-        to="/collections/$handle"
-        params={{ handle: dept.rootHandle }}
+    <div className="relative" onMouseEnter={onOpen} role="none">
+      <button
+        ref={registerTrigger}
+        type="button"
+        role="menuitem"
         aria-haspopup="true"
         aria-expanded={isOpen}
         aria-controls={panelId}
-        className={`hover:text-bronze transition-colors whitespace-nowrap py-2 ${
-          isOpen ? "text-bronze" : ""
-        }`}
+        onClick={() => (isOpen ? onCloseAndFocus() : onOpen())}
+        onKeyDown={onKeyDown}
+        onFocus={onOpen}
+        className={`${TRIGGER_CLASS} ${isOpen ? "text-bronze" : ""}`}
       >
         {dept.label}
-      </Link>
-      {isOpen && (
-        <MegaPanel
-          id={panelId}
-          dept={dept}
-          liveHandles={liveHandles}
-          onMouseEnter={onOpen}
-          onMouseLeave={onScheduleClose}
-        />
-      )}
+      </button>
+      <MegaPanel
+        id={panelId}
+        dept={dept}
+        isOpen={isOpen}
+        liveHandles={liveHandles}
+        onMouseEnter={onOpen}
+        onMouseLeave={onScheduleClose}
+      />
     </div>
   );
 }
@@ -124,12 +222,14 @@ function MegaTrigger({
 function MegaPanel({
   id,
   dept,
+  isOpen,
   liveHandles,
   onMouseEnter,
   onMouseLeave,
 }: {
   id: string;
   dept: MegaDepartment;
+  isOpen: boolean;
   liveHandles: Set<string> | null;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
@@ -140,6 +240,7 @@ function MegaPanel({
       id={id}
       role="region"
       aria-label={`${dept.label} navigation`}
+      hidden={!isOpen}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       className="fixed left-0 right-0 top-20 z-40 bg-canvas border-y border-ink/10 shadow-[0_30px_60px_-30px_rgba(0,0,0,0.18)]"
@@ -149,7 +250,7 @@ function MegaPanel({
           className="grid gap-x-10 gap-y-2"
           style={{ gridTemplateColumns: `repeat(${dept.columns.length}, minmax(0, 1fr))` }}
         >
-          {dept.columns.map((col) => {
+          {dept.columns.map((col, colIdx) => {
             const items = liveHandles
               ? col.items.filter((it) => liveHandles.has(it.handle))
               : col.items;
@@ -160,6 +261,17 @@ function MegaPanel({
                   {col.heading}
                 </p>
                 <ul className="flex flex-col gap-1.5">
+                  {colIdx === 0 && (
+                    <li>
+                      <Link
+                        to="/collections/$handle"
+                        params={{ handle: dept.rootHandle }}
+                        className="text-[13px] text-ink hover:text-bronze inline-block normal-case tracking-normal font-medium"
+                      >
+                        Shop all {dept.label}
+                      </Link>
+                    </li>
+                  )}
                   {items.map((it) => (
                     <li key={it.handle}>
                       <Link
@@ -184,7 +296,7 @@ function MegaPanel({
         >
           <img
             src={featureImg}
-            alt={dept.feature.title}
+            alt=""
             loading="lazy"
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
           />
@@ -223,45 +335,71 @@ function BrandsTrigger({
   isOpen,
   onOpen,
   onScheduleClose,
+  onCloseAndFocus,
+  onArrow,
+  registerTrigger,
 }: {
   isOpen: boolean;
   onOpen: () => void;
   onScheduleClose: () => void;
+  onCloseAndFocus: () => void;
+  onArrow: (e: React.KeyboardEvent) => void;
+  registerTrigger: (el: HTMLButtonElement | null) => void;
 }) {
   const panelId = useId();
   const { data: brands } = useBrandIndex();
+
+  const onKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (e.key === "Enter" || e.key === " " || e.key === "ArrowDown") {
+      e.preventDefault();
+      onOpen();
+      focusFirstLinkInPanel(panelId);
+      return;
+    }
+    if (e.key === "Escape" && isOpen) {
+      e.preventDefault();
+      onCloseAndFocus();
+      return;
+    }
+    onArrow(e);
+  };
+
   return (
-    <div className="relative" onMouseEnter={onOpen} onFocus={onOpen}>
-      <Link
-        to="/brands"
+    <div className="relative" onMouseEnter={onOpen} role="none">
+      <button
+        ref={registerTrigger}
+        type="button"
+        role="menuitem"
         aria-haspopup="true"
         aria-expanded={isOpen}
         aria-controls={panelId}
-        className={`hover:text-bronze transition-colors whitespace-nowrap py-2 ${
-          isOpen ? "text-bronze" : ""
-        }`}
+        onClick={() => (isOpen ? onCloseAndFocus() : onOpen())}
+        onKeyDown={onKeyDown}
+        onFocus={onOpen}
+        className={`${TRIGGER_CLASS} ${isOpen ? "text-bronze" : ""}`}
       >
         Brands
-      </Link>
-      {isOpen && (
-        <BrandsPanel
-          id={panelId}
-          brands={brands ?? []}
-          onMouseEnter={onOpen}
-          onMouseLeave={onScheduleClose}
-        />
-      )}
+      </button>
+      <BrandsPanel
+        id={panelId}
+        isOpen={isOpen}
+        brands={brands ?? []}
+        onMouseEnter={onOpen}
+        onMouseLeave={onScheduleClose}
+      />
     </div>
   );
 }
 
 function BrandsPanel({
   id,
+  isOpen,
   brands,
   onMouseEnter,
   onMouseLeave,
 }: {
   id: string;
+  isOpen: boolean;
   brands: BrandEntry[];
   onMouseEnter: () => void;
   onMouseLeave: () => void;
@@ -274,6 +412,7 @@ function BrandsPanel({
       id={id}
       role="region"
       aria-label="Brands navigation"
+      hidden={!isOpen}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       className="fixed left-0 right-0 top-20 z-40 bg-canvas border-y border-ink/10 shadow-[0_30px_60px_-30px_rgba(0,0,0,0.18)]"
@@ -286,12 +425,22 @@ function BrandsPanel({
           {grouped.length === 0 ? (
             <p className="text-[12px] text-muted-foreground">Loading houses…</p>
           ) : (
-            grouped.map((col) => (
+            grouped.map((col, colIdx) => (
               <div key={col.heading} className="flex flex-col gap-3">
                 <p className="text-[10px] uppercase tracking-[0.3em] text-bronze font-medium pb-2 border-b border-ink/10">
                   {col.heading}
                 </p>
                 <ul className="flex flex-col gap-1.5">
+                  {colIdx === 0 && (
+                    <li>
+                      <Link
+                        to="/brands"
+                        className="text-[13px] text-ink hover:text-bronze inline-block normal-case tracking-normal font-medium"
+                      >
+                        All Brands
+                      </Link>
+                    </li>
+                  )}
                   {col.items.map((b) => (
                     <li key={b.vendor}>
                       <Link
@@ -315,7 +464,7 @@ function BrandsPanel({
         >
           <img
             src={featureImg}
-            alt="The full house directory"
+            alt=""
             loading="lazy"
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
           />
@@ -339,7 +488,8 @@ function BrandsPanel({
 
 /**
  * Mobile / small-screen accordion. Each department + Brands is an expandable
- * group fed from the same live Shopify data.
+ * group fed from the same live Shopify data. Button + region are wired with
+ * aria-controls/aria-expanded so screen readers announce state correctly.
  */
 export function MobileMegamenu() {
   const [openKey, setOpenKey] = useState<string | null>("women");
@@ -360,93 +510,118 @@ export function MobileMegamenu() {
   const brandGroups = useMemo(() => groupBrandsForMenu(brands ?? []), [brands]);
 
   return (
-    <div className="flex flex-col divide-y divide-ink/10">
-      {departments.map((dept) => {
-        const isOpen = openKey === dept.key;
-        return (
-          <div key={dept.key}>
-            <button
-              type="button"
-              onClick={() => setOpenKey(isOpen ? null : dept.key)}
-              aria-expanded={isOpen}
-              className="w-full flex items-center justify-between py-4 text-[12px] uppercase tracking-[0.3em] text-ink"
-            >
-              <span>{dept.label}</span>
-              <span className="text-bronze text-lg leading-none">{isOpen ? "−" : "+"}</span>
-            </button>
-            {isOpen && (
-              <div className="pb-6 flex flex-col gap-5">
-                {dept.columns.map((col) => {
-                  const items = liveHandles
-                    ? col.items.filter((it) => liveHandles.has(it.handle))
-                    : col.items;
-                  if (items.length === 0) return null;
-                  return (
-                    <div key={col.heading} className="flex flex-col gap-1.5">
-                      <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-1">
-                        {col.heading}
-                      </p>
-                      {items.map((it) => (
-                        <Link
-                          key={it.handle}
-                          to="/collections/$handle"
-                          params={{ handle: it.handle }}
-                          className="text-[14px] text-ink/85 hover:text-bronze py-1"
-                        >
-                          {it.label}
-                        </Link>
-                      ))}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        );
-      })}
-
-      {/* Brands accordion */}
-      <div>
-        <button
-          type="button"
-          onClick={() => setOpenKey(openKey === "brands" ? null : "brands")}
-          aria-expanded={openKey === "brands"}
-          className="w-full flex items-center justify-between py-4 text-[12px] uppercase tracking-[0.3em] text-ink"
+    <nav aria-label="Mobile primary" className="flex flex-col divide-y divide-ink/10">
+      {departments.map((dept) => (
+        <MobileAccordion
+          key={dept.key}
+          label={dept.label}
+          isOpen={openKey === dept.key}
+          onToggle={() => setOpenKey(openKey === dept.key ? null : dept.key)}
         >
-          <span>Brands</span>
-          <span className="text-bronze text-lg leading-none">{openKey === "brands" ? "−" : "+"}</span>
-        </button>
-        {openKey === "brands" && (
-          <div className="pb-6 flex flex-col gap-5">
-            {brandGroups.length === 0 ? (
-              <p className="text-[12px] text-muted-foreground">Loading houses…</p>
-            ) : (
-              brandGroups.map((col) => (
-                <div key={col.heading} className="flex flex-col gap-1.5">
-                  <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-1">
-                    {col.heading}
-                  </p>
-                  {col.items.map((b) => (
-                    <Link
-                      key={b.vendor}
-                      to="/brand/$vendor"
-                      params={{ vendor: vendorSlug(b.vendor) }}
-                      className="text-[14px] text-ink/85 hover:text-bronze py-1"
-                    >
-                      {b.vendor}
-                    </Link>
-                  ))}
-                </div>
-              ))
-            )}
-            <Link
-              to="/brands"
-              className="mt-2 text-[11px] uppercase tracking-[0.3em] text-bronze border-b border-bronze/40 self-start pb-1"
-            >
-              View the full directory →
-            </Link>
-          </div>
+          <Link
+            to="/collections/$handle"
+            params={{ handle: dept.rootHandle }}
+            className="text-[14px] text-ink font-medium hover:text-bronze py-1"
+          >
+            Shop all {dept.label}
+          </Link>
+          {dept.columns.map((col) => {
+            const items = liveHandles
+              ? col.items.filter((it) => liveHandles.has(it.handle))
+              : col.items;
+            if (items.length === 0) return null;
+            return (
+              <div key={col.heading} className="flex flex-col gap-1.5">
+                <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-1">
+                  {col.heading}
+                </p>
+                {items.map((it) => (
+                  <Link
+                    key={it.handle}
+                    to="/collections/$handle"
+                    params={{ handle: it.handle }}
+                    className="text-[14px] text-ink/85 hover:text-bronze py-1"
+                  >
+                    {it.label}
+                  </Link>
+                ))}
+              </div>
+            );
+          })}
+        </MobileAccordion>
+      ))}
+
+      <MobileAccordion
+        label="Brands"
+        isOpen={openKey === "brands"}
+        onToggle={() => setOpenKey(openKey === "brands" ? null : "brands")}
+      >
+        {brandGroups.length === 0 ? (
+          <p className="text-[12px] text-muted-foreground">Loading houses…</p>
+        ) : (
+          brandGroups.map((col) => (
+            <div key={col.heading} className="flex flex-col gap-1.5">
+              <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-1">
+                {col.heading}
+              </p>
+              {col.items.map((b) => (
+                <Link
+                  key={b.vendor}
+                  to="/brand/$vendor"
+                  params={{ vendor: vendorSlug(b.vendor) }}
+                  className="text-[14px] text-ink/85 hover:text-bronze py-1"
+                >
+                  {b.vendor}
+                </Link>
+              ))}
+            </div>
+          ))
         )}
+        <Link
+          to="/brands"
+          className="mt-2 text-[11px] uppercase tracking-[0.3em] text-bronze border-b border-bronze/40 self-start pb-1"
+        >
+          View the full directory →
+        </Link>
+      </MobileAccordion>
+    </nav>
+  );
+}
+
+function MobileAccordion({
+  label,
+  isOpen,
+  onToggle,
+  children,
+}: {
+  label: string;
+  isOpen: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+}) {
+  const panelId = useId();
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={isOpen}
+        aria-controls={panelId}
+        className="w-full flex items-center justify-between py-4 text-[12px] uppercase tracking-[0.3em] text-ink min-h-11"
+      >
+        <span>{label}</span>
+        <span aria-hidden="true" className="text-bronze text-lg leading-none">
+          {isOpen ? "−" : "+"}
+        </span>
+      </button>
+      <div
+        id={panelId}
+        role="region"
+        aria-label={`${label} links`}
+        hidden={!isOpen}
+        className="pb-6 flex flex-col gap-5"
+      >
+        {children}
       </div>
     </div>
   );
