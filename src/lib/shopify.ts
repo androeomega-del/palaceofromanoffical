@@ -289,8 +289,13 @@ export async function fetchSearchFiltered(opts: {
   sortKey?: string;
   reverse?: boolean;
 }): Promise<Omit<FilteredResult, "collection">> {
+  // Storefront search requires a non-null query string. Use "" to mean "all
+  // products" (matches everything). composeQuery() can return null when there
+  // is no user query and no exclude filter, which would 400 the request.
+  const composed =
+    opts.query && opts.query !== "*" ? composeQuery(opts.query) : EXCLUDE_QUERY || "";
   const data = await storefrontApiRequest<any>(SEARCH_FILTERED_QUERY, {
-    query: composeQuery(opts.query && opts.query !== "*" ? opts.query : null),
+    query: composed ?? "",
     first: opts.first ?? 24,
     after: opts.after ?? null,
     productFilters: opts.filters ?? [],
