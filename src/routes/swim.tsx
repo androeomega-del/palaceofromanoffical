@@ -16,6 +16,7 @@ import swimHero from "@/assets/marketing-swim-summer.jpg";
 import lookbook1 from "@/assets/marketing-swim-summer.jpg";
 import lookbook2 from "@/assets/lookbook-swim-2.jpg";
 import lookbook3 from "@/assets/lookbook-swim-3.jpg";
+import swimCampaignVideo from "@/assets/swim-campaign.mp4.asset.json";
 
 export const Route = createFileRoute("/swim")({
   head: () => {
