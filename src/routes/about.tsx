@@ -1,0 +1,131 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { EditorialPageShell } from "@/components/editorial-page-shell";
+import { img } from "@/lib/editorial-library";
+
+export const Route = createFileRoute("/about")({
+  head: () => ({
+    meta: [
+      { title: "House Notes — Palace of Roman" },
+      { name: "description", content: "The story of Palace of Roman — a curated multi-brand boutique for luxury fashion, considered and authenticated." },
+      { property: "og:title", content: "House Notes — Palace of Roman" },
+      { property: "og:description", content: "A curated multi-brand boutique. Considered, authenticated, ours." },
+      { property: "og:image", content: img(7) },
+    ],
+  }),
+  component: AboutPage,
+});
+
+const TEAM = [
+  { role: "Buying Director", note: "Selects every piece across the women's and men's edits." },
+  { role: "Head of Authentication", note: "Leads our six-person in-house authentication team." },
+  { role: "Concierge Lead", note: "Handles private appointments, sourcing and after-care." },
+  { role: "Editor-in-Chief", note: "Stewards the seasonal editorials and the quarterly Dispatch." },
+];
+
+function AboutPage() {
+  return (
+    <EditorialPageShell
+      eyebrow="House Notes"
+      title="A boutique, not a marketplace."
+      intro="Palace of Roman is a curated edit of the world's most considered houses — quietly assembled, authenticated in-house, and presented with the care of a single voice."
+      heroImage={img(7)}
+      heroAlt="The boutique in studio light"
+    >
+      {/* Origin */}
+      <section className="grid md:grid-cols-12 gap-10 md:gap-16 items-center mb-32">
+        <div className="md:col-span-7 order-2 md:order-1">
+          <p className="text-[10px] uppercase tracking-[0.35em] text-bronze mb-4">Origin</p>
+          <h2 className="font-serif text-3xl md:text-4xl tracking-tight mb-6 text-balance">
+            Founded in New York, in service of the considered wardrobe.
+          </h2>
+          <p className="text-[15px] leading-[1.8] text-ink/80 mb-4">
+            Palace of Roman was founded with a single conviction: that the great houses of the season deserved a setting
+            that was as edited as the work itself. Not a department store. Not a marketplace. A boutique — assembled by
+            hand, photographed in studio light, and offered to a small audience who already know what they are looking
+            for.
+          </p>
+          <p className="text-[15px] leading-[1.8] text-ink/80">
+            We carry tailoring, footwear, fine leather and house codes from the maisons we believe in. We carry less of
+            them than anyone else. And what we do carry, we authenticate ourselves.
+          </p>
+        </div>
+        <div className="md:col-span-5 order-1 md:order-2">
+          <div className="aspect-[4/5] overflow-hidden bg-canvas-raised">
+            <img src={img(11)} alt="An assembled wardrobe" className="w-full h-full object-cover" loading="lazy" />
+          </div>
+        </div>
+      </section>
+
+      {/* Philosophy — full width image strip */}
+      <section className="mb-32">
+        <p className="text-[10px] uppercase tracking-[0.35em] text-bronze mb-4 text-center">Curation</p>
+        <h2 className="font-serif text-3xl md:text-5xl tracking-tight text-center max-w-3xl mx-auto mb-12 text-balance">
+          Fewer pieces, chosen for the long room.
+        </h2>
+        <div className="grid grid-cols-3 gap-3 md:gap-6">
+          {[19, 27, 34].map((n) => (
+            <div key={n} className="aspect-[4/5] overflow-hidden bg-canvas-raised">
+              <img src={img(n)} alt="Curation studies" className="w-full h-full object-cover" loading="lazy" />
+            </div>
+          ))}
+        </div>
+        <p className="text-[15px] leading-[1.8] text-ink/80 max-w-2xl mx-auto mt-12 text-center">
+          We do not chase volume. Every season our buying director travels to the houses we love and brings back a tight
+          edit — a few pieces per maison, chosen for cut, material, and the way each will live with the others. The
+          result is a boutique you can hold in your head, not a catalogue you scroll through.
+        </p>
+      </section>
+
+      {/* Experience */}
+      <section className="grid md:grid-cols-12 gap-10 md:gap-16 items-center mb-32">
+        <div className="md:col-span-5">
+          <div className="aspect-[4/5] overflow-hidden bg-canvas-raised">
+            <img src={img(42)} alt="The atelier" className="w-full h-full object-cover" loading="lazy" />
+          </div>
+        </div>
+        <div className="md:col-span-7">
+          <p className="text-[10px] uppercase tracking-[0.35em] text-bronze mb-4">Experience</p>
+          <h2 className="font-serif text-3xl md:text-4xl tracking-tight mb-6 text-balance">
+            The boutique experience, online.
+          </h2>
+          <p className="text-[15px] leading-[1.8] text-ink/80 mb-4">
+            Every order is dispatched from our New York atelier in linen-lined boxes, accompanied by a handwritten card
+            and a signed certificate of authenticity. Private appointments — in person or by video — are available on
+            request. Our concierge replies within one business day.
+          </p>
+          <div className="flex flex-wrap gap-4 mt-8">
+            <Link
+              to="/contact"
+              className="px-6 py-3 bg-ink text-canvas text-[11px] uppercase tracking-[0.25em] hover:bg-ink/85 transition-colors"
+            >
+              Book a private appointment
+            </Link>
+            <Link
+              to="/authentication"
+              className="px-6 py-3 ring-1 ring-ink text-[11px] uppercase tracking-[0.25em] hover:bg-ink hover:text-canvas transition-colors"
+            >
+              How we authenticate
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Team */}
+      <section className="border-t border-ink/10 pt-20">
+        <p className="text-[10px] uppercase tracking-[0.35em] text-bronze mb-4 text-center">The atelier</p>
+        <h2 className="font-serif text-3xl md:text-4xl tracking-tight text-center mb-16">The people behind the edit</h2>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+          {TEAM.map((t, i) => (
+            <div key={t.role} className="flex flex-col">
+              <div className="aspect-[4/5] overflow-hidden bg-canvas-raised mb-5">
+                <img src={img(50 + i * 4)} alt={t.role} className="w-full h-full object-cover" loading="lazy" />
+              </div>
+              <p className="font-serif text-lg">{t.role}</p>
+              <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{t.note}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </EditorialPageShell>
+  );
+}
