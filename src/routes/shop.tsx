@@ -13,6 +13,10 @@ import {
 } from "@/components/catalog-filters";
 
 export const Route = createFileRoute("/shop")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    q: typeof search.q === "string" ? search.q : undefined,
+    title: typeof search.title === "string" ? search.title : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Shop All — Palace of Roman" },
@@ -34,6 +38,7 @@ function mapSort(sort: SortValue): { sortKey: string; reverse: boolean } {
 }
 
 function ShopPage() {
+  const { q: queryParam, title: titleParam } = Route.useSearch();
   const [selections, setSelections] = useState<Selection[]>([]);
   const [priceRange, setPriceRange] = useState<{ min: number; max: number } | null>(null);
   const [sort, setSort] = useState<SortValue>("BEST_SELLING-false");
@@ -48,11 +53,11 @@ function ShopPage() {
   const { sortKey, reverse } = mapSort(sort);
 
   const q = useInfiniteQuery({
-    queryKey: ["shop-search", filterInputs, sortKey, reverse],
+    queryKey: ["shop-search", queryParam ?? "*", filterInputs, sortKey, reverse],
     initialPageParam: null as string | null,
     queryFn: ({ pageParam }) =>
       fetchSearchFiltered({
-        query: "*",
+        query: queryParam || "*",
         first: 36,
         after: pageParam,
         filters: filterInputs,
@@ -90,9 +95,9 @@ function ShopPage() {
     <div>
       <section className="px-6 pt-12 pb-8 border-b border-ink/5">
         <div className="max-w-screen-2xl mx-auto">
-          <p className="text-[10px] uppercase tracking-[0.25em] text-bronze mb-3">Shop All</p>
+          <p className="text-[10px] uppercase tracking-[0.25em] text-bronze mb-3">{titleParam ? "Edit" : "Shop All"}</p>
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <h1 className="text-4xl md:text-6xl font-serif">The Boutique</h1>
+            <h1 className="text-4xl md:text-6xl font-serif">{titleParam || "The Boutique"}</h1>
             <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
               {q.isLoading ? "Loading…" : `${edges.length}${q.hasNextPage ? "+" : ""} Pieces`}
             </p>
