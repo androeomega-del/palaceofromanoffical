@@ -138,7 +138,7 @@ export const COLLECTION_BY_HANDLE_QUERY = `
 
 export const COLLECTIONS_QUERY = `
   query GetCollections($first: Int!) {
-    collections(first: $first, sortKey: UPDATED_AT, reverse: true) {
+    collections(first: $first) {
       edges {
         node {
           id title handle description updatedAt
