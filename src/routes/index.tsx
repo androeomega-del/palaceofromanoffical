@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { fetchProducts, fetchCollection, type ShopifyProduct } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
 import heroImage from "@/assets/home-hero.jpg";
+import editorialHero from "@/assets/editorial/may-2026/1.webp";
 
 export const Route = createFileRoute("/")({
   head: () => ({
