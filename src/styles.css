@@ -13,8 +13,10 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-canvas: var(--canvas);
+  --color-canvas-raised: var(--canvas-raised);
   --color-ink: var(--ink);
   --color-bronze: var(--bronze);
+  --color-bronze-soft: var(--bronze-soft);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-card: var(--card);
