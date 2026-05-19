@@ -135,7 +135,7 @@ function MegaPanel({
       aria-label={`${dept.label} navigation`}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      className="fixed left-0 right-0 top-[calc(theme(spacing.20)+30px)] z-40 bg-canvas border-y border-ink/10 shadow-[0_30px_60px_-30px_rgba(0,0,0,0.18)]"
+      className="fixed left-0 right-0 top-20 z-40 bg-canvas border-y border-ink/10 shadow-[0_30px_60px_-30px_rgba(0,0,0,0.18)]"
     >
       <div className="max-w-screen-2xl mx-auto px-10 py-12 grid grid-cols-[1fr_minmax(320px,28%)] gap-12">
         {/* Column grid */}
