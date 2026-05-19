@@ -42,33 +42,33 @@
 :root {
   --radius: 0rem;
 
-  /* Brand — Noir & Gold */
-  --canvas: oklch(0.16 0.002 50);      /* #0d0d0d near-black */
-  --canvas-raised: oklch(0.21 0.003 50); /* #1a1a1a panel */
-  --ink: oklch(0.94 0.012 80);          /* #f0ebe0 warm ivory */
-  --bronze: oklch(0.76 0.105 82);       /* #c9a84c gold */
-  --bronze-soft: oklch(0.86 0.085 85);  /* #f0d78c pale gold */
+  /* Brand — Studio (cream / ink / warm bronze) */
+  --canvas: oklch(0.975 0.004 80);        /* #f9f8f6 cream */
+  --canvas-raised: oklch(0.955 0.005 80); /* #f1efe9 raised cream */
+  --ink: oklch(0.18 0.003 50);            /* #1a1a1a ink */
+  --bronze: oklch(0.62 0.055 72);         /* #a68a5d warm bronze */
+  --bronze-soft: oklch(0.78 0.045 78);    /* #c9b58c pale bronze */
 
   /* Semantic mapped to brand */
   --background: var(--canvas);
   --foreground: var(--ink);
-  --card: var(--canvas-raised);
+  --card: var(--canvas);
   --card-foreground: var(--ink);
-  --popover: var(--canvas-raised);
+  --popover: var(--canvas);
   --popover-foreground: var(--ink);
-  --primary: var(--bronze);
+  --primary: var(--ink);
   --primary-foreground: var(--canvas);
   --secondary: var(--canvas-raised);
   --secondary-foreground: var(--ink);
-  --muted: oklch(0.24 0.003 50);
-  --muted-foreground: oklch(0.68 0.008 70);
+  --muted: oklch(0.92 0.004 80);
+  --muted-foreground: oklch(0.45 0.005 60);
   --accent: var(--bronze);
   --accent-foreground: var(--canvas);
   --destructive: oklch(0.55 0.2 27);
-  --destructive-foreground: var(--ink);
-  --border: oklch(0.94 0.012 80 / 10%);
-  --input: oklch(0.94 0.012 80 / 14%);
-  --ring: var(--bronze);
+  --destructive-foreground: var(--canvas);
+  --border: oklch(0.18 0.003 50 / 10%);
+  --input: oklch(0.18 0.003 50 / 14%);
+  --ring: var(--ink);
 }
 
 @layer base {
@@ -97,15 +97,39 @@
   /* Hairline rule used across editorial layouts */
   .hairline { height: 1px; background: color-mix(in oklab, var(--ink) 14%, transparent); }
 
-  /* Studio surface — luxury cream scope (used on PDP) */
-  .studio {
-    --studio-bg: oklch(0.975 0.004 80);       /* #f9f8f6 cream */
-    --studio-ink: oklch(0.18 0.003 50);       /* #1a1a1a ink */
-    --studio-muted: oklch(0.18 0.003 50 / 60%);
-    --studio-rule: oklch(0.18 0.003 50 / 10%);
-    --studio-bronze: oklch(0.62 0.055 72);    /* #a68a5d warm bronze */
-    background: var(--studio-bg);
-    color: var(--studio-ink);
+  /* Studio surface — kept as a no-op alias so existing PDP markup keeps working
+     now that Studio IS the global theme. */
+  .studio { background: var(--canvas); color: var(--ink); }
+
+  /* Noir scope — reverts a single section to the original Noir & Gold palette.
+     Used for dramatic dark moments (e.g. homepage hero) on an otherwise
+     light-themed site. Override the same tokens locally; children inherit. */
+  .noir {
+    --canvas: oklch(0.16 0.002 50);         /* near-black */
+    --canvas-raised: oklch(0.21 0.003 50);
+    --ink: oklch(0.94 0.012 80);            /* warm ivory */
+    --bronze: oklch(0.76 0.105 82);         /* gold */
+    --bronze-soft: oklch(0.86 0.085 85);
+    --background: var(--canvas);
+    --foreground: var(--ink);
+    --card: var(--canvas-raised);
+    --card-foreground: var(--ink);
+    --popover: var(--canvas-raised);
+    --popover-foreground: var(--ink);
+    --primary: var(--bronze);
+    --primary-foreground: var(--canvas);
+    --secondary: var(--canvas-raised);
+    --secondary-foreground: var(--ink);
+    --muted: oklch(0.24 0.003 50);
+    --muted-foreground: oklch(0.68 0.008 70);
+    --accent: var(--bronze);
+    --accent-foreground: var(--canvas);
+    --border: oklch(0.94 0.012 80 / 12%);
+    --input: oklch(0.94 0.012 80 / 16%);
+    --ring: var(--bronze);
+    background-color: var(--canvas);
+    color: var(--ink);
   }
-  .studio ::selection { background: var(--studio-bronze); color: var(--studio-bg); }
+  .noir ::selection { background: var(--bronze); color: var(--canvas); }
 }
+
