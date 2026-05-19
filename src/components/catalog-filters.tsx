@@ -264,6 +264,7 @@ function PriceFilter({
               value={max}
               onChange={(e) => setMax(Number(e.target.value))}
               onBlur={apply}
+              aria-label="Maximum price"
               className="w-full text-xs bg-transparent focus:outline-none"
             />
           </div>
