@@ -84,9 +84,10 @@ function AboutPage() {
             The boutique experience, online.
           </h2>
           <p className="text-[15px] leading-[1.8] text-ink/80 mb-4">
-            Every order is dispatched from our New York atelier in linen-lined boxes, accompanied by a handwritten card
-            and a signed certificate of authenticity. Private appointments — in person or by video — are available on
-            request. Our concierge replies within one business day.
+            Orders ship directly from the brand-authorised warehouse holding each piece — across Italy, Spain, Germany,
+            Sweden, Northern Ireland and the United States — in their original packaging, with tags and dust bag
+            intact. Private styling correspondence is available on request, and the concierge replies the same business
+            day.
           </p>
           <div className="flex flex-wrap gap-4 mt-8">
             <Link
