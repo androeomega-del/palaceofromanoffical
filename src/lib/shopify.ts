@@ -139,6 +139,68 @@ export const COLLECTIONS_QUERY = `
   }
 `;
 
+// Filter-aware queries (Storefront API ProductFilter + availableFilters)
+export type StorefrontFilterValue = {
+  id: string;
+  label: string;
+  count: number;
+  input: string; // JSON string passed back as filter input
+};
+export type StorefrontFilter = {
+  id: string;
+  label: string;
+  type: "LIST" | "PRICE_RANGE" | "BOOLEAN";
+  values: StorefrontFilterValue[];
+};
+
+export const COLLECTION_FILTERED_QUERY = `
+  ${PRODUCT_FRAGMENT}
+  query GetCollectionFiltered(
+    $handle: String!
+    $first: Int!
+    $after: String
+    $filters: [ProductFilter!]
+    $sortKey: ProductCollectionSortKeys
+    $reverse: Boolean
+  ) {
+    collection(handle: $handle) {
+      id title handle description
+      image { url altText }
+      products(first: $first, after: $after, filters: $filters, sortKey: $sortKey, reverse: $reverse) {
+        filters { id label type values { id label count input } }
+        pageInfo { hasNextPage endCursor }
+        edges { cursor node { ...ProductFields } }
+      }
+    }
+  }
+`;
+
+export const SEARCH_FILTERED_QUERY = `
+  ${PRODUCT_FRAGMENT}
+  query SearchFiltered(
+    $first: Int!
+    $after: String
+    $query: String!
+    $productFilters: [ProductFilter!]
+    $sortKey: SearchSortKeys
+    $reverse: Boolean
+  ) {
+    search(
+      first: $first
+      after: $after
+      query: $query
+      productFilters: $productFilters
+      sortKey: $sortKey
+      reverse: $reverse
+      types: PRODUCT
+    ) {
+      productFilters { id label type values { id label count input } }
+      pageInfo { hasNextPage endCursor }
+      edges { node { ... on Product { ...ProductFields } } }
+    }
+  }
+`;
+
 export async function fetchProducts(opts: { first?: number; query?: string; sortKey?: string; reverse?: boolean } = {}) {
   const data = await storefrontApiRequest<{ products: { edges: ShopifyProduct[] } }>(PRODUCTS_QUERY, {
     first: opts.first ?? 24,
@@ -159,6 +221,63 @@ export async function fetchCollection(handle: string, first = 36) {
     COLLECTION_BY_HANDLE_QUERY, { handle, first }
   );
   return data?.data?.collection ?? null;
+}
+
+export type FilteredResult = {
+  collection?: ShopifyCollection;
+  filters: StorefrontFilter[];
+  edges: ShopifyProduct[];
+  pageInfo: { hasNextPage: boolean; endCursor: string | null };
+};
+
+export async function fetchCollectionFiltered(opts: {
+  handle: string;
+  first?: number;
+  after?: string | null;
+  filters?: object[];
+  sortKey?: string;
+  reverse?: boolean;
+}): Promise<FilteredResult | null> {
+  const data = await storefrontApiRequest<any>(COLLECTION_FILTERED_QUERY, {
+    handle: opts.handle,
+    first: opts.first ?? 24,
+    after: opts.after ?? null,
+    filters: opts.filters ?? [],
+    sortKey: opts.sortKey ?? "BEST_SELLING",
+    reverse: opts.reverse ?? false,
+  });
+  const c = data?.data?.collection;
+  if (!c) return null;
+  return {
+    collection: { id: c.id, title: c.title, handle: c.handle, description: c.description, image: c.image },
+    filters: c.products.filters ?? [],
+    edges: c.products.edges ?? [],
+    pageInfo: c.products.pageInfo,
+  };
+}
+
+export async function fetchSearchFiltered(opts: {
+  query?: string;
+  first?: number;
+  after?: string | null;
+  filters?: object[];
+  sortKey?: string;
+  reverse?: boolean;
+}): Promise<Omit<FilteredResult, "collection">> {
+  const data = await storefrontApiRequest<any>(SEARCH_FILTERED_QUERY, {
+    query: opts.query ?? "*",
+    first: opts.first ?? 24,
+    after: opts.after ?? null,
+    productFilters: opts.filters ?? [],
+    sortKey: opts.sortKey ?? "RELEVANCE",
+    reverse: opts.reverse ?? false,
+  });
+  const s = data?.data?.search;
+  return {
+    filters: s?.productFilters ?? [],
+    edges: s?.edges ?? [],
+    pageInfo: s?.pageInfo ?? { hasNextPage: false, endCursor: null },
+  };
 }
 
 export async function fetchCollections(first = 50) {
