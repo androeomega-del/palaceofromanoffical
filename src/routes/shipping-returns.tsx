@@ -20,10 +20,11 @@ export const Route = createFileRoute("/shipping-returns")({
 });
 
 const ZONES = [
-  { region: "European Union", standard: "On average 3 business days", dispatch: "24–48 hours" },
+  { region: "European Union", standard: "2–3 business days", dispatch: "24–48 hours" },
   { region: "United Kingdom & Northern Ireland", standard: "3–5 business days", dispatch: "24–48 hours" },
-  { region: "United States & Canada", standard: "5–7 business days", dispatch: "24–48 hours" },
-  { region: "Rest of world", standard: "5–7 business days", dispatch: "24–48 hours" },
+  { region: "Switzerland & Norway", standard: "3–5 business days", dispatch: "24–48 hours" },
+  { region: "United States & Canada", standard: "4–7 business days", dispatch: "24–48 hours" },
+  { region: "Rest of world", standard: "5–10 business days", dispatch: "24–48 hours" },
 ];
 
 function ShippingReturnsPage() {
@@ -31,7 +32,7 @@ function ShippingReturnsPage() {
     <EditorialPageShell
       eyebrow="Client Care"
       title="Shipping & Returns"
-      intro="Each order is dispatched from one of our partner ateliers across Italy, Sweden, Spain, Germany, Northern Ireland and the United States — fully tracked, fully insured."
+      intro="Each order is dispatched from one of our partner warehouses across Italy, Sweden, Spain, Austria, Northern Ireland and the United States — fully tracked, fully insured."
       heroImage={img(72)}
       heroAlt="Considered packaging"
     >
@@ -46,7 +47,7 @@ function ShippingReturnsPage() {
             <li><strong className="text-ink font-medium">Italy</strong> — Milan, Giuseppe, Beati, Genova, Florence, Modena, Como, Rome, Pomezia, Napoli, Piacenza, Pescara, Parma</li>
             <li><strong className="text-ink font-medium">Sweden</strong> — Jönköping, Bankeryd, Stockholm</li>
             <li><strong className="text-ink font-medium">Spain</strong> — Alicante</li>
-            <li><strong className="text-ink font-medium">Germany</strong> — Salzburg</li>
+            <li><strong className="text-ink font-medium">Austria</strong> — Salzburg</li>
             <li><strong className="text-ink font-medium">Northern Ireland</strong> — Belfast</li>
             <li><strong className="text-ink font-medium">United States</strong> — Florida, New York</li>
           </ul>

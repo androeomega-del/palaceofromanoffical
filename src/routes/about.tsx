@@ -84,7 +84,7 @@ function AboutPage() {
             The boutique experience, online.
           </h2>
           <p className="text-[15px] leading-[1.8] text-ink/80 mb-4">
-            Orders ship directly from the brand-authorised warehouse holding each piece — across Italy, Spain, Germany,
+            Orders ship directly from the brand-authorised warehouse holding each piece — across Italy, Spain, Austria,
             Sweden, Northern Ireland and the United States — in their original packaging, with tags and dust bag
             intact. Private styling correspondence is available on request, and the concierge replies the same business
             day.

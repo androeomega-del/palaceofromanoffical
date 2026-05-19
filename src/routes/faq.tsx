@@ -33,7 +33,7 @@ const SECTIONS: { title: string; items: QA[] }[] = [
           <>
             Every piece is sourced through an authorised European distribution partner with direct relationships to the
             maisons we carry — Gucci, Prada, Alexander McQueen, Armani and others. Stock is held in partner ateliers
-            across Italy (Milan, Florence, Modena, Como, Rome and more), Sweden, Spain, Germany, Northern Ireland and
+            across Italy (Milan, Florence, Modena, Como, Rome and more), Sweden, Spain, Austria, Northern Ireland and
             the United States, and routed automatically from the warehouse holding the piece.
           </>
         ),
@@ -85,8 +85,9 @@ const SECTIONS: { title: string; items: QA[] }[] = [
         q: "How long will my order take to arrive?",
         a: (
           <>
-            Warehouses dispatch within 24–48 hours. Transit is on average 3 business days within the EU, 3–5 to the
-            United Kingdom, and 5–7 outside the EU. Full breakdown on{" "}
+            Warehouses dispatch within 24–48 hours of order confirmation. Typical transit from dispatch is 2–3 business
+            days within the EU, 3–5 business days to the UK, Switzerland and Norway, 4–7 business days to the United
+            States and Canada, and 5–10 business days to the rest of the world. Full breakdown on{" "}
             <Link to="/shipping-returns" className="underline decoration-bronze/60 underline-offset-4">Shipping &amp; Returns</Link>.
           </>
         ),
