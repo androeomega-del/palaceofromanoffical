@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as SwimRouteImport } from './routes/swim'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ShippingReturnsRouteImport } from './routes/shipping-returns'
@@ -32,6 +33,11 @@ import { Route as BrandVendorRouteImport } from './routes/brand.$vendor'
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SwimRoute = SwimRouteImport.update({
+  id: '/swim',
+  path: '/swim',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -137,6 +143,7 @@ export interface FileRoutesByFullPath {
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/swim': typeof SwimRoute
   '/terms': typeof TermsRoute
   '/brand/$vendor': typeof BrandVendorRoute
   '/collections/$handle': typeof CollectionsHandleRoute
@@ -158,6 +165,7 @@ export interface FileRoutesByTo {
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/swim': typeof SwimRoute
   '/terms': typeof TermsRoute
   '/brand/$vendor': typeof BrandVendorRoute
   '/collections/$handle': typeof CollectionsHandleRoute
@@ -180,6 +188,7 @@ export interface FileRoutesById {
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/swim': typeof SwimRoute
   '/terms': typeof TermsRoute
   '/brand/$vendor': typeof BrandVendorRoute
   '/collections/$handle': typeof CollectionsHandleRoute
@@ -203,6 +212,7 @@ export interface FileRouteTypes {
     | '/shipping-returns'
     | '/shop'
     | '/sitemap.xml'
+    | '/swim'
     | '/terms'
     | '/brand/$vendor'
     | '/collections/$handle'
@@ -224,6 +234,7 @@ export interface FileRouteTypes {
     | '/shipping-returns'
     | '/shop'
     | '/sitemap.xml'
+    | '/swim'
     | '/terms'
     | '/brand/$vendor'
     | '/collections/$handle'
@@ -245,6 +256,7 @@ export interface FileRouteTypes {
     | '/shipping-returns'
     | '/shop'
     | '/sitemap.xml'
+    | '/swim'
     | '/terms'
     | '/brand/$vendor'
     | '/collections/$handle'
@@ -267,6 +279,7 @@ export interface RootRouteChildren {
   ShippingReturnsRoute: typeof ShippingReturnsRoute
   ShopRoute: typeof ShopRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  SwimRoute: typeof SwimRoute
   TermsRoute: typeof TermsRoute
   BrandVendorRoute: typeof BrandVendorRoute
   CollectionsHandleRoute: typeof CollectionsHandleRoute
@@ -284,6 +297,13 @@ declare module '@tanstack/react-router' {
       path: '/terms'
       fullPath: '/terms'
       preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/swim': {
+      id: '/swim'
+      path: '/swim'
+      fullPath: '/swim'
+      preLoaderRoute: typeof SwimRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -427,6 +447,7 @@ const rootRouteChildren: RootRouteChildren = {
   ShippingReturnsRoute: ShippingReturnsRoute,
   ShopRoute: ShopRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  SwimRoute: SwimRoute,
   TermsRoute: TermsRoute,
   BrandVendorRoute: BrandVendorRoute,
   CollectionsHandleRoute: CollectionsHandleRoute,
