@@ -506,3 +506,199 @@ function NewsletterStrip() {
     </section>
   );
 }
+
+/* ------------------------------ SummerBento ------------------------------ */
+
+type ShopifyImg = { url: string; altText: string | null };
+
+function SummerBento({
+  womenImage,
+  menImage,
+  accessoriesImage,
+  spotlightVendor,
+  spotlightSlug,
+}: {
+  womenImage?: ShopifyImg;
+  menImage?: ShopifyImg;
+  accessoriesImage?: ShopifyImg;
+  spotlightVendor?: string;
+  spotlightSlug?: string;
+}) {
+  return (
+    <section className="px-4 md:px-8 lg:px-12 pt-6 md:pt-10 pb-12 md:pb-16">
+      <div className="max-w-[1600px] mx-auto grid grid-cols-12 auto-rows-[180px] md:auto-rows-[200px] gap-4">
+
+        {/* Main Hero: The Shoreline Perspective */}
+        <div className="col-span-12 lg:col-span-8 row-span-3 lg:row-span-4 relative group overflow-hidden bg-canvas-raised">
+          <img
+            src={summerHero}
+            alt="Resort 2026 — The Shoreline Perspective"
+            width={1600}
+            height={1280}
+            fetchPriority="high"
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-ink/10 to-transparent" />
+          <div className="absolute bottom-8 md:bottom-14 lg:bottom-16 left-6 md:left-12 lg:left-16 right-6 max-w-xl">
+            <span className="block text-[10px] md:text-xs uppercase tracking-[0.4em] mb-3 md:mb-5 text-canvas/90">
+              Resort 2026 Collection
+            </span>
+            <h1 className="font-serif text-canvas text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl leading-[0.95] mb-6 md:mb-8 text-balance">
+              The Shoreline
+              <span className="block italic font-light md:ml-10 lg:ml-12">Perspective</span>
+            </h1>
+            <div className="flex flex-wrap gap-3 md:gap-4">
+              <Link
+                to="/collections/$handle"
+                params={{ handle: WOMENS_CLOTHING_HANDLE }}
+                className="px-7 md:px-10 py-3 md:py-4 bg-canvas text-ink text-[10px] uppercase tracking-[0.25em] font-medium hover:bg-[var(--sea)] hover:text-canvas transition-all"
+              >
+                Shop the Edit
+              </Link>
+              <Link
+                to="/editorial/resort-2026"
+                className="px-7 md:px-10 py-3 md:py-4 border border-canvas text-canvas text-[10px] uppercase tracking-[0.25em] font-medium hover:bg-canvas hover:text-ink transition-all"
+              >
+                View Lookbook
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Honey Promo Tile */}
+        <Link
+          to="/shop"
+          search={{ q: "tag:New", title: "Just Landed" }}
+          className="col-span-12 md:col-span-6 lg:col-span-4 row-span-2 bg-bronze p-8 md:p-10 flex flex-col justify-center items-center text-center group transition-colors hover:bg-[oklch(0.70_0.082_70)]"
+        >
+          <span className="text-[10px] uppercase tracking-[0.3em] text-ink/70 mb-3">
+            Limited Release
+          </span>
+          <h3 className="font-serif text-2xl md:text-3xl text-ink mb-3 leading-tight">
+            Mediterranean
+            <br />
+            Craftsmanship
+          </h3>
+          <p className="text-[11px] tracking-[0.2em] text-ink/80 uppercase">
+            Just Landed for Resort
+          </p>
+        </Link>
+
+        {/* Women Category Tile */}
+        <Link
+          to="/collections/$handle"
+          params={{ handle: WOMENS_CLOTHING_HANDLE }}
+          className="col-span-12 md:col-span-6 lg:col-span-4 row-span-2 relative group overflow-hidden bg-canvas-raised"
+        >
+          {womenImage && (
+            <img
+              src={womenImage.url}
+              alt={womenImage.altText ?? "Women's Edit"}
+              loading="lazy"
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            />
+          )}
+          <div className="absolute inset-0 bg-[var(--sea)]/25 mix-blend-multiply" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-center">
+              <h3 className="font-serif italic text-4xl md:text-5xl text-canvas">Women</h3>
+              <div className="h-px w-0 group-hover:w-full bg-canvas transition-all duration-500 mt-3 mx-auto" />
+            </div>
+          </div>
+        </Link>
+
+        {/* Brand Spotlight — Navy */}
+        <Link
+          to={spotlightSlug ? "/brand/$vendor" : "/brands"}
+          params={spotlightSlug ? { vendor: spotlightSlug } : undefined}
+          className="col-span-12 md:col-span-4 lg:col-span-3 row-span-2 bg-ink p-6 md:p-8 flex flex-col justify-between group overflow-hidden relative"
+        >
+          <div className="relative z-10">
+            <span className="text-[9px] uppercase tracking-[0.4em] text-[var(--sea)] mb-3 block">
+              Brand Spotlight
+            </span>
+            <h4 className="font-serif text-2xl md:text-3xl text-canvas leading-tight">
+              {spotlightVendor ?? "The Maisons"}
+              <span className="block italic font-light mt-1">In Stock Now</span>
+            </h4>
+          </div>
+          <div
+            className="absolute bottom-[-30px] right-[-30px] w-44 h-44 rounded-full opacity-40 group-hover:scale-110 transition-transform duration-700 bg-cover bg-center"
+            style={{ backgroundImage: `url(${img(8)})` }}
+            aria-hidden
+          />
+          <span className="relative z-10 text-[10px] uppercase tracking-[0.25em] text-canvas border-b border-canvas/30 pb-1 w-fit">
+            Explore Collection
+          </span>
+        </Link>
+
+        {/* Men Category Tile */}
+        <Link
+          to="/collections/$handle"
+          params={{ handle: MENS_CLOTHING_HANDLE }}
+          className="col-span-12 md:col-span-8 lg:col-span-5 row-span-2 relative group overflow-hidden bg-canvas-raised"
+        >
+          {menImage && (
+            <img
+              src={menImage.url}
+              alt={menImage.altText ?? "The Men's Edit"}
+              loading="lazy"
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/40 to-transparent" />
+          <div className="absolute bottom-6 md:bottom-8 left-6 md:left-8">
+            <h3 className="font-serif text-3xl md:text-4xl text-canvas">The Men's Edit</h3>
+            <p className="text-[10px] uppercase tracking-[0.3em] text-canvas/80 mt-2">
+              Effortless Sophistication
+            </p>
+          </div>
+        </Link>
+
+        {/* Accessories Split Tile */}
+        <Link
+          to="/shop"
+          search={{ q: "tag:Accessories", title: "Accessories" }}
+          className="col-span-6 md:col-span-4 lg:col-span-2 row-span-2 bg-canvas border border-ink/10 flex flex-col group overflow-hidden"
+        >
+          <div className="h-1/2 overflow-hidden bg-canvas-raised">
+            {accessoriesImage && (
+              <img
+                src={accessoriesImage.url}
+                alt={accessoriesImage.altText ?? "Accessories"}
+                loading="lazy"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              />
+            )}
+          </div>
+          <div className="h-1/2 flex flex-col items-center justify-center p-4 text-center">
+            <span className="text-[9px] uppercase tracking-[0.3em] text-[var(--sea)] mb-1">
+              Shop
+            </span>
+            <h4 className="text-base md:text-lg text-ink uppercase tracking-[0.15em] font-medium">
+              Accessories
+            </h4>
+          </div>
+        </Link>
+
+        {/* Sea Sale Tile */}
+        <Link
+          to="/collections/$handle"
+          params={{ handle: "high-discounts" }}
+          className="col-span-6 md:col-span-4 lg:col-span-2 row-span-2 bg-[var(--sea)] p-5 md:p-6 flex flex-col items-center justify-center text-center group hover:bg-[oklch(0.54_0.115_235)] transition-colors"
+        >
+          <h4 className="font-serif text-2xl md:text-3xl text-canvas mb-2 leading-tight">
+            The Summer
+            <br />
+            Sale
+          </h4>
+          <p className="text-[10px] uppercase tracking-[0.3em] text-canvas/85 mb-4">
+            Up to 40% Off
+          </p>
+          <div className="w-8 h-px bg-canvas transition-all group-hover:w-16" />
+        </Link>
+
+      </div>
+    </section>
+  );
+}
