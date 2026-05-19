@@ -38,6 +38,7 @@ function mapSort(sort: SortValue): { sortKey: string; reverse: boolean } {
 }
 
 function ShopPage() {
+  const { q: queryParam, title: titleParam } = Route.useSearch();
   const [selections, setSelections] = useState<Selection[]>([]);
   const [priceRange, setPriceRange] = useState<{ min: number; max: number } | null>(null);
   const [sort, setSort] = useState<SortValue>("BEST_SELLING-false");
@@ -52,11 +53,11 @@ function ShopPage() {
   const { sortKey, reverse } = mapSort(sort);
 
   const q = useInfiniteQuery({
-    queryKey: ["shop-search", filterInputs, sortKey, reverse],
+    queryKey: ["shop-search", queryParam ?? "*", filterInputs, sortKey, reverse],
     initialPageParam: null as string | null,
     queryFn: ({ pageParam }) =>
       fetchSearchFiltered({
-        query: "*",
+        query: queryParam || "*",
         first: 36,
         after: pageParam,
         filters: filterInputs,
