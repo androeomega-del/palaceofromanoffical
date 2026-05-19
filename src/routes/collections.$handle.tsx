@@ -7,6 +7,7 @@ import { ProductCard } from "@/components/product-card";
 import {
   CatalogFilters,
   CatalogSort,
+  SortPresets,
   ActiveFilterPills,
   SORT_OPTIONS,
   type Selection,
