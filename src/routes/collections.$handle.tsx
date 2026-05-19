@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { fetchCollectionFiltered, fetchCollection, type StorefrontFilterValue } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
 import { pageTitle, metaDescription, absoluteUrl, SITE_URL } from "@/lib/seo";
+import { collectionSeo } from "@/lib/collection-seo";
 import {
   collectionImage,
   collectionImageAlt,
@@ -50,16 +51,18 @@ export const Route = createFileRoute("/collections/$handle")({
   },
   head: ({ params, loaderData }) => {
     const title = loaderData?.title ?? titleizeHandle(params.handle);
-    const desc =
-      metaDescription(loaderData?.description ?? "") ||
-      `Shop ${title} from luxury designers at Palace of Roman. 100% authentic, worldwide shipping.`;
+    const seo = collectionSeo({
+      handle: params.handle,
+      title,
+      description: loaderData?.description ?? null,
+    });
     const path = `/collections/${params.handle}`;
     const url = absoluteUrl(path);
     const meta = [
-      { title: pageTitle(title) },
-      { name: "description", content: desc },
-      { property: "og:title", content: pageTitle(title) },
-      { property: "og:description", content: desc },
+      { title: seo.title },
+      { name: "description", content: seo.description },
+      { property: "og:title", content: seo.title },
+      { property: "og:description", content: seo.description },
       { property: "og:url", content: url },
       { property: "og:type", content: "website" },
     ];
@@ -89,7 +92,7 @@ export const Route = createFileRoute("/collections/$handle")({
             "@context": "https://schema.org",
             "@type": "CollectionPage",
             name: title,
-            description: desc,
+            description: seo.description,
             url,
             isPartOf: { "@type": "WebSite", name: "Palace of Roman", url: SITE_URL },
           }),
