@@ -31,6 +31,7 @@ import { Route as EditorialMay2026RouteImport } from './routes/editorial.may-202
 import { Route as CollectionsHandleRouteImport } from './routes/collections.$handle'
 import { Route as CampaignDolceGabbanaSwimRouteImport } from './routes/campaign.dolce-gabbana-swim'
 import { Route as BrandVendorRouteImport } from './routes/brand.$vendor'
+import { Route as AdminCollectionImageQaRouteImport } from './routes/admin.collection-image-qa'
 import { Route as ApiPublicHooksSyncCollectionImagesRouteImport } from './routes/api/public/hooks/sync-collection-images'
 
 const TermsRoute = TermsRouteImport.update({
@@ -144,6 +145,11 @@ const BrandVendorRoute = BrandVendorRouteImport.update({
   path: '/brand/$vendor',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminCollectionImageQaRoute = AdminCollectionImageQaRouteImport.update({
+  id: '/admin/collection-image-qa',
+  path: '/admin/collection-image-qa',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksSyncCollectionImagesRoute =
   ApiPublicHooksSyncCollectionImagesRouteImport.update({
     id: '/api/public/hooks/sync-collection-images',
@@ -165,6 +171,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
+  '/admin/collection-image-qa': typeof AdminCollectionImageQaRoute
   '/brand/$vendor': typeof BrandVendorRoute
   '/campaign/dolce-gabbana-swim': typeof CampaignDolceGabbanaSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
@@ -190,6 +197,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
+  '/admin/collection-image-qa': typeof AdminCollectionImageQaRoute
   '/brand/$vendor': typeof BrandVendorRoute
   '/campaign/dolce-gabbana-swim': typeof CampaignDolceGabbanaSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
@@ -216,6 +224,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
+  '/admin/collection-image-qa': typeof AdminCollectionImageQaRoute
   '/brand/$vendor': typeof BrandVendorRoute
   '/campaign/dolce-gabbana-swim': typeof CampaignDolceGabbanaSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
@@ -243,6 +252,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/swim'
     | '/terms'
+    | '/admin/collection-image-qa'
     | '/brand/$vendor'
     | '/campaign/dolce-gabbana-swim'
     | '/collections/$handle'
@@ -268,6 +278,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/swim'
     | '/terms'
+    | '/admin/collection-image-qa'
     | '/brand/$vendor'
     | '/campaign/dolce-gabbana-swim'
     | '/collections/$handle'
@@ -293,6 +304,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/swim'
     | '/terms'
+    | '/admin/collection-image-qa'
     | '/brand/$vendor'
     | '/campaign/dolce-gabbana-swim'
     | '/collections/$handle'
@@ -319,6 +331,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SwimRoute: typeof SwimRouteWithChildren
   TermsRoute: typeof TermsRoute
+  AdminCollectionImageQaRoute: typeof AdminCollectionImageQaRoute
   BrandVendorRoute: typeof BrandVendorRoute
   CampaignDolceGabbanaSwimRoute: typeof CampaignDolceGabbanaSwimRoute
   CollectionsHandleRoute: typeof CollectionsHandleRoute
@@ -486,6 +499,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BrandVendorRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/collection-image-qa': {
+      id: '/admin/collection-image-qa'
+      path: '/admin/collection-image-qa'
+      fullPath: '/admin/collection-image-qa'
+      preLoaderRoute: typeof AdminCollectionImageQaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/sync-collection-images': {
       id: '/api/public/hooks/sync-collection-images'
       path: '/api/public/hooks/sync-collection-images'
@@ -520,6 +540,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SwimRoute: SwimRouteWithChildren,
   TermsRoute: TermsRoute,
+  AdminCollectionImageQaRoute: AdminCollectionImageQaRoute,
   BrandVendorRoute: BrandVendorRoute,
   CampaignDolceGabbanaSwimRoute: CampaignDolceGabbanaSwimRoute,
   CollectionsHandleRoute: CollectionsHandleRoute,
