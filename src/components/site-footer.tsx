@@ -26,10 +26,11 @@ export function SiteFooter() {
             </div>
             <div className="flex flex-col gap-4">
               <h5 className="text-[10px] uppercase tracking-[0.2em] font-semibold">Client Care</h5>
-              <a href="#" className="text-sm text-muted-foreground hover:text-ink transition-colors">Shipping &amp; Returns</a>
-              <a href="#" className="text-sm text-muted-foreground hover:text-ink transition-colors">Order Tracking</a>
-              <a href="#" className="text-sm text-muted-foreground hover:text-ink transition-colors">Authentication</a>
-              <a href="#" className="text-sm text-muted-foreground hover:text-ink transition-colors">Contact</a>
+              <Link to="/shipping-returns" className="text-sm text-muted-foreground hover:text-ink transition-colors">Shipping &amp; Returns</Link>
+              <Link to="/authentication" className="text-sm text-muted-foreground hover:text-ink transition-colors">Authentication</Link>
+              <Link to="/contact" className="text-sm text-muted-foreground hover:text-ink transition-colors">Contact</Link>
+              <Link to="/about" className="text-sm text-muted-foreground hover:text-ink transition-colors">About</Link>
+              <Link to="/journal" className="text-sm text-muted-foreground hover:text-ink transition-colors">Journal</Link>
             </div>
             <div className="hidden md:flex flex-col gap-6">
               <h5 className="text-[10px] uppercase tracking-[0.2em] font-semibold">In Correspondence</h5>
@@ -38,6 +39,9 @@ export function SiteFooter() {
                   className="bg-transparent border-b border-ink/20 py-2 w-full text-sm focus:outline-none focus:border-ink transition-colors" />
                 <button className="absolute right-0 top-1/2 -translate-y-1/2 text-[10px] uppercase tracking-widest">Join</button>
               </form>
+              <p className="text-[10px] text-muted-foreground/70 leading-relaxed">
+                Quiet correspondence — new arrivals, editorials, private previews.
+              </p>
             </div>
           </div>
         </div>
@@ -45,8 +49,8 @@ export function SiteFooter() {
         <div className="flex flex-col md:flex-row gap-4 justify-between items-center pt-12 border-t border-ink/5 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
           <p>&copy; {new Date().getFullYear()} Palace of Roman. All rights reserved.</p>
           <div className="flex gap-8">
-            <a href="#" className="hover:text-ink transition-colors">Privacy</a>
-            <a href="#" className="hover:text-ink transition-colors">Terms</a>
+            <Link to="/privacy" className="hover:text-ink transition-colors">Privacy</Link>
+            <Link to="/terms" className="hover:text-ink transition-colors">Terms</Link>
           </div>
         </div>
       </div>

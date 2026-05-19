@@ -13,6 +13,7 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ShippingReturnsRouteImport } from './routes/shipping-returns'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as JournalRouteImport } from './routes/journal'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BrandsRouteImport } from './routes/brands'
 import { Route as AuthenticationRouteImport } from './routes/authentication'
@@ -20,6 +21,8 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CollectionsIndexRouteImport } from './routes/collections.index'
 import { Route as ProductHandleRouteImport } from './routes/product.$handle'
+import { Route as EditorialTheNewEveningRouteImport } from './routes/editorial.the-new-evening'
+import { Route as EditorialResort2026RouteImport } from './routes/editorial.resort-2026'
 import { Route as EditorialMay2026RouteImport } from './routes/editorial.may-2026'
 import { Route as CollectionsHandleRouteImport } from './routes/collections.$handle'
 import { Route as BrandVendorRouteImport } from './routes/brand.$vendor'
@@ -42,6 +45,11 @@ const ShippingReturnsRoute = ShippingReturnsRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JournalRoute = JournalRouteImport.update({
+  id: '/journal',
+  path: '/journal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -79,6 +87,16 @@ const ProductHandleRoute = ProductHandleRouteImport.update({
   path: '/product/$handle',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EditorialTheNewEveningRoute = EditorialTheNewEveningRouteImport.update({
+  id: '/editorial/the-new-evening',
+  path: '/editorial/the-new-evening',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EditorialResort2026Route = EditorialResort2026RouteImport.update({
+  id: '/editorial/resort-2026',
+  path: '/editorial/resort-2026',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EditorialMay2026Route = EditorialMay2026RouteImport.update({
   id: '/editorial/may-2026',
   path: '/editorial/may-2026',
@@ -101,6 +119,7 @@ export interface FileRoutesByFullPath {
   '/authentication': typeof AuthenticationRoute
   '/brands': typeof BrandsRoute
   '/contact': typeof ContactRoute
+  '/journal': typeof JournalRoute
   '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
@@ -108,6 +127,8 @@ export interface FileRoutesByFullPath {
   '/brand/$vendor': typeof BrandVendorRoute
   '/collections/$handle': typeof CollectionsHandleRoute
   '/editorial/may-2026': typeof EditorialMay2026Route
+  '/editorial/resort-2026': typeof EditorialResort2026Route
+  '/editorial/the-new-evening': typeof EditorialTheNewEveningRoute
   '/product/$handle': typeof ProductHandleRoute
   '/collections/': typeof CollectionsIndexRoute
 }
@@ -117,6 +138,7 @@ export interface FileRoutesByTo {
   '/authentication': typeof AuthenticationRoute
   '/brands': typeof BrandsRoute
   '/contact': typeof ContactRoute
+  '/journal': typeof JournalRoute
   '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
@@ -124,6 +146,8 @@ export interface FileRoutesByTo {
   '/brand/$vendor': typeof BrandVendorRoute
   '/collections/$handle': typeof CollectionsHandleRoute
   '/editorial/may-2026': typeof EditorialMay2026Route
+  '/editorial/resort-2026': typeof EditorialResort2026Route
+  '/editorial/the-new-evening': typeof EditorialTheNewEveningRoute
   '/product/$handle': typeof ProductHandleRoute
   '/collections': typeof CollectionsIndexRoute
 }
@@ -134,6 +158,7 @@ export interface FileRoutesById {
   '/authentication': typeof AuthenticationRoute
   '/brands': typeof BrandsRoute
   '/contact': typeof ContactRoute
+  '/journal': typeof JournalRoute
   '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
@@ -141,6 +166,8 @@ export interface FileRoutesById {
   '/brand/$vendor': typeof BrandVendorRoute
   '/collections/$handle': typeof CollectionsHandleRoute
   '/editorial/may-2026': typeof EditorialMay2026Route
+  '/editorial/resort-2026': typeof EditorialResort2026Route
+  '/editorial/the-new-evening': typeof EditorialTheNewEveningRoute
   '/product/$handle': typeof ProductHandleRoute
   '/collections/': typeof CollectionsIndexRoute
 }
@@ -152,6 +179,7 @@ export interface FileRouteTypes {
     | '/authentication'
     | '/brands'
     | '/contact'
+    | '/journal'
     | '/privacy'
     | '/shipping-returns'
     | '/shop'
@@ -159,6 +187,8 @@ export interface FileRouteTypes {
     | '/brand/$vendor'
     | '/collections/$handle'
     | '/editorial/may-2026'
+    | '/editorial/resort-2026'
+    | '/editorial/the-new-evening'
     | '/product/$handle'
     | '/collections/'
   fileRoutesByTo: FileRoutesByTo
@@ -168,6 +198,7 @@ export interface FileRouteTypes {
     | '/authentication'
     | '/brands'
     | '/contact'
+    | '/journal'
     | '/privacy'
     | '/shipping-returns'
     | '/shop'
@@ -175,6 +206,8 @@ export interface FileRouteTypes {
     | '/brand/$vendor'
     | '/collections/$handle'
     | '/editorial/may-2026'
+    | '/editorial/resort-2026'
+    | '/editorial/the-new-evening'
     | '/product/$handle'
     | '/collections'
   id:
@@ -184,6 +217,7 @@ export interface FileRouteTypes {
     | '/authentication'
     | '/brands'
     | '/contact'
+    | '/journal'
     | '/privacy'
     | '/shipping-returns'
     | '/shop'
@@ -191,6 +225,8 @@ export interface FileRouteTypes {
     | '/brand/$vendor'
     | '/collections/$handle'
     | '/editorial/may-2026'
+    | '/editorial/resort-2026'
+    | '/editorial/the-new-evening'
     | '/product/$handle'
     | '/collections/'
   fileRoutesById: FileRoutesById
@@ -201,6 +237,7 @@ export interface RootRouteChildren {
   AuthenticationRoute: typeof AuthenticationRoute
   BrandsRoute: typeof BrandsRoute
   ContactRoute: typeof ContactRoute
+  JournalRoute: typeof JournalRoute
   PrivacyRoute: typeof PrivacyRoute
   ShippingReturnsRoute: typeof ShippingReturnsRoute
   ShopRoute: typeof ShopRoute
@@ -208,6 +245,8 @@ export interface RootRouteChildren {
   BrandVendorRoute: typeof BrandVendorRoute
   CollectionsHandleRoute: typeof CollectionsHandleRoute
   EditorialMay2026Route: typeof EditorialMay2026Route
+  EditorialResort2026Route: typeof EditorialResort2026Route
+  EditorialTheNewEveningRoute: typeof EditorialTheNewEveningRoute
   ProductHandleRoute: typeof ProductHandleRoute
   CollectionsIndexRoute: typeof CollectionsIndexRoute
 }
@@ -240,6 +279,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/journal': {
+      id: '/journal'
+      path: '/journal'
+      fullPath: '/journal'
+      preLoaderRoute: typeof JournalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -291,6 +337,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductHandleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/editorial/the-new-evening': {
+      id: '/editorial/the-new-evening'
+      path: '/editorial/the-new-evening'
+      fullPath: '/editorial/the-new-evening'
+      preLoaderRoute: typeof EditorialTheNewEveningRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/editorial/resort-2026': {
+      id: '/editorial/resort-2026'
+      path: '/editorial/resort-2026'
+      fullPath: '/editorial/resort-2026'
+      preLoaderRoute: typeof EditorialResort2026RouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/editorial/may-2026': {
       id: '/editorial/may-2026'
       path: '/editorial/may-2026'
@@ -321,6 +381,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticationRoute: AuthenticationRoute,
   BrandsRoute: BrandsRoute,
   ContactRoute: ContactRoute,
+  JournalRoute: JournalRoute,
   PrivacyRoute: PrivacyRoute,
   ShippingReturnsRoute: ShippingReturnsRoute,
   ShopRoute: ShopRoute,
@@ -328,6 +389,8 @@ const rootRouteChildren: RootRouteChildren = {
   BrandVendorRoute: BrandVendorRoute,
   CollectionsHandleRoute: CollectionsHandleRoute,
   EditorialMay2026Route: EditorialMay2026Route,
+  EditorialResort2026Route: EditorialResort2026Route,
+  EditorialTheNewEveningRoute: EditorialTheNewEveningRoute,
   ProductHandleRoute: ProductHandleRoute,
   CollectionsIndexRoute: CollectionsIndexRoute,
 }

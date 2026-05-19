@@ -317,7 +317,35 @@ function HomePage() {
         </div>
       </section>
 
-      {/* 7. NEWSLETTER */}
+      {/* 7. TRUST / WHY SHOP WITH US */}
+      <section className="py-24 border-t border-ink/5 bg-canvas-raised">
+        <div className="max-w-screen-2xl mx-auto px-6">
+          <div className="text-center mb-14">
+            <span className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-4 block">The House</span>
+            <h2 className="text-3xl md:text-4xl font-serif">Why shop with Palace of Roman</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-8">
+            {[
+              { title: "Authenticated", body: "Every piece is sourced through authorized partners and verified before dispatch." },
+              { title: "Tracked Worldwide", body: "Complimentary DHL or FedEx tracked shipping on orders above $1,200." },
+              { title: "Considered Returns", body: "14-day returns on full-priced merchandise, handled by our client care team." },
+              { title: "Private Concierge", body: "A quiet line for sourcing requests, sizing and styling — by appointment." },
+            ].map((b) => (
+              <div key={b.title} className="text-center md:text-left">
+                <h3 className="font-serif text-lg md:text-xl mb-3">{b.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{b.body}</p>
+              </div>
+            ))}
+          </div>
+          <div className="flex flex-wrap justify-center gap-8 md:gap-10 mt-14 text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+            <Link to="/authentication" className="hover:text-ink transition-colors">Authentication →</Link>
+            <Link to="/shipping-returns" className="hover:text-ink transition-colors">Shipping &amp; Returns →</Link>
+            <Link to="/contact" className="hover:text-ink transition-colors">Contact Concierge →</Link>
+          </div>
+        </div>
+      </section>
+
+      {/* 8. NEWSLETTER */}
       <NewsletterStrip />
     </>
   );
