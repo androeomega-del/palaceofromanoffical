@@ -145,14 +145,11 @@ function AdminCollectionFocal() {
     );
   }, [selected]);
 
-  const lastKeyRef = useRef<string>("");
-  if (selected && lastKeyRef.current !== selectedKey + "|" + savedJSON) {
-    lastKeyRef.current = selectedKey + "|" + savedJSON;
-    // Initialise draft for the freshly selected row.
-    queueMicrotask(() =>
-      setDraft(selected.savedFocal ?? computedFallback),
-    );
-  }
+  useEffect(() => {
+    if (!selected) return;
+    setDraft(selected.savedFocal ?? computedFallback);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedKey, savedJSON]);
 
   const focal = draft ?? selected?.savedFocal ?? computedFallback;
 
