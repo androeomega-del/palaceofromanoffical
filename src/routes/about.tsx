@@ -22,9 +22,9 @@ function AboutPage() {
     <EditorialPageShell
       eyebrow="House Notes"
       title="A boutique, not a marketplace."
-      intro="Palace of Roman is a curated edit of the world's most considered houses — quietly assembled, authenticated in-house, and presented with the care of a single voice."
+      intro="Palace of Roman is a curated edit of the world's most considered houses — quietly assembled, sourced through an authorised European distribution partner, and presented with the care of a single voice."
       heroImage={img(7)}
-      heroAlt="The boutique in studio light"
+      heroAlt="A studio still life from the current edit"
     >
       {/* Origin */}
       <section className="grid md:grid-cols-12 gap-10 md:gap-16 items-center mb-32">
