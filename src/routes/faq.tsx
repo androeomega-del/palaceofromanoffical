@@ -31,10 +31,11 @@ const SECTIONS: { title: string; items: QA[] }[] = [
         q: "Where do the pieces come from?",
         a: (
           <>
-            Every piece is sourced through an authorised European distribution partner with direct relationships to the
-            maisons we carry — Gucci, Prada, Alexander McQueen, Armani and others. Stock is held in brand-authorised
-            partner warehouses across Italy (Milan, Florence, Modena, Como, Rome and more), Sweden, Spain, Austria,
-            Northern Ireland and the United States, and shipped sealed from the warehouse holding the piece.
+            Palace of Roman is an official BrandsGateway partner, authorised to resell from a catalogue of more than
+            ninety luxury houses — Gucci, Versace, Balenciaga, Dior, Dolce &amp; Gabbana, Saint Laurent, Prada,
+            Alexander McQueen, Armani and others. Stock is held in brand-authorised partner warehouses across Italy
+            (Milan, Florence, Modena, Como, Rome and more), Sweden, Spain, Austria, Northern Ireland and the United
+            States, and shipped sealed from the warehouse holding the piece.
           </>
         ),
       },
@@ -42,9 +43,12 @@ const SECTIONS: { title: string; items: QA[] }[] = [
         q: "Are you an official boutique of the brands you carry?",
         a: (
           <>
-            Palace of Roman is an independent curated boutique. We are not directly affiliated with the maisons listed
-            on the site; pieces are supplied through our authorised distribution partner. Read more on{" "}
-            <Link to="/about" className="underline decoration-bronze/60 underline-offset-4">House Notes</Link>.
+            Palace of Roman is an independent boutique and an official partner of BrandsGateway (Gateway Holdings OÜ),
+            authorised to resell goods from the listed maisons. We are not a directly appointed flagship of any single
+            house; pieces reach us through the brands' own authorised distribution channels. Our signed reseller
+            certificate is published on the{" "}
+            <Link to="/authentication" className="underline decoration-bronze/60 underline-offset-4">Sourcing &amp; Authenticity</Link>{" "}
+            page.
           </>
         ),
       },
@@ -52,9 +56,11 @@ const SECTIONS: { title: string; items: QA[] }[] = [
         q: "How do you guarantee authenticity?",
         a: (
           <>
-            Every order is inspected and dispatched directly from the brand-authorised warehouse and ships with its
-            original tags, dust bag and packaging. See the five-stage process on the{" "}
-            <Link to="/authentication" className="underline decoration-bronze/60 underline-offset-4">Authentication</Link>{" "}
+            Every piece is certified by BrandsGateway as 100% authentic and sourced directly from the brands or their
+            authorised distributors. Orders ship sealed from a brand-authorised warehouse with original tags, dust bag
+            and packaging intact. If an independent authenticator ever challenges a piece purchased from us, return it
+            within ninety days for a full refund. Read the full chain of custody on the{" "}
+            <Link to="/authentication" className="underline decoration-bronze/60 underline-offset-4">Sourcing &amp; Authenticity</Link>{" "}
             page.
           </>
         ),

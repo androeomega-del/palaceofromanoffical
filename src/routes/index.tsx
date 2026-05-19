@@ -326,7 +326,7 @@ function HomePage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-8">
             {[
-              { title: "Authorised sourcing", body: "Every piece is sourced through an authorised European distribution partner and ships sealed from a brand-authorised warehouse." },
+              { title: "100% Authentic", body: "Official BrandsGateway partner — every piece authorised and sourced from the brands or their authorised distributors." },
               { title: "Tracked Worldwide", body: "Complimentary DHL or FedEx tracked shipping on orders above $1,200." },
               { title: "Considered Returns", body: "14-day returns on full-priced merchandise from the day your parcel is delivered." },
               { title: "Email Concierge", body: "A single line for sourcing requests, sizing and styling — same-day reply by email." },

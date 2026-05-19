@@ -22,7 +22,7 @@ function AboutPage() {
     <EditorialPageShell
       eyebrow="House Notes"
       title="A boutique, not a marketplace."
-      intro="Palace of Roman is a curated edit of the world's most considered houses — quietly assembled, sourced through an authorised European distribution partner, and presented with the care of a single voice."
+      intro="Palace of Roman is a curated edit of the world's most considered houses — an official BrandsGateway partner, authorised to resell pieces that are 100% authentic and sourced from the brands or their authorised distributors."
       heroImage={img(7)}
       heroAlt="A studio still life from the current edit"
     >
@@ -39,10 +39,11 @@ function AboutPage() {
             presented in studio light, and offered to a small audience who already know what they are looking for.
           </p>
           <p className="text-[15px] leading-[1.8] text-ink/80">
-            We carry tailoring, footwear, fine leather and house codes from the maisons we believe in. Stock is supplied
-            through an authorised European distribution partner and shipped directly from the brand-authorised warehouse
-            holding each piece. We are not directly affiliated with the makers we carry — we are an independent
-            curator of their work.
+            We carry tailoring, footwear, fine leather and house codes from the maisons we believe in. Palace of Roman
+            is an official partner of BrandsGateway and is authorised to resell pieces from Gucci, Versace, Balenciaga,
+            Dior, Dolce &amp; Gabbana, Saint Laurent and the wider catalogue. Every piece is 100% authentic, sourced from
+            the brands or their authorised distributors, and shipped sealed from a brand-authorised warehouse in its
+            original packaging.
           </p>
         </div>
         <div className="md:col-span-5 order-1 md:order-2">
