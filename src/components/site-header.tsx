@@ -96,7 +96,11 @@ export function SiteHeader() {
               <FlatLinks items={FLAT_RIGHT} />
             </nav>
             <div className="flex items-center gap-5">
-              <button aria-label="Search" className="hidden md:block hover:text-bronze transition-colors">
+              <button
+                aria-label="Search"
+                onClick={() => setSearchOpen(true)}
+                className="hover:text-bronze transition-colors"
+              >
                 <Search className="w-4 h-4" strokeWidth={1.25} />
               </button>
               <ReducedMotionToggle />
