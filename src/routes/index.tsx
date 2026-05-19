@@ -5,7 +5,9 @@ import { fetchProducts, fetchCollection, type ShopifyProduct } from "@/lib/shopi
 import { ProductCard } from "@/components/product-card";
 import { EditorialHotspots } from "@/components/editorial-hotspots";
 import heroImage from "@/assets/home-hero.jpg";
+import summerHero from "@/assets/summer-bento-hero.jpg";
 import editorialHero from "@/assets/editorial/may-2026/1.webp";
+import { img } from "@/lib/editorial-library";
 
 export const Route = createFileRoute("/")({
   head: () => ({
