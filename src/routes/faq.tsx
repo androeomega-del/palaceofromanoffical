@@ -21,6 +21,8 @@ export const Route = createFileRoute("/faq")({
 
 type QA = { q: string; a: React.ReactNode };
 
+const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
 const SECTIONS: { title: string; items: QA[] }[] = [
   {
     title: "Sourcing & authenticity",
