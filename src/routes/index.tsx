@@ -139,7 +139,11 @@ function HomePage() {
             height={1080}
             className="absolute inset-0 w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-canvas/80 via-canvas/30 to-transparent" />
+          {/* Cream wash — denser on the text column, fully clear on the right
+              so the editorial imagery still breathes. Bottom feather hands off
+              cleanly to the cream page. */}
+          <div className="absolute inset-0 bg-gradient-to-r from-canvas/92 from-0% via-canvas/55 via-45% to-transparent to-75%" />
+          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-canvas/80" />
           <div className="absolute inset-0 flex items-center">
             <div className="max-w-screen-2xl mx-auto w-full px-6 md:px-12">
               <div className="max-w-xl">
