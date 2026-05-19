@@ -192,7 +192,9 @@ function ProductView({
   );
 
   const addItem = useCartStore((s) => s.addItem);
+  const openDrawer = useCartStore((s) => s.openDrawer);
   const isLoading = useCartStore((s) => s.isLoading);
+
 
   const compareAt = product.compareAtPriceRange?.minVariantPrice;
   const currentPrice = selectedVariant?.price ?? product.priceRange.minVariantPrice;
@@ -231,7 +233,9 @@ function ProductView({
         selectedOptions: selectedVariant.selectedOptions ?? [],
       });
     }
+    openDrawer();
     toast.success(quantity === 1 ? "Added to bag" : `${quantity} added to bag`);
+
   };
 
   const relatedQ = useQuery({
