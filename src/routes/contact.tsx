@@ -173,7 +173,7 @@ function ContactPage() {
           <div className="mt-16 pt-10 border-t border-ink/10 grid sm:grid-cols-3 gap-8 max-w-lg text-sm">
             <div>
               <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">Email</p>
-              <p className="text-ink/80">concierge@<br/>palaceofroman.com</p>
+              <p className="text-ink/80">support@<br/>palaceofroman.com</p>
             </div>
             <div>
               <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">Where we ship from</p>
