@@ -19,6 +19,7 @@ import lookbook3 from "@/assets/lookbook-swim-3.jpg";
 import swimCampaignVideo from "@/assets/swim-campaign.mp4.asset.json";
 import sizeGuideImg from "@/assets/swim-size-guide-hero.jpg";
 import { CampaignVideo } from "@/components/campaign-video";
+import { EditorialHotspots, type Hotspot } from "@/components/editorial-hotspots";
 
 export const Route = createFileRoute("/swim")({
   head: () => {
@@ -99,6 +100,51 @@ function SwimPage() {
   const filters = q.data?.pages?.[0]?.filters ?? [];
   const edges = useMemo(() => q.data?.pages.flatMap((p) => p.edges) ?? [], [q.data]);
   const selectedInputs = useMemo(() => new Set(selections.map((s) => s.input)), [selections]);
+
+  // Build hotspots for the three lookbook frames, anchored to real fetched
+  // pieces. Each frame uses different products so the whole edit is tagged.
+  const lookbookSpots = useMemo(() => {
+    const pool = edges.map((e) => e.node);
+    const used = new Set<string>();
+    const take = (match: RegExp) => {
+      const p = pool.find((p) => !used.has(p.handle) && match.test(p.title))
+        ?? pool.find((p) => !used.has(p.handle));
+      if (!p) return null;
+      used.add(p.handle);
+      return p;
+    };
+    const spot = (x: number, y: number, match: RegExp): Hotspot | null => {
+      const p = take(match);
+      if (!p) return null;
+      const t = p.title.toLowerCase();
+      const label = t.includes("bikini top") ? "Bikini Top"
+        : t.includes("bikini bottom") ? "Bikini Bottom"
+        : t.includes("swimsuit") || t.includes("one piece") ? "Swimsuit"
+        : t.includes("pareo") || t.includes("kaftan") ? "Pareo"
+        : t.includes("bag") ? "Beach Bag"
+        : t.includes("hat") ? "Sun Hat"
+        : t.includes("sandal") || t.includes("espadrille") ? "Footwear"
+        : t.includes("earring") || t.includes("necklace") ? "Jewellery"
+        : "The Piece";
+      return { x, y, handle: p.handle, label, sublabel: p.vendor };
+    };
+    const compact = (arr: Array<Hotspot | null>) => arr.filter((s): s is Hotspot => !!s);
+    return {
+      frame1: compact([
+        spot(48, 55, /swimsuit|one[- ]?piece|bikini/i),
+        spot(70, 38, /pareo|kaftan|sarong/i),
+      ]),
+      frame2: compact([
+        spot(50, 45, /bikini top|top/i),
+        spot(35, 70, /bikini bottom|bottom/i),
+      ]),
+      frame3: compact([
+        spot(28, 40, /bag|tote/i),
+        spot(60, 55, /hat|sandal|earring/i),
+        spot(78, 75, /sunglass|eyewear|jewel/i),
+      ]),
+    };
+  }, [edges]);
 
   const toggle = (filterId: string, v: StorefrontFilterValue) => {
     setSelections((curr) =>
@@ -181,45 +227,70 @@ function SwimPage() {
           <div className="grid grid-cols-12 auto-rows-[200px] md:auto-rows-[240px] gap-4">
             {/* Frame 1 — large portrait */}
             <figure className="col-span-12 md:col-span-7 row-span-3 relative overflow-hidden group">
-              <img
+              <EditorialHotspots
                 src={lookbook1}
                 alt="Pool lounger with infinity Mediterranean view"
-                loading="lazy"
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1400ms] group-hover:scale-105"
+                aspect="4/5"
+                hotspots={lookbookSpots.frame1}
               />
-              <figcaption className="absolute bottom-6 left-6 right-6 text-canvas font-serif italic text-2xl md:text-3xl">
+              <figcaption className="absolute bottom-6 left-6 right-6 text-canvas font-serif italic text-2xl md:text-3xl pointer-events-none drop-shadow-lg">
                 The Infinity Hour
               </figcaption>
-              <div className="absolute inset-0 bg-gradient-to-t from-ink/55 to-transparent pointer-events-none" />
             </figure>
 
             {/* Frame 2 — close-up */}
             <figure className="col-span-6 md:col-span-5 row-span-2 relative overflow-hidden group">
-              <img
+              <EditorialHotspots
                 src={lookbook2}
                 alt="Designer white bikini and gold jewellery, golden hour"
-                loading="lazy"
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1400ms] group-hover:scale-105"
+                aspect="4/5"
+                hotspots={lookbookSpots.frame2}
               />
-              <figcaption className="absolute bottom-5 left-5 text-canvas font-serif italic text-xl md:text-2xl">
+              <figcaption className="absolute bottom-5 left-5 text-canvas font-serif italic text-xl md:text-2xl pointer-events-none drop-shadow-lg">
                 In the Shade
               </figcaption>
-              <div className="absolute inset-0 bg-gradient-to-t from-ink/40 to-transparent pointer-events-none" />
             </figure>
 
             {/* Frame 3 — flatlay */}
             <figure className="col-span-6 md:col-span-5 row-span-1 relative overflow-hidden group">
-              <img
+              <EditorialHotspots
                 src={lookbook3}
                 alt="Beach essentials flat lay on white sand"
-                loading="lazy"
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1400ms] group-hover:scale-105"
+                aspect="4/5"
+                hotspots={lookbookSpots.frame3}
               />
-              <figcaption className="absolute bottom-4 left-5 text-canvas font-serif italic text-lg md:text-xl">
+              <figcaption className="absolute bottom-4 left-5 text-canvas font-serif italic text-lg md:text-xl pointer-events-none drop-shadow-lg">
                 The Essentials
               </figcaption>
-              <div className="absolute inset-0 bg-gradient-to-t from-ink/40 to-transparent pointer-events-none" />
             </figure>
+          </div>
+
+          <p className="mt-6 text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+            Tap the white markers on any frame to shop the piece.
+          </p>
+        </div>
+      </section>
+
+      {/* ============ FEATURED CAMPAIGN + SIZE GUIDE STRIP ============ */}
+      <section className="px-6 md:px-10 py-6 border-y border-ink/5 bg-ink text-canvas">
+        <div className="max-w-screen-2xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="flex items-baseline gap-3">
+            <span className="text-[10px] uppercase tracking-[0.3em] text-[var(--sea)]">Featured</span>
+            <p className="font-serif italic text-lg md:text-xl">Dolce &amp; Gabbana at the water's edge.</p>
+          </div>
+          <div className="flex gap-3">
+            <Link
+              to="/campaign/dolce-gabbana-swim"
+              className="px-6 py-2.5 bg-canvas text-ink text-[10px] uppercase tracking-[0.3em] hover:bg-[var(--sea)] hover:text-canvas transition-colors"
+            >
+              View the Campaign
+            </Link>
+            <Link
+              to="/swim/size-guide"
+              className="px-6 py-2.5 border border-canvas/60 text-canvas text-[10px] uppercase tracking-[0.3em] hover:bg-canvas hover:text-ink transition-colors"
+            >
+              Size Guide
+            </Link>
           </div>
         </div>
       </section>

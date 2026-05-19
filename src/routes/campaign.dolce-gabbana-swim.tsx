@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { fetchProducts } from "@/lib/shopify";
+import { useMemo } from "react";
+import { fetchProducts, type ShopifyProduct } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
 import { CampaignVideo } from "@/components/campaign-video";
+import { EditorialHotspots, type Hotspot } from "@/components/editorial-hotspots";
 import { routeHead } from "@/lib/seo";
 import dgHero from "@/assets/dg-campaign-hero.jpg";
 import dgDetail1 from "@/assets/dg-campaign-detail-1.jpg";
@@ -36,18 +38,107 @@ export const Route = createFileRoute("/campaign/dolce-gabbana-swim")({
   component: DGSwimCampaign,
 });
 
+/* ---------- helpers ---------- */
+
+function categoryFor(title: string): string {
+  const t = title.toLowerCase();
+  if (t.includes("bikini top")) return "Bikini Top";
+  if (t.includes("bikini bottom")) return "Bikini Bottom";
+  if (t.includes("swimsuit") || t.includes("one piece") || t.includes("one-piece")) return "Swimsuit";
+  if (t.includes("pareo") || t.includes("kaftan") || t.includes("sarong")) return "Pareo";
+  if (t.includes("bag") || t.includes("tote")) return "Beach Bag";
+  if (t.includes("earring") || t.includes("necklace") || t.includes("bracelet")) return "Jewellery";
+  if (t.includes("sandal") || t.includes("espadrille") || t.includes("slide")) return "Footwear";
+  if (t.includes("hat")) return "Sun Hat";
+  if (t.includes("sunglass") || t.includes("eyewear")) return "Eyewear";
+  return "The Piece";
+}
+
+/** Build N hotspots for a frame, picking products that match optional keyword
+ *  filters first and falling back to any available D&G piece. Positions are
+ *  hand-tuned per frame so the markers land on the visible garment. */
+function buildHotspots(
+  products: ShopifyProduct[],
+  spots: Array<{ x: number; y: number; match?: RegExp }>,
+): Hotspot[] {
+  const used = new Set<string>();
+  const out: Hotspot[] = [];
+  for (const s of spots) {
+    const pick =
+      products.find(
+        (p) => !used.has(p.node.handle) && (s.match ? s.match.test(p.node.title) : true),
+      ) ?? products.find((p) => !used.has(p.node.handle));
+    if (!pick) continue;
+    used.add(pick.node.handle);
+    out.push({
+      x: s.x,
+      y: s.y,
+      handle: pick.node.handle,
+      label: categoryFor(pick.node.title),
+      sublabel: pick.node.vendor,
+    });
+  }
+  return out;
+}
+
+/* ---------- page ---------- */
+
 function DGSwimCampaign() {
   const productsQ = useQuery({
     queryKey: ["campaign", "dg-swim"],
     queryFn: () =>
       fetchProducts({
-        first: 12,
+        first: 24,
         query:
-          "vendor:'Dolce & Gabbana' AND (tag:Swimwear OR tag:Beachwear OR title:bikini OR title:swimsuit)",
+          "vendor:'Dolce & Gabbana' AND (tag:Swimwear OR tag:Beachwear OR title:bikini OR title:swimsuit OR title:pareo)",
       }),
   });
 
-  const products = productsQ.data?.edges ?? [];
+  // Accessories edit — for the lemon/raffia flatlay
+  const accessoriesQ = useQuery({
+    queryKey: ["campaign", "dg-accessories"],
+    queryFn: () =>
+      fetchProducts({
+        first: 12,
+        query:
+          "vendor:'Dolce & Gabbana' AND (tag:Accessories OR title:pareo OR title:bag OR title:earring OR title:sandal OR title:hat)",
+      }),
+  });
+
+  const products = productsQ.data ?? [];
+  const accessories = accessoriesQ.data ?? [];
+
+  /* ---- hotspot maps per editorial image ---- */
+  const portraitSpots = useMemo<Hotspot[]>(
+    () =>
+      buildHotspots(products, [
+        { x: 52, y: 32, match: /necklace|jewel/i }, // gold neck jewellery
+        { x: 50, y: 55, match: /swimsuit|one[- ]?piece/i }, // body of swimsuit
+        { x: 30, y: 58, match: /bracelet|ring|cuff/i }, // wrist
+      ]),
+    [products],
+  );
+
+  const detail1Spots = useMemo<Hotspot[]>(
+    () =>
+      buildHotspots(products, [
+        { x: 38, y: 62, match: /bikini top|top/i },
+        { x: 52, y: 22, match: /bikini bottom|bottom/i }, // gold hardware
+      ]),
+    [products],
+  );
+
+  const detail2Spots = useMemo<Hotspot[]>(
+    () =>
+      buildHotspots(accessories, [
+        { x: 22, y: 40, match: /pareo|sarong|kaftan|scarf/i }, // lemon pareo
+        { x: 70, y: 25, match: /hat/i }, // straw hat
+        { x: 50, y: 58, match: /earring|jewel/i }, // gold shell earrings
+        { x: 78, y: 60, match: /bag|tote|raffia/i }, // raffia tote
+        { x: 58, y: 80, match: /sandal|espadrille|slide/i }, // espadrilles
+      ]),
+    [accessories],
+  );
 
   return (
     <div className="bg-canvas">
@@ -83,7 +174,10 @@ function DGSwimCampaign() {
                 bikinis, swimsuits and beachwear photographed on the cliffs of Capri.
                 100% authentic, sourced from authorised distributors and ready to ship.
               </p>
-              <div className="mt-9 flex flex-wrap gap-3 md:gap-4">
+              <p className="mt-4 text-[10px] uppercase tracking-[0.3em] text-canvas/60">
+                Tap the white markers on every image to shop the piece.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3 md:gap-4">
                 <a
                   href="#shop"
                   className="px-9 py-4 bg-canvas text-ink text-[10px] uppercase tracking-[0.35em] font-medium hover:bg-[var(--sea)] hover:text-canvas transition-colors"
@@ -119,39 +213,41 @@ function DGSwimCampaign() {
         </div>
       </section>
 
-      {/* ============ EDITORIAL — DIPTYCH ============ */}
+      {/* ============ EDITORIAL — DIPTYCH (shoppable) ============ */}
       <section className="px-6 md:px-10 pb-20 md:pb-28 bg-canvas">
         <div className="max-w-screen-2xl mx-auto grid md:grid-cols-12 gap-6 md:gap-8">
-          <figure className="md:col-span-7 relative overflow-hidden aspect-[4/5] group">
-            <img
+          {/* Frame 1 — portrait, shoppable */}
+          <div className="md:col-span-7 relative">
+            <EditorialHotspots
               src={dgPortrait}
               alt="Model in Sicilian-print swimsuit wading in turquoise Mediterranean water"
-              loading="lazy"
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1600ms] group-hover:scale-105"
-              width={1080}
-              height={1350}
+              hotspots={portraitSpots}
+              aspect="4/5"
             />
-            <figcaption className="absolute bottom-6 left-6 right-6 text-canvas font-serif italic text-2xl md:text-3xl">
-              Sicilia, in the late hour.
+            <figcaption className="mt-3 flex items-baseline justify-between gap-4">
+              <span className="font-serif italic text-lg md:text-xl text-ink">Sicilia, in the late hour.</span>
+              <span className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+                {portraitSpots.length} pieces tagged
+              </span>
             </figcaption>
-            <div className="absolute inset-0 bg-gradient-to-t from-ink/55 to-transparent pointer-events-none" />
-          </figure>
+          </div>
 
           <div className="md:col-span-5 flex flex-col gap-6 md:gap-8">
-            <figure className="relative overflow-hidden aspect-[4/5] group">
-              <img
+            {/* Frame 2 — close-up, shoppable */}
+            <div className="relative">
+              <EditorialHotspots
                 src={dgDetail1}
                 alt="Close-up of D&G majolica-print swimwear with gold hardware"
-                loading="lazy"
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1600ms] group-hover:scale-105"
-                width={1080}
-                height={1350}
+                hotspots={detail1Spots}
+                aspect="4/5"
               />
-              <figcaption className="absolute bottom-5 left-5 text-canvas font-serif italic text-xl md:text-2xl">
-                Majolica &amp; gold.
+              <figcaption className="mt-3 flex items-baseline justify-between gap-4">
+                <span className="font-serif italic text-base md:text-lg text-ink">Majolica &amp; gold.</span>
+                <span className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+                  {detail1Spots.length} pieces tagged
+                </span>
               </figcaption>
-              <div className="absolute inset-0 bg-gradient-to-t from-ink/45 to-transparent pointer-events-none" />
-            </figure>
+            </div>
 
             <div className="bg-canvas-raised/60 p-8 md:p-10">
               <span className="text-[10px] uppercase tracking-[0.3em] text-[var(--sea)] mb-4 block">
@@ -170,7 +266,7 @@ function DGSwimCampaign() {
         </div>
       </section>
 
-      {/* ============ CHAPTER — THE ACCESSORIES ============ */}
+      {/* ============ CHAPTER — THE ACCESSORIES (shoppable) ============ */}
       <section className="px-6 md:px-10 py-20 md:py-28 bg-canvas-raised/40 border-y border-ink/5">
         <div className="max-w-screen-2xl mx-auto grid md:grid-cols-2 gap-12 md:gap-20 items-center">
           <div>
@@ -200,16 +296,20 @@ function DGSwimCampaign() {
               Shop the Accessories →
             </Link>
           </div>
-          <figure className="relative overflow-hidden aspect-[4/5]">
-            <img
+          <div className="relative">
+            <EditorialHotspots
               src={dgDetail2}
               alt="D&G lemon-print pareo, raffia bag, gold seashell earrings, espadrilles"
-              loading="lazy"
-              className="absolute inset-0 w-full h-full object-cover"
-              width={1080}
-              height={1350}
+              hotspots={detail2Spots}
+              aspect="4/5"
             />
-          </figure>
+            <figcaption className="mt-3 flex items-baseline justify-between gap-4">
+              <span className="font-serif italic text-base md:text-lg text-ink">The Riviera kit.</span>
+              <span className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+                {detail2Spots.length} pieces tagged
+              </span>
+            </figcaption>
+          </div>
         </div>
       </section>
 
