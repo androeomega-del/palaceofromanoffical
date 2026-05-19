@@ -248,6 +248,12 @@ function CollectionPage() {
     staleTime: 60_000,
   });
 
+  const dynamicFocalQ = useQuery({
+    queryKey: ["collection-focal-map"],
+    queryFn: () => getCollectionFocalMap(),
+    staleTime: 30_000,
+  });
+
   const heroSrc = collectionImage({
     handle,
     title,
@@ -261,6 +267,7 @@ function CollectionPage() {
     title,
     imageWidth: heroMeta?.width ?? null,
     imageHeight: heroMeta?.height ?? null,
+    dynamicFocal: dynamicFocalQ.data ?? {},
   });
 
   return (
