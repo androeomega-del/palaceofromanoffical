@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { fetchProducts, fetchCollection, type ShopifyProduct } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
 import heroImage from "@/assets/home-hero.jpg";
+import editorialHero from "@/assets/editorial/may-2026/1.webp";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -245,8 +246,41 @@ function HomePage() {
         </div>
       </section>
 
-      {/* 5. EDITORIAL SPLIT — two panels, sub-CTAs for clothing + shoes */}
+      {/* 5. EDITORIAL TEASER — May 2026 */}
       <section className="py-28">
+        <div className="max-w-screen-2xl mx-auto px-6 grid md:grid-cols-2 gap-10 lg:gap-16 items-center">
+          <div className="order-2 md:order-1">
+            <span className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-4 block">The Edit</span>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif leading-tight mb-6 text-balance">
+              May 2026 — A study in quiet authority.
+            </h2>
+            <p className="text-sm text-muted-foreground leading-relaxed mb-10 max-w-md text-pretty">
+              Tailoring, footwear and house codes photographed in studio light. Shop the look throughout the season's most significant edit.
+            </p>
+            <Link
+              to="/editorial/may-2026"
+              className="text-[11px] uppercase tracking-[0.25em] border-b border-ink/20 pb-1 hover:border-ink transition-colors"
+            >
+              Shop the Look →
+            </Link>
+          </div>
+          <div className="order-1 md:order-2">
+            <Link to="/editorial/may-2026" className="block group">
+              <div className="w-full aspect-[4/5] bg-canvas-raised overflow-hidden">
+                <img
+                  src={editorialHero}
+                  alt="May 2026 Editorial — Quiet authority"
+                  loading="lazy"
+                  className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-[1.02]"
+                />
+              </div>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* 6. EDITORIAL SPLIT — two panels, sub-CTAs for clothing + shoes */}
+      <section className="py-28 border-t border-ink/5">
         <div className="max-w-screen-2xl mx-auto px-6 grid md:grid-cols-2 gap-6 lg:gap-10">
           <EditorialPanel
             image={womenEditorialQ.data?.[0]?.node?.images?.edges?.[0]?.node}
