@@ -1,0 +1,201 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`visual regression — /collections cards > every collection card renders a stable image / alt / focal fingerprint 1`] = `
+{
+  "all-products": {
+    "alt": "Curated selection of luxury designer fashion at Palace of Roman",
+    "file": "all.jpg",
+    "focal": "50% 45%",
+  },
+  "best-selling-brands": {
+    "alt": "Best-selling luxury fashion houses and designer brands at Palace of Roman",
+    "file": "best-selling.jpg",
+    "focal": "50% 45%",
+  },
+  "high-discounts": {
+    "alt": "Discounted designer fashion — luxury items on sale at Palace of Roman",
+    "file": "high.jpg",
+    "focal": "50% 50%",
+  },
+  "mens-accessories": {
+    "alt": "Men's designer accessories — luxury wallets, belts and finishing pieces",
+    "file": "mens.jpg",
+    "focal": "50% 45%",
+  },
+  "mens-activewear": {
+    "alt": "Men's designer activewear and luxury sportswear",
+    "file": "mens.jpg",
+    "focal": "50% 35%",
+  },
+  "mens-bags-wallets": {
+    "alt": "Men's designer bags and wallets — briefcases, backpacks and leather goods",
+    "file": "mens-bags.jpg",
+    "focal": "50% 50%",
+  },
+  "mens-belts": {
+    "alt": "Men's designer belts in luxury leather",
+    "file": "mens-belts.jpg",
+    "focal": "50% 50%",
+  },
+  "mens-boots": {
+    "alt": "Men's designer boots — luxury Chelsea, lace-up and ankle boots",
+    "file": "mens-boots.jpg",
+    "focal": "50% 60%",
+  },
+  "mens-clothing": {
+    "alt": "Men's designer clothing — luxury ready-to-wear and tailoring",
+    "file": "mens.jpg",
+    "focal": "50% 30%",
+  },
+  "mens-hoodies-sweatshirts": {
+    "alt": "Men's designer hoodies and sweatshirts",
+    "file": "mens-hoodies.jpg",
+    "focal": "50% 30%",
+  },
+  "mens-jackets-coats": {
+    "alt": "Men's designer jackets and coats — luxury outerwear and overcoats",
+    "file": "mens-jackets-coats.jpg",
+    "focal": "50% 30%",
+  },
+  "mens-pants-trousers": {
+    "alt": "Men's designer pants and tailored trousers",
+    "file": "mens-pants.jpg",
+    "focal": "50% 55%",
+  },
+  "mens-sandals-slides": {
+    "alt": "Men's designer sandals and slides",
+    "file": "mens-sandals.jpg",
+    "focal": "50% 60%",
+  },
+  "mens-shirts": {
+    "alt": "Men's designer shirts — luxury dress and casual shirting",
+    "file": "mens.jpg",
+    "focal": "50% 30%",
+  },
+  "mens-shoes": {
+    "alt": "Men's designer shoes — luxury loafers, oxfords and dress footwear",
+    "file": "mens-shoes.jpg",
+    "focal": "50% 60%",
+  },
+  "mens-shorts": {
+    "alt": "Men's designer shorts in luxury fabrics",
+    "file": "mens.jpg",
+    "focal": "50% 55%",
+  },
+  "mens-sneakers": {
+    "alt": "Men's designer sneakers — luxury low- and high-top trainers",
+    "file": "mens.jpg",
+    "focal": "50% 60%",
+  },
+  "mens-suits": {
+    "alt": "Men's designer suits and luxury tailoring",
+    "file": "mens-suits.jpg",
+    "focal": "50% 30%",
+  },
+  "mens-sweaters-knitwear": {
+    "alt": "Men's designer sweaters and knitwear — cashmere and merino knits",
+    "file": "mens-sweaters.jpg",
+    "focal": "50% 30%",
+  },
+  "mens-swimwear": {
+    "alt": "Men's designer swimwear and swim shorts",
+    "file": "mens.jpg",
+    "focal": "50% 40%",
+  },
+  "mens-tshirts-polos": {
+    "alt": "Men's designer t-shirts and polo shirts",
+    "file": "mens-tshirts-polos.jpg",
+    "focal": "50% 30%",
+  },
+  "mens-underwear-loungewear": {
+    "alt": "Men's designer underwear and loungewear",
+    "file": "mens-underwear.jpg",
+    "focal": "50% 40%",
+  },
+  "mens-watches-jewelry": {
+    "alt": "Men's designer watches and jewelry",
+    "file": "mens-watches.jpg",
+    "focal": "50% 50%",
+  },
+  "new-arrivals": {
+    "alt": "Latest designer arrivals — newest luxury fashion drops at Palace of Roman",
+    "file": "new.jpg",
+    "focal": "50% 35%",
+  },
+  "womens-accessories": {
+    "alt": "Women's designer accessories — luxury handbags, jewelry and finishing pieces",
+    "file": "womens-accessories-1.jpg",
+    "focal": "50% 45%",
+  },
+  "womens-accessories-1": {
+    "alt": "Women's designer accessories — luxury handbags, jewelry and finishing pieces",
+    "file": "womens-accessories-1.jpg",
+    "focal": "50% 45%",
+  },
+  "womens-bags": {
+    "alt": "Women's designer handbags — luxury totes, clutches and shoulder bags",
+    "file": "womens-bags.jpg",
+    "focal": "50% 50%",
+  },
+  "womens-belts": {
+    "alt": "Women's designer belts in luxury leather and signature hardware",
+    "file": "womens-belts.jpg",
+    "focal": "50% 50%",
+  },
+  "womens-clothing": {
+    "alt": "Women's designer clothing — luxury dresses, tops and ready-to-wear",
+    "file": "womens.jpg",
+    "focal": "50% 30%",
+  },
+  "womens-hats": {
+    "alt": "Women's designer hats and headwear",
+    "file": "womens-hats.jpg",
+    "focal": "50% 25%",
+  },
+  "womens-jewelry": {
+    "alt": "Women's designer jewelry — fine necklaces, earrings and rings",
+    "file": "womens.jpg",
+    "focal": "50% 45%",
+  },
+  "womens-scarves": {
+    "alt": "Women's designer scarves and silk shawls",
+    "file": "womens.jpg",
+    "focal": "50% 35%",
+  },
+  "womens-shoes": {
+    "alt": "Women's designer shoes — luxury heels, pumps, sandals and boots",
+    "file": "womens-shoes.jpg",
+    "focal": "50% 60%",
+  },
+  "womens-wallets": {
+    "alt": "Women's designer wallets and small leather goods",
+    "file": "womens.jpg",
+    "focal": "50% 55%",
+  },
+  "womens-watches": {
+    "alt": "Women's designer watches — luxury timepieces and bracelets",
+    "file": "womens.jpg",
+    "focal": "50% 50%",
+  },
+}
+`;
+
+exports[`visual regression — megamenu feature tiles > every menu tile renders a stable image / alt / focal fingerprint 1`] = `
+{
+  "brands": {
+    "alt": "Best-selling luxury fashion houses and designer brands at Palace of Roman",
+    "file": "best-selling.jpg",
+    "focal": "50% 45%",
+  },
+  "men": {
+    "alt": "Men's designer suits and luxury tailoring",
+    "file": "mens-suits.jpg",
+    "focal": "50% 30%",
+  },
+  "women": {
+    "alt": "Women's designer clothing — luxury dresses, tops and ready-to-wear",
+    "file": "womens.jpg",
+    "focal": "50% 30%",
+  },
+}
+`;
