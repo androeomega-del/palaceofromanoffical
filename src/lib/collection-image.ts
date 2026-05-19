@@ -113,6 +113,120 @@ const FALLBACK_RULES: { test: RegExp; img: string }[] = [
   { test: /\b(sale|discount|deal|outlet)\b/, img: highDiscounts },
 ];
 
+// ───────────────────────────────────────────────────────────────────────
+// Handle normalization & alerting
+// ───────────────────────────────────────────────────────────────────────
+//
+// Shopify auto-suffixes duplicate handles (e.g. `womens-accessories-1`) and
+// admins routinely rename collections (`mens-shoes` → `mens-footwear`).
+// We normalise the incoming handle so cosmetic drift doesn't break the map,
+// and we log anything that *still* misses so the admin QA page can surface it.
+
+/** Normalises separators/case and strips Shopify's `-N` duplicate suffix. */
+export function normalizeHandle(raw: string | null | undefined): string {
+  if (!raw) return "";
+  return raw
+    .trim()
+    .toLowerCase()
+    .replace(/[_\s]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/-\d+$/, "");
+}
+
+/** Known synonyms — admin renames we've seen in the wild. */
+const HANDLE_ALIASES: Record<string, string> = {
+  "mens-footwear": "mens-shoes",
+  "womens-footwear": "womens-shoes",
+  "mens-knitwear": "mens-sweaters-knitwear",
+  "mens-knit": "mens-sweaters-knitwear",
+  "mens-sweaters": "mens-sweaters-knitwear",
+  "mens-hoodies": "mens-hoodies-sweatshirts",
+  "mens-sweatshirts": "mens-hoodies-sweatshirts",
+  "mens-tshirts": "mens-tshirts-polos",
+  "mens-tees": "mens-tshirts-polos",
+  "mens-polos": "mens-tshirts-polos",
+  "mens-pants": "mens-pants-trousers",
+  "mens-trousers": "mens-pants-trousers",
+  "mens-jackets": "mens-jackets-coats",
+  "mens-coats": "mens-jackets-coats",
+  "mens-outerwear": "mens-jackets-coats",
+  "mens-sandals": "mens-sandals-slides",
+  "mens-slides": "mens-sandals-slides",
+  "mens-bags": "mens-bags-wallets",
+  "mens-wallets": "mens-bags-wallets",
+  "mens-watches": "mens-watches-jewelry",
+  "mens-jewelry": "mens-watches-jewelry",
+  "mens-underwear": "mens-underwear-loungewear",
+  "mens-loungewear": "mens-underwear-loungewear",
+  "sale": "high-discounts",
+  "discounts": "high-discounts",
+  "outlet": "high-discounts",
+  "bestsellers": "best-selling-brands",
+  "brands": "best-selling-brands",
+  "new": "new-arrivals",
+  "latest": "new-arrivals",
+};
+
+/** Map a raw handle to a canonical key in BY_HANDLE, or "" if no match. */
+function resolveCanonicalHandle(raw: string): string {
+  const direct = (raw ?? "").trim().toLowerCase();
+  if (direct && BY_HANDLE[direct]) return direct;
+  const norm = normalizeHandle(raw);
+  if (!norm) return "";
+  if (BY_HANDLE[norm]) return norm;
+  if (HANDLE_ALIASES[norm] && BY_HANDLE[HANDLE_ALIASES[norm]]) {
+    return HANDLE_ALIASES[norm];
+  }
+  return "";
+}
+
+// In-memory registry of handles that fell all the way through to a rule or
+// the generic default. Persistent across renders so the admin QA page can
+// list them and so we don't spam the console with duplicates.
+const unresolvedHandles = new Map<
+  string,
+  { handle: string; via: "rule" | "default"; topic: string; firstSeen: number; count: number }
+>();
+
+function reportUnresolved(handle: string, via: "rule" | "default", topic: string) {
+  if (!handle) return;
+  const existing = unresolvedHandles.get(handle);
+  if (existing) {
+    existing.count += 1;
+    return;
+  }
+  unresolvedHandles.set(handle, {
+    handle,
+    via,
+    topic,
+    firstSeen: Date.now(),
+    count: 1,
+  });
+  if (import.meta.env?.DEV) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      `[collection-image] Unmapped handle "${handle}" → fell back via ${via} to "${topic}". ` +
+        `Add it to BY_HANDLE or HANDLE_ALIASES in src/lib/collection-image.ts.`,
+    );
+  }
+}
+
+/** Read-only snapshot of handles that failed exact + alias lookup. */
+export function getUnresolvedHandleReport(): Array<{
+  handle: string;
+  via: "rule" | "default";
+  topic: string;
+  firstSeen: number;
+  count: number;
+}> {
+  return Array.from(unresolvedHandles.values()).sort((a, b) => b.count - a.count);
+}
+
+/** Test/admin helper — clears the in-memory alert registry. */
+export function resetUnresolvedHandleReport(): void {
+  unresolvedHandles.clear();
+}
+
 export function collectionImage(input: {
   title?: string;
   handle?: string;
@@ -120,23 +234,30 @@ export function collectionImage(input: {
   /** Optional handle → image URL map from the nightly sync (DB-backed). */
   dynamicMap?: Record<string, string>;
 }): string {
-  const handle = (input.handle ?? "").trim().toLowerCase();
+  const rawHandle = (input.handle ?? "").trim().toLowerCase();
 
   // 1. Dynamic map from Shopify sync (preferred — auto-updates with new collections)
-  if (handle && input.dynamicMap && input.dynamicMap[handle]) {
-    return input.dynamicMap[handle];
+  if (rawHandle && input.dynamicMap) {
+    if (input.dynamicMap[rawHandle]) return input.dynamicMap[rawHandle];
+    const norm = normalizeHandle(rawHandle);
+    if (norm && input.dynamicMap[norm]) return input.dynamicMap[norm];
   }
 
-  // 2. Curated static map (bundled fallback for the 34 known handles)
-  if (handle && BY_HANDLE[handle]) return BY_HANDLE[handle];
+  // 2. Curated static map (exact handle, normalised handle, or known alias)
+  const canonical = resolveCanonicalHandle(rawHandle);
+  if (canonical) return BY_HANDLE[canonical];
 
   // 3. Regex rules for unknown handles
-  const hay = `${input.title ?? ""} ${handle} ${input.description ?? ""}`
+  const hay = `${input.title ?? ""} ${rawHandle} ${input.description ?? ""}`
     .toLowerCase()
     .replace(/[-_]+/g, " ");
   for (const rule of FALLBACK_RULES) {
-    if (rule.test.test(hay)) return rule.img;
+    if (rule.test.test(hay)) {
+      if (rawHandle) reportUnresolved(rawHandle, "rule", IMG_TO_TOPIC.get(rule.img) ?? "unknown");
+      return rule.img;
+    }
   }
+  if (rawHandle) reportUnresolved(rawHandle, "default", "all-products");
   return allProducts;
 }
 
