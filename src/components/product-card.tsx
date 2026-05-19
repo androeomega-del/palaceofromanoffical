@@ -52,11 +52,17 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
     e.preventDefault();
     e.stopPropagation();
     if (soldOut) return;
-    // Multi-variant pieces: route to PDP so the customer can choose size/colour
+    // Multi-variant pieces: route to PDP — first available is preselected,
+    // and the #buy hash makes the PDP scroll to + flash the selector.
     if (hasChoices || !firstAvailable) {
-      navigate({ to: "/product/$handle", params: { handle: p.handle } });
+      navigate({
+        to: "/product/$handle",
+        params: { handle: p.handle },
+        hash: "buy",
+      });
       return;
     }
+
     setBuyingNow(true);
     try {
       await addItem({
