@@ -282,8 +282,6 @@ function CollectionPage() {
                 <SlidersHorizontal className="h-3.5 w-3.5" /> Refine
               </button>
             </div>
-              </button>
-            </div>
 
             {/* Product type chips — derived from titles in the current result set */}
             {availableTypes.length > 1 && (
