@@ -7,6 +7,10 @@ import { EditorialHotspots } from "@/components/editorial-hotspots";
 import heroImage from "@/assets/home-hero.jpg";
 import summerHero from "@/assets/summer-bento-hero.jpg";
 import editorialHero from "@/assets/editorial/may-2026/1.webp";
+import marketingWomen from "@/assets/marketing-women-summer.jpg";
+import marketingMen from "@/assets/marketing-men-summer.jpg";
+import marketingAccessories from "@/assets/marketing-accessories-summer.jpg";
+import marketingSwim from "@/assets/marketing-swim-summer.jpg";
 import { img } from "@/lib/editorial-library";
 
 export const Route = createFileRoute("/")({
@@ -154,10 +158,10 @@ function HomePage() {
     <>
       {/* 1. SUMMER BENTO STOREFRONT — Architectural Resort */}
       <SummerBento
-        womenImage={womenEditorialQ.data?.[0]?.node?.images?.edges?.[0]?.node}
-        menImage={menEditorialQ.data?.[0]?.node?.images?.edges?.[0]?.node}
-        accessoriesImage={newArrivalsQ.data?.[0]?.node?.images?.edges?.[0]?.node}
-        swimImage={swimwearQ.data?.[0]?.node?.images?.edges?.[0]?.node}
+        womenImage={{ url: marketingWomen, altText: "Women's Resort 2026 — Mediterranean Edit" }}
+        menImage={{ url: marketingMen, altText: "Men's Resort 2026 — Amalfi Coast" }}
+        accessoriesImage={{ url: marketingAccessories, altText: "Summer Accessories — Designer Edit" }}
+        swimImage={{ url: marketingSwim, altText: "Designer Swimwear — Riviera Edit" }}
         spotlightVendor={featuredBrands[0]?.name}
         spotlightSlug={featuredBrands[0]?.slug}
       />
