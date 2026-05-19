@@ -598,24 +598,34 @@ function SummerBento({
           </div>
         </div>
 
-        {/* Honey Promo Tile */}
+        {/* Swimwear Promo Tile (honey) */}
         <Link
           to="/shop"
-          search={{ q: "tag:New", title: "Just Landed" }}
-          className="col-span-12 md:col-span-6 lg:col-span-4 row-span-2 bg-bronze p-8 md:p-10 flex flex-col justify-center items-center text-center group transition-colors hover:bg-[oklch(0.70_0.082_70)]"
+          search={{ q: "tag:Swimwear OR tag:Beachwear", title: "Swim & Beachwear" }}
+          className="col-span-12 md:col-span-6 lg:col-span-4 row-span-2 bg-bronze relative overflow-hidden flex flex-col justify-center items-center text-center group"
         >
-          <span className="text-[10px] uppercase tracking-[0.3em] text-ink/70 mb-3">
-            Limited Release
-          </span>
-          <h3 className="font-serif text-2xl md:text-3xl text-ink mb-3 leading-tight">
-            Mediterranean
-            <br />
-            Craftsmanship
-          </h3>
-          <p className="text-[11px] tracking-[0.2em] text-ink/80 uppercase">
-            Just Landed for Resort
-          </p>
+          {swimImage && (
+            <img
+              src={swimImage.url}
+              alt={swimImage.altText ?? "Designer swimwear"}
+              loading="lazy"
+              className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-multiply transition-transform duration-700 group-hover:scale-110"
+            />
+          )}
+          <div className="relative z-10 p-8 md:p-10">
+            <span className="text-[10px] uppercase tracking-[0.3em] text-ink/80 mb-3 block">
+              The Beach Edit
+            </span>
+            <h3 className="font-serif text-3xl md:text-4xl text-ink mb-3 leading-tight">
+              Bikinis &amp;
+              <span className="block italic">Swimwear</span>
+            </h3>
+            <p className="text-[11px] tracking-[0.25em] text-ink/85 uppercase">
+              Dolce &amp; Gabbana — In Stock
+            </p>
+          </div>
         </Link>
+
 
         {/* Women Category Tile */}
         <Link
