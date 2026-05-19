@@ -613,18 +613,19 @@ function SummerBento({
               src={swimImage.url}
               alt={swimImage.altText ?? "Designer swimwear"}
               loading="lazy"
-              className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-multiply transition-transform duration-700 group-hover:scale-110"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             />
           )}
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/60 via-ink/20 to-transparent" />
           <div className="relative z-10 p-8 md:p-10">
-            <span className="text-[10px] uppercase tracking-[0.3em] text-ink/80 mb-3 block">
+            <span className="text-[10px] uppercase tracking-[0.3em] text-canvas/90 mb-3 block">
               The Beach Edit
             </span>
-            <h3 className="font-serif text-3xl md:text-4xl text-ink mb-3 leading-tight">
+            <h3 className="font-serif text-3xl md:text-4xl text-canvas mb-3 leading-tight">
               Bikinis &amp;
               <span className="block italic">Swimwear</span>
             </h3>
-            <p className="text-[11px] tracking-[0.25em] text-ink/85 uppercase">
+            <p className="text-[11px] tracking-[0.25em] text-canvas/85 uppercase">
               Dolce &amp; Gabbana — In Stock
             </p>
           </div>
@@ -645,7 +646,7 @@ function SummerBento({
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             />
           )}
-          <div className="absolute inset-0 bg-[var(--sea)]/25 mix-blend-multiply" />
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-ink/10 to-transparent" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
               <h3 className="font-serif italic text-4xl md:text-5xl text-canvas">Women</h3>
