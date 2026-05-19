@@ -32,36 +32,38 @@ type CategoryTileDef = {
   linkTo: "collection" | "shop";
 };
 
-const WOMENS_CLOTHING_QUERY = "dress OR gown OR blouse OR skirt OR coat OR top OR jacket OR knit OR cardigan OR pants OR suit";
-const WOMENS_SHOES_QUERY = "heels OR pumps OR sandals OR boots OR stilettos OR mules OR loafers OR sneakers";
+export const WOMENS_CLOTHING_HANDLE = "womens-clothing";
+export const WOMENS_SHOES_HANDLE = "womens-shoes";
+export const MENS_CLOTHING_HANDLE = "mens-clothing";
+export const MENS_SHOES_HANDLE = "mens-shoes";
 
 const CATEGORY_TILES: CategoryTileDef[] = [
   {
-    key: "womens-clothing",
+    key: WOMENS_CLOTHING_HANDLE,
     label: "Women's Clothing",
     caption: "Dresses, tailoring & ready-to-wear",
-    source: { kind: "search", query: WOMENS_CLOTHING_QUERY, title: "Women's Clothing" },
-    linkTo: "shop",
-  },
-  {
-    key: "womens-shoes",
-    label: "Women's Shoes",
-    caption: "Heels, boots & sandals",
-    source: { kind: "search", query: WOMENS_SHOES_QUERY, title: "Women's Shoes" },
-    linkTo: "shop",
-  },
-  {
-    key: "mens-clothing",
-    label: "Men's Clothing",
-    caption: "Tailoring & considered staples",
-    source: { kind: "collection", handle: "mens-luxury-clothing" },
+    source: { kind: "collection", handle: WOMENS_CLOTHING_HANDLE },
     linkTo: "collection",
   },
   {
-    key: "mens-shoes",
+    key: WOMENS_SHOES_HANDLE,
+    label: "Women's Shoes",
+    caption: "Heels, boots & sandals",
+    source: { kind: "collection", handle: WOMENS_SHOES_HANDLE },
+    linkTo: "collection",
+  },
+  {
+    key: MENS_CLOTHING_HANDLE,
+    label: "Men's Clothing",
+    caption: "Tailoring & considered staples",
+    source: { kind: "collection", handle: MENS_CLOTHING_HANDLE },
+    linkTo: "collection",
+  },
+  {
+    key: MENS_SHOES_HANDLE,
     label: "Men's Shoes",
     caption: "Designer footwear",
-    source: { kind: "collection", handle: "mens-designer-shoes" },
+    source: { kind: "collection", handle: MENS_SHOES_HANDLE },
     linkTo: "collection",
   },
 ];
@@ -79,26 +81,30 @@ function HomePage() {
   // Editorial split sources — one image per panel, pulled from real data.
   const womenEditorialQ = useQuery({
     queryKey: ["home", "women-editorial"],
-    queryFn: () => fetchProducts({ first: 1, query: WOMENS_CLOTHING_QUERY }),
+    queryFn: () => fetchCollection(WOMENS_CLOTHING_HANDLE, 1).then((c) => c?.products?.edges ?? []),
   });
   const menEditorialQ = useQuery({
     queryKey: ["home", "men-editorial"],
-    queryFn: () => fetchCollection("mens-luxury-clothing", 1).then((c) => c?.products?.edges ?? []),
+    queryFn: () => fetchCollection(MENS_CLOTHING_HANDLE, 1).then((c) => c?.products?.edges ?? []),
   });
 
   // Featured brands: only vendors with in-stock products in BOTH a women's
   // category and a men's category.
-  const womenBrandsQ = useQuery({
-    queryKey: ["home", "brands-women"],
-    queryFn: () => fetchProducts({ first: 60, query: `(${WOMENS_CLOTHING_QUERY}) OR (${WOMENS_SHOES_QUERY})` }),
+  const womenBrandsClothingQ = useQuery({
+    queryKey: ["home", "brands-women-clothing"],
+    queryFn: () => fetchCollection(WOMENS_CLOTHING_HANDLE, 60).then((c) => c?.products?.edges ?? []),
+  });
+  const womenBrandsShoesQ = useQuery({
+    queryKey: ["home", "brands-women-shoes"],
+    queryFn: () => fetchCollection(WOMENS_SHOES_HANDLE, 60).then((c) => c?.products?.edges ?? []),
   });
   const menBrandsClothingQ = useQuery({
     queryKey: ["home", "brands-men-clothing"],
-    queryFn: () => fetchCollection("mens-luxury-clothing", 60).then((c) => c?.products?.edges ?? []),
+    queryFn: () => fetchCollection(MENS_CLOTHING_HANDLE, 60).then((c) => c?.products?.edges ?? []),
   });
   const menBrandsShoesQ = useQuery({
     queryKey: ["home", "brands-men-shoes"],
-    queryFn: () => fetchCollection("mens-designer-shoes", 60).then((c) => c?.products?.edges ?? []),
+    queryFn: () => fetchCollection(MENS_SHOES_HANDLE, 60).then((c) => c?.products?.edges ?? []),
   });
 
   const featuredBrands = useMemo(() => {
@@ -108,7 +114,8 @@ function HomePage() {
       );
     const vendors = (edges: ShopifyProduct[]) =>
       new Set(edges.map((e) => e.node.vendor).filter(Boolean));
-    const womenVendors = vendors(inStock(womenBrandsQ.data));
+    const womenEdges = [...inStock(womenBrandsClothingQ.data), ...inStock(womenBrandsShoesQ.data)];
+    const womenVendors = vendors(womenEdges);
     const menEdges = [...inStock(menBrandsClothingQ.data), ...inStock(menBrandsShoesQ.data)];
     const menVendors = vendors(menEdges);
     const both = [...womenVendors].filter((v) => menVendors.has(v));
@@ -116,7 +123,7 @@ function HomePage() {
       name,
       slug: name.toLowerCase().replace(/\s+/g, "-"),
     }));
-  }, [womenBrandsQ.data, menBrandsClothingQ.data, menBrandsShoesQ.data]);
+  }, [womenBrandsClothingQ.data, womenBrandsShoesQ.data, menBrandsClothingQ.data, menBrandsShoesQ.data]);
 
   return (
     <>
@@ -145,15 +152,15 @@ function HomePage() {
                 </p>
                 <div className="flex flex-wrap gap-4">
                   <Link
-                    to="/shop"
-                    search={{ q: WOMENS_CLOTHING_QUERY, title: "Women's Clothing" }}
+                    to="/collections/$handle"
+                    params={{ handle: WOMENS_CLOTHING_HANDLE }}
                     className="px-8 py-3.5 bg-ink text-canvas text-[11px] uppercase tracking-[0.25em] hover:bg-ink/85 transition-colors"
                   >
                     Shop Women
                   </Link>
                   <Link
                     to="/collections/$handle"
-                    params={{ handle: "mens-luxury-clothing" }}
+                    params={{ handle: MENS_CLOTHING_HANDLE }}
                     className="px-8 py-3.5 ring-1 ring-ink text-[11px] uppercase tracking-[0.25em] hover:bg-ink hover:text-canvas transition-colors"
                   >
                     Shop Men
@@ -211,7 +218,7 @@ function HomePage() {
           </div>
           {featuredBrands.length === 0 ? (
             <p className="text-center text-sm text-muted-foreground py-8">
-              {womenBrandsQ.isLoading || menBrandsClothingQ.isLoading ? "Loading designers…" : "No shared brands in stock at the moment."}
+              {womenBrandsClothingQ.isLoading || menBrandsClothingQ.isLoading ? "Loading designers…" : "No shared brands in stock at the moment."}
             </p>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-y-10">
@@ -246,8 +253,8 @@ function HomePage() {
             eyebrow="The Women's Edit"
             heading="Quiet luxury, deliberately curated."
             ctas={[
-              { label: "Clothing", to: "/shop", search: { q: WOMENS_CLOTHING_QUERY, title: "Women's Clothing" } },
-              { label: "Shoes", to: "/shop", search: { q: WOMENS_SHOES_QUERY, title: "Women's Shoes" } },
+              { label: "Clothing", to: "/collections/$handle", params: { handle: WOMENS_CLOTHING_HANDLE } },
+              { label: "Shoes", to: "/collections/$handle", params: { handle: WOMENS_SHOES_HANDLE } },
             ]}
           />
           <EditorialPanel
@@ -255,8 +262,8 @@ function HomePage() {
             eyebrow="The Men's Edit"
             heading="Refined tailoring and considered staples."
             ctas={[
-              { label: "Clothing", to: "/collections/$handle", params: { handle: "mens-luxury-clothing" } },
-              { label: "Shoes", to: "/collections/$handle", params: { handle: "mens-designer-shoes" } },
+              { label: "Clothing", to: "/collections/$handle", params: { handle: MENS_CLOTHING_HANDLE } },
+              { label: "Shoes", to: "/collections/$handle", params: { handle: MENS_SHOES_HANDLE } },
             ]}
           />
         </div>
