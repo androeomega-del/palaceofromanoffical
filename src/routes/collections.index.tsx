@@ -60,6 +60,17 @@ function matchesFilter(c: ShopifyCollection, filter: FilterKey): boolean {
   }
 }
 
+export function sortCollections(list: ShopifyCollection[], sort: SortKey): ShopifyCollection[] {
+  const sorted = [...list];
+  if (sort === "alpha") {
+    sorted.sort((a, b) => a.title.localeCompare(b.title));
+  } else if (sort === "newest") {
+    sorted.sort((a, b) => (b.updatedAt ?? "").localeCompare(a.updatedAt ?? ""));
+  }
+  // "popular" preserves Shopify's storefront order (manual/best-seller curated)
+  return sorted;
+}
+
 function CollectionsIndexPage() {
   const { filter, sort } = Route.useSearch();
   const navigate = useNavigate({ from: "/collections" });
