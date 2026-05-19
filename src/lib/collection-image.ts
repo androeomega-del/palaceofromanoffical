@@ -521,19 +521,57 @@ const FOCAL_RULES: { test: RegExp; pos: string }[] = [
  * Returns a CSS `object-position` value for the collection hero image.
  * Pass directly to `<img style={{ objectPosition: ... }} className="object-cover" />`
  * so the subject stays framed at every responsive aspect ratio.
+ *
+ * Resolution order:
+ *   1. Curated `FOCAL_BY_HANDLE` (exact or normalised handle)
+ *   2. Keyword rules over title + handle
+ *   3. Orientation-based fallback derived from the stored Shopify image's
+ *      aspect ratio — biases vertical position so the subject stays in
+ *      frame when cropped into the storefront's portrait/landscape boxes.
+ *   4. Generic safe default
  */
 export function collectionImageFocal(input: {
   title?: string;
   handle?: string;
+  /** Width/height of the source image (e.g. from the synced Shopify image). */
+  imageWidth?: number | null;
+  imageHeight?: number | null;
+  /** Pre-computed aspect ratio (width / height). Wins over width+height. */
+  aspectRatio?: number | null;
 }): string {
   const handle = (input.handle ?? "").trim().toLowerCase();
   if (handle && FOCAL_BY_HANDLE[handle]) return FOCAL_BY_HANDLE[handle];
+  const norm = normalizeHandle(handle);
+  if (norm && FOCAL_BY_HANDLE[norm]) return FOCAL_BY_HANDLE[norm];
+
   const hay = `${input.title ?? ""} ${handle}`.toLowerCase().replace(/[-_]+/g, " ");
   for (const rule of FOCAL_RULES) {
     if (rule.test.test(hay)) return rule.pos;
   }
+
+  // Orientation-based fallback. When we have nothing semantic to go on,
+  // the source image's shape is still a useful signal: tall portrait
+  // sources almost always frame the subject in the upper half (head/torso),
+  // wide landscape sources are usually subject-centered, and very wide
+  // banner-style sources benefit from a slight upper bias when cropped
+  // into a tall hero box.
+  const ratio =
+    typeof input.aspectRatio === "number" && input.aspectRatio > 0
+      ? input.aspectRatio
+      : input.imageWidth && input.imageHeight && input.imageHeight > 0
+        ? input.imageWidth / input.imageHeight
+        : null;
+
+  if (ratio !== null) {
+    if (ratio <= 0.85) return "50% 30%";   // portrait → keep face/torso visible
+    if (ratio >= 1.7) return "50% 38%";    // wide banner → modest upper bias
+    if (ratio >= 1.2) return "50% 42%";    // landscape → near-center, slight upper
+    return "50% 40%";                       // ~square → balanced
+  }
+
   return "50% 40%";
 }
+
 
 // ───────────────────────────────────────────────────────────────────────
 // QA / admin helpers
