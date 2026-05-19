@@ -78,9 +78,10 @@ describe("/collections sort dropdown", () => {
     const user = userEvent.setup();
     const { router } = renderAt("/collections?filter=all&sort=popular");
 
-    // Wait for data to load
-    const firstTitle = await screen.findByText("Zenith Capsule");
-    expect(firstTitle).toBeDefined();
+    // Wait for the grid to render all 3 collections
+    await vi.waitFor(() => {
+      expect(screen.getAllByRole("heading", { level: 2 })).toHaveLength(3);
+    });
 
     // Initial order = storefront order (popular)
     const titlesBefore = screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent);
