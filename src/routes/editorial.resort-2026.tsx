@@ -3,6 +3,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { EditorialStory, type StorySlide } from "@/components/editorial-story";
 import { img } from "@/lib/editorial-library";
+import { routeHead } from "@/lib/seo";
 
 const SLIDES: StorySlide[] = [
   { n: 12, caption: "Light as architecture.", shopHandle: "womens-clothing", shopLabel: "Shop Women's" },
