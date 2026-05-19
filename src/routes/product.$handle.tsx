@@ -198,6 +198,23 @@ function ProductView({
   const currentPrice = selectedVariant?.price ?? product.priceRange.minVariantPrice;
   const off = discountPct(currentPrice, compareAt);
 
+  // Buy-Now hand-off from product cards: scroll to the selector + flash it.
+  const buyRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
+  const [flashBuy, setFlashBuy] = useState(false);
+  useEffect(() => {
+    if (location.hash !== "buy" && location.hash !== "#buy") return;
+    const el = buyRef.current;
+    if (!el) return;
+    const t = window.setTimeout(() => {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      setFlashBuy(true);
+      window.setTimeout(() => setFlashBuy(false), 1600);
+    }, 120);
+    return () => window.clearTimeout(t);
+  }, [location.hash]);
+
+
   const handleAdd = async () => {
     if (!selectedVariant) return;
     if (!selectedVariant.availableForSale) {
