@@ -546,12 +546,14 @@ function SummerBento({
   womenImage,
   menImage,
   accessoriesImage,
+  swimImage,
   spotlightVendor,
   spotlightSlug,
 }: {
   womenImage?: ShopifyImg;
   menImage?: ShopifyImg;
   accessoriesImage?: ShopifyImg;
+  swimImage?: ShopifyImg;
   spotlightVendor?: string;
   spotlightSlug?: string;
 }) {
