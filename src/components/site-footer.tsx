@@ -28,6 +28,7 @@ export function SiteFooter() {
               <h5 className="text-[10px] uppercase tracking-[0.2em] font-semibold">Client Care</h5>
               <Link to="/shipping-returns" className="text-sm text-muted-foreground hover:text-ink transition-colors">Shipping &amp; Returns</Link>
               <Link to="/authentication" className="text-sm text-muted-foreground hover:text-ink transition-colors">Authentication</Link>
+              <Link to="/faq" className="text-sm text-muted-foreground hover:text-ink transition-colors">FAQ</Link>
               <Link to="/contact" className="text-sm text-muted-foreground hover:text-ink transition-colors">Contact</Link>
               <Link to="/about" className="text-sm text-muted-foreground hover:text-ink transition-colors">About</Link>
               <Link to="/journal" className="text-sm text-muted-foreground hover:text-ink transition-colors">Journal</Link>

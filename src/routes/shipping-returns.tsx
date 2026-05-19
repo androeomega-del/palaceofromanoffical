@@ -12,7 +12,7 @@ export const Route = createFileRoute("/shipping-returns")({
   head: () => ({
     meta: [
       { title: "Shipping & Returns — Palace of Roman" },
-      { name: "description", content: "Delivery zones, lead times, returns, exchanges and customs information for Palace of Roman orders." },
+      { name: "description", content: "Worldwide shipping from our European and US ateliers, with a 14-day return window from the day your parcel is delivered." },
       { property: "og:title", content: "Shipping & Returns — Palace of Roman" },
     ],
   }),
@@ -20,12 +20,10 @@ export const Route = createFileRoute("/shipping-returns")({
 });
 
 const ZONES = [
-  { region: "United States", standard: "2–4 business days", express: "Next business day", complimentary: "Orders over $1,200" },
-  { region: "Canada", standard: "3–5 business days", express: "2 business days", complimentary: "Orders over $1,500" },
-  { region: "United Kingdom & EU", standard: "3–5 business days", express: "2 business days", complimentary: "Orders over $1,500" },
-  { region: "Middle East & GCC", standard: "3–5 business days", express: "2 business days", complimentary: "Orders over $2,000" },
-  { region: "Asia-Pacific", standard: "4–6 business days", express: "3 business days", complimentary: "Orders over $2,000" },
-  { region: "Rest of world", standard: "5–8 business days", express: "3–4 business days", complimentary: "On request" },
+  { region: "European Union", standard: "On average 3 business days", dispatch: "24–48 hours" },
+  { region: "United Kingdom & Northern Ireland", standard: "3–5 business days", dispatch: "24–48 hours" },
+  { region: "United States & Canada", standard: "5–7 business days", dispatch: "24–48 hours" },
+  { region: "Rest of world", standard: "5–7 business days", dispatch: "24–48 hours" },
 ];
 
 function ShippingReturnsPage() {
@@ -33,21 +31,31 @@ function ShippingReturnsPage() {
     <EditorialPageShell
       eyebrow="Client Care"
       title="Shipping & Returns"
-      intro="Every order is dispatched from our New York atelier under signature, fully insured, in our signature linen-lined boxes."
+      intro="Each order is dispatched from one of our partner ateliers across Italy, Sweden, Spain, Germany, Northern Ireland and the United States — fully tracked, fully insured."
       heroImage={img(72)}
       heroAlt="Considered packaging"
     >
       <ProseColumn>
         <section>
-          <SectionTitle kicker="Delivery">Shipping zones and timing</SectionTitle>
-          <div className="not-prose mt-4 overflow-x-auto -mx-2">
+          <SectionTitle kicker="Delivery">Where we ship from, and how long it takes</SectionTitle>
+          <p>
+            Palace of Roman operates through an authorised European distribution network with warehouses in Italy
+            (Milan, Florence, Modena, Rome, Como and others), Sweden, Spain, Germany, Northern Ireland and the United
+            States (Florida and New York). Your order is routed automatically from the warehouse holding the piece.
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Warehouses dispatch within 24–48 hours of order confirmation. Delivery is by UPS, FedEx or DHL with an
+            active tracking number, sent to you the moment the parcel leaves the warehouse. Couriers and warehouses do
+            not operate on weekends or local public holidays.
+          </p>
+
+          <div className="not-prose mt-8 overflow-x-auto -mx-2">
             <table className="w-full text-sm border-collapse">
               <thead>
                 <tr className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
                   <th className="text-left font-medium py-3 pr-4 border-b border-ink/10">Region</th>
-                  <th className="text-left font-medium py-3 pr-4 border-b border-ink/10">Standard</th>
-                  <th className="text-left font-medium py-3 pr-4 border-b border-ink/10">Express</th>
-                  <th className="text-left font-medium py-3 pr-4 border-b border-ink/10">Complimentary above</th>
+                  <th className="text-left font-medium py-3 pr-4 border-b border-ink/10">Transit</th>
+                  <th className="text-left font-medium py-3 pr-4 border-b border-ink/10">Dispatch window</th>
                 </tr>
               </thead>
               <tbody>
@@ -55,16 +63,17 @@ function ShippingReturnsPage() {
                   <tr key={z.region} className="border-b border-ink/5">
                     <td className="py-4 pr-4 font-serif">{z.region}</td>
                     <td className="py-4 pr-4 text-ink/80">{z.standard}</td>
-                    <td className="py-4 pr-4 text-ink/80">{z.express}</td>
-                    <td className="py-4 pr-4 text-bronze">{z.complimentary}</td>
+                    <td className="py-4 pr-4 text-bronze">{z.dispatch}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+
           <p className="mt-6 text-sm text-muted-foreground">
-            Orders placed before 12 PM Eastern on a business day are processed the same afternoon. Orders placed after
-            that, or on weekends and public holidays, are processed the next business day.
+            Orders containing pieces from more than one warehouse are dispatched separately and may arrive on different
+            days. Shipping is quoted per order at checkout and based on the courier rate plus a per-item handling
+            charge that varies by category.
           </p>
         </section>
       </ProseColumn>
@@ -72,51 +81,72 @@ function ShippingReturnsPage() {
       <div className="max-w-[68ch] mx-auto mt-20">
         <Accordion type="single" collapsible className="w-full">
           <AccordionItem value="returns">
-            <AccordionTrigger className="text-base font-serif">Returns — within 14 days</AccordionTrigger>
+            <AccordionTrigger className="text-base font-serif">Returns — within 14 days of delivery</AccordionTrigger>
             <AccordionContent className="text-[15px] leading-[1.75] text-ink/85 space-y-3">
               <p>
-                Pieces may be returned within fourteen days of delivery for a full refund to your original payment method,
-                provided they are unworn, with all tags attached and in their original packaging. Initiate a return from
-                the order tracking link in your dispatch email or by writing to{" "}
-                <Link to="/contact" className="underline decoration-bronze/60 underline-offset-4">our concierge</Link>.
+                We accept returns within fourteen days of the day your parcel is delivered. Pieces must be unworn, with
+                all original tags attached, in their original packaging. To open a return, write to{" "}
+                <Link to="/contact" className="underline decoration-bronze/60 underline-offset-4">our concierge</Link>{" "}
+                with your order number and the reason for return; we will issue the correct return address and
+                instructions for the warehouse that fulfilled your order.
+              </p>
+              <p>
+                Returns must travel with UPS, FedEx or DHL and a live tracking number — regular postal services cannot
+                be accepted and parcels sent that way will be declined.
               </p>
               <p className="text-sm text-muted-foreground">
-                Final-sale pieces, swimwear, fine jewellery sized to order, and bespoke alterations are not returnable.
+                Sending a return to the wrong warehouse incurs a 20% restocking fee, as it adds significant handling
+                and freight cost. We will confirm the correct address before you ship.
               </p>
             </AccordionContent>
           </AccordionItem>
 
           <AccordionItem value="exchanges">
-            <AccordionTrigger className="text-base font-serif">Exchanges — sized differently</AccordionTrigger>
-            <AccordionContent className="text-[15px] leading-[1.75] text-ink/85">
-              We exchange within the same style for size or colour at no charge. If the replacement piece is no longer in
-              stock we will refund and prepare a personal shortlist of alternatives.
+            <AccordionTrigger className="text-base font-serif">Exchanges — sized or coloured differently</AccordionTrigger>
+            <AccordionContent className="text-[15px] leading-[1.75] text-ink/85 space-y-3">
+              <p>
+                To exchange a piece, place a new order for the replacement size or colour and open a return on the
+                original order following the steps above. The original piece is refunded as soon as it is received and
+                inspected at the warehouse.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                This is the fastest path: it secures your replacement immediately rather than waiting for the return to
+                clear before re-reserving stock.
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="damaged">
+            <AccordionTrigger className="text-base font-serif">A damaged or incorrect piece arrived</AccordionTrigger>
+            <AccordionContent className="text-[15px] leading-[1.75] text-ink/85 space-y-3">
+              <p>
+                Write to us within fourteen days of delivery with clear photographs of the piece, the brand tag, and
+                the visible defect or discrepancy. The case is reviewed with the originating warehouse to confirm the
+                condition at dispatch.
+              </p>
+              <p>
+                If the issue is confirmed, we provide a prepaid return label and, once the piece is received, issue a
+                full refund or arrange a replacement at no cost to you.
+              </p>
             </AccordionContent>
           </AccordionItem>
 
           <AccordionItem value="customs">
             <AccordionTrigger className="text-base font-serif">Duties, taxes and customs</AccordionTrigger>
             <AccordionContent className="text-[15px] leading-[1.75] text-ink/85">
-              Orders to the United States, Canada, United Kingdom, EU and GCC are delivered duties and taxes paid (DDP) —
-              the price you see is the price you pay. Other destinations may attract import duties on arrival; these are
-              the responsibility of the recipient and follow your local customs schedule.
-            </AccordionContent>
-          </AccordionItem>
-
-          <AccordionItem value="packaging">
-            <AccordionTrigger className="text-base font-serif">Packaging</AccordionTrigger>
-            <AccordionContent className="text-[15px] leading-[1.75] text-ink/85">
-              Each order ships in our signature linen-lined box with the certificate of authenticity, a handwritten card
-              and tissue, ready to be presented. Gift wrapping and personalised dedications are complimentary at
-              checkout.
+              Orders within the European Union ship intra-EU with no further duties. Orders to the United Kingdom, the
+              United States, Canada and other destinations may attract import duties and local taxes on arrival, which
+              follow your country's customs schedule and are the responsibility of the recipient. Your courier will
+              contact you directly if any payment is required before delivery.
             </AccordionContent>
           </AccordionItem>
 
           <AccordionItem value="tracking">
             <AccordionTrigger className="text-base font-serif">Tracking your order</AccordionTrigger>
             <AccordionContent className="text-[15px] leading-[1.75] text-ink/85">
-              You will receive a dispatch email with a tracking link the moment your order leaves the atelier. For any
-              query please write to <Link to="/contact" className="underline decoration-bronze/60 underline-offset-4">our concierge</Link> —
+              You will receive a dispatch email with a UPS, FedEx or DHL tracking link the moment your parcel leaves
+              the warehouse. For any question along the way, write to{" "}
+              <Link to="/contact" className="underline decoration-bronze/60 underline-offset-4">our concierge</Link> —
               we reply the same business day.
             </AccordionContent>
           </AccordionItem>
