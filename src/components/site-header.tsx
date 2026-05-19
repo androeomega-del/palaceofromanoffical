@@ -8,16 +8,21 @@ type NavItem = {
   label: string;
   to: string;
   params?: Record<string, string>;
+  search?: Record<string, string>;
   accent?: boolean;
 };
 
+const WOMENS_CLOTHING_QUERY = "dress OR gown OR blouse OR skirt OR coat OR top OR jacket OR knit OR cardigan OR pants OR suit";
+const WOMENS_SHOES_QUERY = "heels OR pumps OR sandals OR boots OR stilettos OR mules OR loafers OR sneakers";
+
 const NAV_LEFT: NavItem[] = [
   { to: "/shop", label: "Shop" },
-  { to: "/collections/$handle", params: { handle: "womens-accessories-1" }, label: "Women" },
-  { to: "/collections/$handle", params: { handle: "mens-luxury-clothing" }, label: "Men" },
+  { to: "/shop", search: { q: WOMENS_CLOTHING_QUERY, title: "Women's Clothing" }, label: "Women's Clothing" },
+  { to: "/shop", search: { q: WOMENS_SHOES_QUERY, title: "Women's Shoes" }, label: "Women's Shoes" },
 ];
 const NAV_RIGHT: NavItem[] = [
-  { to: "/collections/$handle", params: { handle: "new-arrivals" }, label: "New" },
+  { to: "/collections/$handle", params: { handle: "mens-luxury-clothing" }, label: "Men's Clothing" },
+  { to: "/collections/$handle", params: { handle: "mens-designer-shoes" }, label: "Men's Shoes" },
   { to: "/brands", label: "Brands" },
   { to: "/collections/$handle", params: { handle: "high-discounts" }, label: "Sale", accent: true },
 ];
@@ -31,7 +36,8 @@ function NavLinks({ items }: { items: NavItem[] }) {
           key={n.label}
           to={n.to as any}
           params={n.params as any}
-          className={`hover:text-bronze transition-colors ${n.accent ? "text-bronze" : ""}`}
+          search={n.search as any}
+          className={`hover:text-bronze transition-colors whitespace-nowrap ${n.accent ? "text-bronze" : ""}`}
         >
           {n.label}
         </Link>
