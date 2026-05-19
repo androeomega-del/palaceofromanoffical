@@ -250,6 +250,7 @@ function PriceFilter({
               value={min}
               onChange={(e) => setMin(Number(e.target.value))}
               onBlur={apply}
+              aria-label="Minimum price"
               className="w-full text-xs bg-transparent focus:outline-none"
             />
           </div>
