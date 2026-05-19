@@ -32,9 +32,9 @@ const SECTIONS: { title: string; items: QA[] }[] = [
         a: (
           <>
             Every piece is sourced through an authorised European distribution partner with direct relationships to the
-            maisons we carry — Gucci, Prada, Alexander McQueen, Armani and others. Stock is held in partner ateliers
-            across Italy (Milan, Florence, Modena, Como, Rome and more), Sweden, Spain, Austria, Northern Ireland and
-            the United States, and routed automatically from the warehouse holding the piece.
+            maisons we carry — Gucci, Prada, Alexander McQueen, Armani and others. Stock is held in brand-authorised
+            partner warehouses across Italy (Milan, Florence, Modena, Como, Rome and more), Sweden, Spain, Austria,
+            Northern Ireland and the United States, and shipped sealed from the warehouse holding the piece.
           </>
         ),
       },
