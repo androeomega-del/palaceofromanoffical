@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { EditorialPageShell } from "@/components/editorial-page-shell";
 import { img } from "@/lib/editorial-library";
-import founderPortrait from "@/assets/founder-portrait.jpg";
+import founderPortrait from "@/assets/founder-option-palazzo.jpg";
+import founderPortraitSecondary from "@/assets/founder-option-warm.jpg";
 import { routeHead } from "@/lib/seo";
 
 const ABOUT_TITLE = "House Notes — Palace of Roman";
@@ -116,7 +117,10 @@ function AboutPage() {
         <div className="grid md:grid-cols-12 gap-10 md:gap-16 items-start">
           <div className="md:col-span-5">
             <div className="aspect-[4/5] overflow-hidden bg-canvas-raised">
-              <img src={founderPortrait} alt="The founder of Palace of Roman" className="w-full h-full object-cover" loading="lazy" />
+              <img src={founderPortrait} alt="The founder of Palace of Roman, photographed against travertine" className="w-full h-full object-cover" loading="lazy" />
+            </div>
+            <div className="aspect-[4/5] overflow-hidden bg-canvas-raised mt-4 hidden md:block w-2/3 ml-auto -mt-16 relative border-8 border-canvas">
+              <img src={founderPortraitSecondary} alt="The founder of Palace of Roman in cashmere, soft window light" className="w-full h-full object-cover" loading="lazy" />
             </div>
           </div>
           <div className="md:col-span-7">
