@@ -22,9 +22,9 @@ function AboutPage() {
     <EditorialPageShell
       eyebrow="House Notes"
       title="A boutique, not a marketplace."
-      intro="Palace of Roman is a curated edit of the world's most considered houses — quietly assembled, authenticated in-house, and presented with the care of a single voice."
+      intro="Palace of Roman is a curated edit of the world's most considered houses — quietly assembled, sourced through an authorised European distribution partner, and presented with the care of a single voice."
       heroImage={img(7)}
-      heroAlt="The boutique in studio light"
+      heroAlt="A studio still life from the current edit"
     >
       {/* Origin */}
       <section className="grid md:grid-cols-12 gap-10 md:gap-16 items-center mb-32">
@@ -66,9 +66,10 @@ function AboutPage() {
           ))}
         </div>
         <p className="text-[15px] leading-[1.8] text-ink/80 max-w-2xl mx-auto mt-12 text-center">
-          We do not chase volume. Every season our buying director travels to the houses we love and brings back a tight
-          edit — a few pieces per maison, chosen for cut, material, and the way each will live with the others. The
-          result is a boutique you can hold in your head, not a catalogue you scroll through.
+          We do not chase volume. The edit is built piece by piece from the catalogues of an authorised European
+          distribution partner that holds stock from more than ninety maisons — chosen for cut, material, and the way
+          each will live with the others. The result is a boutique you can hold in your head, not a catalogue you
+          scroll through.
         </p>
       </section>
 
@@ -76,7 +77,7 @@ function AboutPage() {
       <section className="grid md:grid-cols-12 gap-10 md:gap-16 items-center mb-32">
         <div className="md:col-span-5">
           <div className="aspect-[4/5] overflow-hidden bg-canvas-raised">
-            <img src={img(42)} alt="The atelier" className="w-full h-full object-cover" loading="lazy" />
+            <img src={img(42)} alt="A piece from the current edit, photographed in studio" className="w-full h-full object-cover" loading="lazy" />
           </div>
         </div>
         <div className="md:col-span-7">
@@ -87,21 +88,21 @@ function AboutPage() {
           <p className="text-[15px] leading-[1.8] text-ink/80 mb-4">
             Orders ship directly from the brand-authorised warehouse holding each piece — across Italy, Spain, Austria,
             Sweden, Northern Ireland and the United States — in their original packaging, with tags and dust bag
-            intact. Private styling correspondence is available on request, and the concierge replies the same business
-            day.
+            intact. Palace of Roman operates online only; there is no showroom or in-person appointment. Styling and
+            fit correspondence is available by email, and the concierge replies the same business day.
           </p>
           <div className="flex flex-wrap gap-4 mt-8">
             <Link
               to="/contact"
               className="px-6 py-3 bg-ink text-canvas text-[11px] uppercase tracking-[0.25em] hover:bg-ink/85 transition-colors"
             >
-              Book a private appointment
+              Write to the concierge
             </Link>
             <Link
               to="/authentication"
               className="px-6 py-3 ring-1 ring-ink text-[11px] uppercase tracking-[0.25em] hover:bg-ink hover:text-canvas transition-colors"
             >
-              How we authenticate
+              How sourcing &amp; authentication work
             </Link>
           </div>
         </div>
