@@ -366,7 +366,7 @@ function MegaPanel({
         >
           <img
             src={featureImg}
-            alt=""
+            alt={collectionImageAlt({ handle: dept.feature.handle, title: dept.feature.title ?? dept.label })}
             loading="lazy"
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
           />
