@@ -11,7 +11,10 @@ export type Hotspot = {
   /** Position in % of image width/height */
   x: number;
   y: number;
+  /** Short product category, e.g. "Eyewear" */
   label: string;
+  /** Optional secondary line, e.g. "Alexander McQueen" */
+  sublabel?: string;
   handle: string;
 };
 
