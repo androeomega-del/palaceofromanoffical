@@ -176,8 +176,24 @@ function FaqPage() {
       heroAlt="Editorial detail"
     >
       <div className="max-w-[68ch] mx-auto space-y-16">
+        <nav aria-label="FAQ topics" className="border-y border-ink/10 py-5">
+          <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-3">Jump to a topic</p>
+          <ul className="flex flex-wrap gap-x-5 gap-y-2">
+            {SECTIONS.map((section) => (
+              <li key={section.title}>
+                <a
+                  href={`#${slugify(section.title)}`}
+                  className="text-[12px] uppercase tracking-[0.18em] text-ink/80 border-b border-transparent hover:text-bronze hover:border-bronze transition-colors pb-0.5"
+                >
+                  {section.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
         {SECTIONS.map((section) => (
-          <section key={section.title}>
+          <section key={section.title} id={slugify(section.title)} className="scroll-mt-28">
             <h2 className="font-serif text-2xl md:text-3xl tracking-tight mb-6">{section.title}</h2>
             <Accordion type="single" collapsible className="w-full">
               {section.items.map((item, i) => (
