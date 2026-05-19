@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { SlidersHorizontal, X } from "lucide-react";
+
 import { fetchCollectionFiltered, fetchCollection, type StorefrontFilterValue } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
 import { pageTitle, metaDescription, absoluteUrl, SITE_URL } from "@/lib/seo";
@@ -110,7 +110,7 @@ function CollectionPage() {
 
   const [selections, setSelections] = useState<Selection[]>([]);
   const [priceRange, setPriceRange] = useState<{ min: number; max: number } | null>(null);
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
 
   // Keyword-based product type derivation. The Shopify product_type field on
@@ -272,15 +272,6 @@ function CollectionPage() {
               />
             </div>
 
-            {/* Controls — Refine button only on mobile; desktop has the sidebar */}
-            <div className="lg:hidden flex items-center justify-between gap-4 mb-6">
-              <button
-                onClick={() => setMobileFiltersOpen(true)}
-                className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] border border-ink/15 px-3 py-2 hover:border-ink transition-colors"
-              >
-                <SlidersHorizontal className="h-3.5 w-3.5" /> Refine
-              </button>
-            </div>
 
             {/* Product type chips — derived from titles in the current result set */}
             {availableTypes.length > 1 && (
@@ -360,29 +351,6 @@ function CollectionPage() {
         </div>
       </section>
 
-      {/* Refine drawer — available at all breakpoints */}
-      {mobileFiltersOpen && (
-        <div className="fixed inset-0 z-50 flex">
-          <button
-            aria-label="Close filters"
-            onClick={() => setMobileFiltersOpen(false)}
-            className="flex-1 bg-ink/40 backdrop-blur-sm"
-          />
-          <div className="w-80 max-w-[85vw] bg-canvas h-full overflow-y-auto p-6">
-            <div className="flex items-center justify-between mb-6">
-              <span className="text-[11px] uppercase tracking-[0.25em]">Refine</span>
-              <button onClick={() => setMobileFiltersOpen(false)} aria-label="Close">
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            {filters.length === 0 ? (
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                No additional refinements available for this collection. Use sort to reorder.
-              </p>
-            ) : sidebar}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
