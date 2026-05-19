@@ -200,24 +200,23 @@ function CollectionsIndexPage() {
                   className="group block"
                 >
                   <div className="w-full aspect-[3/4] bg-muted overflow-hidden mb-5 relative">
-                    {c.image ? (
-                      <img
-                        src={c.image.url}
-                        alt={c.image.altText ?? c.title}
-                        loading="lazy"
-                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-                      />
-                    ) : (
-                      <div className="absolute inset-0 grid place-items-center">
-                        <span className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
-                          {c.title}
-                        </span>
-                      </div>
-                    )}
+                    <img
+                      src={imgForKey(c.handle)}
+                      alt={c.image?.altText ?? c.title}
+                      loading="lazy"
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-ink/10 to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0 p-4 md:p-5">
+                      <p className="text-[10px] uppercase tracking-[0.25em] text-canvas/70 mb-1">
+                        The Edit
+                      </p>
+                      <h2 className="text-lg md:text-xl font-serif text-canvas leading-tight text-balance">
+                        {c.title}
+                      </h2>
+                    </div>
                   </div>
-                  <h2 className="text-base md:text-lg font-serif group-hover:text-bronze transition-colors">
-                    {c.title}
-                  </h2>
+                  <h2 className="sr-only">{c.title}</h2>
                 </Link>
               ))}
             </div>
