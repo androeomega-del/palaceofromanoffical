@@ -273,13 +273,15 @@ function CollectionPage() {
               />
             </div>
 
-            {/* Controls */}
-            <div className="flex items-center justify-between gap-4 mb-6">
+            {/* Controls — Refine button only on mobile; desktop has the sidebar */}
+            <div className="lg:hidden flex items-center justify-between gap-4 mb-6">
               <button
                 onClick={() => setMobileFiltersOpen(true)}
                 className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] border border-ink/15 px-3 py-2 hover:border-ink transition-colors"
               >
                 <SlidersHorizontal className="h-3.5 w-3.5" /> Refine
+              </button>
+            </div>
               </button>
             </div>
 
