@@ -1,20 +1,25 @@
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useId, useRef, useState } from "react";
-import { fetchCollections } from "@/lib/shopify";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { fetchCollections, fetchVendorIndex } from "@/lib/shopify";
 import { collectionImage } from "@/lib/collection-image";
-import { DEPARTMENTS, type MegaDepartment } from "@/lib/nav-config";
+import {
+  buildDepartments,
+  buildBrandList,
+  groupBrandsForMenu,
+  vendorSlug,
+  type MegaDepartment,
+  type BrandEntry,
+} from "@/lib/nav-config";
 
 /**
  * Desktop hover/focus megamenu.
  *
- * - One trigger per department (Women / Men). Hover or keyboard focus opens
- *   the corresponding panel. A short close delay keeps the panel open while
- *   the cursor crosses the gap between trigger and panel.
- * - Items are filtered against the live Shopify collection list so deleted /
- *   renamed collections don't render dead links.
- * - Featured tile uses the same `collectionImage` themed photography as the
- *   collections index, keeping the brand visual language consistent.
+ * - Structure for Women / Men is generated live from Shopify Smart
+ *   Collections via `buildDepartments()` — new collections appear in the
+ *   right column automatically.
+ * - The Brands panel is generated live from product vendor data, filtered
+ *   to a curated luxury house allowlist.
  */
 export function DesktopMegamenu() {
   const [openKey, setOpenKey] = useState<string | null>(null);
@@ -25,6 +30,11 @@ export function DesktopMegamenu() {
     queryFn: () => fetchCollections(100),
     staleTime: 5 * 60_000,
   });
+
+  const departments = useMemo(
+    () => buildDepartments(liveCollections ?? []),
+    [liveCollections],
+  );
 
   const liveHandles = liveCollections
     ? new Set(liveCollections.map((c) => c.handle))
@@ -39,7 +49,6 @@ export function DesktopMegamenu() {
     closeTimer.current = setTimeout(() => setOpenKey(null), 120);
   }
 
-  // Close on Escape
   useEffect(() => {
     if (!openKey) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpenKey(null);
@@ -49,7 +58,7 @@ export function DesktopMegamenu() {
 
   return (
     <div className="flex items-center gap-8" onMouseLeave={scheduleClose}>
-      {DEPARTMENTS.map((dept) => {
+      {departments.map((dept) => {
         const isOpen = openKey === dept.key;
         return (
           <MegaTrigger
@@ -62,6 +71,11 @@ export function DesktopMegamenu() {
           />
         );
       })}
+      <BrandsTrigger
+        isOpen={openKey === "brands"}
+        onOpen={() => openNow("brands")}
+        onScheduleClose={scheduleClose}
+      />
     </div>
   );
 }
@@ -80,13 +94,8 @@ function MegaTrigger({
   liveHandles: Set<string> | null;
 }) {
   const panelId = useId();
-
   return (
-    <div
-      className="relative"
-      onMouseEnter={onOpen}
-      onFocus={onOpen}
-    >
+    <div className="relative" onMouseEnter={onOpen} onFocus={onOpen}>
       <Link
         to="/collections/$handle"
         params={{ handle: dept.rootHandle }}
@@ -99,7 +108,6 @@ function MegaTrigger({
       >
         {dept.label}
       </Link>
-
       {isOpen && (
         <MegaPanel
           id={panelId}
@@ -127,7 +135,6 @@ function MegaPanel({
   onMouseLeave: () => void;
 }) {
   const featureImg = collectionImage({ handle: dept.feature.handle, title: dept.label });
-
   return (
     <div
       id={id}
@@ -138,7 +145,6 @@ function MegaPanel({
       className="fixed left-0 right-0 top-20 z-40 bg-canvas border-y border-ink/10 shadow-[0_30px_60px_-30px_rgba(0,0,0,0.18)]"
     >
       <div className="max-w-screen-2xl mx-auto px-10 py-12 grid grid-cols-[1fr_minmax(320px,28%)] gap-12">
-        {/* Column grid */}
         <div
           className="grid gap-x-10 gap-y-2"
           style={{ gridTemplateColumns: `repeat(${dept.columns.length}, minmax(0, 1fr))` }}
@@ -171,7 +177,6 @@ function MegaPanel({
           })}
         </div>
 
-        {/* Editorial feature tile */}
         <Link
           to="/collections/$handle"
           params={{ handle: dept.feature.handle }}
@@ -201,9 +206,140 @@ function MegaPanel({
   );
 }
 
+// -----------------------------------------------------------------------------
+// Brands megamenu — live from Shopify vendor data
+// -----------------------------------------------------------------------------
+
+function useBrandIndex() {
+  return useQuery({
+    queryKey: ["nav-brand-index"],
+    queryFn: () => fetchVendorIndex(4, 250),
+    staleTime: 10 * 60_000,
+    select: (rows) => buildBrandList(rows),
+  });
+}
+
+function BrandsTrigger({
+  isOpen,
+  onOpen,
+  onScheduleClose,
+}: {
+  isOpen: boolean;
+  onOpen: () => void;
+  onScheduleClose: () => void;
+}) {
+  const panelId = useId();
+  const { data: brands } = useBrandIndex();
+  return (
+    <div className="relative" onMouseEnter={onOpen} onFocus={onOpen}>
+      <Link
+        to="/brands"
+        aria-haspopup="true"
+        aria-expanded={isOpen}
+        aria-controls={panelId}
+        className={`hover:text-bronze transition-colors whitespace-nowrap py-2 ${
+          isOpen ? "text-bronze" : ""
+        }`}
+      >
+        Brands
+      </Link>
+      {isOpen && (
+        <BrandsPanel
+          id={panelId}
+          brands={brands ?? []}
+          onMouseEnter={onOpen}
+          onMouseLeave={onScheduleClose}
+        />
+      )}
+    </div>
+  );
+}
+
+function BrandsPanel({
+  id,
+  brands,
+  onMouseEnter,
+  onMouseLeave,
+}: {
+  id: string;
+  brands: BrandEntry[];
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
+}) {
+  const grouped = groupBrandsForMenu(brands);
+  const featureImg = collectionImage({ handle: "best-selling-brands", title: "Brands" });
+
+  return (
+    <div
+      id={id}
+      role="region"
+      aria-label="Brands navigation"
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      className="fixed left-0 right-0 top-20 z-40 bg-canvas border-y border-ink/10 shadow-[0_30px_60px_-30px_rgba(0,0,0,0.18)]"
+    >
+      <div className="max-w-screen-2xl mx-auto px-10 py-12 grid grid-cols-[1fr_minmax(320px,28%)] gap-12">
+        <div
+          className="grid gap-x-10 gap-y-2"
+          style={{ gridTemplateColumns: `repeat(${Math.max(grouped.length, 1)}, minmax(0, 1fr))` }}
+        >
+          {grouped.length === 0 ? (
+            <p className="text-[12px] text-muted-foreground">Loading houses…</p>
+          ) : (
+            grouped.map((col) => (
+              <div key={col.heading} className="flex flex-col gap-3">
+                <p className="text-[10px] uppercase tracking-[0.3em] text-bronze font-medium pb-2 border-b border-ink/10">
+                  {col.heading}
+                </p>
+                <ul className="flex flex-col gap-1.5">
+                  {col.items.map((b) => (
+                    <li key={b.vendor}>
+                      <Link
+                        to="/brand/$vendor"
+                        params={{ vendor: vendorSlug(b.vendor) }}
+                        className="text-[13px] text-ink/80 hover:text-ink hover:translate-x-0.5 transition-all inline-block normal-case tracking-normal"
+                      >
+                        {b.vendor}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))
+          )}
+        </div>
+
+        <Link
+          to="/brands"
+          className="group relative block aspect-[4/5] overflow-hidden bg-muted"
+        >
+          <img
+            src={featureImg}
+            alt="The full house directory"
+            loading="lazy"
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/15 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 p-6">
+            <p className="text-[10px] uppercase tracking-[0.3em] text-canvas/80 mb-2">
+              The Directory
+            </p>
+            <p className="font-serif text-2xl text-canvas leading-tight text-balance">
+              Every house, A — Z.
+            </p>
+            <span className="mt-4 inline-block text-[11px] uppercase tracking-[0.25em] text-canvas border-b border-canvas/60 pb-0.5">
+              Browse All Brands
+            </span>
+          </div>
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 /**
- * Mobile / small-screen accordion. Renders each department as an expandable
- * group with the same column structure flattened into one stack.
+ * Mobile / small-screen accordion. Each department + Brands is an expandable
+ * group fed from the same live Shopify data.
  */
 export function MobileMegamenu() {
   const [openKey, setOpenKey] = useState<string | null>("women");
@@ -216,10 +352,16 @@ export function MobileMegamenu() {
   const liveHandles = liveCollections
     ? new Set(liveCollections.map((c) => c.handle))
     : null;
+  const departments = useMemo(
+    () => buildDepartments(liveCollections ?? []),
+    [liveCollections],
+  );
+  const { data: brands } = useBrandIndex();
+  const brandGroups = useMemo(() => groupBrandsForMenu(brands ?? []), [brands]);
 
   return (
     <div className="flex flex-col divide-y divide-ink/10">
-      {DEPARTMENTS.map((dept) => {
+      {departments.map((dept) => {
         const isOpen = openKey === dept.key;
         return (
           <div key={dept.key}>
@@ -262,6 +404,50 @@ export function MobileMegamenu() {
           </div>
         );
       })}
+
+      {/* Brands accordion */}
+      <div>
+        <button
+          type="button"
+          onClick={() => setOpenKey(openKey === "brands" ? null : "brands")}
+          aria-expanded={openKey === "brands"}
+          className="w-full flex items-center justify-between py-4 text-[12px] uppercase tracking-[0.3em] text-ink"
+        >
+          <span>Brands</span>
+          <span className="text-bronze text-lg leading-none">{openKey === "brands" ? "−" : "+"}</span>
+        </button>
+        {openKey === "brands" && (
+          <div className="pb-6 flex flex-col gap-5">
+            {brandGroups.length === 0 ? (
+              <p className="text-[12px] text-muted-foreground">Loading houses…</p>
+            ) : (
+              brandGroups.map((col) => (
+                <div key={col.heading} className="flex flex-col gap-1.5">
+                  <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-1">
+                    {col.heading}
+                  </p>
+                  {col.items.map((b) => (
+                    <Link
+                      key={b.vendor}
+                      to="/brand/$vendor"
+                      params={{ vendor: vendorSlug(b.vendor) }}
+                      className="text-[14px] text-ink/85 hover:text-bronze py-1"
+                    >
+                      {b.vendor}
+                    </Link>
+                  ))}
+                </div>
+              ))
+            )}
+            <Link
+              to="/brands"
+              className="mt-2 text-[11px] uppercase tracking-[0.3em] text-bronze border-b border-bronze/40 self-start pb-1"
+            >
+              View the full directory →
+            </Link>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
