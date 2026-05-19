@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { routeHead } from "@/lib/seo";
+import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
 
 // Import all 30 webp files eagerly so Vite emits hashed asset URLs.
 const imageModules = import.meta.glob("@/assets/editorial/may-2026/*.webp", {
