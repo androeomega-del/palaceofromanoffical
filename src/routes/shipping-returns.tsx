@@ -32,7 +32,7 @@ function ShippingReturnsPage() {
     <EditorialPageShell
       eyebrow="Client Care"
       title="Shipping & Returns"
-      intro="Each order is dispatched from one of our partner ateliers across Italy, Sweden, Spain, Germany, Northern Ireland and the United States — fully tracked, fully insured."
+      intro="Each order is dispatched from one of our partner warehouses across Italy, Sweden, Spain, Austria, Northern Ireland and the United States — fully tracked, fully insured."
       heroImage={img(72)}
       heroAlt="Considered packaging"
     >
