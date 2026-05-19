@@ -1,15 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { EditorialPageShell, ProseColumn, SectionTitle } from "@/components/editorial-page-shell";
 import { img } from "@/lib/editorial-library";
+import { routeHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/terms")({
-  head: () => ({
-    meta: [
-      { title: "Terms of Sale — Palace of Roman" },
-      { name: "description", content: "The terms governing your purchase and use of the Palace of Roman boutique." },
-      { property: "og:title", content: "Terms of Sale — Palace of Roman" },
-    ],
-  }),
+  head: () => {
+    const title = "Terms of Sale — Palace of Roman";
+    const desc = "The terms governing your purchase and use of the Palace of Roman boutique.";
+    const rh = routeHead({ path: "/terms", title, description: desc });
+    return {
+      meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
+      links: rh.links,
+    };
+  },
   component: TermsPage,
 });
 
