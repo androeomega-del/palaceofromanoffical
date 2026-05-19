@@ -468,22 +468,22 @@ function BrandsPanel({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       onKeyDown={(e) => onPanelKeyDown(e, id)}
-      className="fixed left-0 right-0 top-20 z-40 bg-canvas border-y border-ink/10 shadow-[0_30px_60px_-30px_rgba(0,0,0,0.18)]"
+      className="fixed left-0 right-0 top-20 z-40 bg-canvas border-t border-ink/10 shadow-[0_40px_80px_-40px_rgba(0,0,0,0.12)]"
     >
-      <div className="max-w-screen-2xl mx-auto px-10 py-12 grid grid-cols-[1fr_minmax(320px,28%)] gap-12">
+      <div className="max-w-screen-2xl mx-auto px-12 py-16 grid grid-cols-[1fr_minmax(340px,30%)] gap-16">
         <div
-          className="grid gap-x-10 gap-y-2"
+          className="grid gap-x-12 gap-y-2"
           style={{ gridTemplateColumns: `repeat(${Math.max(grouped.length, 1)}, minmax(0, 1fr))` }}
         >
           {grouped.length === 0 ? (
-            <p className="text-[12px] text-muted-foreground">Loading houses…</p>
+            <p className="text-[12px] font-light italic text-muted-foreground">Loading houses…</p>
           ) : (
             grouped.map((col, colIdx) => (
-              <div key={col.heading} className="flex flex-col gap-3">
-                <p className="text-[10px] uppercase tracking-[0.3em] text-bronze font-medium pb-2 border-b border-ink/10">
+              <div key={col.heading} className="flex flex-col gap-5">
+                <p className="font-serif italic text-[13px] tracking-[0.04em] text-bronze pb-3 border-b border-ink/15">
                   {col.heading}
                 </p>
-                <ul className="flex flex-col gap-1.5">
+                <ul className="flex flex-col gap-2.5">
                   {colIdx === 0 && (
                     <li>
                       <Link
@@ -499,7 +499,7 @@ function BrandsPanel({
                       <Link
                         to="/brand/$vendor"
                         params={{ vendor: vendorSlug(b.vendor) }}
-                        className="text-[13px] text-ink/80 hover:text-ink hover:translate-x-0.5 transition-all inline-block normal-case tracking-normal"
+                        className="text-[13px] font-light text-ink/75 hover:text-ink transition-colors inline-block normal-case tracking-normal leading-relaxed"
                       >
                         {b.vendor}
                       </Link>
@@ -519,17 +519,17 @@ function BrandsPanel({
             src={featureImg}
             alt=""
             loading="lazy"
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/15 to-transparent" />
-          <div className="absolute inset-x-0 bottom-0 p-6">
-            <p className="text-[10px] uppercase tracking-[0.3em] text-canvas/80 mb-2">
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/20 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 p-8">
+            <p className="text-[10px] uppercase tracking-[0.4em] text-canvas/75 mb-3">
               The Directory
             </p>
-            <p className="font-serif text-2xl text-canvas leading-tight text-balance">
+            <p className="font-serif text-[28px] leading-[1.15] text-canvas text-balance">
               Every house, A — Z.
             </p>
-            <span className="mt-4 inline-block text-[11px] uppercase tracking-[0.25em] text-canvas border-b border-canvas/60 pb-0.5">
+            <span className="mt-5 inline-block text-[10px] uppercase tracking-[0.35em] text-canvas/90 border-b border-canvas/40 pb-1">
               Browse All Brands
             </span>
           </div>
