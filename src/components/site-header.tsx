@@ -4,13 +4,20 @@ import { useState } from "react";
 import { useCartStore } from "@/stores/cart-store";
 import { CartDrawer } from "@/components/cart-drawer";
 
-const NAV = [
+type NavItem = {
+  label: string;
+  to: string;
+  params?: Record<string, string>;
+  accent?: boolean;
+};
+
+const NAV: NavItem[] = [
   { to: "/collections/$handle", params: { handle: "womens-accessories" }, label: "Women" },
   { to: "/collections/$handle", params: { handle: "mens-luxury-clothing" }, label: "Men" },
   { to: "/collections/$handle", params: { handle: "new-arrivals" }, label: "New" },
   { to: "/collections/$handle", params: { handle: "high-discounts" }, label: "Sale", accent: true },
-  { to: "/brands", params: undefined, label: "Brands" },
-] as const;
+  { to: "/brands", label: "Brands" },
+];
 
 export function SiteHeader() {
   const totalItems = useCartStore((s) => s.items.reduce((sum, i) => sum + i.quantity, 0));
@@ -27,12 +34,9 @@ export function SiteHeader() {
             {NAV.map((n) => (
               <Link
                 key={n.label}
-                // @ts-expect-error - dynamic route param shape varies
-                to={n.to}
-                // @ts-expect-error
-                params={n.params}
+                to={n.to as any}
+                params={n.params as any}
                 className={`hover:text-bronze transition-colors ${n.accent ? "text-bronze" : ""}`}
-                activeProps={{ className: "text-bronze" }}
               >
                 {n.label}
               </Link>
@@ -64,15 +68,12 @@ export function SiteHeader() {
           </div>
         </div>
 
-        {/* Mobile nav */}
         <nav className="lg:hidden flex items-center justify-center gap-6 px-6 py-3 text-[11px] uppercase tracking-widest border-t border-ink/5 overflow-x-auto scrollbar-hide">
           {NAV.map((n) => (
             <Link
               key={n.label}
-              // @ts-expect-error
-              to={n.to}
-              // @ts-expect-error
-              params={n.params}
+              to={n.to as any}
+              params={n.params as any}
               className={`hover:text-bronze transition-colors whitespace-nowrap ${n.accent ? "text-bronze" : ""}`}
             >
               {n.label}
