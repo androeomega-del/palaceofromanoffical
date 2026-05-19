@@ -213,7 +213,7 @@ function CollectionsIndexPage() {
                   <div className="w-full aspect-[3/4] bg-muted overflow-hidden mb-4 relative">
                     <img
                       src={collectionImage({ title: c.title, handle: c.handle, description: c.description, dynamicMap })}
-                      alt={c.image?.altText ?? c.title}
+                      alt={c.image?.altText ?? collectionImageAlt({ handle: c.handle, title: c.title })}
                       loading="lazy"
                       width={768}
                       height={1024}
