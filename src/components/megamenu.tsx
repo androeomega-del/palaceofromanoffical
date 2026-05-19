@@ -157,6 +157,13 @@ export function DesktopMegamenu() {
         onArrow={(e) => onTriggerArrow(e, "brands")}
         registerTrigger={registerTrigger("brands")}
       />
+      <Link
+        to="/swim"
+        className={TRIGGER_CLASS + " font-serif italic text-[var(--sea)]"}
+        role="menuitem"
+      >
+        Swim
+      </Link>
     </div>
   );
 }
