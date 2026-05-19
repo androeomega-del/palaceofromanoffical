@@ -146,13 +146,46 @@ export function DesktopMegamenu() {
 const TRIGGER_CLASS =
   "hover:text-bronze transition-colors whitespace-nowrap py-2 bg-transparent border-0 p-0 m-0 font-inherit text-inherit cursor-pointer focus-visible:outline-none focus-visible:text-bronze";
 
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"]), input:not([disabled]), select:not([disabled]), textarea:not([disabled])';
+
+function getPanelFocusables(panelId: string): HTMLElement[] {
+  const panel = document.getElementById(panelId);
+  if (!panel) return [];
+  return Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
+    (el) => !el.hasAttribute("hidden") && el.offsetParent !== null,
+  );
+}
+
 function focusFirstLinkInPanel(panelId: string) {
   // Defer so the panel is mounted before we query it.
   requestAnimationFrame(() => {
-    const panel = document.getElementById(panelId);
-    const first = panel?.querySelector<HTMLElement>("a, button");
-    first?.focus();
+    getPanelFocusables(panelId)[0]?.focus();
   });
+}
+
+/**
+ * Trap Tab / Shift+Tab inside the open panel so keyboard users can't
+ * accidentally land in background content while the megamenu is open.
+ * Escape and arrow-key behaviour are handled separately by the trigger.
+ */
+function onPanelKeyDown(
+  e: React.KeyboardEvent<HTMLDivElement>,
+  panelId: string,
+) {
+  if (e.key !== "Tab") return;
+  const focusables = getPanelFocusables(panelId);
+  if (focusables.length === 0) return;
+  const first = focusables[0];
+  const last = focusables[focusables.length - 1];
+  const active = document.activeElement as HTMLElement | null;
+  if (e.shiftKey && active === first) {
+    e.preventDefault();
+    last.focus();
+  } else if (!e.shiftKey && active === last) {
+    e.preventDefault();
+    first.focus();
+  }
 }
 
 function MegaTrigger({
@@ -243,6 +276,7 @@ function MegaPanel({
       hidden={!isOpen}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
+      onKeyDown={(e) => onPanelKeyDown(e, id)}
       className="fixed left-0 right-0 top-20 z-40 bg-canvas border-y border-ink/10 shadow-[0_30px_60px_-30px_rgba(0,0,0,0.18)]"
     >
       <div className="max-w-screen-2xl mx-auto px-10 py-12 grid grid-cols-[1fr_minmax(320px,28%)] gap-12">
@@ -415,6 +449,7 @@ function BrandsPanel({
       hidden={!isOpen}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
+      onKeyDown={(e) => onPanelKeyDown(e, id)}
       className="fixed left-0 right-0 top-20 z-40 bg-canvas border-y border-ink/10 shadow-[0_30px_60px_-30px_rgba(0,0,0,0.18)]"
     >
       <div className="max-w-screen-2xl mx-auto px-10 py-12 grid grid-cols-[1fr_minmax(320px,28%)] gap-12">
