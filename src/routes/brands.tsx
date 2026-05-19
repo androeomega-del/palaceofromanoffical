@@ -89,6 +89,20 @@ function BrandsPage() {
                 </div>
               </section>
             ))}
+            {sampleQ.hasNextPage && (
+              <div className="pt-10 text-center">
+                <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mb-4">
+                  {allEdges.length.toLocaleString()} pieces scanned · {grouped.reduce((n, [, v]) => n + v.length, 0)} houses found
+                </p>
+                <button
+                  onClick={() => sampleQ.fetchNextPage()}
+                  disabled={sampleQ.isFetchingNextPage}
+                  className="px-10 py-3.5 ring-1 ring-ink text-[11px] uppercase tracking-[0.25em] hover:bg-ink hover:text-canvas transition-colors disabled:opacity-50"
+                >
+                  {sampleQ.isFetchingNextPage ? "Scanning…" : "Scan more of the catalog"}
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>
