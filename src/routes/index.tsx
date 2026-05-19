@@ -131,29 +131,30 @@ function HomePage() {
     <>
       {/* 1. HERO */}
       <section className="relative w-full">
-        <div className="relative w-full aspect-[16/10] md:aspect-[16/7] overflow-hidden bg-muted">
+        <div className="relative w-full min-h-[640px] md:min-h-0 md:aspect-[16/7] overflow-hidden bg-muted">
           <img
             src={heroImage}
             alt="Palace of Roman — Spring editorial"
             width={1920}
             height={1080}
-            className="absolute inset-0 w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-cover object-[70%_center] md:object-center"
           />
-          {/* Cream wash — denser on the text column, fully clear on the right
-              so the editorial imagery still breathes. Bottom feather hands off
-              cleanly to the cream page. */}
-          <div className="absolute inset-0 bg-gradient-to-r from-canvas/92 from-0% via-canvas/55 via-45% to-transparent to-75%" />
+          {/* Cream wash — on mobile the column stack needs full readability,
+              so the wash covers the whole frame; on desktop it fades to clear
+              on the right so the editorial imagery still breathes. */}
+          <div className="absolute inset-0 bg-canvas/70 md:hidden" />
+          <div className="absolute inset-0 hidden md:block bg-gradient-to-r from-canvas/92 from-0% via-canvas/55 via-45% to-transparent to-75%" />
           <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-canvas/80" />
           <div className="absolute inset-0 flex items-center">
-            <div className="max-w-screen-2xl mx-auto w-full px-6 md:px-12">
+            <div className="max-w-screen-2xl mx-auto w-full px-6 md:px-12 py-12 md:py-0">
               <div className="max-w-xl">
-                <span className="text-[10px] uppercase tracking-[0.35em] text-bronze block mb-6">
+                <span className="text-[10px] uppercase tracking-[0.35em] text-bronze block mb-5 md:mb-6">
                   The Spring Edit
                 </span>
-                <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif leading-[1.05] tracking-tight text-balance mb-8">
+                <h1 className="text-[2rem] sm:text-5xl md:text-6xl lg:text-7xl font-serif leading-[1.05] tracking-tight text-balance mb-6 md:mb-8">
                   A study in considered dressing.
                 </h1>
-                <p className="text-sm md:text-base text-ink/70 leading-relaxed max-w-md mb-10 text-pretty">
+                <p className="text-sm md:text-base text-ink/70 leading-relaxed max-w-md mb-8 md:mb-10 text-pretty">
                   A curated edit from the season's most significant houses — quietly assembled, authenticated, and shipped worldwide.
                 </p>
                 <div className="flex flex-wrap gap-4">
