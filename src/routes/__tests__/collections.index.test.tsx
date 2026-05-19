@@ -24,9 +24,9 @@ vi.mock("@/lib/shopify", async (orig) => {
 });
 
 const fixture: ShopifyCollection[] = [
-  { id: "1", title: "Zenith Capsule", handle: "zenith", description: "", updatedAt: "2024-01-01T00:00:00Z" },
-  { id: "2", title: "Atelier Edit",   handle: "atelier", description: "", updatedAt: "2026-05-01T00:00:00Z" },
-  { id: "3", title: "Maison Noir",    handle: "maison",  description: "", updatedAt: "2025-03-01T00:00:00Z" },
+  { id: "1", title: "Zenith Capsule", handle: "zenith", description: "", image: null, updatedAt: "2024-01-01T00:00:00Z" },
+  { id: "2", title: "Atelier Edit",   handle: "atelier", description: "", image: null, updatedAt: "2026-05-01T00:00:00Z" },
+  { id: "3", title: "Maison Noir",    handle: "maison",  description: "", image: null, updatedAt: "2025-03-01T00:00:00Z" },
 ];
 
 function renderAt(initialUrl: string) {
