@@ -237,11 +237,10 @@ function CollectionPage() {
             <div className="flex items-center justify-between gap-4 mb-6">
               <button
                 onClick={() => setMobileFiltersOpen(true)}
-                className="lg:hidden inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] border border-ink/15 px-3 py-2"
+                className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] border border-ink/15 px-3 py-2 hover:border-ink transition-colors"
               >
-                <SlidersHorizontal className="h-3.5 w-3.5" /> Filters
+                <SlidersHorizontal className="h-3.5 w-3.5" /> Refine
               </button>
-              <div className="hidden lg:block" />
               <div className="md:hidden">
                 <CatalogSort value={sort} onChange={setSort} />
               </div>
@@ -290,9 +289,9 @@ function CollectionPage() {
         </div>
       </section>
 
-      {/* Mobile filters drawer */}
+      {/* Refine drawer — available at all breakpoints */}
       {mobileFiltersOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 flex">
+        <div className="fixed inset-0 z-50 flex">
           <button
             aria-label="Close filters"
             onClick={() => setMobileFiltersOpen(false)}
@@ -300,12 +299,16 @@ function CollectionPage() {
           />
           <div className="w-80 max-w-[85vw] bg-canvas h-full overflow-y-auto p-6">
             <div className="flex items-center justify-between mb-6">
-              <span className="text-[11px] uppercase tracking-[0.25em]">Filters</span>
-              <button onClick={() => setMobileFiltersOpen(false)}>
+              <span className="text-[11px] uppercase tracking-[0.25em]">Refine</span>
+              <button onClick={() => setMobileFiltersOpen(false)} aria-label="Close">
                 <X className="h-5 w-5" />
               </button>
             </div>
-            {sidebar}
+            {filters.length === 0 ? (
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                No additional refinements available for this collection. Use sort to reorder.
+              </p>
+            ) : sidebar}
           </div>
         </div>
       )}
