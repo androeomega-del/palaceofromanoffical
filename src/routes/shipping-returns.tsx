@@ -20,10 +20,11 @@ export const Route = createFileRoute("/shipping-returns")({
 });
 
 const ZONES = [
-  { region: "European Union", standard: "On average 3 business days", dispatch: "24–48 hours" },
+  { region: "European Union", standard: "2–3 business days", dispatch: "24–48 hours" },
   { region: "United Kingdom & Northern Ireland", standard: "3–5 business days", dispatch: "24–48 hours" },
-  { region: "United States & Canada", standard: "5–7 business days", dispatch: "24–48 hours" },
-  { region: "Rest of world", standard: "5–7 business days", dispatch: "24–48 hours" },
+  { region: "Switzerland & Norway", standard: "3–5 business days", dispatch: "24–48 hours" },
+  { region: "United States & Canada", standard: "4–7 business days", dispatch: "24–48 hours" },
+  { region: "Rest of world", standard: "5–10 business days", dispatch: "24–48 hours" },
 ];
 
 function ShippingReturnsPage() {
