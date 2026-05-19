@@ -96,7 +96,7 @@ function CollectionsIndexPage() {
                 disabled={disabled}
                 onClick={() =>
                   navigate({
-                    search: (prev) => ({ ...prev, filter: f.key }),
+                    search: (prev: { filter: FilterKey }) => ({ ...prev, filter: f.key }),
                     replace: true,
                   })
                 }
