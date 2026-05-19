@@ -14,6 +14,7 @@ type NavItem = {
 
 const NAV_LEFT: NavItem[] = [
   { to: "/shop", label: "Shop" },
+  { to: "/collections", label: "Collections" },
   { to: "/collections/$handle", params: { handle: "womens-clothing" }, label: "Women's Clothing" },
   { to: "/collections/$handle", params: { handle: "womens-shoes" }, label: "Women's Shoes" },
 ];
