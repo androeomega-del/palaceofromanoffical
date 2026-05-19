@@ -106,37 +106,63 @@ function CollectionsIndexPage() {
         </div>
       </section>
 
-      <section className="px-6 pt-8 pb-2 border-b border-ink/5">
-        <div className="max-w-screen-2xl mx-auto flex flex-wrap gap-2 md:gap-3">
-          {FILTERS.map((f) => {
-            const active = filter === f.key;
-            const count = counts[f.key];
-            const disabled = !q.isLoading && count === 0 && f.key !== "all";
-            return (
-              <button
-                key={f.key}
-                disabled={disabled}
-                onClick={() =>
-                  navigate({
-                    search: (prev: { filter: FilterKey }) => ({ ...prev, filter: f.key }),
-                    replace: true,
-                  })
-                }
-                className={`text-[11px] uppercase tracking-[0.25em] px-4 py-2.5 border transition-colors ${
-                  active
-                    ? "bg-ink text-canvas border-ink"
-                    : "border-ink/15 hover:border-ink hover:text-bronze"
-                } ${disabled ? "opacity-30 cursor-not-allowed hover:border-ink/15 hover:text-inherit" : ""}`}
-              >
-                {f.label}
-                {!q.isLoading && f.key !== "all" && (
-                  <span className="ml-2 opacity-60">({count})</span>
-                )}
-              </button>
-            );
-          })}
+      <section className="px-6 pt-8 pb-6 border-b border-ink/5">
+        <div className="max-w-screen-2xl mx-auto flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+          <div className="flex flex-wrap gap-2 md:gap-3">
+            {FILTERS.map((f) => {
+              const active = filter === f.key;
+              const count = counts[f.key];
+              const disabled = !q.isLoading && count === 0 && f.key !== "all";
+              return (
+                <button
+                  key={f.key}
+                  disabled={disabled}
+                  onClick={() =>
+                    navigate({
+                      search: (prev: { filter: FilterKey; sort: SortKey }) => ({ ...prev, filter: f.key }),
+                      replace: true,
+                    })
+                  }
+                  className={`text-[11px] uppercase tracking-[0.25em] px-4 py-2.5 border transition-colors ${
+                    active
+                      ? "bg-ink text-canvas border-ink"
+                      : "border-ink/15 hover:border-ink hover:text-bronze"
+                  } ${disabled ? "opacity-30 cursor-not-allowed hover:border-ink/15 hover:text-inherit" : ""}`}
+                >
+                  {f.label}
+                  {!q.isLoading && f.key !== "all" && (
+                    <span className="ml-2 opacity-60">({count})</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          <label className="flex items-center gap-3 text-[11px] uppercase tracking-[0.25em] text-muted-foreground self-start lg:self-auto">
+            Sort
+            <select
+              value={sort}
+              onChange={(e) =>
+                navigate({
+                  search: (prev: { filter: FilterKey; sort: SortKey }) => ({
+                    ...prev,
+                    sort: e.target.value as SortKey,
+                  }),
+                  replace: true,
+                })
+              }
+              className="bg-transparent border-b border-ink/30 focus:border-ink py-1 pr-6 text-[11px] uppercase tracking-[0.2em] text-ink focus:outline-none cursor-pointer"
+            >
+              {SORTS.map((s) => (
+                <option key={s.key} value={s.key}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
       </section>
+
 
       <section className="px-6 py-16">
         <div className="max-w-screen-2xl mx-auto">
