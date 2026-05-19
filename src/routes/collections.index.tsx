@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { fetchCollections, type ShopifyCollection } from "@/lib/shopify";
-import { imgForKey } from "@/lib/editorial-library";
+import { collectionImage } from "@/lib/collection-image";
 
 type FilterKey = "all" | "women" | "men" | "clothing" | "shoes" | "luxury";
 
@@ -199,23 +199,28 @@ function CollectionsIndexPage() {
                   params={{ handle: c.handle }}
                   className="group block"
                 >
-                  <div className="w-full aspect-[3/4] bg-muted overflow-hidden mb-5 relative">
+                  <div className="w-full aspect-[3/4] bg-muted overflow-hidden mb-4 relative">
                     <img
-                      src={imgForKey(c.handle)}
+                      src={collectionImage({ title: c.title, handle: c.handle, description: c.description })}
                       alt={c.image?.altText ?? c.title}
                       loading="lazy"
+                      width={768}
+                      height={1024}
                       className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-ink/10 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/15 to-transparent" />
                     <div className="absolute inset-x-0 bottom-0 p-4 md:p-5">
-                      <p className="text-[10px] uppercase tracking-[0.25em] text-canvas/70 mb-1">
+                      <p className="text-[10px] uppercase tracking-[0.3em] text-canvas/70 mb-1.5">
                         The Edit
                       </p>
-                      <h2 className="text-lg md:text-xl font-serif text-canvas leading-tight text-balance">
+                      <h2 className="text-xl md:text-2xl font-serif text-canvas leading-tight text-balance">
                         {c.title}
                       </h2>
                     </div>
                   </div>
+                  <p className="text-[11px] uppercase tracking-[0.25em] text-ink/70 group-hover:text-bronze transition-colors">
+                    Shop {c.title}
+                  </p>
                   <h2 className="sr-only">{c.title}</h2>
                 </Link>
               ))}
