@@ -114,7 +114,8 @@ function HomePage() {
       );
     const vendors = (edges: ShopifyProduct[]) =>
       new Set(edges.map((e) => e.node.vendor).filter(Boolean));
-    const womenVendors = vendors(inStock(womenBrandsQ.data));
+    const womenEdges = [...inStock(womenBrandsClothingQ.data), ...inStock(womenBrandsShoesQ.data)];
+    const womenVendors = vendors(womenEdges);
     const menEdges = [...inStock(menBrandsClothingQ.data), ...inStock(menBrandsShoesQ.data)];
     const menVendors = vendors(menEdges);
     const both = [...womenVendors].filter((v) => menVendors.has(v));
@@ -122,7 +123,7 @@ function HomePage() {
       name,
       slug: name.toLowerCase().replace(/\s+/g, "-"),
     }));
-  }, [womenBrandsQ.data, menBrandsClothingQ.data, menBrandsShoesQ.data]);
+  }, [womenBrandsClothingQ.data, womenBrandsShoesQ.data, menBrandsClothingQ.data, menBrandsShoesQ.data]);
 
   return (
     <>
