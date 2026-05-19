@@ -817,11 +817,12 @@ function SummerBento({
               The Summer
               <br />
               Sale
-          </h4>
-          <p className="text-[10px] uppercase tracking-[0.3em] text-canvas/85 mb-4">
-            Up to 40% Off
-          </p>
-          <div className="w-8 h-px bg-canvas transition-all group-hover:w-16" />
+            </h4>
+            <p className="text-[10px] uppercase tracking-[0.3em] text-canvas/85 mb-4">
+              Up to 40% Off
+            </p>
+            <div className="w-8 h-px bg-canvas transition-all group-hover:w-16" />
+          </div>
         </Link>
 
       </div>
