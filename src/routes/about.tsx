@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { EditorialPageShell } from "@/components/editorial-page-shell";
 import { img } from "@/lib/editorial-library";
+import founderPortrait from "@/assets/founder-portrait.jpg";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -111,7 +112,7 @@ function AboutPage() {
         <div className="grid md:grid-cols-12 gap-10 md:gap-16 items-start">
           <div className="md:col-span-5">
             <div className="aspect-[4/5] overflow-hidden bg-canvas-raised">
-              <img src={img(54)} alt="A study from the edit" className="w-full h-full object-cover" loading="lazy" />
+              <img src={founderPortrait} alt="The founder of Palace of Roman" className="w-full h-full object-cover" loading="lazy" />
             </div>
           </div>
           <div className="md:col-span-7">
