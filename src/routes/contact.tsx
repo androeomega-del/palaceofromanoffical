@@ -136,7 +136,7 @@ function ContactPage() {
                     <FormItem>
                       <FormLabel className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Subject</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="A private appointment, a sourcing request…" className="rounded-none border-0 border-b border-ink/20 focus-visible:ring-0 focus-visible:border-ink px-0 placeholder:text-ink/30" />
+                        <Input {...field} placeholder="A sourcing request, a sizing question…" className="rounded-none border-0 border-b border-ink/20 focus-visible:ring-0 focus-visible:border-ink px-0 placeholder:text-ink/30" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
