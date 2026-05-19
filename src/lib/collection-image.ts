@@ -117,10 +117,20 @@ export function collectionImage(input: {
   title?: string;
   handle?: string;
   description?: string | null;
+  /** Optional handle → image URL map from the nightly sync (DB-backed). */
+  dynamicMap?: Record<string, string>;
 }): string {
   const handle = (input.handle ?? "").trim().toLowerCase();
+
+  // 1. Dynamic map from Shopify sync (preferred — auto-updates with new collections)
+  if (handle && input.dynamicMap && input.dynamicMap[handle]) {
+    return input.dynamicMap[handle];
+  }
+
+  // 2. Curated static map (bundled fallback for the 34 known handles)
   if (handle && BY_HANDLE[handle]) return BY_HANDLE[handle];
 
+  // 3. Regex rules for unknown handles
   const hay = `${input.title ?? ""} ${handle} ${input.description ?? ""}`
     .toLowerCase()
     .replace(/[-_]+/g, " ");

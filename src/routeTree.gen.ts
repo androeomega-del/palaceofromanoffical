@@ -31,6 +31,7 @@ import { Route as EditorialMay2026RouteImport } from './routes/editorial.may-202
 import { Route as CollectionsHandleRouteImport } from './routes/collections.$handle'
 import { Route as CampaignDolceGabbanaSwimRouteImport } from './routes/campaign.dolce-gabbana-swim'
 import { Route as BrandVendorRouteImport } from './routes/brand.$vendor'
+import { Route as ApiPublicHooksSyncCollectionImagesRouteImport } from './routes/api/public/hooks/sync-collection-images'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -143,6 +144,12 @@ const BrandVendorRoute = BrandVendorRouteImport.update({
   path: '/brand/$vendor',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksSyncCollectionImagesRoute =
+  ApiPublicHooksSyncCollectionImagesRouteImport.update({
+    id: '/api/public/hooks/sync-collection-images',
+    path: '/api/public/hooks/sync-collection-images',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -167,6 +174,7 @@ export interface FileRoutesByFullPath {
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/collections/': typeof CollectionsIndexRoute
+  '/api/public/hooks/sync-collection-images': typeof ApiPublicHooksSyncCollectionImagesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -191,6 +199,7 @@ export interface FileRoutesByTo {
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/collections': typeof CollectionsIndexRoute
+  '/api/public/hooks/sync-collection-images': typeof ApiPublicHooksSyncCollectionImagesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -216,6 +225,7 @@ export interface FileRoutesById {
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/collections/': typeof CollectionsIndexRoute
+  '/api/public/hooks/sync-collection-images': typeof ApiPublicHooksSyncCollectionImagesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -242,6 +252,7 @@ export interface FileRouteTypes {
     | '/product/$handle'
     | '/swim/size-guide'
     | '/collections/'
+    | '/api/public/hooks/sync-collection-images'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -266,6 +277,7 @@ export interface FileRouteTypes {
     | '/product/$handle'
     | '/swim/size-guide'
     | '/collections'
+    | '/api/public/hooks/sync-collection-images'
   id:
     | '__root__'
     | '/'
@@ -290,6 +302,7 @@ export interface FileRouteTypes {
     | '/product/$handle'
     | '/swim/size-guide'
     | '/collections/'
+    | '/api/public/hooks/sync-collection-images'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -314,6 +327,7 @@ export interface RootRouteChildren {
   EditorialTheNewEveningRoute: typeof EditorialTheNewEveningRoute
   ProductHandleRoute: typeof ProductHandleRoute
   CollectionsIndexRoute: typeof CollectionsIndexRoute
+  ApiPublicHooksSyncCollectionImagesRoute: typeof ApiPublicHooksSyncCollectionImagesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -472,6 +486,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BrandVendorRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/sync-collection-images': {
+      id: '/api/public/hooks/sync-collection-images'
+      path: '/api/public/hooks/sync-collection-images'
+      fullPath: '/api/public/hooks/sync-collection-images'
+      preLoaderRoute: typeof ApiPublicHooksSyncCollectionImagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -507,6 +528,8 @@ const rootRouteChildren: RootRouteChildren = {
   EditorialTheNewEveningRoute: EditorialTheNewEveningRoute,
   ProductHandleRoute: ProductHandleRoute,
   CollectionsIndexRoute: CollectionsIndexRoute,
+  ApiPublicHooksSyncCollectionImagesRoute:
+    ApiPublicHooksSyncCollectionImagesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -3,6 +3,16 @@ import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { fetchCollections, fetchVendorIndex } from "@/lib/shopify";
 import { collectionImage } from "@/lib/collection-image";
+import { getCollectionImageMap } from "@/lib/collection-image.functions";
+
+function useCollectionImageMap() {
+  const q = useQuery({
+    queryKey: ["collection-image-map"],
+    queryFn: () => getCollectionImageMap(),
+    staleTime: 5 * 60 * 1000,
+  });
+  return q.data ?? {};
+}
 import {
   buildDepartments,
   buildBrandList,
@@ -292,7 +302,8 @@ function MegaPanel({
   onMouseEnter: () => void;
   onMouseLeave: () => void;
 }) {
-  const featureImg = collectionImage({ handle: dept.feature.handle, title: dept.label });
+  const dynamicMap = useCollectionImageMap();
+  const featureImg = collectionImage({ handle: dept.feature.handle, title: dept.label, dynamicMap });
   return (
     <div
       id={id}
@@ -464,7 +475,8 @@ function BrandsPanel({
   onMouseLeave: () => void;
 }) {
   const grouped = groupBrandsForMenu(brands);
-  const featureImg = collectionImage({ handle: "best-selling-brands", title: "Brands" });
+  const dynamicMap = useCollectionImageMap();
+  const featureImg = collectionImage({ handle: "best-selling-brands", title: "Brands", dynamicMap });
 
   return (
     <div

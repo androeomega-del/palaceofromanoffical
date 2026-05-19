@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { fetchCollections, type ShopifyCollection } from "@/lib/shopify";
 import { collectionImage } from "@/lib/collection-image";
+import { getCollectionImageMap } from "@/lib/collection-image.functions";
 import { routeHead } from "@/lib/seo";
 
 type FilterKey = "all" | "women" | "men" | "clothing" | "shoes" | "luxury";
@@ -83,6 +84,13 @@ function CollectionsIndexPage() {
     queryKey: ["collections-all"],
     queryFn: () => fetchCollections(100),
   });
+
+  const imageMapQuery = useQuery({
+    queryKey: ["collection-image-map"],
+    queryFn: () => getCollectionImageMap(),
+    staleTime: 5 * 60 * 1000,
+  });
+  const dynamicMap = imageMapQuery.data ?? {};
 
   const all = q.data ?? [];
   const collections = useMemo(
@@ -204,7 +212,7 @@ function CollectionsIndexPage() {
                 >
                   <div className="w-full aspect-[3/4] bg-muted overflow-hidden mb-4 relative">
                     <img
-                      src={collectionImage({ title: c.title, handle: c.handle, description: c.description })}
+                      src={collectionImage({ title: c.title, handle: c.handle, description: c.description, dynamicMap })}
                       alt={c.image?.altText ?? c.title}
                       loading="lazy"
                       width={768}
