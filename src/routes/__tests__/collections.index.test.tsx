@@ -165,4 +165,23 @@ describe("/collections sort dropdown", () => {
 
     unmount();
   });
+
+  it("invalid ?sort= falls back to the default (popular) on first render", async () => {
+    const { router, unmount } = renderAt("/collections?filter=all&sort=invalid");
+
+    await vi.waitFor(() => {
+      expect(screen.getAllByRole("heading", { level: 2 })).toHaveLength(3);
+    });
+
+    // validateSearch normalizes unknown values to "popular"
+    expect(router.state.location.search).toMatchObject({ sort: "popular" });
+
+    const select = screen.getByRole("combobox") as HTMLSelectElement;
+    expect(select.value).toBe("popular");
+
+    const titles = screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent);
+    expect(titles).toEqual(["Zenith Capsule", "Atelier Edit", "Maison Noir"]);
+
+    unmount();
+  });
 });
