@@ -47,7 +47,7 @@ function ShippingReturnsPage() {
             <li><strong className="text-ink font-medium">Italy</strong> — Milan, Giuseppe, Beati, Genova, Florence, Modena, Como, Rome, Pomezia, Napoli, Piacenza, Pescara, Parma</li>
             <li><strong className="text-ink font-medium">Sweden</strong> — Jönköping, Bankeryd, Stockholm</li>
             <li><strong className="text-ink font-medium">Spain</strong> — Alicante</li>
-            <li><strong className="text-ink font-medium">Germany</strong> — Salzburg</li>
+            <li><strong className="text-ink font-medium">Austria</strong> — Salzburg</li>
             <li><strong className="text-ink font-medium">Northern Ireland</strong> — Belfast</li>
             <li><strong className="text-ink font-medium">United States</strong> — Florida, New York</li>
           </ul>
