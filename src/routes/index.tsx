@@ -717,13 +717,22 @@ function SummerBento({
           </div>
         </Link>
 
-        {/* Brand Spotlight — Navy */}
+        {/* Brand Spotlight — Calvin Klein */}
         <Link
           to={spotlightSlug ? "/brand/$vendor" : "/brands"}
           params={spotlightSlug ? { vendor: spotlightSlug } : undefined}
-          className="col-span-12 md:col-span-4 lg:col-span-3 row-span-2 bg-ink p-6 md:p-8 flex flex-col justify-between group overflow-hidden relative"
+          className="col-span-12 md:col-span-4 lg:col-span-3 row-span-2 bg-ink flex flex-col justify-between group overflow-hidden relative"
         >
-          <div className="relative z-10">
+          {spotlightImage && (
+            <img
+              src={spotlightImage.url}
+              alt={spotlightImage.altText ?? `${spotlightVendor ?? "Maison"} — In Stock`}
+              loading="lazy"
+              className="absolute inset-0 w-full h-full object-cover opacity-70 transition-transform duration-[1400ms] ease-out group-hover:scale-110"
+            />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/40 to-ink/20" />
+          <div className="relative z-10 p-6 md:p-8">
             <span className="text-[9px] uppercase tracking-[0.4em] text-[var(--sea)] mb-3 block">
               Brand Spotlight
             </span>
@@ -732,13 +741,8 @@ function SummerBento({
               <span className="block italic font-light mt-1">In Stock Now</span>
             </h4>
           </div>
-          <div
-            className="absolute bottom-[-30px] right-[-30px] w-44 h-44 rounded-full opacity-40 group-hover:scale-110 transition-transform duration-700 bg-cover bg-center"
-            style={{ backgroundImage: `url(${img(8)})` }}
-            aria-hidden
-          />
-          <span className="relative z-10 text-[10px] uppercase tracking-[0.25em] text-canvas border-b border-canvas/30 pb-1 w-fit">
-            Explore Collection
+          <span className="relative z-10 m-6 md:m-8 text-[10px] uppercase tracking-[0.25em] text-canvas border-b border-canvas/40 pb-1 w-fit group-hover:border-canvas">
+            Shop the Edit
           </span>
         </Link>
 
