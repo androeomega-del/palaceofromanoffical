@@ -22,10 +22,27 @@ export const Route = createFileRoute("/editorial/the-new-evening")({
   head: () => {
     const title = "The New Evening — Editorial | Palace of Roman";
     const desc = "The New Evening: eveningwear, restated. Soft tailoring, fluid surfaces and a quieter relationship with formality.";
-    const rh = routeHead({ path: "/editorial/the-new-evening", title, description: desc, image: img(34), type: "article" });
+    const path = "/editorial/the-new-evening";
+    const image = img(34);
+    const rh = routeHead({ path, title, description: desc, image, type: "article" });
     return {
       meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
       links: rh.links,
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Article",
+            headline: title,
+            description: desc,
+            image: absoluteUrl(image),
+            url: absoluteUrl(path),
+            publisher: { "@type": "Organization", name: SITE_NAME, url: absoluteUrl("/") },
+            mainEntityOfPage: absoluteUrl(path),
+          }),
+        },
+      ],
     };
   },
   component: NewEveningPage,
