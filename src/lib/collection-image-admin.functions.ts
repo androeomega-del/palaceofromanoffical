@@ -89,6 +89,8 @@ export const syncCollectionImagesFromShopify = createServerFn({ method: "POST" }
       image_url: string;
       source: string;
       prompt: null;
+      width: number | null;
+      height: number | null;
     }> = [];
 
     for (const c of collections) {
@@ -109,6 +111,8 @@ export const syncCollectionImagesFromShopify = createServerFn({ method: "POST" }
         image_url: url,
         source: "shopify",
         prompt: null,
+        width: c.image?.width ?? null,
+        height: c.image?.height ?? null,
       });
     }
 
