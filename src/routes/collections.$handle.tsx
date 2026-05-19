@@ -285,10 +285,13 @@ function CollectionPage() {
 
             {/* Product type chips — derived from titles in the current result set */}
             {availableTypes.length > 1 && (
-              <div className="mb-6 flex flex-wrap gap-2">
+              <div className="mb-6 pt-5 border-t border-ink/5 flex flex-wrap items-center gap-2">
+                <span className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mr-2">
+                  Category
+                </span>
                 <button
                   onClick={() => setTypeFilter(null)}
-                  className={`text-[10px] uppercase tracking-[0.2em] px-3 py-1.5 border transition-colors ${
+                  className={`text-[10px] uppercase tracking-[0.2em] px-3 py-1.5 border rounded-full transition-colors ${
                     typeFilter === null
                       ? "bg-ink text-canvas border-ink"
                       : "border-ink/15 text-muted-foreground hover:border-ink hover:text-ink"
@@ -300,7 +303,7 @@ function CollectionPage() {
                   <button
                     key={label}
                     onClick={() => setTypeFilter(typeFilter === label ? null : label)}
-                    className={`text-[10px] uppercase tracking-[0.2em] px-3 py-1.5 border transition-colors ${
+                    className={`text-[10px] uppercase tracking-[0.2em] px-3 py-1.5 border rounded-full transition-colors ${
                       typeFilter === label
                         ? "bg-ink text-canvas border-ink"
                         : "border-ink/15 text-muted-foreground hover:border-ink hover:text-ink"
@@ -312,6 +315,7 @@ function CollectionPage() {
                 ))}
               </div>
             )}
+
 
 
             <ActiveFilterPills
