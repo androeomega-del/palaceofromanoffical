@@ -48,12 +48,13 @@ export function SiteFooter() {
           <p>&copy; {new Date().getFullYear()} Palace of Roman. All rights reserved.</p>
           <div className="flex gap-8 items-center">
             <a
-              href="https://app.xyla.ai/link_in_bio"
+              href="https://www.instagram.com/palaceofroman/"
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="Palace of Roman on Instagram"
               className="hover:text-ink transition-colors"
             >
-              Follow
+              Instagram
             </a>
             <Link to="/privacy" className="hover:text-ink transition-colors">Privacy</Link>
             <Link to="/terms" className="hover:text-ink transition-colors">Terms</Link>
