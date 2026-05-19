@@ -53,7 +53,7 @@ function AuthenticationPage() {
     >
       <div className="not-prose grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-24">
         {[
-          { Icon: Building2, title: "Authorised partner", body: "Sourced through an authorised European distribution partner holding stock from more than ninety maisons." },
+          { Icon: Building2, title: "Official partner", body: "Certified BrandsGateway partner, authorised to resell from a catalogue of more than ninety luxury houses." },
           { Icon: PackageCheck, title: "Sealed shipment", body: "Direct from the brand-authorised warehouse in original packaging — tags, dust bag and box intact." },
           { Icon: FileBadge, title: "Original documentation", body: "Each order arrives with the documentation the maison originally supplied with the piece." },
           { Icon: ShieldCheck, title: "Authenticity guarantee", body: "Ninety days to return for a full refund if a third-party authenticator ever challenges the piece." },
