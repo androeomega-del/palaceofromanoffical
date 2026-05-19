@@ -179,7 +179,7 @@ function CollectionsIndexPage() {
             <div className="py-24 text-center">
               <p className="text-sm text-muted-foreground mb-6">No collections match this filter.</p>
               <button
-                onClick={() => navigate({ search: { filter: "all" }, replace: true })}
+                onClick={() => navigate({ search: { filter: "all", sort }, replace: true })}
                 className="text-[11px] uppercase tracking-[0.25em] border-b border-ink pb-1 hover:text-bronze hover:border-bronze"
               >
                 View All Collections
