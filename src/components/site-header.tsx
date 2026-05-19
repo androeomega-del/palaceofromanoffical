@@ -3,6 +3,7 @@ import { Search, User, ShoppingBag } from "lucide-react";
 import { useState } from "react";
 import { useCartStore } from "@/stores/cart-store";
 import { CartDrawer } from "@/components/cart-drawer";
+import { ReducedMotionToggle } from "@/components/reduced-motion-toggle";
 
 type NavItem = {
   label: string;
