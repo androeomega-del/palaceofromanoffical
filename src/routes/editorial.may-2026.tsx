@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { routeHead } from "@/lib/seo";
 
 // Import all 30 webp files eagerly so Vite emits hashed asset URLs.
 const imageModules = import.meta.glob("@/assets/editorial/may-2026/*.webp", {
@@ -57,22 +58,15 @@ const SLIDES: Slide[] = [
 ];
 
 export const Route = createFileRoute("/editorial/may-2026")({
-  head: () => ({
-    meta: [
-      { title: "May 2026 Editorial — Palace of Roman" },
-      {
-        name: "description",
-        content:
-          "A quiet study of the May 2026 edit — tailoring, footwear and house codes, photographed in studio light. Shop the look.",
-      },
-      { property: "og:title", content: "May 2026 Editorial — Palace of Roman" },
-      {
-        property: "og:description",
-        content: "A quiet study of the May 2026 edit. Shop the look.",
-      },
-      { property: "og:image", content: img(1) },
-    ],
-  }),
+  head: () => {
+    const title = "May 2026 Editorial — Palace of Roman";
+    const desc = "A quiet study of the May 2026 edit — tailoring, footwear and house codes, photographed in studio light. Shop the look.";
+    const rh = routeHead({ path: "/editorial/may-2026", title, description: desc, image: img(1), type: "article" });
+    return {
+      meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
+      links: rh.links,
+    };
+  },
   component: EditorialMay2026,
 });
 

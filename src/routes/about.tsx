@@ -2,17 +2,19 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { EditorialPageShell } from "@/components/editorial-page-shell";
 import { img } from "@/lib/editorial-library";
 import founderPortrait from "@/assets/founder-portrait.jpg";
+import { routeHead } from "@/lib/seo";
+
+const ABOUT_TITLE = "House Notes — Palace of Roman";
+const ABOUT_DESC = "The story of Palace of Roman — a curated multi-brand boutique for luxury fashion, considered and authenticated.";
 
 export const Route = createFileRoute("/about")({
-  head: () => ({
-    meta: [
-      { title: "House Notes — Palace of Roman" },
-      { name: "description", content: "The story of Palace of Roman — a curated multi-brand boutique for luxury fashion, considered and authenticated." },
-      { property: "og:title", content: "House Notes — Palace of Roman" },
-      { property: "og:description", content: "A curated multi-brand boutique. Considered, authenticated, ours." },
-      { property: "og:image", content: img(7) },
-    ],
-  }),
+  head: () => {
+    const rh = routeHead({ path: "/about", title: ABOUT_TITLE, description: ABOUT_DESC, image: img(7) });
+    return {
+      meta: [{ title: ABOUT_TITLE }, { name: "description", content: ABOUT_DESC }, ...rh.meta],
+      links: rh.links,
+    };
+  },
   component: AboutPage,
 });
 

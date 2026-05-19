@@ -2,15 +2,19 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { fetchProductsPage } from "@/lib/shopify";
+import { routeHead } from "@/lib/seo";
+
+const BRANDS_TITLE = "Brands — Palace of Roman";
+const BRANDS_DESC = "The houses we carry. Browse luxury designers stocked at Palace of Roman.";
 
 export const Route = createFileRoute("/brands")({
-  head: () => ({
-    meta: [
-      { title: "Brands — Palace of Roman" },
-      { name: "description", content: "The houses we carry. Browse luxury designers stocked at Palace of Roman." },
-      { property: "og:title", content: "Brands — Palace of Roman" },
-    ],
-  }),
+  head: () => {
+    const rh = routeHead({ path: "/brands", title: BRANDS_TITLE, description: BRANDS_DESC });
+    return {
+      meta: [{ title: BRANDS_TITLE }, { name: "description", content: BRANDS_DESC }, ...rh.meta],
+      links: rh.links,
+    };
+  },
   component: BrandsPage,
 });
 

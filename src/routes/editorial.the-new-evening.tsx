@@ -3,6 +3,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { EditorialStory, type StorySlide } from "@/components/editorial-story";
 import { img } from "@/lib/editorial-library";
+import { routeHead } from "@/lib/seo";
 
 const SLIDES: StorySlide[] = [
   { n: 34, caption: "Eveningwear, restated.", shopHandle: "womens-clothing", shopLabel: "Shop Women's" },
@@ -18,25 +19,15 @@ const SLIDES: StorySlide[] = [
 ];
 
 export const Route = createFileRoute("/editorial/the-new-evening")({
-  head: () => ({
-    meta: [
-      { title: "The New Evening — Editorial | Palace of Roman" },
-      {
-        name: "description",
-        content:
-          "The New Evening: eveningwear, restated. Soft tailoring, fluid surfaces and a quieter relationship with formality.",
-      },
-      { property: "og:title", content: "The New Evening — Editorial" },
-      {
-        property: "og:description",
-        content: "Eveningwear, restated. Soft tailoring and a quieter relationship with formality.",
-      },
-      { property: "og:image", content: img(34) },
-      { property: "og:url", content: "/editorial/the-new-evening" },
-      { property: "og:type", content: "article" },
-    ],
-    links: [{ rel: "canonical", href: "/editorial/the-new-evening" }],
-  }),
+  head: () => {
+    const title = "The New Evening — Editorial | Palace of Roman";
+    const desc = "The New Evening: eveningwear, restated. Soft tailoring, fluid surfaces and a quieter relationship with formality.";
+    const rh = routeHead({ path: "/editorial/the-new-evening", title, description: desc, image: img(34), type: "article" });
+    return {
+      meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
+      links: rh.links,
+    };
+  },
   component: NewEveningPage,
 });
 

@@ -11,16 +11,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { submitContactMessage } from "@/lib/contact.functions";
 import { img } from "@/lib/editorial-library";
+import { routeHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/contact")({
-  head: () => ({
-    meta: [
-      { title: "Concierge — Palace of Roman" },
-      { name: "description", content: "Write to the Palace of Roman concierge for sourcing requests, sizing, styling or after-care. Same-day reply by email." },
-      { property: "og:title", content: "Concierge — Palace of Roman" },
-      { property: "og:image", content: img(8) },
-    ],
-  }),
+  head: () => {
+    const title = "Concierge — Palace of Roman";
+    const desc = "Write to the Palace of Roman concierge for sourcing requests, sizing, styling or after-care. Same-day reply by email.";
+    const rh = routeHead({ path: "/contact", title, description: desc, image: img(8) });
+    return {
+      meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
+      links: rh.links,
+    };
+  },
   component: ContactPage,
 });
 

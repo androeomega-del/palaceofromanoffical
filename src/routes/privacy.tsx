@@ -1,16 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { EditorialPageShell, ProseColumn, SectionTitle } from "@/components/editorial-page-shell";
 import { img } from "@/lib/editorial-library";
+import { routeHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/privacy")({
-  head: () => ({
-    meta: [
-      { title: "Privacy Notice — Palace of Roman" },
-      { name: "description", content: "How Palace of Roman collects, uses and protects your personal information." },
-      { property: "og:title", content: "Privacy Notice — Palace of Roman" },
-      { property: "og:description", content: "Our promise on data, cookies and your rights as a client." },
-    ],
-  }),
+  head: () => {
+    const title = "Privacy Notice — Palace of Roman";
+    const desc = "How Palace of Roman collects, uses and protects your personal information.";
+    const rh = routeHead({ path: "/privacy", title, description: desc });
+    return {
+      meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
+      links: rh.links,
+    };
+  },
   component: PrivacyPage,
 });
 

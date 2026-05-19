@@ -11,19 +11,22 @@ import {
   type Selection,
   type SortValue,
 } from "@/components/catalog-filters";
+import { routeHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/shop")({
   validateSearch: (search: Record<string, unknown>) => ({
     q: typeof search.q === "string" ? search.q : undefined,
     title: typeof search.title === "string" ? search.title : undefined,
   }),
-  head: () => ({
-    meta: [
-      { title: "Shop All — Palace of Roman" },
-      { name: "description", content: "Shop the entire Palace of Roman catalog of luxury designer fashion — filter by brand, category, color, size and price." },
-      { property: "og:title", content: "Shop All — Palace of Roman" },
-    ],
-  }),
+  head: () => {
+    const title = "Shop All — Palace of Roman";
+    const desc = "Shop the entire Palace of Roman catalog of luxury designer fashion — filter by brand, category, color, size and price.";
+    const rh = routeHead({ path: "/shop", title, description: desc });
+    return {
+      meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
+      links: rh.links,
+    };
+  },
   component: ShopPage,
 });
 

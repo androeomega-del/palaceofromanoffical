@@ -45,3 +45,38 @@ export function pageTitle(main: string, max = 60): string {
 export function metaDescription(input: string, max = 158): string {
   return truncate(stripHtml(input), max);
 }
+
+/**
+ * Build a standard set of og:* + twitter:* meta tags plus a canonical link
+ * for a route. `title` and `description` should already be the final strings
+ * (use pageTitle()/metaDescription() upstream if needed). `image` may be
+ * site-relative or absolute; it is normalised to an absolute URL.
+ */
+export function routeHead(opts: {
+  path: string;
+  title: string;
+  description: string;
+  image?: string | null;
+  type?: "website" | "article" | "product";
+}) {
+  const url = absoluteUrl(opts.path);
+  const type = opts.type ?? "website";
+  const meta: Array<Record<string, string>> = [
+    { property: "og:title", content: opts.title },
+    { property: "og:description", content: opts.description },
+    { property: "og:url", content: url },
+    { property: "og:type", content: type },
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: opts.title },
+    { name: "twitter:description", content: opts.description },
+  ];
+  if (opts.image) {
+    const imgUrl = absoluteUrl(opts.image);
+    meta.push({ property: "og:image", content: imgUrl });
+    meta.push({ name: "twitter:image", content: imgUrl });
+  }
+  return {
+    meta,
+    links: [{ rel: "canonical", href: url }],
+  };
+}

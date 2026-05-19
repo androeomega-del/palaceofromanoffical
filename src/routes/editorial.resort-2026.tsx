@@ -3,6 +3,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { EditorialStory, type StorySlide } from "@/components/editorial-story";
 import { img } from "@/lib/editorial-library";
+import { routeHead } from "@/lib/seo";
 
 const SLIDES: StorySlide[] = [
   { n: 12, caption: "Light as architecture.", shopHandle: "womens-clothing", shopLabel: "Shop Women's" },
@@ -18,25 +19,15 @@ const SLIDES: StorySlide[] = [
 ];
 
 export const Route = createFileRoute("/editorial/resort-2026")({
-  head: () => ({
-    meta: [
-      { title: "Resort 2026 — Light as Architecture | Palace of Roman" },
-      {
-        name: "description",
-        content:
-          "Resort 2026: a quiet study of cut and shade across the season's most considered pieces, photographed in late Mediterranean light.",
-      },
-      { property: "og:title", content: "Resort 2026 — Light as Architecture" },
-      {
-        property: "og:description",
-        content: "A quiet study of cut and shade across resort 2026, photographed in late Mediterranean light.",
-      },
-      { property: "og:image", content: img(12) },
-      { property: "og:url", content: "/editorial/resort-2026" },
-      { property: "og:type", content: "article" },
-    ],
-    links: [{ rel: "canonical", href: "/editorial/resort-2026" }],
-  }),
+  head: () => {
+    const title = "Resort 2026 — Light as Architecture | Palace of Roman";
+    const desc = "Resort 2026: a quiet study of cut and shade across the season's most considered pieces, photographed in late Mediterranean light.";
+    const rh = routeHead({ path: "/editorial/resort-2026", title, description: desc, image: img(12), type: "article" });
+    return {
+      meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
+      links: rh.links,
+    };
+  },
   component: ResortPage,
 });
 
