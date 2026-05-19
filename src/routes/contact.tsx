@@ -53,7 +53,7 @@ function ContactPage() {
         setError(res.error ?? "Something went wrong.");
       }
     } catch {
-      setError("We could not reach the atelier. Please try again in a moment.");
+      setError("We could not reach the concierge. Please try again in a moment.");
     }
   };
 
