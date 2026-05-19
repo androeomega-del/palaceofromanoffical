@@ -232,8 +232,24 @@ function CollectionPage() {
     />
   );
 
+  const heroSrc = collectionImage(handle, data?.collection?.image?.url ?? null);
+  const heroAlt = collectionImageAlt(handle, title);
+  const heroFocal = collectionImageFocal(handle);
+
   return (
     <div>
+      <section className="relative h-[42vh] min-h-[280px] max-h-[520px] w-full overflow-hidden bg-ink/5">
+        <img
+          src={heroSrc}
+          alt={heroAlt}
+          loading="eager"
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover"
+          style={{ objectPosition: heroFocal }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-canvas via-canvas/40 to-transparent" />
+      </section>
+
       <section className="px-6 pt-12 pb-8 border-b border-ink/5">
         <div className="max-w-screen-2xl mx-auto">
           <Link to="/" className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground hover:text-ink">
