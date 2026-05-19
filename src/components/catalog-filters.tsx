@@ -308,6 +308,39 @@ export function CatalogSort({
   );
 }
 
+// ---- Sort preset pill row (quick selectors above the grid) ----
+export function SortPresets({
+  value,
+  onChange,
+  extra,
+}: {
+  value: SortValue;
+  onChange: (v: SortValue) => void;
+  extra?: React.ReactNode;
+}) {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      {SORT_PRESETS.map((p) => {
+        const active = p.value === value;
+        return (
+          <button
+            key={p.value}
+            onClick={() => onChange(p.value)}
+            className={cn(
+              "text-[10px] uppercase tracking-[0.2em] px-3 py-2 border transition-colors",
+              active
+                ? "bg-ink text-canvas border-ink"
+                : "border-ink/15 hover:border-ink hover:text-bronze",
+            )}
+          >
+            {p.label}
+          </button>
+        );
+      })}
+      {extra}
+    </div>
+  );
+
 // ---- Active filter pills row ----
 export function ActiveFilterPills({
   selections,
