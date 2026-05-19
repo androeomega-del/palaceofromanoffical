@@ -124,17 +124,14 @@ function SwimPage() {
     <div>
       {/* ============ HERO ============ */}
       <section className="relative h-[82vh] min-h-[600px] overflow-hidden bg-ink">
-        <video
+        <CampaignVideo
           src={swimCampaignVideo.url}
-          autoPlay
-          muted
-          loop
-          playsInline
           poster={swimHero}
           className="absolute inset-0 w-full h-full object-cover"
+          label="Play the Resort 2026 swim film"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/15 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-ink/40 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/15 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-ink/40 via-transparent to-transparent pointer-events-none" />
         <div className="relative h-full flex items-end">
           <div className="max-w-screen-2xl mx-auto px-6 md:px-10 pb-16 md:pb-24 w-full">
             <span className="block text-[10px] md:text-xs uppercase tracking-[0.4em] text-canvas/90 mb-4">
