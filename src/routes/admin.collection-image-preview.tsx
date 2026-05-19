@@ -157,6 +157,19 @@ function AdminCollectionImagePreview() {
     onError: (e) => toast.error(`Revert failed: ${(e as Error).message}`),
   });
 
+  const syncMutation = useMutation({
+    mutationFn: () => syncCollectionImagesFromShopify({}),
+    onSuccess: (r) => {
+      toast.success(
+        `Synced ${r.synced} of ${r.total} collections from Shopify` +
+          (r.skippedManual ? ` · kept ${r.skippedManual} manual override${r.skippedManual === 1 ? "" : "s"}` : "") +
+          (r.skippedNoImage ? ` · ${r.skippedNoImage} had no image` : ""),
+      );
+      invalidate();
+    },
+    onError: (e) => toast.error(`Sync failed: ${(e as Error).message}`),
+  });
+
   const loading = collectionsQ.isLoading || dynamicMapQ.isLoading;
   const error = collectionsQ.error ?? dynamicMapQ.error;
 
