@@ -25,10 +25,11 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
   const navigate = useNavigate();
   const addItem = useCartStore((s) => s.addItem);
   const isLoading = useCartStore((s) => s.isLoading);
+  const [buyingNow, setBuyingNow] = useState(false);
 
   const altBase = p.vendor ? `${p.title} — ${p.vendor}` : p.title;
 
-  const onCta = async (e: React.MouseEvent) => {
+  const onAdd = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (soldOut) return;
@@ -47,7 +48,38 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
     toast.success(`${p.title} — added to bag`);
   };
 
-  const ctaLabel = soldOut ? "Sold Out" : hasChoices ? "View — Select Options" : "Add to Bag";
+  const onBuyNow = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (soldOut) return;
+    // Multi-variant pieces: route to PDP so the customer can choose size/colour
+    if (hasChoices || !firstAvailable) {
+      navigate({ to: "/product/$handle", params: { handle: p.handle } });
+      return;
+    }
+    setBuyingNow(true);
+    try {
+      await addItem({
+        product,
+        variantId: firstAvailable.id,
+        variantTitle: firstAvailable.title,
+        price: firstAvailable.price,
+        quantity: 1,
+        selectedOptions: firstAvailable.selectedOptions ?? [],
+      });
+      const checkoutUrl = useCartStore.getState().checkoutUrl;
+      if (checkoutUrl) {
+        window.open(checkoutUrl, "_blank", "noopener,noreferrer");
+      } else {
+        toast.error("Could not start checkout. Please try again.");
+      }
+    } finally {
+      setBuyingNow(false);
+    }
+  };
+
+  const addLabel = soldOut ? "Sold Out" : hasChoices ? "Select Options" : "Add to Bag";
+
 
   return (
     <Link to="/product/$handle" params={{ handle: p.handle }} className="group block">
