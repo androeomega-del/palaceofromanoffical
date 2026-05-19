@@ -32,7 +32,7 @@ function BrandsPage() {
 
   const grouped = useMemo(() => {
     const map = new Map<string, number>();
-    for (const e of sampleQ.data ?? []) {
+    for (const e of allEdges) {
       const v = e.node.vendor?.trim();
       if (!v) continue;
       map.set(v, (map.get(v) ?? 0) + 1);
@@ -46,7 +46,7 @@ function BrandsPage() {
       byLetter.get(key)!.push({ vendor, count });
     }
     return Array.from(byLetter.entries()).sort((a, b) => a[0].localeCompare(b[0]));
-  }, [sampleQ.data]);
+  }, [allEdges]);
 
   return (
     <div className="px-6 py-16">
