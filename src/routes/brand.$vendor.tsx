@@ -3,17 +3,32 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { fetchProductsPage } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
-import { routeHead } from "@/lib/seo";
+import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
 
 export const Route = createFileRoute("/brand/$vendor")({
   head: ({ params }) => {
     const name = unslug(params.vendor);
+    const path = `/brand/${params.vendor}`;
     const title = `${name} — Palace of Roman`;
-    const desc = `Shop ${name} at Palace of Roman — curated luxury pieces, 100% authentic, shipped worldwide.`;
-    const rh = routeHead({ path: `/brand/${params.vendor}`, title, description: desc });
+    const desc = `Shop the curated ${name} edit at Palace of Roman. 100% authentic luxury pieces, sourced from the brands or their authorised distributors, with worldwide tracked shipping.`;
+    const rh = routeHead({ path, title, description: desc });
     return {
       meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
       links: rh.links,
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            name: `${name} at ${SITE_NAME}`,
+            description: desc,
+            url: absoluteUrl(path),
+            isPartOf: { "@type": "WebSite", name: SITE_NAME, url: absoluteUrl("/") },
+            about: { "@type": "Brand", name },
+          }),
+        },
+      ],
     };
   },
   component: BrandPage,
