@@ -17,8 +17,10 @@ export function SiteFooter() {
             <div className="flex flex-col gap-4">
               <h5 className="text-[10px] uppercase tracking-[0.2em] font-semibold">Boutique</h5>
               <Link to="/collections/$handle" params={{ handle: "new-arrivals" }} className="text-sm text-muted-foreground hover:text-ink transition-colors">New Arrivals</Link>
-              <Link to="/collections/$handle" params={{ handle: "womens-accessories" }} className="text-sm text-muted-foreground hover:text-ink transition-colors">Women</Link>
-              <Link to="/collections/$handle" params={{ handle: "mens-luxury-clothing" }} className="text-sm text-muted-foreground hover:text-ink transition-colors">Men</Link>
+              <Link to="/shop" search={{ q: "dress OR gown OR blouse OR skirt OR coat OR top OR jacket OR knit OR cardigan OR pants OR suit", title: "Women's Clothing" }} className="text-sm text-muted-foreground hover:text-ink transition-colors">Women's Clothing</Link>
+              <Link to="/shop" search={{ q: "heels OR pumps OR sandals OR boots OR stilettos OR mules OR loafers OR sneakers", title: "Women's Shoes" }} className="text-sm text-muted-foreground hover:text-ink transition-colors">Women's Shoes</Link>
+              <Link to="/collections/$handle" params={{ handle: "mens-luxury-clothing" }} className="text-sm text-muted-foreground hover:text-ink transition-colors">Men's Clothing</Link>
+              <Link to="/collections/$handle" params={{ handle: "mens-designer-shoes" }} className="text-sm text-muted-foreground hover:text-ink transition-colors">Men's Shoes</Link>
               <Link to="/brands" className="text-sm text-muted-foreground hover:text-ink transition-colors">Brands Index</Link>
             </div>
             <div className="flex flex-col gap-4">
