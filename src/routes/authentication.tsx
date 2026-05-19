@@ -49,7 +49,6 @@ function AuthenticationPage() {
   return (
     <EditorialPageShell
       eyebrow="Sourcing & Authenticity"
-      title="Where every piece comes from."
       intro="Palace of Roman is an official BrandsGateway partner, authorised to resell pieces from Gucci, Versace, Balenciaga, Dior, Dolce & Gabbana, Saint Laurent and the wider catalogue. Every piece is 100% authentic, sourced from the brands or their authorised distributors, and ships sealed from a brand-authorised warehouse."
       heroImage={img(38)}
       heroAlt="Original brand packaging on a studio surface"
