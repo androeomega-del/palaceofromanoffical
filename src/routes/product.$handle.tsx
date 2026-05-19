@@ -1,6 +1,7 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, useLocation } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState, useMemo } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
+
 import {
   fetchProductByHandle,
   fetchProducts,
@@ -197,6 +198,23 @@ function ProductView({
   const currentPrice = selectedVariant?.price ?? product.priceRange.minVariantPrice;
   const off = discountPct(currentPrice, compareAt);
 
+  // Buy-Now hand-off from product cards: scroll to the selector + flash it.
+  const buyRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
+  const [flashBuy, setFlashBuy] = useState(false);
+  useEffect(() => {
+    if (location.hash !== "buy" && location.hash !== "#buy") return;
+    const el = buyRef.current;
+    if (!el) return;
+    const t = window.setTimeout(() => {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      setFlashBuy(true);
+      window.setTimeout(() => setFlashBuy(false), 1600);
+    }, 120);
+    return () => window.clearTimeout(t);
+  }, [location.hash]);
+
+
   const handleAdd = async () => {
     if (!selectedVariant) return;
     if (!selectedVariant.availableForSale) {
@@ -337,7 +355,16 @@ function ProductView({
             </header>
 
             {/* Variant selectors + CTA */}
-            <div className="space-y-10">
+            <div
+              id="buy"
+              ref={buyRef}
+              className={`space-y-10 scroll-mt-28 rounded-md transition-shadow duration-700 ${
+                flashBuy
+                  ? "ring-2 ring-[var(--studio-bronze)] ring-offset-8 ring-offset-[var(--studio-bg)] shadow-[0_0_0_8px_color-mix(in_oklab,var(--studio-bronze)_15%,transparent)]"
+                  : "ring-0"
+              }`}
+            >
+
               {product.options
                 .filter((o) => o.values.length > 1 || o.name.toLowerCase() !== "title")
                 .map((option) => (
