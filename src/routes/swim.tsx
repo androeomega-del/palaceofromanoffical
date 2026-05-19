@@ -165,7 +165,7 @@ function SwimPage() {
       </section>
 
       {/* ============ LOOKBOOK ============ */}
-      <section className="px-6 md:px-10 py-20 md:py-28 bg-canvas">
+      <section id="lookbook" className="px-6 md:px-10 py-20 md:py-28 bg-canvas scroll-mt-20">
         <div className="max-w-screen-2xl mx-auto">
           <div className="flex items-end justify-between mb-10 md:mb-14">
             <div>
@@ -226,7 +226,7 @@ function SwimPage() {
       </section>
 
       {/* ============ CATEGORY CHIPS ============ */}
-      <section className="px-6 md:px-10 pt-16 pb-6 border-t border-ink/5 bg-canvas-raised/50">
+      <section id="shop" className="px-6 md:px-10 pt-16 pb-6 border-t border-ink/5 bg-canvas-raised/50 scroll-mt-20">
         <div className="max-w-screen-2xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
             <div>
