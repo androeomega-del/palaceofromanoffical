@@ -6,6 +6,11 @@ import { fetchCollectionFiltered, fetchCollection, type StorefrontFilterValue } 
 import { ProductCard } from "@/components/product-card";
 import { pageTitle, metaDescription, absoluteUrl, SITE_URL } from "@/lib/seo";
 import {
+  collectionImage,
+  collectionImageAlt,
+  collectionImageFocal,
+} from "@/lib/collection-image";
+import {
   CatalogFilters,
   SortPresets,
   ActiveFilterPills,
