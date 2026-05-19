@@ -94,7 +94,7 @@ function ShopPage() {
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <h1 className="text-4xl md:text-6xl font-serif">The Boutique</h1>
             <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-              {q.isLoading ? "Loading…" : `${edges.length} Pieces`}
+              {q.isLoading ? "Loading…" : `${edges.length}${q.hasNextPage ? "+" : ""} Pieces`}
             </p>
           </div>
         </div>
