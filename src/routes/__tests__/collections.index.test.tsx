@@ -145,4 +145,24 @@ describe("/collections sort dropdown", () => {
 
     unmount();
   });
+
+  it.each([
+    { sort: "popular", expected: ["Zenith Capsule", "Atelier Edit", "Maison Noir"] },
+    { sort: "alpha",   expected: ["Atelier Edit", "Maison Noir", "Zenith Capsule"] },
+    { sort: "newest",  expected: ["Atelier Edit", "Maison Noir", "Zenith Capsule"] },
+  ])("direct load of ?sort=$sort matches dropdown and grid on first render", async ({ sort, expected }) => {
+    const { unmount } = renderAt(`/collections?filter=all&sort=${sort}`);
+
+    await vi.waitFor(() => {
+      expect(screen.getAllByRole("heading", { level: 2 })).toHaveLength(3);
+    });
+
+    const select = screen.getByRole("combobox") as HTMLSelectElement;
+    expect(select.value).toBe(sort);
+
+    const titles = screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent);
+    expect(titles).toEqual(expected);
+
+    unmount();
+  });
 });
