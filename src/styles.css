@@ -43,12 +43,13 @@
 :root {
   --radius: 0rem;
 
-  /* Brand — Studio (cream / ink / warm bronze) */
-  --canvas: oklch(0.975 0.004 80);        /* #f9f8f6 cream */
-  --canvas-raised: oklch(0.955 0.005 80); /* #f1efe9 raised cream */
-  --ink: oklch(0.18 0.003 50);            /* #1a1a1a ink */
-  --bronze: oklch(0.62 0.055 72);         /* #a68a5d warm bronze */
-  --bronze-soft: oklch(0.78 0.045 78);    /* #c9b58c pale bronze */
+  /* Brand — Mediterranean Blue (sand / honey / sea / deep navy) */
+  --canvas: oklch(0.945 0.022 85);        /* #f4ede0 sand */
+  --canvas-raised: oklch(0.905 0.030 82); /* warmer raised sand */
+  --ink: oklch(0.31 0.078 250);           /* #0f3057 deep navy */
+  --bronze: oklch(0.74 0.082 70);         /* #d4a574 honey */
+  --bronze-soft: oklch(0.84 0.055 78);    /* pale honey */
+  --sea: oklch(0.59 0.105 235);           /* #3a7ca5 sea blue */
 
   /* Semantic mapped to brand */
   --background: var(--canvas);
@@ -61,15 +62,15 @@
   --primary-foreground: var(--canvas);
   --secondary: var(--canvas-raised);
   --secondary-foreground: var(--ink);
-  --muted: oklch(0.92 0.004 80);
-  --muted-foreground: oklch(0.45 0.005 60);
-  --accent: var(--bronze);
+  --muted: oklch(0.90 0.025 82);
+  --muted-foreground: oklch(0.48 0.045 240);
+  --accent: var(--sea);
   --accent-foreground: var(--canvas);
   --destructive: oklch(0.55 0.2 27);
   --destructive-foreground: var(--canvas);
-  --border: oklch(0.18 0.003 50 / 10%);
-  --input: oklch(0.18 0.003 50 / 14%);
-  --ring: var(--ink);
+  --border: oklch(0.31 0.078 250 / 12%);
+  --input: oklch(0.31 0.078 250 / 16%);
+  --ring: var(--sea);
 }
 
 @layer base {
