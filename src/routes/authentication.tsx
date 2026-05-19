@@ -2,15 +2,18 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { EditorialPageShell, ProseColumn, SectionTitle } from "@/components/editorial-page-shell";
 import { Building2, PackageCheck, FileBadge, ShieldCheck } from "lucide-react";
 import { img } from "@/lib/editorial-library";
+import { routeHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/authentication")({
-  head: () => ({
-    meta: [
-      { title: "Sourcing & Authenticity — Palace of Roman" },
-      { name: "description", content: "How Palace of Roman sources its edit: an authorised European distribution partner, sealed shipments from brand-authorised warehouses, and an unconditional authenticity guarantee." },
-      { property: "og:title", content: "Sourcing & Authenticity — Palace of Roman" },
-    ],
-  }),
+  head: () => {
+    const title = "Sourcing & Authenticity — Palace of Roman";
+    const desc = "How Palace of Roman sources its edit: an authorised European distribution partner, sealed shipments from brand-authorised warehouses, and an unconditional authenticity guarantee.";
+    const rh = routeHead({ path: "/authentication", title, description: desc, image: img(38) });
+    return {
+      meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
+      links: rh.links,
+    };
+  },
   component: AuthenticationPage,
 });
 
