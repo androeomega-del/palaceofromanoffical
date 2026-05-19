@@ -39,10 +39,17 @@ function ShippingReturnsPage() {
         <section>
           <SectionTitle kicker="Delivery">Where we ship from, and how long it takes</SectionTitle>
           <p>
-            Palace of Roman operates through an authorised European distribution network with warehouses in Italy
-            (Milan, Florence, Modena, Rome, Como and others), Sweden, Spain, Germany, Northern Ireland and the United
-            States (Florida and New York). Your order is routed automatically from the warehouse holding the piece.
+            Palace of Roman operates through an authorised distribution network with warehouses across Europe and the
+            United States. Your order is routed automatically from the warehouse holding the piece.
           </p>
+          <ul className="text-sm text-muted-foreground !list-none !pl-0 space-y-1">
+            <li><strong className="text-ink font-medium">Italy</strong> — Milan, Giuseppe, Beati, Genova, Florence, Modena, Como, Rome, Pomezia, Napoli, Piacenza, Pescara, Parma</li>
+            <li><strong className="text-ink font-medium">Sweden</strong> — Jönköping, Bankeryd, Stockholm</li>
+            <li><strong className="text-ink font-medium">Spain</strong> — Alicante</li>
+            <li><strong className="text-ink font-medium">Germany</strong> — Salzburg</li>
+            <li><strong className="text-ink font-medium">Northern Ireland</strong> — Belfast</li>
+            <li><strong className="text-ink font-medium">United States</strong> — Florida, New York</li>
+          </ul>
           <p className="text-sm text-muted-foreground">
             Warehouses dispatch within 24–48 hours of order confirmation. Delivery is by UPS, FedEx or DHL with an
             active tracking number, sent to you the moment the parcel leaves the warehouse. Couriers and warehouses do
