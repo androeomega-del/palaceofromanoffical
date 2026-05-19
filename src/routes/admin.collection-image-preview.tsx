@@ -207,6 +207,28 @@ function AdminCollectionImagePreview() {
           <Summary label="Needs attention" value={counts.needs} tone="warn" />
         </div>
 
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-center gap-3 border border-ink/15 bg-canvas px-4 py-3">
+          <div className="flex-1">
+            <p className="text-xs uppercase tracking-[0.2em] text-ink/60 mb-1">
+              Initial Shopify sync
+            </p>
+            <p className="text-sm text-ink/70">
+              Pull every Shopify collection's hero image into the live map.
+              Manual overrides are preserved.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => syncMutation.mutate()}
+            disabled={syncMutation.isPending}
+            className="text-xs uppercase tracking-[0.2em] px-5 py-2.5 bg-ink text-canvas border border-ink hover:bg-ink/90 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {syncMutation.isPending ? "Syncing…" : "Sync from Shopify"}
+          </button>
+        </div>
+
+
+
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-8">
           <div className="flex gap-2">
             {(
