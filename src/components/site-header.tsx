@@ -5,6 +5,7 @@ import { useCartStore } from "@/stores/cart-store";
 import { CartDrawer } from "@/components/cart-drawer";
 import { ReducedMotionToggle } from "@/components/reduced-motion-toggle";
 import { DesktopMegamenu, MobileMegamenu } from "@/components/megamenu";
+import { SearchOverlay } from "@/components/search-overlay";
 
 type FlatItem = {
   label: string;
@@ -47,6 +48,7 @@ export function SiteHeader() {
   const totalItems = useCartStore((s) => s.items.reduce((sum, i) => sum + i.quantity, 0));
   const [cartOpen, setCartOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   // Lock body scroll when mobile drawer is open
   useEffect(() => {
@@ -94,7 +96,11 @@ export function SiteHeader() {
               <FlatLinks items={FLAT_RIGHT} />
             </nav>
             <div className="flex items-center gap-5">
-              <button aria-label="Search" className="hidden md:block hover:text-bronze transition-colors">
+              <button
+                aria-label="Search"
+                onClick={() => setSearchOpen(true)}
+                className="hover:text-bronze transition-colors"
+              >
                 <Search className="w-4 h-4" strokeWidth={1.25} />
               </button>
               <ReducedMotionToggle />
@@ -168,6 +174,7 @@ export function SiteHeader() {
       )}
 
       <CartDrawer open={cartOpen} onOpenChange={setCartOpen} />
+      <SearchOverlay open={searchOpen} onOpenChange={setSearchOpen} />
     </>
   );
 }
