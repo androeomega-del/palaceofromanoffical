@@ -95,9 +95,9 @@ function ShopPage() {
     <div>
       <section className="px-6 pt-12 pb-8 border-b border-ink/5">
         <div className="max-w-screen-2xl mx-auto">
-          <p className="text-[10px] uppercase tracking-[0.25em] text-bronze mb-3">Shop All</p>
+          <p className="text-[10px] uppercase tracking-[0.25em] text-bronze mb-3">{titleParam ? "Edit" : "Shop All"}</p>
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <h1 className="text-4xl md:text-6xl font-serif">The Boutique</h1>
+            <h1 className="text-4xl md:text-6xl font-serif">{titleParam || "The Boutique"}</h1>
             <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
               {q.isLoading ? "Loading…" : `${edges.length}${q.hasNextPage ? "+" : ""} Pieces`}
             </p>
