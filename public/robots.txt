@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+Disallow: /cart
+Disallow: /checkout
+Disallow: /account
+Disallow: /api/
+
+Sitemap: https://palaceofroman.com/sitemap.xml

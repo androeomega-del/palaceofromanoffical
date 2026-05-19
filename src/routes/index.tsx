@@ -11,11 +11,14 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Palace of Roman — Curated Luxury Fashion" },
-      { name: "description", content: "Curated luxury fashion for women and men. Gucci, Prada, Dolce & Gabbana, Saint Laurent and more — authenticated and shipped worldwide." },
+      { name: "description", content: "Shop curated luxury fashion from Gucci, Prada, Saint Laurent, Dolce & Gabbana and 500+ designer houses. 100% authentic. Worldwide shipping." },
       { property: "og:title", content: "Palace of Roman — Curated Luxury Fashion" },
-      { property: "og:description", content: "A curated destination for luxury fashion." },
-      { property: "og:image", content: heroImage },
+      { property: "og:description", content: "Shop curated luxury fashion from 500+ designer houses. 100% authentic. Worldwide shipping." },
+      { property: "og:url", content: "https://palaceofroman.com/" },
+      { property: "og:image", content: `https://palaceofroman.com${heroImage}` },
+      { name: "twitter:image", content: `https://palaceofroman.com${heroImage}` },
     ],
+    links: [{ rel: "canonical", href: "https://palaceofroman.com/" }],
   }),
   component: HomePage,
 });

@@ -8,6 +8,7 @@ import {
   type ShopifyVariant,
   type Money,
 } from "@/lib/shopify";
+import { pageTitle, metaDescription, absoluteUrl, SITE_URL } from "@/lib/seo";
 import { useCartStore } from "@/stores/cart-store";
 import { Loader2, Minus, Plus, ShieldCheck, Truck, RotateCcw, Lock } from "lucide-react";
 import { toast } from "sonner";
@@ -20,12 +21,107 @@ import {
 } from "@/components/ui/accordion";
 
 export const Route = createFileRoute("/product/$handle")({
-  head: ({ params }) => ({
-    meta: [
-      { title: `${humanize(params.handle)} — Palace of Roman` },
-      { property: "og:title", content: `${humanize(params.handle)} — Palace of Roman` },
-    ],
-  }),
+  loader: async ({ params }) => {
+    const p = await fetchProductByHandle(params.handle);
+    return { product: p };
+  },
+  head: ({ params, loaderData }) => {
+    const p = loaderData?.product;
+    const path = `/product/${params.handle}`;
+    const url = absoluteUrl(path);
+
+    if (!p) {
+      return {
+        meta: [{ title: pageTitle(humanize(params.handle)) }],
+        links: [{ rel: "canonical", href: url }],
+      };
+    }
+
+    const titleMain = p.vendor ? `${p.title} | ${p.vendor}` : p.title;
+    const desc =
+      metaDescription(p.description) ||
+      `Shop ${p.title} by ${p.vendor} at Palace of Roman. 100% authentic, worldwide shipping.`;
+    const img = p.images?.edges?.[0]?.node?.url;
+    const price = p.priceRange?.minVariantPrice;
+    const vendorSlug = (p.vendor || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+    const anyAvailable = p.variants.edges.some((v) => v.node.availableForSale);
+
+    const meta = [
+      { title: pageTitle(titleMain) },
+      { name: "description", content: desc },
+      { property: "og:title", content: pageTitle(titleMain) },
+      { property: "og:description", content: desc },
+      { property: "og:url", content: url },
+      { property: "og:type", content: "product" },
+    ];
+    if (img) {
+      meta.push({ property: "og:image", content: img });
+      meta.push({ name: "twitter:image", content: img });
+    }
+    if (price) {
+      meta.push({ property: "product:price:amount", content: price.amount });
+      meta.push({ property: "product:price:currency", content: price.currencyCode });
+    }
+
+    return {
+      meta,
+      links: [{ rel: "canonical", href: url }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: p.title,
+            description: metaDescription(p.description, 5000),
+            sku: p.variants.edges[0]?.node?.id,
+            image: p.images.edges.map((e) => e.node.url),
+            brand: p.vendor ? { "@type": "Brand", name: p.vendor } : undefined,
+            category: p.productType || undefined,
+            offers: {
+              "@type": "Offer",
+              url,
+              priceCurrency: price?.currencyCode ?? "USD",
+              price: price?.amount ?? "0",
+              availability: anyAvailable
+                ? "https://schema.org/InStock"
+                : "https://schema.org/OutOfStock",
+              itemCondition: "https://schema.org/NewCondition",
+              seller: { "@type": "Organization", name: "Palace of Roman" },
+            },
+          }),
+        },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL + "/" },
+              { "@type": "ListItem", position: 2, name: "Shop", item: SITE_URL + "/shop" },
+              ...(p.vendor && vendorSlug
+                ? [{
+                    "@type": "ListItem",
+                    position: 3,
+                    name: p.vendor,
+                    item: `${SITE_URL}/collections/${vendorSlug}`,
+                  }]
+                : []),
+              {
+                "@type": "ListItem",
+                position: p.vendor && vendorSlug ? 4 : 3,
+                name: p.title,
+                item: url,
+              },
+            ],
+          }),
+        },
+      ],
+    };
+  },
   component: ProductPage,
 });
 
@@ -35,13 +131,15 @@ function humanize(h: string) {
 
 function ProductPage() {
   const { handle } = Route.useParams();
+  const { product: initialProduct } = Route.useLoaderData();
 
   const productQ = useQuery({
     queryKey: ["product", handle],
     queryFn: () => fetchProductByHandle(handle),
+    initialData: initialProduct,
   });
 
-  if (productQ.isLoading) return <ProductSkeleton />;
+  if (productQ.isLoading && !initialProduct) return <ProductSkeleton />;
   if (!productQ.data) throw notFound();
 
   return <ProductView product={productQ.data} />;
@@ -80,6 +178,7 @@ function ProductView({
   product: NonNullable<Awaited<ReturnType<typeof fetchProductByHandle>>>;
 }) {
   const images = product.images.edges.map((e) => e.node);
+  const altBase = product.vendor ? `${product.title} — ${product.vendor}` : product.title;
   const variants = product.variants.edges.map((e) => e.node);
   const firstAvailable = variants.find((v) => v.availableForSale) ?? variants[0];
   const [selectedVariantId, setSelectedVariantId] = useState<string | undefined>(firstAvailable?.id);

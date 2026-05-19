@@ -2,8 +2,9 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { SlidersHorizontal, X } from "lucide-react";
-import { fetchCollectionFiltered, type StorefrontFilterValue } from "@/lib/shopify";
+import { fetchCollectionFiltered, fetchCollection, type StorefrontFilterValue } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
+import { pageTitle, metaDescription, absoluteUrl, SITE_URL } from "@/lib/seo";
 import {
   CatalogFilters,
   CatalogSort,
@@ -30,13 +31,64 @@ export const Route = createFileRoute("/collections/$handle")({
     if (raw in INDEX_SORT_ALIASES) return { sort: INDEX_SORT_ALIASES[raw] };
     return { sort: "BEST_SELLING-false" };
   },
-  head: ({ params }) => {
-    const title = titleizeHandle(params.handle);
+  loader: async ({ params }) => {
+    try {
+      const c = await fetchCollection(params.handle, 1);
+      return {
+        title: c?.title ?? titleizeHandle(params.handle),
+        description: c?.description ?? "",
+        image: c?.image?.url ?? null,
+      };
+    } catch {
+      return { title: titleizeHandle(params.handle), description: "", image: null };
+    }
+  },
+  head: ({ params, loaderData }) => {
+    const title = loaderData?.title ?? titleizeHandle(params.handle);
+    const desc =
+      metaDescription(loaderData?.description ?? "") ||
+      `Shop ${title} from luxury designers at Palace of Roman. 100% authentic, worldwide shipping.`;
+    const path = `/collections/${params.handle}`;
+    const url = absoluteUrl(path);
+    const meta = [
+      { title: pageTitle(title) },
+      { name: "description", content: desc },
+      { property: "og:title", content: pageTitle(title) },
+      { property: "og:description", content: desc },
+      { property: "og:url", content: url },
+      { property: "og:type", content: "website" },
+    ];
+    if (loaderData?.image) {
+      meta.push({ property: "og:image", content: loaderData.image });
+      meta.push({ name: "twitter:image", content: loaderData.image });
+    }
     return {
-      meta: [
-        { title: `${title} — Palace of Roman` },
-        { name: "description", content: `Shop ${title} from luxury designers at Palace of Roman.` },
-        { property: "og:title", content: `${title} — Palace of Roman` },
+      meta,
+      links: [{ rel: "canonical", href: url }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL + "/" },
+              { "@type": "ListItem", position: 2, name: "Collections", item: SITE_URL + "/collections" },
+              { "@type": "ListItem", position: 3, name: title, item: url },
+            ],
+          }),
+        },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            name: title,
+            description: desc,
+            url,
+            isPartOf: { "@type": "WebSite", name: "Palace of Roman", url: SITE_URL },
+          }),
+        },
       ],
     };
   },

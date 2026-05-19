@@ -62,11 +62,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Palace of Roman — Curated Luxury Fashion" },
-      { name: "description", content: "A curated destination for luxury fashion. Gucci, Prada, Alexander McQueen, Armani and more — authenticated and shipped worldwide." },
+      { name: "description", content: "Curated luxury fashion from Gucci, Prada, Saint Laurent, Armani and 500+ designer houses. 100% authentic, shipped worldwide." },
+      { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" },
+      { property: "og:site_name", content: "Palace of Roman" },
       { property: "og:title", content: "Palace of Roman — Curated Luxury Fashion" },
       { property: "og:description", content: "Curated luxury fashion from the world's most significant designers." },
       { property: "og:type", content: "website" },
+      { property: "og:locale", content: "en_US" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Palace of Roman — Curated Luxury Fashion" },
+      { name: "twitter:description", content: "Curated luxury fashion from the world's most significant designers." },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -75,6 +80,35 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap",
+      },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "Palace of Roman",
+          url: "https://palaceofroman.com",
+          logo: "https://palaceofroman.com/favicon.ico",
+          description: "Curated multi-brand luxury fashion retailer offering premium designer clothing, shoes, accessories and jewelry from 500+ houses including Gucci, Prada, Calvin Klein, Armani and Versace. Ships worldwide.",
+          email: "concierge@palaceofroman.com",
+          sameAs: [],
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "Palace of Roman",
+          url: "https://palaceofroman.com",
+          potentialAction: {
+            "@type": "SearchAction",
+            target: "https://palaceofroman.com/shop?q={search_term_string}",
+            "query-input": "required name=search_term_string",
+          },
+        }),
       },
     ],
   }),

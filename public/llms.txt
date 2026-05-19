@@ -1,0 +1,39 @@
+# Palace of Roman
+
+> Curated multi-brand luxury fashion retailer offering premium designer clothing, shoes, accessories and jewelry from 500+ houses including Gucci, Prada, Calvin Klein, Armani and Versace. Ships worldwide.
+
+Palace of Roman is an online luxury fashion boutique. Inventory is sourced through BrandsGateway, an authorised reseller network for premium European houses — every piece is 100% authentic, shipped sealed from brand-authorised European warehouses, with full tracking and import duties handled on the customer's behalf.
+
+The store carries women's and men's clothing, footwear, bags, accessories and fine jewelry across runway, ready-to-wear and seasonal-sale segments. Prices are in USD; shipping is global; returns are accepted within 14 days of delivery on full-priced merchandise.
+
+## Pages
+
+- [Home](https://palaceofroman.com/): Seasonal hero edit, new arrivals, featured maisons, editorial.
+- [Shop all](https://palaceofroman.com/shop): Full catalogue with filters (brand, category, size, color, price).
+- [Women's clothing](https://palaceofroman.com/collections/womens-clothing): Dresses, tailoring and ready-to-wear.
+- [Women's shoes](https://palaceofroman.com/collections/womens-shoes): Heels, boots and sandals.
+- [Men's clothing](https://palaceofroman.com/collections/mens-clothing): Tailoring and considered staples.
+- [Men's shoes](https://palaceofroman.com/collections/mens-shoes): Designer footwear.
+- [High discounts](https://palaceofroman.com/collections/high-discounts): Pieces 50%+ off MSRP.
+- [All collections](https://palaceofroman.com/collections): Browse every curated edit.
+- [All designers](https://palaceofroman.com/brands): Index of every maison stocked.
+
+## Editorial
+
+- [Journal](https://palaceofroman.com/journal): Long-form editorial and house notes.
+- [May 2026 — Quiet authority](https://palaceofroman.com/editorial/may-2026): Tailoring and footwear edit.
+- [Resort 2026](https://palaceofroman.com/editorial/resort-2026): Resort edit.
+- [The new evening](https://palaceofroman.com/editorial/the-new-evening): Evening edit.
+
+## Policies & info
+
+- [About](https://palaceofroman.com/about): Who Palace of Roman is and how the boutique operates.
+- [Authentication](https://palaceofroman.com/authentication): Sourcing and 100% authenticity guarantee.
+- [Shipping & returns](https://palaceofroman.com/shipping-returns): Worldwide DHL/FedEx, 14-day returns.
+- [Contact](https://palaceofroman.com/contact): Email concierge for sourcing, sizing and styling.
+- [FAQ](https://palaceofroman.com/faq): Common questions on orders, sizing and delivery.
+
+## Optional
+
+- [Privacy](https://palaceofroman.com/privacy)
+- [Terms](https://palaceofroman.com/terms)
