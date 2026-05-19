@@ -203,7 +203,7 @@ function HomePage() {
             <span className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-4 block">The Wardrobe</span>
             <h2 className="text-3xl md:text-4xl font-serif">Shop by Category</h2>
           </div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             {CATEGORY_TILES.map((tile) => (
               <CategoryTile key={tile.key} tile={tile} />
             ))}
