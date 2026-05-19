@@ -29,3 +29,16 @@ export function imgRange(from: number, to: number): string[] {
 }
 
 export const TOTAL_IMAGES = Object.keys(byIndex).length;
+
+// Deterministic image picker — same key always maps to the same editorial
+// image. Used for collection cards, brand tiles, etc., so the visual stays
+// stable across renders and SSR/CSR.
+export function imgForKey(key: string, offset = 0): string {
+  if (TOTAL_IMAGES === 0) return "";
+  let hash = 0;
+  for (let i = 0; i < key.length; i++) {
+    hash = (hash * 31 + key.charCodeAt(i)) | 0;
+  }
+  const n = (Math.abs(hash) + offset) % TOTAL_IMAGES;
+  return byIndex[n + 1] ?? Object.values(byIndex)[n] ?? "";
+}
