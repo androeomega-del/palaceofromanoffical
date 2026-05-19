@@ -42,10 +42,13 @@ function titleizeHandle(handle: string) {
 
 function CollectionPage() {
   const { handle } = Route.useParams();
+  const { sort } = Route.useSearch();
+  const navigate = useNavigate({ from: "/collections/$handle" });
+  const setSort = (v: SortValue) =>
+    navigate({ search: (prev: { sort: SortValue }) => ({ ...prev, sort: v }), replace: true });
 
   const [selections, setSelections] = useState<Selection[]>([]);
   const [priceRange, setPriceRange] = useState<{ min: number; max: number } | null>(null);
-  const [sort, setSort] = useState<SortValue>("BEST_SELLING-false");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   // Build Shopify filters arg from selections + price
