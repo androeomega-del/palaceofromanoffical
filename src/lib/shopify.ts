@@ -14,6 +14,8 @@ export interface Money {
 export interface ShopifyImage {
   url: string;
   altText: string | null;
+  width?: number | null;
+  height?: number | null;
 }
 
 export interface ShopifyVariant {
@@ -130,7 +132,7 @@ export const COLLECTION_BY_HANDLE_QUERY = `
   query GetCollection($handle: String!, $first: Int!) {
     collection(handle: $handle) {
       id title handle description
-      image { url altText }
+      image { url altText width height }
       products(first: $first) { edges { node { ...ProductFields } } }
     }
   }
@@ -142,7 +144,7 @@ export const COLLECTIONS_QUERY = `
       edges {
         node {
           id title handle description updatedAt
-          image { url altText }
+          image { url altText width height }
         }
       }
     }
@@ -175,7 +177,7 @@ export const COLLECTION_FILTERED_QUERY = `
   ) {
     collection(handle: $handle) {
       id title handle description
-      image { url altText }
+      image { url altText width height }
       products(first: $first, after: $after, filters: $filters, sortKey: $sortKey, reverse: $reverse) {
         filters { id label type values { id label count input } }
         pageInfo { hasNextPage endCursor }

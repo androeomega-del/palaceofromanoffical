@@ -17,27 +17,33 @@ export type Database = {
       collection_images: {
         Row: {
           handle: string
+          height: number | null
           image_url: string
           prompt: string | null
           source: string
           title: string | null
           updated_at: string
+          width: number | null
         }
         Insert: {
           handle: string
+          height?: number | null
           image_url: string
           prompt?: string | null
           source: string
           title?: string | null
           updated_at?: string
+          width?: number | null
         }
         Update: {
           handle?: string
+          height?: number | null
           image_url?: string
           prompt?: string | null
           source?: string
           title?: string | null
           updated_at?: string
+          width?: number | null
         }
         Relationships: []
       }

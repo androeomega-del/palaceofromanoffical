@@ -11,7 +11,7 @@ import {
   collectionImageAlt,
   collectionImageFocal,
 } from "@/lib/collection-image";
-import { getCollectionImageMap } from "@/lib/collection-image.functions";
+import { getCollectionImageMap, getCollectionImageMetaMap } from "@/lib/collection-image.functions";
 import {
   CatalogFilters,
   SortPresets,
@@ -242,6 +242,12 @@ function CollectionPage() {
     staleTime: 60_000,
   });
 
+  const dynamicMetaQ = useQuery({
+    queryKey: ["collection-image-meta-map"],
+    queryFn: () => getCollectionImageMetaMap(),
+    staleTime: 60_000,
+  });
+
   const heroSrc = collectionImage({
     handle,
     title,
@@ -249,7 +255,13 @@ function CollectionPage() {
     dynamicMap: dynamicMapQ.data ?? {},
   });
   const heroAlt = collectionImageAlt({ handle, title, description: description ?? null });
-  const heroFocal = collectionImageFocal({ handle, title });
+  const heroMeta = dynamicMetaQ.data?.[handle.toLowerCase()];
+  const heroFocal = collectionImageFocal({
+    handle,
+    title,
+    imageWidth: heroMeta?.width ?? null,
+    imageHeight: heroMeta?.height ?? null,
+  });
 
   return (
     <div>

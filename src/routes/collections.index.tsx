@@ -217,7 +217,7 @@ function CollectionsIndexPage() {
                       loading="lazy"
                       width={768}
                       height={1024}
-                      style={{ objectPosition: collectionImageFocal({ handle: c.handle, title: c.title }) }}
+                      style={{ objectPosition: collectionImageFocal({ handle: c.handle, title: c.title, imageWidth: c.image?.width ?? null, imageHeight: c.image?.height ?? null }) }}
                       className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/15 to-transparent" />
