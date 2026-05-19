@@ -11,7 +11,10 @@ export type Hotspot = {
   /** Position in % of image width/height */
   x: number;
   y: number;
+  /** Short product category, e.g. "Eyewear" */
   label: string;
+  /** Optional secondary line, e.g. "Alexander McQueen" */
+  sublabel?: string;
   handle: string;
 };
 
@@ -30,27 +33,44 @@ export function EditorialHotspots({ src, alt, hotspots, aspect = "4/5", classNam
     <div className={`relative w-full bg-canvas-raised overflow-hidden ${className}`} style={{ aspectRatio: aspect }}>
       <img src={src} alt={alt} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
 
-      {hotspots.map((h) => (
-        <button
-          key={h.handle}
-          type="button"
-          onClick={() => setOpenHandle(h.handle)}
-          aria-label={`Shop ${h.label}`}
-          className="group absolute -translate-x-1/2 -translate-y-1/2"
-          style={{ left: `${h.x}%`, top: `${h.y}%` }}
-        >
-          {/* pulse ring */}
-          <span className="absolute inset-0 m-auto h-8 w-8 rounded-full bg-white/40 animate-ping" aria-hidden />
-          {/* dot */}
-          <span className="relative flex h-8 w-8 items-center justify-center rounded-full bg-white text-ink shadow-lg ring-1 ring-ink/10 transition-transform group-hover:scale-110">
-            <Plus className="h-4 w-4" />
-          </span>
-          {/* tooltip */}
-          <span className="pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 whitespace-nowrap rounded-sm bg-ink px-2 py-1 text-[10px] uppercase tracking-[0.2em] text-white opacity-0 transition-opacity group-hover:opacity-100">
-            {h.label}
-          </span>
-        </button>
-      ))}
+      {hotspots.map((h) => {
+        const tipId = `hotspot-tip-${h.handle}`;
+        const isRightHalf = h.x > 65;
+        const isBottomHalf = h.y > 70;
+        return (
+          <button
+            key={h.handle}
+            type="button"
+            onClick={() => setOpenHandle(h.handle)}
+            aria-label={`Quick shop ${h.label}${h.sublabel ? ` — ${h.sublabel}` : ""}`}
+            aria-describedby={tipId}
+            aria-haspopup="dialog"
+            className="group absolute -translate-x-1/2 -translate-y-1/2 focus:outline-none"
+            style={{ left: `${h.x}%`, top: `${h.y}%` }}
+          >
+            {/* pulse ring */}
+            <span className="absolute inset-0 m-auto h-8 w-8 rounded-full bg-white/40 animate-ping" aria-hidden />
+            {/* dot */}
+            <span className="relative flex h-8 w-8 items-center justify-center rounded-full bg-white text-ink shadow-lg ring-1 ring-ink/10 transition-transform group-hover:scale-110 group-focus-visible:scale-110 group-focus-visible:ring-2 group-focus-visible:ring-ink group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-canvas">
+              <Plus className="h-4 w-4" />
+            </span>
+            {/* tooltip — shown on hover and keyboard focus */}
+            <span
+              id={tipId}
+              role="tooltip"
+              className={`pointer-events-none absolute z-10 min-w-max max-w-[12rem] bg-ink px-3 py-2 text-left text-white shadow-xl opacity-0 translate-y-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-y-0 group-focus-visible:opacity-100 group-focus-visible:translate-y-0 ${
+                isBottomHalf ? "bottom-full mb-3" : "top-full mt-3"
+              } ${isRightHalf ? "right-1/2 translate-x-2" : "left-1/2 -translate-x-2"}`}
+            >
+              <span className="block text-[9px] uppercase tracking-[0.3em] text-bronze">{h.label}</span>
+              {h.sublabel && (
+                <span className="block text-[11px] font-medium leading-tight mt-1">{h.sublabel}</span>
+              )}
+              <span className="block text-[9px] uppercase tracking-[0.25em] text-white/60 mt-1.5">Quick shop →</span>
+            </span>
+          </button>
+        );
+      })}
 
       <QuickShopDialog handle={openHandle} onOpenChange={(o) => !o && setOpenHandle(null)} />
     </div>
