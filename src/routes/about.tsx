@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { EditorialPageShell } from "@/components/editorial-page-shell";
 import { img } from "@/lib/editorial-library";
+import founderPortrait from "@/assets/founder-portrait.jpg";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
