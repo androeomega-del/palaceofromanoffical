@@ -50,47 +50,44 @@ export function SiteHeader() {
         Authenticity Guaranteed — Complimentary Global Shipping over $1,200
       </div>
       <header className="sticky top-0 z-50 bg-canvas/90 backdrop-blur-md border-b border-ink/10">
-        <div className="max-w-screen-2xl mx-auto px-6 h-20 flex items-center justify-between relative">
-          <nav className="hidden lg:flex items-center gap-8 text-[11px] uppercase tracking-[0.25em] font-medium">
-            {NAV.map((n) => (
-              <Link
-                key={n.label}
-                to={n.to as any}
-                params={n.params as any}
-                className={`hover:text-bronze transition-colors ${n.accent ? "text-bronze" : ""}`}
-              >
-                {n.label}
-              </Link>
-            ))}
+        <div className="max-w-screen-2xl mx-auto px-6 h-20 grid grid-cols-[1fr_auto_1fr] items-center gap-8">
+          <nav className="hidden lg:flex items-center gap-8 text-[11px] uppercase tracking-[0.25em] font-medium justify-self-start">
+            <NavLinks items={NAV_LEFT} />
           </nav>
+          <div className="lg:hidden" />
 
           <Link
             to="/"
-            className="absolute left-1/2 -translate-x-1/2 text-xl md:text-2xl font-serif tracking-[0.15em] uppercase whitespace-nowrap"
+            className="text-xl md:text-2xl font-serif tracking-[0.18em] uppercase whitespace-nowrap justify-self-center"
           >
             Palace of Roman
           </Link>
 
-          <div className="flex items-center gap-5 ml-auto lg:ml-0">
-            <button aria-label="Search" className="hidden md:block hover:text-bronze transition-colors">
-              <Search className="w-4 h-4" strokeWidth={1.25} />
-            </button>
-            <button aria-label="Account" className="hover:text-bronze transition-colors">
-              <User className="w-4 h-4" strokeWidth={1.25} />
-            </button>
-            <button
-              aria-label="Cart"
-              onClick={() => setCartOpen(true)}
-              className="relative hover:text-bronze transition-colors flex items-center gap-2"
-            >
-              <ShoppingBag className="w-4 h-4" strokeWidth={1.25} />
-              <span className="text-xs uppercase tracking-widest font-medium">({totalItems})</span>
-            </button>
+          <div className="flex items-center gap-8 justify-self-end">
+            <nav className="hidden lg:flex items-center gap-8 text-[11px] uppercase tracking-[0.25em] font-medium">
+              <NavLinks items={NAV_RIGHT} />
+            </nav>
+            <div className="flex items-center gap-5">
+              <button aria-label="Search" className="hidden md:block hover:text-bronze transition-colors">
+                <Search className="w-4 h-4" strokeWidth={1.25} />
+              </button>
+              <button aria-label="Account" className="hover:text-bronze transition-colors">
+                <User className="w-4 h-4" strokeWidth={1.25} />
+              </button>
+              <button
+                aria-label="Cart"
+                onClick={() => setCartOpen(true)}
+                className="relative hover:text-bronze transition-colors flex items-center gap-2"
+              >
+                <ShoppingBag className="w-4 h-4" strokeWidth={1.25} />
+                <span className="text-[11px] uppercase tracking-[0.2em] font-medium">({totalItems})</span>
+              </button>
+            </div>
           </div>
         </div>
 
-        <nav className="lg:hidden flex items-center justify-center gap-6 px-6 py-3 text-[11px] uppercase tracking-widest border-t border-ink/5 overflow-x-auto scrollbar-hide">
-          {NAV.map((n) => (
+        <nav className="lg:hidden flex items-center justify-center gap-6 px-6 py-3 text-[11px] uppercase tracking-[0.2em] border-t border-ink/5 overflow-x-auto scrollbar-hide">
+          {NAV_MOBILE.map((n) => (
             <Link
               key={n.label}
               to={n.to as any}
