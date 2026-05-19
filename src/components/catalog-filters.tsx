@@ -340,6 +340,9 @@ export function SortPresets({
       {extra}
     </div>
   );
+}
+
+
 
 // ---- Active filter pills row ----
 export function ActiveFilterPills({
