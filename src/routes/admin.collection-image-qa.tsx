@@ -206,7 +206,7 @@ function QaCard({ row }: { row: Row }) {
           src={imageSrc}
           alt={collectionImageAlt({ handle: c.handle, title: c.title, description: c.description })}
           loading="lazy"
-          style={{ objectPosition: collectionImageFocal({ handle: c.handle, title: c.title }) }}
+          style={{ objectPosition: collectionImageFocal({ handle: c.handle, title: c.title, imageWidth: c.image?.width ?? null, imageHeight: c.image?.height ?? null }) }}
           className="absolute inset-0 w-full h-full object-cover"
         />
         <span
