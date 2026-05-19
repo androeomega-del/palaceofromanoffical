@@ -14,6 +14,7 @@ import { Route as BrandsRouteImport } from './routes/brands'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CollectionsIndexRouteImport } from './routes/collections.index'
 import { Route as ProductHandleRouteImport } from './routes/product.$handle'
+import { Route as EditorialMay2026RouteImport } from './routes/editorial.may-2026'
 import { Route as CollectionsHandleRouteImport } from './routes/collections.$handle'
 import { Route as BrandVendorRouteImport } from './routes/brand.$vendor'
 
@@ -42,6 +43,11 @@ const ProductHandleRoute = ProductHandleRouteImport.update({
   path: '/product/$handle',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EditorialMay2026Route = EditorialMay2026RouteImport.update({
+  id: '/editorial/may-2026',
+  path: '/editorial/may-2026',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CollectionsHandleRoute = CollectionsHandleRouteImport.update({
   id: '/collections/$handle',
   path: '/collections/$handle',
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/shop': typeof ShopRoute
   '/brand/$vendor': typeof BrandVendorRoute
   '/collections/$handle': typeof CollectionsHandleRoute
+  '/editorial/may-2026': typeof EditorialMay2026Route
   '/product/$handle': typeof ProductHandleRoute
   '/collections/': typeof CollectionsIndexRoute
 }
@@ -68,6 +75,7 @@ export interface FileRoutesByTo {
   '/shop': typeof ShopRoute
   '/brand/$vendor': typeof BrandVendorRoute
   '/collections/$handle': typeof CollectionsHandleRoute
+  '/editorial/may-2026': typeof EditorialMay2026Route
   '/product/$handle': typeof ProductHandleRoute
   '/collections': typeof CollectionsIndexRoute
 }
@@ -78,6 +86,7 @@ export interface FileRoutesById {
   '/shop': typeof ShopRoute
   '/brand/$vendor': typeof BrandVendorRoute
   '/collections/$handle': typeof CollectionsHandleRoute
+  '/editorial/may-2026': typeof EditorialMay2026Route
   '/product/$handle': typeof ProductHandleRoute
   '/collections/': typeof CollectionsIndexRoute
 }
@@ -89,6 +98,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/brand/$vendor'
     | '/collections/$handle'
+    | '/editorial/may-2026'
     | '/product/$handle'
     | '/collections/'
   fileRoutesByTo: FileRoutesByTo
@@ -98,6 +108,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/brand/$vendor'
     | '/collections/$handle'
+    | '/editorial/may-2026'
     | '/product/$handle'
     | '/collections'
   id:
@@ -107,6 +118,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/brand/$vendor'
     | '/collections/$handle'
+    | '/editorial/may-2026'
     | '/product/$handle'
     | '/collections/'
   fileRoutesById: FileRoutesById
@@ -117,6 +129,7 @@ export interface RootRouteChildren {
   ShopRoute: typeof ShopRoute
   BrandVendorRoute: typeof BrandVendorRoute
   CollectionsHandleRoute: typeof CollectionsHandleRoute
+  EditorialMay2026Route: typeof EditorialMay2026Route
   ProductHandleRoute: typeof ProductHandleRoute
   CollectionsIndexRoute: typeof CollectionsIndexRoute
 }
@@ -158,6 +171,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductHandleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/editorial/may-2026': {
+      id: '/editorial/may-2026'
+      path: '/editorial/may-2026'
+      fullPath: '/editorial/may-2026'
+      preLoaderRoute: typeof EditorialMay2026RouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/collections/$handle': {
       id: '/collections/$handle'
       path: '/collections/$handle'
@@ -181,9 +201,20 @@ const rootRouteChildren: RootRouteChildren = {
   ShopRoute: ShopRoute,
   BrandVendorRoute: BrandVendorRoute,
   CollectionsHandleRoute: CollectionsHandleRoute,
+  EditorialMay2026Route: EditorialMay2026Route,
   ProductHandleRoute: ProductHandleRoute,
   CollectionsIndexRoute: CollectionsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
