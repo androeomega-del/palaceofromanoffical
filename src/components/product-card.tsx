@@ -9,13 +9,14 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
   const price = p.priceRange.minVariantPrice;
   const onSale = compareAt && parseFloat(compareAt.amount) > parseFloat(price.amount);
 
+  const altBase = p.vendor ? `${p.title} — ${p.vendor}` : p.title;
   return (
     <Link to="/product/$handle" params={{ handle: p.handle }} className="group block">
       <div className="w-full aspect-[4/5] bg-muted relative overflow-hidden mb-5">
         {img && (
           <img
             src={img.url}
-            alt={img.altText ?? p.title}
+            alt={img.altText ?? altBase}
             loading="lazy"
             className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 group-hover:opacity-0"
           />
@@ -23,7 +24,7 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
         {img2 ? (
           <img
             src={img2.url}
-            alt={img2.altText ?? p.title}
+            alt={img2.altText ?? altBase}
             loading="lazy"
             className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-700"
           />
