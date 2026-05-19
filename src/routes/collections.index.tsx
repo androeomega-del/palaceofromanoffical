@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { fetchCollections, type ShopifyCollection } from "@/lib/shopify";
-import { collectionImage, collectionImageAlt } from "@/lib/collection-image";
+import { collectionImage, collectionImageAlt, collectionImageFocal } from "@/lib/collection-image";
 import { getCollectionImageMap } from "@/lib/collection-image.functions";
 import { routeHead } from "@/lib/seo";
 
@@ -217,6 +217,7 @@ function CollectionsIndexPage() {
                       loading="lazy"
                       width={768}
                       height={1024}
+                      style={{ objectPosition: collectionImageFocal({ handle: c.handle, title: c.title }) }}
                       className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/15 to-transparent" />

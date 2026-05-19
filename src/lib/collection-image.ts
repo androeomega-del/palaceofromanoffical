@@ -191,3 +191,84 @@ export function collectionImageAlt(input: {
   if (title) return `${title} — designer collection at Palace of Roman`;
   return "Designer collection at Palace of Roman";
 }
+
+// Focal point per collection handle, expressed as a CSS `object-position`
+// value. Combined with `object-cover` and a fixed aspect ratio, this keeps
+// the subject in frame across mobile (narrow), tablet, and desktop crops.
+//
+// Rule of thumb used below:
+//  - Apparel on a model → upper portion (face/torso) — "50% 30%"
+//  - Footwear / bags / small leather goods → center weighted — "50% 55%"
+//  - Watches & jewelry → tight center — "50% 50%"
+//  - Flat-lay or product groupings → center — "50% 50%"
+const FOCAL_BY_HANDLE: Record<string, string> = {
+  "all-products": "50% 45%",
+  "new-arrivals": "50% 35%",
+  "best-selling-brands": "50% 45%",
+  "high-discounts": "50% 50%",
+
+  // Women's — apparel framed on torso/face
+  "womens-clothing": "50% 30%",
+  "womens-shoes": "50% 60%",
+  "womens-bags": "50% 50%",
+  "womens-wallets": "50% 55%",
+  "womens-belts": "50% 50%",
+  "womens-jewelry": "50% 45%",
+  "womens-watches": "50% 50%",
+  "womens-scarves": "50% 35%",
+  "womens-hats": "50% 25%",
+  "womens-accessories": "50% 45%",
+  "womens-accessories-1": "50% 45%",
+
+  // Men's — apparel framed on torso/face
+  "mens-clothing": "50% 30%",
+  "mens-shoes": "50% 60%",
+  "mens-jackets-coats": "50% 30%",
+  "mens-suits": "50% 30%",
+  "mens-shirts": "50% 30%",
+  "mens-tshirts-polos": "50% 30%",
+  "mens-sweaters-knitwear": "50% 30%",
+  "mens-hoodies-sweatshirts": "50% 30%",
+  "mens-pants-trousers": "50% 55%",
+  "mens-shorts": "50% 55%",
+  "mens-activewear": "50% 35%",
+  "mens-swimwear": "50% 40%",
+  "mens-underwear-loungewear": "50% 40%",
+  "mens-sneakers": "50% 60%",
+  "mens-boots": "50% 60%",
+  "mens-sandals-slides": "50% 60%",
+  "mens-bags-wallets": "50% 50%",
+  "mens-belts": "50% 50%",
+  "mens-watches-jewelry": "50% 50%",
+  "mens-accessories": "50% 45%",
+};
+
+// Heuristics for collections not yet mapped — keep subject visible across crops.
+const FOCAL_RULES: { test: RegExp; pos: string }[] = [
+  { test: /(suit|jacket|coat|shirt|polo|sweater|knit|hoodie|tshirt|t-shirt|dress|blouse|top)/, pos: "50% 30%" },
+  { test: /(hat|cap|headwear)/, pos: "50% 25%" },
+  { test: /(scarf|shawl)/, pos: "50% 35%" },
+  { test: /(shoe|sneaker|boot|sandal|slide|loafer|heel|pump)/, pos: "50% 60%" },
+  { test: /(pant|trouser|short|swim)/, pos: "50% 55%" },
+  { test: /(bag|wallet|tote|clutch|purse|brief|backpack)/, pos: "50% 50%" },
+  { test: /(belt)/, pos: "50% 50%" },
+  { test: /(watch|jewel|ring|necklace|earring)/, pos: "50% 50%" },
+];
+
+/**
+ * Returns a CSS `object-position` value for the collection hero image.
+ * Pass directly to `<img style={{ objectPosition: ... }} className="object-cover" />`
+ * so the subject stays framed at every responsive aspect ratio.
+ */
+export function collectionImageFocal(input: {
+  title?: string;
+  handle?: string;
+}): string {
+  const handle = (input.handle ?? "").trim().toLowerCase();
+  if (handle && FOCAL_BY_HANDLE[handle]) return FOCAL_BY_HANDLE[handle];
+  const hay = `${input.title ?? ""} ${handle}`.toLowerCase().replace(/[-_]+/g, " ");
+  for (const rule of FOCAL_RULES) {
+    if (rule.test.test(hay)) return rule.pos;
+  }
+  return "50% 40%";
+}

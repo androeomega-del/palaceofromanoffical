@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { fetchCollections, fetchVendorIndex } from "@/lib/shopify";
-import { collectionImage, collectionImageAlt } from "@/lib/collection-image";
+import { collectionImage, collectionImageAlt, collectionImageFocal } from "@/lib/collection-image";
 import { getCollectionImageMap } from "@/lib/collection-image.functions";
 
 function useCollectionImageMap() {
@@ -368,6 +368,7 @@ function MegaPanel({
             src={featureImg}
             alt={collectionImageAlt({ handle: dept.feature.handle, title: dept.feature.title ?? dept.label })}
             loading="lazy"
+            style={{ objectPosition: collectionImageFocal({ handle: dept.feature.handle, title: dept.feature.title ?? dept.label }) }}
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/20 to-transparent" />
@@ -538,6 +539,7 @@ function BrandsPanel({
             src={featureImg}
             alt={collectionImageAlt({ handle: "best-selling-brands", title: "Best-selling luxury fashion brands" })}
             loading="lazy"
+            style={{ objectPosition: collectionImageFocal({ handle: "best-selling-brands", title: "Best-selling luxury fashion brands" }) }}
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/20 to-transparent" />
