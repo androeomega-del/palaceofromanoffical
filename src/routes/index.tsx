@@ -71,6 +71,20 @@ const CATEGORY_TILES: CategoryTileDef[] = [
     source: { kind: "collection", handle: MENS_SHOES_HANDLE },
     linkTo: "collection",
   },
+  {
+    key: "womens-accessories",
+    label: "Women's Accessories",
+    caption: "Bags, belts, scarves & jewellery",
+    source: { kind: "search", query: "tag:Accessories AND tag:Women", title: "Women's Accessories" },
+    linkTo: "shop",
+  },
+  {
+    key: "mens-accessories",
+    label: "Men's Accessories",
+    caption: "Belts, ties, wallets & eyewear",
+    source: { kind: "search", query: "tag:Accessories AND tag:Men", title: "Men's Accessories" },
+    linkTo: "shop",
+  },
 ];
 
 function HomePage() {
