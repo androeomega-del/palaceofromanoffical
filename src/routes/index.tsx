@@ -152,15 +152,15 @@ function HomePage() {
                 </p>
                 <div className="flex flex-wrap gap-4">
                   <Link
-                    to="/shop"
-                    search={{ q: WOMENS_CLOTHING_QUERY, title: "Women's Clothing" }}
+                    to="/collections/$handle"
+                    params={{ handle: WOMENS_CLOTHING_HANDLE }}
                     className="px-8 py-3.5 bg-ink text-canvas text-[11px] uppercase tracking-[0.25em] hover:bg-ink/85 transition-colors"
                   >
                     Shop Women
                   </Link>
                   <Link
                     to="/collections/$handle"
-                    params={{ handle: "mens-luxury-clothing" }}
+                    params={{ handle: MENS_CLOTHING_HANDLE }}
                     className="px-8 py-3.5 ring-1 ring-ink text-[11px] uppercase tracking-[0.25em] hover:bg-ink hover:text-canvas transition-colors"
                   >
                     Shop Men
