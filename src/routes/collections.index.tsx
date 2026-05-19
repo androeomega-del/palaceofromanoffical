@@ -1,8 +1,26 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { fetchCollections } from "@/lib/shopify";
+import { useMemo } from "react";
+import { fetchCollections, type ShopifyCollection } from "@/lib/shopify";
+
+type FilterKey = "all" | "women" | "men" | "clothing" | "shoes" | "luxury";
+
+const FILTERS: { key: FilterKey; label: string }[] = [
+  { key: "all", label: "All" },
+  { key: "women", label: "Women" },
+  { key: "men", label: "Men" },
+  { key: "clothing", label: "Clothing" },
+  { key: "shoes", label: "Shoes" },
+  { key: "luxury", label: "Luxury" },
+];
+
+const FILTER_KEYS: FilterKey[] = FILTERS.map((f) => f.key);
 
 export const Route = createFileRoute("/collections/")({
+  validateSearch: (search: Record<string, unknown>): { filter: FilterKey } => {
+    const raw = typeof search.filter === "string" ? (search.filter as FilterKey) : "all";
+    return { filter: FILTER_KEYS.includes(raw) ? raw : "all" };
+  },
   head: () => ({
     meta: [
       { title: "All Collections — Palace of Roman" },
@@ -13,13 +31,42 @@ export const Route = createFileRoute("/collections/")({
   component: CollectionsIndexPage,
 });
 
+function matchesFilter(c: ShopifyCollection, filter: FilterKey): boolean {
+  if (filter === "all") return true;
+  const hay = `${c.title} ${c.handle} ${c.description ?? ""}`.toLowerCase();
+  switch (filter) {
+    case "women":
+      return /\b(women|woman|womens|women's|ladies|female)\b/.test(hay);
+    case "men":
+      return /\b(men|mens|men's|male)\b/.test(hay) && !/\b(women|woman|womens)\b/.test(hay);
+    case "clothing":
+      return /(clothing|apparel|dress|tops|outerwear|jacket|coat|knit|tailoring|suit|skirt|pants|trouser|shirt|blouse|ready[- ]?to[- ]?wear)/.test(hay);
+    case "shoes":
+      return /(shoe|shoes|footwear|sneaker|boot|heel|pump|sandal|loafer|mule|stiletto)/.test(hay);
+    case "luxury":
+      return /(luxury|designer|premium|haute|couture|maison)/.test(hay);
+  }
+}
+
 function CollectionsIndexPage() {
+  const { filter } = Route.useSearch();
+  const navigate = useNavigate({ from: "/collections" });
+
   const q = useQuery({
     queryKey: ["collections-all"],
     queryFn: () => fetchCollections(100),
   });
 
-  const collections = q.data ?? [];
+  const all = q.data ?? [];
+  const collections = useMemo(() => all.filter((c) => matchesFilter(c, filter)), [all, filter]);
+
+  const counts = useMemo(() => {
+    const result: Record<FilterKey, number> = { all: 0, women: 0, men: 0, clothing: 0, shoes: 0, luxury: 0 };
+    for (const c of all) {
+      for (const f of FILTER_KEYS) if (matchesFilter(c, f)) result[f]++;
+    }
+    return result;
+  }, [all]);
 
   return (
     <div>
@@ -29,9 +76,43 @@ function CollectionsIndexPage() {
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <h1 className="text-4xl md:text-6xl font-serif">All Collections</h1>
             <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-              {q.isLoading ? "Loading…" : `${collections.length} ${collections.length === 1 ? "Collection" : "Collections"}`}
+              {q.isLoading
+                ? "Loading…"
+                : `${collections.length} of ${all.length} ${all.length === 1 ? "Collection" : "Collections"}`}
             </p>
           </div>
+        </div>
+      </section>
+
+      <section className="px-6 pt-8 pb-2 border-b border-ink/5">
+        <div className="max-w-screen-2xl mx-auto flex flex-wrap gap-2 md:gap-3">
+          {FILTERS.map((f) => {
+            const active = filter === f.key;
+            const count = counts[f.key];
+            const disabled = !q.isLoading && count === 0 && f.key !== "all";
+            return (
+              <button
+                key={f.key}
+                disabled={disabled}
+                onClick={() =>
+                  navigate({
+                    search: (prev) => ({ ...prev, filter: f.key }),
+                    replace: true,
+                  })
+                }
+                className={`text-[11px] uppercase tracking-[0.25em] px-4 py-2.5 border transition-colors ${
+                  active
+                    ? "bg-ink text-canvas border-ink"
+                    : "border-ink/15 hover:border-ink hover:text-bronze"
+                } ${disabled ? "opacity-30 cursor-not-allowed hover:border-ink/15 hover:text-inherit" : ""}`}
+              >
+                {f.label}
+                {!q.isLoading && f.key !== "all" && (
+                  <span className="ml-2 opacity-60">({count})</span>
+                )}
+              </button>
+            );
+          })}
         </div>
       </section>
 
@@ -47,7 +128,15 @@ function CollectionsIndexPage() {
               ))}
             </div>
           ) : collections.length === 0 ? (
-            <p className="py-24 text-center text-sm text-muted-foreground">No collections found.</p>
+            <div className="py-24 text-center">
+              <p className="text-sm text-muted-foreground mb-6">No collections match this filter.</p>
+              <button
+                onClick={() => navigate({ search: { filter: "all" }, replace: true })}
+                className="text-[11px] uppercase tracking-[0.25em] border-b border-ink pb-1 hover:text-bronze hover:border-bronze"
+              >
+                View All Collections
+              </button>
+            </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-14">
               {collections.map((c) => (
