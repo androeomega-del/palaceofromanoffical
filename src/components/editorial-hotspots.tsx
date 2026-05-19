@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/compone
 import { Button } from "@/components/ui/button";
 import { fetchProductByHandle, formatPrice, type ShopifyProduct } from "@/lib/shopify";
 import { useCartStore } from "@/stores/cart-store";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { Loader2, Plus } from "lucide-react";
 
 export type Hotspot = {
