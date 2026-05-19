@@ -16,6 +16,7 @@ import swimHero from "@/assets/marketing-swim-summer.jpg";
 import lookbook1 from "@/assets/marketing-swim-summer.jpg";
 import lookbook2 from "@/assets/lookbook-swim-2.jpg";
 import lookbook3 from "@/assets/lookbook-swim-3.jpg";
+import swimCampaignVideo from "@/assets/swim-campaign.mp4.asset.json";
 
 export const Route = createFileRoute("/swim")({
   head: () => {
@@ -120,16 +121,18 @@ function SwimPage() {
   return (
     <div>
       {/* ============ HERO ============ */}
-      <section className="relative h-[78vh] min-h-[560px] overflow-hidden bg-canvas-raised">
-        <img
-          src={swimHero}
-          alt="Designer swimwear — Resort 2026 editorial"
-          width={1600}
-          height={1200}
-          fetchPriority="high"
+      <section className="relative h-[82vh] min-h-[600px] overflow-hidden bg-ink">
+        <video
+          src={swimCampaignVideo.url}
+          autoPlay
+          muted
+          loop
+          playsInline
+          poster={swimHero}
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/65 via-ink/15 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/15 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-ink/40 via-transparent to-transparent" />
         <div className="relative h-full flex items-end">
           <div className="max-w-screen-2xl mx-auto px-6 md:px-10 pb-16 md:pb-24 w-full">
             <span className="block text-[10px] md:text-xs uppercase tracking-[0.4em] text-canvas/90 mb-4">
@@ -143,12 +146,26 @@ function SwimPage() {
               Designer bikinis, swimsuits and beachwear from the world's leading maisons —
               100% authentic, sourced from authorised distributors and shipped worldwide.
             </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <a
+                href="#shop"
+                className="px-8 py-3.5 bg-canvas text-ink text-[10px] uppercase tracking-[0.3em] font-medium hover:bg-[var(--sea)] hover:text-canvas transition-colors"
+              >
+                Shop the Look
+              </a>
+              <a
+                href="#lookbook"
+                className="px-8 py-3.5 border border-canvas/60 text-canvas text-[10px] uppercase tracking-[0.3em] font-medium hover:bg-canvas hover:text-ink transition-colors"
+              >
+                View Lookbook
+              </a>
+            </div>
           </div>
         </div>
       </section>
 
       {/* ============ LOOKBOOK ============ */}
-      <section className="px-6 md:px-10 py-20 md:py-28 bg-canvas">
+      <section id="lookbook" className="px-6 md:px-10 py-20 md:py-28 bg-canvas scroll-mt-20">
         <div className="max-w-screen-2xl mx-auto">
           <div className="flex items-end justify-between mb-10 md:mb-14">
             <div>
@@ -209,7 +226,7 @@ function SwimPage() {
       </section>
 
       {/* ============ CATEGORY CHIPS ============ */}
-      <section className="px-6 md:px-10 pt-16 pb-6 border-t border-ink/5 bg-canvas-raised/50">
+      <section id="shop" className="px-6 md:px-10 pt-16 pb-6 border-t border-ink/5 bg-canvas-raised/50 scroll-mt-20">
         <div className="max-w-screen-2xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
             <div>
