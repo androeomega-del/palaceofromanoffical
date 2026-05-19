@@ -99,11 +99,21 @@ const PRODUCT_FRAGMENT = `
   }
 `;
 
+// Global catalog exclusion: hide women's clothing & women's shoes everywhere.
+export const EXCLUDE_QUERY = "-tag:cat-womens-clothing -tag:cat-womens-shoes";
+
+function composeQuery(userQuery?: string | null) {
+  const base = EXCLUDE_QUERY;
+  if (!userQuery) return base;
+  return `(${userQuery}) AND ${base}`;
+}
+
 export const PRODUCTS_QUERY = `
   ${PRODUCT_FRAGMENT}
-  query GetProducts($first: Int!, $query: String, $sortKey: ProductSortKeys, $reverse: Boolean) {
-    products(first: $first, query: $query, sortKey: $sortKey, reverse: $reverse) {
-      edges { node { ...ProductFields } }
+  query GetProducts($first: Int!, $after: String, $query: String, $sortKey: ProductSortKeys, $reverse: Boolean) {
+    products(first: $first, after: $after, query: $query, sortKey: $sortKey, reverse: $reverse) {
+      pageInfo { hasNextPage endCursor }
+      edges { cursor node { ...ProductFields } }
     }
   }
 `;
@@ -201,14 +211,29 @@ export const SEARCH_FILTERED_QUERY = `
   }
 `;
 
-export async function fetchProducts(opts: { first?: number; query?: string; sortKey?: string; reverse?: boolean } = {}) {
-  const data = await storefrontApiRequest<{ products: { edges: ShopifyProduct[] } }>(PRODUCTS_QUERY, {
+export async function fetchProducts(opts: { first?: number; after?: string | null; query?: string; sortKey?: string; reverse?: boolean } = {}) {
+  const data = await storefrontApiRequest<{ products: { edges: ShopifyProduct[]; pageInfo: { hasNextPage: boolean; endCursor: string | null } } }>(PRODUCTS_QUERY, {
     first: opts.first ?? 24,
-    query: opts.query ?? null,
+    after: opts.after ?? null,
+    query: composeQuery(opts.query),
     sortKey: opts.sortKey ?? "BEST_SELLING",
     reverse: opts.reverse ?? false,
   });
   return data?.data?.products?.edges ?? [];
+}
+
+export async function fetchProductsPage(opts: { first?: number; after?: string | null; query?: string; sortKey?: string; reverse?: boolean } = {}) {
+  const data = await storefrontApiRequest<{ products: { edges: ShopifyProduct[]; pageInfo: { hasNextPage: boolean; endCursor: string | null } } }>(PRODUCTS_QUERY, {
+    first: opts.first ?? 48,
+    after: opts.after ?? null,
+    query: composeQuery(opts.query),
+    sortKey: opts.sortKey ?? "BEST_SELLING",
+    reverse: opts.reverse ?? false,
+  });
+  return {
+    edges: data?.data?.products?.edges ?? [],
+    pageInfo: data?.data?.products?.pageInfo ?? { hasNextPage: false, endCursor: null },
+  };
 }
 
 export async function fetchProductByHandle(handle: string) {
@@ -265,7 +290,7 @@ export async function fetchSearchFiltered(opts: {
   reverse?: boolean;
 }): Promise<Omit<FilteredResult, "collection">> {
   const data = await storefrontApiRequest<any>(SEARCH_FILTERED_QUERY, {
-    query: opts.query ?? "*",
+    query: composeQuery(opts.query && opts.query !== "*" ? opts.query : null),
     first: opts.first ?? 24,
     after: opts.after ?? null,
     productFilters: opts.filters ?? [],

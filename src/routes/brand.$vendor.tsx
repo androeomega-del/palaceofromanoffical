@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { fetchProducts } from "@/lib/shopify";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
+import { fetchProductsPage } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
 
 export const Route = createFileRoute("/brand/$vendor")({
@@ -25,12 +26,15 @@ function BrandPage() {
   const { vendor } = Route.useParams();
   const name = unslug(vendor);
 
-  const productsQ = useQuery({
+  const q = useInfiniteQuery({
     queryKey: ["brand", vendor],
-    queryFn: () => fetchProducts({ first: 48, query: `vendor:"${name}"` }),
+    initialPageParam: null as string | null,
+    queryFn: ({ pageParam }) =>
+      fetchProductsPage({ first: 48, after: pageParam, query: `vendor:"${name}"` }),
+    getNextPageParam: (last) => (last.pageInfo.hasNextPage ? last.pageInfo.endCursor : undefined),
   });
 
-  const edges = productsQ.data ?? [];
+  const edges = useMemo(() => q.data?.pages.flatMap((p) => p.edges) ?? [], [q.data]);
 
   return (
     <div>
@@ -43,7 +47,7 @@ function BrandPage() {
             <h1 className="text-5xl md:text-7xl font-serif">{name}</h1>
             {edges.length > 0 && (
               <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                {edges.length} {edges.length === 1 ? "Piece" : "Pieces"}
+                {edges.length}{q.hasNextPage ? "+" : ""} {edges.length === 1 ? "Piece" : "Pieces"}
               </p>
             )}
           </div>
@@ -52,7 +56,7 @@ function BrandPage() {
 
       <section className="px-6 py-20">
         <div className="max-w-screen-2xl mx-auto">
-          {productsQ.isLoading ? (
+          {q.isLoading ? (
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
               {Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className="animate-pulse">
@@ -67,11 +71,24 @@ function BrandPage() {
               <p className="text-sm text-muted-foreground">No pieces currently available from {name}.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-16">
-              {edges.map((e) => (
-                <ProductCard key={e.node.id} product={e} />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-16">
+                {edges.map((e) => (
+                  <ProductCard key={e.node.id} product={e} />
+                ))}
+              </div>
+              {q.hasNextPage && (
+                <div className="mt-20 text-center">
+                  <button
+                    onClick={() => q.fetchNextPage()}
+                    disabled={q.isFetchingNextPage}
+                    className="px-10 py-3.5 ring-1 ring-ink text-[11px] uppercase tracking-[0.25em] hover:bg-ink hover:text-canvas transition-colors disabled:opacity-50"
+                  >
+                    {q.isFetchingNextPage ? "Loading…" : "Load More"}
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </section>

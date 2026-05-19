@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { fetchProducts } from "@/lib/shopify";
+import { fetchProductsPage } from "@/lib/shopify";
 
 export const Route = createFileRoute("/brands")({
   head: () => ({
@@ -15,15 +15,24 @@ export const Route = createFileRoute("/brands")({
 });
 
 function BrandsPage() {
-  // Sample first 250 products to extract a vendor list. (Storefront API has no direct vendor index.)
-  const sampleQ = useQuery({
+  // Scan the catalog in pages to extract vendors. Storefront API has no vendor index,
+  // so we walk products and dedupe. User can "Scan more" to keep going.
+  const sampleQ = useInfiniteQuery({
     queryKey: ["brands-sample"],
-    queryFn: () => fetchProducts({ first: 250, sortKey: "BEST_SELLING" }),
+    initialPageParam: null as string | null,
+    queryFn: ({ pageParam }) =>
+      fetchProductsPage({ first: 250, after: pageParam, sortKey: "BEST_SELLING" }),
+    getNextPageParam: (last) => (last.pageInfo.hasNextPage ? last.pageInfo.endCursor : undefined),
   });
+
+  const allEdges = useMemo(
+    () => sampleQ.data?.pages.flatMap((p) => p.edges) ?? [],
+    [sampleQ.data],
+  );
 
   const grouped = useMemo(() => {
     const map = new Map<string, number>();
-    for (const e of sampleQ.data ?? []) {
+    for (const e of allEdges) {
       const v = e.node.vendor?.trim();
       if (!v) continue;
       map.set(v, (map.get(v) ?? 0) + 1);
@@ -37,7 +46,7 @@ function BrandsPage() {
       byLetter.get(key)!.push({ vendor, count });
     }
     return Array.from(byLetter.entries()).sort((a, b) => a[0].localeCompare(b[0]));
-  }, [sampleQ.data]);
+  }, [allEdges]);
 
   return (
     <div className="px-6 py-16">
@@ -80,6 +89,20 @@ function BrandsPage() {
                 </div>
               </section>
             ))}
+            {sampleQ.hasNextPage && (
+              <div className="pt-10 text-center">
+                <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mb-4">
+                  {allEdges.length.toLocaleString()} pieces scanned · {grouped.reduce((n, [, v]) => n + v.length, 0)} houses found
+                </p>
+                <button
+                  onClick={() => sampleQ.fetchNextPage()}
+                  disabled={sampleQ.isFetchingNextPage}
+                  className="px-10 py-3.5 ring-1 ring-ink text-[11px] uppercase tracking-[0.25em] hover:bg-ink hover:text-canvas transition-colors disabled:opacity-50"
+                >
+                  {sampleQ.isFetchingNextPage ? "Scanning…" : "Scan more of the catalog"}
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>

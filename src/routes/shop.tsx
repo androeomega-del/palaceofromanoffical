@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { SlidersHorizontal, X } from "lucide-react";
 import { fetchSearchFiltered, type StorefrontFilterValue } from "@/lib/shopify";
@@ -47,20 +47,23 @@ function ShopPage() {
 
   const { sortKey, reverse } = mapSort(sort);
 
-  const q = useQuery({
+  const q = useInfiniteQuery({
     queryKey: ["shop-search", filterInputs, sortKey, reverse],
-    queryFn: () =>
+    initialPageParam: null as string | null,
+    queryFn: ({ pageParam }) =>
       fetchSearchFiltered({
         query: "*",
         first: 36,
+        after: pageParam,
         filters: filterInputs,
         sortKey,
         reverse,
       }),
+    getNextPageParam: (last) => (last.pageInfo.hasNextPage ? last.pageInfo.endCursor : undefined),
   });
 
-  const filters = q.data?.filters ?? [];
-  const edges = q.data?.edges ?? [];
+  const filters = q.data?.pages?.[0]?.filters ?? [];
+  const edges = useMemo(() => q.data?.pages.flatMap((p) => p.edges) ?? [], [q.data]);
 
   const selectedInputs = useMemo(() => new Set(selections.map((s) => s.input)), [selections]);
   const toggle = (filterId: string, v: StorefrontFilterValue) => {
@@ -91,7 +94,7 @@ function ShopPage() {
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <h1 className="text-4xl md:text-6xl font-serif">The Boutique</h1>
             <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-              {q.isLoading ? "Loading…" : `${edges.length} Pieces`}
+              {q.isLoading ? "Loading…" : `${edges.length}${q.hasNextPage ? "+" : ""} Pieces`}
             </p>
           </div>
         </div>
@@ -141,11 +144,24 @@ function ShopPage() {
                 )}
               </div>
             ) : (
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-16">
-                {edges.map((e) => (
-                  <ProductCard key={e.node.id} product={e} />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-16">
+                  {edges.map((e) => (
+                    <ProductCard key={e.node.id} product={e} />
+                  ))}
+                </div>
+                {q.hasNextPage && (
+                  <div className="mt-20 text-center">
+                    <button
+                      onClick={() => q.fetchNextPage()}
+                      disabled={q.isFetchingNextPage}
+                      className="px-10 py-3.5 ring-1 ring-ink text-[11px] uppercase tracking-[0.25em] hover:bg-ink hover:text-canvas transition-colors disabled:opacity-50"
+                    >
+                      {q.isFetchingNextPage ? "Loading…" : "Load More"}
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
