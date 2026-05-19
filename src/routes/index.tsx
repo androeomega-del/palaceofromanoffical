@@ -32,36 +32,38 @@ type CategoryTileDef = {
   linkTo: "collection" | "shop";
 };
 
-const WOMENS_CLOTHING_QUERY = "dress OR gown OR blouse OR skirt OR coat OR top OR jacket OR knit OR cardigan OR pants OR suit";
-const WOMENS_SHOES_QUERY = "heels OR pumps OR sandals OR boots OR stilettos OR mules OR loafers OR sneakers";
+export const WOMENS_CLOTHING_HANDLE = "womens-clothing";
+export const WOMENS_SHOES_HANDLE = "womens-shoes";
+export const MENS_CLOTHING_HANDLE = "mens-clothing";
+export const MENS_SHOES_HANDLE = "mens-shoes";
 
 const CATEGORY_TILES: CategoryTileDef[] = [
   {
-    key: "womens-clothing",
+    key: WOMENS_CLOTHING_HANDLE,
     label: "Women's Clothing",
     caption: "Dresses, tailoring & ready-to-wear",
-    source: { kind: "search", query: WOMENS_CLOTHING_QUERY, title: "Women's Clothing" },
-    linkTo: "shop",
-  },
-  {
-    key: "womens-shoes",
-    label: "Women's Shoes",
-    caption: "Heels, boots & sandals",
-    source: { kind: "search", query: WOMENS_SHOES_QUERY, title: "Women's Shoes" },
-    linkTo: "shop",
-  },
-  {
-    key: "mens-clothing",
-    label: "Men's Clothing",
-    caption: "Tailoring & considered staples",
-    source: { kind: "collection", handle: "mens-luxury-clothing" },
+    source: { kind: "collection", handle: WOMENS_CLOTHING_HANDLE },
     linkTo: "collection",
   },
   {
-    key: "mens-shoes",
+    key: WOMENS_SHOES_HANDLE,
+    label: "Women's Shoes",
+    caption: "Heels, boots & sandals",
+    source: { kind: "collection", handle: WOMENS_SHOES_HANDLE },
+    linkTo: "collection",
+  },
+  {
+    key: MENS_CLOTHING_HANDLE,
+    label: "Men's Clothing",
+    caption: "Tailoring & considered staples",
+    source: { kind: "collection", handle: MENS_CLOTHING_HANDLE },
+    linkTo: "collection",
+  },
+  {
+    key: MENS_SHOES_HANDLE,
     label: "Men's Shoes",
     caption: "Designer footwear",
-    source: { kind: "collection", handle: "mens-designer-shoes" },
+    source: { kind: "collection", handle: MENS_SHOES_HANDLE },
     linkTo: "collection",
   },
 ];
