@@ -265,16 +265,18 @@ function HomePage() {
             </Link>
           </div>
           <div className="order-1 md:order-2">
-            <Link to="/editorial/may-2026" className="block group">
-              <div className="w-full aspect-[4/5] bg-canvas-raised overflow-hidden">
-                <img
-                  src={editorialHero}
-                  alt="May 2026 Editorial — Quiet authority"
-                  loading="lazy"
-                  className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-[1.02]"
-                />
-              </div>
-            </Link>
+            <EditorialHotspots
+              src={editorialHero}
+              alt="May 2026 Editorial — Quiet authority"
+              hotspots={[
+                { x: 80, y: 11, label: "Sunglasses", handle: "alexander-mcqueen-black-acetate-sunglasses" },
+                { x: 47, y: 56, label: "Shoulder bag", handle: "alexander-mcqueen-black-calf-leather-bos-taurus-shoulder-bag" },
+                { x: 22, y: 88, label: "Sneakers", handle: "alexander-mcqueen-beige-calf-leather-bos-taurus-chunky-sneakers" },
+              ]}
+            />
+            <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mt-3">
+              Tap the markers to shop the look
+            </p>
           </div>
         </div>
       </section>
