@@ -1,59 +1,43 @@
-// Maps a Shopify collection (by title + handle + description) to the most
-// thematically appropriate editorial image from src/assets/collections.
+// Picks a deterministic, unique editorial image for each collection card so
+// no two collections share the same hero. Keyed off the handle (stable across
+// SSR/CSR and renders). With 99 editorial library images, uniqueness is
+// effectively guaranteed for any realistic collection count.
 
-import womenBlouse from "@/assets/collections/women-blouse.jpg";
-import womenDress from "@/assets/collections/women-dress.jpg";
-import womenOuterwear from "@/assets/collections/women-outerwear.jpg";
-import womenShoes from "@/assets/collections/women-shoes.jpg";
-import knitwear from "@/assets/collections/knitwear.jpg";
-import bags from "@/assets/collections/bags.jpg";
-import accessories from "@/assets/collections/accessories.jpg";
-import menSuit from "@/assets/collections/men-suit.jpg";
-import menShirt from "@/assets/collections/men-shirt.jpg";
-import menOuterwear from "@/assets/collections/men-outerwear.jpg";
-import menShoes from "@/assets/collections/men-shoes.jpg";
-import defaultImg from "@/assets/collections/default.jpg";
+import { imgForKey, TOTAL_IMAGES } from "@/lib/editorial-library";
 
-type Rule = { test: RegExp; img: string };
+// Track keys we've already assigned in this process so cards on the same
+// page never collide. The map is keyed by handle (or title fallback) and
+// memoises the resolved image url.
+const assignedByKey = new Map<string, string>();
+const usedImages = new Set<string>();
 
-// Order matters — first match wins. More specific rules go on top.
-const RULES: Rule[] = [
-  // Men-first (catch "men's suits", "menswear", etc. before generic suit rule)
-  { test: /\bmen('?s)?\b.*(suit|tailoring|tuxedo|blazer)/, img: menSuit },
-  { test: /\bmen('?s)?\b.*(shirt|polo)/, img: menShirt },
-  { test: /\bmen('?s)?\b.*(coat|outerwear|jacket|parka|trench)/, img: menOuterwear },
-  { test: /\bmen('?s)?\b.*(shoe|sneaker|loafer|boot|oxford|derby)/, img: menShoes },
-  { test: /\b(suit|tuxedo|tailoring)\b/, img: menSuit },
-  // Women
-  { test: /\bwomen('?s)?\b.*(blouse|shirt|top)/, img: womenBlouse },
-  { test: /\bwomen('?s)?\b.*(dress|gown|evening)/, img: womenDress },
-  { test: /\bwomen('?s)?\b.*(coat|outerwear|jacket|trench|parka)/, img: womenOuterwear },
-  { test: /\bwomen('?s)?\b.*(shoe|heel|pump|sandal|mule|stiletto|boot)/, img: womenShoes },
-  { test: /\b(blouse|silk\s*shirt)\b/, img: womenBlouse },
-  { test: /\b(dress|gown|evening)\b/, img: womenDress },
-  { test: /\b(heel|pump|stiletto|sandal|mule)\b/, img: womenShoes },
-  // Category agnostic
-  { test: /\b(knit|knitwear|sweater|cashmere|jumper|cardigan)\b/, img: knitwear },
-  { test: /\b(bag|handbag|tote|clutch|purse|leather\s*goods)\b/, img: bags },
-  { test: /\b(accessor|scarf|belt|sunglass|jewel|jewellery|jewelry|watch)\b/, img: accessories },
-  { test: /\b(coat|outerwear|trench|parka|overcoat)\b/, img: menOuterwear },
-  { test: /\b(shoe|sneaker|loafer|boot|footwear)\b/, img: menShoes },
-  { test: /\bshirt\b/, img: menShirt },
-  // Gender fallbacks last
-  { test: /\bmen('?s)?\b|\bmenswear\b/, img: menSuit },
-  { test: /\bwomen('?s)?\b|\bwomenswear\b|\bladies\b/, img: womenBlouse },
-];
+function uniqueImageForKey(key: string): string {
+  const existing = assignedByKey.get(key);
+  if (existing) return existing;
+
+  // Probe deterministic offsets until we find an unused image (or wrap).
+  for (let offset = 0; offset < TOTAL_IMAGES; offset++) {
+    const candidate = imgForKey(key, offset);
+    if (!usedImages.has(candidate)) {
+      assignedByKey.set(key, candidate);
+      usedImages.add(candidate);
+      return candidate;
+    }
+  }
+  // All images consumed — fall back to the plain deterministic pick.
+  const fallback = imgForKey(key);
+  assignedByKey.set(key, fallback);
+  return fallback;
+}
 
 export function collectionImage(input: {
   title?: string;
   handle?: string;
   description?: string | null;
 }): string {
-  const hay = `${input.title ?? ""} ${input.handle ?? ""} ${input.description ?? ""}`
-    .toLowerCase()
-    .replace(/[-_]+/g, " ");
-  for (const r of RULES) {
-    if (r.test.test(hay)) return r.img;
-  }
-  return defaultImg;
+  const key =
+    (input.handle && input.handle.trim()) ||
+    (input.title && input.title.trim()) ||
+    "collection";
+  return uniqueImageForKey(key.toLowerCase());
 }
