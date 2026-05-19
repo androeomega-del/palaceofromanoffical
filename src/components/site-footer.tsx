@@ -65,6 +65,15 @@ export function SiteFooter() {
             >
               Facebook
             </a>
+            <a
+              href="https://www.tiktok.com/@palaceofroman"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Palace of Roman on TikTok"
+              className="hover:text-ink transition-colors"
+            >
+              TikTok
+            </a>
             <Link to="/privacy" className="hover:text-ink transition-colors">Privacy</Link>
             <Link to="/terms" className="hover:text-ink transition-colors">Terms</Link>
           </div>
