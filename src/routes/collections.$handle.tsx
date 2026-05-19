@@ -271,9 +271,6 @@ function CollectionPage() {
                   )
                 }
               />
-              <div className="hidden md:block">
-                <CatalogSort value={sort} onChange={setSort} />
-              </div>
             </div>
 
             {/* Controls */}
@@ -284,9 +281,6 @@ function CollectionPage() {
               >
                 <SlidersHorizontal className="h-3.5 w-3.5" /> Refine
               </button>
-              <div className="md:hidden">
-                <CatalogSort value={sort} onChange={setSort} />
-              </div>
             </div>
 
             {/* Product type chips — derived from titles in the current result set */}
