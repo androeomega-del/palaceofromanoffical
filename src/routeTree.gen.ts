@@ -29,6 +29,7 @@ import { Route as EditorialTheNewEveningRouteImport } from './routes/editorial.t
 import { Route as EditorialResort2026RouteImport } from './routes/editorial.resort-2026'
 import { Route as EditorialMay2026RouteImport } from './routes/editorial.may-2026'
 import { Route as CollectionsHandleRouteImport } from './routes/collections.$handle'
+import { Route as CampaignDolceGabbanaSwimRouteImport } from './routes/campaign.dolce-gabbana-swim'
 import { Route as BrandVendorRouteImport } from './routes/brand.$vendor'
 
 const TermsRoute = TermsRouteImport.update({
@@ -131,6 +132,12 @@ const CollectionsHandleRoute = CollectionsHandleRouteImport.update({
   path: '/collections/$handle',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CampaignDolceGabbanaSwimRoute =
+  CampaignDolceGabbanaSwimRouteImport.update({
+    id: '/campaign/dolce-gabbana-swim',
+    path: '/campaign/dolce-gabbana-swim',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const BrandVendorRoute = BrandVendorRouteImport.update({
   id: '/brand/$vendor',
   path: '/brand/$vendor',
@@ -152,6 +159,7 @@ export interface FileRoutesByFullPath {
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
   '/brand/$vendor': typeof BrandVendorRoute
+  '/campaign/dolce-gabbana-swim': typeof CampaignDolceGabbanaSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
   '/editorial/may-2026': typeof EditorialMay2026Route
   '/editorial/resort-2026': typeof EditorialResort2026Route
@@ -175,6 +183,7 @@ export interface FileRoutesByTo {
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
   '/brand/$vendor': typeof BrandVendorRoute
+  '/campaign/dolce-gabbana-swim': typeof CampaignDolceGabbanaSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
   '/editorial/may-2026': typeof EditorialMay2026Route
   '/editorial/resort-2026': typeof EditorialResort2026Route
@@ -199,6 +208,7 @@ export interface FileRoutesById {
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
   '/brand/$vendor': typeof BrandVendorRoute
+  '/campaign/dolce-gabbana-swim': typeof CampaignDolceGabbanaSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
   '/editorial/may-2026': typeof EditorialMay2026Route
   '/editorial/resort-2026': typeof EditorialResort2026Route
@@ -224,6 +234,7 @@ export interface FileRouteTypes {
     | '/swim'
     | '/terms'
     | '/brand/$vendor'
+    | '/campaign/dolce-gabbana-swim'
     | '/collections/$handle'
     | '/editorial/may-2026'
     | '/editorial/resort-2026'
@@ -247,6 +258,7 @@ export interface FileRouteTypes {
     | '/swim'
     | '/terms'
     | '/brand/$vendor'
+    | '/campaign/dolce-gabbana-swim'
     | '/collections/$handle'
     | '/editorial/may-2026'
     | '/editorial/resort-2026'
@@ -270,6 +282,7 @@ export interface FileRouteTypes {
     | '/swim'
     | '/terms'
     | '/brand/$vendor'
+    | '/campaign/dolce-gabbana-swim'
     | '/collections/$handle'
     | '/editorial/may-2026'
     | '/editorial/resort-2026'
@@ -294,6 +307,7 @@ export interface RootRouteChildren {
   SwimRoute: typeof SwimRouteWithChildren
   TermsRoute: typeof TermsRoute
   BrandVendorRoute: typeof BrandVendorRoute
+  CampaignDolceGabbanaSwimRoute: typeof CampaignDolceGabbanaSwimRoute
   CollectionsHandleRoute: typeof CollectionsHandleRoute
   EditorialMay2026Route: typeof EditorialMay2026Route
   EditorialResort2026Route: typeof EditorialResort2026Route
@@ -444,6 +458,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CollectionsHandleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/campaign/dolce-gabbana-swim': {
+      id: '/campaign/dolce-gabbana-swim'
+      path: '/campaign/dolce-gabbana-swim'
+      fullPath: '/campaign/dolce-gabbana-swim'
+      preLoaderRoute: typeof CampaignDolceGabbanaSwimRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/brand/$vendor': {
       id: '/brand/$vendor'
       path: '/brand/$vendor'
@@ -479,6 +500,7 @@ const rootRouteChildren: RootRouteChildren = {
   SwimRoute: SwimRouteWithChildren,
   TermsRoute: TermsRoute,
   BrandVendorRoute: BrandVendorRoute,
+  CampaignDolceGabbanaSwimRoute: CampaignDolceGabbanaSwimRoute,
   CollectionsHandleRoute: CollectionsHandleRoute,
   EditorialMay2026Route: EditorialMay2026Route,
   EditorialResort2026Route: EditorialResort2026Route,
