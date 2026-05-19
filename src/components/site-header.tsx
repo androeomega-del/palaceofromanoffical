@@ -1,34 +1,31 @@
 import { Link } from "@tanstack/react-router";
-import { Search, User, ShoppingBag } from "lucide-react";
-import { useState } from "react";
+import { Search, User, ShoppingBag, Menu, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useCartStore } from "@/stores/cart-store";
 import { CartDrawer } from "@/components/cart-drawer";
 import { ReducedMotionToggle } from "@/components/reduced-motion-toggle";
+import { DesktopMegamenu, MobileMegamenu } from "@/components/megamenu";
 
-type NavItem = {
+type FlatItem = {
   label: string;
   to: string;
   params?: Record<string, string>;
-  search?: Record<string, string>;
   accent?: boolean;
 };
 
-const NAV_LEFT: NavItem[] = [
+// Flat (non-megamenu) links. Department links (Women / Men) are rendered
+// separately by <DesktopMegamenu /> and <MobileMegamenu />.
+const FLAT_LEFT: FlatItem[] = [
   { to: "/shop", label: "Shop" },
   { to: "/collections", label: "Collections" },
-  { to: "/collections/$handle", params: { handle: "womens-clothing" }, label: "Women's Clothing" },
-  { to: "/collections/$handle", params: { handle: "womens-shoes" }, label: "Women's Shoes" },
 ];
-const NAV_RIGHT: NavItem[] = [
-  { to: "/collections/$handle", params: { handle: "mens-clothing" }, label: "Men's Clothing" },
-  { to: "/collections/$handle", params: { handle: "mens-shoes" }, label: "Men's Shoes" },
+const FLAT_RIGHT: FlatItem[] = [
   { to: "/brands", label: "Brands" },
   { to: "/journal", label: "Journal" },
   { to: "/collections/$handle", params: { handle: "high-discounts" }, label: "Sale", accent: true },
 ];
-const NAV_MOBILE: NavItem[] = [...NAV_LEFT, ...NAV_RIGHT];
 
-function NavLinks({ items }: { items: NavItem[] }) {
+function FlatLinks({ items }: { items: FlatItem[] }) {
   return (
     <>
       {items.map((n) => (
@@ -36,8 +33,9 @@ function NavLinks({ items }: { items: NavItem[] }) {
           key={n.label}
           to={n.to as any}
           params={n.params as any}
-          search={n.search as any}
-          className={`hover:text-bronze transition-colors whitespace-nowrap ${n.accent ? "text-bronze" : ""}`}
+          className={`hover:text-bronze transition-colors whitespace-nowrap py-2 ${
+            n.accent ? "text-bronze" : ""
+          }`}
         >
           {n.label}
         </Link>
@@ -49,18 +47,41 @@ function NavLinks({ items }: { items: NavItem[] }) {
 export function SiteHeader() {
   const totalItems = useCartStore((s) => s.items.reduce((sum, i) => sum + i.quantity, 0));
   const [cartOpen, setCartOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Lock body scroll when mobile drawer is open
+  useEffect(() => {
+    if (mobileOpen) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = prev;
+      };
+    }
+  }, [mobileOpen]);
 
   return (
     <>
       <div className="w-full bg-canvas-raised text-bronze/90 text-[10px] py-2 uppercase tracking-[0.3em] text-center border-b border-ink/5">
         Authenticity Guaranteed — Complimentary Global Shipping over $1,200
       </div>
-      <header className="sticky top-0 z-50 bg-canvas/90 backdrop-blur-md border-b border-ink/10">
+      <header className="sticky top-0 z-50 bg-canvas/95 backdrop-blur-md border-b border-ink/10">
         <div className="max-w-screen-2xl mx-auto px-6 h-20 grid grid-cols-[1fr_auto_1fr] items-center gap-8">
+          {/* Left nav (desktop) */}
           <nav className="hidden lg:flex items-center gap-8 text-[11px] uppercase tracking-[0.25em] font-medium justify-self-start">
-            <NavLinks items={NAV_LEFT} />
+            <FlatLinks items={FLAT_LEFT} />
+            <DesktopMegamenu />
           </nav>
-          <div className="lg:hidden" />
+
+          {/* Mobile menu trigger */}
+          <button
+            type="button"
+            aria-label="Open menu"
+            onClick={() => setMobileOpen(true)}
+            className="lg:hidden justify-self-start hover:text-bronze transition-colors"
+          >
+            <Menu className="w-5 h-5" strokeWidth={1.25} />
+          </button>
 
           <Link
             to="/"
@@ -71,7 +92,7 @@ export function SiteHeader() {
 
           <div className="flex items-center gap-8 justify-self-end">
             <nav className="hidden lg:flex items-center gap-8 text-[11px] uppercase tracking-[0.25em] font-medium">
-              <NavLinks items={NAV_RIGHT} />
+              <FlatLinks items={FLAT_RIGHT} />
             </nav>
             <div className="flex items-center gap-5">
               <button aria-label="Search" className="hidden md:block hover:text-bronze transition-colors">
@@ -92,21 +113,61 @@ export function SiteHeader() {
             </div>
           </div>
         </div>
-
-        <nav className="lg:hidden flex items-center justify-center gap-6 px-6 py-3 text-[11px] uppercase tracking-[0.2em] border-t border-ink/5 overflow-x-auto scrollbar-hide">
-          {NAV_MOBILE.map((n) => (
-            <Link
-              key={n.label}
-              to={n.to as any}
-              params={n.params as any}
-              search={n.search as any}
-              className={`hover:text-bronze transition-colors whitespace-nowrap ${n.accent ? "text-bronze" : ""}`}
-            >
-              {n.label}
-            </Link>
-          ))}
-        </nav>
       </header>
+
+      {/* Mobile slide-in drawer */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-[60] lg:hidden">
+          <div
+            className="absolute inset-0 bg-ink/40 backdrop-blur-sm"
+            onClick={() => setMobileOpen(false)}
+            aria-hidden="true"
+          />
+          <div className="absolute left-0 top-0 h-full w-[88%] max-w-sm bg-canvas shadow-2xl flex flex-col">
+            <div className="flex items-center justify-between px-6 h-20 border-b border-ink/10">
+              <Link
+                to="/"
+                onClick={() => setMobileOpen(false)}
+                className="text-base font-serif tracking-[0.18em] uppercase"
+              >
+                Palace of Roman
+              </Link>
+              <button
+                type="button"
+                aria-label="Close menu"
+                onClick={() => setMobileOpen(false)}
+                className="hover:text-bronze"
+              >
+                <X className="w-5 h-5" strokeWidth={1.25} />
+              </button>
+            </div>
+            <div
+              className="flex-1 overflow-y-auto px-6 py-4"
+              onClick={(e) => {
+                // Auto-close when tapping any link inside the drawer
+                if ((e.target as HTMLElement).closest("a")) setMobileOpen(false);
+              }}
+            >
+              <MobileMegamenu />
+              <div className="mt-4 pt-4 border-t border-ink/10 flex flex-col gap-1">
+                {[...FLAT_LEFT, ...FLAT_RIGHT].map((n) => (
+                  <Link
+                    key={n.label}
+                    to={n.to as any}
+                    params={n.params as any}
+                    className={`py-3 text-[12px] uppercase tracking-[0.3em] ${
+                      n.accent ? "text-bronze" : "text-ink"
+                    }`}
+                  >
+                    {n.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <CartDrawer open={cartOpen} onOpenChange={setCartOpen} />
     </>
   );
