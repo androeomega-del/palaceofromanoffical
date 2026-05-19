@@ -110,7 +110,7 @@ function CollectionPage() {
 
   const [selections, setSelections] = useState<Selection[]>([]);
   const [priceRange, setPriceRange] = useState<{ min: number; max: number } | null>(null);
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
 
   // Keyword-based product type derivation. The Shopify product_type field on
