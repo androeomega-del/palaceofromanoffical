@@ -15,11 +15,19 @@ export type SortValue =
   | "TITLE-false";
 
 export const SORT_OPTIONS: { value: SortValue; label: string }[] = [
-  { value: "BEST_SELLING-false", label: "Popularity" },
-  { value: "CREATED-true", label: "Newest" },
+  { value: "BEST_SELLING-false", label: "Best Selling" },
+  { value: "CREATED-true", label: "New Arrivals" },
   { value: "TITLE-false", label: "A–Z" },
   { value: "PRICE-false", label: "Price: Low to High" },
   { value: "PRICE-true", label: "Price: High to Low" },
+];
+
+// Compact quick-preset pills surfaced above the grid on collection pages
+export const SORT_PRESETS: { value: SortValue; label: string }[] = [
+  { value: "CREATED-true", label: "New Arrivals" },
+  { value: "BEST_SELLING-false", label: "Best Selling" },
+  { value: "PRICE-false", label: "Price ↑" },
+  { value: "PRICE-true", label: "Price ↓" },
 ];
 
 // --- Helpers ---
