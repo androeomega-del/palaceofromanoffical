@@ -130,7 +130,7 @@ function HomePage() {
   return (
     <>
       {/* 1. HERO */}
-      <section className="noir relative w-full">
+      <section className="relative w-full">
         <div className="relative w-full aspect-[16/10] md:aspect-[16/7] overflow-hidden bg-muted">
           <img
             src={heroImage}
