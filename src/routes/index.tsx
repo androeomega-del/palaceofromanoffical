@@ -7,6 +7,10 @@ import { EditorialHotspots } from "@/components/editorial-hotspots";
 import heroImage from "@/assets/home-hero.jpg";
 import summerHero from "@/assets/summer-bento-hero.jpg";
 import editorialHero from "@/assets/editorial/may-2026/1.webp";
+import marketingWomen from "@/assets/marketing-women-summer.jpg";
+import marketingMen from "@/assets/marketing-men-summer.jpg";
+import marketingAccessories from "@/assets/marketing-accessories-summer.jpg";
+import marketingSwim from "@/assets/marketing-swim-summer.jpg";
 import { img } from "@/lib/editorial-library";
 
 export const Route = createFileRoute("/")({
@@ -154,10 +158,10 @@ function HomePage() {
     <>
       {/* 1. SUMMER BENTO STOREFRONT — Architectural Resort */}
       <SummerBento
-        womenImage={womenEditorialQ.data?.[0]?.node?.images?.edges?.[0]?.node}
-        menImage={menEditorialQ.data?.[0]?.node?.images?.edges?.[0]?.node}
-        accessoriesImage={newArrivalsQ.data?.[0]?.node?.images?.edges?.[0]?.node}
-        swimImage={swimwearQ.data?.[0]?.node?.images?.edges?.[0]?.node}
+        womenImage={{ url: marketingWomen, altText: "Women's Resort 2026 — Mediterranean Edit" }}
+        menImage={{ url: marketingMen, altText: "Men's Resort 2026 — Amalfi Coast" }}
+        accessoriesImage={{ url: marketingAccessories, altText: "Summer Accessories — Designer Edit" }}
+        swimImage={{ url: marketingSwim, altText: "Designer Swimwear — Riviera Edit" }}
         spotlightVendor={featuredBrands[0]?.name}
         spotlightSlug={featuredBrands[0]?.slug}
       />
@@ -609,18 +613,19 @@ function SummerBento({
               src={swimImage.url}
               alt={swimImage.altText ?? "Designer swimwear"}
               loading="lazy"
-              className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-multiply transition-transform duration-700 group-hover:scale-110"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             />
           )}
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/60 via-ink/20 to-transparent" />
           <div className="relative z-10 p-8 md:p-10">
-            <span className="text-[10px] uppercase tracking-[0.3em] text-ink/80 mb-3 block">
+            <span className="text-[10px] uppercase tracking-[0.3em] text-canvas/90 mb-3 block">
               The Beach Edit
             </span>
-            <h3 className="font-serif text-3xl md:text-4xl text-ink mb-3 leading-tight">
+            <h3 className="font-serif text-3xl md:text-4xl text-canvas mb-3 leading-tight">
               Bikinis &amp;
               <span className="block italic">Swimwear</span>
             </h3>
-            <p className="text-[11px] tracking-[0.25em] text-ink/85 uppercase">
+            <p className="text-[11px] tracking-[0.25em] text-canvas/85 uppercase">
               Dolce &amp; Gabbana — In Stock
             </p>
           </div>
@@ -641,7 +646,7 @@ function SummerBento({
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             />
           )}
-          <div className="absolute inset-0 bg-[var(--sea)]/25 mix-blend-multiply" />
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-ink/10 to-transparent" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
               <h3 className="font-serif italic text-4xl md:text-5xl text-canvas">Women</h3>
