@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { NewsletterForm } from "@/components/newsletter-form";
 
 export function SiteFooter() {
   return (
