@@ -72,8 +72,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Palace of Roman — Curated Luxury Fashion" },
       { name: "twitter:description", content: "Curated luxury fashion from Gucci, Prada, Saint Laurent, Armani and 500+ designer houses. 100% authentic, shipped worldwide." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/25362ba6-ae2d-46dc-b3e9-9ba1c9b645dd/id-preview-c555be94--a70dea94-4a98-4b06-9d12-c49a8efe251f.lovable.app-1779197915411.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/25362ba6-ae2d-46dc-b3e9-9ba1c9b645dd/id-preview-c555be94--a70dea94-4a98-4b06-9d12-c49a8efe251f.lovable.app-1779197915411.png" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/d3633d38-5bae-4a69-b9bc-c6762b9650c4" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/d3633d38-5bae-4a69-b9bc-c6762b9650c4" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
