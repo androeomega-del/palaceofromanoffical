@@ -14,6 +14,7 @@ import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ShippingReturnsRouteImport } from './routes/shipping-returns'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as BrandsRouteImport } from './routes/brands'
+import { Route as AuthenticationRouteImport } from './routes/authentication'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CollectionsIndexRouteImport } from './routes/collections.index'
 import { Route as ProductHandleRouteImport } from './routes/product.$handle'
@@ -44,6 +45,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
 const BrandsRoute = BrandsRouteImport.update({
   id: '/brands',
   path: '/brands',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticationRoute = AuthenticationRouteImport.update({
+  id: '/authentication',
+  path: '/authentication',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -79,6 +85,7 @@ const BrandVendorRoute = BrandVendorRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/authentication': typeof AuthenticationRoute
   '/brands': typeof BrandsRoute
   '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
@@ -92,6 +99,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/authentication': typeof AuthenticationRoute
   '/brands': typeof BrandsRoute
   '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
@@ -106,6 +114,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/authentication': typeof AuthenticationRoute
   '/brands': typeof BrandsRoute
   '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/authentication'
     | '/brands'
     | '/privacy'
     | '/shipping-returns'
@@ -134,6 +144,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/authentication'
     | '/brands'
     | '/privacy'
     | '/shipping-returns'
@@ -147,6 +158,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/authentication'
     | '/brands'
     | '/privacy'
     | '/shipping-returns'
@@ -161,6 +173,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticationRoute: typeof AuthenticationRoute
   BrandsRoute: typeof BrandsRoute
   PrivacyRoute: typeof PrivacyRoute
   ShippingReturnsRoute: typeof ShippingReturnsRoute
@@ -210,6 +223,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BrandsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/authentication': {
+      id: '/authentication'
+      path: '/authentication'
+      fullPath: '/authentication'
+      preLoaderRoute: typeof AuthenticationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -257,6 +277,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticationRoute: AuthenticationRoute,
   BrandsRoute: BrandsRoute,
   PrivacyRoute: PrivacyRoute,
   ShippingReturnsRoute: ShippingReturnsRoute,
