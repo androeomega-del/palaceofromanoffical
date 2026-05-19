@@ -486,10 +486,10 @@ function VariantOption({
                 onClick={() => candidate && onSelect(candidate)}
                 disabled={!candidate}
                 title={value + (unavailable ? " — sold out" : "")}
-                className={`relative h-9 w-9 rounded-full border transition-all ${
+                className={`relative h-10 w-10 rounded-full border transition-all ${
                   active
-                    ? "border-ink ring-2 ring-offset-2 ring-ink/30"
-                    : "border-ink/20 hover:border-ink/60"
+                    ? "border-[var(--studio-ink)] ring-2 ring-offset-2 ring-[var(--studio-ink)]/20 ring-offset-[var(--studio-bg)]"
+                    : "border-[var(--studio-ink)]/20 hover:border-[var(--studio-ink)]/60"
                 } ${unavailable ? "opacity-40" : ""}`}
                 style={{ background: swatchFor(value) }}
               >
@@ -507,13 +507,16 @@ function VariantOption({
               key={value}
               onClick={() => candidate && onSelect(candidate)}
               disabled={!candidate}
-              className={`min-w-[3rem] h-11 px-4 text-xs uppercase tracking-widest border transition-colors ${
-                active ? "border-ink bg-ink text-canvas" : "border-ink/15 hover:border-ink"
+              className={`min-w-16 h-14 px-4 text-[11px] uppercase tracking-widest border transition-all duration-300 ${
+                active
+                  ? "border-[var(--studio-ink)] bg-[var(--studio-ink)] text-[var(--studio-bg)]"
+                  : "border-[var(--studio-ink)]/10 bg-white hover:border-[var(--studio-ink)]"
               } ${unavailable ? "line-through opacity-50" : ""}`}
             >
               {value}
             </button>
           );
+
         })}
       </div>
     </div>
