@@ -233,7 +233,9 @@ function ProductView({
         selectedOptions: selectedVariant.selectedOptions ?? [],
       });
     }
+    openDrawer();
     toast.success(quantity === 1 ? "Added to bag" : `${quantity} added to bag`);
+
   };
 
   const relatedQ = useQuery({
