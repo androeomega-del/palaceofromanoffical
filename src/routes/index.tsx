@@ -650,7 +650,9 @@ function SummerBento({
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
               <h3 className="font-serif italic text-4xl md:text-5xl text-canvas">Women</h3>
-              <div className="h-px w-0 group-hover:w-full bg-canvas transition-all duration-500 mt-3 mx-auto" />
+              <span className="mt-4 inline-block text-[10px] uppercase tracking-[0.3em] text-canvas border-b border-canvas/40 pb-1 group-hover:border-canvas">
+                Shop the Edit
+              </span>
             </div>
           </div>
         </Link>
@@ -695,11 +697,14 @@ function SummerBento({
             />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-ink/40 to-transparent" />
-          <div className="absolute bottom-6 md:bottom-8 left-6 md:left-8">
+          <div className="absolute bottom-6 md:bottom-8 left-6 md:left-8 right-6">
             <h3 className="font-serif text-3xl md:text-4xl text-canvas">The Men's Edit</h3>
             <p className="text-[10px] uppercase tracking-[0.3em] text-canvas/80 mt-2">
               Effortless Sophistication
             </p>
+            <span className="mt-4 inline-block text-[10px] uppercase tracking-[0.3em] text-canvas border-b border-canvas/40 pb-1 group-hover:border-canvas">
+              Shop the Look
+            </span>
           </div>
         </Link>
 
