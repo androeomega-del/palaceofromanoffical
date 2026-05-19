@@ -16,6 +16,8 @@ export type Database = {
     Tables: {
       collection_images: {
         Row: {
+          focal_x: number | null
+          focal_y: number | null
           handle: string
           height: number | null
           image_url: string
@@ -26,6 +28,8 @@ export type Database = {
           width: number | null
         }
         Insert: {
+          focal_x?: number | null
+          focal_y?: number | null
           handle: string
           height?: number | null
           image_url: string
@@ -36,6 +40,8 @@ export type Database = {
           width?: number | null
         }
         Update: {
+          focal_x?: number | null
+          focal_y?: number | null
           handle?: string
           height?: number | null
           image_url?: string
