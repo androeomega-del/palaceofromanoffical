@@ -117,7 +117,7 @@ function HomePage() {
       </section>
 
       {/* 3. NEW ARRIVALS — horizontal scroll rail */}
-      <section className="py-24 bg-muted/30">
+      <section className="py-24 bg-canvas-raised">
         <div className="max-w-screen-2xl mx-auto">
           <div className="flex justify-between items-end mb-12 px-6">
             <div>
