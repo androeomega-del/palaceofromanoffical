@@ -87,10 +87,11 @@ function TermsPage() {
         <section>
           <SectionTitle kicker="07">Sourcing &amp; authenticity</SectionTitle>
           <p>
-            Palace of Roman is an independent curator and is not directly affiliated with the maisons listed on the
-            site. Every piece is sourced through an authorised European distribution partner and ships sealed from a
-            brand-authorised warehouse in its original packaging. The full chain of custody and our authenticity
-            guarantee are described on the{" "}
+            Palace of Roman is an official partner of BrandsGateway (Gateway Holdings OÜ, Estonia), authorised to
+            resell luxury fashion goods from the maisons listed on the site. Every piece is certified by our partner
+            as 100% authentic and sourced directly from the brands or their authorised distributors, and ships sealed
+            from a brand-authorised warehouse in its original packaging. The full chain of custody, our reseller
+            certificate and our authenticity guarantee are described on the{" "}
             <Link to="/authentication" className="underline decoration-bronze/60 underline-offset-4 hover:text-bronze">
               sourcing &amp; authenticity page
             </Link>
