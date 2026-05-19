@@ -536,7 +536,7 @@ function BrandsPanel({
         >
           <img
             src={featureImg}
-            alt=""
+            alt={collectionImageAlt({ handle: "best-selling-brands", title: "Best-selling luxury fashion brands" })}
             loading="lazy"
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
           />
