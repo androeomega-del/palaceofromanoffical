@@ -16,7 +16,7 @@ export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
       { title: "Concierge — Palace of Roman" },
-      { name: "description", content: "Write to our concierge for private appointments, sourcing requests, authentication or after-care." },
+      { name: "description", content: "Write to the Palace of Roman concierge for sourcing requests, sizing, styling or after-care. Same-day reply by email." },
       { property: "og:title", content: "Concierge — Palace of Roman" },
       { property: "og:image", content: img(8) },
     ],
