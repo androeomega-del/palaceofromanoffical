@@ -157,9 +157,36 @@ function HomePage() {
         womenImage={womenEditorialQ.data?.[0]?.node?.images?.edges?.[0]?.node}
         menImage={menEditorialQ.data?.[0]?.node?.images?.edges?.[0]?.node}
         accessoriesImage={newArrivalsQ.data?.[0]?.node?.images?.edges?.[0]?.node}
+        swimImage={swimwearQ.data?.[0]?.node?.images?.edges?.[0]?.node}
         spotlightVendor={featuredBrands[0]?.name}
         spotlightSlug={featuredBrands[0]?.slug}
       />
+
+      {/* 1b. SWIMWEAR RAIL — Bikinis, Beachwear, Resort */}
+      <section className="py-20 md:py-24 bg-canvas-raised">
+        <div className="max-w-screen-2xl mx-auto">
+          <div className="flex justify-between items-end mb-10 md:mb-12 px-6">
+            <div>
+              <span className="text-[10px] uppercase tracking-[0.3em] text-[var(--sea)] mb-3 block">
+                Sun, Sand &amp; Salt
+              </span>
+              <h2 className="text-3xl md:text-4xl font-serif">Swim &amp; Beachwear</h2>
+              <p className="text-xs md:text-sm text-muted-foreground mt-3 max-w-md">
+                Designer bikinis, swimsuits and resort pieces — built for the season.
+              </p>
+            </div>
+            <Link
+              to="/shop"
+              search={{ q: "tag:Swimwear OR tag:Beachwear", title: "Swim & Beachwear" }}
+              className="text-[11px] uppercase tracking-[0.25em] border-b border-ink/20 pb-1 hover:border-ink hidden md:inline-block"
+            >
+              Shop all swimwear
+            </Link>
+          </div>
+          <HorizontalRail edges={swimwearQ.data ?? []} loading={swimwearQ.isLoading} />
+        </div>
+      </section>
+
 
 
       {/* 3. NEW ARRIVALS — horizontal scroll rail */}
