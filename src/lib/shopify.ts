@@ -46,6 +46,7 @@ export interface ShopifyCollection {
   handle: string;
   description: string;
   image: ShopifyImage | null;
+  updatedAt?: string;
 }
 
 export async function storefrontApiRequest<T = any>(
@@ -140,7 +141,7 @@ export const COLLECTIONS_QUERY = `
     collections(first: $first) {
       edges {
         node {
-          id title handle description
+          id title handle description updatedAt
           image { url altText }
         }
       }

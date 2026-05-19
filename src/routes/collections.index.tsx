@@ -16,10 +16,22 @@ const FILTERS: { key: FilterKey; label: string }[] = [
 
 const FILTER_KEYS: FilterKey[] = FILTERS.map((f) => f.key);
 
+type SortKey = "popular" | "newest" | "alpha";
+const SORTS: { key: SortKey; label: string }[] = [
+  { key: "popular", label: "Popularity" },
+  { key: "newest", label: "Newest" },
+  { key: "alpha", label: "A–Z" },
+];
+const SORT_KEYS: SortKey[] = SORTS.map((s) => s.key);
+
 export const Route = createFileRoute("/collections/")({
-  validateSearch: (search: Record<string, unknown>): { filter: FilterKey } => {
-    const raw = typeof search.filter === "string" ? (search.filter as FilterKey) : "all";
-    return { filter: FILTER_KEYS.includes(raw) ? raw : "all" };
+  validateSearch: (search: Record<string, unknown>): { filter: FilterKey; sort: SortKey } => {
+    const rawFilter = typeof search.filter === "string" ? (search.filter as FilterKey) : "all";
+    const rawSort = typeof search.sort === "string" ? (search.sort as SortKey) : "popular";
+    return {
+      filter: FILTER_KEYS.includes(rawFilter) ? rawFilter : "all",
+      sort: SORT_KEYS.includes(rawSort) ? rawSort : "popular",
+    };
   },
   head: () => ({
     meta: [
@@ -49,7 +61,7 @@ function matchesFilter(c: ShopifyCollection, filter: FilterKey): boolean {
 }
 
 function CollectionsIndexPage() {
-  const { filter } = Route.useSearch();
+  const { filter, sort } = Route.useSearch();
   const navigate = useNavigate({ from: "/collections" });
 
   const q = useQuery({
@@ -58,7 +70,17 @@ function CollectionsIndexPage() {
   });
 
   const all = q.data ?? [];
-  const collections = useMemo(() => all.filter((c) => matchesFilter(c, filter)), [all, filter]);
+  const collections = useMemo(() => {
+    const filtered = all.filter((c) => matchesFilter(c, filter));
+    const sorted = [...filtered];
+    if (sort === "alpha") {
+      sorted.sort((a, b) => a.title.localeCompare(b.title));
+    } else if (sort === "newest") {
+      sorted.sort((a, b) => (b.updatedAt ?? "").localeCompare(a.updatedAt ?? ""));
+    }
+    // "popular" preserves Shopify's storefront order (manual/best-seller curated)
+    return sorted;
+  }, [all, filter, sort]);
 
   const counts = useMemo(() => {
     const result: Record<FilterKey, number> = { all: 0, women: 0, men: 0, clothing: 0, shoes: 0, luxury: 0 };
@@ -84,37 +106,63 @@ function CollectionsIndexPage() {
         </div>
       </section>
 
-      <section className="px-6 pt-8 pb-2 border-b border-ink/5">
-        <div className="max-w-screen-2xl mx-auto flex flex-wrap gap-2 md:gap-3">
-          {FILTERS.map((f) => {
-            const active = filter === f.key;
-            const count = counts[f.key];
-            const disabled = !q.isLoading && count === 0 && f.key !== "all";
-            return (
-              <button
-                key={f.key}
-                disabled={disabled}
-                onClick={() =>
-                  navigate({
-                    search: (prev: { filter: FilterKey }) => ({ ...prev, filter: f.key }),
-                    replace: true,
-                  })
-                }
-                className={`text-[11px] uppercase tracking-[0.25em] px-4 py-2.5 border transition-colors ${
-                  active
-                    ? "bg-ink text-canvas border-ink"
-                    : "border-ink/15 hover:border-ink hover:text-bronze"
-                } ${disabled ? "opacity-30 cursor-not-allowed hover:border-ink/15 hover:text-inherit" : ""}`}
-              >
-                {f.label}
-                {!q.isLoading && f.key !== "all" && (
-                  <span className="ml-2 opacity-60">({count})</span>
-                )}
-              </button>
-            );
-          })}
+      <section className="px-6 pt-8 pb-6 border-b border-ink/5">
+        <div className="max-w-screen-2xl mx-auto flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+          <div className="flex flex-wrap gap-2 md:gap-3">
+            {FILTERS.map((f) => {
+              const active = filter === f.key;
+              const count = counts[f.key];
+              const disabled = !q.isLoading && count === 0 && f.key !== "all";
+              return (
+                <button
+                  key={f.key}
+                  disabled={disabled}
+                  onClick={() =>
+                    navigate({
+                      search: (prev: { filter: FilterKey; sort: SortKey }) => ({ ...prev, filter: f.key }),
+                      replace: true,
+                    })
+                  }
+                  className={`text-[11px] uppercase tracking-[0.25em] px-4 py-2.5 border transition-colors ${
+                    active
+                      ? "bg-ink text-canvas border-ink"
+                      : "border-ink/15 hover:border-ink hover:text-bronze"
+                  } ${disabled ? "opacity-30 cursor-not-allowed hover:border-ink/15 hover:text-inherit" : ""}`}
+                >
+                  {f.label}
+                  {!q.isLoading && f.key !== "all" && (
+                    <span className="ml-2 opacity-60">({count})</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          <label className="flex items-center gap-3 text-[11px] uppercase tracking-[0.25em] text-muted-foreground self-start lg:self-auto">
+            Sort
+            <select
+              value={sort}
+              onChange={(e) =>
+                navigate({
+                  search: (prev: { filter: FilterKey; sort: SortKey }) => ({
+                    ...prev,
+                    sort: e.target.value as SortKey,
+                  }),
+                  replace: true,
+                })
+              }
+              className="bg-transparent border-b border-ink/30 focus:border-ink py-1 pr-6 text-[11px] uppercase tracking-[0.2em] text-ink focus:outline-none cursor-pointer"
+            >
+              {SORTS.map((s) => (
+                <option key={s.key} value={s.key}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
       </section>
+
 
       <section className="px-6 py-16">
         <div className="max-w-screen-2xl mx-auto">
@@ -131,7 +179,7 @@ function CollectionsIndexPage() {
             <div className="py-24 text-center">
               <p className="text-sm text-muted-foreground mb-6">No collections match this filter.</p>
               <button
-                onClick={() => navigate({ search: { filter: "all" }, replace: true })}
+                onClick={() => navigate({ search: { filter: "all", sort }, replace: true })}
                 className="text-[11px] uppercase tracking-[0.25em] border-b border-ink pb-1 hover:text-bronze hover:border-bronze"
               >
                 View All Collections
