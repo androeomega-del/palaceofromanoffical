@@ -46,13 +46,13 @@ async function fetchAllProductSlugs(): Promise<Array<{ handle: string; updatedAt
   const out: Array<{ handle: string; updatedAt: string; vendor: string }> = [];
   let after: string | null = null;
   while (out.length < MAX_PRODUCTS) {
-    const res = await storefrontApiRequest<any>(PRODUCT_SLUGS_QUERY, {
+    const res: any = await storefrontApiRequest<any>(PRODUCT_SLUGS_QUERY, {
       first: Math.min(PRODUCT_PAGE_SIZE, MAX_PRODUCTS - out.length),
       after,
     });
-    const page = res?.data?.products;
+    const page: any = res?.data?.products;
     if (!page) break;
-    for (const e of page.edges) {
+    for (const e of page.edges as any[]) {
       out.push({
         handle: e.node.handle,
         updatedAt: e.node.updatedAt,

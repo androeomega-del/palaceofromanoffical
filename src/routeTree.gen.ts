@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ShippingReturnsRouteImport } from './routes/shipping-returns'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -31,6 +32,11 @@ import { Route as BrandVendorRouteImport } from './routes/brand.$vendor'
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ShopRoute = ShopRouteImport.update({
@@ -130,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/brand/$vendor': typeof BrandVendorRoute
   '/collections/$handle': typeof CollectionsHandleRoute
@@ -150,6 +157,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/brand/$vendor': typeof BrandVendorRoute
   '/collections/$handle': typeof CollectionsHandleRoute
@@ -171,6 +179,7 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/brand/$vendor': typeof BrandVendorRoute
   '/collections/$handle': typeof CollectionsHandleRoute
@@ -193,6 +202,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/shipping-returns'
     | '/shop'
+    | '/sitemap.xml'
     | '/terms'
     | '/brand/$vendor'
     | '/collections/$handle'
@@ -213,6 +223,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/shipping-returns'
     | '/shop'
+    | '/sitemap.xml'
     | '/terms'
     | '/brand/$vendor'
     | '/collections/$handle'
@@ -233,6 +244,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/shipping-returns'
     | '/shop'
+    | '/sitemap.xml'
     | '/terms'
     | '/brand/$vendor'
     | '/collections/$handle'
@@ -254,6 +266,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   ShippingReturnsRoute: typeof ShippingReturnsRoute
   ShopRoute: typeof ShopRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   BrandVendorRoute: typeof BrandVendorRoute
   CollectionsHandleRoute: typeof CollectionsHandleRoute
@@ -271,6 +284,13 @@ declare module '@tanstack/react-router' {
       path: '/terms'
       fullPath: '/terms'
       preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/shop': {
@@ -406,6 +426,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   ShippingReturnsRoute: ShippingReturnsRoute,
   ShopRoute: ShopRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   BrandVendorRoute: BrandVendorRoute,
   CollectionsHandleRoute: CollectionsHandleRoute,
