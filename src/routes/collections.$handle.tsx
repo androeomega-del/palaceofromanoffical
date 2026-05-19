@@ -71,12 +71,16 @@ function CollectionPage() {
   const [sortKey, reverseStr] = sort.split("-");
   const reverse = reverseStr === "true";
 
+  // For /collections/high-discounts, fetch a wider window and filter client-side
+  // to products that are 80–99% off (compareAtPrice vs price).
+  const isHighDiscounts = handle === "high-discounts";
+
   const q = useQuery({
-    queryKey: ["collection-filtered", handle, filterInputs, sortKey, reverse],
+    queryKey: ["collection-filtered", handle, filterInputs, sortKey, reverse, isHighDiscounts],
     queryFn: () =>
       fetchCollectionFiltered({
         handle,
-        first: 36,
+        first: isHighDiscounts ? 250 : 36,
         filters: filterInputs,
         sortKey,
         reverse,
@@ -85,9 +89,20 @@ function CollectionPage() {
 
   const data = q.data;
   const filters = data?.filters ?? [];
-  const edges = data?.edges ?? [];
+  const rawEdges = data?.edges ?? [];
+  const edges = useMemo(() => {
+    if (!isHighDiscounts) return rawEdges;
+    return rawEdges.filter((e: any) => {
+      const price = parseFloat(e.node.priceRange?.minVariantPrice?.amount ?? "0");
+      const compare = parseFloat(e.node.compareAtPriceRange?.minVariantPrice?.amount ?? "0");
+      if (!price || !compare || compare <= price) return false;
+      const pct = ((compare - price) / compare) * 100;
+      return pct >= 80 && pct <= 99;
+    });
+  }, [rawEdges, isHighDiscounts]);
   const title = data?.collection?.title ?? titleizeHandle(handle);
   const description = data?.collection?.description;
+
 
   const selectedInputs = useMemo(() => new Set(selections.map((s) => s.input)), [selections]);
 
