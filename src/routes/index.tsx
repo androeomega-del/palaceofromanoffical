@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { fetchProducts, fetchCollection, type ShopifyProduct } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
+import { EditorialHotspots } from "@/components/editorial-hotspots";
 import heroImage from "@/assets/home-hero.jpg";
 import editorialHero from "@/assets/editorial/may-2026/1.webp";
 
