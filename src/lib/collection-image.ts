@@ -272,3 +272,230 @@ export function collectionImageFocal(input: {
   }
   return "50% 40%";
 }
+
+// ───────────────────────────────────────────────────────────────────────
+// QA / admin helpers
+// ───────────────────────────────────────────────────────────────────────
+
+// Reverse map: bundled image URL → canonical topic key. Lets us tell which
+// "topic" the resolved image actually represents, so QA can compare it
+// against the collection's title/description.
+const IMG_TO_TOPIC: Map<string, string> = new Map(
+  Object.entries(BY_HANDLE).map(([handle, img]) => [img, handle]),
+);
+
+export type CollectionImageSource = "dynamic" | "handle" | "rule" | "default";
+
+export interface ResolvedCollectionImage {
+  src: string;
+  /** Canonical topic key (a handle from BY_HANDLE), or "dynamic" for sync-sourced. */
+  topic: string;
+  source: CollectionImageSource;
+}
+
+/** Same resolution as collectionImage(), but also reports how it was chosen. */
+export function resolveCollectionImage(input: {
+  title?: string;
+  handle?: string;
+  description?: string | null;
+  dynamicMap?: Record<string, string>;
+}): ResolvedCollectionImage {
+  const handle = (input.handle ?? "").trim().toLowerCase();
+
+  if (handle && input.dynamicMap && input.dynamicMap[handle]) {
+    return { src: input.dynamicMap[handle], topic: "dynamic", source: "dynamic" };
+  }
+  if (handle && BY_HANDLE[handle]) {
+    return { src: BY_HANDLE[handle], topic: handle, source: "handle" };
+  }
+  const hay = `${input.title ?? ""} ${handle} ${input.description ?? ""}`
+    .toLowerCase()
+    .replace(/[-_]+/g, " ");
+  for (const rule of FALLBACK_RULES) {
+    if (rule.test.test(hay)) {
+      return { src: rule.img, topic: IMG_TO_TOPIC.get(rule.img) ?? "unknown", source: "rule" };
+    }
+  }
+  return { src: allProducts, topic: "all-products", source: "default" };
+}
+
+// Expected gender + category keywords per topic. Used to QA-score whether the
+// resolved image semantically matches the collection's title/description.
+interface TopicExpectation {
+  gender: "mens" | "womens" | null;
+  /** Any one of these patterns appearing in title+desc counts as a category match. */
+  category: RegExp[];
+  /** Topics that don't need a category check (broad/marketing buckets). */
+  broad?: boolean;
+}
+
+const TOPIC_EXPECTATIONS: Record<string, TopicExpectation> = {
+  "all-products": { gender: null, category: [], broad: true },
+  "new-arrivals": { gender: null, category: [/\b(new|arrival|fresh|just[- ]in|drop)\b/], broad: true },
+  "best-selling-brands": { gender: null, category: [/\b(brand|maison|designer|bestsell|best[- ]selling)\b/], broad: true },
+  "high-discounts": { gender: null, category: [/\b(sale|discount|deal|outlet|off|markdown)\b/], broad: true },
+
+  "womens-clothing": { gender: "womens", category: [/\b(cloth|dress|gown|blouse|top|skirt|jumpsuit|knit|coat|jacket)\b/] },
+  "womens-shoes": { gender: "womens", category: [/\b(shoe|heel|pump|sandal|mule|stiletto|boot|loafer|footwear)\b/] },
+  "womens-bags": { gender: "womens", category: [/\b(bag|tote|clutch|handbag|purse|shoulder|hobo|satchel)\b/] },
+  "womens-wallets": { gender: "womens", category: [/\b(wallet|cardholder|purse|pouch)\b/] },
+  "womens-belts": { gender: "womens", category: [/\bbelt/] },
+  "womens-jewelry": { gender: "womens", category: [/\b(jewel|necklace|earring|ring|bracelet|pendant)\b/] },
+  "womens-watches": { gender: "womens", category: [/\bwatch/] },
+  "womens-scarves": { gender: "womens", category: [/\b(scarf|shawl|stole|foulard)\b/] },
+  "womens-hats": { gender: "womens", category: [/\b(hat|cap|beanie|fedora|headwear)\b/] },
+  "womens-accessories": { gender: "womens", category: [/\b(access|jewel|belt|bag|scarf|hat|wallet|sunglass)\b/] },
+  "womens-accessories-1": { gender: "womens", category: [/\b(access|jewel|belt|bag|scarf|hat|wallet|sunglass)\b/] },
+
+  "mens-clothing": { gender: "mens", category: [/\b(cloth|shirt|suit|jacket|coat|knit|sweater|pant|trouser|short|tee|polo)\b/] },
+  "mens-shoes": { gender: "mens", category: [/\b(shoe|loafer|oxford|derby|footwear|brogue)\b/] },
+  "mens-jackets-coats": { gender: "mens", category: [/\b(jacket|coat|outerwear|parka|trench|blazer|bomber)\b/] },
+  "mens-suits": { gender: "mens", category: [/\b(suit|tuxedo|tailor|formal)\b/] },
+  "mens-shirts": { gender: "mens", category: [/\b(shirt|button[- ]?down|oxford|dress shirt)\b/] },
+  "mens-tshirts-polos": { gender: "mens", category: [/\b(t[- ]?shirt|tee|polo)\b/] },
+  "mens-sweaters-knitwear": { gender: "mens", category: [/\b(sweater|knit|cashmere|jumper|cardigan|pullover)\b/] },
+  "mens-hoodies-sweatshirts": { gender: "mens", category: [/\b(hoodie|sweatshirt|hooded)\b/] },
+  "mens-pants-trousers": { gender: "mens", category: [/\b(pant|trouser|chino|jean|denim)\b/] },
+  "mens-shorts": { gender: "mens", category: [/\bshort\b/] },
+  "mens-activewear": { gender: "mens", category: [/\b(active|sport|gym|training|track)\b/] },
+  "mens-swimwear": { gender: "mens", category: [/\b(swim|beach|boardshort|trunk)\b/] },
+  "mens-underwear-loungewear": { gender: "mens", category: [/\b(underwear|lounge|pajama|sleep|boxer|brief|robe)\b/] },
+  "mens-sneakers": { gender: "mens", category: [/\b(sneaker|trainer|kicks)\b/] },
+  "mens-boots": { gender: "mens", category: [/\bboot/] },
+  "mens-sandals-slides": { gender: "mens", category: [/\b(sandal|slide|flip[- ]?flop)\b/] },
+  "mens-bags-wallets": { gender: "mens", category: [/\b(bag|wallet|briefcase|backpack|messenger|pouch)\b/] },
+  "mens-belts": { gender: "mens", category: [/\bbelt/] },
+  "mens-watches-jewelry": { gender: "mens", category: [/\b(watch|jewel|cufflink|bracelet|ring|necklace)\b/] },
+  "mens-accessories": { gender: "mens", category: [/\b(access|belt|wallet|bag|tie|cufflink|sunglass|hat)\b/] },
+};
+
+function detectGender(text: string): "mens" | "womens" | null {
+  // Strip "women(s)" first so it doesn't get re-matched as "men".
+  const womenHits = /\b(women|ladies|female|her)\b/.test(text);
+  const stripped = text.replace(/\bwomen('?s)?\b/g, " ").replace(/\bladies\b/g, " ");
+  const menHits = /\b(men|male|gentlem|his)\b/.test(stripped);
+  if (womenHits && !menHits) return "womens";
+  if (menHits && !womenHits) return "mens";
+  if (womenHits && menHits) return null; // unisex / mixed
+  return null;
+}
+
+export type QaStatus = "ok" | "review" | "mismatch";
+
+export interface CollectionImageQa {
+  status: QaStatus;
+  /** Topic the resolved image represents. */
+  imageTopic: string;
+  /** Gender inferred from the collection's title/description. */
+  collectionGender: "mens" | "womens" | null;
+  /** Human-readable reason for the status. */
+  reason: string;
+  /** Optional fix suggestion. */
+  suggestion?: string;
+  source: CollectionImageSource;
+}
+
+/**
+ * Audits whether the resolved image semantically matches a Shopify
+ * collection's title + description. Status legend:
+ *  - ok:       image topic, gender, and category all line up
+ *  - review:   image was chosen by a regex fallback (worth a human glance)
+ *  - mismatch: image gender or category clearly disagrees with the copy
+ *
+ * Dynamic (Shopify-supplied or DB-synced) images skip the topic check —
+ * we trust the source — and are always reported as "ok".
+ */
+export function qaCollectionImage(input: {
+  handle: string;
+  title?: string;
+  description?: string | null;
+  dynamicMap?: Record<string, string>;
+}): CollectionImageQa {
+  const resolved = resolveCollectionImage(input);
+  const hay = `${input.title ?? ""} ${input.handle} ${input.description ?? ""}`
+    .toLowerCase()
+    .replace(/[-_]+/g, " ");
+  const collectionGender = detectGender(hay);
+
+  // Trust dynamic/Shopify-supplied imagery.
+  if (resolved.source === "dynamic") {
+    return {
+      status: "ok",
+      imageTopic: "dynamic",
+      collectionGender,
+      reason: "Image supplied by Shopify/sync — not generated from the topic map.",
+      source: resolved.source,
+    };
+  }
+
+  const expectation = TOPIC_EXPECTATIONS[resolved.topic];
+
+  // Default bucket on a non-broad collection → almost certainly miscategorised.
+  if (resolved.source === "default") {
+    return {
+      status: "mismatch",
+      imageTopic: resolved.topic,
+      collectionGender,
+      reason: "No topic matched — falling back to the generic 'all-products' hero.",
+      suggestion: "Add this handle to BY_HANDLE or extend FALLBACK_RULES with a matching keyword.",
+      source: resolved.source,
+    };
+  }
+
+  if (!expectation) {
+    return {
+      status: "review",
+      imageTopic: resolved.topic,
+      collectionGender,
+      reason: `Image topic '${resolved.topic}' has no QA expectation defined.`,
+      source: resolved.source,
+    };
+  }
+
+  // Gender mismatch is the strongest signal.
+  if (expectation.gender && collectionGender && expectation.gender !== collectionGender) {
+    return {
+      status: "mismatch",
+      imageTopic: resolved.topic,
+      collectionGender,
+      reason: `Image is a ${expectation.gender} hero but the collection reads as ${collectionGender}.`,
+      suggestion: `Remap '${input.handle}' to a ${collectionGender}-* topic.`,
+      source: resolved.source,
+    };
+  }
+
+  // Category keyword check (skipped for broad marketing buckets).
+  if (!expectation.broad && expectation.category.length > 0) {
+    const hit = expectation.category.some((rx) => rx.test(hay));
+    if (!hit) {
+      return {
+        status: resolved.source === "rule" ? "review" : "mismatch",
+        imageTopic: resolved.topic,
+        collectionGender,
+        reason: `Title/description don't mention the image's category (${resolved.topic}).`,
+        suggestion: "Confirm the topic is correct or update BY_HANDLE.",
+        source: resolved.source,
+      };
+    }
+  }
+
+  // Rule-matched but otherwise consistent — flag for a quick eyeball.
+  if (resolved.source === "rule") {
+    return {
+      status: "review",
+      imageTopic: resolved.topic,
+      collectionGender,
+      reason: "Image was chosen by a fallback rule rather than an explicit handle mapping.",
+      suggestion: `Consider adding '${input.handle}' to BY_HANDLE for a deterministic mapping.`,
+      source: resolved.source,
+    };
+  }
+
+  return {
+    status: "ok",
+    imageTopic: resolved.topic,
+    collectionGender,
+    reason: "Image topic, gender, and category align with the collection copy.",
+    source: resolved.source,
+  };
+}
