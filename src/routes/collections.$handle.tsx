@@ -91,7 +91,7 @@ export const Route = createFileRoute("/collections/$handle")({
             "@context": "https://schema.org",
             "@type": "CollectionPage",
             name: title,
-            description: desc,
+            description: seo.description,
             url,
             isPartOf: { "@type": "WebSite", name: "Palace of Roman", url: SITE_URL },
           }),
