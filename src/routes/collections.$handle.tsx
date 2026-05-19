@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { fetchCollectionFiltered, fetchCollection, type StorefrontFilterValue } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
 import { pageTitle, metaDescription, absoluteUrl, SITE_URL } from "@/lib/seo";
+import { collectionSeo } from "@/lib/collection-seo";
 import {
   collectionImage,
   collectionImageAlt,
