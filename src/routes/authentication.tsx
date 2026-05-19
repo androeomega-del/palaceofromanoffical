@@ -76,7 +76,7 @@ function AuthenticationPage() {
             <div key={s.n} className="grid grid-cols-[auto_1fr] gap-6 md:gap-10">
               <span className="text-[10px] uppercase tracking-[0.35em] text-bronze mt-1">{s.n}</span>
               <div>
-                <h3 className="font-serif text-xl mb-2">{s.title}</h3>
+                <h2 className="font-serif text-xl mb-2">{s.title}</h2>
                 <p className="text-[15px] leading-[1.75] text-ink/80">{s.body}</p>
               </div>
             </div>
