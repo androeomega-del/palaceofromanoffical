@@ -99,11 +99,21 @@ const PRODUCT_FRAGMENT = `
   }
 `;
 
+// Global catalog exclusion: hide women's clothing & women's shoes everywhere.
+export const EXCLUDE_QUERY = "-tag:cat-womens-clothing -tag:cat-womens-shoes";
+
+function composeQuery(userQuery?: string | null) {
+  const base = EXCLUDE_QUERY;
+  if (!userQuery) return base;
+  return `(${userQuery}) AND ${base}`;
+}
+
 export const PRODUCTS_QUERY = `
   ${PRODUCT_FRAGMENT}
-  query GetProducts($first: Int!, $query: String, $sortKey: ProductSortKeys, $reverse: Boolean) {
-    products(first: $first, query: $query, sortKey: $sortKey, reverse: $reverse) {
-      edges { node { ...ProductFields } }
+  query GetProducts($first: Int!, $after: String, $query: String, $sortKey: ProductSortKeys, $reverse: Boolean) {
+    products(first: $first, after: $after, query: $query, sortKey: $sortKey, reverse: $reverse) {
+      pageInfo { hasNextPage endCursor }
+      edges { cursor node { ...ProductFields } }
     }
   }
 `;
