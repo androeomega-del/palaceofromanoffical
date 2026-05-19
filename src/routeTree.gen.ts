@@ -32,6 +32,7 @@ import { Route as CollectionsHandleRouteImport } from './routes/collections.$han
 import { Route as CampaignDolceGabbanaSwimRouteImport } from './routes/campaign.dolce-gabbana-swim'
 import { Route as BrandVendorRouteImport } from './routes/brand.$vendor'
 import { Route as AdminCollectionImageQaRouteImport } from './routes/admin.collection-image-qa'
+import { Route as AdminCollectionImagePreviewRouteImport } from './routes/admin.collection-image-preview'
 import { Route as ApiPublicHooksSyncCollectionImagesRouteImport } from './routes/api/public/hooks/sync-collection-images'
 
 const TermsRoute = TermsRouteImport.update({
@@ -150,6 +151,12 @@ const AdminCollectionImageQaRoute = AdminCollectionImageQaRouteImport.update({
   path: '/admin/collection-image-qa',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminCollectionImagePreviewRoute =
+  AdminCollectionImagePreviewRouteImport.update({
+    id: '/admin/collection-image-preview',
+    path: '/admin/collection-image-preview',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksSyncCollectionImagesRoute =
   ApiPublicHooksSyncCollectionImagesRouteImport.update({
     id: '/api/public/hooks/sync-collection-images',
@@ -171,6 +178,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
+  '/admin/collection-image-preview': typeof AdminCollectionImagePreviewRoute
   '/admin/collection-image-qa': typeof AdminCollectionImageQaRoute
   '/brand/$vendor': typeof BrandVendorRoute
   '/campaign/dolce-gabbana-swim': typeof CampaignDolceGabbanaSwimRoute
@@ -197,6 +205,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
+  '/admin/collection-image-preview': typeof AdminCollectionImagePreviewRoute
   '/admin/collection-image-qa': typeof AdminCollectionImageQaRoute
   '/brand/$vendor': typeof BrandVendorRoute
   '/campaign/dolce-gabbana-swim': typeof CampaignDolceGabbanaSwimRoute
@@ -224,6 +233,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
+  '/admin/collection-image-preview': typeof AdminCollectionImagePreviewRoute
   '/admin/collection-image-qa': typeof AdminCollectionImageQaRoute
   '/brand/$vendor': typeof BrandVendorRoute
   '/campaign/dolce-gabbana-swim': typeof CampaignDolceGabbanaSwimRoute
@@ -252,6 +262,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/swim'
     | '/terms'
+    | '/admin/collection-image-preview'
     | '/admin/collection-image-qa'
     | '/brand/$vendor'
     | '/campaign/dolce-gabbana-swim'
@@ -278,6 +289,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/swim'
     | '/terms'
+    | '/admin/collection-image-preview'
     | '/admin/collection-image-qa'
     | '/brand/$vendor'
     | '/campaign/dolce-gabbana-swim'
@@ -304,6 +316,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/swim'
     | '/terms'
+    | '/admin/collection-image-preview'
     | '/admin/collection-image-qa'
     | '/brand/$vendor'
     | '/campaign/dolce-gabbana-swim'
@@ -331,6 +344,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SwimRoute: typeof SwimRouteWithChildren
   TermsRoute: typeof TermsRoute
+  AdminCollectionImagePreviewRoute: typeof AdminCollectionImagePreviewRoute
   AdminCollectionImageQaRoute: typeof AdminCollectionImageQaRoute
   BrandVendorRoute: typeof BrandVendorRoute
   CampaignDolceGabbanaSwimRoute: typeof CampaignDolceGabbanaSwimRoute
@@ -506,6 +520,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCollectionImageQaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/collection-image-preview': {
+      id: '/admin/collection-image-preview'
+      path: '/admin/collection-image-preview'
+      fullPath: '/admin/collection-image-preview'
+      preLoaderRoute: typeof AdminCollectionImagePreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/sync-collection-images': {
       id: '/api/public/hooks/sync-collection-images'
       path: '/api/public/hooks/sync-collection-images'
@@ -540,6 +561,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SwimRoute: SwimRouteWithChildren,
   TermsRoute: TermsRoute,
+  AdminCollectionImagePreviewRoute: AdminCollectionImagePreviewRoute,
   AdminCollectionImageQaRoute: AdminCollectionImageQaRoute,
   BrandVendorRoute: BrandVendorRoute,
   CampaignDolceGabbanaSwimRoute: CampaignDolceGabbanaSwimRoute,
