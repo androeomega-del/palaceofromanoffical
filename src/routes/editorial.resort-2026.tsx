@@ -1,0 +1,57 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
+import { EditorialStory, type StorySlide } from "@/components/editorial-story";
+import { img } from "@/lib/editorial-library";
+
+const SLIDES: StorySlide[] = [
+  { n: 12, caption: "Light as architecture.", shopHandle: "womens-clothing", shopLabel: "Shop Women's" },
+  { n: 14, caption: "Linen, considered.", shopHandle: "womens-clothing", shopLabel: "Shop Women's" },
+  { n: 16, caption: "Sandal and stone.", shopHandle: "womens-shoes", shopLabel: "Shop Sandals" },
+  { n: 18, caption: "Late afternoon shade.", shopHandle: "womens-clothing" },
+  { n: 20, caption: "Tonal study — sand on sand.", shopHandle: "mens-clothing", shopLabel: "Shop Men's" },
+  { n: 22, caption: "Resort tailoring.", shopHandle: "mens-clothing" },
+  { n: 24, caption: "Travel cases, slowly opened.", shopHandle: "high-discounts", shopLabel: "Shop the Sale" },
+  { n: 26, caption: "Loose cotton, salt air." },
+  { n: 28, caption: "Footwear without ceremony.", shopHandle: "mens-shoes", shopLabel: "Shop Men's Shoes" },
+  { n: 30, caption: "End of the long day." },
+];
+
+export const Route = createFileRoute("/editorial/resort-2026")({
+  head: () => ({
+    meta: [
+      { title: "Resort 2026 — Light as Architecture | Palace of Roman" },
+      {
+        name: "description",
+        content:
+          "Resort 2026: a quiet study of cut and shade across the season's most considered pieces, photographed in late Mediterranean light.",
+      },
+      { property: "og:title", content: "Resort 2026 — Light as Architecture" },
+      {
+        property: "og:description",
+        content: "A quiet study of cut and shade across resort 2026, photographed in late Mediterranean light.",
+      },
+      { property: "og:image", content: img(12) },
+      { property: "og:url", content: "/editorial/resort-2026" },
+      { property: "og:type", content: "article" },
+    ],
+    links: [{ rel: "canonical", href: "/editorial/resort-2026" }],
+  }),
+  component: ResortPage,
+});
+
+function ResortPage() {
+  return (
+    <>
+      <SiteHeader />
+      <EditorialStory
+        issueNumber="Issue No. 07"
+        title="Resort 2026"
+        subtitle="Light as Architecture"
+        intro="A study of cut and shade across the season's most considered resort pieces, photographed in the late Mediterranean light."
+        slides={SLIDES}
+      />
+      <SiteFooter />
+    </>
+  );
+}
