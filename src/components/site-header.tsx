@@ -48,9 +48,11 @@ function FlatLinks({ items }: { items: FlatItem[] }) {
 
 export function SiteHeader() {
   const totalItems = useCartStore((s) => s.items.reduce((sum, i) => sum + i.quantity, 0));
-  const [cartOpen, setCartOpen] = useState(false);
+  const cartOpen = useCartStore((s) => s.isDrawerOpen);
+  const setCartOpen = useCartStore((s) => s.setDrawerOpen);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+
 
   // Lock body scroll when mobile drawer is open
   useEffect(() => {
