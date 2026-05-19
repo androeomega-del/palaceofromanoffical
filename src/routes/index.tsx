@@ -98,6 +98,10 @@ function HomePage() {
     queryKey: ["home", "best-sellers"],
     queryFn: () => fetchProducts({ first: 8, sortKey: "BEST_SELLING" }),
   });
+  const swimwearQ = useQuery({
+    queryKey: ["home", "swimwear"],
+    queryFn: () => fetchProducts({ first: 12, query: "tag:Swimwear OR tag:Beachwear" }),
+  });
 
   // Editorial split sources — one image per panel, pulled from real data.
   const womenEditorialQ = useQuery({
