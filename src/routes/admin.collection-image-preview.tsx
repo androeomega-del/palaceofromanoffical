@@ -20,6 +20,7 @@ import { getCollectionImageMap } from "@/lib/collection-image.functions";
 import {
   upsertCollectionImageOverride,
   deleteCollectionImageOverride,
+  syncCollectionImagesFromShopify,
 } from "@/lib/collection-image-admin.functions";
 import { toast } from "sonner";
 
@@ -156,6 +157,19 @@ function AdminCollectionImagePreview() {
     onError: (e) => toast.error(`Revert failed: ${(e as Error).message}`),
   });
 
+  const syncMutation = useMutation({
+    mutationFn: () => syncCollectionImagesFromShopify({}),
+    onSuccess: (r) => {
+      toast.success(
+        `Synced ${r.synced} of ${r.total} collections from Shopify` +
+          (r.skippedManual ? ` · kept ${r.skippedManual} manual override${r.skippedManual === 1 ? "" : "s"}` : "") +
+          (r.skippedNoImage ? ` · ${r.skippedNoImage} had no image` : ""),
+      );
+      invalidate();
+    },
+    onError: (e) => toast.error(`Sync failed: ${(e as Error).message}`),
+  });
+
   const loading = collectionsQ.isLoading || dynamicMapQ.isLoading;
   const error = collectionsQ.error ?? dynamicMapQ.error;
 
@@ -192,6 +206,28 @@ function AdminCollectionImagePreview() {
           <Summary label="Overridden" value={counts.overridden} tone="ok" />
           <Summary label="Needs attention" value={counts.needs} tone="warn" />
         </div>
+
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-center gap-3 border border-ink/15 bg-canvas px-4 py-3">
+          <div className="flex-1">
+            <p className="text-xs uppercase tracking-[0.2em] text-ink/60 mb-1">
+              Initial Shopify sync
+            </p>
+            <p className="text-sm text-ink/70">
+              Pull every Shopify collection's hero image into the live map.
+              Manual overrides are preserved.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => syncMutation.mutate()}
+            disabled={syncMutation.isPending}
+            className="text-xs uppercase tracking-[0.2em] px-5 py-2.5 bg-ink text-canvas border border-ink hover:bg-ink/90 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {syncMutation.isPending ? "Syncing…" : "Sync from Shopify"}
+          </button>
+        </div>
+
+
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-8">
           <div className="flex gap-2">

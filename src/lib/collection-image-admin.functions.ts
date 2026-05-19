@@ -6,6 +6,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { fetchCollections } from "@/lib/shopify";
 
 const handleSchema = z
   .string()
@@ -57,4 +58,73 @@ export const listCollectionImageOverrides = createServerFn({ method: "GET" })
       .select("handle, title, image_url, source, updated_at");
     if (error) throw new Error(error.message);
     return data ?? [];
+  });
+
+/**
+ * Initial / on-demand sync of every Shopify collection's hero image into
+ * `collection_images`. Skips collections without an image and preserves any
+ * existing `manual` overrides (they win over Shopify's image).
+ */
+export const syncCollectionImagesFromShopify = createServerFn({ method: "POST" })
+  .handler(async () => {
+    const collections = await fetchCollections(250);
+
+    // Load existing manual overrides so we don't clobber them.
+    const { data: existing, error: readErr } = await supabaseAdmin
+      .from("collection_images")
+      .select("handle, source");
+    if (readErr) throw new Error(readErr.message);
+    const manualHandles = new Set(
+      (existing ?? [])
+        .filter((r) => r.source === "manual")
+        .map((r) => r.handle),
+    );
+
+    let synced = 0;
+    let skippedNoImage = 0;
+    let skippedManual = 0;
+    const rows: Array<{
+      handle: string;
+      title: string | null;
+      image_url: string;
+      source: string;
+      prompt: null;
+    }> = [];
+
+    for (const c of collections) {
+      const handle = c.handle?.toLowerCase();
+      if (!handle) continue;
+      if (manualHandles.has(handle)) {
+        skippedManual++;
+        continue;
+      }
+      const url = c.image?.url;
+      if (!url) {
+        skippedNoImage++;
+        continue;
+      }
+      rows.push({
+        handle,
+        title: c.title ?? null,
+        image_url: url,
+        source: "shopify",
+        prompt: null,
+      });
+    }
+
+    if (rows.length > 0) {
+      const { error } = await supabaseAdmin
+        .from("collection_images")
+        .upsert(rows, { onConflict: "handle" });
+      if (error) throw new Error(error.message);
+      synced = rows.length;
+    }
+
+    return {
+      ok: true as const,
+      total: collections.length,
+      synced,
+      skippedNoImage,
+      skippedManual,
+    };
   });
