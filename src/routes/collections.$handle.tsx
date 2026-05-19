@@ -112,6 +112,28 @@ function CollectionPage() {
   const [selections, setSelections] = useState<Selection[]>([]);
   const [priceRange, setPriceRange] = useState<{ min: number; max: number } | null>(null);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [typeFilter, setTypeFilter] = useState<string | null>(null);
+
+  // Keyword-based product type derivation. The Shopify product_type field on
+  // this store is inconsistent, so we infer category from the product title.
+  // Order matters — more specific patterns first (t-shirt before shirt).
+  const TYPE_PATTERNS: { label: string; test: RegExp }[] = [
+    { label: "Dresses", test: /\b(dress|gown|kaftan)\b/i },
+    { label: "Knitwear", test: /\b(knit|sweater|jumper|cardigan|cashmere|wool top|pullover)\b/i },
+    { label: "Outerwear", test: /\b(coat|jacket|parka|trench|blazer|overcoat|puffer)\b/i },
+    { label: "Tops", test: /\b(t-shirt|tee|shirt|blouse|top|tank|polo|camisole)\b/i },
+    { label: "Trousers", test: /\b(trouser|pant|chino|legging|joggers)\b/i },
+    { label: "Denim", test: /\b(jean|denim)\b/i },
+    { label: "Skirts", test: /\b(skirt)\b/i },
+    { label: "Shoes", test: /\b(shoe|sneaker|boot|loafer|sandal|heel|pump|mule|trainer|slipper)\b/i },
+    { label: "Bags", test: /\b(bag|tote|clutch|backpack|crossbody|handbag|pouch|satchel)\b/i },
+    { label: "Accessories", test: /\b(belt|scarf|hat|cap|glove|wallet|sunglass|jewel|necklace|ring|earring|bracelet|watch|tie)\b/i },
+  ];
+
+  function inferType(title: string): string | null {
+    for (const p of TYPE_PATTERNS) if (p.test.test(title)) return p.label;
+    return null;
+  }
 
   // Build Shopify filters arg from selections + price
   const filterInputs = useMemo(() => {
@@ -142,7 +164,7 @@ function CollectionPage() {
   const data = q.data;
   const filters = data?.filters ?? [];
   const rawEdges = data?.edges ?? [];
-  const edges = useMemo(() => {
+  const discountEdges = useMemo(() => {
     if (!isHighDiscounts) return rawEdges;
     return rawEdges.filter((e: any) => {
       const price = parseFloat(e.node.priceRange?.minVariantPrice?.amount ?? "0");
@@ -152,6 +174,27 @@ function CollectionPage() {
       return pct >= 80 && pct <= 99;
     });
   }, [rawEdges, isHighDiscounts]);
+
+  // Derive available product types from the current result set
+  const typeCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const e of discountEdges) {
+      const t = inferType(e.node.title ?? "");
+      if (t) counts[t] = (counts[t] ?? 0) + 1;
+    }
+    return counts;
+  }, [discountEdges]);
+
+  const availableTypes = useMemo(
+    () => TYPE_PATTERNS.map((p) => p.label).filter((label) => (typeCounts[label] ?? 0) > 0),
+    [typeCounts]
+  );
+
+  const edges = useMemo(() => {
+    if (!typeFilter) return discountEdges;
+    return discountEdges.filter((e: any) => inferType(e.node.title ?? "") === typeFilter);
+  }, [discountEdges, typeFilter]);
+
   const title = data?.collection?.title ?? titleizeHandle(handle);
   const description = data?.collection?.description;
 
@@ -245,6 +288,37 @@ function CollectionPage() {
                 <CatalogSort value={sort} onChange={setSort} />
               </div>
             </div>
+
+            {/* Product type chips — derived from titles in the current result set */}
+            {availableTypes.length > 1 && (
+              <div className="mb-6 flex flex-wrap gap-2">
+                <button
+                  onClick={() => setTypeFilter(null)}
+                  className={`text-[10px] uppercase tracking-[0.2em] px-3 py-1.5 border transition-colors ${
+                    typeFilter === null
+                      ? "bg-ink text-canvas border-ink"
+                      : "border-ink/15 text-muted-foreground hover:border-ink hover:text-ink"
+                  }`}
+                >
+                  All
+                </button>
+                {availableTypes.map((label) => (
+                  <button
+                    key={label}
+                    onClick={() => setTypeFilter(typeFilter === label ? null : label)}
+                    className={`text-[10px] uppercase tracking-[0.2em] px-3 py-1.5 border transition-colors ${
+                      typeFilter === label
+                        ? "bg-ink text-canvas border-ink"
+                        : "border-ink/15 text-muted-foreground hover:border-ink hover:text-ink"
+                    }`}
+                  >
+                    {label}
+                    <span className="ml-2 opacity-60">{typeCounts[label]}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+
 
             <ActiveFilterPills
               selections={selections}
