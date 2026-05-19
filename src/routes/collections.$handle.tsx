@@ -15,10 +15,19 @@ import {
 
 const SORT_VALUES = SORT_OPTIONS.map((o) => o.value);
 
+// Map collections-index sort keys → per-collection sort values
+const INDEX_SORT_ALIASES: Record<string, SortValue> = {
+  popular: "BEST_SELLING-false",
+  newest: "CREATED-true",
+  alpha: "TITLE-false",
+};
+
 export const Route = createFileRoute("/collections/$handle")({
   validateSearch: (search: Record<string, unknown>): { sort: SortValue } => {
-    const raw = typeof search.sort === "string" ? (search.sort as SortValue) : "BEST_SELLING-false";
-    return { sort: SORT_VALUES.includes(raw) ? raw : "BEST_SELLING-false" };
+    const raw = typeof search.sort === "string" ? search.sort : "";
+    if (SORT_VALUES.includes(raw as SortValue)) return { sort: raw as SortValue };
+    if (raw in INDEX_SORT_ALIASES) return { sort: INDEX_SORT_ALIASES[raw] };
+    return { sort: "BEST_SELLING-false" };
   },
   head: ({ params }) => {
     const title = titleizeHandle(params.handle);
