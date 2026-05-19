@@ -326,10 +326,10 @@ function HomePage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-8">
             {[
-              { title: "Authenticated", body: "Every piece is sourced through authorized partners and verified before dispatch." },
+              { title: "Authorised sourcing", body: "Every piece is sourced through an authorised European distribution partner and ships sealed from a brand-authorised warehouse." },
               { title: "Tracked Worldwide", body: "Complimentary DHL or FedEx tracked shipping on orders above $1,200." },
-              { title: "Considered Returns", body: "14-day returns on full-priced merchandise, handled by our client care team." },
-              { title: "Private Concierge", body: "A quiet line for sourcing requests, sizing and styling — by appointment." },
+              { title: "Considered Returns", body: "14-day returns on full-priced merchandise from the day your parcel is delivered." },
+              { title: "Email Concierge", body: "A single line for sourcing requests, sizing and styling — same-day reply by email." },
             ].map((b) => (
               <div key={b.title} className="text-center md:text-left">
                 <h3 className="font-serif text-lg md:text-xl mb-3">{b.title}</h3>
