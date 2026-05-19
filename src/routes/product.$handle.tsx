@@ -178,6 +178,7 @@ function ProductView({
   product: NonNullable<Awaited<ReturnType<typeof fetchProductByHandle>>>;
 }) {
   const images = product.images.edges.map((e) => e.node);
+  const altBase = product.vendor ? `${product.title} — ${product.vendor}` : product.title;
   const variants = product.variants.edges.map((e) => e.node);
   const firstAvailable = variants.find((v) => v.availableForSale) ?? variants[0];
   const [selectedVariantId, setSelectedVariantId] = useState<string | undefined>(firstAvailable?.id);
