@@ -166,8 +166,10 @@ function HomePage() {
         menImage={{ url: marketingMen, altText: "Men's Resort 2026 — Amalfi Coast" }}
         accessoriesImage={{ url: marketingAccessories, altText: "Summer Accessories — Designer Edit" }}
         swimImage={{ url: marketingSwim, altText: "Designer Swimwear — Riviera Edit" }}
-        spotlightVendor={featuredBrands[0]?.name}
-        spotlightSlug={featuredBrands[0]?.slug}
+        saleImage={{ url: marketingSummerSale, altText: "The Summer Sale — Up to 40% Off" }}
+        spotlightImage={{ url: marketingCalvinKlein, altText: "Calvin Klein — In Stock Now" }}
+        spotlightVendor="Calvin Klein"
+        spotlightSlug="calvin-klein"
       />
 
       {/* 1b. SWIMWEAR RAIL — Bikinis, Beachwear, Resort */}
