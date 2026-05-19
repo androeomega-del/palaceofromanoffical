@@ -43,13 +43,21 @@ export function EditorialHotspots({ src, alt, hotspots, aspect = "4/5", classNam
     return () => document.removeEventListener("pointerdown", onDown);
   }, [revealedHandle]);
 
+  const vibrate = (pattern: number | number[]) => {
+    if (typeof navigator === "undefined") return;
+    const nav = navigator as Navigator & { vibrate?: (p: number | number[]) => boolean };
+    try { nav.vibrate?.(pattern); } catch { /* ignore */ }
+  };
+
   const handleActivate = (handle: string, pointerType: string) => {
     // Coarse pointer (touch/pen): first tap reveals tooltip, second opens dialog
     const isCoarse = pointerType === "touch" || pointerType === "pen";
     if (isCoarse && revealedHandle !== handle) {
+      vibrate(8); // subtle tick on reveal
       setRevealedHandle(handle);
       return;
     }
+    if (isCoarse) vibrate([10, 30, 14]); // double-pulse on open
     setRevealedHandle(null);
     setOpenHandle(handle);
   };
