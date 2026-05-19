@@ -233,9 +233,20 @@ function CollectionPage() {
     />
   );
 
-  const heroSrc = collectionImage(handle, data?.collection?.image?.url ?? null);
-  const heroAlt = collectionImageAlt(handle, title);
-  const heroFocal = collectionImageFocal(handle);
+  const dynamicMapQ = useQuery({
+    queryKey: ["collection-image-map"],
+    queryFn: () => getCollectionImageMap(),
+    staleTime: 60_000,
+  });
+
+  const heroSrc = collectionImage({
+    handle,
+    title,
+    description: description ?? null,
+    dynamicMap: dynamicMapQ.data ?? {},
+  });
+  const heroAlt = collectionImageAlt({ handle, title });
+  const heroFocal = collectionImageFocal({ handle, title });
 
   return (
     <div>
