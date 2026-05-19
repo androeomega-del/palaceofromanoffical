@@ -30,17 +30,18 @@ function AboutPage() {
         <div className="md:col-span-7 order-2 md:order-1">
           <p className="text-[10px] uppercase tracking-[0.35em] text-bronze mb-4">Origin</p>
           <h2 className="font-serif text-3xl md:text-4xl tracking-tight mb-6 text-balance">
-            Founded in New York, in service of the considered wardrobe.
+            An independent boutique, in service of the considered wardrobe.
           </h2>
           <p className="text-[15px] leading-[1.8] text-ink/80 mb-4">
-            Palace of Roman was founded with a single conviction: that the great houses of the season deserved a setting
-            that was as edited as the work itself. Not a department store. Not a marketplace. A boutique — assembled by
-            hand, photographed in studio light, and offered to a small audience who already know what they are looking
-            for.
+            Palace of Roman was founded on a single conviction: that the great houses of the season deserved a setting
+            as edited as the work itself. Not a department store. Not a marketplace. A boutique — assembled by hand,
+            presented in studio light, and offered to a small audience who already know what they are looking for.
           </p>
           <p className="text-[15px] leading-[1.8] text-ink/80">
-            We carry tailoring, footwear, fine leather and house codes from the maisons we believe in. We carry less of
-            them than anyone else. And what we do carry, we authenticate ourselves.
+            We carry tailoring, footwear, fine leather and house codes from the maisons we believe in. Stock is supplied
+            through an authorised European distribution partner and shipped directly from the brand-authorised warehouse
+            holding each piece. We are not directly affiliated with the makers we carry — we are an independent
+            curator of their work.
           </p>
         </div>
         <div className="md:col-span-5 order-1 md:order-2">
