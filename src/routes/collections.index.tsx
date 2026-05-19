@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { fetchCollections, type ShopifyCollection } from "@/lib/shopify";
 import { collectionImage, collectionImageAlt, collectionImageFocal } from "@/lib/collection-image";
-import { getCollectionImageMap } from "@/lib/collection-image.functions";
+import { getCollectionImageMap, getCollectionFocalMap } from "@/lib/collection-image.functions";
 import { routeHead } from "@/lib/seo";
 
 type FilterKey = "all" | "women" | "men" | "clothing" | "shoes" | "luxury";
@@ -91,6 +91,13 @@ function CollectionsIndexPage() {
     staleTime: 5 * 60 * 1000,
   });
   const dynamicMap = imageMapQuery.data ?? {};
+
+  const focalMapQuery = useQuery({
+    queryKey: ["collection-focal-map"],
+    queryFn: () => getCollectionFocalMap(),
+    staleTime: 30_000,
+  });
+  const dynamicFocal = focalMapQuery.data ?? {};
 
   const all = q.data ?? [];
   const collections = useMemo(
@@ -217,7 +224,7 @@ function CollectionsIndexPage() {
                       loading="lazy"
                       width={768}
                       height={1024}
-                      style={{ objectPosition: collectionImageFocal({ handle: c.handle, title: c.title, imageWidth: c.image?.width ?? null, imageHeight: c.image?.height ?? null }) }}
+                      style={{ objectPosition: collectionImageFocal({ handle: c.handle, title: c.title, imageWidth: c.image?.width ?? null, imageHeight: c.image?.height ?? null, dynamicFocal }) }}
                       className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/15 to-transparent" />

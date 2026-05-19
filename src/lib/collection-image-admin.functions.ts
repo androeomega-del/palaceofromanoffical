@@ -51,6 +51,64 @@ export const deleteCollectionImageOverride = createServerFn({ method: "POST" })
     return { ok: true as const };
   });
 
+// ───────────────────────────────────────────────────────────────────────
+// Focal point overrides (per-handle object-position editor)
+// ───────────────────────────────────────────────────────────────────────
+
+const percentSchema = z.number().min(0).max(100);
+
+/**
+ * Save or update a focal point for a handle. The handle row must already
+ * exist in `collection_images` (sync first if needed). We only touch the
+ * focal columns so we don't clobber `image_url` / `source` / `title`.
+ */
+export const upsertCollectionFocal = createServerFn({ method: "POST" })
+  .inputValidator((input) =>
+    z
+      .object({
+        handle: handleSchema,
+        focalX: percentSchema,
+        focalY: percentSchema,
+      })
+      .parse(input),
+  )
+  .handler(async ({ data }) => {
+    const handle = data.handle.toLowerCase();
+    const { data: existing, error: readErr } = await supabaseAdmin
+      .from("collection_images")
+      .select("handle")
+      .eq("handle", handle)
+      .maybeSingle();
+    if (readErr) throw new Error(readErr.message);
+
+    if (!existing) {
+      throw new Error(
+        `No collection_images row for "${handle}". Sync from Shopify or add an image override first.`,
+      );
+    }
+
+    const { error } = await supabaseAdmin
+      .from("collection_images")
+      .update({
+        focal_x: Math.round(data.focalX * 10) / 10,
+        focal_y: Math.round(data.focalY * 10) / 10,
+      })
+      .eq("handle", handle);
+    if (error) throw new Error(error.message);
+    return { ok: true as const };
+  });
+
+export const clearCollectionFocal = createServerFn({ method: "POST" })
+  .inputValidator((input) => z.object({ handle: handleSchema }).parse(input))
+  .handler(async ({ data }) => {
+    const { error } = await supabaseAdmin
+      .from("collection_images")
+      .update({ focal_x: null, focal_y: null })
+      .eq("handle", data.handle.toLowerCase());
+    if (error) throw new Error(error.message);
+    return { ok: true as const };
+  });
+
 export const listCollectionImageOverrides = createServerFn({ method: "GET" })
   .handler(async () => {
     const { data, error } = await supabaseAdmin

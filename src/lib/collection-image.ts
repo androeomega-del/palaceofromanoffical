@@ -538,8 +538,19 @@ export function collectionImageFocal(input: {
   imageHeight?: number | null;
   /** Pre-computed aspect ratio (width / height). Wins over width+height. */
   aspectRatio?: number | null;
+  /** Admin-tuned overrides from the focal-point editor: `{ [handle]: "x% y%" }`. */
+  dynamicFocal?: Record<string, string>;
 }): string {
   const handle = (input.handle ?? "").trim().toLowerCase();
+
+  // 1. Admin-tuned override (highest priority — beats everything else).
+  if (handle && input.dynamicFocal) {
+    if (input.dynamicFocal[handle]) return input.dynamicFocal[handle];
+    const norm = normalizeHandle(handle);
+    if (norm && input.dynamicFocal[norm]) return input.dynamicFocal[norm];
+  }
+
+  // 2. Curated static map.
   if (handle && FOCAL_BY_HANDLE[handle]) return FOCAL_BY_HANDLE[handle];
   const norm = normalizeHandle(handle);
   if (norm && FOCAL_BY_HANDLE[norm]) return FOCAL_BY_HANDLE[norm];
