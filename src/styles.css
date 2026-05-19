@@ -96,4 +96,16 @@
 
   /* Hairline rule used across editorial layouts */
   .hairline { height: 1px; background: color-mix(in oklab, var(--ink) 14%, transparent); }
+
+  /* Studio surface — luxury cream scope (used on PDP) */
+  .studio {
+    --studio-bg: oklch(0.975 0.004 80);       /* #f9f8f6 cream */
+    --studio-ink: oklch(0.18 0.003 50);       /* #1a1a1a ink */
+    --studio-muted: oklch(0.18 0.003 50 / 60%);
+    --studio-rule: oklch(0.18 0.003 50 / 10%);
+    --studio-bronze: oklch(0.62 0.055 72);    /* #a68a5d warm bronze */
+    background: var(--studio-bg);
+    color: var(--studio-ink);
+  }
+  .studio ::selection { background: var(--studio-bronze); color: var(--studio-bg); }
 }
