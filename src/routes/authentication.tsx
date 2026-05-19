@@ -81,20 +81,29 @@ function AuthenticationPage() {
         </div>
 
         <div className="not-prose mt-16 p-8 md:p-10 bg-canvas-raised border border-ink/5">
-          <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-3">A note on honesty</p>
-          <h3 className="font-serif text-2xl mb-4">We are a curator, not the maison.</h3>
+          <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-3">Verified partner</p>
+          <h3 className="font-serif text-2xl mb-4">Read our reseller certificate.</h3>
           <p className="text-sm text-ink/80 leading-relaxed mb-6">
-            Palace of Roman is not directly affiliated with the houses we carry. We are an independent boutique that
-            sources from an authorised European distribution partner and ships pieces sealed from brand-authorised
-            warehouses. If you ever want to verify a piece before or after purchase, write to us — we'll share the
-            documentation we have.
+            Palace of Roman is certified by BrandsGateway (Gateway Holdings OÜ, Estonia) as an official partner,
+            authorised to resell luxury fashion goods that are 100% authentic and sourced from the brands or their
+            authorised distributors. The signed certificate is available below for your review.
           </p>
-          <Link
-            to="/contact"
-            className="inline-block text-[11px] uppercase tracking-[0.25em] border-b border-ink pb-1 hover:text-bronze hover:border-bronze"
-          >
-            Write to the concierge →
-          </Link>
+          <div className="flex flex-wrap gap-4">
+            <a
+              href="/reseller-certificate.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block text-[11px] uppercase tracking-[0.25em] border-b border-ink pb-1 hover:text-bronze hover:border-bronze"
+            >
+              View reseller certificate (PDF) →
+            </a>
+            <Link
+              to="/contact"
+              className="inline-block text-[11px] uppercase tracking-[0.25em] border-b border-ink/40 pb-1 hover:text-bronze hover:border-bronze"
+            >
+              Write to the concierge →
+            </Link>
+          </div>
         </div>
       </ProseColumn>
     </EditorialPageShell>
