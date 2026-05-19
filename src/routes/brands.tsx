@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { fetchProducts } from "@/lib/shopify";
+import { fetchProductsPage } from "@/lib/shopify";
 
 export const Route = createFileRoute("/brands")({
   head: () => ({
@@ -15,11 +15,20 @@ export const Route = createFileRoute("/brands")({
 });
 
 function BrandsPage() {
-  // Sample first 250 products to extract a vendor list. (Storefront API has no direct vendor index.)
-  const sampleQ = useQuery({
+  // Scan the catalog in pages to extract vendors. Storefront API has no vendor index,
+  // so we walk products and dedupe. User can "Scan more" to keep going.
+  const sampleQ = useInfiniteQuery({
     queryKey: ["brands-sample"],
-    queryFn: () => fetchProducts({ first: 250, sortKey: "BEST_SELLING" }),
+    initialPageParam: null as string | null,
+    queryFn: ({ pageParam }) =>
+      fetchProductsPage({ first: 250, after: pageParam, sortKey: "BEST_SELLING" }),
+    getNextPageParam: (last) => (last.pageInfo.hasNextPage ? last.pageInfo.endCursor : undefined),
   });
+
+  const allEdges = useMemo(
+    () => sampleQ.data?.pages.flatMap((p) => p.edges) ?? [],
+    [sampleQ.data],
+  );
 
   const grouped = useMemo(() => {
     const map = new Map<string, number>();
