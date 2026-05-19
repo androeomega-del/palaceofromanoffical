@@ -59,9 +59,27 @@ export function DesktopMegamenu() {
     if (closeTimer.current) clearTimeout(closeTimer.current);
     setOpenKey(key);
   }, []);
+  /**
+   * Mouse-leave close. If the panel is hiding while keyboard focus is still
+   * inside it, move focus back to the matching trigger first — otherwise the
+   * `hidden` attribute would strand focus on the body and break Tab order.
+   * Escape and focus-out cases are handled by closeAndFocusTrigger / onBlur.
+   */
   const scheduleClose = useCallback(() => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
-    closeTimer.current = setTimeout(() => setOpenKey(null), 120);
+    closeTimer.current = setTimeout(() => {
+      setOpenKey((current) => {
+        if (current) {
+          const trigger = triggerRefs.current.get(current);
+          const active = document.activeElement as HTMLElement | null;
+          const panel = trigger?.parentElement?.querySelector<HTMLElement>('[role="region"]');
+          if (trigger && active && panel && panel.contains(active)) {
+            trigger.focus();
+          }
+        }
+        return null;
+      });
+    }, 120);
   }, []);
 
   const closeAndFocusTrigger = useCallback((key: string | null) => {
