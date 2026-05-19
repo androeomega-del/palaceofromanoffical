@@ -60,6 +60,17 @@ function matchesFilter(c: ShopifyCollection, filter: FilterKey): boolean {
   }
 }
 
+export function sortCollections(list: ShopifyCollection[], sort: SortKey): ShopifyCollection[] {
+  const sorted = [...list];
+  if (sort === "alpha") {
+    sorted.sort((a, b) => a.title.localeCompare(b.title));
+  } else if (sort === "newest") {
+    sorted.sort((a, b) => (b.updatedAt ?? "").localeCompare(a.updatedAt ?? ""));
+  }
+  // "popular" preserves Shopify's storefront order (manual/best-seller curated)
+  return sorted;
+}
+
 function CollectionsIndexPage() {
   const { filter, sort } = Route.useSearch();
   const navigate = useNavigate({ from: "/collections" });
@@ -70,17 +81,10 @@ function CollectionsIndexPage() {
   });
 
   const all = q.data ?? [];
-  const collections = useMemo(() => {
-    const filtered = all.filter((c) => matchesFilter(c, filter));
-    const sorted = [...filtered];
-    if (sort === "alpha") {
-      sorted.sort((a, b) => a.title.localeCompare(b.title));
-    } else if (sort === "newest") {
-      sorted.sort((a, b) => (b.updatedAt ?? "").localeCompare(a.updatedAt ?? ""));
-    }
-    // "popular" preserves Shopify's storefront order (manual/best-seller curated)
-    return sorted;
-  }, [all, filter, sort]);
+  const collections = useMemo(
+    () => sortCollections(all.filter((c) => matchesFilter(c, filter)), sort),
+    [all, filter, sort],
+  );
 
   const counts = useMemo(() => {
     const result: Record<FilterKey, number> = { all: 0, women: 0, men: 0, clothing: 0, shoes: 0, luxury: 0 };
