@@ -174,6 +174,7 @@ export function SiteHeader() {
       )}
 
       <CartDrawer open={cartOpen} onOpenChange={setCartOpen} />
+      <SearchOverlay open={searchOpen} onOpenChange={setSearchOpen} />
     </>
   );
 }
