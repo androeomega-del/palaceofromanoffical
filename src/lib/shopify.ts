@@ -14,6 +14,8 @@ export interface Money {
 export interface ShopifyImage {
   url: string;
   altText: string | null;
+  width?: number | null;
+  height?: number | null;
 }
 
 export interface ShopifyVariant {
