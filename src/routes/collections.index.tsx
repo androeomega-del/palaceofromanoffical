@@ -92,6 +92,13 @@ function CollectionsIndexPage() {
   });
   const dynamicMap = imageMapQuery.data ?? {};
 
+  const focalMapQuery = useQuery({
+    queryKey: ["collection-focal-map"],
+    queryFn: () => getCollectionFocalMap(),
+    staleTime: 30_000,
+  });
+  const dynamicFocal = focalMapQuery.data ?? {};
+
   const all = q.data ?? [];
   const collections = useMemo(
     () => sortCollections(all.filter((c) => matchesFilter(c, filter)), sort),
