@@ -26,12 +26,12 @@ export function SiteHeader() {
 
   return (
     <>
-      <div className="w-full bg-ink text-canvas/80 text-[10px] py-1.5 uppercase tracking-[0.2em] text-center">
-        Authenticity Guaranteed on Every Piece — Complimentary Global Shipping over $1,200
+      <div className="w-full bg-canvas-raised text-bronze/90 text-[10px] py-2 uppercase tracking-[0.3em] text-center border-b border-ink/5">
+        Authenticity Guaranteed — Complimentary Global Shipping over $1,200
       </div>
-      <header className="sticky top-0 z-50 bg-canvas/95 backdrop-blur-sm border-b border-ink/5">
+      <header className="sticky top-0 z-50 bg-canvas/90 backdrop-blur-md border-b border-ink/10">
         <div className="max-w-screen-2xl mx-auto px-6 h-20 flex items-center justify-between relative">
-          <nav className="hidden lg:flex items-center gap-8 text-xs uppercase tracking-widest font-medium">
+          <nav className="hidden lg:flex items-center gap-8 text-[11px] uppercase tracking-[0.25em] font-medium">
             {NAV.map((n) => (
               <Link
                 key={n.label}
