@@ -33,6 +33,7 @@ import { Route as CampaignDolceGabbanaSwimRouteImport } from './routes/campaign.
 import { Route as BrandVendorRouteImport } from './routes/brand.$vendor'
 import { Route as AdminCollectionImageQaRouteImport } from './routes/admin.collection-image-qa'
 import { Route as AdminCollectionImagePreviewRouteImport } from './routes/admin.collection-image-preview'
+import { Route as AdminCollectionHeroRegressionRouteImport } from './routes/admin.collection-hero-regression'
 import { Route as AdminCollectionFocalRouteImport } from './routes/admin.collection-focal'
 import { Route as ApiPublicHooksSyncCollectionImagesRouteImport } from './routes/api/public/hooks/sync-collection-images'
 
@@ -158,6 +159,12 @@ const AdminCollectionImagePreviewRoute =
     path: '/admin/collection-image-preview',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminCollectionHeroRegressionRoute =
+  AdminCollectionHeroRegressionRouteImport.update({
+    id: '/admin/collection-hero-regression',
+    path: '/admin/collection-hero-regression',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminCollectionFocalRoute = AdminCollectionFocalRouteImport.update({
   id: '/admin/collection-focal',
   path: '/admin/collection-focal',
@@ -185,6 +192,7 @@ export interface FileRoutesByFullPath {
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
   '/admin/collection-focal': typeof AdminCollectionFocalRoute
+  '/admin/collection-hero-regression': typeof AdminCollectionHeroRegressionRoute
   '/admin/collection-image-preview': typeof AdminCollectionImagePreviewRoute
   '/admin/collection-image-qa': typeof AdminCollectionImageQaRoute
   '/brand/$vendor': typeof BrandVendorRoute
@@ -213,6 +221,7 @@ export interface FileRoutesByTo {
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
   '/admin/collection-focal': typeof AdminCollectionFocalRoute
+  '/admin/collection-hero-regression': typeof AdminCollectionHeroRegressionRoute
   '/admin/collection-image-preview': typeof AdminCollectionImagePreviewRoute
   '/admin/collection-image-qa': typeof AdminCollectionImageQaRoute
   '/brand/$vendor': typeof BrandVendorRoute
@@ -242,6 +251,7 @@ export interface FileRoutesById {
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
   '/admin/collection-focal': typeof AdminCollectionFocalRoute
+  '/admin/collection-hero-regression': typeof AdminCollectionHeroRegressionRoute
   '/admin/collection-image-preview': typeof AdminCollectionImagePreviewRoute
   '/admin/collection-image-qa': typeof AdminCollectionImageQaRoute
   '/brand/$vendor': typeof BrandVendorRoute
@@ -272,6 +282,7 @@ export interface FileRouteTypes {
     | '/swim'
     | '/terms'
     | '/admin/collection-focal'
+    | '/admin/collection-hero-regression'
     | '/admin/collection-image-preview'
     | '/admin/collection-image-qa'
     | '/brand/$vendor'
@@ -300,6 +311,7 @@ export interface FileRouteTypes {
     | '/swim'
     | '/terms'
     | '/admin/collection-focal'
+    | '/admin/collection-hero-regression'
     | '/admin/collection-image-preview'
     | '/admin/collection-image-qa'
     | '/brand/$vendor'
@@ -328,6 +340,7 @@ export interface FileRouteTypes {
     | '/swim'
     | '/terms'
     | '/admin/collection-focal'
+    | '/admin/collection-hero-regression'
     | '/admin/collection-image-preview'
     | '/admin/collection-image-qa'
     | '/brand/$vendor'
@@ -357,6 +370,7 @@ export interface RootRouteChildren {
   SwimRoute: typeof SwimRouteWithChildren
   TermsRoute: typeof TermsRoute
   AdminCollectionFocalRoute: typeof AdminCollectionFocalRoute
+  AdminCollectionHeroRegressionRoute: typeof AdminCollectionHeroRegressionRoute
   AdminCollectionImagePreviewRoute: typeof AdminCollectionImagePreviewRoute
   AdminCollectionImageQaRoute: typeof AdminCollectionImageQaRoute
   BrandVendorRoute: typeof BrandVendorRoute
@@ -540,6 +554,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCollectionImagePreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/collection-hero-regression': {
+      id: '/admin/collection-hero-regression'
+      path: '/admin/collection-hero-regression'
+      fullPath: '/admin/collection-hero-regression'
+      preLoaderRoute: typeof AdminCollectionHeroRegressionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/collection-focal': {
       id: '/admin/collection-focal'
       path: '/admin/collection-focal'
@@ -582,6 +603,7 @@ const rootRouteChildren: RootRouteChildren = {
   SwimRoute: SwimRouteWithChildren,
   TermsRoute: TermsRoute,
   AdminCollectionFocalRoute: AdminCollectionFocalRoute,
+  AdminCollectionHeroRegressionRoute: AdminCollectionHeroRegressionRoute,
   AdminCollectionImagePreviewRoute: AdminCollectionImagePreviewRoute,
   AdminCollectionImageQaRoute: AdminCollectionImageQaRoute,
   BrandVendorRoute: BrandVendorRoute,
