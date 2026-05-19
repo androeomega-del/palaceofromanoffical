@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as BrandsRouteImport } from './routes/brands'
@@ -19,6 +20,11 @@ import { Route as EditorialMay2026RouteImport } from './routes/editorial.may-202
 import { Route as CollectionsHandleRouteImport } from './routes/collections.$handle'
 import { Route as BrandVendorRouteImport } from './routes/brand.$vendor'
 
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ShopRoute = ShopRouteImport.update({
   id: '/shop',
   path: '/shop',
@@ -70,6 +76,7 @@ export interface FileRoutesByFullPath {
   '/brands': typeof BrandsRoute
   '/privacy': typeof PrivacyRoute
   '/shop': typeof ShopRoute
+  '/terms': typeof TermsRoute
   '/brand/$vendor': typeof BrandVendorRoute
   '/collections/$handle': typeof CollectionsHandleRoute
   '/editorial/may-2026': typeof EditorialMay2026Route
@@ -81,6 +88,7 @@ export interface FileRoutesByTo {
   '/brands': typeof BrandsRoute
   '/privacy': typeof PrivacyRoute
   '/shop': typeof ShopRoute
+  '/terms': typeof TermsRoute
   '/brand/$vendor': typeof BrandVendorRoute
   '/collections/$handle': typeof CollectionsHandleRoute
   '/editorial/may-2026': typeof EditorialMay2026Route
@@ -93,6 +101,7 @@ export interface FileRoutesById {
   '/brands': typeof BrandsRoute
   '/privacy': typeof PrivacyRoute
   '/shop': typeof ShopRoute
+  '/terms': typeof TermsRoute
   '/brand/$vendor': typeof BrandVendorRoute
   '/collections/$handle': typeof CollectionsHandleRoute
   '/editorial/may-2026': typeof EditorialMay2026Route
@@ -106,6 +115,7 @@ export interface FileRouteTypes {
     | '/brands'
     | '/privacy'
     | '/shop'
+    | '/terms'
     | '/brand/$vendor'
     | '/collections/$handle'
     | '/editorial/may-2026'
@@ -117,6 +127,7 @@ export interface FileRouteTypes {
     | '/brands'
     | '/privacy'
     | '/shop'
+    | '/terms'
     | '/brand/$vendor'
     | '/collections/$handle'
     | '/editorial/may-2026'
@@ -128,6 +139,7 @@ export interface FileRouteTypes {
     | '/brands'
     | '/privacy'
     | '/shop'
+    | '/terms'
     | '/brand/$vendor'
     | '/collections/$handle'
     | '/editorial/may-2026'
@@ -140,6 +152,7 @@ export interface RootRouteChildren {
   BrandsRoute: typeof BrandsRoute
   PrivacyRoute: typeof PrivacyRoute
   ShopRoute: typeof ShopRoute
+  TermsRoute: typeof TermsRoute
   BrandVendorRoute: typeof BrandVendorRoute
   CollectionsHandleRoute: typeof CollectionsHandleRoute
   EditorialMay2026Route: typeof EditorialMay2026Route
@@ -149,6 +162,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/shop': {
       id: '/shop'
       path: '/shop'
@@ -220,6 +240,7 @@ const rootRouteChildren: RootRouteChildren = {
   BrandsRoute: BrandsRoute,
   PrivacyRoute: PrivacyRoute,
   ShopRoute: ShopRoute,
+  TermsRoute: TermsRoute,
   BrandVendorRoute: BrandVendorRoute,
   CollectionsHandleRoute: CollectionsHandleRoute,
   EditorialMay2026Route: EditorialMay2026Route,
