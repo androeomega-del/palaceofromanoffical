@@ -128,28 +128,28 @@ function ProductView({
   const vendorHandle = product.vendor.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
   return (
-    <div>
+    <div className="studio">
       {/* Breadcrumb */}
-      <div className="px-6 pt-8">
-        <div className="max-w-screen-2xl mx-auto flex items-center gap-2 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
-          <Link to="/" className="hover:text-ink">Boutique</Link>
+      <div className="px-6 pt-10">
+        <div className="max-w-screen-2xl mx-auto flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-[var(--studio-muted)]">
+          <Link to="/" className="hover:text-[var(--studio-ink)] transition-colors">Boutique</Link>
           <span className="opacity-40">/</span>
           <Link
             to="/collections/$handle"
             params={{ handle: vendorHandle }}
-            className="hover:text-ink"
+            className="hover:text-[var(--studio-ink)] transition-colors"
           >
             {product.vendor}
           </Link>
           <span className="opacity-40">/</span>
-          <span className="text-ink/70 truncate max-w-[40ch]">{product.title}</span>
+          <span className="text-[var(--studio-ink)] truncate max-w-[40ch]">{product.title}</span>
         </div>
       </div>
 
-      <div className="px-6 pt-8 pb-16">
-        <div className="max-w-screen-2xl mx-auto grid grid-cols-1 lg:grid-cols-[1.25fr_1fr] gap-10 lg:gap-16">
-          {/* ===== Gallery ===== */}
-          <div>
+      <div className="px-6 md:px-12 pt-12 pb-20">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
+          {/* ===== Gallery — stacked editorial ===== */}
+          <div className="lg:col-span-7">
             {/* Mobile: snap carousel */}
             <div className="lg:hidden -mx-6">
               <div
@@ -160,7 +160,7 @@ function ProductView({
                 }}
               >
                 {(images.length ? images : [{ url: "", altText: product.title }]).map((img, i) => (
-                  <div key={i} className="min-w-full snap-center aspect-[4/5] bg-muted overflow-hidden">
+                  <div key={i} className="min-w-full snap-center aspect-[3/4] bg-white overflow-hidden">
                     {img.url && (
                       <img
                         src={img.url}
@@ -177,7 +177,9 @@ function ProductView({
                     <span
                       key={i}
                       className={`h-1 transition-all ${
-                        i === activeImg ? "w-8 bg-ink" : "w-4 bg-ink/20"
+                        i === activeImg
+                          ? "w-8 bg-[var(--studio-ink)]"
+                          : "w-4 bg-[var(--studio-ink)]/20"
                       }`}
                     />
                   ))}
@@ -185,167 +187,168 @@ function ProductView({
               )}
             </div>
 
-            {/* Desktop: editorial grid */}
-            <div className="hidden lg:grid grid-cols-2 gap-3">
-              {images.length === 0 ? (
-                <div className="col-span-2 w-full aspect-[4/5] bg-muted" />
-              ) : (
-                images.map((img, i) => {
-                  const fullBleed = i === 0 || (i % 5 === 0 && i > 0);
-                  return (
-                    <div
-                      key={img.url}
-                      className={`bg-muted overflow-hidden ${
-                        fullBleed ? "col-span-2 aspect-[4/5]" : "aspect-[3/4]"
-                      }`}
-                    >
-                      <img
-                        src={img.url}
-                        alt={img.altText ?? product.title}
-                        className="w-full h-full object-cover transition-transform duration-[1200ms] hover:scale-[1.02]"
-                      />
-                    </div>
-                  );
-                })
-              )}
+            {/* Desktop: stacked tall frames */}
+            <div className="hidden lg:flex flex-col gap-8">
+              {(images.length ? images : [{ url: "", altText: product.title }]).map((img, i) => (
+                <div
+                  key={img.url || i}
+                  className="bg-white aspect-[3/4] overflow-hidden shadow-[0_1px_2px_rgba(26,26,26,0.04),0_24px_48px_-24px_rgba(26,26,26,0.08)]"
+                >
+                  {img.url && (
+                    <img
+                      src={img.url}
+                      alt={img.altText ?? product.title}
+                      className="w-full h-full object-cover transition-transform duration-[1400ms] hover:scale-[1.02]"
+                    />
+                  )}
+                </div>
+              ))}
             </div>
           </div>
 
           {/* ===== Info column ===== */}
-          <div className="lg:sticky lg:top-28 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-2 lg:-mr-2">
-            <Link
-              to="/collections/$handle"
-              params={{ handle: vendorHandle }}
-              className="inline-block text-[10px] uppercase tracking-[0.3em] text-bronze hover:text-ink mb-4"
-            >
-              {product.vendor}
-            </Link>
-            <h1 className="text-3xl md:text-4xl font-serif leading-[1.05] mb-6 text-balance">
-              {product.title}
-            </h1>
-
-            {/* Price row */}
-            <div className="flex items-baseline gap-3 mb-1">
-              <span className="text-2xl md:text-[1.7rem] font-serif">{formatPrice(currentPrice)}</span>
-              {off > 0 && (
-                <>
-                  <span className="text-sm text-muted-foreground line-through">
-                    {formatPrice(compareAt!)}
-                  </span>
-                  <span className="text-[10px] uppercase tracking-[0.2em] px-2 py-1 bg-bronze/10 text-bronze">
-                    {off}% Off
-                  </span>
-                </>
-              )}
-            </div>
-            <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mb-8">
-              Import duties included · Worldwide delivery
-            </p>
-
-            {/* Variant selectors */}
-            {product.options
-              .filter((o) => o.values.length > 1 || o.name.toLowerCase() !== "title")
-              .map((option) => (
-                <VariantOption
-                  key={option.name}
-                  option={option}
-                  variants={variants}
-                  selected={selectedVariant}
-                  onSelect={(v) => setSelectedVariantId(v.id)}
-                />
-              ))}
-
-            {/* Quantity + CTA */}
-            <div className="flex gap-3 mt-6">
-              <div className="flex items-center border border-ink/15">
-                <button
-                  type="button"
-                  onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                  className="px-3 h-14 hover:bg-ink/5"
-                  aria-label="Decrease quantity"
-                >
-                  <Minus className="h-3.5 w-3.5" />
-                </button>
-                <span className="w-8 text-center text-sm tabular-nums">{quantity}</span>
-                <button
-                  type="button"
-                  onClick={() => setQuantity((q) => Math.min(10, q + 1))}
-                  className="px-3 h-14 hover:bg-ink/5"
-                  aria-label="Increase quantity"
-                >
-                  <Plus className="h-3.5 w-3.5" />
-                </button>
-              </div>
-              <button
-                onClick={handleAdd}
-                disabled={isLoading || !selectedVariant?.availableForSale}
-                className="flex-1 h-14 bg-ink text-canvas hover:bg-bronze transition-colors text-[11px] uppercase tracking-[0.3em] font-medium disabled:opacity-50 inline-flex items-center justify-center gap-2"
+          <div className="lg:col-span-5 lg:sticky lg:top-24 lg:self-start space-y-12">
+            <header className="space-y-5">
+              <Link
+                to="/collections/$handle"
+                params={{ handle: vendorHandle }}
+                className="inline-block text-[10px] uppercase tracking-[0.3em] font-semibold text-[var(--studio-bronze)] hover:text-[var(--studio-ink)] transition-colors"
               >
-                {isLoading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : !selectedVariant?.availableForSale ? (
-                  "Sold Out"
-                ) : (
+                Palace of Roman — {product.vendor}
+              </Link>
+              <h1 className="font-serif text-4xl md:text-5xl lg:text-[3.4rem] leading-[1.05] tracking-tight text-balance">
+                {product.title}
+              </h1>
+              <div className="flex items-baseline gap-4 pt-1">
+                <span className="font-serif text-3xl font-light">{formatPrice(currentPrice)}</span>
+                {off > 0 && (
                   <>
-                    <Lock className="w-3 h-3" />
-                    Add to Bag — {formatPrice({
-                      amount: (parseFloat(currentPrice.amount) * quantity).toString(),
-                      currencyCode: currentPrice.currencyCode,
-                    })}
+                    <span className="text-sm italic text-[var(--studio-bronze)] line-through decoration-[var(--studio-bronze)]/30">
+                      {formatPrice(compareAt!)}
+                    </span>
+                    <span className="text-[10px] tracking-[0.2em] uppercase border border-[var(--studio-bronze)]/30 px-2 py-1 text-[var(--studio-bronze)]">
+                      {off}% Off
+                    </span>
                   </>
                 )}
-              </button>
+              </div>
+              <p className="text-[10px] uppercase tracking-[0.25em] text-[var(--studio-muted)] font-medium">
+                Import duties included · Express global delivery
+              </p>
+            </header>
+
+            {/* Variant selectors + CTA */}
+            <div className="space-y-10">
+              {product.options
+                .filter((o) => o.values.length > 1 || o.name.toLowerCase() !== "title")
+                .map((option) => (
+                  <VariantOption
+                    key={option.name}
+                    option={option}
+                    variants={variants}
+                    selected={selectedVariant}
+                    onSelect={(v) => setSelectedVariantId(v.id)}
+                  />
+                ))}
+
+              <div className="flex gap-4">
+                <div className="flex items-center border border-[var(--studio-rule)] bg-white h-16 shadow-sm">
+                  <button
+                    type="button"
+                    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                    className="w-12 h-full flex items-center justify-center hover:bg-[var(--studio-ink)]/5 transition-colors"
+                    aria-label="Decrease quantity"
+                  >
+                    <Minus className="h-3.5 w-3.5" />
+                  </button>
+                  <span className="w-10 text-center text-sm tabular-nums font-medium">{quantity}</span>
+                  <button
+                    type="button"
+                    onClick={() => setQuantity((q) => Math.min(10, q + 1))}
+                    className="w-12 h-full flex items-center justify-center hover:bg-[var(--studio-ink)]/5 transition-colors"
+                    aria-label="Increase quantity"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+                <button
+                  onClick={handleAdd}
+                  disabled={isLoading || !selectedVariant?.availableForSale}
+                  className="flex-1 h-16 bg-[var(--studio-ink)] text-[var(--studio-bg)] hover:bg-[var(--studio-bronze)] transition-colors duration-700 text-[11px] uppercase tracking-[0.3em] font-semibold disabled:opacity-50 inline-flex items-center justify-center gap-2 shadow-lg"
+                >
+                  {isLoading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : !selectedVariant?.availableForSale ? (
+                    "Sold Out"
+                  ) : (
+                    <>
+                      <Lock className="w-3 h-3" />
+                      Add to Bag — {formatPrice({
+                        amount: (parseFloat(currentPrice.amount) * quantity).toString(),
+                        currencyCode: currentPrice.currencyCode,
+                      })}
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
 
-            {/* Trust strip */}
-            <ul className="mt-8 grid grid-cols-3 gap-2 border-y border-ink/10 py-5">
-              <TrustItem icon={ShieldCheck} title="100% Authentic" sub="BrandsGateway sourced" />
-              <TrustItem icon={Truck} title="Free Shipping" sub="On orders over $1,200" />
-              <TrustItem icon={RotateCcw} title="90-Day Returns" sub="Independent authenticator" />
+            {/* Trust strip — diamonds */}
+            <ul className="grid grid-cols-3 gap-8 py-10 border-y border-[var(--studio-rule)]">
+              <TrustItem title="Curated" sub="Authentic Only" />
+              <TrustItem title="Express" sub="3–5 Day Global" />
+              <TrustItem title="90 Day" sub="Free Returns" />
             </ul>
 
             {/* Accordions */}
-            <Accordion type="multiple" defaultValue={["details"]} className="mt-8">
+            <Accordion
+              type="multiple"
+              defaultValue={["details"]}
+              className="divide-y divide-[var(--studio-rule)] border-b border-[var(--studio-rule)] -mt-2"
+            >
               {product.description && (
-                <AccordionItem value="details" className="border-ink/10">
-                  <AccordionTrigger className="text-[10px] uppercase tracking-[0.25em] hover:no-underline py-5">
-                    Description
+                <AccordionItem value="details" className="border-0">
+                  <AccordionTrigger className="text-[11px] uppercase tracking-[0.25em] font-bold hover:no-underline py-6 [&>svg]:text-[var(--studio-bronze)]">
+                    The Narrative
                   </AccordionTrigger>
                   <AccordionContent>
-                    <p className="text-sm leading-relaxed text-muted-foreground whitespace-pre-line">
+                    <p className="text-sm leading-[1.85] text-[var(--studio-muted)] whitespace-pre-line italic font-serif">
                       {product.description}
                     </p>
                   </AccordionContent>
                 </AccordionItem>
               )}
-              <AccordionItem value="sizing" className="border-ink/10">
-                <AccordionTrigger className="text-[10px] uppercase tracking-[0.25em] hover:no-underline py-5">
+              <AccordionItem value="sizing" className="border-0">
+                <AccordionTrigger className="text-[11px] uppercase tracking-[0.25em] font-bold hover:no-underline py-6 [&>svg]:text-[var(--studio-bronze)]">
                   Sizing & Fit
                 </AccordionTrigger>
                 <AccordionContent>
-                  <p className="text-sm leading-relaxed text-muted-foreground">
+                  <p className="text-sm leading-[1.85] text-[var(--studio-muted)]">
                     Pieces are sized to the maison's standard. If you sit between two sizes, we
                     recommend sizing up for relaxed silhouettes and down for tailored cuts. Reach
                     out via{" "}
-                    <Link to="/contact" className="underline underline-offset-4 hover:text-ink">
+                    <Link
+                      to="/contact"
+                      className="underline underline-offset-4 hover:text-[var(--studio-ink)]"
+                    >
                       concierge
                     </Link>{" "}
                     for a personal fit check before ordering.
                   </p>
                 </AccordionContent>
               </AccordionItem>
-              <AccordionItem value="shipping" className="border-ink/10">
-                <AccordionTrigger className="text-[10px] uppercase tracking-[0.25em] hover:no-underline py-5">
+              <AccordionItem value="shipping" className="border-0">
+                <AccordionTrigger className="text-[11px] uppercase tracking-[0.25em] font-bold hover:no-underline py-6 [&>svg]:text-[var(--studio-bronze)]">
                   Shipping & Delivery
                 </AccordionTrigger>
                 <AccordionContent>
-                  <p className="text-sm leading-relaxed text-muted-foreground">
+                  <p className="text-sm leading-[1.85] text-[var(--studio-muted)]">
                     Dispatched sealed from a brand-authorised European warehouse within 1–3
                     business days. Express courier with full tracking; import duties and taxes
                     handled on your behalf. Full details on the{" "}
                     <Link
                       to="/shipping-returns"
-                      className="underline underline-offset-4 hover:text-ink"
+                      className="underline underline-offset-4 hover:text-[var(--studio-ink)]"
                     >
                       Shipping & Returns
                     </Link>{" "}
@@ -353,19 +356,19 @@ function ProductView({
                   </p>
                 </AccordionContent>
               </AccordionItem>
-              <AccordionItem value="auth" className="border-ink/10 border-b">
-                <AccordionTrigger className="text-[10px] uppercase tracking-[0.25em] hover:no-underline py-5">
+              <AccordionItem value="auth" className="border-0">
+                <AccordionTrigger className="text-[11px] uppercase tracking-[0.25em] font-bold hover:no-underline py-6 [&>svg]:text-[var(--studio-bronze)]">
                   Authenticity & Returns
                 </AccordionTrigger>
                 <AccordionContent>
-                  <p className="text-sm leading-relaxed text-muted-foreground">
+                  <p className="text-sm leading-[1.85] text-[var(--studio-muted)]">
                     Every piece is 100% authentic, sourced from the brands or their authorised
                     distributors as an official BrandsGateway partner. If any independent
                     authenticator finds otherwise within 90 days, Palace of Roman issues a full
                     refund — no questions. See{" "}
                     <Link
                       to="/authentication"
-                      className="underline underline-offset-4 hover:text-ink"
+                      className="underline underline-offset-4 hover:text-[var(--studio-ink)]"
                     >
                       our authenticity guarantee
                     </Link>
@@ -379,18 +382,18 @@ function ProductView({
 
         {/* ===== More from vendor ===== */}
         {related.length > 0 && (
-          <section className="max-w-screen-2xl mx-auto mt-28 pt-16 border-t border-ink/10">
-            <div className="flex items-end justify-between mb-10">
-              <div>
-                <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">
+          <section className="max-w-7xl mx-auto mt-32 pt-20 border-t border-[var(--studio-rule)]">
+            <div className="flex items-end justify-between mb-12">
+              <div className="space-y-3">
+                <p className="text-[10px] tracking-[0.3em] uppercase text-[var(--studio-bronze)] font-semibold">
                   The Edit
                 </p>
-                <h2 className="text-2xl md:text-3xl font-serif">More from {product.vendor}</h2>
+                <h2 className="font-serif text-3xl md:text-4xl">More from {product.vendor}</h2>
               </div>
               <Link
                 to="/collections/$handle"
                 params={{ handle: vendorHandle }}
-                className="hidden md:inline-block text-[10px] uppercase tracking-[0.25em] border-b border-ink pb-1 hover:text-bronze hover:border-bronze"
+                className="hidden md:inline-block text-[10px] uppercase tracking-[0.25em] border-b border-[var(--studio-ink)] pb-1 hover:text-[var(--studio-bronze)] hover:border-[var(--studio-bronze)] transition-colors"
               >
                 View all {product.vendor}
               </Link>
@@ -407,20 +410,19 @@ function ProductView({
   );
 }
 
-function TrustItem({
-  icon: Icon,
-  title,
-  sub,
-}: {
-  icon: typeof ShieldCheck;
-  title: string;
-  sub: string;
-}) {
+function TrustItem({ title, sub }: { title: string; sub: string }) {
   return (
-    <li className="flex flex-col items-center text-center gap-1.5">
-      <Icon className="h-4 w-4 text-bronze" strokeWidth={1.5} />
-      <span className="text-[10px] uppercase tracking-[0.2em] leading-tight">{title}</span>
-      <span className="text-[9px] text-muted-foreground leading-tight">{sub}</span>
+    <li className="flex flex-col items-center text-center gap-3">
+      <span
+        className="block h-2.5 w-2.5 border border-[var(--studio-bronze)] rotate-45"
+        aria-hidden
+      />
+      <span className="text-[10px] uppercase tracking-[0.25em] font-bold leading-none">
+        {title}
+      </span>
+      <span className="text-[9px] uppercase tracking-[0.2em] text-[var(--studio-muted)] leading-none">
+        {sub}
+      </span>
     </li>
   );
 }
