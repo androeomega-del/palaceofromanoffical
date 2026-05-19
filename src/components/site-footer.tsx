@@ -21,6 +21,7 @@ export function SiteFooter() {
               <Link to="/collections/$handle" params={{ handle: "womens-shoes" }} className="text-sm text-muted-foreground hover:text-ink transition-colors">Women's Shoes</Link>
               <Link to="/collections/$handle" params={{ handle: "mens-clothing" }} className="text-sm text-muted-foreground hover:text-ink transition-colors">Men's Clothing</Link>
               <Link to="/collections/$handle" params={{ handle: "mens-shoes" }} className="text-sm text-muted-foreground hover:text-ink transition-colors">Men's Shoes</Link>
+              <Link to="/collections" className="text-sm text-muted-foreground hover:text-ink transition-colors">All Collections</Link>
               <Link to="/brands" className="text-sm text-muted-foreground hover:text-ink transition-colors">Brands Index</Link>
             </div>
             <div className="flex flex-col gap-4">
