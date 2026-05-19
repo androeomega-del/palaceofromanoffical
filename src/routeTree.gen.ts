@@ -14,6 +14,7 @@ import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ShippingReturnsRouteImport } from './routes/shipping-returns'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as JournalRouteImport } from './routes/journal'
+import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BrandsRouteImport } from './routes/brands'
 import { Route as AuthenticationRouteImport } from './routes/authentication'
@@ -50,6 +51,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
 const JournalRoute = JournalRouteImport.update({
   id: '/journal',
   path: '/journal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -119,6 +125,7 @@ export interface FileRoutesByFullPath {
   '/authentication': typeof AuthenticationRoute
   '/brands': typeof BrandsRoute
   '/contact': typeof ContactRoute
+  '/faq': typeof FaqRoute
   '/journal': typeof JournalRoute
   '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
@@ -138,6 +145,7 @@ export interface FileRoutesByTo {
   '/authentication': typeof AuthenticationRoute
   '/brands': typeof BrandsRoute
   '/contact': typeof ContactRoute
+  '/faq': typeof FaqRoute
   '/journal': typeof JournalRoute
   '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
@@ -158,6 +166,7 @@ export interface FileRoutesById {
   '/authentication': typeof AuthenticationRoute
   '/brands': typeof BrandsRoute
   '/contact': typeof ContactRoute
+  '/faq': typeof FaqRoute
   '/journal': typeof JournalRoute
   '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
@@ -179,6 +188,7 @@ export interface FileRouteTypes {
     | '/authentication'
     | '/brands'
     | '/contact'
+    | '/faq'
     | '/journal'
     | '/privacy'
     | '/shipping-returns'
@@ -198,6 +208,7 @@ export interface FileRouteTypes {
     | '/authentication'
     | '/brands'
     | '/contact'
+    | '/faq'
     | '/journal'
     | '/privacy'
     | '/shipping-returns'
@@ -217,6 +228,7 @@ export interface FileRouteTypes {
     | '/authentication'
     | '/brands'
     | '/contact'
+    | '/faq'
     | '/journal'
     | '/privacy'
     | '/shipping-returns'
@@ -237,6 +249,7 @@ export interface RootRouteChildren {
   AuthenticationRoute: typeof AuthenticationRoute
   BrandsRoute: typeof BrandsRoute
   ContactRoute: typeof ContactRoute
+  FaqRoute: typeof FaqRoute
   JournalRoute: typeof JournalRoute
   PrivacyRoute: typeof PrivacyRoute
   ShippingReturnsRoute: typeof ShippingReturnsRoute
@@ -286,6 +299,13 @@ declare module '@tanstack/react-router' {
       path: '/journal'
       fullPath: '/journal'
       preLoaderRoute: typeof JournalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -381,6 +401,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticationRoute: AuthenticationRoute,
   BrandsRoute: BrandsRoute,
   ContactRoute: ContactRoute,
+  FaqRoute: FaqRoute,
   JournalRoute: JournalRoute,
   PrivacyRoute: PrivacyRoute,
   ShippingReturnsRoute: ShippingReturnsRoute,
