@@ -176,12 +176,12 @@ function ContactPage() {
               <p className="text-ink/80">concierge@<br/>palaceofroman.com</p>
             </div>
             <div>
-              <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">By appointment</p>
-              <p className="text-ink/80">New York atelier<br/>Mon–Sat</p>
+              <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">Where we ship from</p>
+              <p className="text-ink/80">Brand-authorised<br/>partner warehouses</p>
             </div>
             <div>
-              <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">Hours</p>
-              <p className="text-ink/80">10am – 7pm ET<br/>Same-day reply</p>
+              <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">Reply time</p>
+              <p className="text-ink/80">Same business day<br/>Mon–Sat</p>
             </div>
           </div>
         </div>
