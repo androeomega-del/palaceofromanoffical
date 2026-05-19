@@ -106,20 +106,37 @@ function AboutPage() {
         </div>
       </section>
 
-      {/* Team */}
+      {/* Founder's note */}
       <section className="border-t border-ink/10 pt-20">
-        <p className="text-[10px] uppercase tracking-[0.35em] text-bronze mb-4 text-center">The atelier</p>
-        <h2 className="font-serif text-3xl md:text-4xl tracking-tight text-center mb-16">The people behind the edit</h2>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-          {TEAM.map((t, i) => (
-            <div key={t.role} className="flex flex-col">
-              <div className="aspect-[4/5] overflow-hidden bg-canvas-raised mb-5">
-                <img src={img(50 + i * 4)} alt={t.role} className="w-full h-full object-cover" loading="lazy" />
-              </div>
-              <p className="font-serif text-lg">{t.role}</p>
-              <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{t.note}</p>
+        <div className="grid md:grid-cols-12 gap-10 md:gap-16 items-start">
+          <div className="md:col-span-5">
+            <div className="aspect-[4/5] overflow-hidden bg-canvas-raised">
+              <img src={img(54)} alt="A study from the edit" className="w-full h-full object-cover" loading="lazy" />
             </div>
-          ))}
+          </div>
+          <div className="md:col-span-7">
+            <p className="text-[10px] uppercase tracking-[0.35em] text-bronze mb-4">A note from the founder</p>
+            <h2 className="font-serif text-3xl md:text-4xl tracking-tight mb-6 text-balance">
+              One voice, one edit.
+            </h2>
+            <p className="text-[15px] leading-[1.8] text-ink/80 mb-4">
+              Palace of Roman is a small independent house. The selection, the writing, the studio direction and the
+              correspondence with clients all come from a single point of view — not a committee, not a department.
+              Pieces are chosen because they belong, and the rest is left out.
+            </p>
+            <p className="text-[15px] leading-[1.8] text-ink/80">
+              If you'd like to talk about a piece, a fit, or something you haven't found here, write to me directly.
+              I read every note.
+            </p>
+            <div className="mt-8">
+              <Link
+                to="/contact"
+                className="inline-block text-[11px] uppercase tracking-[0.25em] border-b border-ink pb-1 hover:text-bronze hover:border-bronze transition-colors"
+              >
+                Write to the founder
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
     </EditorialPageShell>
