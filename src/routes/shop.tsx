@@ -47,20 +47,23 @@ function ShopPage() {
 
   const { sortKey, reverse } = mapSort(sort);
 
-  const q = useQuery({
+  const q = useInfiniteQuery({
     queryKey: ["shop-search", filterInputs, sortKey, reverse],
-    queryFn: () =>
+    initialPageParam: null as string | null,
+    queryFn: ({ pageParam }) =>
       fetchSearchFiltered({
         query: "*",
         first: 36,
+        after: pageParam,
         filters: filterInputs,
         sortKey,
         reverse,
       }),
+    getNextPageParam: (last) => (last.pageInfo.hasNextPage ? last.pageInfo.endCursor : undefined),
   });
 
-  const filters = q.data?.filters ?? [];
-  const edges = q.data?.edges ?? [];
+  const filters = q.data?.pages?.[0]?.filters ?? [];
+  const edges = useMemo(() => q.data?.pages.flatMap((p) => p.edges) ?? [], [q.data]);
 
   const selectedInputs = useMemo(() => new Set(selections.map((s) => s.input)), [selections]);
   const toggle = (filterId: string, v: StorefrontFilterValue) => {
