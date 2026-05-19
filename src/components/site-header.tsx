@@ -22,6 +22,7 @@ const NAV_RIGHT: NavItem[] = [
   { to: "/collections/$handle", params: { handle: "mens-clothing" }, label: "Men's Clothing" },
   { to: "/collections/$handle", params: { handle: "mens-shoes" }, label: "Men's Shoes" },
   { to: "/brands", label: "Brands" },
+  { to: "/editorial/may-2026", label: "Editorial" },
   { to: "/collections/$handle", params: { handle: "high-discounts" }, label: "Sale", accent: true },
 ];
 const NAV_MOBILE: NavItem[] = [...NAV_LEFT, ...NAV_RIGHT];
