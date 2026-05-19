@@ -101,6 +101,51 @@ function SwimPage() {
   const edges = useMemo(() => q.data?.pages.flatMap((p) => p.edges) ?? [], [q.data]);
   const selectedInputs = useMemo(() => new Set(selections.map((s) => s.input)), [selections]);
 
+  // Build hotspots for the three lookbook frames, anchored to real fetched
+  // pieces. Each frame uses different products so the whole edit is tagged.
+  const lookbookSpots = useMemo(() => {
+    const pool = edges.map((e) => e.node);
+    const used = new Set<string>();
+    const take = (match: RegExp) => {
+      const p = pool.find((p) => !used.has(p.handle) && match.test(p.title))
+        ?? pool.find((p) => !used.has(p.handle));
+      if (!p) return null;
+      used.add(p.handle);
+      return p;
+    };
+    const spot = (x: number, y: number, match: RegExp): Hotspot | null => {
+      const p = take(match);
+      if (!p) return null;
+      const t = p.title.toLowerCase();
+      const label = t.includes("bikini top") ? "Bikini Top"
+        : t.includes("bikini bottom") ? "Bikini Bottom"
+        : t.includes("swimsuit") || t.includes("one piece") ? "Swimsuit"
+        : t.includes("pareo") || t.includes("kaftan") ? "Pareo"
+        : t.includes("bag") ? "Beach Bag"
+        : t.includes("hat") ? "Sun Hat"
+        : t.includes("sandal") || t.includes("espadrille") ? "Footwear"
+        : t.includes("earring") || t.includes("necklace") ? "Jewellery"
+        : "The Piece";
+      return { x, y, handle: p.handle, label, sublabel: p.vendor };
+    };
+    const compact = (arr: Array<Hotspot | null>) => arr.filter((s): s is Hotspot => !!s);
+    return {
+      frame1: compact([
+        spot(48, 55, /swimsuit|one[- ]?piece|bikini/i),
+        spot(70, 38, /pareo|kaftan|sarong/i),
+      ]),
+      frame2: compact([
+        spot(50, 45, /bikini top|top/i),
+        spot(35, 70, /bikini bottom|bottom/i),
+      ]),
+      frame3: compact([
+        spot(28, 40, /bag|tote/i),
+        spot(60, 55, /hat|sandal|earring/i),
+        spot(78, 75, /sunglass|eyewear|jewel/i),
+      ]),
+    };
+  }, [edges]);
+
   const toggle = (filterId: string, v: StorefrontFilterValue) => {
     setSelections((curr) =>
       curr.some((s) => s.input === v.input)
