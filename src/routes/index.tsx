@@ -218,7 +218,7 @@ function HomePage() {
           </div>
           {featuredBrands.length === 0 ? (
             <p className="text-center text-sm text-muted-foreground py-8">
-              {womenBrandsQ.isLoading || menBrandsClothingQ.isLoading ? "Loading designers…" : "No shared brands in stock at the moment."}
+              {womenBrandsClothingQ.isLoading || menBrandsClothingQ.isLoading ? "Loading designers…" : "No shared brands in stock at the moment."}
             </p>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-y-10">
