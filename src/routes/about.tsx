@@ -66,9 +66,10 @@ function AboutPage() {
           ))}
         </div>
         <p className="text-[15px] leading-[1.8] text-ink/80 max-w-2xl mx-auto mt-12 text-center">
-          We do not chase volume. Every season our buying director travels to the houses we love and brings back a tight
-          edit — a few pieces per maison, chosen for cut, material, and the way each will live with the others. The
-          result is a boutique you can hold in your head, not a catalogue you scroll through.
+          We do not chase volume. The edit is built piece by piece from the catalogues of an authorised European
+          distribution partner that holds stock from more than ninety maisons — chosen for cut, material, and the way
+          each will live with the others. The result is a boutique you can hold in your head, not a catalogue you
+          scroll through.
         </p>
       </section>
 
