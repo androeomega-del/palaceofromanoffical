@@ -15,12 +15,6 @@ export const Route = createFileRoute("/about")({
   component: AboutPage,
 });
 
-const TEAM = [
-  { role: "Buying Director", note: "Selects every piece across the women's and men's edits." },
-  { role: "Head of Authentication", note: "Leads our six-person in-house authentication team." },
-  { role: "Concierge Lead", note: "Handles private appointments, sourcing and after-care." },
-  { role: "Editor-in-Chief", note: "Stewards the seasonal editorials and the quarterly Dispatch." },
-];
 
 function AboutPage() {
   return (
@@ -36,17 +30,18 @@ function AboutPage() {
         <div className="md:col-span-7 order-2 md:order-1">
           <p className="text-[10px] uppercase tracking-[0.35em] text-bronze mb-4">Origin</p>
           <h2 className="font-serif text-3xl md:text-4xl tracking-tight mb-6 text-balance">
-            Founded in New York, in service of the considered wardrobe.
+            An independent boutique, in service of the considered wardrobe.
           </h2>
           <p className="text-[15px] leading-[1.8] text-ink/80 mb-4">
-            Palace of Roman was founded with a single conviction: that the great houses of the season deserved a setting
-            that was as edited as the work itself. Not a department store. Not a marketplace. A boutique — assembled by
-            hand, photographed in studio light, and offered to a small audience who already know what they are looking
-            for.
+            Palace of Roman was founded on a single conviction: that the great houses of the season deserved a setting
+            as edited as the work itself. Not a department store. Not a marketplace. A boutique — assembled by hand,
+            presented in studio light, and offered to a small audience who already know what they are looking for.
           </p>
           <p className="text-[15px] leading-[1.8] text-ink/80">
-            We carry tailoring, footwear, fine leather and house codes from the maisons we believe in. We carry less of
-            them than anyone else. And what we do carry, we authenticate ourselves.
+            We carry tailoring, footwear, fine leather and house codes from the maisons we believe in. Stock is supplied
+            through an authorised European distribution partner and shipped directly from the brand-authorised warehouse
+            holding each piece. We are not directly affiliated with the makers we carry — we are an independent
+            curator of their work.
           </p>
         </div>
         <div className="md:col-span-5 order-1 md:order-2">
@@ -89,9 +84,10 @@ function AboutPage() {
             The boutique experience, online.
           </h2>
           <p className="text-[15px] leading-[1.8] text-ink/80 mb-4">
-            Every order is dispatched from our New York atelier in linen-lined boxes, accompanied by a handwritten card
-            and a signed certificate of authenticity. Private appointments — in person or by video — are available on
-            request. Our concierge replies within one business day.
+            Orders ship directly from the brand-authorised warehouse holding each piece — across Italy, Spain, Germany,
+            Sweden, Northern Ireland and the United States — in their original packaging, with tags and dust bag
+            intact. Private styling correspondence is available on request, and the concierge replies the same business
+            day.
           </p>
           <div className="flex flex-wrap gap-4 mt-8">
             <Link
@@ -110,20 +106,37 @@ function AboutPage() {
         </div>
       </section>
 
-      {/* Team */}
+      {/* Founder's note */}
       <section className="border-t border-ink/10 pt-20">
-        <p className="text-[10px] uppercase tracking-[0.35em] text-bronze mb-4 text-center">The atelier</p>
-        <h2 className="font-serif text-3xl md:text-4xl tracking-tight text-center mb-16">The people behind the edit</h2>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-          {TEAM.map((t, i) => (
-            <div key={t.role} className="flex flex-col">
-              <div className="aspect-[4/5] overflow-hidden bg-canvas-raised mb-5">
-                <img src={img(50 + i * 4)} alt={t.role} className="w-full h-full object-cover" loading="lazy" />
-              </div>
-              <p className="font-serif text-lg">{t.role}</p>
-              <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{t.note}</p>
+        <div className="grid md:grid-cols-12 gap-10 md:gap-16 items-start">
+          <div className="md:col-span-5">
+            <div className="aspect-[4/5] overflow-hidden bg-canvas-raised">
+              <img src={img(54)} alt="A study from the edit" className="w-full h-full object-cover" loading="lazy" />
             </div>
-          ))}
+          </div>
+          <div className="md:col-span-7">
+            <p className="text-[10px] uppercase tracking-[0.35em] text-bronze mb-4">A note from the founder</p>
+            <h2 className="font-serif text-3xl md:text-4xl tracking-tight mb-6 text-balance">
+              One voice, one edit.
+            </h2>
+            <p className="text-[15px] leading-[1.8] text-ink/80 mb-4">
+              Palace of Roman is a small independent house. The selection, the writing, the studio direction and the
+              correspondence with clients all come from a single point of view — not a committee, not a department.
+              Pieces are chosen because they belong, and the rest is left out.
+            </p>
+            <p className="text-[15px] leading-[1.8] text-ink/80">
+              If you'd like to talk about a piece, a fit, or something you haven't found here, write to me directly.
+              I read every note.
+            </p>
+            <div className="mt-8">
+              <Link
+                to="/contact"
+                className="inline-block text-[11px] uppercase tracking-[0.25em] border-b border-ink pb-1 hover:text-bronze hover:border-bronze transition-colors"
+              >
+                Write to the founder
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
     </EditorialPageShell>
