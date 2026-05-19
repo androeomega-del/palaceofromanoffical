@@ -191,3 +191,76 @@ describe("collection-image — QA semantic match", () => {
     expect(qa.source).toBe("dynamic");
   });
 });
+
+// ───────────────────────────────────────────────────────────────────────
+// Graceful handling of missing / renamed handles
+// ───────────────────────────────────────────────────────────────────────
+import {
+  normalizeHandle,
+  getUnresolvedHandleReport,
+  resetUnresolvedHandleReport,
+} from "@/lib/collection-image";
+
+describe("collection-image — handle normalization & aliasing", () => {
+  it("strips Shopify's -N duplicate suffix and matches the canonical handle", () => {
+    const resolved = resolveCollectionImage({ handle: "mens-shoes-2" });
+    expect(resolved.source).toBe("alias");
+    expect(resolved.topic).toBe("mens-shoes");
+    expect(resolved.matchedVia).toBe("mens-shoes");
+  });
+
+  it("normalises underscores and whitespace into the canonical separator", () => {
+    expect(normalizeHandle("Mens_Shoes")).toBe("mens-shoes");
+    expect(normalizeHandle("  womens  bags  ")).toBe("womens-bags");
+    const resolved = resolveCollectionImage({ handle: "Mens_Shoes" });
+    expect(resolved.source).toBe("alias");
+    expect(resolved.topic).toBe("mens-shoes");
+  });
+
+  it("maps known renames via HANDLE_ALIASES (mens-footwear → mens-shoes)", () => {
+    const resolved = resolveCollectionImage({ handle: "mens-footwear" });
+    expect(resolved.source).toBe("alias");
+    expect(resolved.topic).toBe("mens-shoes");
+  });
+
+  it("dynamicMap also accepts the normalised form", () => {
+    const url = "https://cdn.example.com/x.jpg";
+    const resolved = resolveCollectionImage({
+      handle: "Mens_Shoes",
+      dynamicMap: { "mens-shoes": url },
+    });
+    expect(resolved.source).toBe("dynamic");
+    expect(resolved.src).toBe(url);
+  });
+});
+
+describe("collection-image — alerting on unresolved handles", () => {
+  it("records rule + default fallbacks so the admin QA page can list them", () => {
+    resetUnresolvedHandleReport();
+    // Rule-match: known gender keyword, unknown handle
+    collectionImage({ handle: "mens-mystery-knit-drop", title: "Men's Knit" });
+    // Default: nothing matches
+    collectionImage({ handle: "totally-unknown-bucket-xyz" });
+    // Duplicate of the rule case should bump the count, not add a row
+    collectionImage({ handle: "mens-mystery-knit-drop", title: "Men's Knit" });
+
+    const report = getUnresolvedHandleReport();
+    const knit = report.find((r) => r.handle === "mens-mystery-knit-drop");
+    const xyz = report.find((r) => r.handle === "totally-unknown-bucket-xyz");
+
+    expect(knit).toBeDefined();
+    expect(knit?.via).toBe("rule");
+    expect(knit?.count).toBe(2);
+
+    expect(xyz).toBeDefined();
+    expect(xyz?.via).toBe("default");
+    expect(xyz?.topic).toBe("all-products");
+  });
+
+  it("does NOT report aliased handles — they resolved cleanly", () => {
+    resetUnresolvedHandleReport();
+    collectionImage({ handle: "mens-shoes-2" });
+    collectionImage({ handle: "mens-footwear" });
+    expect(getUnresolvedHandleReport()).toHaveLength(0);
+  });
+});
