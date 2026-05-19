@@ -443,13 +443,13 @@ function VariantOption({
   const isSize = /size/i.test(option.name);
 
   return (
-    <div className="mb-6">
-      <div className="flex justify-between items-baseline mb-3">
-        <p className="text-[10px] uppercase tracking-[0.25em] font-medium">
+    <div>
+      <div className="flex justify-between items-end mb-5 pb-2 border-b border-[var(--studio-rule)]">
+        <p className="text-[11px] uppercase tracking-[0.25em] font-semibold">
           {option.name}
           {selectedValue && (
-            <span className="ml-2 text-muted-foreground font-normal normal-case tracking-normal">
-              · {selectedValue}
+            <span className="ml-2 text-[var(--studio-muted)] font-normal normal-case tracking-normal">
+              — {selectedValue}
             </span>
           )}
         </p>
@@ -457,13 +457,14 @@ function VariantOption({
           <button
             type="button"
             onClick={() => toast("Sizing guide coming soon — message concierge for a fit check.")}
-            className="text-[10px] uppercase tracking-[0.2em] text-bronze hover:text-ink underline-offset-4 hover:underline"
+            className="text-[10px] uppercase tracking-[0.25em] text-[var(--studio-bronze)] hover:text-[var(--studio-ink)] transition-colors"
           >
-            Size Guide
+            Size Chart
           </button>
         )}
       </div>
-      <div className={`flex flex-wrap gap-2 ${isColor ? "items-center" : ""}`}>
+      <div className={`flex flex-wrap gap-3 ${isColor ? "items-center" : ""}`}>
+
         {option.values.map((value) => {
           const candidate =
             variants.find((v) => {
