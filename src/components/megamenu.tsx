@@ -475,7 +475,8 @@ function BrandsPanel({
   onMouseLeave: () => void;
 }) {
   const grouped = groupBrandsForMenu(brands);
-  const featureImg = collectionImage({ handle: "best-selling-brands", title: "Brands" });
+  const dynamicMap = useCollectionImageMap();
+  const featureImg = collectionImage({ handle: "best-selling-brands", title: "Brands", dynamicMap });
 
   return (
     <div
