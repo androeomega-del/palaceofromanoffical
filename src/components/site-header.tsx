@@ -12,17 +12,14 @@ type NavItem = {
   accent?: boolean;
 };
 
-const WOMENS_CLOTHING_QUERY = "dress OR gown OR blouse OR skirt OR coat OR top OR jacket OR knit OR cardigan OR pants OR suit";
-const WOMENS_SHOES_QUERY = "heels OR pumps OR sandals OR boots OR stilettos OR mules OR loafers OR sneakers";
-
 const NAV_LEFT: NavItem[] = [
   { to: "/shop", label: "Shop" },
-  { to: "/shop", search: { q: WOMENS_CLOTHING_QUERY, title: "Women's Clothing" }, label: "Women's Clothing" },
-  { to: "/shop", search: { q: WOMENS_SHOES_QUERY, title: "Women's Shoes" }, label: "Women's Shoes" },
+  { to: "/collections/$handle", params: { handle: "womens-clothing" }, label: "Women's Clothing" },
+  { to: "/collections/$handle", params: { handle: "womens-shoes" }, label: "Women's Shoes" },
 ];
 const NAV_RIGHT: NavItem[] = [
-  { to: "/collections/$handle", params: { handle: "mens-luxury-clothing" }, label: "Men's Clothing" },
-  { to: "/collections/$handle", params: { handle: "mens-designer-shoes" }, label: "Men's Shoes" },
+  { to: "/collections/$handle", params: { handle: "mens-clothing" }, label: "Men's Clothing" },
+  { to: "/collections/$handle", params: { handle: "mens-shoes" }, label: "Men's Shoes" },
   { to: "/brands", label: "Brands" },
   { to: "/collections/$handle", params: { handle: "high-discounts" }, label: "Sale", accent: true },
 ];
