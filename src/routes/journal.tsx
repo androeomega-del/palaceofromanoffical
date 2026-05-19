@@ -53,10 +53,32 @@ export const Route = createFileRoute("/journal")({
   head: () => {
     const title = "The Journal — Palace of Roman";
     const desc = "Editorials, house notes and seasonal studies from Palace of Roman — a quiet record of how the season is being worn.";
-    const rh = routeHead({ path: "/journal", title, description: desc, image: editorialMayHero });
+    const rh = routeHead({ path: "/journal", title, description: desc, image: editorialMayHero, type: "article" });
     return {
       meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
       links: rh.links,
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Blog",
+            name: title,
+            description: desc,
+            url: absoluteUrl("/journal"),
+            image: absoluteUrl(editorialMayHero),
+            publisher: { "@type": "Organization", name: SITE_NAME, url: absoluteUrl("/") },
+            blogPost: ENTRIES.map((e) => ({
+              "@type": "BlogPosting",
+              headline: e.title,
+              description: e.excerpt,
+              image: absoluteUrl(e.cover),
+              url: absoluteUrl(e.to),
+              datePublished: e.date,
+            })),
+          }),
+        },
+      ],
     };
   },
   component: JournalPage,
