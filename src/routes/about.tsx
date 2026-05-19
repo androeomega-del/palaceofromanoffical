@@ -15,12 +15,6 @@ export const Route = createFileRoute("/about")({
   component: AboutPage,
 });
 
-const TEAM = [
-  { role: "Buying Director", note: "Selects every piece across the women's and men's edits." },
-  { role: "Head of Authentication", note: "Leads our six-person in-house authentication team." },
-  { role: "Concierge Lead", note: "Handles private appointments, sourcing and after-care." },
-  { role: "Editor-in-Chief", note: "Stewards the seasonal editorials and the quarterly Dispatch." },
-];
 
 function AboutPage() {
   return (
