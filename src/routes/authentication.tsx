@@ -1,14 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { EditorialPageShell, ProseColumn, SectionTitle } from "@/components/editorial-page-shell";
-import { ShieldCheck, FileBadge, Microscope, Repeat } from "lucide-react";
+import { Building2, PackageCheck, FileBadge, ShieldCheck } from "lucide-react";
 import { img } from "@/lib/editorial-library";
 
 export const Route = createFileRoute("/authentication")({
   head: () => ({
     meta: [
-      { title: "Authentication — Palace of Roman" },
-      { name: "description", content: "Every piece is authenticated in-house and accompanied by a certificate. Our authentication standard, explained." },
-      { property: "og:title", content: "Authentication — Palace of Roman" },
+      { title: "Sourcing & Authenticity — Palace of Roman" },
+      { name: "description", content: "How Palace of Roman sources its edit: an authorised European distribution partner, sealed shipments from brand-authorised warehouses, and an unconditional authenticity guarantee." },
+      { property: "og:title", content: "Sourcing & Authenticity — Palace of Roman" },
     ],
   }),
   component: AuthenticationPage,
@@ -17,46 +17,46 @@ export const Route = createFileRoute("/authentication")({
 const STEPS = [
   {
     n: "01",
-    title: "Provenance",
-    body: "Each piece is sourced directly from the maison, a verified distributor, or a private wardrobe with traceable history. We do not buy from unverified marketplaces.",
+    title: "Authorised distribution",
+    body: "Every piece in the edit is held by an authorised European distribution partner that sources directly from the maisons and their official wholesale channels. We do not buy from unverified marketplaces, resellers, or private sellers.",
   },
   {
     n: "02",
-    title: "Materials",
-    body: "Hides, hardware, threads and stitching are inspected against the maison's reference for season, line and country of manufacture. Subtle deviations are recorded and challenged.",
+    title: "Brand-authorised warehouses",
+    body: "Stock is kept at brand-authorised warehouses across Italy, Spain, Austria, Sweden, Northern Ireland and the United States. Pieces remain in their original packaging from the moment they leave the maison until the moment they reach you.",
   },
   {
     n: "03",
-    title: "Construction",
-    body: "Stitch count, edge paint, lining seams and the placement of every emblem are compared against our in-house archive of authenticated examples.",
+    title: "Sealed shipment",
+    body: "When you order, the piece ships directly from the warehouse holding it — sealed, with tags, dust bag and brand packaging intact. Palace of Roman does not open, repackage, or relabel inventory.",
   },
   {
     n: "04",
-    title: "Identity",
-    body: "Date codes, heat stamps, micro-engraving, RFID tags and serial numbers are verified through both physical inspection and, where the maison offers it, digital confirmation.",
+    title: "Documentation",
+    body: "Each order arrives with the original brand documentation supplied by the maison, including any authenticity card, serial or date code, and care booklet provided with that piece.",
   },
   {
     n: "05",
-    title: "Certificate",
-    body: "Once cleared the piece is photographed, recorded under a unique reference and accompanied to you with a signed certificate of authenticity.",
+    title: "Unconditional guarantee",
+    body: "If an independent authenticator ever finds reason to challenge a piece purchased from us, return it within ninety days for a full refund. We would rather lose the sale than carry a piece we cannot stand behind.",
   },
 ];
 
 function AuthenticationPage() {
   return (
     <EditorialPageShell
-      eyebrow="The House Standard"
-      title="Every piece, authenticated."
-      intro="A four-stage process performed by our in-house authentication team on every single item before it leaves the atelier."
+      eyebrow="Sourcing & Authenticity"
+      title="Where every piece comes from."
+      intro="Palace of Roman is an independent curator. The edit is sourced through an authorised European distribution partner and shipped sealed from brand-authorised warehouses — never touched, opened, or repackaged by us."
       heroImage={img(38)}
-      heroAlt="The atelier at work"
+      heroAlt="Original brand packaging on a studio surface"
     >
       <div className="not-prose grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-24">
         {[
-          { Icon: ShieldCheck, title: "In-house team", body: "No outsourced authentication. Six specialists, twenty years average tenure." },
-          { Icon: Microscope, title: "Archival reference", body: "An internal library of thousands of authenticated examples across every house we stock." },
-          { Icon: FileBadge, title: "Certificate", body: "Each order ships with a signed, numbered certificate matched to your piece." },
-          { Icon: Repeat, title: "Lifetime re-check", body: "Should you ever wish, we re-authenticate any piece purchased from us at no cost." },
+          { Icon: Building2, title: "Authorised partner", body: "Sourced through an authorised European distribution partner holding stock from more than ninety maisons." },
+          { Icon: PackageCheck, title: "Sealed shipment", body: "Direct from the brand-authorised warehouse in original packaging — tags, dust bag and box intact." },
+          { Icon: FileBadge, title: "Original documentation", body: "Each order arrives with the documentation the maison originally supplied with the piece." },
+          { Icon: ShieldCheck, title: "Authenticity guarantee", body: "Ninety days to return for a full refund if a third-party authenticator ever challenges the piece." },
         ].map(({ Icon, title, body }) => (
           <div key={title} className="border-l border-ink/15 pl-5">
             <Icon className="h-5 w-5 text-bronze mb-4" strokeWidth={1.25} />
@@ -67,7 +67,7 @@ function AuthenticationPage() {
       </div>
 
       <ProseColumn>
-        <SectionTitle kicker="The process">Five stages, every piece.</SectionTitle>
+        <SectionTitle kicker="The chain of custody">From the maison to your door.</SectionTitle>
         <div className="not-prose space-y-10 mt-6">
           {STEPS.map((s) => (
             <div key={s.n} className="grid grid-cols-[auto_1fr] gap-6 md:gap-10">
@@ -81,18 +81,19 @@ function AuthenticationPage() {
         </div>
 
         <div className="not-prose mt-16 p-8 md:p-10 bg-canvas-raised border border-ink/5">
-          <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-3">If something is ever wrong</p>
-          <h3 className="font-serif text-2xl mb-4">Our guarantee is unconditional.</h3>
+          <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-3">A note on honesty</p>
+          <h3 className="font-serif text-2xl mb-4">We are a curator, not the maison.</h3>
           <p className="text-sm text-ink/80 leading-relaxed mb-6">
-            If a third-party authenticator ever finds reason to challenge a piece purchased from us, return it within
-            ninety days for a full refund and a public-record correction to our archive. We have no interest in being
-            anything other than right.
+            Palace of Roman is not directly affiliated with the houses we carry. We are an independent boutique that
+            sources from an authorised European distribution partner and ships pieces sealed from brand-authorised
+            warehouses. If you ever want to verify a piece before or after purchase, write to us — we'll share the
+            documentation we have.
           </p>
           <Link
             to="/contact"
             className="inline-block text-[11px] uppercase tracking-[0.25em] border-b border-ink pb-1 hover:text-bronze hover:border-bronze"
           >
-            Speak to the concierge →
+            Write to the concierge →
           </Link>
         </div>
       </ProseColumn>
