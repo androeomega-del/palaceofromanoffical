@@ -11,7 +11,7 @@ import {
   collectionImageAlt,
   collectionImageFocal,
 } from "@/lib/collection-image";
-import { getCollectionImageMap, getCollectionImageMetaMap } from "@/lib/collection-image.functions";
+import { getCollectionImageMap, getCollectionImageMetaMap, getCollectionFocalMap } from "@/lib/collection-image.functions";
 import {
   CatalogFilters,
   SortPresets,
