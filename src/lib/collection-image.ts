@@ -405,13 +405,15 @@ const IMG_TO_TOPIC: Map<string, string> = new Map(
   Object.entries(BY_HANDLE).map(([handle, img]) => [img, handle]),
 );
 
-export type CollectionImageSource = "dynamic" | "handle" | "rule" | "default";
+export type CollectionImageSource = "dynamic" | "handle" | "alias" | "rule" | "default";
 
 export interface ResolvedCollectionImage {
   src: string;
   /** Canonical topic key (a handle from BY_HANDLE), or "dynamic" for sync-sourced. */
   topic: string;
   source: CollectionImageSource;
+  /** Set when the incoming handle was matched via normalization or an alias. */
+  matchedVia?: string;
 }
 
 /** Same resolution as collectionImage(), but also reports how it was chosen. */
@@ -423,20 +425,34 @@ export function resolveCollectionImage(input: {
 }): ResolvedCollectionImage {
   const handle = (input.handle ?? "").trim().toLowerCase();
 
-  if (handle && input.dynamicMap && input.dynamicMap[handle]) {
-    return { src: input.dynamicMap[handle], topic: "dynamic", source: "dynamic" };
+  if (handle && input.dynamicMap) {
+    if (input.dynamicMap[handle]) {
+      return { src: input.dynamicMap[handle], topic: "dynamic", source: "dynamic" };
+    }
+    const norm = normalizeHandle(handle);
+    if (norm && input.dynamicMap[norm]) {
+      return { src: input.dynamicMap[norm], topic: "dynamic", source: "dynamic", matchedVia: norm };
+    }
   }
   if (handle && BY_HANDLE[handle]) {
     return { src: BY_HANDLE[handle], topic: handle, source: "handle" };
+  }
+  // Try normalized form / known alias before falling to regex rules.
+  const canonical = resolveCanonicalHandle(handle);
+  if (canonical) {
+    return { src: BY_HANDLE[canonical], topic: canonical, source: "alias", matchedVia: canonical };
   }
   const hay = `${input.title ?? ""} ${handle} ${input.description ?? ""}`
     .toLowerCase()
     .replace(/[-_]+/g, " ");
   for (const rule of FALLBACK_RULES) {
     if (rule.test.test(hay)) {
-      return { src: rule.img, topic: IMG_TO_TOPIC.get(rule.img) ?? "unknown", source: "rule" };
+      const topic = IMG_TO_TOPIC.get(rule.img) ?? "unknown";
+      if (handle) reportUnresolved(handle, "rule", topic);
+      return { src: rule.img, topic, source: "rule" };
     }
   }
+  if (handle) reportUnresolved(handle, "default", "all-products");
   return { src: allProducts, topic: "all-products", source: "default" };
 }
 
