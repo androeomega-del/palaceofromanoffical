@@ -28,45 +28,92 @@ type Props = {
 
 export function EditorialHotspots({ src, alt, hotspots, aspect = "4/5", className = "" }: Props) {
   const [openHandle, setOpenHandle] = useState<string | null>(null);
+  const [revealedHandle, setRevealedHandle] = useState<string | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Close the revealed tooltip when tapping outside any hotspot
+  useEffect(() => {
+    if (!revealedHandle) return;
+    const onDown = (e: PointerEvent) => {
+      const el = e.target as Node | null;
+      if (!containerRef.current?.contains(el)) setRevealedHandle(null);
+      else if (el instanceof Element && !el.closest("[data-hotspot]")) setRevealedHandle(null);
+    };
+    document.addEventListener("pointerdown", onDown);
+    return () => document.removeEventListener("pointerdown", onDown);
+  }, [revealedHandle]);
+
+  const handleActivate = (handle: string, pointerType: string) => {
+    // Coarse pointer (touch/pen): first tap reveals tooltip, second opens dialog
+    const isCoarse = pointerType === "touch" || pointerType === "pen";
+    if (isCoarse && revealedHandle !== handle) {
+      setRevealedHandle(handle);
+      return;
+    }
+    setRevealedHandle(null);
+    setOpenHandle(handle);
+  };
 
   return (
-    <div className={`relative w-full bg-canvas-raised overflow-hidden ${className}`} style={{ aspectRatio: aspect }}>
+    <div
+      ref={containerRef}
+      className={`relative w-full bg-canvas-raised overflow-hidden ${className}`}
+      style={{ aspectRatio: aspect }}
+    >
       <img src={src} alt={alt} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
 
       {hotspots.map((h) => {
         const tipId = `hotspot-tip-${h.handle}`;
         const isRightHalf = h.x > 65;
         const isBottomHalf = h.y > 70;
+        const isRevealed = revealedHandle === h.handle;
         return (
           <button
             key={h.handle}
             type="button"
-            onClick={() => setOpenHandle(h.handle)}
+            data-hotspot
+            onPointerUp={(e) => handleActivate(h.handle, e.pointerType)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                setRevealedHandle(null);
+                setOpenHandle(h.handle);
+              }
+            }}
             aria-label={`Quick shop ${h.label}${h.sublabel ? ` — ${h.sublabel}` : ""}`}
             aria-describedby={tipId}
             aria-haspopup="dialog"
+            aria-expanded={isRevealed}
             className="group absolute -translate-x-1/2 -translate-y-1/2 focus:outline-none"
             style={{ left: `${h.x}%`, top: `${h.y}%` }}
           >
             {/* pulse ring */}
             <span className="absolute inset-0 m-auto h-8 w-8 rounded-full bg-white/40 animate-ping" aria-hidden />
             {/* dot */}
-            <span className="relative flex h-8 w-8 items-center justify-center rounded-full bg-white text-ink shadow-lg ring-1 ring-ink/10 transition-transform group-hover:scale-110 group-focus-visible:scale-110 group-focus-visible:ring-2 group-focus-visible:ring-ink group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-canvas">
+            <span
+              className={`relative flex h-8 w-8 items-center justify-center rounded-full bg-white text-ink shadow-lg ring-1 ring-ink/10 transition-transform group-hover:scale-110 group-focus-visible:scale-110 group-focus-visible:ring-2 group-focus-visible:ring-ink group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-canvas ${
+                isRevealed ? "scale-110 ring-2 ring-ink" : ""
+              }`}
+            >
               <Plus className="h-4 w-4" />
             </span>
-            {/* tooltip — shown on hover and keyboard focus */}
+            {/* tooltip — shown on hover, keyboard focus, or first tap on touch */}
             <span
               id={tipId}
               role="tooltip"
-              className={`pointer-events-none absolute z-10 min-w-max max-w-[12rem] bg-ink px-3 py-2 text-left text-white shadow-xl opacity-0 translate-y-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-y-0 group-focus-visible:opacity-100 group-focus-visible:translate-y-0 ${
-                isBottomHalf ? "bottom-full mb-3" : "top-full mt-3"
-              } ${isRightHalf ? "right-1/2 translate-x-2" : "left-1/2 -translate-x-2"}`}
+              className={`pointer-events-none absolute z-10 min-w-max max-w-[12rem] bg-ink px-3 py-2 text-left text-white shadow-xl transition-all duration-200 group-hover:opacity-100 group-hover:translate-y-0 group-focus-visible:opacity-100 group-focus-visible:translate-y-0 ${
+                isRevealed ? "opacity-100 translate-y-0" : "opacity-0 translate-y-1"
+              } ${isBottomHalf ? "bottom-full mb-3" : "top-full mt-3"} ${
+                isRightHalf ? "right-1/2 translate-x-2" : "left-1/2 -translate-x-2"
+              }`}
             >
               <span className="block text-[9px] uppercase tracking-[0.3em] text-bronze">{h.label}</span>
               {h.sublabel && (
                 <span className="block text-[11px] font-medium leading-tight mt-1">{h.sublabel}</span>
               )}
-              <span className="block text-[9px] uppercase tracking-[0.25em] text-white/60 mt-1.5">Quick shop →</span>
+              <span className="block text-[9px] uppercase tracking-[0.25em] text-white/60 mt-1.5">
+                {isRevealed ? "Tap again to open →" : "Quick shop →"}
+              </span>
             </span>
           </button>
         );
