@@ -31,6 +31,7 @@ export function EditorialHotspots({ src, alt, hotspots, aspect = "4/5", classNam
   const [openHandle, setOpenHandle] = useState<string | null>(null);
   const [revealedHandle, setRevealedHandle] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const { reduced } = useReducedMotion();
 
   // Close the revealed tooltip when tapping outside any hotspot
   useEffect(() => {
