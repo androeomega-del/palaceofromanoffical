@@ -98,12 +98,16 @@ export function EditorialHotspots({ src, alt, hotspots, aspect = "4/5", classNam
             className="group absolute -translate-x-1/2 -translate-y-1/2 focus:outline-none"
             style={{ left: `${h.x}%`, top: `${h.y}%` }}
           >
-            {/* pulse ring */}
-            <span className="absolute inset-0 m-auto h-8 w-8 rounded-full bg-white/40 animate-ping" aria-hidden />
+            {/* pulse ring — suppressed for reduced motion */}
+            {!reduced && (
+              <span className="absolute inset-0 m-auto h-8 w-8 rounded-full bg-white/40 animate-ping" aria-hidden />
+            )}
             {/* dot */}
             <span
-              className={`relative flex h-8 w-8 items-center justify-center rounded-full bg-white text-ink shadow-lg ring-1 ring-ink/10 transition-transform group-hover:scale-110 group-focus-visible:scale-110 group-focus-visible:ring-2 group-focus-visible:ring-ink group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-canvas ${
-                isRevealed ? "scale-110 ring-2 ring-ink" : ""
+              className={`relative flex h-8 w-8 items-center justify-center rounded-full bg-white text-ink shadow-lg ring-1 ring-ink/10 ${
+                reduced ? "" : "transition-transform group-hover:scale-110 group-focus-visible:scale-110"
+              } group-focus-visible:ring-2 group-focus-visible:ring-ink group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-canvas ${
+                isRevealed ? (reduced ? "ring-2 ring-ink" : "scale-110 ring-2 ring-ink") : ""
               }`}
             >
               <Plus className="h-4 w-4" />
@@ -112,7 +116,9 @@ export function EditorialHotspots({ src, alt, hotspots, aspect = "4/5", classNam
             <span
               id={tipId}
               role="tooltip"
-              className={`pointer-events-none absolute z-10 min-w-max max-w-[12rem] bg-ink px-3 py-2 text-left text-white shadow-xl transition-all duration-200 group-hover:opacity-100 group-hover:translate-y-0 group-focus-visible:opacity-100 group-focus-visible:translate-y-0 ${
+              className={`pointer-events-none absolute z-10 min-w-max max-w-[12rem] bg-ink px-3 py-2 text-left text-white shadow-xl ${
+                reduced ? "" : "transition-all duration-200"
+              } group-hover:opacity-100 group-hover:translate-y-0 group-focus-visible:opacity-100 group-focus-visible:translate-y-0 ${
                 isRevealed ? "opacity-100 translate-y-0" : "opacity-0 translate-y-1"
               } ${isBottomHalf ? "bottom-full mb-3" : "top-full mt-3"} ${
                 isRightHalf ? "right-1/2 translate-x-2" : "left-1/2 -translate-x-2"
