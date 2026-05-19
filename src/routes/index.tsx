@@ -772,42 +772,51 @@ function SummerBento({
           </div>
         </Link>
 
-        {/* Accessories Split Tile */}
+        {/* Accessories Tile — full-bleed */}
         <Link
           to="/shop"
           search={{ q: "tag:Accessories", title: "Accessories" }}
-          className="col-span-6 md:col-span-4 lg:col-span-2 row-span-2 bg-canvas border border-ink/10 flex flex-col group overflow-hidden"
+          className="col-span-6 md:col-span-4 lg:col-span-2 row-span-2 relative group overflow-hidden bg-canvas-raised"
         >
-          <div className="h-1/2 overflow-hidden bg-canvas-raised">
-            {accessoriesImage && (
-              <img
-                src={accessoriesImage.url}
-                alt={accessoriesImage.altText ?? "Accessories"}
-                loading="lazy"
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-              />
-            )}
-          </div>
-          <div className="h-1/2 flex flex-col items-center justify-center p-4 text-center">
-            <span className="text-[9px] uppercase tracking-[0.3em] text-[var(--sea)] mb-1">
+          {accessoriesImage && (
+            <img
+              src={accessoriesImage.url}
+              alt={accessoriesImage.altText ?? "Accessories"}
+              loading="lazy"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/25 to-transparent" />
+          <div className="relative z-10 h-full flex flex-col justify-end p-5 md:p-6 text-center items-center">
+            <span className="text-[9px] uppercase tracking-[0.3em] text-canvas/85 mb-1">
               Shop
             </span>
-            <h4 className="text-base md:text-lg text-ink uppercase tracking-[0.15em] font-medium">
+            <h4 className="text-base md:text-lg text-canvas uppercase tracking-[0.15em] font-medium">
               Accessories
             </h4>
           </div>
         </Link>
 
-        {/* Sea Sale Tile */}
+        {/* Summer Sale Tile — full-bleed editorial */}
         <Link
           to="/collections/$handle"
           params={{ handle: "high-discounts" }}
-          className="col-span-6 md:col-span-4 lg:col-span-2 row-span-2 bg-[var(--sea)] p-5 md:p-6 flex flex-col items-center justify-center text-center group hover:bg-[oklch(0.54_0.115_235)] transition-colors"
+          className="col-span-6 md:col-span-4 lg:col-span-2 row-span-2 relative group overflow-hidden bg-bronze"
         >
-          <h4 className="font-serif text-2xl md:text-3xl text-canvas mb-2 leading-tight">
-            The Summer
-            <br />
-            Sale
+          {saleImage && (
+            <img
+              src={saleImage.url}
+              alt={saleImage.altText ?? "The Summer Sale"}
+              loading="lazy"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/20 to-transparent" />
+          <div className="relative z-10 h-full flex flex-col items-center justify-center text-center p-5 md:p-6">
+            <h4 className="font-serif text-2xl md:text-3xl text-canvas mb-2 leading-tight">
+              The Summer
+              <br />
+              Sale
           </h4>
           <p className="text-[10px] uppercase tracking-[0.3em] text-canvas/85 mb-4">
             Up to 40% Off
