@@ -5,6 +5,7 @@ import { useCartStore } from "@/stores/cart-store";
 import { CartDrawer } from "@/components/cart-drawer";
 import { ReducedMotionToggle } from "@/components/reduced-motion-toggle";
 import { DesktopMegamenu, MobileMegamenu } from "@/components/megamenu";
+import { SearchOverlay } from "@/components/search-overlay";
 
 type FlatItem = {
   label: string;
