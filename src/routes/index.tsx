@@ -194,12 +194,8 @@ function HomePage() {
 
       {/* 2. SWIM CAMPAIGN — Dolce & Gabbana cinematic */}
       <section className="relative h-[80vh] min-h-[600px] overflow-hidden bg-ink">
-        <video
+        <CampaignVideo
           src={swimCampaignVideo.url}
-          autoPlay
-          muted
-          loop
-          playsInline
           poster={marketingSwim}
           className="absolute inset-0 w-full h-full object-cover opacity-90"
         />
