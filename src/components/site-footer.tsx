@@ -46,7 +46,15 @@ export function SiteFooter() {
 
         <div className="flex flex-col md:flex-row gap-4 justify-between items-center pt-12 border-t border-ink/5 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
           <p>&copy; {new Date().getFullYear()} Palace of Roman. All rights reserved.</p>
-          <div className="flex gap-8">
+          <div className="flex gap-8 items-center">
+            <a
+              href="https://app.xyla.ai/link_in_bio"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-ink transition-colors"
+            >
+              Follow
+            </a>
             <Link to="/privacy" className="hover:text-ink transition-colors">Privacy</Link>
             <Link to="/terms" className="hover:text-ink transition-colors">Terms</Link>
           </div>
