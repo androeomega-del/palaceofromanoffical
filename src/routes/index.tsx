@@ -81,26 +81,30 @@ function HomePage() {
   // Editorial split sources — one image per panel, pulled from real data.
   const womenEditorialQ = useQuery({
     queryKey: ["home", "women-editorial"],
-    queryFn: () => fetchProducts({ first: 1, query: WOMENS_CLOTHING_QUERY }),
+    queryFn: () => fetchCollection(WOMENS_CLOTHING_HANDLE, 1).then((c) => c?.products?.edges ?? []),
   });
   const menEditorialQ = useQuery({
     queryKey: ["home", "men-editorial"],
-    queryFn: () => fetchCollection("mens-luxury-clothing", 1).then((c) => c?.products?.edges ?? []),
+    queryFn: () => fetchCollection(MENS_CLOTHING_HANDLE, 1).then((c) => c?.products?.edges ?? []),
   });
 
   // Featured brands: only vendors with in-stock products in BOTH a women's
   // category and a men's category.
-  const womenBrandsQ = useQuery({
-    queryKey: ["home", "brands-women"],
-    queryFn: () => fetchProducts({ first: 60, query: `(${WOMENS_CLOTHING_QUERY}) OR (${WOMENS_SHOES_QUERY})` }),
+  const womenBrandsClothingQ = useQuery({
+    queryKey: ["home", "brands-women-clothing"],
+    queryFn: () => fetchCollection(WOMENS_CLOTHING_HANDLE, 60).then((c) => c?.products?.edges ?? []),
+  });
+  const womenBrandsShoesQ = useQuery({
+    queryKey: ["home", "brands-women-shoes"],
+    queryFn: () => fetchCollection(WOMENS_SHOES_HANDLE, 60).then((c) => c?.products?.edges ?? []),
   });
   const menBrandsClothingQ = useQuery({
     queryKey: ["home", "brands-men-clothing"],
-    queryFn: () => fetchCollection("mens-luxury-clothing", 60).then((c) => c?.products?.edges ?? []),
+    queryFn: () => fetchCollection(MENS_CLOTHING_HANDLE, 60).then((c) => c?.products?.edges ?? []),
   });
   const menBrandsShoesQ = useQuery({
     queryKey: ["home", "brands-men-shoes"],
-    queryFn: () => fetchCollection("mens-designer-shoes", 60).then((c) => c?.products?.edges ?? []),
+    queryFn: () => fetchCollection(MENS_SHOES_HANDLE, 60).then((c) => c?.products?.edges ?? []),
   });
 
   const featuredBrands = useMemo(() => {
