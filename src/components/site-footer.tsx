@@ -56,6 +56,15 @@ export function SiteFooter() {
             >
               Instagram
             </a>
+            <a
+              href="https://www.facebook.com/people/Palace-of-Roman/61581195176963/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Palace of Roman on Facebook"
+              className="hover:text-ink transition-colors"
+            >
+              Facebook
+            </a>
             <Link to="/privacy" className="hover:text-ink transition-colors">Privacy</Link>
             <Link to="/terms" className="hover:text-ink transition-colors">Terms</Link>
           </div>
