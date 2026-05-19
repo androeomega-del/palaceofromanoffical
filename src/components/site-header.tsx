@@ -11,14 +11,34 @@ type NavItem = {
   accent?: boolean;
 };
 
-const NAV: NavItem[] = [
+const NAV_LEFT: NavItem[] = [
   { to: "/shop", label: "Shop" },
   { to: "/collections/$handle", params: { handle: "womens-accessories-1" }, label: "Women" },
   { to: "/collections/$handle", params: { handle: "mens-luxury-clothing" }, label: "Men" },
-  { to: "/collections/$handle", params: { handle: "new-arrivals" }, label: "New" },
-  { to: "/collections/$handle", params: { handle: "high-discounts" }, label: "Sale", accent: true },
-  { to: "/brands", label: "Brands" },
 ];
+const NAV_RIGHT: NavItem[] = [
+  { to: "/collections/$handle", params: { handle: "new-arrivals" }, label: "New" },
+  { to: "/brands", label: "Brands" },
+  { to: "/collections/$handle", params: { handle: "high-discounts" }, label: "Sale", accent: true },
+];
+const NAV_MOBILE: NavItem[] = [...NAV_LEFT, ...NAV_RIGHT];
+
+function NavLinks({ items }: { items: NavItem[] }) {
+  return (
+    <>
+      {items.map((n) => (
+        <Link
+          key={n.label}
+          to={n.to as any}
+          params={n.params as any}
+          className={`hover:text-bronze transition-colors ${n.accent ? "text-bronze" : ""}`}
+        >
+          {n.label}
+        </Link>
+      ))}
+    </>
+  );
+}
 
 export function SiteHeader() {
   const totalItems = useCartStore((s) => s.items.reduce((sum, i) => sum + i.quantity, 0));
