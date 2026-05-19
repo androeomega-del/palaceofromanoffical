@@ -139,3 +139,55 @@ export function collectionImage(input: {
   }
   return allProducts;
 }
+
+// SEO-friendly alt text per collection handle. Each line describes what the
+// hero image actually depicts plus the category it represents, so search
+// engines and screen readers get meaningful context — not just the title.
+const ALT_BY_HANDLE: Record<string, string> = {
+  "all-products": "Curated selection of luxury designer fashion at Palace of Roman",
+  "new-arrivals": "Latest designer arrivals — newest luxury fashion drops at Palace of Roman",
+  "best-selling-brands": "Best-selling luxury fashion houses and designer brands at Palace of Roman",
+  "high-discounts": "Discounted designer fashion — luxury items on sale at Palace of Roman",
+  "womens-accessories": "Women's designer accessories — luxury handbags, jewelry and finishing pieces",
+  "womens-accessories-1": "Women's designer accessories — luxury handbags, jewelry and finishing pieces",
+  "womens-clothing": "Women's designer clothing — luxury dresses, tops and ready-to-wear",
+  "womens-shoes": "Women's designer shoes — luxury heels, pumps, sandals and boots",
+  "womens-bags": "Women's designer handbags — luxury totes, clutches and shoulder bags",
+  "womens-wallets": "Women's designer wallets and small leather goods",
+  "womens-belts": "Women's designer belts in luxury leather and signature hardware",
+  "womens-jewelry": "Women's designer jewelry — fine necklaces, earrings and rings",
+  "womens-watches": "Women's designer watches — luxury timepieces and bracelets",
+  "womens-scarves": "Women's designer scarves and silk shawls",
+  "womens-hats": "Women's designer hats and headwear",
+  "mens-accessories": "Men's designer accessories — luxury wallets, belts and finishing pieces",
+  "mens-clothing": "Men's designer clothing — luxury ready-to-wear and tailoring",
+  "mens-shoes": "Men's designer shoes — luxury loafers, oxfords and dress footwear",
+  "mens-jackets-coats": "Men's designer jackets and coats — luxury outerwear and overcoats",
+  "mens-suits": "Men's designer suits and luxury tailoring",
+  "mens-shirts": "Men's designer shirts — luxury dress and casual shirting",
+  "mens-tshirts-polos": "Men's designer t-shirts and polo shirts",
+  "mens-sweaters-knitwear": "Men's designer sweaters and knitwear — cashmere and merino knits",
+  "mens-hoodies-sweatshirts": "Men's designer hoodies and sweatshirts",
+  "mens-pants-trousers": "Men's designer pants and tailored trousers",
+  "mens-shorts": "Men's designer shorts in luxury fabrics",
+  "mens-activewear": "Men's designer activewear and luxury sportswear",
+  "mens-swimwear": "Men's designer swimwear and swim shorts",
+  "mens-underwear-loungewear": "Men's designer underwear and loungewear",
+  "mens-sneakers": "Men's designer sneakers — luxury low- and high-top trainers",
+  "mens-boots": "Men's designer boots — luxury Chelsea, lace-up and ankle boots",
+  "mens-sandals-slides": "Men's designer sandals and slides",
+  "mens-bags-wallets": "Men's designer bags and wallets — briefcases, backpacks and leather goods",
+  "mens-belts": "Men's designer belts in luxury leather",
+  "mens-watches-jewelry": "Men's designer watches and jewelry",
+};
+
+export function collectionImageAlt(input: {
+  title?: string;
+  handle?: string;
+}): string {
+  const handle = (input.handle ?? "").trim().toLowerCase();
+  if (handle && ALT_BY_HANDLE[handle]) return ALT_BY_HANDLE[handle];
+  const title = (input.title ?? "").trim();
+  if (title) return `${title} — designer collection at Palace of Roman`;
+  return "Designer collection at Palace of Roman";
+}

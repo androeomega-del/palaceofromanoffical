@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { fetchCollections, type ShopifyCollection } from "@/lib/shopify";
-import { collectionImage } from "@/lib/collection-image";
+import { collectionImage, collectionImageAlt } from "@/lib/collection-image";
 import { getCollectionImageMap } from "@/lib/collection-image.functions";
 import { routeHead } from "@/lib/seo";
 
@@ -213,7 +213,7 @@ function CollectionsIndexPage() {
                   <div className="w-full aspect-[3/4] bg-muted overflow-hidden mb-4 relative">
                     <img
                       src={collectionImage({ title: c.title, handle: c.handle, description: c.description, dynamicMap })}
-                      alt={c.image?.altText ?? c.title}
+                      alt={c.image?.altText ?? collectionImageAlt({ handle: c.handle, title: c.title })}
                       loading="lazy"
                       width={768}
                       height={1024}

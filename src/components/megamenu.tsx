@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { fetchCollections, fetchVendorIndex } from "@/lib/shopify";
-import { collectionImage } from "@/lib/collection-image";
+import { collectionImage, collectionImageAlt } from "@/lib/collection-image";
 import { getCollectionImageMap } from "@/lib/collection-image.functions";
 
 function useCollectionImageMap() {
@@ -366,7 +366,7 @@ function MegaPanel({
         >
           <img
             src={featureImg}
-            alt=""
+            alt={collectionImageAlt({ handle: dept.feature.handle, title: dept.feature.title ?? dept.label })}
             loading="lazy"
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
           />
@@ -536,7 +536,7 @@ function BrandsPanel({
         >
           <img
             src={featureImg}
-            alt=""
+            alt={collectionImageAlt({ handle: "best-selling-brands", title: "Best-selling luxury fashion brands" })}
             loading="lazy"
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
           />
