@@ -46,6 +46,7 @@ export interface ShopifyCollection {
   handle: string;
   description: string;
   image: ShopifyImage | null;
+  updatedAt?: string;
 }
 
 export async function storefrontApiRequest<T = any>(
