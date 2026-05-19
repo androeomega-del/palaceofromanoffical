@@ -34,13 +34,15 @@ export const Route = createFileRoute("/collections/")({
       sort: SORT_KEYS.includes(rawSort) ? rawSort : "popular",
     };
   },
-  head: () => ({
-    meta: [
-      { title: "All Collections — Palace of Roman" },
-      { name: "description", content: "Browse every curated collection at Palace of Roman — women's, men's, designer edits and seasonal capsules." },
-      { property: "og:title", content: "All Collections — Palace of Roman" },
-    ],
-  }),
+  head: () => {
+    const title = "All Collections — Palace of Roman";
+    const desc = "Browse every curated collection at Palace of Roman — women's, men's, designer edits and seasonal capsules.";
+    const rh = routeHead({ path: "/collections", title, description: desc });
+    return {
+      meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
+      links: rh.links,
+    };
+  },
   component: CollectionsIndexPage,
 });
 
