@@ -7,15 +7,18 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { img } from "@/lib/editorial-library";
+import { routeHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/faq")({
-  head: () => ({
-    meta: [
-      { title: "Frequently Asked Questions — Palace of Roman" },
-      { name: "description", content: "Sourcing, authentication, shipping, returns and care — the questions our clients ask most." },
-      { property: "og:title", content: "Frequently Asked Questions — Palace of Roman" },
-    ],
-  }),
+  head: () => {
+    const title = "Frequently Asked Questions — Palace of Roman";
+    const desc = "Sourcing, authentication, shipping, returns and care — the questions our clients ask most.";
+    const rh = routeHead({ path: "/faq", title, description: desc });
+    return {
+      meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
+      links: rh.links,
+    };
+  },
   component: FaqPage,
 });
 
