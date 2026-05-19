@@ -77,6 +77,7 @@ export function SiteHeader() {
               <button aria-label="Search" className="hidden md:block hover:text-bronze transition-colors">
                 <Search className="w-4 h-4" strokeWidth={1.25} />
               </button>
+              <ReducedMotionToggle />
               <button aria-label="Account" className="hover:text-bronze transition-colors">
                 <User className="w-4 h-4" strokeWidth={1.25} />
               </button>
