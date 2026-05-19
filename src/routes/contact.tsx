@@ -62,12 +62,12 @@ function ContactPage() {
       <section className="grid md:grid-cols-2 min-h-[80vh]">
         {/* Image side */}
         <div className="relative bg-canvas-raised order-1 md:order-2">
-          <img src={img(8)} alt="The atelier" className="absolute inset-0 w-full h-full object-cover" />
+          <img src={img(8)} alt="A still life from the current edit" className="absolute inset-0 w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-ink/40 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12 text-white">
             <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-3">Concierge</p>
             <p className="font-serif italic text-xl md:text-2xl max-w-md">
-              "A single voice — for sourcing, appointments and after-care."
+              "A single voice — for sourcing, sizing and after-care."
             </p>
           </div>
         </div>
