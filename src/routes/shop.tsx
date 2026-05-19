@@ -144,11 +144,24 @@ function ShopPage() {
                 )}
               </div>
             ) : (
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-16">
-                {edges.map((e) => (
-                  <ProductCard key={e.node.id} product={e} />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-16">
+                  {edges.map((e) => (
+                    <ProductCard key={e.node.id} product={e} />
+                  ))}
+                </div>
+                {q.hasNextPage && (
+                  <div className="mt-20 text-center">
+                    <button
+                      onClick={() => q.fetchNextPage()}
+                      disabled={q.isFetchingNextPage}
+                      className="px-10 py-3.5 ring-1 ring-ink text-[11px] uppercase tracking-[0.25em] hover:bg-ink hover:text-canvas transition-colors disabled:opacity-50"
+                    >
+                      {q.isFetchingNextPage ? "Loading…" : "Load More"}
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
