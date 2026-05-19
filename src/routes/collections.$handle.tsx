@@ -7,7 +7,6 @@ import { ProductCard } from "@/components/product-card";
 import { pageTitle, metaDescription, absoluteUrl, SITE_URL } from "@/lib/seo";
 import {
   CatalogFilters,
-  
   SortPresets,
   ActiveFilterPills,
   SORT_OPTIONS,
