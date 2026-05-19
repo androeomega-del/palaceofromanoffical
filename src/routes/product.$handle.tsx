@@ -355,7 +355,16 @@ function ProductView({
             </header>
 
             {/* Variant selectors + CTA */}
-            <div className="space-y-10">
+            <div
+              id="buy"
+              ref={buyRef}
+              className={`space-y-10 scroll-mt-28 rounded-md transition-shadow duration-700 ${
+                flashBuy
+                  ? "ring-2 ring-[var(--studio-bronze)] ring-offset-8 ring-offset-[var(--studio-bg)] shadow-[0_0_0_8px_color-mix(in_oklab,var(--studio-bronze)_15%,transparent)]"
+                  : "ring-0"
+              }`}
+            >
+
               {product.options
                 .filter((o) => o.values.length > 1 || o.name.toLowerCase() !== "title")
                 .map((option) => (
