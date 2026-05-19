@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { fetchProducts, fetchCollection, type ShopifyProduct } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
 import heroImage from "@/assets/home-hero.jpg";
@@ -9,7 +9,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Palace of Roman — Curated Luxury Fashion" },
-      { name: "description", content: "Curated luxury fashion. Gucci, Prada, Dolce & Gabbana, Saint Laurent and more — authenticated and shipped worldwide." },
+      { name: "description", content: "Curated luxury fashion for women and men. Gucci, Prada, Dolce & Gabbana, Saint Laurent and more — authenticated and shipped worldwide." },
       { property: "og:title", content: "Palace of Roman — Curated Luxury Fashion" },
       { property: "og:description", content: "A curated destination for luxury fashion." },
       { property: "og:image", content: heroImage },
@@ -18,22 +18,52 @@ export const Route = createFileRoute("/")({
   component: HomePage,
 });
 
-const FEATURED_BRANDS = [
-  { name: "Dolce & Gabbana", slug: "dolce-&-gabbana" },
-  { name: "Calvin Klein", slug: "calvin-klein" },
-  { name: "Brunello Cucinelli", slug: "brunello-cucinelli" },
-  { name: "Prada", slug: "prada" },
-  { name: "Gucci", slug: "gucci" },
-  { name: "Saint Laurent", slug: "saint-laurent" },
-  { name: "Armani", slug: "armani" },
-  { name: "Alexander McQueen", slug: "alexander-mcqueen" },
-];
+// Virtual category sources: each tile pulls its first image from a real
+// Shopify source (collection or product search) so nothing is invented.
+type TileSource =
+  | { kind: "collection"; handle: string }
+  | { kind: "search"; query: string; title: string };
 
-const CATEGORY_TILES = [
-  { handle: "cat-womens-wear", label: "Clothing", caption: "Tailoring, knitwear & ready-to-wear" },
-  { handle: "cat-womens-bags", label: "Bags", caption: "Heritage leather goods" },
-  { handle: "cat-mens-shoes", label: "Shoes", caption: "Footwear for every occasion" },
-  { handle: "cat-womens-accessories", label: "Accessories", caption: "Finishing touches" },
+type CategoryTileDef = {
+  key: string;
+  label: string;
+  caption: string;
+  source: TileSource;
+  linkTo: "collection" | "shop";
+};
+
+const WOMENS_CLOTHING_QUERY = "dress OR gown OR blouse OR skirt OR coat OR top OR jacket OR knit OR cardigan OR pants OR suit";
+const WOMENS_SHOES_QUERY = "heels OR pumps OR sandals OR boots OR stilettos OR mules OR loafers OR sneakers";
+
+const CATEGORY_TILES: CategoryTileDef[] = [
+  {
+    key: "womens-clothing",
+    label: "Women's Clothing",
+    caption: "Dresses, tailoring & ready-to-wear",
+    source: { kind: "search", query: WOMENS_CLOTHING_QUERY, title: "Women's Clothing" },
+    linkTo: "shop",
+  },
+  {
+    key: "womens-shoes",
+    label: "Women's Shoes",
+    caption: "Heels, boots & sandals",
+    source: { kind: "search", query: WOMENS_SHOES_QUERY, title: "Women's Shoes" },
+    linkTo: "shop",
+  },
+  {
+    key: "mens-clothing",
+    label: "Men's Clothing",
+    caption: "Tailoring & considered staples",
+    source: { kind: "collection", handle: "mens-luxury-clothing" },
+    linkTo: "collection",
+  },
+  {
+    key: "mens-shoes",
+    label: "Men's Shoes",
+    caption: "Designer footwear",
+    source: { kind: "collection", handle: "mens-designer-shoes" },
+    linkTo: "collection",
+  },
 ];
 
 function HomePage() {
@@ -41,18 +71,52 @@ function HomePage() {
     queryKey: ["home", "new-arrivals"],
     queryFn: () => fetchProducts({ first: 12, sortKey: "CREATED_AT", reverse: true }),
   });
-  const womenHeroQ = useQuery({
-    queryKey: ["home", "women-hero"],
-    queryFn: () => fetchCollection("womens-accessories-1", 1).then((c) => c?.products?.edges?.[0] ?? null),
-  });
-  const menHeroQ = useQuery({
-    queryKey: ["home", "men-hero"],
-    queryFn: () => fetchCollection("mens-luxury-clothing", 1).then((c) => c?.products?.edges?.[0] ?? null),
-  });
   const bestSellersQ = useQuery({
     queryKey: ["home", "best-sellers"],
     queryFn: () => fetchProducts({ first: 8, sortKey: "BEST_SELLING" }),
   });
+
+  // Editorial split sources — one image per panel, pulled from real data.
+  const womenEditorialQ = useQuery({
+    queryKey: ["home", "women-editorial"],
+    queryFn: () => fetchProducts({ first: 1, query: WOMENS_CLOTHING_QUERY }),
+  });
+  const menEditorialQ = useQuery({
+    queryKey: ["home", "men-editorial"],
+    queryFn: () => fetchCollection("mens-luxury-clothing", 1).then((c) => c?.products?.edges ?? []),
+  });
+
+  // Featured brands: only vendors with in-stock products in BOTH a women's
+  // category and a men's category.
+  const womenBrandsQ = useQuery({
+    queryKey: ["home", "brands-women"],
+    queryFn: () => fetchProducts({ first: 60, query: `(${WOMENS_CLOTHING_QUERY}) OR (${WOMENS_SHOES_QUERY})` }),
+  });
+  const menBrandsClothingQ = useQuery({
+    queryKey: ["home", "brands-men-clothing"],
+    queryFn: () => fetchCollection("mens-luxury-clothing", 60).then((c) => c?.products?.edges ?? []),
+  });
+  const menBrandsShoesQ = useQuery({
+    queryKey: ["home", "brands-men-shoes"],
+    queryFn: () => fetchCollection("mens-designer-shoes", 60).then((c) => c?.products?.edges ?? []),
+  });
+
+  const featuredBrands = useMemo(() => {
+    const inStock = (edges: ShopifyProduct[] | undefined) =>
+      (edges ?? []).filter((e) =>
+        e.node.variants.edges.some((v) => v.node.availableForSale),
+      );
+    const vendors = (edges: ShopifyProduct[]) =>
+      new Set(edges.map((e) => e.node.vendor).filter(Boolean));
+    const womenVendors = vendors(inStock(womenBrandsQ.data));
+    const menEdges = [...inStock(menBrandsClothingQ.data), ...inStock(menBrandsShoesQ.data)];
+    const menVendors = vendors(menEdges);
+    const both = [...womenVendors].filter((v) => menVendors.has(v));
+    return both.slice(0, 8).map((name) => ({
+      name,
+      slug: name.toLowerCase().replace(/\s+/g, "-"),
+    }));
+  }, [womenBrandsQ.data, menBrandsClothingQ.data, menBrandsShoesQ.data]);
 
   return (
     <>
@@ -81,8 +145,8 @@ function HomePage() {
                 </p>
                 <div className="flex flex-wrap gap-4">
                   <Link
-                    to="/collections/$handle"
-                    params={{ handle: "womens-accessories-1" }}
+                    to="/shop"
+                    search={{ q: WOMENS_CLOTHING_QUERY, title: "Women's Clothing" }}
                     className="px-8 py-3.5 bg-ink text-canvas text-[11px] uppercase tracking-[0.25em] hover:bg-ink/85 transition-colors"
                   >
                     Shop Women
@@ -110,7 +174,7 @@ function HomePage() {
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
             {CATEGORY_TILES.map((tile) => (
-              <CategoryTile key={tile.handle} {...tile} />
+              <CategoryTile key={tile.key} tile={tile} />
             ))}
           </div>
         </div>
@@ -126,7 +190,6 @@ function HomePage() {
             </div>
             <Link
               to="/shop"
-              search={{ sort: "newest" } as any}
               className="text-[11px] uppercase tracking-[0.25em] border-b border-ink/20 pb-1 hover:border-ink hidden md:inline-block"
             >
               View all
@@ -136,25 +199,34 @@ function HomePage() {
         </div>
       </section>
 
-      {/* 4. FEATURED BRANDS */}
+      {/* 4. FEATURED BRANDS — brands stocked in BOTH women's and men's */}
       <section className="py-28 border-y border-ink/5">
         <div className="max-w-screen-2xl mx-auto px-6">
           <div className="text-center mb-16">
             <span className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-4 block">Maisons</span>
             <h2 className="text-3xl md:text-4xl font-serif">Featured Brands</h2>
+            <p className="text-xs text-muted-foreground mt-3 max-w-md mx-auto">
+              Houses currently stocked across both our women's and men's edits.
+            </p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-y-10">
-            {FEATURED_BRANDS.map((b) => (
-              <Link
-                key={b.slug}
-                to="/brand/$vendor"
-                params={{ vendor: b.slug }}
-                className="text-center text-xs md:text-sm tracking-[0.25em] font-medium uppercase opacity-70 hover:opacity-100 hover:text-bronze transition-all py-4"
-              >
-                {b.name}
-              </Link>
-            ))}
-          </div>
+          {featuredBrands.length === 0 ? (
+            <p className="text-center text-sm text-muted-foreground py-8">
+              {womenBrandsQ.isLoading || menBrandsClothingQ.isLoading ? "Loading designers…" : "No shared brands in stock at the moment."}
+            </p>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-y-10">
+              {featuredBrands.map((b) => (
+                <Link
+                  key={b.slug}
+                  to="/brand/$vendor"
+                  params={{ vendor: b.slug }}
+                  className="text-center text-xs md:text-sm tracking-[0.25em] font-medium uppercase opacity-70 hover:opacity-100 hover:text-bronze transition-all py-4"
+                >
+                  {b.name}
+                </Link>
+              ))}
+            </div>
+          )}
           <div className="text-center mt-12">
             <Link
               to="/brands"
@@ -166,22 +238,26 @@ function HomePage() {
         </div>
       </section>
 
-      {/* 5. EDITORIAL SPLIT — Women + Men */}
+      {/* 5. EDITORIAL SPLIT — two panels, sub-CTAs for clothing + shoes */}
       <section className="py-28">
         <div className="max-w-screen-2xl mx-auto px-6 grid md:grid-cols-2 gap-6 lg:gap-10">
           <EditorialPanel
-            edge={womenHeroQ.data ?? undefined}
+            image={womenEditorialQ.data?.[0]?.node?.images?.edges?.[0]?.node}
             eyebrow="The Women's Edit"
             heading="Quiet luxury, deliberately curated."
-            ctaLabel="Discover Women"
-            handle="womens-accessories-1"
+            ctas={[
+              { label: "Clothing", to: "/shop", search: { q: WOMENS_CLOTHING_QUERY, title: "Women's Clothing" } },
+              { label: "Shoes", to: "/shop", search: { q: WOMENS_SHOES_QUERY, title: "Women's Shoes" } },
+            ]}
           />
           <EditorialPanel
-            edge={menHeroQ.data ?? undefined}
+            image={menEditorialQ.data?.[0]?.node?.images?.edges?.[0]?.node}
             eyebrow="The Men's Edit"
             heading="Refined tailoring and considered staples."
-            ctaLabel="Discover Men"
-            handle="mens-luxury-clothing"
+            ctas={[
+              { label: "Clothing", to: "/collections/$handle", params: { handle: "mens-luxury-clothing" } },
+              { label: "Shoes", to: "/collections/$handle", params: { handle: "mens-designer-shoes" } },
+            ]}
           />
         </div>
       </section>
@@ -203,66 +279,94 @@ function HomePage() {
   );
 }
 
-function CategoryTile({ handle, label, caption }: { handle: string; label: string; caption: string }) {
+function CategoryTile({ tile }: { tile: CategoryTileDef }) {
   const { data } = useQuery({
-    queryKey: ["home", "category-tile", handle],
-    queryFn: () => fetchCollection(handle, 1).then((c) => c?.products?.edges?.[0]?.node?.images?.edges?.[0]?.node ?? null),
+    queryKey: ["home", "category-tile", tile.key],
+    queryFn: async () => {
+      if (tile.source.kind === "collection") {
+        const c = await fetchCollection(tile.source.handle, 1);
+        return c?.products?.edges?.[0]?.node?.images?.edges?.[0]?.node ?? null;
+      }
+      const edges = await fetchProducts({ first: 1, query: tile.source.query });
+      return edges?.[0]?.node?.images?.edges?.[0]?.node ?? null;
+    },
   });
 
+  const linkProps =
+    tile.linkTo === "collection" && tile.source.kind === "collection"
+      ? { to: "/collections/$handle" as const, params: { handle: tile.source.handle } }
+      : tile.source.kind === "search"
+        ? { to: "/shop" as const, search: { q: tile.source.query, title: tile.source.title } }
+        : { to: "/shop" as const };
+
   return (
-    <Link to="/collections/$handle" params={{ handle }} className="group block">
+    <Link {...(linkProps as any)} className="group block">
       <div className="w-full aspect-[3/4] bg-muted overflow-hidden mb-5 relative">
         {data ? (
           <img
             src={data.url}
-            alt={data.altText ?? label}
+            alt={data.altText ?? tile.label}
             loading="lazy"
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
           />
         ) : (
           <div className="absolute inset-0 grid place-items-center">
-            <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">{label}</span>
+            <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">{tile.label}</span>
           </div>
         )}
       </div>
-      <h3 className="text-base md:text-lg font-serif mb-1">{label}</h3>
-      <p className="text-xs text-muted-foreground">{caption}</p>
+      <h3 className="text-base md:text-lg font-serif mb-1">{tile.label}</h3>
+      <p className="text-xs text-muted-foreground">{tile.caption}</p>
     </Link>
   );
 }
 
+type EditorialCta = {
+  label: string;
+  to: string;
+  params?: Record<string, string>;
+  search?: Record<string, string>;
+};
+
 function EditorialPanel({
-  edge,
+  image,
   eyebrow,
   heading,
-  ctaLabel,
-  handle,
+  ctas,
 }: {
-  edge?: ShopifyProduct | null;
+  image?: { url: string; altText: string | null };
   eyebrow: string;
   heading: string;
-  ctaLabel: string;
-  handle: string;
+  ctas: EditorialCta[];
 }) {
-  const img = edge?.node?.images?.edges?.[0]?.node;
   return (
-    <Link to="/collections/$handle" params={{ handle }} className="group block">
+    <div className="block">
       <div className="w-full aspect-[4/5] bg-muted overflow-hidden mb-6">
-        {img && (
+        {image && (
           <img
-            src={img.url}
-            alt={img.altText ?? eyebrow}
+            src={image.url}
+            alt={image.altText ?? eyebrow}
             loading="lazy"
-            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-[1.02]"
+            className="w-full h-full object-cover transition-transform duration-1000 hover:scale-[1.02]"
           />
         )}
       </div>
       <span className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-3 block">{eyebrow}</span>
       <h3 className="text-2xl md:text-3xl font-serif leading-tight mb-5 text-balance">{heading}</h3>
-      <span className="text-[11px] uppercase tracking-[0.25em] border-b border-ink/20 pb-1 group-hover:border-ink transition-colors">
-        {ctaLabel}
-      </span>
-    </Link>
+      <div className="flex gap-6">
+        {ctas.map((cta) => (
+          <Link
+            key={cta.label}
+            to={cta.to as any}
+            params={cta.params as any}
+            search={cta.search as any}
+            className="text-[11px] uppercase tracking-[0.25em] border-b border-ink/20 pb-1 hover:border-ink transition-colors"
+          >
+            {cta.label}
+          </Link>
+        ))}
+      </div>
+    </div>
   );
 }
 
