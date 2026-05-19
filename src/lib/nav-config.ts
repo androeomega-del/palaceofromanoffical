@@ -211,11 +211,9 @@ export function groupBrandsForMenu(brands: BrandEntry[]): { heading: string; ite
     .filter((b) => b.items.length > 0);
 }
 
-/** Convert a vendor display name to its `/brand/$vendor` URL slug. */
+/** Convert a vendor display name to its `/brand/$vendor` URL slug.
+ *  Mirrors the slug pattern used on the /brands index so links round-trip. */
 export function vendorSlug(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/&/g, "and")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
+  return name.toLowerCase().replace(/\s+/g, "-");
 }
+
