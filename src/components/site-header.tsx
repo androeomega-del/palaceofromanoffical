@@ -20,7 +20,6 @@ const FLAT_LEFT: FlatItem[] = [
   { to: "/collections", label: "Collections" },
 ];
 const FLAT_RIGHT: FlatItem[] = [
-  { to: "/brands", label: "Brands" },
   { to: "/journal", label: "Journal" },
   { to: "/collections/$handle", params: { handle: "high-discounts" }, label: "Sale", accent: true },
 ];

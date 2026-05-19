@@ -315,6 +315,28 @@ export async function fetchCollections(first = 50) {
   return data?.data?.collections?.edges?.map((e) => e.node) ?? [];
 }
 
+/**
+ * Scan the catalog in pages and aggregate vendor counts. Storefront API has
+ * no vendor index, so we walk products. `maxPages` bounds the cost.
+ */
+export async function fetchVendorIndex(maxPages = 4, perPage = 250): Promise<Array<{ vendor: string; count: number }>> {
+  const counts = new Map<string, number>();
+  let cursor: string | null = null;
+  for (let i = 0; i < maxPages; i++) {
+    const page = await fetchProductsPage({ first: perPage, after: cursor, sortKey: "BEST_SELLING" });
+    for (const e of page.edges) {
+      const v = e.node.vendor?.trim();
+      if (!v) continue;
+      counts.set(v, (counts.get(v) ?? 0) + 1);
+    }
+    if (!page.pageInfo.hasNextPage) break;
+    cursor = page.pageInfo.endCursor;
+  }
+  return Array.from(counts.entries())
+    .map(([vendor, count]) => ({ vendor, count }))
+    .sort((a, b) => b.count - a.count);
+}
+
 export function formatPrice(money: Money | undefined) {
   if (!money) return "";
   const amount = parseFloat(money.amount);
