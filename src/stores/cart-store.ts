@@ -18,6 +18,10 @@ interface CartStore {
   checkoutUrl: string | null;
   isLoading: boolean;
   isSyncing: boolean;
+  isDrawerOpen: boolean;
+  openDrawer: () => void;
+  closeDrawer: () => void;
+  setDrawerOpen: (v: boolean) => void;
   addItem: (item: Omit<CartItem, "lineId">) => Promise<void>;
   updateQuantity: (variantId: string, quantity: number) => Promise<void>;
   removeItem: (variantId: string) => Promise<void>;
