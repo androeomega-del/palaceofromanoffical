@@ -104,4 +104,45 @@ describe("/collections sort dropdown", () => {
     // Sanity: select is inside the document
     expect(within(document.body).getAllByRole("heading", { level: 2 })).toHaveLength(3);
   });
+
+  it("dropdown stays synced on direct-load (refresh) and back/forward navigation", async () => {
+    // Simulate a fresh load (refresh) at ?sort=alpha
+    const { router, unmount } = renderAt("/collections?filter=all&sort=alpha");
+
+    await vi.waitFor(() => {
+      expect(screen.getAllByRole("heading", { level: 2 })).toHaveLength(3);
+    });
+
+    const select = () => screen.getByRole("combobox") as HTMLSelectElement;
+    const titles = () =>
+      screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent);
+
+    // Refresh case: dropdown reflects ?sort=alpha from the URL on first paint
+    expect(select().value).toBe("alpha");
+    expect(titles()).toEqual(["Atelier Edit", "Maison Noir", "Zenith Capsule"]);
+
+    // Navigate forward to ?sort=newest (pushes a new history entry)
+    await router.navigate({
+      to: "/collections",
+      search: { filter: "all", sort: "newest" },
+    });
+    await vi.waitFor(() => expect(select().value).toBe("newest"));
+    expect(titles()).toEqual(["Atelier Edit", "Maison Noir", "Zenith Capsule"]);
+
+    // Browser BACK → should restore ?sort=alpha and the dropdown should follow
+    router.history.back();
+    await vi.waitFor(() => {
+      expect(router.state.location.search).toMatchObject({ sort: "alpha" });
+      expect(select().value).toBe("alpha");
+    });
+
+    // Browser FORWARD → should restore ?sort=newest
+    router.history.forward();
+    await vi.waitFor(() => {
+      expect(router.state.location.search).toMatchObject({ sort: "newest" });
+      expect(select().value).toBe("newest");
+    });
+
+    unmount();
+  });
 });
