@@ -24,6 +24,7 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
 
   const navigate = useNavigate();
   const addItem = useCartStore((s) => s.addItem);
+  const openDrawer = useCartStore((s) => s.openDrawer);
   const isLoading = useCartStore((s) => s.isLoading);
   const [buyingNow, setBuyingNow] = useState(false);
 
@@ -45,8 +46,10 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
       quantity: 1,
       selectedOptions: firstAvailable.selectedOptions ?? [],
     });
+    openDrawer();
     toast.success(`${p.title} — added to bag`);
   };
+
 
   const onBuyNow = async (e: React.MouseEvent) => {
     e.preventDefault();
