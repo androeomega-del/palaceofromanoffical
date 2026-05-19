@@ -7,6 +7,7 @@ import { ProductCard } from "@/components/product-card";
 import {
   CatalogFilters,
   CatalogSort,
+  SortPresets,
   ActiveFilterPills,
   SORT_OPTIONS,
   type Selection,
@@ -143,6 +144,28 @@ function CollectionPage() {
 
           {/* Main column */}
           <div className="flex-1 min-w-0">
+            {/* Quick sort presets */}
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
+              <SortPresets
+                value={sort}
+                onChange={setSort}
+                extra={
+                  handle !== "high-discounts" && (
+                    <Link
+                      to="/collections/$handle"
+                      params={{ handle: "high-discounts" }}
+                      className="text-[10px] uppercase tracking-[0.2em] px-3 py-2 border border-bronze/40 text-bronze hover:bg-bronze hover:text-canvas transition-colors"
+                    >
+                      High Discounts
+                    </Link>
+                  )
+                }
+              />
+              <div className="hidden md:block">
+                <CatalogSort value={sort} onChange={setSort} />
+              </div>
+            </div>
+
             {/* Controls */}
             <div className="flex items-center justify-between gap-4 mb-6">
               <button
@@ -152,7 +175,9 @@ function CollectionPage() {
                 <SlidersHorizontal className="h-3.5 w-3.5" /> Filters
               </button>
               <div className="hidden lg:block" />
-              <CatalogSort value={sort} onChange={setSort} />
+              <div className="md:hidden">
+                <CatalogSort value={sort} onChange={setSort} />
+              </div>
             </div>
 
             <ActiveFilterPills
