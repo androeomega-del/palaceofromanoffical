@@ -289,6 +289,37 @@ function CollectionPage() {
               </div>
             </div>
 
+            {/* Product type chips — derived from titles in the current result set */}
+            {availableTypes.length > 1 && (
+              <div className="mb-6 flex flex-wrap gap-2">
+                <button
+                  onClick={() => setTypeFilter(null)}
+                  className={`text-[10px] uppercase tracking-[0.2em] px-3 py-1.5 border transition-colors ${
+                    typeFilter === null
+                      ? "bg-ink text-canvas border-ink"
+                      : "border-ink/15 text-muted-foreground hover:border-ink hover:text-ink"
+                  }`}
+                >
+                  All
+                </button>
+                {availableTypes.map((label) => (
+                  <button
+                    key={label}
+                    onClick={() => setTypeFilter(typeFilter === label ? null : label)}
+                    className={`text-[10px] uppercase tracking-[0.2em] px-3 py-1.5 border transition-colors ${
+                      typeFilter === label
+                        ? "bg-ink text-canvas border-ink"
+                        : "border-ink/15 text-muted-foreground hover:border-ink hover:text-ink"
+                    }`}
+                  >
+                    {label}
+                    <span className="ml-2 opacity-60">{typeCounts[label]}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+
+
             <ActiveFilterPills
               selections={selections}
               priceRange={priceRange}
