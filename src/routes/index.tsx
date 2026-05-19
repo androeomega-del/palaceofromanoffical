@@ -11,6 +11,7 @@ import marketingWomen from "@/assets/marketing-women-summer.jpg";
 import marketingMen from "@/assets/marketing-men-summer.jpg";
 import marketingAccessories from "@/assets/marketing-accessories-summer.jpg";
 import marketingSwim from "@/assets/marketing-swim-summer.jpg";
+import swimCampaignVideo from "@/assets/swim-campaign.mp4.asset.json";
 import { img } from "@/lib/editorial-library";
 
 export const Route = createFileRoute("/")({
@@ -190,6 +191,60 @@ function HomePage() {
           <HorizontalRail edges={swimwearQ.data ?? []} loading={swimwearQ.isLoading} />
         </div>
       </section>
+
+      {/* 2. SWIM CAMPAIGN — Dolce & Gabbana cinematic */}
+      <section className="relative h-[80vh] min-h-[600px] overflow-hidden bg-ink">
+        <video
+          src={swimCampaignVideo.url}
+          autoPlay
+          muted
+          loop
+          playsInline
+          poster={marketingSwim}
+          className="absolute inset-0 w-full h-full object-cover opacity-90"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-ink/70 via-ink/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink/60 via-transparent to-transparent" />
+
+        <div className="relative h-full flex items-center">
+          <div className="max-w-screen-2xl mx-auto px-6 md:px-12 w-full">
+            <div className="max-w-xl text-canvas">
+              <span className="block text-[10px] md:text-xs uppercase tracking-[0.5em] text-[var(--sea)] mb-5">
+                The Campaign — Resort 2026
+              </span>
+              <h2 className="font-serif text-5xl md:text-7xl lg:text-8xl leading-[0.95] mb-6 text-balance">
+                Dolce &amp; Gabbana
+                <span className="block italic font-light mt-2">at the water's edge.</span>
+              </h2>
+              <p className="text-sm md:text-base text-canvas/85 leading-relaxed mb-9 max-w-md">
+                A capsule of bikinis, swimsuits and beachwear — corals, seashells,
+                Mediterranean stripes. 100% authentic, in stock for immediate dispatch.
+              </p>
+              <div className="flex flex-wrap gap-3 md:gap-4">
+                <Link
+                  to="/swim"
+                  className="px-8 md:px-10 py-3.5 md:py-4 bg-canvas text-ink text-[10px] uppercase tracking-[0.3em] font-medium hover:bg-[var(--sea)] hover:text-canvas transition-colors"
+                >
+                  Shop the Look
+                </Link>
+                <Link
+                  to="/brand/$vendor"
+                  params={{ vendor: "dolce-gabbana" }}
+                  className="px-8 md:px-10 py-3.5 md:py-4 border border-canvas/60 text-canvas text-[10px] uppercase tracking-[0.3em] font-medium hover:bg-canvas hover:text-ink transition-colors"
+                >
+                  Enter the Maison
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="absolute bottom-6 right-6 md:bottom-10 md:right-10 text-canvas/70 text-[9px] uppercase tracking-[0.4em]">
+          Riviera — Golden Hour
+        </div>
+      </section>
+
+
 
 
 
