@@ -148,6 +148,7 @@ function ListFilter({
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder={`Search ${filter.label.toLowerCase()}…`}
+            aria-label={`Search ${filter.label.toLowerCase()} options`}
             className="w-full pl-8 pr-2 py-2 text-xs border border-ink/15 bg-transparent focus:outline-none focus:border-ink"
           />
         </div>
@@ -249,6 +250,7 @@ function PriceFilter({
               value={min}
               onChange={(e) => setMin(Number(e.target.value))}
               onBlur={apply}
+              aria-label="Minimum price"
               className="w-full text-xs bg-transparent focus:outline-none"
             />
           </div>
@@ -262,6 +264,7 @@ function PriceFilter({
               value={max}
               onChange={(e) => setMax(Number(e.target.value))}
               onBlur={apply}
+              aria-label="Maximum price"
               className="w-full text-xs bg-transparent focus:outline-none"
             />
           </div>
@@ -275,6 +278,7 @@ function PriceFilter({
         onChange={(e) => setMax(Number(e.target.value))}
         onMouseUp={apply}
         onTouchEnd={apply}
+        aria-label={`Price range, currently up to $${max}`}
         className="w-full accent-bronze"
       />
       <p className="mt-2 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">

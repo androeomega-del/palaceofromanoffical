@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { routeHead } from "@/lib/seo";
+import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
 
 // Import all 30 webp files eagerly so Vite emits hashed asset URLs.
 const imageModules = import.meta.glob("@/assets/editorial/may-2026/*.webp", {
@@ -61,10 +61,27 @@ export const Route = createFileRoute("/editorial/may-2026")({
   head: () => {
     const title = "May 2026 Editorial — Palace of Roman";
     const desc = "A quiet study of the May 2026 edit — tailoring, footwear and house codes, photographed in studio light. Shop the look.";
-    const rh = routeHead({ path: "/editorial/may-2026", title, description: desc, image: img(1), type: "article" });
+    const path = "/editorial/may-2026";
+    const image = img(1);
+    const rh = routeHead({ path, title, description: desc, image, type: "article" });
     return {
       meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
       links: rh.links,
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Article",
+            headline: title,
+            description: desc,
+            image: absoluteUrl(image),
+            url: absoluteUrl(path),
+            publisher: { "@type": "Organization", name: SITE_NAME, url: absoluteUrl("/") },
+            mainEntityOfPage: absoluteUrl(path),
+          }),
+        },
+      ],
     };
   },
   component: EditorialMay2026,

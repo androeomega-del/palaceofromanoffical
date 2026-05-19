@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { isValidElement, type ReactNode } from "react";
 import { EditorialPageShell } from "@/components/editorial-page-shell";
 import {
   Accordion,
@@ -7,16 +8,47 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { img } from "@/lib/editorial-library";
-import { routeHead } from "@/lib/seo";
+import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
+
+/** Flatten a ReactNode tree into plain text for JSON-LD answer bodies. */
+function nodeToText(node: ReactNode): string {
+  if (node == null || typeof node === "boolean") return "";
+  if (typeof node === "string" || typeof node === "number") return String(node);
+  if (Array.isArray(node)) return node.map(nodeToText).join("");
+  if (isValidElement(node)) {
+    const children = (node.props as { children?: ReactNode })?.children;
+    return nodeToText(children);
+  }
+  return "";
+}
 
 export const Route = createFileRoute("/faq")({
   head: () => {
     const title = "Frequently Asked Questions — Palace of Roman";
     const desc = "Sourcing, authentication, shipping, returns and care — the questions our clients ask most.";
-    const rh = routeHead({ path: "/faq", title, description: desc });
+    const rh = routeHead({ path: "/faq", title, description: desc, image: img(48) });
+    const faqJsonLd = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      url: absoluteUrl("/faq"),
+      isPartOf: { "@type": "WebSite", name: SITE_NAME, url: absoluteUrl("/") },
+      mainEntity: SECTIONS.flatMap((section) =>
+        section.items.map((item) => ({
+          "@type": "Question",
+          name: item.q,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: nodeToText(item.a).replace(/\s+/g, " ").trim(),
+          },
+        })),
+      ),
+    };
     return {
       meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
       links: rh.links,
+      scripts: [
+        { type: "application/ld+json", children: JSON.stringify(faqJsonLd) },
+      ],
     };
   },
   component: FaqPage,

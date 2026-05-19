@@ -63,7 +63,7 @@ function AuthenticationPage() {
         ].map(({ Icon, title, body }) => (
           <div key={title} className="border-l border-ink/15 pl-5">
             <Icon className="h-5 w-5 text-bronze mb-4" strokeWidth={1.25} />
-            <h3 className="font-serif text-lg mb-2">{title}</h3>
+            <h2 className="font-serif text-lg mb-2">{title}</h2>
             <p className="text-sm text-ink/70 leading-relaxed">{body}</p>
           </div>
         ))}
@@ -76,7 +76,7 @@ function AuthenticationPage() {
             <div key={s.n} className="grid grid-cols-[auto_1fr] gap-6 md:gap-10">
               <span className="text-[10px] uppercase tracking-[0.35em] text-bronze mt-1">{s.n}</span>
               <div>
-                <h3 className="font-serif text-xl mb-2">{s.title}</h3>
+                <h2 className="font-serif text-xl mb-2">{s.title}</h2>
                 <p className="text-[15px] leading-[1.75] text-ink/80">{s.body}</p>
               </div>
             </div>
@@ -85,7 +85,7 @@ function AuthenticationPage() {
 
         <div className="not-prose mt-16 p-8 md:p-10 bg-canvas-raised border border-ink/5">
           <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-3">Verified partner</p>
-          <h3 className="font-serif text-2xl mb-4">Read our reseller certificate.</h3>
+          <h2 className="font-serif text-2xl mb-4">Read our reseller certificate.</h2>
           <p className="text-sm text-ink/80 leading-relaxed mb-6">
             Palace of Roman is certified by BrandsGateway (Gateway Holdings OÜ, Estonia) as an official partner,
             authorised to resell luxury fashion goods that are 100% authentic and sourced from the brands or their

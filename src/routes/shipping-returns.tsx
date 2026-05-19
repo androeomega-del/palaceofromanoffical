@@ -13,7 +13,7 @@ export const Route = createFileRoute("/shipping-returns")({
   head: () => {
     const title = "Shipping & Returns — Palace of Roman";
     const desc = "Worldwide shipping from our brand-authorised European and US partner warehouses, with a 14-day return window from the day your parcel is delivered.";
-    const rh = routeHead({ path: "/shipping-returns", title, description: desc });
+    const rh = routeHead({ path: "/shipping-returns", title, description: desc, image: img(22) });
     return {
       meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
       links: rh.links,

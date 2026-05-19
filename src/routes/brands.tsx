@@ -2,17 +2,37 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { fetchProductsPage } from "@/lib/shopify";
-import { routeHead } from "@/lib/seo";
+import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
+import { img } from "@/lib/editorial-library";
 
 const BRANDS_TITLE = "Brands — Palace of Roman";
-const BRANDS_DESC = "The houses we carry. Browse luxury designers stocked at Palace of Roman.";
+const BRANDS_DESC =
+  "Browse the houses we carry at Palace of Roman — an A–Z directory of luxury designers stocked through our official BrandsGateway partnership, with worldwide tracked shipping.";
 
 export const Route = createFileRoute("/brands")({
   head: () => {
-    const rh = routeHead({ path: "/brands", title: BRANDS_TITLE, description: BRANDS_DESC });
+    const rh = routeHead({
+      path: "/brands",
+      title: BRANDS_TITLE,
+      description: BRANDS_DESC,
+      image: img(11),
+    });
     return {
       meta: [{ title: BRANDS_TITLE }, { name: "description", content: BRANDS_DESC }, ...rh.meta],
       links: rh.links,
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            name: BRANDS_TITLE,
+            description: BRANDS_DESC,
+            url: absoluteUrl("/brands"),
+            isPartOf: { "@type": "WebSite", name: SITE_NAME, url: absoluteUrl("/") },
+          }),
+        },
+      ],
     };
   },
   component: BrandsPage,
