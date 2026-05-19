@@ -305,13 +305,154 @@ const ALT_BY_HANDLE: Record<string, string> = {
 export function collectionImageAlt(input: {
   title?: string;
   handle?: string;
+  description?: string | null;
 }): string {
   const handle = (input.handle ?? "").trim().toLowerCase();
   if (handle && ALT_BY_HANDLE[handle]) return ALT_BY_HANDLE[handle];
-  const title = (input.title ?? "").trim();
-  if (title) return `${title} — designer collection at Palace of Roman`;
-  return "Designer collection at Palace of Roman";
+
+  const norm = normalizeHandle(handle);
+  if (norm && ALT_BY_HANDLE[norm]) return ALT_BY_HANDLE[norm];
+
+  return generateAltFromMeta({
+    title: input.title,
+    handle,
+    description: input.description ?? null,
+  });
 }
+
+// ───────────────────────────────────────────────────────────────────────
+// Auto-generated alt text for unknown/missing handles
+// ───────────────────────────────────────────────────────────────────────
+//
+// Builds a single, SEO-friendly alt string from whatever metadata Shopify
+// gives us. Priority:
+//   1. Curated ALT_BY_HANDLE  (handled in collectionImageAlt above)
+//   2. Title + keyword-rich descriptor inferred from title/handle/description
+//   3. Title alone with brand suffix
+//   4. Generic brand-level fallback
+//
+// Output is plain text (no markdown), <= ~150 chars to stay within the
+// recommended alt-attribute length for screen readers and Google Images.
+
+const ALT_KEYWORD_RULES: Array<{ test: RegExp; phrase: string }> = [
+  // Gender-specific apparel and accessories
+  { test: /\b(women'?s?|woman|ladies|female)\b.*\b(dress|gown)/i, phrase: "women's designer dresses and gowns" },
+  { test: /\b(women'?s?|woman|ladies|female)\b.*\b(shoe|heel|pump|sandal|boot|sneaker)/i, phrase: "women's designer shoes" },
+  { test: /\b(women'?s?|woman|ladies|female)\b.*\b(bag|tote|clutch|handbag|purse)/i, phrase: "women's designer handbags" },
+  { test: /\b(women'?s?|woman|ladies|female)\b.*\b(jewel|necklace|earring|ring|bracelet)/i, phrase: "women's designer jewelry" },
+  { test: /\b(women'?s?|woman|ladies|female)\b.*\b(watch|timepiece)/i, phrase: "women's designer watches" },
+  { test: /\b(women'?s?|woman|ladies|female)\b.*\b(accessor|scarf|hat|belt|wallet)/i, phrase: "women's designer accessories" },
+  { test: /\b(women'?s?|woman|ladies|female)\b.*\b(cloth|wear|top|blouse|skirt)/i, phrase: "women's designer clothing" },
+  { test: /\b(women'?s?|woman|ladies|female)\b/i, phrase: "women's designer fashion" },
+
+  { test: /\b(men'?s?|man|male|gentlemen)\b.*\b(suit|tuxedo|tailoring)/i, phrase: "men's designer suits and tailoring" },
+  { test: /\b(men'?s?|man|male|gentlemen)\b.*\b(shirt|polo)/i, phrase: "men's designer shirts" },
+  { test: /\b(men'?s?|man|male|gentlemen)\b.*\b(jacket|coat|outerwear|overcoat)/i, phrase: "men's designer outerwear" },
+  { test: /\b(men'?s?|man|male|gentlemen)\b.*\b(shoe|loafer|oxford|sneaker|boot|sandal)/i, phrase: "men's designer shoes" },
+  { test: /\b(men'?s?|man|male|gentlemen)\b.*\b(bag|backpack|briefcase|wallet)/i, phrase: "men's designer bags and leather goods" },
+  { test: /\b(men'?s?|man|male|gentlemen)\b.*\b(watch|jewel)/i, phrase: "men's designer watches and jewelry" },
+  { test: /\b(men'?s?|man|male|gentlemen)\b.*\b(accessor|belt|scarf|hat)/i, phrase: "men's designer accessories" },
+  { test: /\b(men'?s?|man|male|gentlemen)\b.*\b(cloth|wear|trouser|pant|short|knit|sweater)/i, phrase: "men's designer clothing" },
+  { test: /\b(men'?s?|man|male|gentlemen)\b/i, phrase: "men's designer fashion" },
+
+  // Cross-gender categories
+  { test: /\b(sale|discount|markdown|outlet|clearance)\b/i, phrase: "discounted luxury designer fashion" },
+  { test: /\b(new[-\s]?arrival|just[-\s]?in|latest|new[-\s]?drop)\b/i, phrase: "newest designer arrivals" },
+  { test: /\b(best[-\s]?sell|popular|trending|top[-\s]?pick)\b/i, phrase: "best-selling designer pieces" },
+  { test: /\b(brand|house|maison|designer)s?\b/i, phrase: "luxury designer brands" },
+  { test: /\b(bag|tote|clutch|handbag|purse)\b/i, phrase: "designer handbags" },
+  { test: /\b(shoe|heel|pump|sandal|boot|sneaker|loafer|oxford)\b/i, phrase: "designer shoes" },
+  { test: /\b(jewel|necklace|earring|ring|bracelet)\b/i, phrase: "designer jewelry" },
+  { test: /\b(watch|timepiece)\b/i, phrase: "designer watches" },
+  { test: /\b(belt|wallet|scarf|hat|sunglass|eyewear)\b/i, phrase: "designer accessories" },
+  { test: /\b(dress|gown|skirt|blouse|top)\b/i, phrase: "designer clothing" },
+  { test: /\b(jacket|coat|outerwear|overcoat|blazer)\b/i, phrase: "designer outerwear" },
+  { test: /\b(suit|tuxedo|tailoring|trouser|pant|shirt)\b/i, phrase: "designer tailoring" },
+  { test: /\b(knit|sweater|hoodie|sweatshirt|cashmere|merino)\b/i, phrase: "designer knitwear" },
+  { test: /\b(swim|beach|resort)\b/i, phrase: "designer swim and resortwear" },
+  { test: /\b(active|sport|athleis)\w*/i, phrase: "designer activewear" },
+];
+
+const STOP_WORDS = new Set([
+  "the", "and", "or", "of", "for", "to", "in", "with", "from", "by", "a", "an",
+  "our", "your", "this", "that", "these", "those", "all", "new", "shop",
+]);
+
+function generateAltFromMeta(input: {
+  title?: string;
+  handle?: string;
+  description?: string | null;
+}): string {
+  const title = (input.title ?? "").trim();
+  const handle = (input.handle ?? "").trim().toLowerCase();
+  const description = (input.description ?? "").trim();
+
+  // Build a haystack of all available text to mine for keywords.
+  const haystack = `${title} ${handle.replace(/[-_]+/g, " ")} ${description}`;
+
+  // First matching rule wins (rules are ordered most-specific first).
+  let descriptor: string | null = null;
+  for (const rule of ALT_KEYWORD_RULES) {
+    if (rule.test.test(haystack)) {
+      descriptor = rule.phrase;
+      break;
+    }
+  }
+
+  // Pull a couple of distinctive words from the description to keep the
+  // alt unique across similar collections (helps Google Images variety).
+  const distinctive = pickDistinctiveWords(description, title);
+
+  const titleClean = title || titleFromHandle(handle);
+  if (!titleClean && !descriptor) {
+    return "Designer collection at Palace of Roman";
+  }
+
+  const head = titleClean
+    ? `${titleClean} — ${descriptor ?? "designer collection"}`
+    : descriptor!;
+  const tail = distinctive ? ` (${distinctive})` : "";
+  const suffix = " at Palace of Roman";
+
+  const full = `${head}${tail}${suffix}`;
+  // Soft cap at 150 chars so screen readers don't truncate awkwardly.
+  if (full.length <= 150) return full;
+  const trimmed = `${head}${suffix}`;
+  return trimmed.length <= 150 ? trimmed : `${titleClean || "Designer collection"}${suffix}`;
+}
+
+function titleFromHandle(handle: string): string {
+  if (!handle) return "";
+  return handle
+    .replace(/[-_]+/g, " ")
+    .replace(/\b(\w)/g, (c) => c.toUpperCase())
+    .replace(/\bs\b/g, "'s")
+    .trim();
+}
+
+function pickDistinctiveWords(description: string, title: string): string {
+  if (!description) return "";
+  const titleTokens = new Set(
+    title.toLowerCase().split(/\s+/).filter(Boolean),
+  );
+  const words = description
+    .toLowerCase()
+    .replace(/[^a-z0-9\s'-]/g, " ")
+    .split(/\s+/)
+    .filter((w) => w.length >= 4 && !STOP_WORDS.has(w) && !titleTokens.has(w));
+  // Keep first 2 unique nouns-ish words.
+  const seen = new Set<string>();
+  const picks: string[] = [];
+  for (const w of words) {
+    if (seen.has(w)) continue;
+    seen.add(w);
+    picks.push(w);
+    if (picks.length === 2) break;
+  }
+  return picks.join(", ");
+}
+
+
 
 // Focal point per collection handle, expressed as a CSS `object-position`
 // value. Combined with `object-cover` and a fixed aspect ratio, this keeps

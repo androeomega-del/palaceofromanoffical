@@ -245,7 +245,7 @@ function CollectionPage() {
     description: description ?? null,
     dynamicMap: dynamicMapQ.data ?? {},
   });
-  const heroAlt = collectionImageAlt({ handle, title });
+  const heroAlt = collectionImageAlt({ handle, title, description: description ?? null });
   const heroFocal = collectionImageFocal({ handle, title });
 
   return (
