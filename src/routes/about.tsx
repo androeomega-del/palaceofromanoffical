@@ -22,7 +22,7 @@ function AboutPage() {
     <EditorialPageShell
       eyebrow="House Notes"
       title="A boutique, not a marketplace."
-      intro="Palace of Roman is a curated edit of the world's most considered houses — quietly assembled, sourced through an authorised European distribution partner, and presented with the care of a single voice."
+      intro="Palace of Roman is a curated edit of the world's most considered houses — an official BrandsGateway partner, authorised to resell pieces that are 100% authentic and sourced from the brands or their authorised distributors."
       heroImage={img(7)}
       heroAlt="A studio still life from the current edit"
     >
