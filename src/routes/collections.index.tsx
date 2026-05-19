@@ -85,6 +85,13 @@ function CollectionsIndexPage() {
     queryFn: () => fetchCollections(100),
   });
 
+  const imageMapQuery = useQuery({
+    queryKey: ["collection-image-map"],
+    queryFn: () => getCollectionImageMap(),
+    staleTime: 5 * 60 * 1000,
+  });
+  const dynamicMap = imageMapQuery.data ?? {};
+
   const all = q.data ?? [];
   const collections = useMemo(
     () => sortCollections(all.filter((c) => matchesFilter(c, filter)), sort),
