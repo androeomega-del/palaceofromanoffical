@@ -69,9 +69,9 @@ export function SiteHeader() {
         Authenticity Guaranteed — Complimentary Global Shipping over $1,200
       </div>
       <header className="sticky top-0 z-50 bg-canvas/95 backdrop-blur-md border-b border-ink/10">
-        <div className="max-w-screen-2xl mx-auto px-6 h-20 grid grid-cols-[1fr_auto_1fr] items-center gap-8">
+        <div className="max-w-screen-2xl mx-auto px-6 md:px-10 h-20 grid grid-cols-[1fr_auto_1fr] items-center gap-6">
           {/* Left nav (desktop) */}
-          <nav className="hidden lg:flex items-center gap-8 text-[11px] uppercase tracking-[0.25em] font-medium justify-self-start">
+          <nav className="hidden lg:flex items-center gap-7 text-[11px] uppercase tracking-[0.25em] font-medium justify-self-start">
             <FlatLinks items={FLAT_LEFT} />
             <DesktopMegamenu />
           </nav>
@@ -81,41 +81,46 @@ export function SiteHeader() {
             type="button"
             aria-label="Open menu"
             onClick={() => setMobileOpen(true)}
-            className="lg:hidden justify-self-start hover:text-bronze transition-colors"
+            className="lg:hidden justify-self-start hover:text-bronze transition-colors inline-flex items-center justify-center w-9 h-9 -ml-2"
           >
             <Menu className="w-5 h-5" strokeWidth={1.25} />
           </button>
 
           <Link
             to="/"
-            className="text-xl md:text-2xl font-serif tracking-[0.18em] uppercase whitespace-nowrap justify-self-center"
+            className="text-xl md:text-2xl font-serif tracking-[0.18em] uppercase whitespace-nowrap justify-self-center leading-none"
           >
             Palace of Roman
           </Link>
 
-          <div className="flex items-center gap-8 justify-self-end">
-            <nav className="hidden lg:flex items-center gap-8 text-[11px] uppercase tracking-[0.25em] font-medium">
+          <div className="flex items-center gap-7 justify-self-end">
+            <nav className="hidden lg:flex items-center gap-7 text-[11px] uppercase tracking-[0.25em] font-medium">
               <FlatLinks items={FLAT_RIGHT} />
             </nav>
-            <div className="flex items-center gap-5">
+            <div className="flex items-center gap-6">
               <button
                 aria-label="Search"
                 onClick={() => setSearchOpen(true)}
-                className="hover:text-bronze transition-colors"
+                className="hover:text-bronze transition-colors inline-flex items-center justify-center w-5 h-5"
               >
                 <Search className="w-4 h-4" strokeWidth={1.25} />
               </button>
               <ReducedMotionToggle />
-              <button aria-label="Account" className="hover:text-bronze transition-colors">
+              <button
+                aria-label="Account"
+                className="hover:text-bronze transition-colors hidden sm:inline-flex items-center justify-center w-5 h-5"
+              >
                 <User className="w-4 h-4" strokeWidth={1.25} />
               </button>
               <button
                 aria-label="Cart"
                 onClick={() => setCartOpen(true)}
-                className="relative hover:text-bronze transition-colors flex items-center gap-2"
+                className="relative hover:text-bronze transition-colors inline-flex items-center gap-1.5"
               >
                 <ShoppingBag className="w-4 h-4" strokeWidth={1.25} />
-                <span className="text-[11px] uppercase tracking-[0.2em] font-medium">({totalItems})</span>
+                <span className="text-[11px] uppercase tracking-[0.2em] font-medium tabular-nums leading-none">
+                  ({totalItems})
+                </span>
               </button>
             </div>
           </div>
