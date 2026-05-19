@@ -96,6 +96,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           sameAs: [
             "https://www.instagram.com/palaceofroman/",
             "https://www.facebook.com/people/Palace-of-Roman/61581195176963/",
+            "https://www.tiktok.com/@palaceofroman",
           ],
         }),
       },
