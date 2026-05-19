@@ -302,7 +302,8 @@ function MegaPanel({
   onMouseEnter: () => void;
   onMouseLeave: () => void;
 }) {
-  const featureImg = collectionImage({ handle: dept.feature.handle, title: dept.label });
+  const dynamicMap = useCollectionImageMap();
+  const featureImg = collectionImage({ handle: dept.feature.handle, title: dept.label, dynamicMap });
   return (
     <div
       id={id}
