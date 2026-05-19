@@ -22,10 +22,27 @@ export const Route = createFileRoute("/editorial/resort-2026")({
   head: () => {
     const title = "Resort 2026 — Light as Architecture | Palace of Roman";
     const desc = "Resort 2026: a quiet study of cut and shade across the season's most considered pieces, photographed in late Mediterranean light.";
-    const rh = routeHead({ path: "/editorial/resort-2026", title, description: desc, image: img(12), type: "article" });
+    const path = "/editorial/resort-2026";
+    const image = img(12);
+    const rh = routeHead({ path, title, description: desc, image, type: "article" });
     return {
       meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
       links: rh.links,
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Article",
+            headline: title,
+            description: desc,
+            image: absoluteUrl(image),
+            url: absoluteUrl(path),
+            publisher: { "@type": "Organization", name: SITE_NAME, url: absoluteUrl("/") },
+            mainEntityOfPage: absoluteUrl(path),
+          }),
+        },
+      ],
     };
   },
   component: ResortPage,
