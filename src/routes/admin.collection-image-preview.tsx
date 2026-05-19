@@ -20,6 +20,7 @@ import { getCollectionImageMap } from "@/lib/collection-image.functions";
 import {
   upsertCollectionImageOverride,
   deleteCollectionImageOverride,
+  syncCollectionImagesFromShopify,
 } from "@/lib/collection-image-admin.functions";
 import { toast } from "sonner";
 
