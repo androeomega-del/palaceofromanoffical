@@ -12,7 +12,8 @@ type NavItem = {
 };
 
 const NAV: NavItem[] = [
-  { to: "/collections/$handle", params: { handle: "womens-accessories" }, label: "Women" },
+  { to: "/shop", label: "Shop" },
+  { to: "/collections/$handle", params: { handle: "womens-accessories-1" }, label: "Women" },
   { to: "/collections/$handle", params: { handle: "mens-luxury-clothing" }, label: "Men" },
   { to: "/collections/$handle", params: { handle: "new-arrivals" }, label: "New" },
   { to: "/collections/$handle", params: { handle: "high-discounts" }, label: "Sale", accent: true },
