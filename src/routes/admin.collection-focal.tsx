@@ -6,7 +6,7 @@
 // "lock down before public deploy" pattern.
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { fetchCollections, type ShopifyCollection } from "@/lib/shopify";
 import {
