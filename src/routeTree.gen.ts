@@ -23,6 +23,7 @@ import { Route as AuthenticationRouteImport } from './routes/authentication'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CollectionsIndexRouteImport } from './routes/collections.index'
+import { Route as SwimSizeGuideRouteImport } from './routes/swim.size-guide'
 import { Route as ProductHandleRouteImport } from './routes/product.$handle'
 import { Route as EditorialTheNewEveningRouteImport } from './routes/editorial.the-new-evening'
 import { Route as EditorialResort2026RouteImport } from './routes/editorial.resort-2026'
@@ -100,6 +101,11 @@ const CollectionsIndexRoute = CollectionsIndexRouteImport.update({
   path: '/collections/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SwimSizeGuideRoute = SwimSizeGuideRouteImport.update({
+  id: '/size-guide',
+  path: '/size-guide',
+  getParentRoute: () => SwimRoute,
+} as any)
 const ProductHandleRoute = ProductHandleRouteImport.update({
   id: '/product/$handle',
   path: '/product/$handle',
@@ -143,7 +149,7 @@ export interface FileRoutesByFullPath {
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/swim': typeof SwimRoute
+  '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
   '/brand/$vendor': typeof BrandVendorRoute
   '/collections/$handle': typeof CollectionsHandleRoute
@@ -151,6 +157,7 @@ export interface FileRoutesByFullPath {
   '/editorial/resort-2026': typeof EditorialResort2026Route
   '/editorial/the-new-evening': typeof EditorialTheNewEveningRoute
   '/product/$handle': typeof ProductHandleRoute
+  '/swim/size-guide': typeof SwimSizeGuideRoute
   '/collections/': typeof CollectionsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -165,7 +172,7 @@ export interface FileRoutesByTo {
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/swim': typeof SwimRoute
+  '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
   '/brand/$vendor': typeof BrandVendorRoute
   '/collections/$handle': typeof CollectionsHandleRoute
@@ -173,6 +180,7 @@ export interface FileRoutesByTo {
   '/editorial/resort-2026': typeof EditorialResort2026Route
   '/editorial/the-new-evening': typeof EditorialTheNewEveningRoute
   '/product/$handle': typeof ProductHandleRoute
+  '/swim/size-guide': typeof SwimSizeGuideRoute
   '/collections': typeof CollectionsIndexRoute
 }
 export interface FileRoutesById {
@@ -188,7 +196,7 @@ export interface FileRoutesById {
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/swim': typeof SwimRoute
+  '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
   '/brand/$vendor': typeof BrandVendorRoute
   '/collections/$handle': typeof CollectionsHandleRoute
@@ -196,6 +204,7 @@ export interface FileRoutesById {
   '/editorial/resort-2026': typeof EditorialResort2026Route
   '/editorial/the-new-evening': typeof EditorialTheNewEveningRoute
   '/product/$handle': typeof ProductHandleRoute
+  '/swim/size-guide': typeof SwimSizeGuideRoute
   '/collections/': typeof CollectionsIndexRoute
 }
 export interface FileRouteTypes {
@@ -220,6 +229,7 @@ export interface FileRouteTypes {
     | '/editorial/resort-2026'
     | '/editorial/the-new-evening'
     | '/product/$handle'
+    | '/swim/size-guide'
     | '/collections/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -242,6 +252,7 @@ export interface FileRouteTypes {
     | '/editorial/resort-2026'
     | '/editorial/the-new-evening'
     | '/product/$handle'
+    | '/swim/size-guide'
     | '/collections'
   id:
     | '__root__'
@@ -264,6 +275,7 @@ export interface FileRouteTypes {
     | '/editorial/resort-2026'
     | '/editorial/the-new-evening'
     | '/product/$handle'
+    | '/swim/size-guide'
     | '/collections/'
   fileRoutesById: FileRoutesById
 }
@@ -279,7 +291,7 @@ export interface RootRouteChildren {
   ShippingReturnsRoute: typeof ShippingReturnsRoute
   ShopRoute: typeof ShopRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
-  SwimRoute: typeof SwimRoute
+  SwimRoute: typeof SwimRouteWithChildren
   TermsRoute: typeof TermsRoute
   BrandVendorRoute: typeof BrandVendorRoute
   CollectionsHandleRoute: typeof CollectionsHandleRoute
@@ -390,6 +402,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CollectionsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/swim/size-guide': {
+      id: '/swim/size-guide'
+      path: '/size-guide'
+      fullPath: '/swim/size-guide'
+      preLoaderRoute: typeof SwimSizeGuideRouteImport
+      parentRoute: typeof SwimRoute
+    }
     '/product/$handle': {
       id: '/product/$handle'
       path: '/product/$handle'
@@ -435,6 +454,16 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface SwimRouteChildren {
+  SwimSizeGuideRoute: typeof SwimSizeGuideRoute
+}
+
+const SwimRouteChildren: SwimRouteChildren = {
+  SwimSizeGuideRoute: SwimSizeGuideRoute,
+}
+
+const SwimRouteWithChildren = SwimRoute._addFileChildren(SwimRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
@@ -447,7 +476,7 @@ const rootRouteChildren: RootRouteChildren = {
   ShippingReturnsRoute: ShippingReturnsRoute,
   ShopRoute: ShopRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
-  SwimRoute: SwimRoute,
+  SwimRoute: SwimRouteWithChildren,
   TermsRoute: TermsRoute,
   BrandVendorRoute: BrandVendorRoute,
   CollectionsHandleRoute: CollectionsHandleRoute,
