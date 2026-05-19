@@ -290,7 +290,7 @@ export async function fetchSearchFiltered(opts: {
   reverse?: boolean;
 }): Promise<Omit<FilteredResult, "collection">> {
   const data = await storefrontApiRequest<any>(SEARCH_FILTERED_QUERY, {
-    query: opts.query ?? "*",
+    query: composeQuery(opts.query && opts.query !== "*" ? opts.query : null),
     first: opts.first ?? 24,
     after: opts.after ?? null,
     productFilters: opts.filters ?? [],
