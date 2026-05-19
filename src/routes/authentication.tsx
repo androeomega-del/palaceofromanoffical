@@ -63,7 +63,7 @@ function AuthenticationPage() {
         ].map(({ Icon, title, body }) => (
           <div key={title} className="border-l border-ink/15 pl-5">
             <Icon className="h-5 w-5 text-bronze mb-4" strokeWidth={1.25} />
-            <h3 className="font-serif text-lg mb-2">{title}</h3>
+            <h2 className="font-serif text-lg mb-2">{title}</h2>
             <p className="text-sm text-ink/70 leading-relaxed">{body}</p>
           </div>
         ))}
