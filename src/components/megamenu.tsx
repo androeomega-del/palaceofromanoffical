@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { fetchCollections, fetchVendorIndex } from "@/lib/shopify";
-import { collectionImage } from "@/lib/collection-image";
+import { collectionImage, collectionImageAlt } from "@/lib/collection-image";
 import { getCollectionImageMap } from "@/lib/collection-image.functions";
 
 function useCollectionImageMap() {
