@@ -59,9 +59,44 @@ export function DesktopMegamenu() {
     if (closeTimer.current) clearTimeout(closeTimer.current);
     setOpenKey(key);
   }, []);
+  /**
+   * Close the panel without stranding keyboard focus on an element that is
+   * about to be hidden. If the active element lives inside the closing panel,
+   * we move focus back to that panel's trigger before hiding it. This covers:
+   *   - Escape (explicit close)
+   *   - mouse-leave with focus still trapped inside (e.g. user tabbed in, then
+   *     cursor drifted away)
+   *   - focus-out when the relatedTarget is inside the panel that just hid
+   */
+  const closeKey = useCallback((key: string | null, restoreFocus: boolean) => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    if (key && restoreFocus) {
+      const trigger = triggerRefs.current.get(key);
+      const active = document.activeElement as HTMLElement | null;
+      const panel = trigger?.parentElement?.querySelector<HTMLElement>('[role="region"]');
+      if (trigger && active && panel && panel.contains(active)) {
+        trigger.focus();
+      }
+    }
+    setOpenKey(null);
+  }, []);
+
   const scheduleClose = useCallback(() => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
-    closeTimer.current = setTimeout(() => setOpenKey(null), 120);
+    closeTimer.current = setTimeout(() => {
+      // Use the latest openKey via functional update to avoid stale closure.
+      setOpenKey((current) => {
+        if (current) {
+          const trigger = triggerRefs.current.get(current);
+          const active = document.activeElement as HTMLElement | null;
+          const panel = trigger?.parentElement?.querySelector<HTMLElement>('[role="region"]');
+          if (trigger && active && panel && panel.contains(active)) {
+            trigger.focus();
+          }
+        }
+        return null;
+      });
+    }, 120);
   }, []);
 
   const closeAndFocusTrigger = useCallback((key: string | null) => {
