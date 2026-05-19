@@ -5,7 +5,9 @@ import { fetchProducts, fetchCollection, type ShopifyProduct } from "@/lib/shopi
 import { ProductCard } from "@/components/product-card";
 import { EditorialHotspots } from "@/components/editorial-hotspots";
 import heroImage from "@/assets/home-hero.jpg";
+import summerHero from "@/assets/summer-bento-hero.jpg";
 import editorialHero from "@/assets/editorial/may-2026/1.webp";
+import { img } from "@/lib/editorial-library";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -146,70 +148,15 @@ function HomePage() {
 
   return (
     <>
-      {/* 1. HERO */}
-      <section className="relative w-full">
-        <div className="relative w-full min-h-[640px] md:min-h-0 md:aspect-[16/7] overflow-hidden bg-muted">
-          <img
-            src={heroImage}
-            alt="Palace of Roman — Spring editorial"
-            width={1920}
-            height={1080}
-            className="absolute inset-0 w-full h-full object-cover object-[70%_center] md:object-center"
-          />
-          {/* Cream wash — on mobile the column stack needs full readability,
-              so the wash covers the whole frame; on desktop it fades to clear
-              on the right so the editorial imagery still breathes. */}
-          <div className="absolute inset-0 bg-canvas/70 md:hidden" />
-          <div className="absolute inset-0 hidden md:block bg-gradient-to-r from-canvas/92 from-0% via-canvas/55 via-45% to-transparent to-75%" />
-          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-canvas/80" />
-          <div className="absolute inset-0 flex items-center">
-            <div className="max-w-screen-2xl mx-auto w-full px-6 md:px-12 py-12 md:py-0">
-              <div className="max-w-xl">
-                <span className="text-[10px] uppercase tracking-[0.35em] text-bronze block mb-5 md:mb-6">
-                  The Spring Edit
-                </span>
-                <h1 className="text-[2rem] sm:text-5xl md:text-6xl lg:text-7xl font-serif leading-[1.05] tracking-tight text-balance mb-6 md:mb-8">
-                  A study in considered dressing.
-                </h1>
-                <p className="text-sm md:text-base text-ink/70 leading-relaxed max-w-md mb-8 md:mb-10 text-pretty">
-                  A curated edit from the season's most significant houses — quietly assembled, authenticated, and shipped worldwide.
-                </p>
-                <div className="flex flex-wrap gap-4">
-                  <Link
-                    to="/collections/$handle"
-                    params={{ handle: WOMENS_CLOTHING_HANDLE }}
-                    className="px-8 py-3.5 bg-ink text-canvas text-[11px] uppercase tracking-[0.25em] hover:bg-ink/85 transition-colors"
-                  >
-                    Shop Women
-                  </Link>
-                  <Link
-                    to="/collections/$handle"
-                    params={{ handle: MENS_CLOTHING_HANDLE }}
-                    className="px-8 py-3.5 ring-1 ring-ink text-[11px] uppercase tracking-[0.25em] hover:bg-ink hover:text-canvas transition-colors"
-                  >
-                    Shop Men
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* 1. SUMMER BENTO STOREFRONT — Architectural Resort */}
+      <SummerBento
+        womenImage={womenEditorialQ.data?.[0]?.node?.images?.edges?.[0]?.node}
+        menImage={menEditorialQ.data?.[0]?.node?.images?.edges?.[0]?.node}
+        accessoriesImage={newArrivalsQ.data?.[0]?.node?.images?.edges?.[0]?.node}
+        spotlightVendor={featuredBrands[0]?.name}
+        spotlightSlug={featuredBrands[0]?.slug}
+      />
 
-      {/* 2. SHOP BY CATEGORY */}
-      <section className="py-28">
-        <div className="max-w-screen-2xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <span className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-4 block">The Wardrobe</span>
-            <h2 className="text-3xl md:text-4xl font-serif">Shop by Category</h2>
-          </div>
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-            {CATEGORY_TILES.map((tile) => (
-              <CategoryTile key={tile.key} tile={tile} />
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* 3. NEW ARRIVALS — horizontal scroll rail */}
       <section className="py-24 bg-canvas-raised">
@@ -555,6 +502,202 @@ function NewsletterStrip() {
             </button>
           </form>
         )}
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------ SummerBento ------------------------------ */
+
+type ShopifyImg = { url: string; altText: string | null };
+
+function SummerBento({
+  womenImage,
+  menImage,
+  accessoriesImage,
+  spotlightVendor,
+  spotlightSlug,
+}: {
+  womenImage?: ShopifyImg;
+  menImage?: ShopifyImg;
+  accessoriesImage?: ShopifyImg;
+  spotlightVendor?: string;
+  spotlightSlug?: string;
+}) {
+  return (
+    <section className="px-4 md:px-8 lg:px-12 pt-6 md:pt-10 pb-12 md:pb-16">
+      <div className="max-w-[1600px] mx-auto grid grid-cols-12 auto-rows-[180px] md:auto-rows-[200px] gap-4">
+
+        {/* Main Hero: The Shoreline Perspective */}
+        <div className="col-span-12 lg:col-span-8 row-span-3 lg:row-span-4 relative group overflow-hidden bg-canvas-raised">
+          <img
+            src={summerHero}
+            alt="Resort 2026 — The Shoreline Perspective"
+            width={1600}
+            height={1280}
+            fetchPriority="high"
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-ink/10 to-transparent" />
+          <div className="absolute bottom-8 md:bottom-14 lg:bottom-16 left-6 md:left-12 lg:left-16 right-6 max-w-xl">
+            <span className="block text-[10px] md:text-xs uppercase tracking-[0.4em] mb-3 md:mb-5 text-canvas/90">
+              Resort 2026 Collection
+            </span>
+            <h1 className="font-serif text-canvas text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl leading-[0.95] mb-6 md:mb-8 text-balance">
+              The Shoreline
+              <span className="block italic font-light md:ml-10 lg:ml-12">Perspective</span>
+            </h1>
+            <div className="flex flex-wrap gap-3 md:gap-4">
+              <Link
+                to="/collections/$handle"
+                params={{ handle: WOMENS_CLOTHING_HANDLE }}
+                className="px-7 md:px-10 py-3 md:py-4 bg-canvas text-ink text-[10px] uppercase tracking-[0.25em] font-medium hover:bg-[var(--sea)] hover:text-canvas transition-all"
+              >
+                Shop the Edit
+              </Link>
+              <Link
+                to="/editorial/resort-2026"
+                className="px-7 md:px-10 py-3 md:py-4 border border-canvas text-canvas text-[10px] uppercase tracking-[0.25em] font-medium hover:bg-canvas hover:text-ink transition-all"
+              >
+                View Lookbook
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Honey Promo Tile */}
+        <Link
+          to="/shop"
+          search={{ q: "tag:New", title: "Just Landed" }}
+          className="col-span-12 md:col-span-6 lg:col-span-4 row-span-2 bg-bronze p-8 md:p-10 flex flex-col justify-center items-center text-center group transition-colors hover:bg-[oklch(0.70_0.082_70)]"
+        >
+          <span className="text-[10px] uppercase tracking-[0.3em] text-ink/70 mb-3">
+            Limited Release
+          </span>
+          <h3 className="font-serif text-2xl md:text-3xl text-ink mb-3 leading-tight">
+            Mediterranean
+            <br />
+            Craftsmanship
+          </h3>
+          <p className="text-[11px] tracking-[0.2em] text-ink/80 uppercase">
+            Just Landed for Resort
+          </p>
+        </Link>
+
+        {/* Women Category Tile */}
+        <Link
+          to="/collections/$handle"
+          params={{ handle: WOMENS_CLOTHING_HANDLE }}
+          className="col-span-12 md:col-span-6 lg:col-span-4 row-span-2 relative group overflow-hidden bg-canvas-raised"
+        >
+          {womenImage && (
+            <img
+              src={womenImage.url}
+              alt={womenImage.altText ?? "Women's Edit"}
+              loading="lazy"
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            />
+          )}
+          <div className="absolute inset-0 bg-[var(--sea)]/25 mix-blend-multiply" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-center">
+              <h3 className="font-serif italic text-4xl md:text-5xl text-canvas">Women</h3>
+              <div className="h-px w-0 group-hover:w-full bg-canvas transition-all duration-500 mt-3 mx-auto" />
+            </div>
+          </div>
+        </Link>
+
+        {/* Brand Spotlight — Navy */}
+        <Link
+          to={spotlightSlug ? "/brand/$vendor" : "/brands"}
+          params={spotlightSlug ? { vendor: spotlightSlug } : undefined}
+          className="col-span-12 md:col-span-4 lg:col-span-3 row-span-2 bg-ink p-6 md:p-8 flex flex-col justify-between group overflow-hidden relative"
+        >
+          <div className="relative z-10">
+            <span className="text-[9px] uppercase tracking-[0.4em] text-[var(--sea)] mb-3 block">
+              Brand Spotlight
+            </span>
+            <h4 className="font-serif text-2xl md:text-3xl text-canvas leading-tight">
+              {spotlightVendor ?? "The Maisons"}
+              <span className="block italic font-light mt-1">In Stock Now</span>
+            </h4>
+          </div>
+          <div
+            className="absolute bottom-[-30px] right-[-30px] w-44 h-44 rounded-full opacity-40 group-hover:scale-110 transition-transform duration-700 bg-cover bg-center"
+            style={{ backgroundImage: `url(${img(8)})` }}
+            aria-hidden
+          />
+          <span className="relative z-10 text-[10px] uppercase tracking-[0.25em] text-canvas border-b border-canvas/30 pb-1 w-fit">
+            Explore Collection
+          </span>
+        </Link>
+
+        {/* Men Category Tile */}
+        <Link
+          to="/collections/$handle"
+          params={{ handle: MENS_CLOTHING_HANDLE }}
+          className="col-span-12 md:col-span-8 lg:col-span-5 row-span-2 relative group overflow-hidden bg-canvas-raised"
+        >
+          {menImage && (
+            <img
+              src={menImage.url}
+              alt={menImage.altText ?? "The Men's Edit"}
+              loading="lazy"
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/40 to-transparent" />
+          <div className="absolute bottom-6 md:bottom-8 left-6 md:left-8">
+            <h3 className="font-serif text-3xl md:text-4xl text-canvas">The Men's Edit</h3>
+            <p className="text-[10px] uppercase tracking-[0.3em] text-canvas/80 mt-2">
+              Effortless Sophistication
+            </p>
+          </div>
+        </Link>
+
+        {/* Accessories Split Tile */}
+        <Link
+          to="/shop"
+          search={{ q: "tag:Accessories", title: "Accessories" }}
+          className="col-span-6 md:col-span-4 lg:col-span-2 row-span-2 bg-canvas border border-ink/10 flex flex-col group overflow-hidden"
+        >
+          <div className="h-1/2 overflow-hidden bg-canvas-raised">
+            {accessoriesImage && (
+              <img
+                src={accessoriesImage.url}
+                alt={accessoriesImage.altText ?? "Accessories"}
+                loading="lazy"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              />
+            )}
+          </div>
+          <div className="h-1/2 flex flex-col items-center justify-center p-4 text-center">
+            <span className="text-[9px] uppercase tracking-[0.3em] text-[var(--sea)] mb-1">
+              Shop
+            </span>
+            <h4 className="text-base md:text-lg text-ink uppercase tracking-[0.15em] font-medium">
+              Accessories
+            </h4>
+          </div>
+        </Link>
+
+        {/* Sea Sale Tile */}
+        <Link
+          to="/collections/$handle"
+          params={{ handle: "high-discounts" }}
+          className="col-span-6 md:col-span-4 lg:col-span-2 row-span-2 bg-[var(--sea)] p-5 md:p-6 flex flex-col items-center justify-center text-center group hover:bg-[oklch(0.54_0.115_235)] transition-colors"
+        >
+          <h4 className="font-serif text-2xl md:text-3xl text-canvas mb-2 leading-tight">
+            The Summer
+            <br />
+            Sale
+          </h4>
+          <p className="text-[10px] uppercase tracking-[0.3em] text-canvas/85 mb-4">
+            Up to 40% Off
+          </p>
+          <div className="w-8 h-px bg-canvas transition-all group-hover:w-16" />
+        </Link>
+
       </div>
     </section>
   );
