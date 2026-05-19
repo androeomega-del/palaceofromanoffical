@@ -539,6 +539,7 @@ function BrandsPanel({
             src={featureImg}
             alt={collectionImageAlt({ handle: "best-selling-brands", title: "Best-selling luxury fashion brands" })}
             loading="lazy"
+            style={{ objectPosition: collectionImageFocal({ handle: "best-selling-brands", title: "Best-selling luxury fashion brands" }) }}
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/20 to-transparent" />
