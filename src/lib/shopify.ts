@@ -211,14 +211,29 @@ export const SEARCH_FILTERED_QUERY = `
   }
 `;
 
-export async function fetchProducts(opts: { first?: number; query?: string; sortKey?: string; reverse?: boolean } = {}) {
-  const data = await storefrontApiRequest<{ products: { edges: ShopifyProduct[] } }>(PRODUCTS_QUERY, {
+export async function fetchProducts(opts: { first?: number; after?: string | null; query?: string; sortKey?: string; reverse?: boolean } = {}) {
+  const data = await storefrontApiRequest<{ products: { edges: ShopifyProduct[]; pageInfo: { hasNextPage: boolean; endCursor: string | null } } }>(PRODUCTS_QUERY, {
     first: opts.first ?? 24,
-    query: opts.query ?? null,
+    after: opts.after ?? null,
+    query: composeQuery(opts.query),
     sortKey: opts.sortKey ?? "BEST_SELLING",
     reverse: opts.reverse ?? false,
   });
   return data?.data?.products?.edges ?? [];
+}
+
+export async function fetchProductsPage(opts: { first?: number; after?: string | null; query?: string; sortKey?: string; reverse?: boolean } = {}) {
+  const data = await storefrontApiRequest<{ products: { edges: ShopifyProduct[]; pageInfo: { hasNextPage: boolean; endCursor: string | null } } }>(PRODUCTS_QUERY, {
+    first: opts.first ?? 48,
+    after: opts.after ?? null,
+    query: composeQuery(opts.query),
+    sortKey: opts.sortKey ?? "BEST_SELLING",
+    reverse: opts.reverse ?? false,
+  });
+  return {
+    edges: data?.data?.products?.edges ?? [],
+    pageInfo: data?.data?.products?.pageInfo ?? { hasNextPage: false, endCursor: null },
+  };
 }
 
 export async function fetchProductByHandle(handle: string) {
