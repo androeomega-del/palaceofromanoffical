@@ -10,6 +10,7 @@ import {
   collectionImageAlt,
   collectionImageFocal,
 } from "@/lib/collection-image";
+import { getCollectionImageMap } from "@/lib/collection-image.functions";
 import {
   CatalogFilters,
   SortPresets,
