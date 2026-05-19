@@ -1,0 +1,80 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { fetchProducts } from "@/lib/shopify";
+import { ProductCard } from "@/components/product-card";
+
+export const Route = createFileRoute("/brand/$vendor")({
+  head: ({ params }) => {
+    const name = unslug(params.vendor);
+    return {
+      meta: [
+        { title: `${name} — Palace of Roman` },
+        { name: "description", content: `Shop ${name} at Palace of Roman.` },
+        { property: "og:title", content: `${name} — Palace of Roman` },
+      ],
+    };
+  },
+  component: BrandPage,
+});
+
+function unslug(s: string) {
+  return s.split("-").map((w) => w[0]?.toUpperCase() + w.slice(1)).join(" ");
+}
+
+function BrandPage() {
+  const { vendor } = Route.useParams();
+  const name = unslug(vendor);
+
+  const productsQ = useQuery({
+    queryKey: ["brand", vendor],
+    queryFn: () => fetchProducts({ first: 48, query: `vendor:"${name}"` }),
+  });
+
+  const edges = productsQ.data ?? [];
+
+  return (
+    <div>
+      <section className="px-6 pt-16 pb-12 border-b border-ink/5">
+        <div className="max-w-screen-2xl mx-auto">
+          <Link to="/brands" className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground hover:text-ink">
+            ← All Brands
+          </Link>
+          <div className="mt-6 flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <h1 className="text-5xl md:text-7xl font-serif">{name}</h1>
+            {edges.length > 0 && (
+              <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                {edges.length} {edges.length === 1 ? "Piece" : "Pieces"}
+              </p>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <section className="px-6 py-20">
+        <div className="max-w-screen-2xl mx-auto">
+          {productsQ.isLoading ? (
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="w-full aspect-[4/5] bg-muted mb-5" />
+                  <div className="h-2 w-16 bg-muted mb-2" />
+                  <div className="h-3 w-3/4 bg-muted" />
+                </div>
+              ))}
+            </div>
+          ) : edges.length === 0 ? (
+            <div className="py-32 text-center">
+              <p className="text-sm text-muted-foreground">No pieces currently available from {name}.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-16">
+              {edges.map((e) => (
+                <ProductCard key={e.node.id} product={e} />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+    </div>
+  );
+}
