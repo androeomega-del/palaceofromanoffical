@@ -79,8 +79,8 @@ function ContactPage() {
             How may we help?
           </h1>
           <p className="text-sm text-muted-foreground leading-relaxed mb-10 max-w-md">
-            Private appointments, sourcing for a piece you have in mind, authentication of an existing wardrobe — we
-            reply the same business day.
+            Sourcing for a piece you have in mind, sizing and styling questions, after-care or order help — we reply
+            the same business day. Palace of Roman operates online only; there is no showroom or in-person fitting.
           </p>
 
           {sent ? (
