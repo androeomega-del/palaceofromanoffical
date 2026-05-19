@@ -98,6 +98,7 @@ export function SiteHeader() {
               key={n.label}
               to={n.to as any}
               params={n.params as any}
+              search={n.search as any}
               className={`hover:text-bronze transition-colors whitespace-nowrap ${n.accent ? "text-bronze" : ""}`}
             >
               {n.label}
