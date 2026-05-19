@@ -278,6 +278,7 @@ function PriceFilter({
         onChange={(e) => setMax(Number(e.target.value))}
         onMouseUp={apply}
         onTouchEnd={apply}
+        aria-label={`Price range, currently up to $${max}`}
         className="w-full accent-bronze"
       />
       <p className="mt-2 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
