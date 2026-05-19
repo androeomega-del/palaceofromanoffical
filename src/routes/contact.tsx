@@ -16,7 +16,7 @@ export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
       { title: "Concierge — Palace of Roman" },
-      { name: "description", content: "Write to our concierge for private appointments, sourcing requests, authentication or after-care." },
+      { name: "description", content: "Write to the Palace of Roman concierge for sourcing requests, sizing, styling or after-care. Same-day reply by email." },
       { property: "og:title", content: "Concierge — Palace of Roman" },
       { property: "og:image", content: img(8) },
     ],
@@ -53,7 +53,7 @@ function ContactPage() {
         setError(res.error ?? "Something went wrong.");
       }
     } catch {
-      setError("We could not reach the atelier. Please try again in a moment.");
+      setError("We could not reach the concierge. Please try again in a moment.");
     }
   };
 
@@ -62,12 +62,12 @@ function ContactPage() {
       <section className="grid md:grid-cols-2 min-h-[80vh]">
         {/* Image side */}
         <div className="relative bg-canvas-raised order-1 md:order-2">
-          <img src={img(8)} alt="The atelier" className="absolute inset-0 w-full h-full object-cover" />
+          <img src={img(8)} alt="A still life from the current edit" className="absolute inset-0 w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-ink/40 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12 text-white">
             <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-3">Concierge</p>
             <p className="font-serif italic text-xl md:text-2xl max-w-md">
-              "A single voice — for sourcing, appointments and after-care."
+              "A single voice — for sourcing, sizing and after-care."
             </p>
           </div>
         </div>
@@ -79,8 +79,8 @@ function ContactPage() {
             How may we help?
           </h1>
           <p className="text-sm text-muted-foreground leading-relaxed mb-10 max-w-md">
-            Private appointments, sourcing for a piece you have in mind, authentication of an existing wardrobe — we
-            reply the same business day.
+            Sourcing for a piece you have in mind, sizing and styling questions, after-care or order help — we reply
+            the same business day. Palace of Roman operates online only; there is no showroom or in-person fitting.
           </p>
 
           {sent ? (
@@ -136,7 +136,7 @@ function ContactPage() {
                     <FormItem>
                       <FormLabel className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Subject</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="A private appointment, a sourcing request…" className="rounded-none border-0 border-b border-ink/20 focus-visible:ring-0 focus-visible:border-ink px-0 placeholder:text-ink/30" />
+                        <Input {...field} placeholder="A sourcing request, a sizing question…" className="rounded-none border-0 border-b border-ink/20 focus-visible:ring-0 focus-visible:border-ink px-0 placeholder:text-ink/30" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -176,12 +176,12 @@ function ContactPage() {
               <p className="text-ink/80">concierge@<br/>palaceofroman.com</p>
             </div>
             <div>
-              <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">By appointment</p>
-              <p className="text-ink/80">New York atelier<br/>Mon–Sat</p>
+              <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">Where we ship from</p>
+              <p className="text-ink/80">Brand-authorised<br/>partner warehouses</p>
             </div>
             <div>
-              <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">Hours</p>
-              <p className="text-ink/80">10am – 7pm ET<br/>Same-day reply</p>
+              <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">Reply time</p>
+              <p className="text-ink/80">Same business day<br/>Mon–Sat</p>
             </div>
           </div>
         </div>

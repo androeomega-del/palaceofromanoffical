@@ -12,7 +12,7 @@ export const Route = createFileRoute("/shipping-returns")({
   head: () => ({
     meta: [
       { title: "Shipping & Returns — Palace of Roman" },
-      { name: "description", content: "Worldwide shipping from our European and US ateliers, with a 14-day return window from the day your parcel is delivered." },
+      { name: "description", content: "Worldwide shipping from our brand-authorised European and US partner warehouses, with a 14-day return window from the day your parcel is delivered." },
       { property: "og:title", content: "Shipping & Returns — Palace of Roman" },
     ],
   }),
