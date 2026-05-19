@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { SlidersHorizontal, X } from "lucide-react";
@@ -8,11 +8,18 @@ import {
   CatalogFilters,
   CatalogSort,
   ActiveFilterPills,
+  SORT_OPTIONS,
   type Selection,
   type SortValue,
 } from "@/components/catalog-filters";
 
+const SORT_VALUES = SORT_OPTIONS.map((o) => o.value);
+
 export const Route = createFileRoute("/collections/$handle")({
+  validateSearch: (search: Record<string, unknown>): { sort: SortValue } => {
+    const raw = typeof search.sort === "string" ? (search.sort as SortValue) : "BEST_SELLING-false";
+    return { sort: SORT_VALUES.includes(raw) ? raw : "BEST_SELLING-false" };
+  },
   head: ({ params }) => {
     const title = titleizeHandle(params.handle);
     return {
