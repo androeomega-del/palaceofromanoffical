@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      collection_images: {
+        Row: {
+          handle: string
+          image_url: string
+          prompt: string | null
+          source: string
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          handle: string
+          image_url: string
+          prompt?: string | null
+          source: string
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          handle?: string
+          image_url?: string
+          prompt?: string | null
+          source?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       contact_messages: {
         Row: {
           created_at: string

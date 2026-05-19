@@ -1,43 +1,84 @@
-# Launch plan
+## Goal
 
-Three phases: security pass → SEO pass → publish + custom domain.
+Whenever a new Shopify collection appears, `collectionImage({ handle })` should automatically resolve to a correct, on-topic hero image — no manual code edits, no missing or duplicated images.
 
-## 1. Security scan + fix
+## How it will work
 
-- Run a full security scan against the Lovable Cloud backend (RLS, exposed data, auth misconfig).
-- Triage findings:
-  - **Auto-fix** anything mechanical: missing RLS policies, public tables that should be owner-scoped, missing input validation on server functions, leaked-password protection toggle.
-  - **Ignore with reason** anything intentionally public (e.g. the storefront product reads, the `/api/public/*` sitemap route).
-- Re-run scan to confirm clean (or down to known-accepted items).
+```text
+┌────────────────────┐   nightly cron   ┌──────────────────────────┐
+│  Shopify Storefront│ ───────────────► │  /api/public/hooks/      │
+│  collections(100)  │                  │  sync-collection-images  │
+└────────────────────┘                  └──────────┬───────────────┘
+                                                   │
+                          ┌────────────────────────┼─────────────────────────┐
+                          ▼                        ▼                         ▼
+                  Shopify image exists?      No image + handle      Already in DB
+                  → use it (CDN URL)         not in DB → generate    & fresh → skip
+                                             via Lovable AI Gateway
+                                             (gemini-3-pro-image)
+                                             → upload to Supabase
+                                             Storage `collection-images`
+                                             → store public URL
+                                                   │
+                                                   ▼
+                                       upsert collection_images
+                                       (handle, title, image_url,
+                                        source, updated_at)
+```
 
-## 2. SEO scan + fix
+At render time, `collectionImage({ handle })` looks up the DB-backed map (loaded once per request via a server fn + React Query cache). The existing hand-curated `BY_HANDLE` map becomes the **seed / fallback** so nothing regresses if sync hasn't run yet or the network is down.
 
-- Trigger an SEO review. While it runs (~1 min), do a manual sweep of the high-impact items the scanner usually flags:
-  - Verify each route file has its own `head()` with route-specific `title`, `description`, `og:title`, `og:description`, `og:url`, and canonical `<link>` (root has defaults only — never canonical).
-  - Verify `og:image` is wired on routes with a hero image (home, swim, campaign, editorial, brand, product, collection).
-  - Confirm `public/robots.txt` and `src/routes/sitemap[.]xml.ts` reflect every current public route (home, shop, swim, swim/size-guide, campaign/dolce-gabbana-swim, brands, brand/$vendor, collections, collections/$handle, product/$handle, editorial/*, journal, about, contact, faq, authentication, shipping-returns, privacy, terms).
-  - Spot-check image `alt` text on the home bento, swim hero, and campaign page.
-  - JSON-LD: `Organization` at root, `Product` on product page, `BreadcrumbList` on deep routes, `FAQPage` on `/faq`.
-- Apply fixes, mark findings resolved.
+## What gets built
 
-## 3. Publish + custom domain
+### 1. Database (migration)
 
-- Make sure the latest preview build is green (no TS errors, no console errors on `/`, `/shop`, `/swim`, `/campaign/dolce-gabbana-swim`, a product page).
-- Surface the **Publish** button so you can push the latest version live to `*.lovable.app`.
-- Connect your custom domain. You said you already own it — here's what we need:
-  - **Domain name** — you didn't include one in your reply. I'll prompt for it in chat before we wire DNS.
-  - I'll walk you through adding the records at your registrar:
-    - `A` `@` → `185.158.133.1`
-    - `A` `www` → `185.158.133.1`
-    - `TXT` `_lovable` → verification value shown in the Domains dialog
-  - If your DNS is behind Cloudflare/proxy, we'll use the CNAME-based "Advanced → proxy" flow instead.
-- After DNS verifies (minutes to hours), Lovable auto-provisions SSL and the domain goes Active. We then update `BASE_URL` in the sitemap and the canonical/`og:url` tags to the new domain.
+- `collection_images` table
+  - `handle text primary key`
+  - `title text`
+  - `image_url text not null`
+  - `source text` — `'shopify' | 'ai' | 'manual'`
+  - `prompt text` (for AI rows, so we can regenerate)
+  - `updated_at timestamptz default now()`
+- Public read RLS (`select` to `anon`), writes only via service role.
+- Storage bucket `collection-images` (public).
 
-## What I still need from you
+### 2. Sync server route — `src/routes/api/public/hooks/sync-collection-images.ts`
 
-- The exact domain you want to launch on (e.g. `palaceofroman.com`). I'll ask once we hit step 3 if you haven't sent it by then.
+Public hook (apikey-protected via `pg_cron`). Flow:
+1. Fetch all Shopify collections (handle, title, description, image).
+2. For each handle:
+   - If Shopify has its own `image.url` → upsert with `source='shopify'`.
+   - Else if row already exists with `source in ('ai','manual')` → skip.
+   - Else → call Lovable AI Gateway `google/gemini-3-pro-image-preview` with a prompt derived from title + description ("editorial studio photograph of {title}, luxury fashion, neutral background, 4:5"), download bytes, upload to `collection-images/{handle}.jpg`, upsert with `source='ai'`.
+3. Return `{ added, updated, skipped, errors }`.
 
-## Out of scope for this plan
+### 3. Nightly cron
 
-- Claiming the Shopify store / starting the 30-day trial — that's a separate action from your side when you're ready to take real orders.
-- Buying a new domain through Lovable (you said you already own one).
+`pg_cron` → POSTs to the route once a day at 03:00 UTC with `apikey: <anon>` header. New Shopify collections get images within 24h with no code change.
+
+### 4. Read path — `src/lib/collection-image.ts`
+
+- New server fn `getCollectionImageMap()` returns `Record<handle, url>` from the DB.
+- `collectionImage({ handle, title })` resolution order:
+  1. DB map (if loaded for this request)
+  2. Existing `BY_HANDLE` static map (current 34 handles)
+  3. Existing regex `FALLBACK_RULES`
+  4. `all-products` default
+- Caller sites (`collections.index.tsx`, `megamenu.tsx`) get the map via a TanStack Query that calls the server fn; while loading they render the static fallback so there's no flash.
+
+### 5. Manual override
+
+Admins can later insert a row with `source='manual'` and any image URL — sync will leave manual rows alone.
+
+## Technical details
+
+- **AI image generation**: `process.env.LOVABLE_API_KEY` + `https://ai.gateway.lovable.dev/v1/images/generations` with `model: google/gemini-3-pro-image-preview`, `size: 1024x1280`, returns base64 → uploaded via `supabaseAdmin.storage.from('collection-images').upload(...)`.
+- **Auth**: route lives under `/api/public/*`, validated with the Supabase anon key in `apikey` header (matches our cron convention). No new secret needed; `LOVABLE_API_KEY` is already managed.
+- **Idempotent**: re-runs are safe — Shopify-sourced URLs overwrite; AI/manual rows are preserved unless explicitly cleared.
+- **No client bundle bloat**: existing static images stay as the offline fallback; new ones are served from Supabase Storage CDN (URLs only, no bundling).
+- **Type generation**: Supabase types regenerate after the migration.
+
+## Out of scope (call out)
+
+- Backfilling: the existing 34 handles already have curated images — sync will fill `collection_images` from Shopify-supplied images where present, otherwise leave the static fallback in charge for those handles. We can re-run sync with a `force=true` query param later if you ever want every row regenerated.
+- No admin UI for overrides in this pass — overrides happen via a direct DB row (or a future settings page).
