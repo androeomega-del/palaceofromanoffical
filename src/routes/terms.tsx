@@ -85,14 +85,17 @@ function TermsPage() {
         </section>
 
         <section>
-          <SectionTitle kicker="07">Authentication</SectionTitle>
+          <SectionTitle kicker="07">Sourcing &amp; authenticity</SectionTitle>
           <p>
-            Every piece sold at Palace of Roman is authenticated in-house and accompanied by a certificate. Our
-            authentication standard is described on the{" "}
+            Palace of Roman is an independent curator and is not directly affiliated with the maisons listed on the
+            site. Every piece is sourced through an authorised European distribution partner and ships sealed from a
+            brand-authorised warehouse in its original packaging. The full chain of custody and our authenticity
+            guarantee are described on the{" "}
             <Link to="/authentication" className="underline decoration-bronze/60 underline-offset-4 hover:text-bronze">
-              authentication page
+              sourcing &amp; authenticity page
             </Link>
-            . Should you ever doubt a purchase, we will re-authenticate at no cost for the life of the piece.
+            . If an independent authenticator ever challenges a piece purchased from us, return it within ninety days
+            for a full refund.
           </p>
         </section>
 
