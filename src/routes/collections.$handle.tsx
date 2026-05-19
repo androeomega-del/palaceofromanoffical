@@ -6,6 +6,12 @@ import { fetchCollectionFiltered, fetchCollection, type StorefrontFilterValue } 
 import { ProductCard } from "@/components/product-card";
 import { pageTitle, metaDescription, absoluteUrl, SITE_URL } from "@/lib/seo";
 import {
+  collectionImage,
+  collectionImageAlt,
+  collectionImageFocal,
+} from "@/lib/collection-image";
+import { getCollectionImageMap } from "@/lib/collection-image.functions";
+import {
   CatalogFilters,
   SortPresets,
   ActiveFilterPills,
@@ -227,8 +233,35 @@ function CollectionPage() {
     />
   );
 
+  const dynamicMapQ = useQuery({
+    queryKey: ["collection-image-map"],
+    queryFn: () => getCollectionImageMap(),
+    staleTime: 60_000,
+  });
+
+  const heroSrc = collectionImage({
+    handle,
+    title,
+    description: description ?? null,
+    dynamicMap: dynamicMapQ.data ?? {},
+  });
+  const heroAlt = collectionImageAlt({ handle, title });
+  const heroFocal = collectionImageFocal({ handle, title });
+
   return (
     <div>
+      <section className="relative h-[42vh] min-h-[280px] max-h-[520px] w-full overflow-hidden bg-ink/5">
+        <img
+          src={heroSrc}
+          alt={heroAlt}
+          loading="eager"
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover"
+          style={{ objectPosition: heroFocal }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-canvas via-canvas/40 to-transparent" />
+      </section>
+
       <section className="px-6 pt-12 pb-8 border-b border-ink/5">
         <div className="max-w-screen-2xl mx-auto">
           <Link to="/" className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground hover:text-ink">
