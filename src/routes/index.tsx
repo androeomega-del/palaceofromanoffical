@@ -253,8 +253,8 @@ function HomePage() {
             eyebrow="The Women's Edit"
             heading="Quiet luxury, deliberately curated."
             ctas={[
-              { label: "Clothing", to: "/shop", search: { q: WOMENS_CLOTHING_QUERY, title: "Women's Clothing" } },
-              { label: "Shoes", to: "/shop", search: { q: WOMENS_SHOES_QUERY, title: "Women's Shoes" } },
+              { label: "Clothing", to: "/collections/$handle", params: { handle: WOMENS_CLOTHING_HANDLE } },
+              { label: "Shoes", to: "/collections/$handle", params: { handle: WOMENS_SHOES_HANDLE } },
             ]}
           />
           <EditorialPanel
@@ -262,8 +262,8 @@ function HomePage() {
             eyebrow="The Men's Edit"
             heading="Refined tailoring and considered staples."
             ctas={[
-              { label: "Clothing", to: "/collections/$handle", params: { handle: "mens-luxury-clothing" } },
-              { label: "Shoes", to: "/collections/$handle", params: { handle: "mens-designer-shoes" } },
+              { label: "Clothing", to: "/collections/$handle", params: { handle: MENS_CLOTHING_HANDLE } },
+              { label: "Shoes", to: "/collections/$handle", params: { handle: MENS_SHOES_HANDLE } },
             ]}
           />
         </div>
