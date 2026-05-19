@@ -323,7 +323,10 @@ export function SortPresets({
   extra?: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="flex flex-wrap items-center gap-3">
+      <span className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mr-1">
+        Sort
+      </span>
       {SORT_PRESETS.map((p) => {
         const active = p.value === value;
         return (
@@ -331,17 +334,17 @@ export function SortPresets({
             key={p.value}
             onClick={() => onChange(p.value)}
             className={cn(
-              "text-[10px] uppercase tracking-[0.2em] px-3 py-2 border transition-colors",
+              "text-[10px] uppercase tracking-[0.2em] pb-1 border-b transition-colors",
               active
-                ? "bg-ink text-canvas border-ink"
-                : "border-ink/15 hover:border-ink hover:text-bronze",
+                ? "border-ink text-ink"
+                : "border-transparent text-muted-foreground hover:text-ink hover:border-ink/40",
             )}
           >
             {p.label}
           </button>
         );
       })}
-      {extra}
+      {extra && <span className="ml-2">{extra}</span>}
     </div>
   );
 }
