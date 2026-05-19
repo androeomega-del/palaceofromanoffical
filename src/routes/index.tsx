@@ -146,70 +146,15 @@ function HomePage() {
 
   return (
     <>
-      {/* 1. HERO */}
-      <section className="relative w-full">
-        <div className="relative w-full min-h-[640px] md:min-h-0 md:aspect-[16/7] overflow-hidden bg-muted">
-          <img
-            src={heroImage}
-            alt="Palace of Roman — Spring editorial"
-            width={1920}
-            height={1080}
-            className="absolute inset-0 w-full h-full object-cover object-[70%_center] md:object-center"
-          />
-          {/* Cream wash — on mobile the column stack needs full readability,
-              so the wash covers the whole frame; on desktop it fades to clear
-              on the right so the editorial imagery still breathes. */}
-          <div className="absolute inset-0 bg-canvas/70 md:hidden" />
-          <div className="absolute inset-0 hidden md:block bg-gradient-to-r from-canvas/92 from-0% via-canvas/55 via-45% to-transparent to-75%" />
-          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-canvas/80" />
-          <div className="absolute inset-0 flex items-center">
-            <div className="max-w-screen-2xl mx-auto w-full px-6 md:px-12 py-12 md:py-0">
-              <div className="max-w-xl">
-                <span className="text-[10px] uppercase tracking-[0.35em] text-bronze block mb-5 md:mb-6">
-                  The Spring Edit
-                </span>
-                <h1 className="text-[2rem] sm:text-5xl md:text-6xl lg:text-7xl font-serif leading-[1.05] tracking-tight text-balance mb-6 md:mb-8">
-                  A study in considered dressing.
-                </h1>
-                <p className="text-sm md:text-base text-ink/70 leading-relaxed max-w-md mb-8 md:mb-10 text-pretty">
-                  A curated edit from the season's most significant houses — quietly assembled, authenticated, and shipped worldwide.
-                </p>
-                <div className="flex flex-wrap gap-4">
-                  <Link
-                    to="/collections/$handle"
-                    params={{ handle: WOMENS_CLOTHING_HANDLE }}
-                    className="px-8 py-3.5 bg-ink text-canvas text-[11px] uppercase tracking-[0.25em] hover:bg-ink/85 transition-colors"
-                  >
-                    Shop Women
-                  </Link>
-                  <Link
-                    to="/collections/$handle"
-                    params={{ handle: MENS_CLOTHING_HANDLE }}
-                    className="px-8 py-3.5 ring-1 ring-ink text-[11px] uppercase tracking-[0.25em] hover:bg-ink hover:text-canvas transition-colors"
-                  >
-                    Shop Men
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* 1. SUMMER BENTO STOREFRONT — Architectural Resort */}
+      <SummerBento
+        womenImage={womenEditorialQ.data?.[0]?.node?.images?.edges?.[0]?.node}
+        menImage={menEditorialQ.data?.[0]?.node?.images?.edges?.[0]?.node}
+        accessoriesImage={newArrivalsQ.data?.[0]?.node?.images?.edges?.[0]?.node}
+        spotlightVendor={featuredBrands[0]?.name}
+        spotlightSlug={featuredBrands[0]?.slug}
+      />
 
-      {/* 2. SHOP BY CATEGORY */}
-      <section className="py-28">
-        <div className="max-w-screen-2xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <span className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-4 block">The Wardrobe</span>
-            <h2 className="text-3xl md:text-4xl font-serif">Shop by Category</h2>
-          </div>
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-            {CATEGORY_TILES.map((tile) => (
-              <CategoryTile key={tile.key} tile={tile} />
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* 3. NEW ARRIVALS — horizontal scroll rail */}
       <section className="py-24 bg-canvas-raised">
