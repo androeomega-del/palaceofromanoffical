@@ -19,10 +19,10 @@ type FlatItem = {
 const FLAT_LEFT: FlatItem[] = [
   { to: "/shop", label: "Shop" },
   { to: "/collections/$handle", params: { handle: "new-arrivals" }, label: "New Arrivals" },
-  { to: "/collections/$handle", params: { handle: "best-sellers" }, label: "Best Sellers" },
-  { to: "/collections", label: "Collections" },
 ];
 const FLAT_RIGHT: FlatItem[] = [
+  { to: "/collections/$handle", params: { handle: "best-sellers" }, label: "Best Sellers" },
+  { to: "/collections", label: "Collections" },
   { to: "/journal", label: "Journal" },
   { to: "/collections/$handle", params: { handle: "high-discounts" }, label: "Sale", accent: true },
 ];
