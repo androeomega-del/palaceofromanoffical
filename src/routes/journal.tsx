@@ -3,6 +3,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { img } from "@/lib/editorial-library";
 import editorialMayHero from "@/assets/editorial/may-2026/1.webp";
+import { routeHead } from "@/lib/seo";
 
 type JournalEntry = {
   to: string;
