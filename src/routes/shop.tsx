@@ -13,6 +13,10 @@ import {
 } from "@/components/catalog-filters";
 
 export const Route = createFileRoute("/shop")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    q: typeof search.q === "string" ? search.q : undefined,
+    title: typeof search.title === "string" ? search.title : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Shop All — Palace of Roman" },
