@@ -22,7 +22,14 @@ const LIMIT_COLLECTIONS = (() => {
 if (!TOKEN) { console.error('Missing SHOPIFY_ACCESS_TOKEN'); process.exit(1); }
 
 // Collections to skip entirely — special / non-categorical.
-const SKIP_HANDLES = new Set(['best-sellers', 'in-stock', 'new-arrivals']);
+const SKIP_HANDLES = new Set([
+  'best-sellers', 'in-stock', 'new-arrivals', 'tiktok-shop',
+  'out-of-stock', 'sale', 'all', 'home-page', 'frontpage',
+]);
+// Skip any handle that contains these substrings (catches variants like "out-of-stock-women").
+const SKIP_SUBSTRINGS = ['out-of-stock', 'tiktok'];
+// Words to drop from collection titles when deriving tags.
+const STOPWORDS = new Set(['of', 'the', 'and', '&', '-', 'for', 'with', 'a', 'an', 'in', 'on']);
 
 async function shopify(path, init = {}) {
   const url = `https://${SHOP}/admin/api/${API}${path}`;
