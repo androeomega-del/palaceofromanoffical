@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, ClientOnly, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { fetchProducts, fetchCollection, fetchSearchFiltered, type ShopifyProduct } from "@/lib/shopify";
@@ -171,17 +171,21 @@ function HomePage() {
 
   return (
     <>
-      {/* 1. SUMMER BENTO STOREFRONT — Architectural Resort */}
-      <SummerBento
-        womenImage={{ url: marketingWomen, altText: "Women's Resort 2026 — Mediterranean Edit" }}
-        menImage={{ url: marketingMen, altText: "Men's Resort 2026 — Amalfi Coast" }}
-        accessoriesImage={{ url: marketingAccessories, altText: "Summer Accessories — Designer Edit" }}
-        swimImage={{ url: marketingSwim, altText: "Designer Swimwear — Riviera Edit" }}
-        saleImage={{ url: marketingSummerSale, altText: "The Summer Sale — Up to 40% Off" }}
-        spotlightImage={{ url: marketingCalvinKlein, altText: "Calvin Klein — In Stock Now" }}
-        spotlightVendor="Calvin Klein"
-        spotlightSlug="calvin-klein"
-      />
+      {/* 1. SUMMER BENTO STOREFRONT — Architectural Resort.
+          Rendered client-only to avoid SSR/CSR hydration mismatches while
+          the bento markup is iterated on. */}
+      <ClientOnly fallback={<div aria-hidden className="min-h-[80vh] bg-canvas-raised" />}>
+        <SummerBento
+          womenImage={{ url: marketingWomen, altText: "Women's Resort 2026 — Mediterranean Edit" }}
+          menImage={{ url: marketingMen, altText: "Men's Resort 2026 — Amalfi Coast" }}
+          accessoriesImage={{ url: marketingAccessories, altText: "Summer Accessories — Designer Edit" }}
+          swimImage={{ url: marketingSwim, altText: "Designer Swimwear — Riviera Edit" }}
+          saleImage={{ url: marketingSummerSale, altText: "The Summer Sale — Up to 40% Off" }}
+          spotlightImage={{ url: marketingCalvinKlein, altText: "Calvin Klein — In Stock Now" }}
+          spotlightVendor="Calvin Klein"
+          spotlightSlug="calvin-klein"
+        />
+      </ClientOnly>
 
       {/* 1b. SWIMWEAR RAIL — Bikinis, Beachwear, Resort */}
       <section className="py-20 md:py-24 bg-canvas-raised">
