@@ -170,7 +170,10 @@ function CollectionsIndexPage() {
   });
   const dynamicFocal = focalMapQuery.data ?? {};
 
-  const all = useMemo(() => (q.data ?? []).filter(isMainCollection), [q.data]);
+  const all = useMemo(
+    () => dedupeByCanonical((q.data ?? []).filter(isMainCollection)),
+    [q.data],
+  );
   const collections = useMemo(
     () => sortCollections(all.filter((c) => matchesFilter(c, filter)), sort),
     [all, filter, sort],
