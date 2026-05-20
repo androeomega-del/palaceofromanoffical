@@ -1,11 +1,11 @@
 // Admin-only server functions for remapping collection hero images.
-// These use the admin client (bypasses RLS) — keep this route behind the
-// `/admin` prefix and rotate the table to require auth before shipping
-// publicly. For now they match the existing `/admin/collection-image-qa`
-// pattern (noindex, unlinked, internal use).
+// These use the admin client (bypasses RLS), so they are gated by the
+// `requireAdmin` middleware which validates the caller's Supabase JWT and
+// confirms an `admin` row in `user_roles` before any DB write runs.
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { requireAdmin } from "@/lib/admin-middleware";
 import { fetchCollections } from "@/lib/shopify";
 
 const handleSchema = z
