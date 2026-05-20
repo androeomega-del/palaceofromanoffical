@@ -4,16 +4,8 @@ import { useMemo, useState } from "react";
 
 import { fetchCollectionFiltered, fetchCollection, type StorefrontFilterValue } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
-import { pageTitle, metaDescription, absoluteUrl, SITE_URL } from "@/lib/seo";
+import { absoluteUrl, SITE_URL } from "@/lib/seo";
 import { collectionSeo } from "@/lib/collection-seo";
-import {
-  collectionImage,
-  responsiveCollectionImage,
-  HERO_RESPONSIVE_WIDTHS,
-  collectionImageAlt,
-  collectionImageFocal,
-} from "@/lib/collection-image";
-import { getCollectionImageMap, getCollectionImageMetaMap, getCollectionFocalMap } from "@/lib/collection-image.functions";
 import {
   CatalogFilters,
   SortPresets,
@@ -22,7 +14,6 @@ import {
   type Selection,
   type SortValue,
 } from "@/components/catalog-filters";
-import { HeroFocalOverlay } from "@/components/hero-focal-overlay";
 
 const SORT_VALUES = SORT_OPTIONS.map((o) => o.value);
 
@@ -34,14 +25,13 @@ const INDEX_SORT_ALIASES: Record<string, SortValue> = {
 };
 
 export const Route = createFileRoute("/collections/$handle")({
-  validateSearch: (search: Record<string, unknown>): { sort: SortValue; edit?: "focal" } => {
+  validateSearch: (search: Record<string, unknown>): { sort: SortValue } => {
     const raw = typeof search.sort === "string" ? search.sort : "";
-    const edit = search.edit === "focal" ? ("focal" as const) : undefined;
     let sort: SortValue;
     if (SORT_VALUES.includes(raw as SortValue)) sort = raw as SortValue;
     else if (raw in INDEX_SORT_ALIASES) sort = INDEX_SORT_ALIASES[raw];
     else sort = "BEST_SELLING-false";
-    return edit ? { sort, edit } : { sort };
+    return { sort };
   },
   loader: async ({ params }) => {
     try {
@@ -118,7 +108,7 @@ function titleizeHandle(handle: string) {
 
 function CollectionPage() {
   const { handle } = Route.useParams();
-  const { sort, edit } = Route.useSearch();
+  const { sort } = Route.useSearch();
   const navigate = useNavigate({ from: "/collections/$handle" });
   const setSort = (v: SortValue) =>
     navigate({ search: (prev: { sort: SortValue }) => ({ ...prev, sort: v }), replace: true });
@@ -230,52 +220,16 @@ function CollectionPage() {
     />
   );
 
-  const dynamicMapQ = useQuery({
-    queryKey: ["collection-image-map"],
-    queryFn: () => getCollectionImageMap(),
-    staleTime: 60_000,
-  });
+  const heroImage = data?.collection?.image ?? null;
+  const heroSrc = heroImage?.url ?? "";
+  const heroAlt = heroImage?.altText ?? `${title} collection at Palace of Roman`;
+  const heroFocal = "50% 50%";
 
-  const dynamicMetaQ = useQuery({
-    queryKey: ["collection-image-meta-map"],
-    queryFn: () => getCollectionImageMetaMap(),
-    staleTime: 60_000,
-  });
-
-  const dynamicFocalQ = useQuery({
-    queryKey: ["collection-focal-map"],
-    queryFn: () => getCollectionFocalMap(),
-    staleTime: 30_000,
-  });
-
-  const heroSrc = collectionImage({
-    handle,
-    title,
-    description: description ?? null,
-    dynamicMap: dynamicMapQ.data ?? {},
-  });
-  const heroAlt = collectionImageAlt({ handle, title, description: description ?? null });
-  const heroMeta = dynamicMetaQ.data?.[handle.toLowerCase()];
-  const heroFocal = collectionImageFocal({
-    handle,
-    title,
-    imageWidth: heroMeta?.width ?? null,
-    imageHeight: heroMeta?.height ?? null,
-    dynamicFocal: dynamicFocalQ.data ?? {},
-  });
-
-  const editing = edit === "focal";
   const parsedFocal = (() => {
     const m = heroFocal.match(/(-?\d+(?:\.\d+)?)%\s+(-?\d+(?:\.\d+)?)%/);
     return m ? { x: parseFloat(m[1]), y: parseFloat(m[2]) } : { x: 50, y: 40 };
   })();
-  const [liveFocal, setLiveFocal] = useState<{ x: number; y: number } | null>(null);
-  const renderedFocal = liveFocal ?? parsedFocal;
-  const hasSavedOverride =
-    heroMeta?.focalX !== null &&
-    heroMeta?.focalX !== undefined &&
-    heroMeta?.focalY !== null &&
-    heroMeta?.focalY !== undefined;
+  const renderedFocal = parsedFocal;
 
   return (
     <div>
@@ -284,16 +238,9 @@ function CollectionPage() {
         data-testid="collection-hero"
         data-handle={handle.toLowerCase()}
       >
-        {(() => {
-          const r = responsiveCollectionImage(heroSrc, {
-            widths: HERO_RESPONSIVE_WIDTHS,
-            sizes: "100vw",
-          });
-          return (
+        {heroSrc && (
             <img
-              src={r.src}
-              srcSet={r.srcSet}
-              sizes={r.sizes}
+              src={heroSrc}
               alt={heroAlt}
               loading="eager"
               fetchPriority="high"
@@ -302,22 +249,8 @@ function CollectionPage() {
               style={{ objectPosition: `${renderedFocal.x}% ${renderedFocal.y}%` }}
               data-testid="collection-hero-img"
             />
-          );
-        })()}
-        {!editing && (
-          <div className="absolute inset-0 bg-gradient-to-t from-canvas via-canvas/40 to-transparent" />
         )}
-        {editing && (
-          <HeroFocalOverlay
-            handle={handle.toLowerCase()}
-            initialFocal={parsedFocal}
-            hasSavedOverride={hasSavedOverride}
-            onLiveChange={setLiveFocal}
-            onExit={() =>
-              navigate({ search: { sort }, replace: true })
-            }
-          />
-        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-canvas via-canvas/40 to-transparent" />
       </section>
 
 

@@ -1,18 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
-import { fetchCollections, fetchVendorIndex } from "@/lib/shopify";
-import { collectionImage, collectionImageAlt, collectionImageFocal } from "@/lib/collection-image";
-import { getCollectionImageMap } from "@/lib/collection-image.functions";
-
-function useCollectionImageMap() {
-  const q = useQuery({
-    queryKey: ["collection-image-map"],
-    queryFn: () => getCollectionImageMap(),
-    staleTime: 5 * 60 * 1000,
-  });
-  return q.data ?? {};
-}
+import { fetchCollections, fetchVendorIndex, type ShopifyCollection } from "@/lib/shopify";
 import {
   buildDepartments,
   buildBrandList,
@@ -156,6 +145,7 @@ export function DesktopMegamenu() {
             onArrow={(e) => onTriggerArrow(e, dept.key)}
             registerTrigger={registerTrigger(dept.key)}
             liveHandles={liveHandles}
+            liveCollections={liveCollections ?? []}
           />
         );
       })}
@@ -166,6 +156,7 @@ export function DesktopMegamenu() {
         onCloseAndFocus={() => closeAndFocusTrigger("brands")}
         onArrow={(e) => onTriggerArrow(e, "brands")}
         registerTrigger={registerTrigger("brands")}
+        liveCollections={liveCollections ?? []}
       />
       <Link
         to="/swim"
@@ -232,6 +223,7 @@ function MegaTrigger({
   onArrow,
   registerTrigger,
   liveHandles,
+  liveCollections,
 }: {
   dept: MegaDepartment;
   isOpen: boolean;
@@ -241,6 +233,7 @@ function MegaTrigger({
   onArrow: (e: React.KeyboardEvent) => void;
   registerTrigger: (el: HTMLButtonElement | null) => void;
   liveHandles: Set<string> | null;
+  liveCollections: ShopifyCollection[];
 }) {
   const panelId = useId();
 
@@ -280,6 +273,7 @@ function MegaTrigger({
         dept={dept}
         isOpen={isOpen}
         liveHandles={liveHandles}
+        liveCollections={liveCollections}
         onMouseEnter={onOpen}
         onMouseLeave={onScheduleClose}
       />
@@ -292,6 +286,7 @@ function MegaPanel({
   dept,
   isOpen,
   liveHandles,
+  liveCollections,
   onMouseEnter,
   onMouseLeave,
 }: {
@@ -299,11 +294,12 @@ function MegaPanel({
   dept: MegaDepartment;
   isOpen: boolean;
   liveHandles: Set<string> | null;
+  liveCollections: ShopifyCollection[];
   onMouseEnter: () => void;
   onMouseLeave: () => void;
 }) {
-  const dynamicMap = useCollectionImageMap();
-  const featureImg = collectionImage({ handle: dept.feature.handle, title: dept.label, dynamicMap });
+  const featureCollection = liveCollections.find((c) => c.handle === dept.feature.handle);
+  const featureImg = featureCollection?.image;
   return (
     <div
       id={id}
@@ -368,13 +364,14 @@ function MegaPanel({
           data-testid="megamenu-feature-tile"
           data-handle={dept.feature.handle}
         >
-          <img
-            src={featureImg}
-            alt={collectionImageAlt({ handle: dept.feature.handle, title: dept.feature.title ?? dept.label })}
-            loading="lazy"
-            style={{ objectPosition: collectionImageFocal({ handle: dept.feature.handle, title: dept.feature.title ?? dept.label }) }}
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
-          />
+          {featureImg && (
+            <img
+              src={featureImg.url}
+              alt={featureImg.altText ?? `${dept.feature.title ?? dept.label} collection`}
+              loading="lazy"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
+            />
+          )}
           <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/20 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 p-8">
             <p className="text-[10px] uppercase tracking-[0.4em] text-canvas/75 mb-3">
@@ -413,6 +410,7 @@ function BrandsTrigger({
   onCloseAndFocus,
   onArrow,
   registerTrigger,
+  liveCollections,
 }: {
   isOpen: boolean;
   onOpen: () => void;
@@ -420,6 +418,7 @@ function BrandsTrigger({
   onCloseAndFocus: () => void;
   onArrow: (e: React.KeyboardEvent) => void;
   registerTrigger: (el: HTMLButtonElement | null) => void;
+  liveCollections: ShopifyCollection[];
 }) {
   const panelId = useId();
   const { data: brands } = useBrandIndex();
@@ -459,6 +458,7 @@ function BrandsTrigger({
         id={panelId}
         isOpen={isOpen}
         brands={brands ?? []}
+        liveCollections={liveCollections}
         onMouseEnter={onOpen}
         onMouseLeave={onScheduleClose}
       />
@@ -470,18 +470,19 @@ function BrandsPanel({
   id,
   isOpen,
   brands,
+  liveCollections,
   onMouseEnter,
   onMouseLeave,
 }: {
   id: string;
   isOpen: boolean;
   brands: BrandEntry[];
+  liveCollections: ShopifyCollection[];
   onMouseEnter: () => void;
   onMouseLeave: () => void;
 }) {
   const grouped = groupBrandsForMenu(brands);
-  const dynamicMap = useCollectionImageMap();
-  const featureImg = collectionImage({ handle: "best-selling-brands", title: "Brands", dynamicMap });
+  const featureImg = liveCollections.find((c) => c.handle === "best-selling-brands")?.image;
 
   return (
     <div
@@ -539,13 +540,14 @@ function BrandsPanel({
           to="/brands"
           className="group relative block aspect-[4/5] overflow-hidden bg-muted"
         >
-          <img
-            src={featureImg}
-            alt={collectionImageAlt({ handle: "best-selling-brands", title: "Best-selling luxury fashion brands" })}
-            loading="lazy"
-            style={{ objectPosition: collectionImageFocal({ handle: "best-selling-brands", title: "Best-selling luxury fashion brands" }) }}
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
-          />
+          {featureImg && (
+            <img
+              src={featureImg.url}
+              alt={featureImg.altText ?? "Best-selling luxury fashion brands"}
+              loading="lazy"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
+            />
+          )}
           <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/20 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 p-8">
             <p className="text-[10px] uppercase tracking-[0.4em] text-canvas/75 mb-3">

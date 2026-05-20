@@ -171,11 +171,7 @@ function HomePage() {
   });
   const swimwearQ = useQuery({
     queryKey: ["home", "swimwear"],
-    queryFn: () => fetchSearchFiltered({
-      first: 12,
-      filters: [{ productType: "Swimwear" }, { available: true }],
-      sortKey: "BEST_SELLING",
-    }).then((r) => r.edges),
+    queryFn: () => fetchCollection("swimwear", 12).then((c) => c?.products?.edges ?? []),
   });
 
   // Editorial split sources — one image per panel, pulled from real data.
