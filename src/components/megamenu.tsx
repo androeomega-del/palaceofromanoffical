@@ -410,6 +410,7 @@ function BrandsTrigger({
   onCloseAndFocus,
   onArrow,
   registerTrigger,
+  liveCollections,
 }: {
   isOpen: boolean;
   onOpen: () => void;
@@ -417,6 +418,7 @@ function BrandsTrigger({
   onCloseAndFocus: () => void;
   onArrow: (e: React.KeyboardEvent) => void;
   registerTrigger: (el: HTMLButtonElement | null) => void;
+  liveCollections: ShopifyCollection[];
 }) {
   const panelId = useId();
   const { data: brands } = useBrandIndex();
@@ -456,6 +458,7 @@ function BrandsTrigger({
         id={panelId}
         isOpen={isOpen}
         brands={brands ?? []}
+        liveCollections={liveCollections}
         onMouseEnter={onOpen}
         onMouseLeave={onScheduleClose}
       />
@@ -467,18 +470,19 @@ function BrandsPanel({
   id,
   isOpen,
   brands,
+  liveCollections,
   onMouseEnter,
   onMouseLeave,
 }: {
   id: string;
   isOpen: boolean;
   brands: BrandEntry[];
+  liveCollections: ShopifyCollection[];
   onMouseEnter: () => void;
   onMouseLeave: () => void;
 }) {
   const grouped = groupBrandsForMenu(brands);
-  const dynamicMap = useCollectionImageMap();
-  const featureImg = collectionImage({ handle: "best-selling-brands", title: "Brands", dynamicMap });
+  const featureImg = liveCollections.find((c) => c.handle === "best-selling-brands")?.image;
 
   return (
     <div
@@ -536,13 +540,14 @@ function BrandsPanel({
           to="/brands"
           className="group relative block aspect-[4/5] overflow-hidden bg-muted"
         >
-          <img
-            src={featureImg}
-            alt={collectionImageAlt({ handle: "best-selling-brands", title: "Best-selling luxury fashion brands" })}
-            loading="lazy"
-            style={{ objectPosition: collectionImageFocal({ handle: "best-selling-brands", title: "Best-selling luxury fashion brands" }) }}
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
-          />
+          {featureImg && (
+            <img
+              src={featureImg.url}
+              alt={featureImg.altText ?? "Best-selling luxury fashion brands"}
+              loading="lazy"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
+            />
+          )}
           <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/20 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 p-8">
             <p className="text-[10px] uppercase tracking-[0.4em] text-canvas/75 mb-3">
