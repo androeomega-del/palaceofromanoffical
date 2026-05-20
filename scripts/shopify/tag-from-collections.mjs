@@ -84,8 +84,9 @@ const collections = [...smart.map(c => ({ ...c, _type: 'smart' })), ...custom.ma
 // Decide tags-to-add per collection
 function tagsForCollection(c) {
   const tags = new Set();
-  // Skip pure vendor collections (no useful tag beyond brand)
+  if (SKIP_HANDLES.has(c.handle)) return [];
   if (c._type === 'smart' && Array.isArray(c.rules)) {
+    if (c.disjunctive) return []; // OR-rule collections aren't single concepts
     const cols = new Set(c.rules.map(r => r.column));
     if (cols.size === 1 && cols.has('vendor')) return [];
     for (const r of c.rules) {
@@ -94,8 +95,6 @@ function tagsForCollection(c) {
       }
     }
   }
-  // Supplement
-  for (const t of HANDLE_TAG_SUPPLEMENT[c.handle] || []) tags.add(t);
   return [...tags];
 }
 
