@@ -66,7 +66,7 @@ export const getCartAnalytics = createServerFn({ method: "POST" })
 
       const day = r.created_at.slice(0, 10);
       const b = byDay.get(day) ?? { date: day, add_to_cart: 0, remove_from_cart: 0, checkout_started: 0 };
-      if (type in b) (b as Record<string, number>)[type]++;
+      if (type === "add_to_cart" || type === "remove_from_cart" || type === "checkout_started") b[type]++;
       byDay.set(day, b);
 
       if (r.product_handle && (r.event_type === "add_to_cart" || r.event_type === "checkout_started")) {
