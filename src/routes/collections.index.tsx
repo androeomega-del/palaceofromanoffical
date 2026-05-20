@@ -209,13 +209,15 @@ function CollectionsIndexPage() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-14">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-14" data-testid="collection-grid">
               {collections.map((c) => (
                 <Link
                   key={c.id}
                   to="/collections/$handle"
                   params={{ handle: c.handle }}
                   className="group block"
+                  data-testid="collection-card"
+                  data-handle={c.handle}
                 >
                   <div className="w-full aspect-[3/4] bg-muted overflow-hidden mb-4 relative">
                     {(() => {
