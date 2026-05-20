@@ -184,6 +184,21 @@ function HomePage() {
     queryFn: () => fetchCollection(MENS_CLOTHING_HANDLE, 1).then((c) => c?.products?.edges ?? []),
   });
 
+  // Wardrobe Essentials triptych — Polos, Long Sleeve Tees, Hoodies.
+  // Each pulls its first product image from the matching collection.
+  const polosQ = useQuery({
+    queryKey: ["home", "polos-editorial"],
+    queryFn: () => fetchCollection("polo-shirts", 1).then((c) => c?.products?.edges ?? []),
+  });
+  const longSleeveQ = useQuery({
+    queryKey: ["home", "long-sleeve-tees-editorial"],
+    queryFn: () => fetchCollection("long-sleeve-tees", 1).then((c) => c?.products?.edges ?? []),
+  });
+  const hoodiesQ = useQuery({
+    queryKey: ["home", "hoodies-editorial"],
+    queryFn: () => fetchCollection("hoodies", 1).then((c) => c?.products?.edges ?? []),
+  });
+
   // Featured brands: only vendors with in-stock products in BOTH a women's
   // category and a men's category.
   const womenBrandsClothingQ = useQuery({
@@ -423,6 +438,48 @@ function HomePage() {
           />
         </div>
       </section>
+
+      {/* 6b. WARDROBE ESSENTIALS — Polos, Long Sleeve Tees, Hoodies */}
+      <section className="py-28 border-t border-ink/5 bg-canvas-raised">
+        <div className="max-w-screen-2xl mx-auto px-6">
+          <div className="text-center mb-16 max-w-xl mx-auto">
+            <span className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-4 block">
+              Wardrobe Essentials
+            </span>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif leading-tight mb-5 text-balance">
+              The everyday, properly considered.
+            </h2>
+            <p className="text-sm text-muted-foreground leading-relaxed text-pretty">
+              Three foundations of the modern wardrobe — cut and finished by houses that take
+              the ordinary seriously. Pieces to be worn often, and worn well.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6 lg:gap-10">
+            <EssentialTile
+              image={polosQ.data?.[0]?.node?.images?.edges?.[0]?.node}
+              eyebrow="Polo Shirts"
+              heading="A quieter form of tailoring."
+              copy="Piqué cotton, considered collars and weights that hold their line — polos chosen for the way they sit under a jacket and on their own."
+              handle="polo-shirts"
+            />
+            <EssentialTile
+              image={longSleeveQ.data?.[0]?.node?.images?.edges?.[0]?.node}
+              eyebrow="Long Sleeve Tees"
+              heading="The off-duty foundation."
+              copy="Fine cotton and merino long sleeves — the layer worn on its own at the weekend and under everything else for the rest of the week."
+              handle="long-sleeve-tees"
+            />
+            <EssentialTile
+              image={hoodiesQ.data?.[0]?.node?.images?.edges?.[0]?.node}
+              eyebrow="Hoodies"
+              heading="Soft architecture."
+              copy="Heavyweight loopback, brushed fleece and houses that finish a hood as carefully as a lapel — the piece worn most, dressed quietly."
+              handle="hoodies"
+            />
+          </div>
+        </div>
+      </section>
+
 
       {/* 6. BEST SELLERS */}
       <section className="py-28">
