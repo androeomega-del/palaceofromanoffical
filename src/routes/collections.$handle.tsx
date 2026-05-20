@@ -4,16 +4,8 @@ import { useMemo, useState } from "react";
 
 import { fetchCollectionFiltered, fetchCollection, type StorefrontFilterValue } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
-import { pageTitle, metaDescription, absoluteUrl, SITE_URL } from "@/lib/seo";
+import { absoluteUrl, SITE_URL } from "@/lib/seo";
 import { collectionSeo } from "@/lib/collection-seo";
-import {
-  collectionImage,
-  responsiveCollectionImage,
-  HERO_RESPONSIVE_WIDTHS,
-  collectionImageAlt,
-  collectionImageFocal,
-} from "@/lib/collection-image";
-import { getCollectionImageMap, getCollectionImageMetaMap, getCollectionFocalMap } from "@/lib/collection-image.functions";
 import {
   CatalogFilters,
   SortPresets,
@@ -230,39 +222,10 @@ function CollectionPage() {
     />
   );
 
-  const dynamicMapQ = useQuery({
-    queryKey: ["collection-image-map"],
-    queryFn: () => getCollectionImageMap(),
-    staleTime: 60_000,
-  });
-
-  const dynamicMetaQ = useQuery({
-    queryKey: ["collection-image-meta-map"],
-    queryFn: () => getCollectionImageMetaMap(),
-    staleTime: 60_000,
-  });
-
-  const dynamicFocalQ = useQuery({
-    queryKey: ["collection-focal-map"],
-    queryFn: () => getCollectionFocalMap(),
-    staleTime: 30_000,
-  });
-
-  const heroSrc = collectionImage({
-    handle,
-    title,
-    description: description ?? null,
-    dynamicMap: dynamicMapQ.data ?? {},
-  });
-  const heroAlt = collectionImageAlt({ handle, title, description: description ?? null });
-  const heroMeta = dynamicMetaQ.data?.[handle.toLowerCase()];
-  const heroFocal = collectionImageFocal({
-    handle,
-    title,
-    imageWidth: heroMeta?.width ?? null,
-    imageHeight: heroMeta?.height ?? null,
-    dynamicFocal: dynamicFocalQ.data ?? {},
-  });
+  const heroImage = data?.collection?.image ?? null;
+  const heroSrc = heroImage?.url ?? "";
+  const heroAlt = heroImage?.altText ?? `${title} collection at Palace of Roman`;
+  const heroFocal = "50% 50%";
 
   const editing = edit === "focal";
   const parsedFocal = (() => {
@@ -271,11 +234,7 @@ function CollectionPage() {
   })();
   const [liveFocal, setLiveFocal] = useState<{ x: number; y: number } | null>(null);
   const renderedFocal = liveFocal ?? parsedFocal;
-  const hasSavedOverride =
-    heroMeta?.focalX !== null &&
-    heroMeta?.focalX !== undefined &&
-    heroMeta?.focalY !== null &&
-    heroMeta?.focalY !== undefined;
+  const hasSavedOverride = false;
 
   return (
     <div>
