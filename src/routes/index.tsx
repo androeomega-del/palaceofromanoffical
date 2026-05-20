@@ -26,10 +26,6 @@ const SUMMER_BENTO_PROPS = {
   menImage: { url: marketingMen, altText: "Men's Resort 2026 — Amalfi Coast" },
   accessoriesImage: { url: marketingAccessories, altText: "Summer Accessories — Designer Edit" },
   swimImage: { url: marketingSwim, altText: "Designer Swimwear — Riviera Edit" },
-  
-  spotlightImage: { url: marketingCalvinKlein, altText: "Calvin Klein — In Stock Now" },
-  spotlightVendor: "Calvin Klein",
-  spotlightSlug: "calvin-klein",
 } as const;
 
 export const Route = createFileRoute("/")({
