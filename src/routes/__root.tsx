@@ -13,6 +13,13 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { useCartSync } from "@/hooks/use-cart-sync";
 import { Toaster } from "@/components/ui/sonner";
+import { installHydrationMonitor } from "@/lib/hydration-monitor";
+
+// Side-effect: patch console.error on the client to capture hydration
+// mismatch warnings with timestamps + component names. No-op on the server.
+if (typeof window !== "undefined") {
+  installHydrationMonitor();
+}
 
 function NotFoundComponent() {
   return (
