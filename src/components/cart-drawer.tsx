@@ -4,6 +4,7 @@ import { Minus, Plus, X, Loader2, ShoppingBag } from "lucide-react";
 import { useEffect } from "react";
 import { useCartStore } from "@/stores/cart-store";
 import { formatPrice } from "@/lib/shopify";
+import { trackCartEvent } from "@/lib/cart-analytics";
 
 export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
   const { items, isLoading, isSyncing, updateQuantity, removeItem, getCheckoutUrl, syncCart } = useCartStore();
@@ -16,6 +17,11 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
   const handleCheckout = () => {
     const url = getCheckoutUrl();
     if (url) {
+      trackCartEvent({
+        event_type: "checkout_started",
+        quantity: totalItems,
+        price_usd: totalAmount,
+      });
       window.open(url, "_blank");
       onOpenChange(false);
     }
