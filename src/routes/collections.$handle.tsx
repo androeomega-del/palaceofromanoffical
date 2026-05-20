@@ -243,16 +243,9 @@ function CollectionPage() {
         data-testid="collection-hero"
         data-handle={handle.toLowerCase()}
       >
-        {(() => {
-          const r = responsiveCollectionImage(heroSrc, {
-            widths: HERO_RESPONSIVE_WIDTHS,
-            sizes: "100vw",
-          });
-          return (
+        {heroSrc && (
             <img
-              src={r.src}
-              srcSet={r.srcSet}
-              sizes={r.sizes}
+              src={heroSrc}
               alt={heroAlt}
               loading="eager"
               fetchPriority="high"
@@ -261,8 +254,7 @@ function CollectionPage() {
               style={{ objectPosition: `${renderedFocal.x}% ${renderedFocal.y}%` }}
               data-testid="collection-hero-img"
             />
-          );
-        })()}
+        )}
         {!editing && (
           <div className="absolute inset-0 bg-gradient-to-t from-canvas via-canvas/40 to-transparent" />
         )}
