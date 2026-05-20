@@ -173,6 +173,71 @@ function swatchFor(label: string): string {
   return COLOR_SWATCH[first] ?? "#e5e7eb";
 }
 
+// ===== Layering categories: editorial product treatment =====
+type LayeringKey = "polo" | "long-sleeve" | "hoodie" | "cardigan" | "turtleneck" | "sweatshirt";
+
+const LAYERING_COPY: Record<LayeringKey, {
+  eyebrow: string;
+  tagline: string;
+  piece: string;
+  craft: string;
+  styling: string;
+}> = {
+  polo: {
+    eyebrow: "The Polo",
+    tagline: "A collar between sport and tailoring — finished by houses that have spent decades perfecting the form.",
+    piece: "The polo lives in the seam between knitwear and shirting. Cut from breathable piqué cottons or fine merino, with a placket short enough to wear open and a collar weighted to hold its line. The proportions are restrained — close through the shoulder, easy through the body, sleeves that sit just above the elbow.",
+    craft: "Mills in Italy and Portugal supply the cottons; the embroidered crests and tone-on-tone branding are finished by the maison's own ateliers. Pearlised buttons, side vents, and bar-tacked seams are constants of houses that take this category seriously.",
+    styling: "Worn open under a structured blazer, tucked into pleated trousers, or layered over a fine tee with tailored shorts. The polo is the most quietly versatile collar in a considered wardrobe.",
+  },
+  "long-sleeve": {
+    eyebrow: "The Long Sleeve",
+    tagline: "The foundation layer — long-staple cottons, considered cuts, the quiet base every wardrobe is built on.",
+    piece: "A long sleeve tee is the most honest piece in a wardrobe — nothing to hide behind. The maisons in this edit favour long-staple Egyptian and Pima cottons, garment-dyed for depth, with reinforced shoulder seams and a hem that lies flat under tailoring or knitwear.",
+    craft: "Knitted in northern Italy on vintage circular machines that produce a denser, more elastic fabric than modern looms. Branding is restrained — a woven tab at the hem, a tonal logo at the chest, nothing more.",
+    styling: "Layered under a cardigan, worn solo under a leather jacket, or tucked into denim with a belt. The cut is built to disappear into a look or carry it alone.",
+  },
+  hoodie: {
+    eyebrow: "The Hoodie",
+    tagline: "Heavyweight cottons, double-lined hoods, and the brands that elevated the silhouette into a luxury proposition.",
+    piece: "The luxury hoodie has earned its place beside knitwear in a serious wardrobe. Heavyweight brushed-back cottons — 450 to 600 GSM — sit with weight on the shoulder. Hoods are double-lined and faced with grosgrain or self-fabric; cords are tipped in metal or leather.",
+    craft: "Cut and sewn in Italy, Portugal, or Japan depending on the house. Ribbed cuffs and hem are knitted separately for elasticity; kangaroo pockets are bar-tacked at the stress points. Branding ranges from a discreet rubberised badge to full-chest embroidery — never printed.",
+    styling: "Under a long wool overcoat with tailored trousers, or with washed denim and clean white sneakers. The hoodie has become an off-duty signature for those who understand that luxury is as much about texture as cut.",
+  },
+  cardigan: {
+    eyebrow: "The Cardigan",
+    tagline: "The most quietly elegant knit a man can own — Italian wool, mother-of-pearl, and centuries of craft.",
+    piece: "The cardigan is the most considered piece of knitwear in a wardrobe — the only one designed to be worn open as readily as closed. Cut from fine merino, cashmere, or wool-silk blends, with mother-of-pearl buttons set on a placket reinforced with grosgrain ribbon.",
+    craft: "Knitted on fully-fashioned machines in northern Italy and Scotland — meaning the panels are shaped on the loom rather than cut from a knitted sheet. This preserves the integrity of every stitch and gives the garment its quiet drape.",
+    styling: "Over a fine tee with tailored trousers, under a topcoat in deep winter, or as the unstructured third piece in place of a jacket. Few garments do more with less.",
+  },
+  turtleneck: {
+    eyebrow: "The Turtleneck",
+    tagline: "Fine-gauge wools and cashmeres — the most architectural neckline in a man's wardrobe.",
+    piece: "The turtleneck draws the eye upward and reframes the shoulder. The pieces in this edit are knitted in fine-gauge merino, cashmere, or wool-silk — sized close through the body, with a collar tall enough to fold once at the throat.",
+    craft: "Spun from Cariaggi and Loro Piana yarns in Italy, with shoulders that are linked rather than stitched — a finishing technique that flattens the seam to a single thread of yarn. The collar is double-knitted for weight and recovery.",
+    styling: "Under a tailored jacket in place of a shirt and tie, or under a leather coat with raw denim. The most chronologically reliable silhouette in modern menswear.",
+  },
+  sweatshirt: {
+    eyebrow: "The Sweatshirt",
+    tagline: "Loopback cottons, vintage looms, and the houses that treat jersey with the seriousness of a wool coat.",
+    piece: "The sweatshirt has been quietly reclaimed by luxury — the heavyweight loopback cottons, the boxy proportions, the ribbed collar that sits flat against the throat. The pieces here are cut close through the shoulder with an easy body and a hem that breaks at the hip.",
+    craft: "Knitted on vintage tubular looms in Italy and Japan, then garment-dyed for an irregular, lived-in depth of colour. Cuffs and waistband are knitted separately and joined by hand to preserve the rib pattern across the seam.",
+    styling: "Under tailoring as a softer alternative to knitwear, or with washed denim and minimal sneakers. A reminder that the most versatile pieces in a wardrobe are rarely the loudest.",
+  },
+};
+
+function layeringKey(product: { title: string; productType?: string }): LayeringKey | null {
+  const hay = `${product.title} ${product.productType ?? ""}`.toLowerCase();
+  if (/\bpolo\b/.test(hay)) return "polo";
+  if (/turtleneck|roll[- ]?neck/.test(hay)) return "turtleneck";
+  if (/cardigan/.test(hay)) return "cardigan";
+  if (/hoodie|hooded/.test(hay)) return "hoodie";
+  if (/sweatshirt/.test(hay)) return "sweatshirt";
+  if (/long[- ]?sleeve/.test(hay)) return "long-sleeve";
+  return null;
+}
+
 function ProductView({
   product,
 }: {
