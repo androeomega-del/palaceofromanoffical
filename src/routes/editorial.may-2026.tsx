@@ -23,44 +23,44 @@ type Slide = {
 };
 
 // Editorial sequencing — captions are abstract/poetic, shop targets route
-// to the most relevant existing collection. Adjust freely; this is data.
+// to the most relevant existing collection. Mapped by visual audit of each image.
 const SLIDES: Slide[] = [
-  { n: 1, caption: "Quiet authority.", shop: { kind: "collection", handle: "womens-clothing", label: "Shop Women's" } },
-  { n: 2, caption: "Soft architecture.", shop: { kind: "collection", handle: "womens-shoes", label: "Shop Women's Shoes" } },
-  { n: 3, caption: "Considered ease.", shop: { kind: "collection", handle: "mens-clothing", label: "Shop Men's" } },
-  { n: 4, caption: "Tonal study.", shop: { kind: "collection", handle: "womens-clothing", label: "Shop Women's" } },
-  { n: 5, caption: "House code.", shop: { kind: "collection", handle: "mens-shoes", label: "Shop Men's Shoes" } },
-  { n: 6, caption: "The everyday object.", shop: { kind: "shop", label: "Shop the Edit" } },
-  { n: 7, caption: "Cut, refined.", shop: { kind: "collection", handle: "womens-clothing", label: "Shop Women's" } },
-  { n: 8, caption: "Hand and heel.", shop: { kind: "collection", handle: "womens-shoes", label: "Shop Heels" } },
-  { n: 9, caption: "Pressed light.", shop: { kind: "collection", handle: "mens-clothing", label: "Shop Men's" } },
-  { n: 10, caption: "Discreet luxury.", shop: { kind: "collection", handle: "high-discounts", label: "Shop the Sale" } },
-  { n: 11, caption: "Material weight.", shop: { kind: "collection", handle: "mens-shoes", label: "Shop Men's Shoes" } },
-  { n: 12, caption: "Slow proportion.", shop: { kind: "collection", handle: "womens-clothing", label: "Shop Women's" } },
-  { n: 13, caption: "Studio still.", shop: { kind: "shop", label: "Shop the Edit" } },
-  { n: 14, caption: "Soft tailoring.", shop: { kind: "collection", handle: "mens-clothing", label: "Shop Men's" } },
-  { n: 15, caption: "Surface and shadow.", shop: { kind: "collection", handle: "womens-shoes", label: "Shop Women's Shoes" } },
-  { n: 16, caption: "Patient craft.", shop: { kind: "collection", handle: "womens-clothing", label: "Shop Women's" } },
-  { n: 17, caption: "Modern restraint.", shop: { kind: "collection", handle: "mens-shoes", label: "Shop Men's Shoes" } },
-  { n: 18, caption: "Quiet palette.", shop: { kind: "shop", label: "Shop the Edit" } },
-  { n: 19, caption: "Edited motion.", shop: { kind: "collection", handle: "womens-clothing", label: "Shop Women's" } },
-  { n: 20, caption: "Form, distilled.", shop: { kind: "collection", handle: "mens-clothing", label: "Shop Men's" } },
-  { n: 21, caption: "Worn lightly.", shop: { kind: "collection", handle: "womens-shoes", label: "Shop Women's Shoes" } },
-  { n: 22, caption: "Inherited line.", shop: { kind: "collection", handle: "mens-clothing", label: "Shop Men's" } },
-  { n: 23, caption: "Slow color.", shop: { kind: "collection", handle: "womens-clothing", label: "Shop Women's" } },
-  { n: 24, caption: "Held shape.", shop: { kind: "collection", handle: "mens-shoes", label: "Shop Men's Shoes" } },
-  { n: 25, caption: "Off-duty grammar.", shop: { kind: "shop", label: "Shop the Edit" } },
+  { n: 1, caption: "Quiet authority.", shop: { kind: "collection", handle: "womens-bags", label: "Shop Women's Bags" } },
+  { n: 2, caption: "Easy silhouette.", shop: { kind: "collection", handle: "mens-jackets-coats", label: "Shop Men's Jackets" } },
+  { n: 3, caption: "Soft architecture.", shop: { kind: "collection", handle: "mens-sweaters-knitwear", label: "Shop Men's Knitwear" } },
+  { n: 4, caption: "Considered ease.", shop: { kind: "collection", handle: "mens-sweaters-knitwear", label: "Shop Men's Knitwear" } },
+  { n: 5, caption: "House code.", shop: { kind: "collection", handle: "womens-bags", label: "Shop Women's Bags" } },
+  { n: 6, caption: "Worn lightly.", shop: { kind: "collection", handle: "womens-clothing", label: "Shop Women's" } },
+  { n: 7, caption: "Cut, refined.", shop: { kind: "collection", handle: "womens-bags", label: "Shop Women's Bags" } },
+  { n: 8, caption: "The everyday object.", shop: { kind: "collection", handle: "womens-bags", label: "Shop Women's Bags" } },
+  { n: 9, caption: "Discreet luxury.", shop: { kind: "collection", handle: "mens-bags-wallets", label: "Shop Men's Bags" } },
+  { n: 10, caption: "Tonal study.", shop: { kind: "collection", handle: "womens-bags", label: "Shop Women's Bags" } },
+  { n: 11, caption: "Material weight.", shop: { kind: "collection", handle: "womens-clothing", label: "Shop Women's" } },
+  { n: 12, caption: "Pressed light.", shop: { kind: "collection", handle: "womens-bags", label: "Shop Women's Bags" } },
+  { n: 13, caption: "Studio still.", shop: { kind: "collection", handle: "womens-bags", label: "Shop Women's Bags" } },
+  { n: 14, caption: "Surface and shadow.", shop: { kind: "collection", handle: "womens-accessories-1", label: "Shop Women's Accessories" } },
+  { n: 15, caption: "Slow proportion.", shop: { kind: "collection", handle: "womens-clothing", label: "Shop Women's" } },
+  { n: 16, caption: "Modern restraint.", shop: { kind: "collection", handle: "mens-accessories", label: "Shop Men's Accessories" } },
+  { n: 17, caption: "Patient craft.", shop: { kind: "collection", handle: "mens-bags-wallets", label: "Shop Men's Wallets" } },
+  { n: 18, caption: "Soft tailoring.", shop: { kind: "collection", handle: "womens-bags", label: "Shop Women's Bags" } },
+  { n: 19, caption: "Edited motion.", shop: { kind: "collection", handle: "mens-sneakers", label: "Shop Men's Sneakers" } },
+  { n: 20, caption: "Inherited line.", shop: { kind: "collection", handle: "womens-accessories-1", label: "Shop Women's Accessories" } },
+  { n: 21, caption: "Quiet palette.", shop: { kind: "collection", handle: "womens-shoes", label: "Shop Women's Shoes" } },
+  { n: 22, caption: "Form, distilled.", shop: { kind: "collection", handle: "womens-clothing", label: "Shop Women's" } },
+  { n: 23, caption: "Slow color.", shop: { kind: "collection", handle: "womens-hats", label: "Shop Women's Hats" } },
+  { n: 24, caption: "Held shape.", shop: { kind: "collection", handle: "womens-wallets", label: "Shop Women's Wallets" } },
+  { n: 25, caption: "Off-duty grammar.", shop: { kind: "collection", handle: "mens-watches-jewelry", label: "Shop Men's Watches" } },
   { n: 26, caption: "Atelier light.", shop: { kind: "collection", handle: "womens-clothing", label: "Shop Women's" } },
   { n: 27, caption: "Considered finish.", shop: { kind: "collection", handle: "womens-shoes", label: "Shop Women's Shoes" } },
-  { n: 28, caption: "Codes, rewritten.", shop: { kind: "collection", handle: "mens-clothing", label: "Shop Men's" } },
-  { n: 29, caption: "Final cut.", shop: { kind: "collection", handle: "high-discounts", label: "Shop the Sale" } },
-  { n: 30, caption: "End of frame.", shop: { kind: "shop", label: "Shop the Edit" } },
+  { n: 28, caption: "Codes, rewritten.", shop: { kind: "collection", handle: "womens-bags", label: "Shop Women's Bags" } },
+  { n: 29, caption: "Final cut.", shop: { kind: "collection", handle: "womens-clothing", label: "Shop Women's" } },
+  { n: 30, caption: "End of frame.", shop: { kind: "collection", handle: "womens-clothing", label: "Shop Women's" } },
 ];
 
 export const Route = createFileRoute("/editorial/may-2026")({
   head: () => {
     const title = "May 2026 Editorial — Palace of Roman";
-    const desc = "A quiet study of the May 2026 edit — tailoring, footwear and house codes, photographed in studio light. Shop the look.";
+    const desc = "A quiet study of the season — bags, accessories, knitwear and footwear, photographed in natural light. Shop the look.";
     const path = "/editorial/may-2026";
     const image = img(1);
     const rh = routeHead({ path, title, description: desc, image, type: "article" });
@@ -167,8 +167,8 @@ function EditorialMay2026() {
             </h1>
           </div>
           <p className="max-w-md font-serif italic text-base md:text-lg text-ink/70">
-            A quiet study of the season — tailoring, footwear and house codes,
-            photographed in studio light. Shop the look throughout.
+            A quiet study of the season — bags, accessories, knitwear and
+            footwear, photographed in natural light. Shop the look throughout.
           </p>
         </div>
       </section>
@@ -190,7 +190,7 @@ function EditorialMay2026() {
             </span>
             <Link
               to="/collections/$handle"
-              params={{ handle: hero.shop.kind === "collection" ? hero.shop.handle : "womens-clothing" }}
+              params={{ handle: hero.shop.kind === "collection" ? hero.shop.handle : "womens-bags" }}
               className="text-[10px] uppercase tracking-[0.3em] text-white border-b border-white/60 hover:border-white pb-1"
             >
               {hero.shop.label} →
@@ -248,17 +248,26 @@ function EditorialMay2026() {
         <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-4">End of issue</p>
         <h2 className="font-serif text-3xl md:text-5xl mb-8">Shop the season</h2>
         <div className="flex flex-wrap justify-center gap-3 md:gap-4">
+          <Link to="/collections/$handle" params={{ handle: "womens-bags" }} className="px-6 py-3 border border-ink hover:bg-ink hover:text-canvas transition-colors text-[11px] uppercase tracking-[0.25em]">
+            Women's Bags
+          </Link>
           <Link to="/collections/$handle" params={{ handle: "womens-clothing" }} className="px-6 py-3 border border-ink hover:bg-ink hover:text-canvas transition-colors text-[11px] uppercase tracking-[0.25em]">
             Women's Clothing
           </Link>
           <Link to="/collections/$handle" params={{ handle: "womens-shoes" }} className="px-6 py-3 border border-ink hover:bg-ink hover:text-canvas transition-colors text-[11px] uppercase tracking-[0.25em]">
             Women's Shoes
           </Link>
-          <Link to="/collections/$handle" params={{ handle: "mens-clothing" }} className="px-6 py-3 border border-ink hover:bg-ink hover:text-canvas transition-colors text-[11px] uppercase tracking-[0.25em]">
-            Men's Clothing
+          <Link to="/collections/$handle" params={{ handle: "womens-accessories-1" }} className="px-6 py-3 border border-ink hover:bg-ink hover:text-canvas transition-colors text-[11px] uppercase tracking-[0.25em]">
+            Women's Accessories
           </Link>
-          <Link to="/collections/$handle" params={{ handle: "mens-shoes" }} className="px-6 py-3 border border-ink hover:bg-ink hover:text-canvas transition-colors text-[11px] uppercase tracking-[0.25em]">
-            Men's Shoes
+          <Link to="/collections/$handle" params={{ handle: "mens-sweaters-knitwear" }} className="px-6 py-3 border border-ink hover:bg-ink hover:text-canvas transition-colors text-[11px] uppercase tracking-[0.25em]">
+            Men's Knitwear
+          </Link>
+          <Link to="/collections/$handle" params={{ handle: "mens-bags-wallets" }} className="px-6 py-3 border border-ink hover:bg-ink hover:text-canvas transition-colors text-[11px] uppercase tracking-[0.25em]">
+            Men's Bags &amp; Wallets
+          </Link>
+          <Link to="/collections/$handle" params={{ handle: "mens-sneakers" }} className="px-6 py-3 border border-ink hover:bg-ink hover:text-canvas transition-colors text-[11px] uppercase tracking-[0.25em]">
+            Men's Sneakers
           </Link>
         </div>
       </section>
