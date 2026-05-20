@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { SlidersHorizontal, X } from "lucide-react";
-import { fetchSearchFiltered, type StorefrontFilterValue } from "@/lib/shopify";
+import { fetchSearchFiltered, fetchCollectionFiltered, type StorefrontFilterValue } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
 import {
   CatalogFilters,
@@ -85,15 +85,27 @@ function SwimPage() {
   const q = useInfiniteQuery({
     queryKey: ["swim-search", category.key, filterInputs, sortKey, reverse],
     initialPageParam: null as string | null,
-    queryFn: ({ pageParam }) =>
-      fetchSearchFiltered({
+    queryFn: async ({ pageParam }) => {
+      if (category.key === "all") {
+        const r = await fetchCollectionFiltered({
+          handle: "swimwear",
+          first: 36,
+          after: pageParam,
+          filters: filterInputs,
+          sortKey,
+          reverse,
+        });
+        return r ?? { edges: [], pageInfo: { hasNextPage: false, endCursor: null }, filters: [] };
+      }
+      return fetchSearchFiltered({
         query: category.query,
         first: 36,
         after: pageParam,
         filters: filterInputs,
         sortKey,
         reverse,
-      }),
+      });
+    },
     getNextPageParam: (last) => (last.pageInfo.hasNextPage ? last.pageInfo.endCursor : undefined),
   });
 
