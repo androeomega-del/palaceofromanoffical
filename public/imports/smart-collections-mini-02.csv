@@ -1,0 +1,10 @@
+Handle,Command,Title,Body HTML,Sort Order,Published,Published Scope,Type,Match Column,Rule: Product Column,Rule: Relation,Rule: Condition
+valentino-garavani,MERGE,Valentino Garavani,<p>Discover the Valentino Garavani collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Valentino Garavani
+desigual,MERGE,Desigual,<p>Discover the Desigual collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Desigual
+dsquared,MERGE,Dsquared²,<p>Discover the Dsquared² collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Dsquared²
+max-mara,MERGE,Max Mara,<p>Discover the Max Mara collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Max Mara
+u-s-grand,MERGE,U.S. Grand,<p>Discover the U.S. Grand collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,U.S. Grand
+cavalli-class,MERGE,Cavalli Class,<p>Discover the Cavalli Class collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Cavalli Class
+polaroid,MERGE,Polaroid,<p>Discover the Polaroid collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Polaroid
+prada,MERGE,Prada,<p>Discover the Prada collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Prada
+michael-kors,MERGE,Michael Kors,<p>Discover the Michael Kors collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Michael Kors

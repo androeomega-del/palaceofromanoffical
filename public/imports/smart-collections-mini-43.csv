@@ -1,0 +1,10 @@
+Handle,Command,Title,Body HTML,Sort Order,Published,Published Scope,Type,Match Column,Rule: Product Column,Rule: Relation,Rule: Condition
+women-accessories,MERGE,,,,,,,,Type,Equals,Accessories
+men-bags,MERGE,Men Bags,<p>Men Bags — handpicked from our designer catalog.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Men
+men-bags,MERGE,,,,,,,,Type,Equals,Bags
+men-shoes,MERGE,Men Shoes,<p>Men Shoes — handpicked from our designer catalog.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Men
+men-shoes,MERGE,,,,,,,,Type,Equals,Shoes
+men-clothing,MERGE,Men Clothing,<p>Men Clothing — handpicked from our designer catalog.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Men
+men-clothing,MERGE,,,,,,,,Type,Equals,Clothing
+men-accessories,MERGE,Men Accessories,<p>Men Accessories — handpicked from our designer catalog.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Men
+men-accessories,MERGE,,,,,,,,Type,Equals,Accessories

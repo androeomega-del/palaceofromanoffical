@@ -1,0 +1,10 @@
+Handle,Command,Title,Body HTML,Sort Order,Published,Published Scope,Type,Match Column,Rule: Product Column,Rule: Relation,Rule: Condition
+jacqueline-de-yong,MERGE,Jacqueline De Yong,<p>Discover the Jacqueline De Yong collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Jacqueline De Yong
+lardini,MERGE,Lardini,<p>Discover the Lardini collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Lardini
+c-p-company,MERGE,C.P. Company,<p>Discover the C.P. Company collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,C.P. Company
+ami-paris,MERGE,Ami Paris,<p>Discover the Ami Paris collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Ami Paris
+ichi,MERGE,ICHI,<p>Discover the ICHI collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,ICHI
+byblos,MERGE,BYBLOS,<p>Discover the BYBLOS collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,BYBLOS
+khaite,MERGE,Khaite,<p>Discover the Khaite collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Khaite
+rick-owens,MERGE,Rick Owens,<p>Discover the Rick Owens collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Rick Owens
+jacob-cohen,MERGE,Jacob Cohen,<p>Discover the Jacob Cohen collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Jacob Cohen

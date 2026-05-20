@@ -1,0 +1,10 @@
+Handle,Command,Title,Body HTML,Sort Order,Published,Published Scope,Type,Match Column,Rule: Product Column,Rule: Relation,Rule: Condition
+trussardi,MERGE,Trussardi,<p>Discover the Trussardi collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Trussardi
+gianmarco-venturi,MERGE,Gianmarco Venturi,<p>Discover the Gianmarco Venturi collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Gianmarco Venturi
+tommy-hilfiger-jeans,MERGE,Tommy Hilfiger Jeans,<p>Discover the Tommy Hilfiger Jeans collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Tommy Hilfiger Jeans
+borbonese,MERGE,Borbonese,<p>Discover the Borbonese collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Borbonese
+jacquemus,MERGE,Jacquemus,<p>Discover the Jacquemus collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Jacquemus
+acht,MERGE,Acht,<p>Discover the Acht collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Acht
+bikkembergs,MERGE,Bikkembergs,<p>Discover the Bikkembergs collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Bikkembergs
+alexander-mcqueen,MERGE,Alexander McQueen,<p>Discover the Alexander McQueen collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Alexander McQueen
+bmw,MERGE,BMW,<p>Discover the BMW collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,BMW

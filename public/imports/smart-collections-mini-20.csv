@@ -1,0 +1,10 @@
+Handle,Command,Title,Body HTML,Sort Order,Published,Published Scope,Type,Match Column,Rule: Product Column,Rule: Relation,Rule: Condition
+ellesse,MERGE,Ellesse,<p>Discover the Ellesse collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Ellesse
+mm6,MERGE,MM6,<p>Discover the MM6 collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,MM6
+piquadro,MERGE,Piquadro,<p>Discover the Piquadro collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Piquadro
+nialaya,MERGE,Nialaya,<p>Discover the Nialaya collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Nialaya
+zeiss,MERGE,ZEISS,<p>Discover the ZEISS collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,ZEISS
+lanvin,MERGE,Lanvin,<p>Discover the Lanvin collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Lanvin
+the-north-face,MERGE,The North Face,<p>Discover the The North Face collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,The North Face
+mcm,MERGE,MCM,<p>Discover the MCM collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,MCM
+isabel-marant,MERGE,Isabel Marant,<p>Discover the Isabel Marant collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Isabel Marant

@@ -1,0 +1,10 @@
+Handle,Command,Title,Body HTML,Sort Order,Published,Published Scope,Type,Match Column,Rule: Product Column,Rule: Relation,Rule: Condition
+chronotech,MERGE,Chronotech,<p>Discover the Chronotech collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Chronotech
+gas,MERGE,Gas,<p>Discover the Gas collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Gas
+marni,MERGE,Marni,<p>Discover the Marni collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Marni
+jil-sander,MERGE,Jil Sander,<p>Discover the Jil Sander collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Jil Sander
+karl-lagerfeld,MERGE,Karl Lagerfeld,<p>Discover the Karl Lagerfeld collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Karl Lagerfeld
+nike,MERGE,Nike,<p>Discover the Nike collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Nike
+baldinini-trend,MERGE,Baldinini Trend,<p>Discover the Baldinini Trend collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Baldinini Trend
+trussardi-action,MERGE,Trussardi Action,<p>Discover the Trussardi Action collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Trussardi Action
+coccinelle,MERGE,Coccinelle,<p>Discover the Coccinelle collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Coccinelle

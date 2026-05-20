@@ -1,0 +1,10 @@
+Handle,Command,Title,Body HTML,Sort Order,Published,Published Scope,Type,Match Column,Rule: Product Column,Rule: Relation,Rule: Condition
+porsche-design,MERGE,Porsche Design,<p>Discover the Porsche Design collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Porsche Design
+billabong,MERGE,BILLABONG,<p>Discover the BILLABONG collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,BILLABONG
+robert-friedman,MERGE,Robert Friedman,<p>Discover the Robert Friedman collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Robert Friedman
+pt-torino,MERGE,PT Torino,<p>Discover the PT Torino collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,PT Torino
+fiorucci,MERGE,Fiorucci,<p>Discover the Fiorucci collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Fiorucci
+haikure,MERGE,Haikure,<p>Discover the Haikure collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Haikure
+web,MERGE,Web,<p>Discover the Web collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Web
+magda-butrym,MERGE,Magda Butrym,<p>Discover the Magda Butrym collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Magda Butrym
+bally,MERGE,Bally,<p>Discover the Bally collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Bally

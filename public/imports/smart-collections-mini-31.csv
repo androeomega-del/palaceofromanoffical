@@ -1,0 +1,10 @@
+Handle,Command,Title,Body HTML,Sort Order,Published,Published Scope,Type,Match Column,Rule: Product Column,Rule: Relation,Rule: Condition
+domenico-tagliente,MERGE,Domenico Tagliente,<p>Discover the Domenico Tagliente collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Domenico Tagliente
+kate-spade,MERGE,Kate Spade,<p>Discover the Kate Spade collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Kate Spade
+kristina-ti,MERGE,Kristina Ti,<p>Discover the Kristina Ti collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Kristina Ti
+hunza-g,MERGE,Hunza G,<p>Discover the Hunza G collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Hunza G
+casadei,MERGE,Casadei,<p>Discover the Casadei collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Casadei
+only-sons,MERGE,Only & Sons,<p>Discover the Only & Sons collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Only & Sons
+hackett,MERGE,Hackett,<p>Discover the Hackett collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Hackett
+armata-di-mare,MERGE,Armata Di Mare,<p>Discover the Armata Di Mare collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Armata Di Mare
+max-mara-pure,MERGE,Max Mara Pure,<p>Discover the Max Mara Pure collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Max Mara Pure

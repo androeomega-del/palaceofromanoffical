@@ -1,0 +1,10 @@
+Handle,Command,Title,Body HTML,Sort Order,Published,Published Scope,Type,Match Column,Rule: Product Column,Rule: Relation,Rule: Condition
+christian-lacroix,MERGE,Christian Lacroix,<p>Discover the Christian Lacroix collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Christian Lacroix
+casio,MERGE,Casio,<p>Discover the Casio collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Casio
+hamaki-ho,MERGE,Hamaki-Ho,<p>Discover the Hamaki-Ho collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Hamaki-Ho
+ambush,MERGE,Ambush,<p>Discover the Ambush collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Ambush
+clothing,MERGE,Clothing,<p>Shop clothing from the world's most coveted maisons.</p>,best-selling,TRUE,global,Smart,all,Type,Equals,Clothing
+accessories,MERGE,Accessories,<p>Shop accessories from the world's most coveted maisons.</p>,best-selling,TRUE,global,Smart,all,Type,Equals,Accessories
+shoes,MERGE,Shoes,<p>Shop shoes from the world's most coveted maisons.</p>,best-selling,TRUE,global,Smart,all,Type,Equals,Shoes
+bags,MERGE,Bags,<p>Shop bags from the world's most coveted maisons.</p>,best-selling,TRUE,global,Smart,all,Type,Equals,Bags
+handbags,MERGE,Handbags,<p>Curated handbags from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Handbags

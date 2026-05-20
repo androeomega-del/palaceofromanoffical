@@ -1,0 +1,10 @@
+Handle,Command,Title,Body HTML,Sort Order,Published,Published Scope,Type,Match Column,Rule: Product Column,Rule: Relation,Rule: Condition
+allude,MERGE,Allude,<p>Discover the Allude collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Allude
+brooksfield,MERGE,Brooksfield,<p>Discover the Brooksfield collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Brooksfield
+courr-ges,MERGE,Courrèges,<p>Discover the Courrèges collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Courrèges
+dkny,MERGE,DKNY,<p>Discover the DKNY collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,DKNY
+time-force,MERGE,Time Force,<p>Discover the Time Force collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Time Force
+alessandra-rich,MERGE,Alessandra Rich,<p>Discover the Alessandra Rich collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Alessandra Rich
+county-of-milan,MERGE,County of Milan,<p>Discover the County of Milan collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,County of Milan
+trussardi-beachwear,MERGE,Trussardi Beachwear,<p>Discover the Trussardi Beachwear collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Trussardi Beachwear
+os-ree,MERGE,Oséree,<p>Discover the Oséree collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Oséree

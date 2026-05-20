@@ -1,0 +1,10 @@
+Handle,Command,Title,Body HTML,Sort Order,Published,Published Scope,Type,Match Column,Rule: Product Column,Rule: Relation,Rule: Condition
+giuseppe-zanotti,MERGE,Giuseppe Zanotti,<p>Discover the Giuseppe Zanotti collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Giuseppe Zanotti
+refrigiwear,MERGE,Refrigiwear,<p>Discover the Refrigiwear collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Refrigiwear
+b-young,MERGE,B.Young,<p>Discover the B.Young collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,B.Young
+pieces,MERGE,Pieces,<p>Discover the Pieces collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Pieces
+laneus,MERGE,Laneus,<p>Discover the Laneus collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Laneus
+coach,MERGE,COACH,<p>Discover the COACH collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,COACH
+saucony,MERGE,Saucony,<p>Discover the Saucony collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Saucony
+uominitaliani,MERGE,Uominitaliani,<p>Discover the Uominitaliani collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Uominitaliani
+staud,MERGE,Staud,<p>Discover the Staud collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Staud

@@ -1,0 +1,10 @@
+Handle,Command,Title,Body HTML,Sort Order,Published,Published Scope,Type,Match Column,Rule: Product Column,Rule: Relation,Rule: Condition
+invicta,MERGE,Invicta,<p>Discover the Invicta collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Invicta
+icon,MERGE,Icon,<p>Discover the Icon collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Icon
+lumberjack,MERGE,Lumberjack,<p>Discover the Lumberjack collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Lumberjack
+gianni-lupo,MERGE,Gianni Lupo,<p>Discover the Gianni Lupo collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Gianni Lupo
+justina,MERGE,JUSTINA,<p>Discover the JUSTINA collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,JUSTINA
+stone-island,MERGE,Stone Island,<p>Discover the Stone Island collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Stone Island
+vero-moda,MERGE,Vero Moda,<p>Discover the Vero Moda collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Vero Moda
+sandro,MERGE,Sandro,<p>Discover the Sandro collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Sandro
+birkenstock,MERGE,Birkenstock,<p>Discover the Birkenstock collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Birkenstock

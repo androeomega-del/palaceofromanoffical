@@ -1,0 +1,10 @@
+Handle,Command,Title,Body HTML,Sort Order,Published,Published Scope,Type,Match Column,Rule: Product Column,Rule: Relation,Rule: Condition
+versace,MERGE,Versace,<p>Discover the Versace collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Versace
+napapijri,MERGE,Napapijri,<p>Discover the Napapijri collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Napapijri
+victoria-beckham,MERGE,Victoria Beckham,<p>Discover the Victoria Beckham collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Victoria Beckham
+emilio-pucci,MERGE,Emilio Pucci,<p>Discover the Emilio Pucci collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Emilio Pucci
+gucci,MERGE,Gucci,<p>Discover the Gucci collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Gucci
+pinko,MERGE,PINKO,<p>Discover the PINKO collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,PINKO
+fila,MERGE,Fila,<p>Discover the Fila collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Fila
+saint-laurent,MERGE,Saint Laurent,<p>Discover the Saint Laurent collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Saint Laurent
+moschino,MERGE,Moschino,<p>Discover the Moschino collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Moschino

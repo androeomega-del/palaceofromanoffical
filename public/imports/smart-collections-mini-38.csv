@@ -1,0 +1,10 @@
+Handle,Command,Title,Body HTML,Sort Order,Published,Published Scope,Type,Match Column,Rule: Product Column,Rule: Relation,Rule: Condition
+santoni,MERGE,Santoni,<p>Discover the Santoni collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Santoni
+porsche,MERGE,Porsche,<p>Discover the Porsche collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Porsche
+sunflower,MERGE,Sunflower,<p>Discover the Sunflower collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Sunflower
+dondup,MERGE,Dondup,<p>Discover the Dondup collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Dondup
+cycle,MERGE,CYCLE,<p>Discover the CYCLE collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,CYCLE
+bmw-motorsport,MERGE,BMW Motorsport,<p>Discover the BMW Motorsport collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,BMW Motorsport
+brioni,MERGE,Brioni,<p>Discover the Brioni collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Brioni
+umit-benan,MERGE,Umit Benan,<p>Discover the Umit Benan collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Umit Benan
+sandro-ferrone,MERGE,Sandro Ferrone,<p>Discover the Sandro Ferrone collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Sandro Ferrone

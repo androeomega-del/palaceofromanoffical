@@ -1,0 +1,10 @@
+Handle,Command,Title,Body HTML,Sort Order,Published,Published Scope,Type,Match Column,Rule: Product Column,Rule: Relation,Rule: Condition
+longchamp,MERGE,Longchamp,<p>Discover the Longchamp collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Longchamp
+missoni,MERGE,Missoni,<p>Discover the Missoni collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Missoni
+off-white,MERGE,Off-White,<p>Discover the Off-White collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Off-White
+balmain,MERGE,Balmain,<p>Discover the Balmain collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Balmain
+love-moschino,MERGE,Love Moschino,<p>Discover the Love Moschino collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Love Moschino
+rifle,MERGE,Rifle,<p>Discover the Rifle collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Rifle
+thom-browne,MERGE,Thom Browne,<p>Discover the Thom Browne collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Thom Browne
+street-one,MERGE,Street One,<p>Discover the Street One collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Street One
+miu-miu,MERGE,Miu Miu,<p>Discover the Miu Miu collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Miu Miu

@@ -1,0 +1,10 @@
+Handle,Command,Title,Body HTML,Sort Order,Published,Published Scope,Type,Match Column,Rule: Product Column,Rule: Relation,Rule: Condition
+shirts,MERGE,Shirts,<p>Curated shirts from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Shirts
+watches,MERGE,Watches,<p>Curated watches from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Watches
+shoulder-bags,MERGE,Shoulder Bags,<p>Curated shoulder bags from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Shoulder Bags
+suits,MERGE,Suits,<p>Curated suits from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Suits
+boots,MERGE,Boots,<p>Curated boots from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Boots
+skirts,MERGE,Skirts,<p>Curated skirts from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Skirts
+loafers,MERGE,Loafers,<p>Curated loafers from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Loafers
+hats,MERGE,Hats,<p>Curated hats from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Hats
+swimwear,MERGE,Swimwear,<p>Curated swimwear from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Swimwear

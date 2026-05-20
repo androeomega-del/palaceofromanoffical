@@ -1,0 +1,10 @@
+Handle,Command,Title,Body HTML,Sort Order,Published,Published Scope,Type,Match Column,Rule: Product Column,Rule: Relation,Rule: Condition
+aldo,MERGE,ALDO,<p>Discover the ALDO collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,ALDO
+tom-ford,MERGE,Tom Ford,<p>Discover the Tom Ford collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Tom Ford
+diesel,MERGE,Diesel,<p>Discover the Diesel collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Diesel
+just-cavalli,MERGE,Just Cavalli,<p>Discover the Just Cavalli collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Just Cavalli
+twinset,MERGE,Twinset,<p>Discover the Twinset collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Twinset
+bottega-veneta,MERGE,Bottega Veneta,<p>Discover the Bottega Veneta collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Bottega Veneta
+yohji-yamamoto,MERGE,Yohji Yamamoto,<p>Discover the Yohji Yamamoto collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Yohji Yamamoto
+antony-morato,MERGE,Antony Morato,<p>Discover the Antony Morato collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Antony Morato
+ermenegildo-zegna,MERGE,Ermenegildo Zegna,<p>Discover the Ermenegildo Zegna collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Ermenegildo Zegna
