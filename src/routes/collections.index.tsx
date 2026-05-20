@@ -155,10 +155,11 @@ function CollectionsIndexPage() {
     queryFn: () => fetchCollections(100),
   });
 
-  // Show every collection on the index (deduped by canonical handle).
-  // Previously filtered to a curated "main" allowlist — now displays all.
+  // Show every collection that has a main image set in Shopify
+  // (deduped by canonical handle). Collections without an image are hidden
+  // so the editorial grid never renders a placeholder card.
   const all = useMemo(
-    () => dedupeByCanonical(q.data ?? []),
+    () => dedupeByCanonical((q.data ?? []).filter((c) => !!c.image?.url)),
     [q.data],
   );
   const collections = useMemo(
