@@ -238,10 +238,6 @@ function HomePage() {
         <SummerBento {...SUMMER_BENTO_PROPS} />
       </ClientOnly>
 
-      <InventoryCollectionsSection
-        collections={inventoryCollectionsQ.data ?? []}
-        loading={inventoryCollectionsQ.isLoading}
-      />
 
       {/* 1b. SWIMWEAR RAIL — Bikinis, Beachwear, Resort */}
       <section className="py-20 md:py-24 bg-canvas-raised">
