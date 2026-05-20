@@ -86,6 +86,39 @@ const MEN_RULES: ClassifierRule[] = [
 const WOMEN_COLUMN_ORDER = ["Apparel", "Shoes", "Bags & Leather", "Fine Accessories", "More"];
 const MEN_COLUMN_ORDER   = ["Apparel", "Tailoring", "Shirts & Knitwear", "Bottoms & Beach", "Shoes", "Accessories", "More"];
 
+/**
+ * Cross-gender category collections (no `women-`/`men-` prefix) that should
+ * still appear inside the Women / Men dropdowns. Each entry routes the same
+ * handle into the correct column for each gender.
+ *
+ * `women`/`men` is null when the category shouldn't appear in that gender
+ * (e.g. `skirts` only under Women, `suits` only under Men).
+ */
+type CrossEntry = {
+  handle: string;
+  label: string;
+  women: { column: string; order: number } | null;
+  men:   { column: string; order: number } | null;
+};
+const CROSS_CATEGORIES: CrossEntry[] = [
+  { handle: "best-sellers", label: "Best Sellers",  women: { column: "Apparel", order: 1 },           men: { column: "Apparel", order: 1 } },
+  { handle: "clothing",     label: "All Clothing",  women: { column: "Apparel", order: 2 },           men: { column: "Apparel", order: 2 } },
+  { handle: "shirts",       label: "Shirts",        women: { column: "Apparel", order: 5 },           men: { column: "Shirts & Knitwear", order: 0 } },
+  { handle: "skirts",       label: "Skirts",        women: { column: "Apparel", order: 6 },           men: null },
+  { handle: "suits",        label: "Suits",         women: null,                                       men: { column: "Tailoring", order: 0 } },
+  { handle: "swimwear",     label: "Swimwear",      women: { column: "Apparel", order: 7 },           men: { column: "Bottoms & Beach", order: 3 } },
+  { handle: "sleepwear",    label: "Sleepwear",     women: { column: "Apparel", order: 8 },           men: { column: "Bottoms & Beach", order: 5 } },
+  { handle: "shoes",        label: "All Shoes",     women: { column: "Shoes", order: 1 },             men: { column: "Shoes", order: 0 } },
+  { handle: "boots",        label: "Boots",         women: { column: "Shoes", order: 2 },             men: { column: "Shoes", order: 2 } },
+  { handle: "loafers",      label: "Loafers",       women: { column: "Shoes", order: 3 },             men: { column: "Shoes", order: 4 } },
+  { handle: "bags",         label: "Bags",          women: { column: "Bags & Leather", order: 1 },    men: { column: "Accessories", order: 0 } },
+  { handle: "accessories",  label: "All Accessories", women: { column: "Fine Accessories", order: 8 }, men: { column: "Accessories", order: 8 } },
+  { handle: "watches",      label: "Watches",       women: { column: "Fine Accessories", order: 1 },  men: { column: "Accessories", order: 2 } },
+  { handle: "hats",         label: "Hats",          women: { column: "Fine Accessories", order: 3 },  men: { column: "Accessories", order: 3 } },
+  { handle: "gloves",       label: "Gloves",        women: { column: "Fine Accessories", order: 4 },  men: { column: "Accessories", order: 4 } },
+  { handle: "unisex",       label: "Unisex",        women: { column: "More", order: 0 },              men: { column: "More", order: 0 } },
+];
+
 function cleanTitle(title: string, prefixWord: "Women's" | "Men's"): string {
   return title.replace(new RegExp(`^${prefixWord.replace("'", "['']")}\\s*`, "i"), "").trim() || title;
 }
@@ -98,21 +131,34 @@ function buildDepartment(
   dept: Omit<MegaDepartment, "columns">,
 ): MegaDepartment {
   const prefixWord = prefixes[0].startsWith("women") ? "Women's" : "Men's";
+  const genderKey: "women" | "men" = prefixes[0].startsWith("women") ? "women" : "men";
+  const byHandle = new Map(collections.map((c) => [c.handle, c]));
 
   // Group rule matches by column.
-  const grouped = new Map<string, MegaItem[]>();
+  const grouped = new Map<string, Array<MegaItem & { _order: number }>>();
+  const push = (col: string, item: MegaItem & { _order: number }) => {
+    const arr = grouped.get(col) ?? [];
+    arr.push(item);
+    grouped.set(col, arr);
+  };
 
-  // 1) "New Arrivals" sits at the top of Apparel for both departments —
-  //    it's a smart collection that crosses genders, but it reads as the
-  //    natural lead item in an apparel column.
-  const newArrivals = collections.find((c) => c.handle === "new-arrivals");
-  if (newArrivals) {
-    const colName = columnOrder[0]; // Apparel / Tailoring
-    grouped.set(colName, [{ handle: "new-arrivals", label: "New Arrivals" }]);
+  // 1) "New Arrivals" sits at the top of Apparel for both departments.
+  if (byHandle.has("new-arrivals")) {
+    push(columnOrder[0], { handle: "new-arrivals", label: "New Arrivals", _order: 0 });
   }
 
-  // Dedupe by handle in case multiple prefixes match the same suffix.
-  const seen = new Set<string>();
+  // 2) Cross-gender categories (unprefixed handles that still belong here).
+  const seen = new Set<string>(["new-arrivals"]);
+  for (const cx of CROSS_CATEGORIES) {
+    const slot = cx[genderKey];
+    if (!slot) continue;
+    if (!byHandle.has(cx.handle)) continue;
+    if (seen.has(cx.handle)) continue;
+    seen.add(cx.handle);
+    push(slot.column, { handle: cx.handle, label: cx.label, _order: slot.order });
+  }
+
+  // 3) Prefixed collections (womens-/women-/mens-/men-), routed by rule or "More".
   const moreItems: Array<MegaItem & { _order: number }> = [];
   for (const c of collections) {
     const matchedPrefix = prefixes.find((p) => c.handle.startsWith(p));
@@ -124,30 +170,27 @@ function buildDepartment(
 
     if (rule) {
       const label = rule.label ?? cleanTitle(c.title, prefixWord);
-      const arr = grouped.get(rule.column) ?? [];
-      arr.push({ handle: c.handle, label, _order: rule.order } as MegaItem & { _order: number });
-      grouped.set(rule.column, arr);
+      push(rule.column, { handle: c.handle, label, _order: rule.order });
     } else {
-      // Catchall — surface every prefix-matching collection so nothing is hidden.
       moreItems.push({ handle: c.handle, label: cleanTitle(c.title, prefixWord), _order: 99 });
     }
   }
   if (moreItems.length > 0) {
     moreItems.sort((a, b) => a.label.localeCompare(b.label));
-    grouped.set("More", moreItems);
+    for (const m of moreItems) push("More", m);
   }
 
-
-  // Build columns in defined order, sorting items by their rule order.
+  // Build columns in defined order, dedupe per column, sort by _order.
   const columns: MegaColumn[] = [];
   for (const heading of columnOrder) {
     const items = grouped.get(heading);
     if (!items || items.length === 0) continue;
-    items.sort((a, b) => ((a as any)._order ?? 99) - ((b as any)._order ?? 99));
-    // strip internal _order before returning
+    const dedup = new Map<string, MegaItem & { _order: number }>();
+    for (const it of items) if (!dedup.has(it.handle)) dedup.set(it.handle, it);
+    const sorted = [...dedup.values()].sort((a, b) => a._order - b._order);
     columns.push({
       heading,
-      items: items.map(({ handle, label }) => ({ handle, label })),
+      items: sorted.map(({ handle, label }) => ({ handle, label })),
     });
   }
 
