@@ -102,16 +102,17 @@ type CrossEntry = {
 };
 const CROSS_CATEGORIES: CrossEntry[] = [
   { handle: "best-sellers", label: "Best Sellers",  women: { column: "Apparel", order: 1 },           men: { column: "Apparel", order: 1 } },
-  { handle: "clothing",     label: "All Clothing",  women: { column: "Apparel", order: 2 },           men: { column: "Apparel", order: 2 } },
+  // `clothing`, `shoes`, `bags`, `accessories` are global (unisex) collections.
+  // Gender dropdowns use the prefixed `womens-…` / `mens-…` variants as their
+  // canonical "All …" links (handled by WOMEN_RULES / MEN_RULES). Do not
+  // duplicate them here.
   { handle: "shirts",       label: "Shirts",        women: { column: "Apparel", order: 5 },           men: { column: "Shirts & Knitwear", order: 0 } },
   { handle: "skirts",       label: "Skirts",        women: { column: "Apparel", order: 6 },           men: null },
   { handle: "suits",        label: "Suits",         women: null,                                       men: { column: "Tailoring", order: 0 } },
   { handle: "swimwear",     label: "Swimwear",      women: { column: "Apparel", order: 7 },           men: { column: "Bottoms & Beach", order: 3 } },
   { handle: "sleepwear",    label: "Sleepwear",     women: { column: "Apparel", order: 8 },           men: { column: "Bottoms & Beach", order: 5 } },
-  { handle: "shoes",        label: "All Shoes",     women: { column: "Shoes", order: 1 },             men: { column: "Shoes", order: 0 } },
   { handle: "boots",        label: "Boots",         women: { column: "Shoes", order: 2 },             men: { column: "Shoes", order: 2 } },
   { handle: "loafers",      label: "Loafers",       women: { column: "Shoes", order: 3 },             men: { column: "Shoes", order: 4 } },
-  { handle: "bags",         label: "Bags",          women: { column: "Bags & Leather", order: 1 },    men: { column: "Accessories", order: 0 } },
   // `accessories` is the global (unisex) collection — gender dropdowns use
   // the prefixed `women-accessories` / `mens-accessories` as "All Accessories"
   // (handled by WOMEN_RULES / MEN_RULES). Do not duplicate here.
