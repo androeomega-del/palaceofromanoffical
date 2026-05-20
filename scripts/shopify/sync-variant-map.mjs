@@ -81,9 +81,14 @@ while (url && pages < PAGE_LIMIT) {
     }
   }
 
+  // Dedupe by SKU within this batch (Shopify occasionally has duplicate SKUs across products)
+  const dedupedMap = new Map();
+  for (const r of rows) dedupedMap.set(r.sku, r);
+  const deduped = Array.from(dedupedMap.values());
+
   pages++;
-  console.log(`Page ${pages}: ${products.length} products, ${rows.length} variants → upsert`);
-  if (!DRY) await sbUpsert(rows);
+  console.log(`Page ${pages}: ${products.length} products, ${rows.length} variants (${deduped.length} unique SKUs) → upsert`);
+  if (!DRY) await sbUpsert(deduped);
   if (DRY && pages === 1) {
     console.log('Sample rows:', JSON.stringify(rows.slice(0, 2), null, 2));
   }
