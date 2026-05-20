@@ -380,22 +380,56 @@ function HomePage() {
       {/* 6. BEST SELLERS */}
       <section className="py-28">
         <div className="max-w-screen-2xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <span className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-4 block">Most Coveted</span>
-            <h2 className="text-3xl md:text-4xl font-serif">Best Sellers</h2>
-          </div>
-          <ProductCarousel edges={bestSellersQ.data ?? []} loading={bestSellersQ.isLoading} />
-          <div className="mt-14 flex justify-center">
-            <Link
-              to="/collections/$handle"
-              params={{ handle: "best-sellers" }}
-              search={{ sort: "BEST_SELLING-false" }}
-              className="group inline-flex items-center gap-3 bg-ink text-canvas px-10 py-5 text-[11px] uppercase tracking-[0.3em] hover:bg-bronze transition-colors"
-            >
-              Shop Best Sellers
-              <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
-            </Link>
-          </div>
+          {(() => {
+            const bestEdges = bestSellersQ.data ?? [];
+            const showEmpty = !bestSellersQ.isLoading && bestEdges.length === 0;
+            const fallbackEdges = (newArrivalsQ.data ?? []).slice(0, 8);
+            if (showEmpty) {
+              return (
+                <>
+                  <div className="text-center mb-12 max-w-xl mx-auto">
+                    <span className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-4 block">Most Coveted</span>
+                    <h2 className="text-3xl md:text-4xl font-serif mb-6">A best-seller list is taking shape.</h2>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      The boutique is brand new, so no piece has had time to rise above the rest just yet.
+                      In the meantime, see what has only just landed — these new arrivals will be tomorrow's most-coveted.
+                    </p>
+                  </div>
+                  <ProductCarousel edges={fallbackEdges} loading={newArrivalsQ.isLoading} />
+                  <div className="mt-14 flex justify-center">
+                    <Link
+                      to="/collections/$handle"
+                      params={{ handle: "new-arrivals" }}
+                      className="group inline-flex items-center gap-3 bg-ink text-canvas px-10 py-5 text-[11px] uppercase tracking-[0.3em] hover:bg-bronze transition-colors"
+                    >
+                      Shop New Arrivals
+                      <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
+                    </Link>
+                  </div>
+                </>
+              );
+            }
+            return (
+              <>
+                <div className="text-center mb-16">
+                  <span className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-4 block">Most Coveted</span>
+                  <h2 className="text-3xl md:text-4xl font-serif">Best Sellers</h2>
+                </div>
+                <ProductCarousel edges={bestEdges} loading={bestSellersQ.isLoading} />
+                <div className="mt-14 flex justify-center">
+                  <Link
+                    to="/collections/$handle"
+                    params={{ handle: "best-sellers" }}
+                    search={{ sort: "BEST_SELLING-false" }}
+                    className="group inline-flex items-center gap-3 bg-ink text-canvas px-10 py-5 text-[11px] uppercase tracking-[0.3em] hover:bg-bronze transition-colors"
+                  >
+                    Shop Best Sellers
+                    <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
+                  </Link>
+                </div>
+              </>
+            );
+          })()}
         </div>
       </section>
 
