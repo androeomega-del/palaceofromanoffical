@@ -247,6 +247,54 @@ export type Database = {
         }
         Relationships: []
       }
+      inventory_sync_runs: {
+        Row: {
+          activated: number
+          dry_run: boolean
+          error_message: string | null
+          failed: number
+          finished_at: string | null
+          flipped: number
+          id: string
+          notes: string | null
+          processed: number
+          started_at: string
+          status: string
+          total: number
+          updated: number
+        }
+        Insert: {
+          activated?: number
+          dry_run?: boolean
+          error_message?: string | null
+          failed?: number
+          finished_at?: string | null
+          flipped?: number
+          id?: string
+          notes?: string | null
+          processed?: number
+          started_at?: string
+          status?: string
+          total?: number
+          updated?: number
+        }
+        Update: {
+          activated?: number
+          dry_run?: boolean
+          error_message?: string | null
+          failed?: number
+          finished_at?: string | null
+          flipped?: number
+          id?: string
+          notes?: string | null
+          processed?: number
+          started_at?: string
+          status?: string
+          total?: number
+          updated?: number
+        }
+        Relationships: []
+      }
       newsletter_subscribers: {
         Row: {
           created_at: string
