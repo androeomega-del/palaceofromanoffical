@@ -247,17 +247,24 @@ export function collectionImage(input: {
   const canonical = resolveCanonicalHandle(rawHandle);
   if (canonical) return BY_HANDLE[canonical];
 
-  // 3. Regex rules for unknown handles
-  const hay = `${input.title ?? ""} ${rawHandle} ${input.description ?? ""}`
+  // 3. Unique per-handle fallback. Regex rules used to bucket many distinct
+  //    sub-collections (e.g. women-handbags, women-clutch-bags,
+  //    women-crossbody-bags) onto the same curated image, which produced
+  //    visible duplicates across women's collections. Use the editorial
+  //    library keyed by the handle so each unique handle gets a stable,
+  //    unique image — and only fall back to topical regex matching when
+  //    there is no handle to key on.
+  if (rawHandle) {
+    reportUnresolved(rawHandle, "rule", "editorial-library");
+    return imgForKey(rawHandle);
+  }
+
+  const hay = `${input.title ?? ""} ${input.description ?? ""}`
     .toLowerCase()
     .replace(/[-_]+/g, " ");
   for (const rule of FALLBACK_RULES) {
-    if (rule.test.test(hay)) {
-      if (rawHandle) reportUnresolved(rawHandle, "rule", IMG_TO_TOPIC.get(rule.img) ?? "unknown");
-      return rule.img;
-    }
+    if (rule.test.test(hay)) return rule.img;
   }
-  if (rawHandle) reportUnresolved(rawHandle, "default", "all-products");
   return allProducts;
 }
 
