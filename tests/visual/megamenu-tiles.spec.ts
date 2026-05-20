@@ -46,7 +46,7 @@ test.describe("megamenu — desktop", () => {
 });
 
 test.describe("megamenu — mobile", () => {
-  test.skip(({}, testInfo) => testInfo.project.name !== "mobile-chromium", "Mobile-only layout");
+  test.skip(({}, testInfo) => !testInfo.project.name.startsWith("mobile"), "Mobile-only layout");
 
   test("drawer open snapshot", async ({ page }) => {
     await page.goto("/");
