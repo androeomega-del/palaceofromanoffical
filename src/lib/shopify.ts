@@ -663,26 +663,27 @@ export async function fetchCollection(handle: string, first = 36) {
   };
 }
 
-async function countCollectionInventory(def: CollectionDef): Promise<number> {
-  let b: any = supabase
-    .from("bg_products")
-    .select("id", { count: "exact", head: true })
-    .eq("in_stock", true);
-  b = applyCollectionFilter(b, def);
-  const { count, error } = await b;
-  if (error) {
-    console.error("bg collection inventory count error:", def.handle, error);
-    return 0;
-  }
-  return count ?? 0;
+function rowMatchesCollectionFilter(
+  row: Pick<BgProductRow, "gender"|"category"|"subcategory"|"subsubcategory">,
+  def: CollectionDef,
+): boolean {
+  const f = def.filter;
+  const same = (a: string | null, b?: string) => !b || (a ?? "").toLowerCase() === b.toLowerCase();
+  const inList = (a: string | null, list?: string[]) => !list?.length || list.some((v) => same(a, v));
+  return same(row.gender, f.gender)
+    && same(row.category, f.category)
+    && same(row.subcategory, f.subcategory)
+    && same(row.subsubcategory, f.subsubcategory)
+    && inList(row.subcategory, f.subcategoryIn)
+    && inList(row.category, f.categoryIn);
 }
 
 export async function fetchCollections(first = 250): Promise<ShopifyCollection[]> {
   const dyn = await getDynamicCollections();
   const all = [...STATIC_COLLECTIONS, ...dyn];
-  const counts = await Promise.all(all.map((def) => countCollectionInventory(def)));
+  const rows = await getInventoryDimensionRows();
   return all
-    .map((def, index) => ({ def, count: counts[index] ?? 0 }))
+    .map((def) => ({ def, count: rows.filter((row) => rowMatchesCollectionFilter(row, def)).length }))
     .filter(({ count }) => count > 0)
     .slice(0, first)
     .map(({ def, count }) => defToShopify(def, count));
