@@ -385,13 +385,15 @@ function HomePage() {
             <h2 className="text-3xl md:text-4xl font-serif">Best Sellers</h2>
           </div>
           <ProductCarousel edges={bestSellersQ.data ?? []} loading={bestSellersQ.isLoading} />
-          <div className="mt-12 text-center">
+          <div className="mt-14 flex justify-center">
             <Link
               to="/collections/$handle"
               params={{ handle: "best-sellers" }}
-              className="text-[10px] uppercase tracking-[0.25em] border-b border-ink pb-1 hover:text-bronze hover:border-bronze transition-colors"
+              search={{ sort: "BEST_SELLING-false" }}
+              className="group inline-flex items-center gap-3 bg-ink text-canvas px-10 py-5 text-[11px] uppercase tracking-[0.3em] hover:bg-bronze transition-colors"
             >
-              View all best sellers
+              Shop Best Sellers
+              <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
             </Link>
           </div>
         </div>
