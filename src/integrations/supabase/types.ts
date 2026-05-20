@@ -14,6 +14,128 @@ export type Database = {
   }
   public: {
     Tables: {
+      bg_products: {
+        Row: {
+          brand: string | null
+          category: string | null
+          color: string | null
+          created_at: string
+          currency: string | null
+          description: string | null
+          description_plain: string | null
+          gender: string | null
+          group_sku: string
+          handle: string
+          id: string
+          in_stock: boolean
+          main_picture: string | null
+          material: string | null
+          modified_at: string | null
+          name: string | null
+          origin: string | null
+          pictures: string[]
+          product_condition: string | null
+          retail_price: number | null
+          subcategory: string | null
+          subsubcategory: string | null
+          total_stock: number
+          wholesale_price: number | null
+        }
+        Insert: {
+          brand?: string | null
+          category?: string | null
+          color?: string | null
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          description_plain?: string | null
+          gender?: string | null
+          group_sku: string
+          handle: string
+          id?: string
+          in_stock?: boolean
+          main_picture?: string | null
+          material?: string | null
+          modified_at?: string | null
+          name?: string | null
+          origin?: string | null
+          pictures?: string[]
+          product_condition?: string | null
+          retail_price?: number | null
+          subcategory?: string | null
+          subsubcategory?: string | null
+          total_stock?: number
+          wholesale_price?: number | null
+        }
+        Update: {
+          brand?: string | null
+          category?: string | null
+          color?: string | null
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          description_plain?: string | null
+          gender?: string | null
+          group_sku?: string
+          handle?: string
+          id?: string
+          in_stock?: boolean
+          main_picture?: string | null
+          material?: string | null
+          modified_at?: string | null
+          name?: string | null
+          origin?: string | null
+          pictures?: string[]
+          product_condition?: string | null
+          retail_price?: number | null
+          subcategory?: string | null
+          subsubcategory?: string | null
+          total_stock?: number
+          wholesale_price?: number | null
+        }
+        Relationships: []
+      }
+      bg_variants: {
+        Row: {
+          created_at: string
+          group_sku: string
+          id: string
+          mpn: string | null
+          product_sku: string
+          quantity: number
+          size: string | null
+          weight: number | null
+        }
+        Insert: {
+          created_at?: string
+          group_sku: string
+          id?: string
+          mpn?: string | null
+          product_sku: string
+          quantity?: number
+          size?: string | null
+          weight?: number | null
+        }
+        Update: {
+          created_at?: string
+          group_sku?: string
+          id?: string
+          mpn?: string | null
+          product_sku?: string
+          quantity?: number
+          size?: string | null
+          weight?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bg_variants_group_sku_fkey"
+            columns: ["group_sku"]
+            isOneToOne: false
+            referencedRelation: "bg_products"
+            referencedColumns: ["group_sku"]
+          },
+        ]
+      }
       collection_images: {
         Row: {
           focal_x: number | null
