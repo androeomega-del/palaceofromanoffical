@@ -1,34 +1,37 @@
 ## Goal
-Create all 381 smart collections directly in your Shopify store (`mwuwqi-vy.myshopify.com`) via the Shopify Admin REST API, bypassing Matrixify entirely.
+Preserve everything needed to recreate Shopify smart collections (and similar Admin API bulk operations) without rediscovering the working token, payload mapping, or rate-limit handling.
 
-## Why this works
-- `SHOPIFY_ADMIN_TOKEN` is already configured as a secret — no new credentials needed.
-- The source CSV (`public/imports/smart-collections-matrixify-fixed.csv`) is clean and contains all 381 rows with: handle, title, body HTML, sort order, rule column (Vendor/Tag/Type/Variant Inventory), relation (Equals/Greater Than), and condition value.
-- Shopify's REST endpoint `POST /admin/api/2025-07/smart_collections.json` creates a smart collection with rules in a single call.
+## What gets saved
 
-## Approach
-This is a **one-off operation**, not an app feature. I'll run a Node script via `code--exec` — nothing gets committed to your codebase.
+### 1. The script → permanent project location
+Move `/tmp/create_collections.mjs` (currently ephemeral — wiped on sandbox reset) to `scripts/shopify/create-smart-collections.mjs`. It will run from any future sandbox via:
+```
+node scripts/shopify/create-smart-collections.mjs --dry
+node scripts/shopify/create-smart-collections.mjs
+```
 
-### Script logic
-1. Parse the CSV (handle commas inside `<p>` HTML and rule conditions like `Dolce & Gabbana`).
-2. Fetch existing smart collections by handle (paginated) so we skip duplicates and don't double-create the 10 already imported.
-3. For each remaining row, map CSV fields → Shopify rule format:
-   - `Rule: Product Column` → `column` (`vendor`, `tag`, `type`, `variant_inventory`)
-   - `Rule: Relation` → `relation` (`equals`, `greater_than`)
-   - `Rule: Condition` → `condition` (string)
-   - `Match Column` `all` → `disjunctive: false`
-   - `Sort Order` `best-selling` → `sort_order: "best-selling"`
-4. POST to `https://mwuwqi-vy.myshopify.com/admin/api/2025-07/smart_collections.json` with header `X-Shopify-Access-Token: $SHOPIFY_ADMIN_TOKEN`.
-5. Throttle to 2 req/sec to respect Shopify's leaky-bucket rate limit; auto-retry on HTTP 429 with the `Retry-After` header.
-6. Log every result (✓ created / ↻ skipped existing / ✗ failed with reason) and print a final summary.
+### 2. A Lovable skill → `.agents/skills/shopify-admin-bulk/`
+So any future agent (in this project or remixes) knows the playbook:
+- `SKILL.md` — when to use, full workflow, common errors
+- Key facts captured:
+  - Use `SHOPIFY_ACCESS_TOKEN` for Admin REST — **not** `SHOPIFY_ADMIN_TOKEN` (returns 401)
+  - Shop domain: `mwuwqi-vy.myshopify.com`, API version `2025-07`
+  - 2 req/sec throttle + 429 retry pattern
+  - Matrixify free-plan import cap is ~10 rows / ~10KB — bypass with this script
+  - CSV → REST field mapping table (Vendor/Tag/Type → column; Equals/Greater Than → relation)
+- Apply via `skills--apply_draft` so it's discoverable on every future request matching "shopify collections", "bulk admin api", etc.
 
-### Validation
-- Dry-run first: parse all 381 rows and print the first 3 + last 3 payloads without POSTing, to confirm the mapping is correct.
-- Then run the full import.
-- After completion, fetch the smart_collections count from Shopify to verify it equals 381.
+### 3. Project memory → `mem://integrations/shopify-admin-api`
+One-line core rule + detailed note:
+- Core: "Shopify Admin REST API: use `SHOPIFY_ACCESS_TOKEN` (not `SHOPIFY_ADMIN_TOKEN` — that returns 401)."
+- Detail file: shop domain, API version, working endpoints, script location.
 
-## What you'll see
-A live log streaming through all 381 collections (~3-4 minutes at 2/sec) followed by a summary like `Created: 371, Skipped (already existed): 10, Failed: 0`.
+## What doesn't need saving
+- The 381 collections themselves are now live in Shopify — that's the source of truth.
+- The CSV at `public/imports/smart-collections-matrixify-fixed.csv` stays where it is (it's the input the script reads).
 
 ## What changes in your project
-**Nothing.** No files added, no code modified. This is a pure data-creation task run from the sandbox against Shopify's API.
+- **New file:** `scripts/shopify/create-smart-collections.mjs`
+- **New skill:** `.agents/skills/shopify-admin-bulk/SKILL.md` (then applied)
+- **New memory:** `mem://integrations/shopify-admin-api` + 1 line added to `mem://index.md`
+- No app code, routes, or database changes.
