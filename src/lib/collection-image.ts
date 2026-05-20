@@ -36,6 +36,7 @@ import mensBelts from "@/assets/collections/auto/mens-belts.jpg";
 import mensWatchesJewelry from "@/assets/collections/auto/mens-watches-jewelry.jpg";
 import womensClothing from "@/assets/collections/auto/womens-clothing.jpg";
 import womensShoes from "@/assets/collections/auto/womens-shoes.jpg";
+import { imgForKey } from "@/lib/editorial-library";
 
 const BY_HANDLE: Record<string, string> = {
   "all-products": allProducts,
