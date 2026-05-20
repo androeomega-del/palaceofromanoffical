@@ -187,33 +187,18 @@ export function buildDepartments(collections: ShopifyCollection[]): MegaDepartme
 }
 
 // -----------------------------------------------------------------------------
-// Brands — derived from live vendor data, filtered to a luxury allowlist
+// Brands — every vendor surfaced from live product data, no allowlist
 // -----------------------------------------------------------------------------
-
-/** Houses we are willing to surface in the top nav. Lower-cased for matching. */
-const LUXURY_BRAND_ALLOWLIST = new Set(
-  [
-    "Alexander McQueen", "Alexander Wang", "Armani", "Giorgio Armani", "Emporio Armani",
-    "Balenciaga", "Balmain", "Bottega Veneta", "Brunello Cucinelli", "Burberry",
-    "Calvin Klein", "Cartier", "Celine", "Céline", "Chloé", "Chloe", "Christian Dior",
-    "Christian Louboutin", "Dior", "Dolce & Gabbana", "Etro", "Fendi", "Ferragamo",
-    "Givenchy", "Goyard", "Gucci", "Hermès", "Hermes", "Jimmy Choo", "Lanvin",
-    "Loewe", "Loro Piana", "Maison Margiela", "MM6 Maison Margiela", "Marni",
-    "Missoni", "Miu Miu", "Moncler", "Moschino", "Off-White", "Philipp Plein",
-    "Prada", "Saint Laurent", "Yves Saint Laurent", "Salvatore Ferragamo",
-    "Stella McCartney", "The Row", "Tom Ford", "Tory Burch", "Valentino",
-    "Versace", "Versace Jeans",
-  ].map((s) => s.toLowerCase()),
-);
 
 export type BrandEntry = { vendor: string; count: number };
 
-/** Filter a vendor-with-count list to the luxury allowlist, sorted alphabetically. */
+/** Return every vendor, sorted alphabetically. No curation. */
 export function buildBrandList(vendors: BrandEntry[]): BrandEntry[] {
   return vendors
-    .filter((v) => LUXURY_BRAND_ALLOWLIST.has(v.vendor.toLowerCase()))
+    .filter((v) => v.vendor && v.vendor.trim().length > 0)
     .sort((a, b) => a.vendor.localeCompare(b.vendor));
 }
+
 
 /** Group brands into A–G / H–N / O–Z columns for the megamenu panel. */
 export function groupBrandsForMenu(brands: BrandEntry[]): { heading: string; items: BrandEntry[] }[] {
