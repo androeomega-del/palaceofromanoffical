@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 
-import { fetchCollectionFiltered, fetchCollection, fetchSearchFiltered, type StorefrontFilterValue } from "@/lib/shopify";
+import { fetchCollectionFiltered, fetchCollection, type StorefrontFilterValue } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
 import { pageTitle, metaDescription, absoluteUrl, SITE_URL } from "@/lib/seo";
 import { collectionSeo } from "@/lib/collection-seo";
