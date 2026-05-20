@@ -21,19 +21,8 @@ const LIMIT_COLLECTIONS = (() => {
 
 if (!TOKEN) { console.error('Missing SHOPIFY_ACCESS_TOKEN'); process.exit(1); }
 
-// Handles whose rules don't fully express the intent (intersection collections
-// where the 2nd rule was dropped at import). Tags listed here are added in
-// addition to whatever the rules already imply.
-const HANDLE_TAG_SUPPLEMENT = {
-  'women-bags': ['Bags'],
-  'women-shoes': ['Shoes'],
-  'women-clothing': ['Clothing'],
-  'women-accessories': ['Accessories'],
-  'men-bags': ['Bags'],
-  'men-shoes': ['Shoes'],
-  'men-clothing': ['Clothing'],
-  'men-accessories': ['Accessories'],
-};
+// Collections to skip entirely — special / non-categorical.
+const SKIP_HANDLES = new Set(['best-sellers', 'in-stock', 'new-arrivals']);
 
 async function shopify(path, init = {}) {
   const url = `https://${SHOP}/admin/api/${API}${path}`;
