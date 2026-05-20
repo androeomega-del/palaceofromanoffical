@@ -99,7 +99,10 @@ const candidates = [];
 for (const [g, data] of groups) {
   if (!data.parent || data.children.length === 0) continue;
   const hits = data.children.filter((c) => existing.has(c['Product Sku'])).length;
-  if (hits === 0) candidates.push({ groupSku: g, ...data });
+  if (hits !== 0) continue;
+  const totalQty = data.children.reduce((s, c) => s + (parseInt(c['Quantity'] || '0', 10) || 0), 0);
+  if (totalQty <= 0) continue; // skip out-of-stock products
+  candidates.push({ groupSku: g, ...data });
 }
 console.log(`Fully-new product groups: ${candidates.length}`);
 
