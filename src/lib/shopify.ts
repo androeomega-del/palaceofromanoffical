@@ -142,6 +142,8 @@ type BgVariantRow = {
   quantity: number;
 };
 
+type VariantMapRow = { sku: string; variant_gid: string; available: boolean };
+
 const PRODUCT_COLUMNS =
   "id,handle,group_sku,brand,name,description,description_plain,gender,category,subcategory,subsubcategory,color,material,main_picture,pictures,retail_price,currency,in_stock,total_stock";
 
@@ -215,6 +217,35 @@ function rowToNode(r: BgProductRow, variants?: BgVariantRow[]): ShopifyProductNo
     variants: { edges: variantEdges },
     options,
   };
+}
+
+async function fetchVariantMap(skus: string[]): Promise<Map<string, { gid: string; available: boolean }>> {
+  const gidBySku = new Map<string, { gid: string; available: boolean }>();
+  const uniqueSkus = Array.from(new Set(skus.filter(Boolean)));
+  for (let i = 0; i < uniqueSkus.length; i += 200) {
+    const batch = uniqueSkus.slice(i, i + 200);
+    const { data, error } = await supabase
+      .from("shopify_variant_map")
+      .select("sku,variant_gid,available")
+      .in("sku", batch);
+    if (error) {
+      console.error("shopify_variant_map fetch error:", error);
+      continue;
+    }
+    for (const m of (data ?? []) as VariantMapRow[]) {
+      gidBySku.set(m.sku, { gid: m.variant_gid, available: m.available });
+    }
+  }
+  return gidBySku;
+}
+
+function applyVariantMap(node: ShopifyProductNode, gidBySku: Map<string, { gid: string; available: boolean }>) {
+  node.variants.edges = node.variants.edges.map((e) => {
+    const mapped = gidBySku.get(e.node.id);
+    if (!mapped) return { node: { ...e.node, availableForSale: false } };
+    return { node: { ...e.node, id: mapped.gid, availableForSale: e.node.availableForSale && mapped.available } };
+  });
+  return node;
 }
 
 // ── Cursor (base64-encoded offset) ──────────────────────────────────────────
