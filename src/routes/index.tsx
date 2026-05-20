@@ -225,7 +225,7 @@ function HomePage() {
       {/* 1. SUMMER BENTO STOREFRONT — Architectural Resort.
           Rendered client-only to avoid SSR/CSR hydration mismatches while
           the bento markup is iterated on. */}
-      <ClientOnly fallback={<div aria-hidden className="min-h-[80vh] bg-canvas-raised" />}>
+      <ClientOnly fallback={<SummerBentoSkeleton />}>
         <SummerBento {...SUMMER_BENTO_PROPS} />
       </ClientOnly>
 
@@ -813,15 +813,15 @@ function SummerBento({
   spotlightVendor?: string;
   spotlightSlug?: string;
 }) {
-  // Hydration-safe guard: render a placeholder on the first paint (and on
-  // any SSR pass that bypasses the parent ClientOnly) so SummerBento's
-  // markup never appears before React has finished hydrating.
+  // Hydration-safe guard: render the matching skeleton (same grid, same
+  // tile spans) on the first paint so the layout slot is reserved exactly
+  // and there's no CLS when the real bento mounts.
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
   }, []);
   if (!mounted) {
-    return <div aria-hidden className="min-h-[80vh] bg-canvas-raised" />;
+    return <SummerBentoSkeleton />;
   }
   return (
     <section className="px-4 md:px-8 lg:px-12 pt-6 md:pt-10 pb-12 md:pb-16">
@@ -1028,6 +1028,38 @@ function SummerBento({
           </div>
         </Link>
 
+      </div>
+    </section>
+  );
+}
+
+/* -------------------------- SummerBentoSkeleton -------------------------- */
+/**
+ * Pixel-matching skeleton for SummerBento. Mirrors the exact grid container
+ * and every tile's `col-span` / `row-span` so the layout slot is identical
+ * before and after the real bento mounts — eliminating layout shift (CLS).
+ */
+function SummerBentoSkeleton() {
+  return (
+    <section
+      aria-hidden
+      className="px-4 md:px-8 lg:px-12 pt-6 md:pt-10 pb-12 md:pb-16"
+    >
+      <div className="max-w-[1600px] mx-auto grid grid-cols-12 auto-rows-[180px] md:auto-rows-[200px] gap-4">
+        {/* Main Hero */}
+        <div className="col-span-12 lg:col-span-8 row-span-3 lg:row-span-4 bg-canvas-raised animate-pulse" />
+        {/* Swim Promo */}
+        <div className="col-span-12 md:col-span-6 lg:col-span-4 row-span-2 bg-bronze/40 animate-pulse" />
+        {/* Women Tile */}
+        <div className="col-span-12 md:col-span-6 lg:col-span-4 row-span-2 bg-canvas-raised animate-pulse" />
+        {/* Brand Spotlight */}
+        <div className="col-span-12 md:col-span-4 lg:col-span-3 row-span-2 bg-ink/80 animate-pulse" />
+        {/* Men Tile */}
+        <div className="col-span-12 md:col-span-8 lg:col-span-5 row-span-2 bg-canvas-raised animate-pulse" />
+        {/* Accessories Tile */}
+        <div className="col-span-6 md:col-span-4 lg:col-span-2 row-span-2 bg-canvas-raised animate-pulse" />
+        {/* Summer Sale Tile */}
+        <div className="col-span-6 md:col-span-4 lg:col-span-2 row-span-2 bg-bronze/40 animate-pulse" />
       </div>
     </section>
   );
