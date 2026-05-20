@@ -40,14 +40,24 @@ export function DesktopMegamenu() {
     staleTime: 5 * 60_000,
   });
 
-  const departments = useMemo(
-    () => buildDepartments(liveCollections ?? []),
-    [liveCollections],
-  );
-
   const liveHandles = liveCollections
     ? new Set(liveCollections.map((c) => c.handle))
     : null;
+
+  // Only show departments whose root collection actually exists in Shopify.
+  // Fall back the feature tile to the root when the configured feature handle
+  // is missing, so the panel never renders a broken hero link.
+  const departments = useMemo(() => {
+    const built = buildDepartments(liveCollections ?? []);
+    if (!liveHandles) return built;
+    return built
+      .filter((d) => liveHandles.has(d.rootHandle))
+      .map((d) =>
+        liveHandles.has(d.feature.handle)
+          ? d
+          : { ...d, feature: { ...d.feature, handle: d.rootHandle } },
+      );
+  }, [liveCollections, liveHandles]);
 
   const triggerKeys = useMemo(
     () => [...departments.map((d) => d.key as string), "brands"],
