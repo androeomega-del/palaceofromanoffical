@@ -2,8 +2,6 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { fetchCollections, type ShopifyCollection } from "@/lib/shopify";
-import { collectionImage, collectionImageAlt, collectionImageFocal, responsiveCollectionImage, TILE_RESPONSIVE_WIDTHS } from "@/lib/collection-image";
-import { getCollectionImageMap, getCollectionFocalMap } from "@/lib/collection-image.functions";
 import { routeHead } from "@/lib/seo";
 
 type FilterKey = "all" | "women" | "men" | "clothing" | "shoes" | "luxury";
@@ -156,20 +154,6 @@ function CollectionsIndexPage() {
     queryFn: () => fetchCollections(100),
   });
 
-  const imageMapQuery = useQuery({
-    queryKey: ["collection-image-map"],
-    queryFn: () => getCollectionImageMap(),
-    staleTime: 5 * 60 * 1000,
-  });
-  const dynamicMap = imageMapQuery.data ?? {};
-
-  const focalMapQuery = useQuery({
-    queryKey: ["collection-focal-map"],
-    queryFn: () => getCollectionFocalMap(),
-    staleTime: 30_000,
-  });
-  const dynamicFocal = focalMapQuery.data ?? {};
-
   const all = useMemo(
     () => dedupeByCanonical((q.data ?? []).filter(isMainCollection)),
     [q.data],
@@ -300,8 +284,6 @@ function CollectionsIndexPage() {
                   collection={c}
                   slot={slotFor(i)}
                   index={i}
-                  dynamicMap={dynamicMap}
-                  dynamicFocal={dynamicFocal}
                 />
               ))}
             </div>
@@ -316,40 +298,14 @@ function CollectionCard({
   collection: c,
   slot,
   index,
-  dynamicMap,
-  dynamicFocal,
 }: {
   collection: ShopifyCollection;
   slot: SlotKind;
   index: number;
-  dynamicMap: Record<string, string>;
-  dynamicFocal: Record<string, string>;
 }) {
-  const baseSrc = collectionImage({
-    title: c.title,
-    handle: c.handle,
-    description: c.description,
-    dynamicMap,
-  });
-  const r = responsiveCollectionImage(baseSrc, {
-    widths: TILE_RESPONSIVE_WIDTHS,
-    sizes:
-      slot === "feature"
-        ? "(min-width: 1024px) 60vw, (min-width: 768px) 60vw, 100vw"
-        : slot === "side"
-          ? "(min-width: 1024px) 40vw, (min-width: 768px) 40vw, 100vw"
-          : "(min-width: 1024px) 33vw, (min-width: 768px) 33vw, 100vw",
-  });
-  const objectPosition = collectionImageFocal({
-    handle: c.handle,
-    title: c.title,
-    imageWidth: c.image?.width ?? null,
-    imageHeight: c.image?.height ?? null,
-    dynamicFocal,
-  });
-  const alt =
-    c.image?.altText ??
-    collectionImageAlt({ handle: c.handle, title: c.title, description: c.description });
+  const image = c.image;
+  const objectPosition = "50% 50%";
+  const alt = image?.altText ?? `${c.title} collection at Palace of Roman`;
 
   const wrapperClass =
     slot === "feature"
@@ -385,18 +341,18 @@ function CollectionCard({
       data-handle={c.handle}
     >
       <div className={`relative ${aspectClass} mb-7 overflow-hidden bg-canvas-raised`}>
-        <img
-          src={r.src}
-          srcSet={r.srcSet}
-          sizes={r.sizes}
-          alt={alt}
-          loading={index < 2 ? "eager" : "lazy"}
-          decoding="async"
-          width={1200}
-          height={1500}
-          style={{ objectPosition }}
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1500ms] ease-out group-hover:scale-[1.05]"
-        />
+        {image && (
+          <img
+            src={image.url}
+            alt={alt}
+            loading={index < 2 ? "eager" : "lazy"}
+            decoding="async"
+            width={image.width ?? 1200}
+            height={image.height ?? 1500}
+            style={{ objectPosition }}
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1500ms] ease-out group-hover:scale-[1.05]"
+          />
+        )}
 
         {slot === "feature" ? (
           <>
