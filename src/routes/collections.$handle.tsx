@@ -159,35 +159,9 @@ function CollectionPage() {
   const [sortKey, reverseStr] = sort.split("-");
   const reverse = reverseStr === "true";
 
-  // /collections/best-sellers is a virtual collection — no Shopify collection
-  // exists by that handle, so we synthesize results from the global product
-  // catalog sorted by BEST_SELLING.
-  const isBestSellers = handle === "best-sellers";
-
   const q = useQuery({
-    queryKey: ["collection-filtered", handle, filterInputs, sortKey, reverse, isBestSellers],
+    queryKey: ["collection-filtered", handle, filterInputs, sortKey, reverse],
     queryFn: async () => {
-      if (isBestSellers) {
-        const res = await fetchSearchFiltered({
-          first: 48,
-          filters: filterInputs,
-          sortKey,
-          reverse,
-        });
-        return {
-          collection: {
-            id: "virtual:best-sellers",
-            title: "Best Sellers",
-            handle: "best-sellers",
-            description:
-              "The pieces our clients reach for most — a live ranking of the boutique's most-ordered styles across every maison.",
-            image: null,
-          },
-          filters: res.filters,
-          edges: res.edges,
-          pageInfo: res.pageInfo,
-        };
-      }
       return fetchCollectionFiltered({
         handle,
         first: 36,
