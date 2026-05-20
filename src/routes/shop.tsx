@@ -46,6 +46,7 @@ function ShopPage() {
   const [priceRange, setPriceRange] = useState<{ min: number; max: number } | null>(null);
   const [sort, setSort] = useState<SortValue>("BEST_SELLING-false");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [inStockOnly, setInStockOnly] = useState(true);
 
   const filterInputs = useMemo(() => {
     const arr: object[] = selections.map((s) => JSON.parse(s.input));
@@ -56,7 +57,7 @@ function ShopPage() {
   const { sortKey, reverse } = mapSort(sort);
 
   const q = useInfiniteQuery({
-    queryKey: ["shop-search", queryParam ?? "*", filterInputs, sortKey, reverse],
+    queryKey: ["shop-search", queryParam ?? "*", filterInputs, sortKey, reverse, inStockOnly],
     initialPageParam: null as string | null,
     queryFn: ({ pageParam }) =>
       fetchSearchFiltered({
@@ -66,9 +67,11 @@ function ShopPage() {
         filters: filterInputs,
         sortKey,
         reverse,
+        available: inStockOnly,
       }),
     getNextPageParam: (last) => (last.pageInfo.hasNextPage ? last.pageInfo.endCursor : undefined),
   });
+
 
   const filters = q.data?.pages?.[0]?.filters ?? [];
   const edges = useMemo(() => q.data?.pages.flatMap((p) => p.edges) ?? [], [q.data]);
