@@ -47,12 +47,17 @@ function AdminAnalytics() {
 
   const maxBucket = Math.max(
     1,
-    ...(data?.buckets ?? []).map((b) => b.add_to_cart + b.remove_from_cart + b.checkout_started),
+    ...(data?.buckets ?? []).map((b) => b.add_to_cart + b.remove_from_cart + b.checkout_started + b.reached_checkout),
   );
 
   const conversionRate =
     data && data.totals.add_to_cart > 0
-      ? Math.round((data.totals.checkout_started / data.totals.add_to_cart) * 100)
+      ? Math.round((data.totals.reached_checkout / data.totals.add_to_cart) * 100)
+      : 0;
+
+  const reachRate =
+    data && data.totals.checkout_started > 0
+      ? Math.round((data.totals.reached_checkout / data.totals.checkout_started) * 100)
       : 0;
 
   return (
@@ -83,11 +88,12 @@ function AdminAnalytics() {
           <p className="text-sm text-muted-foreground">Loading…</p>
         ) : (
           <>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-12">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-12">
               <Stat label="Add to Cart" value={fmt(data.totals.add_to_cart)} />
               <Stat label="Removed" value={fmt(data.totals.remove_from_cart)} />
               <Stat label="Checkout Clicks" value={fmt(data.totals.checkout_started)} />
-              <Stat label="Conversion" value={`${conversionRate}%`} hint="checkouts / adds" />
+              <Stat label="Reached Checkout" value={fmt(data.totals.reached_checkout)} hint={`${reachRate}% of clicks`} />
+              <Stat label="Conversion" value={`${conversionRate}%`} hint="reached / adds" />
               <Stat label="Est. GMV" value={usd(data.totals.estimated_gmv)} hint={`${fmt(data.totals.unique_sessions)} sessions`} />
             </div>
 
@@ -95,13 +101,13 @@ function AdminAnalytics() {
               <h2 className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-6">Daily activity</h2>
               <div className="flex items-end gap-1 h-40">
                 {data.buckets.map((b) => {
-                  const total = b.add_to_cart + b.remove_from_cart + b.checkout_started;
+                  const total = b.add_to_cart + b.remove_from_cart + b.checkout_started + b.reached_checkout;
                   const h = (total / maxBucket) * 100;
                   return (
                     <div
                       key={b.date}
                       className="flex-1 flex flex-col items-center justify-end gap-1"
-                      title={`${b.date}\nAdds: ${b.add_to_cart}\nRemoves: ${b.remove_from_cart}\nCheckouts: ${b.checkout_started}`}
+                      title={`${b.date}\nAdds: ${b.add_to_cart}\nRemoves: ${b.remove_from_cart}\nCheckout clicks: ${b.checkout_started}\nReached checkout: ${b.reached_checkout}`}
                     >
                       <div
                         className="w-full bg-bronze/80 hover:bg-bronze transition-colors rounded-sm min-h-[2px]"
@@ -128,7 +134,8 @@ function AdminAnalytics() {
                       <tr>
                         <th className="text-left font-medium py-2">Product</th>
                         <th className="text-right font-medium py-2">Adds</th>
-                        <th className="text-right font-medium py-2">Checkouts</th>
+                        <th className="text-right font-medium py-2">Clicks</th>
+                        <th className="text-right font-medium py-2">Reached</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -145,7 +152,8 @@ function AdminAnalytics() {
                             </a>
                           </td>
                           <td className="py-3 text-right tabular-nums">{p.adds}</td>
-                          <td className="py-3 text-right tabular-nums text-bronze">{p.checkouts}</td>
+                          <td className="py-3 text-right tabular-nums">{p.checkouts}</td>
+                          <td className="py-3 text-right tabular-nums text-bronze">{p.reached}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -164,8 +172,10 @@ function AdminAnalytics() {
                         <div className="min-w-0">
                           <span
                             className={`inline-block text-[9px] uppercase tracking-[0.2em] px-2 py-0.5 rounded mr-2 ${
-                              r.event_type === "checkout_started"
-                                ? "bg-bronze/15 text-bronze"
+                              r.event_type === "reached_checkout"
+                                ? "bg-bronze/25 text-bronze"
+                                : r.event_type === "checkout_started"
+                                ? "bg-bronze/10 text-bronze"
                                 : r.event_type === "add_to_cart"
                                 ? "bg-ink/5 text-ink"
                                 : "bg-destructive/10 text-destructive"
