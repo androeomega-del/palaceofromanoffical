@@ -1,4 +1,5 @@
 import { stabilize, test, expect, loadFixtures } from "./_helpers";
+import { attachImageContext } from "./_image-context";
 
 /**
  * Hero image fingerprinting + cropping at multiple breakpoints.
