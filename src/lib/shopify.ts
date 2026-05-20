@@ -274,7 +274,7 @@ async function listProducts(opts: {
   first: number;
   after?: string | null;
   query?: string | null;
-  filters?: FilterInput[];
+  filters?: object[];
   sortKey?: string;
   reverse?: boolean;
 }): Promise<{ edges: ShopifyProduct[]; pageInfo: { hasNextPage: boolean; endCursor: string | null } }> {
@@ -456,7 +456,7 @@ export async function fetchCollections(first = 50): Promise<ShopifyCollection[]>
 
 export async function fetchCollectionFiltered(opts: {
   handle: string; first?: number; after?: string | null;
-  filters?: FilterInput[]; sortKey?: string; reverse?: boolean;
+  filters?: object[]; sortKey?: string; reverse?: boolean;
 }): Promise<FilteredResult | null> {
   const def = await resolveCollection(opts.handle);
   if (!def) return null;
@@ -503,7 +503,7 @@ export async function fetchCollectionFiltered(opts: {
 
 export async function fetchSearchFiltered(opts: {
   query?: string; first?: number; after?: string | null;
-  filters?: FilterInput[]; sortKey?: string; reverse?: boolean;
+  filters?: object[]; sortKey?: string; reverse?: boolean;
 }): Promise<Omit<FilteredResult, "collection">> {
   const first = opts.first ?? 24;
   const offset = decodeCursor(opts.after);
