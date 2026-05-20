@@ -1,11 +1,25 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { fetchProductsPage } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
 import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
 
+type SortKey = "popular" | "newest" | "price-asc" | "price-desc" | "alpha";
+const SORTS: { key: SortKey; label: string; sortKey: string; reverse: boolean }[] = [
+  { key: "popular", label: "Popularity", sortKey: "BEST_SELLING", reverse: false },
+  { key: "newest", label: "Newest", sortKey: "CREATED_AT", reverse: true },
+  { key: "price-asc", label: "Price · Low to High", sortKey: "PRICE", reverse: false },
+  { key: "price-desc", label: "Price · High to Low", sortKey: "PRICE", reverse: true },
+  { key: "alpha", label: "A–Z", sortKey: "TITLE", reverse: false },
+];
+const SORT_KEYS: SortKey[] = SORTS.map((s) => s.key);
+
 export const Route = createFileRoute("/brand/$vendor")({
+  validateSearch: (search: Record<string, unknown>): { sort: SortKey } => {
+    const raw = typeof search.sort === "string" ? (search.sort as SortKey) : "popular";
+    return { sort: SORT_KEYS.includes(raw) ? raw : "popular" };
+  },
   head: ({ params }) => {
     const name = unslug(params.vendor);
     const path = `/brand/${params.vendor}`;
@@ -40,13 +54,23 @@ function unslug(s: string) {
 
 function BrandPage() {
   const { vendor } = Route.useParams();
+  const { sort } = Route.useSearch();
+  const navigate = useNavigate({ from: "/brand/$vendor" });
   const name = unslug(vendor);
 
+  const sortDef = useMemo(() => SORTS.find((s) => s.key === sort) ?? SORTS[0], [sort]);
+
   const q = useInfiniteQuery({
-    queryKey: ["brand", vendor],
+    queryKey: ["brand", vendor, sort],
     initialPageParam: null as string | null,
     queryFn: ({ pageParam }) =>
-      fetchProductsPage({ first: 48, after: pageParam, query: `vendor:"${name}"` }),
+      fetchProductsPage({
+        first: 48,
+        after: pageParam,
+        query: `vendor:"${name}"`,
+        sortKey: sortDef.sortKey,
+        reverse: sortDef.reverse,
+      }),
     getNextPageParam: (last) => (last.pageInfo.hasNextPage ? last.pageInfo.endCursor : undefined),
   });
 
@@ -67,6 +91,30 @@ function BrandPage() {
               </p>
             )}
           </div>
+        </div>
+      </section>
+
+      <section className="px-6 py-6 border-b border-ink/5">
+        <div className="max-w-screen-2xl mx-auto flex items-center justify-end">
+          <label className="flex items-center gap-3 text-[11px] uppercase tracking-[0.25em] text-muted-foreground">
+            Sort
+            <select
+              value={sort}
+              onChange={(e) =>
+                navigate({
+                  search: () => ({ sort: e.target.value as SortKey }),
+                  replace: true,
+                })
+              }
+              className="bg-transparent border-b border-ink/30 focus:border-ink py-1 pr-6 text-[11px] uppercase tracking-[0.2em] text-ink focus:outline-none cursor-pointer"
+            >
+              {SORTS.map((s) => (
+                <option key={s.key} value={s.key}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
       </section>
 
