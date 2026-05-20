@@ -131,21 +131,34 @@ function buildDepartment(
   dept: Omit<MegaDepartment, "columns">,
 ): MegaDepartment {
   const prefixWord = prefixes[0].startsWith("women") ? "Women's" : "Men's";
+  const genderKey: "women" | "men" = prefixes[0].startsWith("women") ? "women" : "men";
+  const byHandle = new Map(collections.map((c) => [c.handle, c]));
 
   // Group rule matches by column.
-  const grouped = new Map<string, MegaItem[]>();
+  const grouped = new Map<string, Array<MegaItem & { _order: number }>>();
+  const push = (col: string, item: MegaItem & { _order: number }) => {
+    const arr = grouped.get(col) ?? [];
+    arr.push(item);
+    grouped.set(col, arr);
+  };
 
-  // 1) "New Arrivals" sits at the top of Apparel for both departments —
-  //    it's a smart collection that crosses genders, but it reads as the
-  //    natural lead item in an apparel column.
-  const newArrivals = collections.find((c) => c.handle === "new-arrivals");
-  if (newArrivals) {
-    const colName = columnOrder[0]; // Apparel / Tailoring
-    grouped.set(colName, [{ handle: "new-arrivals", label: "New Arrivals" }]);
+  // 1) "New Arrivals" sits at the top of Apparel for both departments.
+  if (byHandle.has("new-arrivals")) {
+    push(columnOrder[0], { handle: "new-arrivals", label: "New Arrivals", _order: 0 });
   }
 
-  // Dedupe by handle in case multiple prefixes match the same suffix.
-  const seen = new Set<string>();
+  // 2) Cross-gender categories (unprefixed handles that still belong here).
+  const seen = new Set<string>(["new-arrivals"]);
+  for (const cx of CROSS_CATEGORIES) {
+    const slot = cx[genderKey];
+    if (!slot) continue;
+    if (!byHandle.has(cx.handle)) continue;
+    if (seen.has(cx.handle)) continue;
+    seen.add(cx.handle);
+    push(slot.column, { handle: cx.handle, label: cx.label, _order: slot.order });
+  }
+
+  // 3) Prefixed collections (womens-/women-/mens-/men-), routed by rule or "More".
   const moreItems: Array<MegaItem & { _order: number }> = [];
   for (const c of collections) {
     const matchedPrefix = prefixes.find((p) => c.handle.startsWith(p));
@@ -157,30 +170,27 @@ function buildDepartment(
 
     if (rule) {
       const label = rule.label ?? cleanTitle(c.title, prefixWord);
-      const arr = grouped.get(rule.column) ?? [];
-      arr.push({ handle: c.handle, label, _order: rule.order } as MegaItem & { _order: number });
-      grouped.set(rule.column, arr);
+      push(rule.column, { handle: c.handle, label, _order: rule.order });
     } else {
-      // Catchall — surface every prefix-matching collection so nothing is hidden.
       moreItems.push({ handle: c.handle, label: cleanTitle(c.title, prefixWord), _order: 99 });
     }
   }
   if (moreItems.length > 0) {
     moreItems.sort((a, b) => a.label.localeCompare(b.label));
-    grouped.set("More", moreItems);
+    for (const m of moreItems) push("More", m);
   }
 
-
-  // Build columns in defined order, sorting items by their rule order.
+  // Build columns in defined order, dedupe per column, sort by _order.
   const columns: MegaColumn[] = [];
   for (const heading of columnOrder) {
     const items = grouped.get(heading);
     if (!items || items.length === 0) continue;
-    items.sort((a, b) => ((a as any)._order ?? 99) - ((b as any)._order ?? 99));
-    // strip internal _order before returning
+    const dedup = new Map<string, MegaItem & { _order: number }>();
+    for (const it of items) if (!dedup.has(it.handle)) dedup.set(it.handle, it);
+    const sorted = [...dedup.values()].sort((a, b) => a._order - b._order);
     columns.push({
       heading,
-      items: items.map(({ handle, label }) => ({ handle, label })),
+      items: sorted.map(({ handle, label }) => ({ handle, label })),
     });
   }
 
