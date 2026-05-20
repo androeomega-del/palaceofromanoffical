@@ -7,6 +7,7 @@ export interface AnalyticsBucket {
   add_to_cart: number;
   remove_from_cart: number;
   checkout_started: number;
+  reached_checkout: number;
 }
 
 export interface TopProduct {
@@ -14,6 +15,7 @@ export interface TopProduct {
   product_title: string | null;
   adds: number;
   checkouts: number;
+  reached: number;
 }
 
 export interface CartAnalytics {
@@ -21,6 +23,7 @@ export interface CartAnalytics {
     add_to_cart: number;
     remove_from_cart: number;
     checkout_started: number;
+    reached_checkout: number;
     unique_sessions: number;
     estimated_gmv: number;
   };
@@ -37,6 +40,14 @@ export interface CartAnalytics {
   }>;
 }
 
+const emptyBucket = (date: string): AnalyticsBucket => ({
+  date,
+  add_to_cart: 0,
+  remove_from_cart: 0,
+  checkout_started: 0,
+  reached_checkout: 0,
+});
+
 export const getCartAnalytics = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
   .handler(async (): Promise<CartAnalytics> => {
@@ -51,7 +62,14 @@ export const getCartAnalytics = createServerFn({ method: "POST" })
 
     if (error) throw new Error(error.message);
 
-    const totals = { add_to_cart: 0, remove_from_cart: 0, checkout_started: 0, unique_sessions: 0, estimated_gmv: 0 };
+    const totals = {
+      add_to_cart: 0,
+      remove_from_cart: 0,
+      checkout_started: 0,
+      reached_checkout: 0,
+      unique_sessions: 0,
+      estimated_gmv: 0,
+    };
     const sessions = new Set<string>();
     const byDay = new Map<string, AnalyticsBucket>();
     const byProduct = new Map<string, TopProduct>();
@@ -60,24 +78,38 @@ export const getCartAnalytics = createServerFn({ method: "POST" })
       const type = r.event_type as keyof typeof totals;
       if (type in totals) (totals as Record<string, number>)[type]++;
       if (r.session_id) sessions.add(r.session_id);
-      if (r.event_type === "checkout_started") {
+      if (r.event_type === "reached_checkout") {
         totals.estimated_gmv += Number(r.price_usd ?? 0) * (r.quantity ?? 1);
       }
 
       const day = r.created_at.slice(0, 10);
-      const b = byDay.get(day) ?? { date: day, add_to_cart: 0, remove_from_cart: 0, checkout_started: 0 };
-      if (type === "add_to_cart" || type === "remove_from_cart" || type === "checkout_started") b[type]++;
+      const b = byDay.get(day) ?? emptyBucket(day);
+      if (
+        type === "add_to_cart" ||
+        type === "remove_from_cart" ||
+        type === "checkout_started" ||
+        type === "reached_checkout"
+      ) {
+        b[type]++;
+      }
       byDay.set(day, b);
 
-      if (r.product_handle && (r.event_type === "add_to_cart" || r.event_type === "checkout_started")) {
+      if (
+        r.product_handle &&
+        (r.event_type === "add_to_cart" ||
+          r.event_type === "checkout_started" ||
+          r.event_type === "reached_checkout")
+      ) {
         const p = byProduct.get(r.product_handle) ?? {
           product_handle: r.product_handle,
           product_title: r.product_title,
           adds: 0,
           checkouts: 0,
+          reached: 0,
         };
         if (r.event_type === "add_to_cart") p.adds++;
-        else p.checkouts++;
+        else if (r.event_type === "checkout_started") p.checkouts++;
+        else p.reached++;
         if (!p.product_title && r.product_title) p.product_title = r.product_title;
         byProduct.set(r.product_handle, p);
       }
@@ -90,11 +122,12 @@ export const getCartAnalytics = createServerFn({ method: "POST" })
       const d = new Date();
       d.setUTCDate(d.getUTCDate() - i);
       const key = d.toISOString().slice(0, 10);
-      buckets.push(byDay.get(key) ?? { date: key, add_to_cart: 0, remove_from_cart: 0, checkout_started: 0 });
+      buckets.push(byDay.get(key) ?? emptyBucket(key));
     }
 
+    const score = (p: TopProduct) => p.adds + p.checkouts * 2 + p.reached * 4;
     const top_products = [...byProduct.values()]
-      .sort((a, b) => b.adds + b.checkouts * 3 - (a.adds + a.checkouts * 3))
+      .sort((a, b) => score(b) - score(a))
       .slice(0, 15);
 
     const recent = (rows ?? []).slice(0, 25).map((r) => ({

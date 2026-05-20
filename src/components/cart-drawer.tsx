@@ -16,13 +16,20 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
 
   const handleCheckout = () => {
     const url = getCheckoutUrl();
+    trackCartEvent({
+      event_type: "checkout_started",
+      quantity: totalItems,
+      price_usd: totalAmount,
+    });
     if (url) {
-      trackCartEvent({
-        event_type: "checkout_started",
-        quantity: totalItems,
-        price_usd: totalAmount,
-      });
-      window.open(url, "_blank");
+      const win = window.open(url, "_blank");
+      if (win) {
+        trackCartEvent({
+          event_type: "reached_checkout",
+          quantity: totalItems,
+          price_usd: totalAmount,
+        });
+      }
       onOpenChange(false);
     }
   };
