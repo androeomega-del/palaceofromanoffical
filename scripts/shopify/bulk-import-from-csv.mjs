@@ -10,7 +10,9 @@
 //   node scripts/shopify/bulk-import-from-csv.mjs --dry --limit=3
 //   node scripts/shopify/bulk-import-from-csv.mjs --limit=10        (smoke)
 //   node scripts/shopify/bulk-import-from-csv.mjs                   (full, ~5h)
-//   node scripts/shopify/bulk-import-from-csv.mjs --publish         (status=active)
+//
+// Defaults: status=active, published=true. Out-of-stock groups (sum(qty)==0) are skipped.
+//   --draft   create as draft instead of active
 
 import fs from 'node:fs';
 import { parse } from 'csv-parse/sync';
