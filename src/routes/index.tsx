@@ -771,9 +771,20 @@ function SummerBento({
   spotlightVendor?: string;
   spotlightSlug?: string;
 }) {
+  // Hydration-safe guard: render a placeholder on the first paint (and on
+  // any SSR pass that bypasses the parent ClientOnly) so SummerBento's
+  // markup never appears before React has finished hydrating.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  if (!mounted) {
+    return <div aria-hidden className="min-h-[80vh] bg-canvas-raised" />;
+  }
   return (
     <section className="px-4 md:px-8 lg:px-12 pt-6 md:pt-10 pb-12 md:pb-16">
       <div className="max-w-[1600px] mx-auto grid grid-cols-12 auto-rows-[180px] md:auto-rows-[200px] gap-4">
+
 
         {/* Main Hero: The Shoreline Perspective */}
         <div className="col-span-12 lg:col-span-8 row-span-3 lg:row-span-4 relative group overflow-hidden bg-canvas-raised">
