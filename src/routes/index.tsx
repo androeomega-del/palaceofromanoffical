@@ -249,8 +249,7 @@ function HomePage() {
               </p>
             </div>
             <Link
-              to="/shop"
-              search={{ q: "tag:Swimwear OR tag:Beachwear", title: "Swim & Beachwear" }}
+              to="/swim"
               className="text-[11px] uppercase tracking-[0.25em] border-b border-ink/20 pb-1 hover:border-ink hidden md:inline-block"
             >
               Shop all swimwear
