@@ -22,6 +22,7 @@ import {
   type Selection,
   type SortValue,
 } from "@/components/catalog-filters";
+import { HeroFocalOverlay } from "@/components/hero-focal-overlay";
 
 const SORT_VALUES = SORT_OPTIONS.map((o) => o.value);
 
@@ -33,11 +34,14 @@ const INDEX_SORT_ALIASES: Record<string, SortValue> = {
 };
 
 export const Route = createFileRoute("/collections/$handle")({
-  validateSearch: (search: Record<string, unknown>): { sort: SortValue } => {
+  validateSearch: (search: Record<string, unknown>): { sort: SortValue; edit?: "focal" } => {
     const raw = typeof search.sort === "string" ? search.sort : "";
-    if (SORT_VALUES.includes(raw as SortValue)) return { sort: raw as SortValue };
-    if (raw in INDEX_SORT_ALIASES) return { sort: INDEX_SORT_ALIASES[raw] };
-    return { sort: "BEST_SELLING-false" };
+    const edit = search.edit === "focal" ? ("focal" as const) : undefined;
+    let sort: SortValue;
+    if (SORT_VALUES.includes(raw as SortValue)) sort = raw as SortValue;
+    else if (raw in INDEX_SORT_ALIASES) sort = INDEX_SORT_ALIASES[raw];
+    else sort = "BEST_SELLING-false";
+    return edit ? { sort, edit } : { sort };
   },
   loader: async ({ params }) => {
     try {
@@ -114,7 +118,7 @@ function titleizeHandle(handle: string) {
 
 function CollectionPage() {
   const { handle } = Route.useParams();
-  const { sort } = Route.useSearch();
+  const { sort, edit } = Route.useSearch();
   const navigate = useNavigate({ from: "/collections/$handle" });
   const setSort = (v: SortValue) =>
     navigate({ search: (prev: { sort: SortValue }) => ({ ...prev, sort: v }), replace: true });
@@ -272,6 +276,19 @@ function CollectionPage() {
     dynamicFocal: dynamicFocalQ.data ?? {},
   });
 
+  const editing = edit === "focal";
+  const parsedFocal = (() => {
+    const m = heroFocal.match(/(-?\d+(?:\.\d+)?)%\s+(-?\d+(?:\.\d+)?)%/);
+    return m ? { x: parseFloat(m[1]), y: parseFloat(m[2]) } : { x: 50, y: 40 };
+  })();
+  const [liveFocal, setLiveFocal] = useState<{ x: number; y: number } | null>(null);
+  const renderedFocal = liveFocal ?? parsedFocal;
+  const hasSavedOverride =
+    heroMeta?.focalX !== null &&
+    heroMeta?.focalX !== undefined &&
+    heroMeta?.focalY !== null &&
+    heroMeta?.focalY !== undefined;
+
   return (
     <div>
       <section className="relative h-[42vh] min-h-[280px] max-h-[520px] w-full overflow-hidden bg-ink/5">
@@ -290,12 +307,26 @@ function CollectionPage() {
               fetchPriority="high"
               decoding="async"
               className="absolute inset-0 h-full w-full object-cover"
-              style={{ objectPosition: heroFocal }}
+              style={{ objectPosition: `${renderedFocal.x}% ${renderedFocal.y}%` }}
             />
           );
         })()}
-        <div className="absolute inset-0 bg-gradient-to-t from-canvas via-canvas/40 to-transparent" />
+        {!editing && (
+          <div className="absolute inset-0 bg-gradient-to-t from-canvas via-canvas/40 to-transparent" />
+        )}
+        {editing && (
+          <HeroFocalOverlay
+            handle={handle.toLowerCase()}
+            initialFocal={parsedFocal}
+            hasSavedOverride={hasSavedOverride}
+            onLiveChange={setLiveFocal}
+            onExit={() =>
+              navigate({ search: { sort }, replace: true })
+            }
+          />
+        )}
       </section>
+
 
 
       <section className="px-6 pt-12 pb-8 border-b border-ink/5">
