@@ -304,9 +304,13 @@ function CollectionCard({
   slot: SlotKind;
   index: number;
 }) {
-  const image = c.image;
+  const shopifyImg = c.image;
+  const fallbackUrl = collectionImage({ title: c.title, handle: c.handle, description: c.description });
+  const imgUrl = shopifyImg?.url ?? fallbackUrl;
+  const imgWidth = shopifyImg?.width ?? 1200;
+  const imgHeight = shopifyImg?.height ?? 1500;
   const objectPosition = "50% 50%";
-  const alt = image?.altText ?? `${c.title} collection at Palace of Roman`;
+  const alt = shopifyImg?.altText ?? `${c.title} collection at Palace of Roman`;
 
   const wrapperClass =
     slot === "feature"
