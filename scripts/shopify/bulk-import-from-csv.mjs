@@ -25,7 +25,7 @@ const SB_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const EUR_TO_USD = 1.08;
 
 const DRY = process.argv.includes('--dry');
-const PUBLISH = process.argv.includes('--publish');
+const DRAFT = process.argv.includes('--draft');
 const limitArg = process.argv.find((a) => a.startsWith('--limit='));
 const LIMIT = limitArg ? parseInt(limitArg.split('=')[1], 10) : Infinity;
 const CSV = process.env.CSV_PATH || '/tmp/latest.csv';
