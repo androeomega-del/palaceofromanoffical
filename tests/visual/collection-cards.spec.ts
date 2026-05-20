@@ -1,12 +1,19 @@
-import { stabilize, test, expect } from "./_helpers";
+import { stabilize, test, expect, loadFixtures } from "./_helpers";
 
 /**
  * Pixel-based visual regression for the /collections grid.
  *
- * Snapshots each visible collection card individually (so a single
- * mis-cropped tile fails its own assertion instead of polluting a full-grid
- * diff) and also captures a full-grid snapshot per viewport.
+ * The set of asserted collections is derived from Shopify at test-setup time
+ * (see tests/visual/global-setup.ts) so this file never has to be edited when
+ * collections are added or removed.
  */
+const fixture = loadFixtures();
+
+// Cap to keep wall-time bounded; first N stable handles is enough to catch
+// regressions (cards share layout + image pipeline).
+const MAX_CARDS = 12;
+const cardHandles = fixture.collectionHandles.slice(0, MAX_CARDS);
+
 test.describe("collection cards", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/collections");
@@ -19,19 +26,13 @@ test.describe("collection cards", () => {
     await expect(grid).toHaveScreenshot(`grid-${testInfo.project.name}.png`);
   });
 
-  test("per-card snapshots", async ({ page }, testInfo) => {
-    const cards = page.getByTestId("collection-card");
-    const count = await cards.count();
-    expect(count).toBeGreaterThan(0);
-
-    // Cap to keep runtime sane on large catalogs; first N is enough to catch regressions.
-    const max = Math.min(count, 12);
-    for (let i = 0; i < max; i++) {
-      const card = cards.nth(i);
-      const handle = (await card.getAttribute("data-handle")) ?? `idx-${i}`;
+  for (const handle of cardHandles) {
+    test(`card: ${handle}`, async ({ page }, testInfo) => {
+      const card = page.locator(`[data-testid="collection-card"][data-handle="${handle}"]`);
+      await expect(card, `collection-card[${handle}] should exist on /collections`).toHaveCount(1);
       await card.scrollIntoViewIfNeeded();
       await stabilize(page);
       await expect(card).toHaveScreenshot(`card-${handle}-${testInfo.project.name}.png`);
-    }
-  });
+    });
+  }
 });
