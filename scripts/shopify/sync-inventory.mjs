@@ -172,6 +172,45 @@ let failed = 0;
 let activated = 0;
 const skuFlipped = []; // {sku, newAvailable}
 
+// ---- Track this run in inventory_sync_runs ---------------------------------
+
+let runId = null;
+async function createRun() {
+  if (DRY) return;
+  try {
+    const r = await sb('inventory_sync_runs', {
+      method: 'POST',
+      headers: { Prefer: 'return=representation' },
+      body: JSON.stringify({
+        status: 'running',
+        dry_run: false,
+        total: resolved.length,
+      }),
+    });
+    const rows = await r.json();
+    runId = rows?.[0]?.id ?? null;
+    if (runId) console.log(`Run id: ${runId}`);
+  } catch (e) {
+    console.warn('Could not create sync run row:', e.message);
+  }
+}
+
+async function patchRun(patch) {
+  if (!runId) return;
+  try {
+    await sb(`inventory_sync_runs?id=eq.${runId}`, {
+      method: 'PATCH',
+      headers: { Prefer: 'return=minimal' },
+      body: JSON.stringify(patch),
+    });
+  } catch (e) {
+    console.warn('patchRun failed:', e.message);
+  }
+}
+
+await createRun();
+let lastPatch = 0;
+
 for (let i = 0; i < resolved.length; i += 100) {
   const slice = resolved.slice(i, i + 100);
 
