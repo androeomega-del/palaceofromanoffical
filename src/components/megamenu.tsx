@@ -400,7 +400,7 @@ function MegaPanel({
 function useBrandIndex() {
   return useQuery({
     queryKey: ["nav-brand-index"],
-    queryFn: () => fetchVendorIndex(4, 250),
+    queryFn: () => fetchVendorIndex(),
     staleTime: 10 * 60_000,
     select: (rows) => buildBrandList(rows),
   });
