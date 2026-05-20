@@ -314,6 +314,9 @@ function ProductView({
     .slice(0, 4);
 
   const vendorHandle = product.vendor.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  const layering = layeringKey(product);
+  const editorial = layering ? LAYERING_COPY[layering] : null;
+
 
   return (
     <div className="studio">
