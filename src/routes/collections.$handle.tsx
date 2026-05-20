@@ -169,16 +169,13 @@ function CollectionPage() {
   const [sortKey, reverseStr] = sort.split("-");
   const reverse = reverseStr === "true";
 
-  // For /collections/high-discounts, fetch a wider window and filter client-side
-  // to products that are 50%+ off (compareAtPrice vs price).
-  const isHighDiscounts = handle === "high-discounts";
   // /collections/best-sellers is a virtual collection — no Shopify collection
   // exists by that handle, so we synthesize results from the global product
   // catalog sorted by BEST_SELLING.
   const isBestSellers = handle === "best-sellers";
 
   const q = useQuery({
-    queryKey: ["collection-filtered", handle, filterInputs, sortKey, reverse, isHighDiscounts, isBestSellers],
+    queryKey: ["collection-filtered", handle, filterInputs, sortKey, reverse, isBestSellers],
     queryFn: async () => {
       if (isBestSellers) {
         const res = await fetchSearchFiltered({
@@ -205,8 +202,8 @@ function CollectionPage() {
         handle,
         first: 36,
         filters: filterInputs,
-        sortKey: isHighDiscounts ? "PRICE" : sortKey,
-        reverse: isHighDiscounts ? false : reverse,
+        sortKey,
+        reverse,
       });
     },
   });
@@ -214,8 +211,6 @@ function CollectionPage() {
   const data = q.data;
   const filters = data?.filters ?? [];
   const rawEdges = data?.edges ?? [];
-  // High Discounts is the entry-price edit — surface lowest-priced in-stock items.
-  // (No synthetic % off; we have no MSRP-vs-sale data to anchor a real discount.)
   const discountEdges = rawEdges;
 
   // Derive available product types from the current result set
