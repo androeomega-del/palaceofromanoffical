@@ -102,7 +102,7 @@ if (!DRY) {
     if ((i + 1) % 100 === 0 || i + 1 === productGids.length) {
       console.log(`Progress ${i + 1}/${productGids.length} — published=${published}, failed=${failed}`);
     }
-    await sleep(150);
+    await sleep(50);
   }
 }
 
