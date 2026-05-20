@@ -5,7 +5,7 @@ import { fetchProducts, fetchCollection, fetchSearchFiltered, type ShopifyProduc
 import { ProductCard } from "@/components/product-card";
 import { EditorialHotspots } from "@/components/editorial-hotspots";
 import { CampaignVideo } from "@/components/campaign-video";
-import { collectionImage, collectionImageAlt, collectionImageFocal } from "@/lib/collection-image";
+
 import heroImage from "@/assets/home-hero.jpg";
 import summerHero from "@/assets/summer-bento-hero.jpg";
 import editorialHero from "@/assets/editorial/may-2026/1.webp";
