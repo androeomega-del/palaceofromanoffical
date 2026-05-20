@@ -116,10 +116,20 @@ type BgVariantRow = {
 const PRODUCT_COLUMNS =
   "id,handle,group_sku,brand,name,description,description_plain,gender,category,subcategory,subsubcategory,color,material,main_picture,pictures,retail_price,currency,in_stock,total_stock";
 
+// Display currency: BG catalog is priced in EUR, but the storefront is sold in USD.
+// Apply a single FX constant at the read boundary so every surface (cards, PDP,
+// cart, structured data, OG meta) sees the same USD amount.
+const DISPLAY_CURRENCY = "USD";
+const EUR_TO_USD = 1.08;
+
 function priceMoney(amount: number | string | null, currency: string | null): Money {
   const n = typeof amount === "string" ? parseFloat(amount) : (amount ?? 0);
-  return { amount: (Number.isFinite(n) ? n : 0).toFixed(2), currencyCode: currency || "EUR" };
+  const eur = Number.isFinite(n) ? n : 0;
+  const src = (currency || "EUR").toUpperCase();
+  const usd = src === "USD" ? eur : eur * EUR_TO_USD;
+  return { amount: usd.toFixed(2), currencyCode: DISPLAY_CURRENCY };
 }
+
 
 function imagesFromRow(r: BgProductRow, alt: string): ShopifyProductNode["images"] {
   const urls: string[] = [];
