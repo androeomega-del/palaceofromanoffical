@@ -144,8 +144,8 @@ export const useCartStore = create<CartStore>()(
         const trackAdd = () =>
           trackCartEvent({
             event_type: "add_to_cart",
-            product_handle: item.product?.handle ?? null,
-            product_title: item.product?.title ?? null,
+            product_handle: item.product?.node?.handle ?? null,
+            product_title: item.product?.node?.title ?? null,
             variant_id: item.variantId,
             variant_title: item.variantTitle,
             price_usd: item.price ? Number(item.price.amount) : null,
