@@ -951,8 +951,7 @@ function SummerBento({
 
         {/* Swimwear Promo Tile (honey) */}
         <Link
-          to="/shop"
-          search={{ q: "tag:Swimwear OR tag:Beachwear", title: "Swim & Beachwear" }}
+          to="/swim"
           className="col-span-12 md:col-span-6 lg:col-span-4 row-span-2 bg-bronze relative overflow-hidden flex flex-col justify-center items-center text-center group"
         >
           {swimImage && (
