@@ -152,7 +152,7 @@ function CollectionsIndexPage() {
 
   const q = useQuery({
     queryKey: ["collections-all"],
-    queryFn: () => fetchCollections(100),
+    queryFn: () => fetchCollections(500),
   });
 
   // Show every collection that has a main image set in Shopify

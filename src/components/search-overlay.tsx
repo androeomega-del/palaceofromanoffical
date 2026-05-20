@@ -42,7 +42,7 @@ export function SearchOverlay({ open, onOpenChange }: Props) {
   // Cache collections (cheap, low-cardinality) and filter client-side.
   const collectionsQ = useQuery({
     queryKey: ["all-collections-for-search"],
-    queryFn: () => fetchCollections(100),
+    queryFn: () => fetchCollections(500),
     staleTime: 1000 * 60 * 10,
     enabled: open,
   });

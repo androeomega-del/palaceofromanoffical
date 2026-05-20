@@ -57,10 +57,11 @@ const WOMEN_RULES: ClassifierRule[] = [
   { column: "Fine Accessories", order: 1,  match: (s) => s === "watches",         label: "Watches" },
   { column: "Fine Accessories", order: 2,  match: (s) => s === "scarves",         label: "Scarves & Shawls" },
   { column: "Fine Accessories", order: 3,  match: (s) => s === "hats",            label: "Hats" },
-  { column: "Fine Accessories", order: 9,  match: (s) => s.startsWith("accessories"), label: "All Accessories" },
+  { column: "Fine Accessories", order: 9,  match: (s) => s === "accessories" || s.startsWith("accessories"), label: "All Accessories" },
 ];
 
 const MEN_RULES: ClassifierRule[] = [
+  { column: "Apparel",              order: 0, match: (s) => s === "clothing",               label: "All Clothing" },
   { column: "Tailoring",            order: 0, match: (s) => s === "suits",                  label: "Suits" },
   { column: "Tailoring",            order: 1, match: (s) => s === "jackets-coats",          label: "Jackets & Coats" },
   { column: "Shirts & Knitwear",    order: 0, match: (s) => s === "shirts",                 label: "Shirts" },
@@ -76,14 +77,14 @@ const MEN_RULES: ClassifierRule[] = [
   { column: "Shoes",                order: 1, match: (s) => s === "sneakers",               label: "Sneakers" },
   { column: "Shoes",                order: 2, match: (s) => s === "boots",                  label: "Boots" },
   { column: "Shoes",                order: 3, match: (s) => s === "sandals-slides",         label: "Sandals & Slides" },
-  { column: "Accessories",          order: 0, match: (s) => s === "bags-wallets",           label: "Bags & Wallets" },
+  { column: "Accessories",          order: 0, match: (s) => s === "bags" || s === "bags-wallets", label: "Bags" },
   { column: "Accessories",          order: 1, match: (s) => s === "belts",                  label: "Belts" },
   { column: "Accessories",          order: 2, match: (s) => s === "watches-jewelry",        label: "Watches & Jewellery" },
-  { column: "Accessories",          order: 9, match: (s) => s.startsWith("accessories"),    label: "All Accessories" },
+  { column: "Accessories",          order: 9, match: (s) => s === "accessories" || s.startsWith("accessories"), label: "All Accessories" },
 ];
 
 const WOMEN_COLUMN_ORDER = ["Apparel", "Shoes", "Bags & Leather", "Fine Accessories"];
-const MEN_COLUMN_ORDER   = ["Tailoring", "Shirts & Knitwear", "Bottoms & Beach", "Shoes", "Accessories"];
+const MEN_COLUMN_ORDER   = ["Apparel", "Tailoring", "Shirts & Knitwear", "Bottoms & Beach", "Shoes", "Accessories"];
 
 function cleanTitle(title: string, prefixWord: "Women's" | "Men's"): string {
   return title.replace(new RegExp(`^${prefixWord.replace("'", "['']")}\\s*`, "i"), "").trim() || title;
@@ -91,12 +92,12 @@ function cleanTitle(title: string, prefixWord: "Women's" | "Men's"): string {
 
 function buildDepartment(
   collections: ShopifyCollection[],
-  prefix: "womens-" | "mens-",
+  prefixes: string[],
   rules: ClassifierRule[],
   columnOrder: string[],
   dept: Omit<MegaDepartment, "columns">,
 ): MegaDepartment {
-  const prefixWord = prefix === "womens-" ? "Women's" : "Men's";
+  const prefixWord = prefixes[0].startsWith("women") ? "Women's" : "Men's";
 
   // Group rule matches by column.
   const grouped = new Map<string, MegaItem[]>();
@@ -110,11 +111,16 @@ function buildDepartment(
     grouped.set(colName, [{ handle: "new-arrivals", label: "New Arrivals" }]);
   }
 
+  // Dedupe by handle in case multiple prefixes match the same suffix.
+  const seen = new Set<string>();
   for (const c of collections) {
-    if (!c.handle.startsWith(prefix)) continue;
-    const suffix = c.handle.slice(prefix.length);
+    const matchedPrefix = prefixes.find((p) => c.handle.startsWith(p));
+    if (!matchedPrefix) continue;
+    if (seen.has(c.handle)) continue;
+    const suffix = c.handle.slice(matchedPrefix.length);
     const rule = rules.find((r) => r.match(suffix));
     if (!rule) continue;
+    seen.add(c.handle);
 
     const label = rule.label ?? cleanTitle(c.title, prefixWord);
     const arr = grouped.get(rule.column) ?? [];
@@ -141,10 +147,13 @@ function buildDepartment(
 /**
  * Build the Women / Men megamenu departments live from Shopify collections.
  * Pass the full collection list from `fetchCollections()`.
+ *
+ * Both `womens-` and `women-` prefixes are accepted (Shopify has a mix —
+ * `womens-clothing` and `women-bags` both exist as real collections).
  */
 export function buildDepartments(collections: ShopifyCollection[]): MegaDepartment[] {
   return [
-    buildDepartment(collections, "womens-", WOMEN_RULES, WOMEN_COLUMN_ORDER, {
+    buildDepartment(collections, ["womens-", "women-"], WOMEN_RULES, WOMEN_COLUMN_ORDER, {
       key: "women",
       label: "Women",
       rootHandle: "womens-clothing",
@@ -154,12 +163,12 @@ export function buildDepartments(collections: ShopifyCollection[]): MegaDepartme
         title: "A study in considered dressing.",
       },
     }),
-    buildDepartment(collections, "mens-", MEN_RULES, MEN_COLUMN_ORDER, {
+    buildDepartment(collections, ["mens-", "men-"], MEN_RULES, MEN_COLUMN_ORDER, {
       key: "men",
       label: "Men",
       rootHandle: "mens-clothing",
       feature: {
-        handle: "mens-suits",
+        handle: "mens-clothing",
         eyebrow: "The Tailoring Room",
         title: "Sharp lines, quiet codes.",
       },

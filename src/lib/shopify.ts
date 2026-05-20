@@ -244,8 +244,9 @@ export async function fetchProductByHandle(handle: string): Promise<ShopifyProdu
 // Shopify collection has no collection image, the storefront uses the first
 // Shopify product image instead — never Cloud/BG image overrides.
 const COLLECTIONS_LIST = `
-  query Collections($first: Int!) {
-    collections(first: $first, sortKey: TITLE) {
+  query Collections($first: Int!, $after: String) {
+    collections(first: $first, after: $after, sortKey: TITLE) {
+      pageInfo { hasNextPage endCursor }
       edges {
         node {
           id
@@ -278,25 +279,46 @@ interface CollectionListNode {
   products: { edges: Array<{ node: { id: string; images: { edges: Array<{ node: ShopifyImage }> } } }> };
 }
 
-export async function fetchCollections(first = 250): Promise<ShopifyCollection[]> {
-  const res = await storefrontApiRequest<{ collections: { edges: Array<{ node: CollectionListNode }> } }>(
-    COLLECTIONS_LIST,
-    { first: Math.min(first, 250) },
-  );
-  if (!res?.data) return [];
-  return res.data.collections.edges.map(({ node }) => {
-    const firstProductImage = node.products?.edges?.[0]?.node?.images?.edges?.[0]?.node ?? null;
-    return {
-      id: node.id,
-      title: node.title,
-      handle: node.handle,
-      description: node.description ?? "",
-      image: node.image ?? firstProductImage,
-      updatedAt: node.updatedAt,
-      productCount: (node.products?.edges?.length ?? 0) > 0 ? 1 : 0,
+/**
+ * Fetch up to `max` collections, paginating Shopify's 250-per-page cap so the
+ * nav can see every category collection even when the store has hundreds of
+ * vendor/brand collections sharing the same list.
+ */
+export async function fetchCollections(max = 500): Promise<ShopifyCollection[]> {
+  const out: ShopifyCollection[] = [];
+  let after: string | null = null;
+  const pageSize = 250;
+  type Page = {
+    collections: {
+      pageInfo: { hasNextPage: boolean; endCursor: string | null };
+      edges: Array<{ node: CollectionListNode }>;
     };
-  });
+  };
+  while (out.length < max) {
+    const res = (await storefrontApiRequest<Page>(
+      COLLECTIONS_LIST,
+      { first: Math.min(pageSize, max - out.length), after },
+    )) as { data?: Page } | undefined;
+    if (!res?.data) break;
+    const pg: Page["collections"] = res.data.collections;
+    for (const { node } of pg.edges) {
+      const firstProductImage = node.products?.edges?.[0]?.node?.images?.edges?.[0]?.node ?? null;
+      out.push({
+        id: node.id,
+        title: node.title,
+        handle: node.handle,
+        description: node.description ?? "",
+        image: node.image ?? firstProductImage,
+        updatedAt: node.updatedAt,
+        productCount: (node.products?.edges?.length ?? 0) > 0 ? 1 : 0,
+      });
+    }
+    if (!pg.pageInfo.hasNextPage || !pg.pageInfo.endCursor) break;
+    after = pg.pageInfo.endCursor;
+  }
+  return out;
 }
+
 
 // ── Collection by handle (simple list view) ─────────────────────────────────
 const COLLECTION_BY_HANDLE = `

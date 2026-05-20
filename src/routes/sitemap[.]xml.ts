@@ -95,7 +95,7 @@ export const Route = createFileRoute("/sitemap.xml")({
         for (const r of STATIC_ROUTES) entries.push(urlEntry(r));
 
         try {
-          const collections = await fetchCollections(100);
+          const collections = await fetchCollections(500);
           for (const c of collections) {
             entries.push(
               urlEntry({
