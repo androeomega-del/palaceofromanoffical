@@ -179,7 +179,7 @@ function HomePage() {
   });
   const inventoryCollectionsQ = useQuery({
     queryKey: ["home", "inventory-collections"],
-    queryFn: () => fetchCollections(500),
+    queryFn: () => fetchCollections(1000),
   });
 
   // Editorial split sources — one image per panel, pulled from real data.
