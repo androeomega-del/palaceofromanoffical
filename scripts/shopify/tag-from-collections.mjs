@@ -83,19 +83,16 @@ const collections = [...smart.map(c => ({ ...c, _type: 'smart' })), ...custom.ma
 
 // Decide tags-to-add per collection
 function tagsForCollection(c) {
-  const tags = new Set();
   if (SKIP_HANDLES.has(c.handle)) return [];
+  // Skip pure-vendor smart collections (brand is already the product's vendor).
   if (c._type === 'smart' && Array.isArray(c.rules)) {
-    if (c.disjunctive) return []; // OR-rule collections aren't single concepts
     const cols = new Set(c.rules.map(r => r.column));
     if (cols.size === 1 && cols.has('vendor')) return [];
-    for (const r of c.rules) {
-      if (r.column === 'tag' || r.column === 'type') {
-        if (r.relation === 'equals' && r.condition) tags.add(r.condition);
-      }
-    }
   }
-  return [...tags];
+  // Each word in the title is its own tag.
+  const title = (c.title || '').trim();
+  if (!title) return [];
+  return title.split(/\s+/).filter(Boolean);
 }
 
 let toProcess = collections
