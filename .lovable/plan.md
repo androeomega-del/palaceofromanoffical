@@ -1,42 +1,57 @@
-# Wire Real Shopify Checkout
+# Zero-Budget Launch Plan — First Order in 24–72h
 
-## Current state
+No ads. You drive traffic via IG/TikTok UGC. My job: make sure that when a stranger lands on the site from a reel, they trust it enough to check out.
 
-- Storefront shows products from `bg_products` / `bg_variants` (Supabase snapshot).
-- `storefrontApiRequest` in `src/lib/shopify.ts` is a stub that returns `undefined` and silently fails — so Add to Bag → checkout does nothing.
-- Shopify domain in code (`i1w7wx-gu.myshopify.com`) and token are stale; the live store is `mwuwqi-vy.myshopify.com`.
-- The live Shopify store already has 8,559 BG products with matching variant SKUs (`CA-30278-XL` etc.), so no product re-creation needed.
+## Part 1 — What I'll do on the site (today)
 
-## Plan
+Goal: remove every reason a first-time visitor bounces.
 
-### 1. Build a SKU → Shopify variant GID lookup
-- New Supabase table `shopify_variant_map(sku TEXT PRIMARY KEY, variant_gid TEXT NOT NULL, product_handle TEXT, available BOOLEAN DEFAULT true, synced_at TIMESTAMPTZ DEFAULT now())` with public-read RLS.
-- One-off Node script `scripts/shopify/sync-variant-map.mjs` that paginates `GET /admin/api/2025-07/products.json?limit=250&fields=handle,variants` via Admin REST, then `INSERT … ON CONFLICT (sku) DO UPDATE` into `shopify_variant_map`. Throttled at 2 req/sec, retries on 429.
+### A. Trust pass (the #1 conversion blocker for a no-name store)
+1. **Contact page audit** — make sure `support@palaceofroman.com` is visible, clickable, and replied-to. Add response-time line ("We reply within 24h").
+2. **Shipping & returns clarity** — surface "14-day returns" + "Ships from EU" as a strip on every product page, not buried in a policy page.
+3. **Authenticity strip on PDP** — short line: "100% authentic, sourced from the brands or their authorised distributors. Official BrandsGateway partner." Links to /reseller-certificate.pdf.
+4. **Footer trust row** — payment icons (Visa/MC/Amex), secure-checkout lock, return window, contact email.
+5. **Remove anything that screams "dropship"** — generic stock copy, "Lorem", empty review counts showing "0 (0)", broken size guides.
 
-### 2. Restore the real Storefront API
-- Replace the stub in `src/lib/shopify.ts`:
-  - `SHOPIFY_STORE_PERMANENT_DOMAIN = "mwuwqi-vy.myshopify.com"`
-  - `SHOPIFY_STOREFRONT_TOKEN = "3b02ce4f61d642096147b804ec7ba962"`
-  - Real `fetch` against `…/api/2025-07/graphql.json` with proper error handling and the 402 billing-required toast.
+### B. End-to-end checkout QA
+- Test add-to-cart → checkout on 3 random products across categories
+- Confirm shipping rates load, USD shows correctly, mobile cart drawer works at 440px
+- Fix anything broken before a single visitor sees it
 
-### 3. Make catalog variants carry the real GID
-- In `src/lib/shopify.ts`, when materialising `ShopifyVariant` from a `bg_variants` row, look up `shopify_variant_map.variant_gid` by SKU and set `variant.id` to the GID. Variants without a mapping become `availableForSale: false` (graceful fallback while the sync catches up).
-- Adjusts the adapter only — no UI changes.
+### C. One landing page per UGC angle
+You'll post reels around specific products/categories. Each viral angle needs a clean destination — not the homepage:
+- `/swim` (Dolce & Gabbana swim) — already exists, polish hero
+- `/sneakers` or `/men` — whichever category you'll push first
+- Each page = one hero image + 8–12 products + clear CTA. No fluff.
 
-### 4. Verify
-- Reload `/shop`, Add to Bag a Cavalli Class polo (size XL), open drawer → confirm a `cartCreate` request hits `mwuwqi-vy.myshopify.com` and returns a `checkoutUrl`.
-- Click Proceed to Checkout → confirm it loads the real Shopify checkout (storefront password does NOT block checkout pages).
+## Part 2 — What you do off-site (your job, I can't do it)
 
-### 5. Memory
-- Update `mem://integrations/shopify-admin-api` to note the SKU mapping table and the storefront token.
+I'll give you the assets, you post.
 
-## Technical notes
+### Content I'll generate for you
+- **5 caption templates** for IG/TikTok (hook + product + CTA + hashtags) tuned to luxury resale voice
+- **Link-in-bio page** (`/links` route) — clean Beacons-style hub linking to your top categories + WhatsApp + email
+- **3–5 product "hero shots"** ready for reels overlays (you film, drop the still over the video)
 
-- The variant map sync only needs to run when new BG products are imported into Shopify; we can hook it later, for now manual `node scripts/shopify/sync-variant-map.mjs` is fine.
-- We do NOT change BG product/variant rendering — the storefront keeps reading from `bg_products` for catalog speed and to preserve filters/SEO.
-- Stock counts stay from `bg_variants.quantity`; Shopify is only used for the checkout handoff.
+### Posting rhythm that actually works at zero budget
+- **TikTok**: 3 posts/day for 14 days. Format: "POV: you found designer X for $Y" / unboxing-style / "tag a friend who'd wear this". Algorithm rewards volume early.
+- **Instagram Reels**: 1–2/day, same clips re-cut. Stories daily.
+- **Reddit soft drops**: r/femalefashionadvice, r/malefashionadvice "where to buy authentic X" threads — answer helpfully, mention the store once.
+- **WhatsApp**: DM 20 friends a personal "we launched, take a look" link in the next 48h. This is realistically where order #1 comes from.
 
-## Out of scope (can do later)
-- Auto-syncing inventory between Shopify and `bg_variants`.
-- Webhook to refresh `shopify_variant_map` when products change in Shopify.
-- Removing the unused `bg_*` adapter once we move fully to Shopify Storefront API for catalog.
+## Part 3 — Order of operations
+
+1. I do the trust pass + checkout QA + link-in-bio page (this session)
+2. I write the 5 caption templates + product hook list (this session)
+3. You start posting tonight + DM 20 friends
+4. We watch orders/analytics and iterate on whatever's converting
+
+## What I need from you to start
+
+Pick one to confirm and I'll execute:
+
+- **Go** — I run the full trust pass + QA + link-in-bio + caption pack now
+- **Just the trust pass** — skip caption/link-in-bio for now
+- **Different priority** — tell me
+
+No code/copy changes happen until you say go.

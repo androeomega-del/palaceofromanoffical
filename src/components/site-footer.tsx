@@ -48,7 +48,33 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-4 justify-between items-center pt-12 border-t border-ink/5 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+        {/* Trust row — payments, security, contact */}
+        <div className="flex flex-col md:flex-row gap-6 md:gap-10 justify-between items-start md:items-center py-8 border-t border-ink/10">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+            <span className="font-semibold text-ink/70">Secure Checkout</span>
+            <span className="opacity-30">·</span>
+            <span>Visa</span>
+            <span className="opacity-30">·</span>
+            <span>Mastercard</span>
+            <span className="opacity-30">·</span>
+            <span>Amex</span>
+            <span className="opacity-30">·</span>
+            <span>Apple Pay</span>
+            <span className="opacity-30">·</span>
+            <span>Shop Pay</span>
+          </div>
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+            <span>14-Day Returns</span>
+            <span className="opacity-30">·</span>
+            <span>Ships Worldwide</span>
+            <span className="opacity-30">·</span>
+            <a href="mailto:support@palaceofroman.com" className="hover:text-ink transition-colors normal-case tracking-normal">
+              support@palaceofroman.com
+            </a>
+          </div>
+        </div>
+
+        <div className="flex flex-col md:flex-row gap-4 justify-between items-center pt-6 border-t border-ink/5 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
           <p>&copy; {COPYRIGHT_YEAR} Palace of Roman. All rights reserved.</p>
           <div className="flex gap-8 items-center">
             <a
