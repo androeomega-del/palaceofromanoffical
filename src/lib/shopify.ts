@@ -7,11 +7,11 @@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-// Kept for compatibility with cart-store which references these constants.
+// Live Shopify storefront — checkout handoff routes through this domain/token.
 export const SHOPIFY_API_VERSION = "2025-07";
-export const SHOPIFY_STORE_PERMANENT_DOMAIN = "i1w7wx-gu.myshopify.com";
+export const SHOPIFY_STORE_PERMANENT_DOMAIN = "mwuwqi-vy.myshopify.com";
 export const SHOPIFY_STOREFRONT_URL = `https://${SHOPIFY_STORE_PERMANENT_DOMAIN}/api/${SHOPIFY_API_VERSION}/graphql.json`;
-export const SHOPIFY_STOREFRONT_TOKEN = "fe3b8c80fa66fbfd3c0bbe7a10ccd6b0";
+export const SHOPIFY_STOREFRONT_TOKEN = "3b02ce4f61d642096147b804ec7ba962";
 export const EXCLUDE_QUERY = "";
 
 // Query string constants kept as stubs for any leftover imports.
@@ -68,19 +68,48 @@ export type FilteredResult = {
   pageInfo: { hasNextPage: boolean; endCursor: string | null };
 };
 
-// ── Storefront stub (cart-store calls this; snapshot mode has no Shopify) ───
-let CHECKOUT_TOAST_SHOWN = false;
+// ── Storefront API (real fetch — used by cart-store for cartCreate/etc.) ────
+let BILLING_TOAST_SHOWN = false;
 export async function storefrontApiRequest<T = unknown>(
-  _query?: string,
-  _variables?: Record<string, unknown>,
+  query: string,
+  variables: Record<string, unknown> = {},
 ): Promise<{ data?: T } | undefined> {
-  if (!CHECKOUT_TOAST_SHOWN) {
-    CHECKOUT_TOAST_SHOWN = true;
-    toast.error("Checkout is not connected", {
-      description: "This is a catalog snapshot. Checkout will activate once the BrandsGateway API + payments are wired.",
+  try {
+    const res = await fetch(SHOPIFY_STOREFRONT_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Shopify-Storefront-Access-Token": SHOPIFY_STOREFRONT_TOKEN,
+      },
+      body: JSON.stringify({ query, variables }),
     });
+
+    if (res.status === 402) {
+      if (!BILLING_TOAST_SHOWN) {
+        BILLING_TOAST_SHOWN = true;
+        toast.error("Checkout temporarily unavailable", {
+          description: "Shopify billing needs to be active to process orders. Please try again shortly.",
+        });
+      }
+      return undefined;
+    }
+    if (!res.ok) {
+      console.error("Storefront API error", res.status, await res.text());
+      toast.error("Couldn't reach checkout", { description: "Please try again in a moment." });
+      return undefined;
+    }
+    const json = await res.json();
+    if (json.errors) {
+      console.error("Storefront API GraphQL errors", json.errors);
+      toast.error("Checkout error", { description: json.errors[0]?.message ?? "Unknown error" });
+      return undefined;
+    }
+    return json as { data?: T };
+  } catch (err) {
+    console.error("Storefront API fetch failed", err);
+    toast.error("Network error", { description: "Couldn't reach checkout." });
+    return undefined;
   }
-  return undefined;
 }
 
 // ── DB row → ShopifyProductNode ─────────────────────────────────────────────
@@ -333,7 +362,31 @@ export async function fetchProductByHandle(handle: string): Promise<ShopifyProdu
   const { data: vRows } = await supabase
     .from("bg_variants").select("product_sku,group_sku,size,quantity")
     .eq("group_sku", product.group_sku).order("size");
-  return rowToNode(product, (vRows ?? []) as BgVariantRow[]);
+  const variants = (vRows ?? []) as BgVariantRow[];
+
+  // Enrich with real Shopify variant GIDs so cart → cartCreate works.
+  const skus = variants.map((v) => v.product_sku).filter(Boolean);
+  let gidBySku = new Map<string, { gid: string; available: boolean }>();
+  if (skus.length > 0) {
+    const { data: mapRows } = await supabase
+      .from("shopify_variant_map")
+      .select("sku,variant_gid,available")
+      .in("sku", skus);
+    for (const m of (mapRows ?? []) as Array<{ sku: string; variant_gid: string; available: boolean }>) {
+      gidBySku.set(m.sku, { gid: m.variant_gid, available: m.available });
+    }
+  }
+
+  const node = rowToNode(product, variants);
+  node.variants.edges = node.variants.edges.map((e) => {
+    const mapped = gidBySku.get(e.node.id);
+    if (!mapped) {
+      // No Shopify mapping — variant is not purchasable yet.
+      return { node: { ...e.node, availableForSale: false } };
+    }
+    return { node: { ...e.node, id: mapped.gid, availableForSale: e.node.availableForSale && mapped.available } };
+  });
+  return node;
 }
 
 // ── Public API: collections ─────────────────────────────────────────────────

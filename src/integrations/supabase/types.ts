@@ -226,6 +226,33 @@ export type Database = {
         }
         Relationships: []
       }
+      shopify_variant_map: {
+        Row: {
+          available: boolean
+          product_gid: string | null
+          product_handle: string | null
+          sku: string
+          synced_at: string
+          variant_gid: string
+        }
+        Insert: {
+          available?: boolean
+          product_gid?: string | null
+          product_handle?: string | null
+          sku: string
+          synced_at?: string
+          variant_gid: string
+        }
+        Update: {
+          available?: boolean
+          product_gid?: string | null
+          product_handle?: string | null
+          sku?: string
+          synced_at?: string
+          variant_gid?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string

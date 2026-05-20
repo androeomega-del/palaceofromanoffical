@@ -1,37 +1,42 @@
-## Goal
-Preserve everything needed to recreate Shopify smart collections (and similar Admin API bulk operations) without rediscovering the working token, payload mapping, or rate-limit handling.
+# Wire Real Shopify Checkout
 
-## What gets saved
+## Current state
 
-### 1. The script → permanent project location
-Move `/tmp/create_collections.mjs` (currently ephemeral — wiped on sandbox reset) to `scripts/shopify/create-smart-collections.mjs`. It will run from any future sandbox via:
-```
-node scripts/shopify/create-smart-collections.mjs --dry
-node scripts/shopify/create-smart-collections.mjs
-```
+- Storefront shows products from `bg_products` / `bg_variants` (Supabase snapshot).
+- `storefrontApiRequest` in `src/lib/shopify.ts` is a stub that returns `undefined` and silently fails — so Add to Bag → checkout does nothing.
+- Shopify domain in code (`i1w7wx-gu.myshopify.com`) and token are stale; the live store is `mwuwqi-vy.myshopify.com`.
+- The live Shopify store already has 8,559 BG products with matching variant SKUs (`CA-30278-XL` etc.), so no product re-creation needed.
 
-### 2. A Lovable skill → `.agents/skills/shopify-admin-bulk/`
-So any future agent (in this project or remixes) knows the playbook:
-- `SKILL.md` — when to use, full workflow, common errors
-- Key facts captured:
-  - Use `SHOPIFY_ACCESS_TOKEN` for Admin REST — **not** `SHOPIFY_ADMIN_TOKEN` (returns 401)
-  - Shop domain: `mwuwqi-vy.myshopify.com`, API version `2025-07`
-  - 2 req/sec throttle + 429 retry pattern
-  - Matrixify free-plan import cap is ~10 rows / ~10KB — bypass with this script
-  - CSV → REST field mapping table (Vendor/Tag/Type → column; Equals/Greater Than → relation)
-- Apply via `skills--apply_draft` so it's discoverable on every future request matching "shopify collections", "bulk admin api", etc.
+## Plan
 
-### 3. Project memory → `mem://integrations/shopify-admin-api`
-One-line core rule + detailed note:
-- Core: "Shopify Admin REST API: use `SHOPIFY_ACCESS_TOKEN` (not `SHOPIFY_ADMIN_TOKEN` — that returns 401)."
-- Detail file: shop domain, API version, working endpoints, script location.
+### 1. Build a SKU → Shopify variant GID lookup
+- New Supabase table `shopify_variant_map(sku TEXT PRIMARY KEY, variant_gid TEXT NOT NULL, product_handle TEXT, available BOOLEAN DEFAULT true, synced_at TIMESTAMPTZ DEFAULT now())` with public-read RLS.
+- One-off Node script `scripts/shopify/sync-variant-map.mjs` that paginates `GET /admin/api/2025-07/products.json?limit=250&fields=handle,variants` via Admin REST, then `INSERT … ON CONFLICT (sku) DO UPDATE` into `shopify_variant_map`. Throttled at 2 req/sec, retries on 429.
 
-## What doesn't need saving
-- The 381 collections themselves are now live in Shopify — that's the source of truth.
-- The CSV at `public/imports/smart-collections-matrixify-fixed.csv` stays where it is (it's the input the script reads).
+### 2. Restore the real Storefront API
+- Replace the stub in `src/lib/shopify.ts`:
+  - `SHOPIFY_STORE_PERMANENT_DOMAIN = "mwuwqi-vy.myshopify.com"`
+  - `SHOPIFY_STOREFRONT_TOKEN = "3b02ce4f61d642096147b804ec7ba962"`
+  - Real `fetch` against `…/api/2025-07/graphql.json` with proper error handling and the 402 billing-required toast.
 
-## What changes in your project
-- **New file:** `scripts/shopify/create-smart-collections.mjs`
-- **New skill:** `.agents/skills/shopify-admin-bulk/SKILL.md` (then applied)
-- **New memory:** `mem://integrations/shopify-admin-api` + 1 line added to `mem://index.md`
-- No app code, routes, or database changes.
+### 3. Make catalog variants carry the real GID
+- In `src/lib/shopify.ts`, when materialising `ShopifyVariant` from a `bg_variants` row, look up `shopify_variant_map.variant_gid` by SKU and set `variant.id` to the GID. Variants without a mapping become `availableForSale: false` (graceful fallback while the sync catches up).
+- Adjusts the adapter only — no UI changes.
+
+### 4. Verify
+- Reload `/shop`, Add to Bag a Cavalli Class polo (size XL), open drawer → confirm a `cartCreate` request hits `mwuwqi-vy.myshopify.com` and returns a `checkoutUrl`.
+- Click Proceed to Checkout → confirm it loads the real Shopify checkout (storefront password does NOT block checkout pages).
+
+### 5. Memory
+- Update `mem://integrations/shopify-admin-api` to note the SKU mapping table and the storefront token.
+
+## Technical notes
+
+- The variant map sync only needs to run when new BG products are imported into Shopify; we can hook it later, for now manual `node scripts/shopify/sync-variant-map.mjs` is fine.
+- We do NOT change BG product/variant rendering — the storefront keeps reading from `bg_products` for catalog speed and to preserve filters/SEO.
+- Stock counts stay from `bg_variants.quantity`; Shopify is only used for the checkout handoff.
+
+## Out of scope (can do later)
+- Auto-syncing inventory between Shopify and `bg_variants`.
+- Webhook to refresh `shopify_variant_map` when products change in Shopify.
+- Removing the unused `bg_*` adapter once we move fully to Shopify Storefront API for catalog.
