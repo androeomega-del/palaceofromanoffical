@@ -22,7 +22,14 @@ const LIMIT_COLLECTIONS = (() => {
 if (!TOKEN) { console.error('Missing SHOPIFY_ACCESS_TOKEN'); process.exit(1); }
 
 // Collections to skip entirely — special / non-categorical.
-const SKIP_HANDLES = new Set(['best-sellers', 'in-stock', 'new-arrivals']);
+const SKIP_HANDLES = new Set([
+  'best-sellers', 'in-stock', 'new-arrivals', 'tiktok-shop',
+  'out-of-stock', 'sale', 'all', 'home-page', 'frontpage',
+]);
+// Skip any handle that contains these substrings (catches variants like "out-of-stock-women").
+const SKIP_SUBSTRINGS = ['out-of-stock', 'tiktok'];
+// Words to drop from collection titles when deriving tags.
+const STOPWORDS = new Set(['of', 'the', 'and', '&', '-', 'for', 'with', 'a', 'an', 'in', 'on']);
 
 async function shopify(path, init = {}) {
   const url = `https://${SHOP}/admin/api/${API}${path}`;
@@ -84,6 +91,7 @@ const collections = [...smart.map(c => ({ ...c, _type: 'smart' })), ...custom.ma
 // Decide tags-to-add per collection
 function tagsForCollection(c) {
   if (SKIP_HANDLES.has(c.handle)) return [];
+  if (SKIP_SUBSTRINGS.some(s => c.handle.includes(s))) return [];
   // Skip pure-vendor smart collections (brand is already the product's vendor).
   if (c._type === 'smart' && Array.isArray(c.rules)) {
     const cols = new Set(c.rules.map(r => r.column));
@@ -92,7 +100,10 @@ function tagsForCollection(c) {
   // Each word in the title is its own tag.
   const title = (c.title || '').trim();
   if (!title) return [];
-  return title.split(/\s+/).filter(Boolean);
+  return title
+    .split(/[\s/]+/)
+    .map(w => w.replace(/['’]s\b/i, '').replace(/[^a-zA-Z0-9-]/g, ''))
+    .filter(w => w && !STOPWORDS.has(w.toLowerCase()));
 }
 
 let toProcess = collections
