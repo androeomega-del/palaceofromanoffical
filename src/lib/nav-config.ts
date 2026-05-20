@@ -102,6 +102,9 @@ type CrossEntry = {
 };
 const CROSS_CATEGORIES: CrossEntry[] = [
   { handle: "best-sellers", label: "Best Sellers",  women: { column: "Apparel", order: 1 },           men: { column: "Apparel", order: 1 } },
+  // Curated cross-category edit (polos, long sleeves, turtlenecks, cardigans,
+  // hoodies, sweatshirts). Surfaces high in both gender menus.
+  { handle: "layering-edit", label: "The Layering Edit", women: { column: "Apparel", order: 2 }, men: { column: "Shirts & Knitwear", order: -1 } },
   // `clothing`, `shoes`, `bags`, `accessories` are global (unisex) collections.
   // Gender dropdowns use the prefixed `womens-…` / `mens-…` variants as their
   // canonical "All …" links (handled by WOMEN_RULES / MEN_RULES). Do not
