@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { requireAdmin } from "@/lib/admin-middleware";
 
 const TOKEN_URL = "https://api.shopify.com/auth/access_token";
 
