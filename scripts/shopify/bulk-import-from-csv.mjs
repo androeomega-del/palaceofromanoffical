@@ -10,7 +10,9 @@
 //   node scripts/shopify/bulk-import-from-csv.mjs --dry --limit=3
 //   node scripts/shopify/bulk-import-from-csv.mjs --limit=10        (smoke)
 //   node scripts/shopify/bulk-import-from-csv.mjs                   (full, ~5h)
-//   node scripts/shopify/bulk-import-from-csv.mjs --publish         (status=active)
+//
+// Defaults: status=active, published=true. Out-of-stock groups (sum(qty)==0) are skipped.
+//   --draft   create as draft instead of active
 
 import fs from 'node:fs';
 import { parse } from 'csv-parse/sync';
@@ -23,7 +25,7 @@ const SB_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const EUR_TO_USD = 1.08;
 
 const DRY = process.argv.includes('--dry');
-const PUBLISH = process.argv.includes('--publish');
+const DRAFT = process.argv.includes('--draft');
 const limitArg = process.argv.find((a) => a.startsWith('--limit='));
 const LIMIT = limitArg ? parseInt(limitArg.split('=')[1], 10) : Infinity;
 const CSV = process.env.CSV_PATH || '/tmp/latest.csv';
@@ -97,7 +99,10 @@ const candidates = [];
 for (const [g, data] of groups) {
   if (!data.parent || data.children.length === 0) continue;
   const hits = data.children.filter((c) => existing.has(c['Product Sku'])).length;
-  if (hits === 0) candidates.push({ groupSku: g, ...data });
+  if (hits !== 0) continue;
+  const totalQty = data.children.reduce((s, c) => s + (parseInt(c['Quantity'] || '0', 10) || 0), 0);
+  if (totalQty <= 0) continue; // skip out-of-stock products
+  candidates.push({ groupSku: g, ...data });
 }
 console.log(`Fully-new product groups: ${candidates.length}`);
 
@@ -156,8 +161,8 @@ function buildPayload({ groupSku, parent, children }) {
       vendor,
       product_type: productType,
       tags,
-      status: PUBLISH ? 'active' : 'draft',
-      published: false,
+      status: DRAFT ? 'draft' : 'active',
+      published: !DRAFT,
       options,
       variants,
       images: imgs,
