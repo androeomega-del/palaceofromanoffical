@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { fetchProducts, fetchCollection, type ShopifyProduct } from "@/lib/shopify";
+import { fetchProducts, fetchCollection, fetchSearchFiltered, type ShopifyProduct } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
 import { EditorialHotspots } from "@/components/editorial-hotspots";
 import { CampaignVideo } from "@/components/campaign-video";
@@ -104,7 +104,10 @@ function HomePage() {
   });
   const bestSellersQ = useQuery({
     queryKey: ["home", "best-sellers"],
-    queryFn: () => fetchProducts({ first: 8, sortKey: "BEST_SELLING" }),
+    queryFn: () =>
+      fetchSearchFiltered({ first: 8, sortKey: "BEST_SELLING", reverse: false }).then(
+        (r) => r.edges,
+      ),
   });
   const swimwearQ = useQuery({
     queryKey: ["home", "swimwear"],
