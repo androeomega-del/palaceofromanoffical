@@ -8,6 +8,8 @@ import { pageTitle, metaDescription, absoluteUrl, SITE_URL } from "@/lib/seo";
 import { collectionSeo } from "@/lib/collection-seo";
 import {
   collectionImage,
+  responsiveCollectionImage,
+  HERO_RESPONSIVE_WIDTHS,
   collectionImageAlt,
   collectionImageFocal,
 } from "@/lib/collection-image";
@@ -273,16 +275,28 @@ function CollectionPage() {
   return (
     <div>
       <section className="relative h-[42vh] min-h-[280px] max-h-[520px] w-full overflow-hidden bg-ink/5">
-        <img
-          src={heroSrc}
-          alt={heroAlt}
-          loading="eager"
-          decoding="async"
-          className="absolute inset-0 h-full w-full object-cover"
-          style={{ objectPosition: heroFocal }}
-        />
+        {(() => {
+          const r = responsiveCollectionImage(heroSrc, {
+            widths: HERO_RESPONSIVE_WIDTHS,
+            sizes: "100vw",
+          });
+          return (
+            <img
+              src={r.src}
+              srcSet={r.srcSet}
+              sizes={r.sizes}
+              alt={heroAlt}
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              className="absolute inset-0 h-full w-full object-cover"
+              style={{ objectPosition: heroFocal }}
+            />
+          );
+        })()}
         <div className="absolute inset-0 bg-gradient-to-t from-canvas via-canvas/40 to-transparent" />
       </section>
+
 
       <section className="px-6 pt-12 pb-8 border-b border-ink/5">
         <div className="max-w-screen-2xl mx-auto">

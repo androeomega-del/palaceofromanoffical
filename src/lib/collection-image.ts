@@ -826,3 +826,66 @@ export function qaCollectionImage(input: {
     source: resolved.source,
   };
 }
+
+// ---------------------------------------------------------------------------
+// Responsive image helper
+// ---------------------------------------------------------------------------
+// Builds a srcset for Shopify CDN URLs (which honor ?width=N for on-the-fly
+// resizing). For local bundled assets or unknown hosts we return src only —
+// the browser will load the single bundled file as-is.
+//
+// Usage:
+//   const r = responsiveCollectionImage(src, { widths: [480, 768, 1200, 1800], sizes: "100vw" });
+//   <img src={r.src} srcSet={r.srcSet} sizes={r.sizes} ... />
+
+export interface ResponsiveImage {
+  src: string;
+  srcSet?: string;
+  sizes?: string;
+}
+
+const DEFAULT_HERO_WIDTHS = [480, 768, 1024, 1440, 1920];
+const DEFAULT_TILE_WIDTHS = [240, 360, 480, 720, 960];
+
+function isShopifyCdn(url: string): boolean {
+  return /(^https?:)?\/\/cdn\.shopify\.com\//i.test(url);
+}
+
+function withShopifyWidth(url: string, width: number): string {
+  // Strip any existing width/height query so we don't double-apply.
+  // Shopify accepts ?width=N (and optional &height, &crop) on its image CDN.
+  try {
+    const u = new URL(url, "https://cdn.shopify.com");
+    u.searchParams.delete("width");
+    u.searchParams.delete("height");
+    u.searchParams.delete("crop");
+    u.searchParams.set("width", String(width));
+    return u.toString();
+  } catch {
+    const sep = url.includes("?") ? "&" : "?";
+    return `${url}${sep}width=${width}`;
+  }
+}
+
+export function responsiveCollectionImage(
+  src: string,
+  opts: { widths?: number[]; sizes?: string } = {},
+): ResponsiveImage {
+  const widths = opts.widths ?? DEFAULT_HERO_WIDTHS;
+  const sizes = opts.sizes;
+  if (!src) return { src };
+  if (!isShopifyCdn(src)) {
+    // Bundled assets are pre-optimised at a single resolution; nothing to do.
+    return { src, sizes };
+  }
+  const sorted = [...new Set(widths)].sort((a, b) => a - b);
+  const srcSet = sorted
+    .map((w) => `${withShopifyWidth(src, w)} ${w}w`)
+    .join(", ");
+  // Use the largest as the base src for browsers without srcset support.
+  const baseSrc = withShopifyWidth(src, sorted[sorted.length - 1]);
+  return { src: baseSrc, srcSet, sizes };
+}
+
+export const HERO_RESPONSIVE_WIDTHS = DEFAULT_HERO_WIDTHS;
+export const TILE_RESPONSIVE_WIDTHS = DEFAULT_TILE_WIDTHS;

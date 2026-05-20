@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { fetchCollections, type ShopifyCollection } from "@/lib/shopify";
-import { collectionImage, collectionImageAlt, collectionImageFocal } from "@/lib/collection-image";
+import { collectionImage, collectionImageAlt, collectionImageFocal, responsiveCollectionImage, TILE_RESPONSIVE_WIDTHS } from "@/lib/collection-image";
 import { getCollectionImageMap, getCollectionFocalMap } from "@/lib/collection-image.functions";
 import { routeHead } from "@/lib/seo";
 
@@ -218,15 +218,28 @@ function CollectionsIndexPage() {
                   className="group block"
                 >
                   <div className="w-full aspect-[3/4] bg-muted overflow-hidden mb-4 relative">
-                    <img
-                      src={collectionImage({ title: c.title, handle: c.handle, description: c.description, dynamicMap })}
-                      alt={c.image?.altText ?? collectionImageAlt({ handle: c.handle, title: c.title, description: c.description })}
-                      loading="lazy"
-                      width={768}
-                      height={1024}
-                      style={{ objectPosition: collectionImageFocal({ handle: c.handle, title: c.title, imageWidth: c.image?.width ?? null, imageHeight: c.image?.height ?? null, dynamicFocal }) }}
-                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                    />
+                    {(() => {
+                      const baseSrc = collectionImage({ title: c.title, handle: c.handle, description: c.description, dynamicMap });
+                      const r = responsiveCollectionImage(baseSrc, {
+                        widths: TILE_RESPONSIVE_WIDTHS,
+                        sizes: "(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw",
+                      });
+                      return (
+                        <img
+                          src={r.src}
+                          srcSet={r.srcSet}
+                          sizes={r.sizes}
+                          alt={c.image?.altText ?? collectionImageAlt({ handle: c.handle, title: c.title, description: c.description })}
+                          loading="lazy"
+                          decoding="async"
+                          width={768}
+                          height={1024}
+                          style={{ objectPosition: collectionImageFocal({ handle: c.handle, title: c.title, imageWidth: c.image?.width ?? null, imageHeight: c.image?.height ?? null, dynamicFocal }) }}
+                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                        />
+                      );
+                    })()}
+
                     <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/15 to-transparent" />
                     <div className="absolute inset-x-0 bottom-0 p-4 md:p-5">
                       <p className="text-[10px] uppercase tracking-[0.3em] text-canvas/70 mb-1.5">
