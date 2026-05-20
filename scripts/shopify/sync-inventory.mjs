@@ -144,41 +144,88 @@ mutation($input: InventorySetQuantitiesInput!){
   }
 }`;
 
-let updated = 0;
-let failed = 0;
-const skuFlipped = []; // {sku, newAvailable}
+const ACTIVATE_MUTATION = `
+mutation($inventoryItemId: ID!, $locationId: ID!, $available: Int!){
+  inventoryActivate(inventoryItemId:$inventoryItemId, locationId:$locationId, available:$available){
+    inventoryLevel{ id }
+    userErrors{ field message }
+  }
+}`;
 
-for (let i = 0; i < resolved.length; i += 100) {
-  const slice = resolved.slice(i, i + 100);
+async function setBatch(items) {
   const input = {
     reason: 'correction',
     name: 'available',
     ignoreCompareQuantity: true,
-    quantities: slice.map((w) => ({
+    quantities: items.map((w) => ({
       inventoryItemId: itemByGid.get(w.variantGid),
       locationId: LOCATION_GID,
       quantity: Math.max(0, w.desired | 0),
     })),
   };
+  const data = await gql(SET_MUTATION, { input });
+  return data.inventorySetQuantities.userErrors || [];
+}
+
+let updated = 0;
+let failed = 0;
+let activated = 0;
+const skuFlipped = []; // {sku, newAvailable}
+
+for (let i = 0; i < resolved.length; i += 100) {
+  const slice = resolved.slice(i, i + 100);
 
   if (DRY && i === 0) {
     console.log('--dry first batch input (truncated):');
-    console.log(JSON.stringify({ ...input, quantities: input.quantities.slice(0, 3) }, null, 2));
+    console.log(JSON.stringify(slice.slice(0, 3).map((w) => ({
+      inventoryItemId: itemByGid.get(w.variantGid),
+      locationId: LOCATION_GID,
+      quantity: Math.max(0, w.desired | 0),
+    })), null, 2));
   }
 
   if (!DRY) {
     try {
-      const data = await gql(SET_MUTATION, { input });
-      const errs = data.inventorySetQuantities.userErrors || [];
-      if (errs.length) {
-        console.warn(`batch ${i / 100}: userErrors`, errs.slice(0, 3));
-        failed += errs.length;
-        updated += slice.length - errs.length;
-      } else {
-        updated += slice.length;
+      const errs = await setBatch(slice);
+      // Activate inventory at location for items the location isn't stocking yet, then retry.
+      const toActivate = [];
+      for (const e of errs) {
+        if (/not stocked at the location/i.test(e.message || '')) {
+          const idx = parseInt(e.field?.[2] ?? '-1', 10);
+          if (idx >= 0 && slice[idx]) toActivate.push(slice[idx]);
+        }
+      }
+      if (toActivate.length) {
+        for (const w of toActivate) {
+          try {
+            const d = await gql(ACTIVATE_MUTATION, {
+              inventoryItemId: itemByGid.get(w.variantGid),
+              locationId: LOCATION_GID,
+              available: Math.max(0, w.desired | 0),
+            });
+            const aerrs = d.inventoryActivate.userErrors || [];
+            if (aerrs.length) {
+              console.warn(`activate failed for ${w.sku}:`, aerrs);
+              failed += 1;
+            } else {
+              activated += 1;
+              updated += 1;
+            }
+          } catch (e) {
+            console.warn(`activate threw for ${w.sku}:`, e.message);
+            failed += 1;
+          }
+          await sleep(50);
+        }
+      }
+      const hardFails = errs.length - toActivate.length;
+      failed += Math.max(0, hardFails);
+      updated += slice.length - errs.length;
+      if (errs.length && errs.length !== toActivate.length) {
+        console.warn(`batch ${i / 100}: ${errs.length - toActivate.length} hard error(s) sample:`, errs.slice(0, 2));
       }
     } catch (e) {
-      console.error(`batch ${i / 100} failed:`, e.message);
+      console.error(`batch ${i / 100} threw:`, e.message);
       failed += slice.length;
     }
   }
@@ -189,11 +236,12 @@ for (let i = 0; i < resolved.length; i += 100) {
   }
 
   if ((i / 100) % 10 === 0) console.log(`  ${Math.min(i + 100, resolved.length)}/${resolved.length} synced`);
-  await sleep(200);
+  await sleep(150);
 }
 
-console.log(`\nShopify inventory updated: ${updated} variants (failed: ${failed})`);
+console.log(`\nShopify inventory updated: ${updated} variants (activated: ${activated}, failed: ${failed})`);
 console.log(`Availability changes to mirror in shopify_variant_map: ${skuFlipped.length}`);
+
 
 // ---- Mirror `available` into shopify_variant_map ---------------------------
 
