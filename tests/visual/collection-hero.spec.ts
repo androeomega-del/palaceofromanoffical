@@ -1,4 +1,5 @@
 import { stabilize, test, expect, loadFixtures } from "./_helpers";
+import { attachImageContext } from "./_image-context";
 
 /**
  * Hero image fingerprinting + cropping at multiple breakpoints.
@@ -51,11 +52,13 @@ test.describe("collection hero — breakpoint matrix", () => {
       await hero.waitFor({ state: "visible" });
       await stabilize(page);
 
+      const img = hero.locator('[data-testid="collection-hero-img"]');
+      await attachImageContext(testInfo, page, img, { handle, label: `hero/${handle}` });
+
       // 1. Pixel snapshot of the cropped hero region
       await expect(hero).toHaveScreenshot(`hero-${handle}-${testInfo.project.name}.png`);
 
       // 2. Fingerprint: which ladder rung did the browser actually fetch?
-      const img = hero.locator('[data-testid="collection-hero-img"]');
       const { currentSrc, naturalWidth } = await img.evaluate((el) => {
         const i = el as HTMLImageElement;
         return { currentSrc: i.currentSrc, naturalWidth: i.naturalWidth };

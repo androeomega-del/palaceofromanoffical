@@ -73,3 +73,17 @@ Tolerances (`playwright.config.ts`):
 - `threshold: 0.2`
 
 Bump these if hosted-font or CDN-image jitter produces false positives.
+
+## Admin diff report
+
+When any snapshot fails, a custom reporter writes
+`playwright-report/diff-report/index.html`. Open it in a browser to review:
+
+- expected / actual / diff PNGs side-by-side for each mismatched snapshot
+- the alt text, `currentSrc`, srcset/sizes, focal point (`object-position`)
+  and viewport captured at test time
+- a short error excerpt linking back to the failing test
+
+This page is designed for non-engineering reviewers — it surfaces enough
+context to decide whether a diff is an intentional content/crop change (in
+which case run `bun run test:visual:update`) or a true regression.
