@@ -183,19 +183,31 @@ function buildDepartment(
     for (const m of moreItems) push("More", m);
   }
 
-  // Build columns in defined order, dedupe per column, sort by _order.
+  // Build columns in defined order. Dedupe by handle (per column) AND by label
+  // (across the whole department) so the same display name — e.g. "All Shoes"
+  // or "All Accessories" — can never appear twice even if two Shopify handles
+  // would otherwise resolve to the same label.
   const columns: MegaColumn[] = [];
+  const seenLabel = new Set<string>();
   for (const heading of columnOrder) {
     const items = grouped.get(heading);
     if (!items || items.length === 0) continue;
     const dedup = new Map<string, MegaItem & { _order: number }>();
-    for (const it of items) if (!dedup.has(it.handle)) dedup.set(it.handle, it);
+    for (const it of items) {
+      if (dedup.has(it.handle)) continue;
+      const labelKey = it.label.trim().toLowerCase();
+      if (seenLabel.has(labelKey)) continue;
+      seenLabel.add(labelKey);
+      dedup.set(it.handle, it);
+    }
+    if (dedup.size === 0) continue;
     const sorted = [...dedup.values()].sort((a, b) => a._order - b._order);
     columns.push({
       heading,
       items: sorted.map(({ handle, label }) => ({ handle, label })),
     });
   }
+
 
   return { ...dept, columns };
 }
