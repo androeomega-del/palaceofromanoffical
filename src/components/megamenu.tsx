@@ -223,6 +223,7 @@ function MegaTrigger({
   onArrow,
   registerTrigger,
   liveHandles,
+  liveCollections,
 }: {
   dept: MegaDepartment;
   isOpen: boolean;
@@ -232,6 +233,7 @@ function MegaTrigger({
   onArrow: (e: React.KeyboardEvent) => void;
   registerTrigger: (el: HTMLButtonElement | null) => void;
   liveHandles: Set<string> | null;
+  liveCollections: ShopifyCollection[];
 }) {
   const panelId = useId();
 
@@ -271,6 +273,7 @@ function MegaTrigger({
         dept={dept}
         isOpen={isOpen}
         liveHandles={liveHandles}
+        liveCollections={liveCollections}
         onMouseEnter={onOpen}
         onMouseLeave={onScheduleClose}
       />
@@ -283,6 +286,7 @@ function MegaPanel({
   dept,
   isOpen,
   liveHandles,
+  liveCollections,
   onMouseEnter,
   onMouseLeave,
 }: {
@@ -290,11 +294,12 @@ function MegaPanel({
   dept: MegaDepartment;
   isOpen: boolean;
   liveHandles: Set<string> | null;
+  liveCollections: ShopifyCollection[];
   onMouseEnter: () => void;
   onMouseLeave: () => void;
 }) {
-  const dynamicMap = useCollectionImageMap();
-  const featureImg = collectionImage({ handle: dept.feature.handle, title: dept.label, dynamicMap });
+  const featureCollection = liveCollections.find((c) => c.handle === dept.feature.handle);
+  const featureImg = featureCollection?.image;
   return (
     <div
       id={id}
@@ -359,13 +364,14 @@ function MegaPanel({
           data-testid="megamenu-feature-tile"
           data-handle={dept.feature.handle}
         >
-          <img
-            src={featureImg}
-            alt={collectionImageAlt({ handle: dept.feature.handle, title: dept.feature.title ?? dept.label })}
-            loading="lazy"
-            style={{ objectPosition: collectionImageFocal({ handle: dept.feature.handle, title: dept.feature.title ?? dept.label }) }}
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
-          />
+          {featureImg && (
+            <img
+              src={featureImg.url}
+              alt={featureImg.altText ?? `${dept.feature.title ?? dept.label} collection`}
+              loading="lazy"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
+            />
+          )}
           <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/20 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 p-8">
             <p className="text-[10px] uppercase tracking-[0.4em] text-canvas/75 mb-3">
