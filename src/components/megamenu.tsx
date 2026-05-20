@@ -1,18 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
-import { fetchCollections, fetchVendorIndex } from "@/lib/shopify";
-import { collectionImage, collectionImageAlt, collectionImageFocal } from "@/lib/collection-image";
-import { getCollectionImageMap } from "@/lib/collection-image.functions";
-
-function useCollectionImageMap() {
-  const q = useQuery({
-    queryKey: ["collection-image-map"],
-    queryFn: () => getCollectionImageMap(),
-    staleTime: 5 * 60 * 1000,
-  });
-  return q.data ?? {};
-}
+import { fetchCollections, fetchVendorIndex, type ShopifyCollection } from "@/lib/shopify";
 import {
   buildDepartments,
   buildBrandList,
@@ -156,6 +145,7 @@ export function DesktopMegamenu() {
             onArrow={(e) => onTriggerArrow(e, dept.key)}
             registerTrigger={registerTrigger(dept.key)}
             liveHandles={liveHandles}
+            liveCollections={liveCollections ?? []}
           />
         );
       })}
@@ -166,6 +156,7 @@ export function DesktopMegamenu() {
         onCloseAndFocus={() => closeAndFocusTrigger("brands")}
         onArrow={(e) => onTriggerArrow(e, "brands")}
         registerTrigger={registerTrigger("brands")}
+        liveCollections={liveCollections ?? []}
       />
       <Link
         to="/swim"
