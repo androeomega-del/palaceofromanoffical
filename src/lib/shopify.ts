@@ -216,7 +216,8 @@ type FilterInput = Record<string, unknown>;
 function applyFilters(builder: any, filters: object[] | undefined) {
   if (!filters || filters.length === 0) return builder;
   let b = builder;
-  for (const f of filters) {
+  for (const raw of filters) {
+    const f = raw as FilterInput;
     if (typeof f.available === "boolean") {
       if (f.available) b = b.eq("in_stock", true);
     }
