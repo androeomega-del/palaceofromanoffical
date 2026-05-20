@@ -87,16 +87,17 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
       const checkoutUrl = useCartStore.getState().checkoutUrl;
       if (checkoutUrl) {
         const { trackCartEvent } = await import("@/lib/cart-analytics");
-        trackCartEvent({
-          event_type: "checkout_started",
+        const base = {
           product_handle: product.node.handle,
           product_title: product.node.title,
           variant_id: firstAvailable.id,
           variant_title: firstAvailable.title,
           price_usd: Number(firstAvailable.price.amount),
           quantity: 1,
-        });
-        window.open(checkoutUrl, "_blank", "noopener,noreferrer");
+        };
+        trackCartEvent({ event_type: "checkout_started", ...base });
+        const win = window.open(checkoutUrl, "_blank", "noopener,noreferrer");
+        if (win) trackCartEvent({ event_type: "reached_checkout", ...base });
       } else {
         toast.error("Could not start checkout. Please try again.");
       }

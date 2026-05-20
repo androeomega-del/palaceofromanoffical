@@ -17,7 +17,7 @@ function getSessionId(): string {
 }
 
 export interface TrackPayload {
-  event_type: "add_to_cart" | "remove_from_cart" | "checkout_started";
+  event_type: "add_to_cart" | "remove_from_cart" | "checkout_started" | "reached_checkout";
   product_handle?: string | null;
   product_title?: string | null;
   variant_id?: string | null;
