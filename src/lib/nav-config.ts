@@ -83,8 +83,8 @@ const MEN_RULES: ClassifierRule[] = [
   { column: "Accessories",          order: 9, match: (s) => s === "accessories" || s.startsWith("accessories"), label: "All Accessories" },
 ];
 
-const WOMEN_COLUMN_ORDER = ["Apparel", "Shoes", "Bags & Leather", "Fine Accessories"];
-const MEN_COLUMN_ORDER   = ["Apparel", "Tailoring", "Shirts & Knitwear", "Bottoms & Beach", "Shoes", "Accessories"];
+const WOMEN_COLUMN_ORDER = ["Apparel", "Shoes", "Bags & Leather", "Fine Accessories", "More"];
+const MEN_COLUMN_ORDER   = ["Apparel", "Tailoring", "Shirts & Knitwear", "Bottoms & Beach", "Shoes", "Accessories", "More"];
 
 function cleanTitle(title: string, prefixWord: "Women's" | "Men's"): string {
   return title.replace(new RegExp(`^${prefixWord.replace("'", "['']")}\\s*`, "i"), "").trim() || title;
@@ -113,20 +113,30 @@ function buildDepartment(
 
   // Dedupe by handle in case multiple prefixes match the same suffix.
   const seen = new Set<string>();
+  const moreItems: Array<MegaItem & { _order: number }> = [];
   for (const c of collections) {
     const matchedPrefix = prefixes.find((p) => c.handle.startsWith(p));
     if (!matchedPrefix) continue;
     if (seen.has(c.handle)) continue;
+    seen.add(c.handle);
     const suffix = c.handle.slice(matchedPrefix.length);
     const rule = rules.find((r) => r.match(suffix));
-    if (!rule) continue;
-    seen.add(c.handle);
 
-    const label = rule.label ?? cleanTitle(c.title, prefixWord);
-    const arr = grouped.get(rule.column) ?? [];
-    arr.push({ handle: c.handle, label, ...({ _order: rule.order } as object) } as MegaItem & { _order: number });
-    grouped.set(rule.column, arr);
+    if (rule) {
+      const label = rule.label ?? cleanTitle(c.title, prefixWord);
+      const arr = grouped.get(rule.column) ?? [];
+      arr.push({ handle: c.handle, label, _order: rule.order } as MegaItem & { _order: number });
+      grouped.set(rule.column, arr);
+    } else {
+      // Catchall — surface every prefix-matching collection so nothing is hidden.
+      moreItems.push({ handle: c.handle, label: cleanTitle(c.title, prefixWord), _order: 99 });
+    }
   }
+  if (moreItems.length > 0) {
+    moreItems.sort((a, b) => a.label.localeCompare(b.label));
+    grouped.set("More", moreItems);
+  }
+
 
   // Build columns in defined order, sorting items by their rule order.
   const columns: MegaColumn[] = [];
@@ -177,33 +187,18 @@ export function buildDepartments(collections: ShopifyCollection[]): MegaDepartme
 }
 
 // -----------------------------------------------------------------------------
-// Brands — derived from live vendor data, filtered to a luxury allowlist
+// Brands — every vendor surfaced from live product data, no allowlist
 // -----------------------------------------------------------------------------
-
-/** Houses we are willing to surface in the top nav. Lower-cased for matching. */
-const LUXURY_BRAND_ALLOWLIST = new Set(
-  [
-    "Alexander McQueen", "Alexander Wang", "Armani", "Giorgio Armani", "Emporio Armani",
-    "Balenciaga", "Balmain", "Bottega Veneta", "Brunello Cucinelli", "Burberry",
-    "Calvin Klein", "Cartier", "Celine", "Céline", "Chloé", "Chloe", "Christian Dior",
-    "Christian Louboutin", "Dior", "Dolce & Gabbana", "Etro", "Fendi", "Ferragamo",
-    "Givenchy", "Goyard", "Gucci", "Hermès", "Hermes", "Jimmy Choo", "Lanvin",
-    "Loewe", "Loro Piana", "Maison Margiela", "MM6 Maison Margiela", "Marni",
-    "Missoni", "Miu Miu", "Moncler", "Moschino", "Off-White", "Philipp Plein",
-    "Prada", "Saint Laurent", "Yves Saint Laurent", "Salvatore Ferragamo",
-    "Stella McCartney", "The Row", "Tom Ford", "Tory Burch", "Valentino",
-    "Versace", "Versace Jeans",
-  ].map((s) => s.toLowerCase()),
-);
 
 export type BrandEntry = { vendor: string; count: number };
 
-/** Filter a vendor-with-count list to the luxury allowlist, sorted alphabetically. */
+/** Return every vendor, sorted alphabetically. No curation. */
 export function buildBrandList(vendors: BrandEntry[]): BrandEntry[] {
   return vendors
-    .filter((v) => LUXURY_BRAND_ALLOWLIST.has(v.vendor.toLowerCase()))
+    .filter((v) => v.vendor && v.vendor.trim().length > 0)
     .sort((a, b) => a.vendor.localeCompare(b.vendor));
 }
+
 
 /** Group brands into A–G / H–N / O–Z columns for the megamenu panel. */
 export function groupBrandsForMenu(brands: BrandEntry[]): { heading: string; items: BrandEntry[] }[] {
