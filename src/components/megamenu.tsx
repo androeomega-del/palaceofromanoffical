@@ -592,10 +592,11 @@ export function MobileMegamenu() {
   const liveHandles = liveCollections
     ? new Set(liveCollections.map((c) => c.handle))
     : null;
-  const departments = useMemo(
-    () => buildDepartments(liveCollections ?? []),
-    [liveCollections],
-  );
+  const departments = useMemo(() => {
+    const built = buildDepartments(liveCollections ?? []);
+    if (!liveHandles) return built;
+    return built.filter((d) => liveHandles.has(d.rootHandle));
+  }, [liveCollections, liveHandles]);
   const { data: brands } = useBrandIndex();
   const brandGroups = useMemo(() => groupBrandsForMenu(brands ?? []), [brands]);
 
