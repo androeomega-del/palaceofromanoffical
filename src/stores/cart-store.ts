@@ -161,6 +161,7 @@ export const useCartStore = create<CartStore>()(
                 checkoutUrl: result.checkoutUrl,
                 items: [{ ...item, lineId: result.lineId }],
               });
+              trackAdd();
               return true;
             }
             return false;
@@ -171,12 +172,14 @@ export const useCartStore = create<CartStore>()(
             if (r.success) {
               const cur = get().items;
               set({ items: cur.map((i) => (i.variantId === item.variantId ? { ...i, quantity: newQty } : i)) });
+              trackAdd();
               return true;
             } else if (r.cartNotFound) {
               clearCart();
               const result = await createShopifyCart({ ...item, lineId: null, quantity: newQty });
               if (result) {
                 set({ cartId: result.cartId, checkoutUrl: result.checkoutUrl, items: [{ ...item, quantity: newQty, lineId: result.lineId }] });
+                trackAdd();
                 return true;
               }
             }
@@ -187,12 +190,14 @@ export const useCartStore = create<CartStore>()(
               const cur = get().items;
               if (!r.lineId) return false;
               set({ items: [...cur, { ...item, lineId: r.lineId }] });
+              trackAdd();
               return true;
             } else if (r.cartNotFound) {
               clearCart();
               const result = await createShopifyCart({ ...item, lineId: null });
               if (result) {
                 set({ cartId: result.cartId, checkoutUrl: result.checkoutUrl, items: [{ ...item, lineId: result.lineId }] });
+                trackAdd();
                 return true;
               }
             }
@@ -231,6 +236,15 @@ export const useCartStore = create<CartStore>()(
         try {
           const r = await removeLineFromShopifyCart(cartId, item.lineId);
           if (r.success) {
+            trackCartEvent({
+              event_type: "remove_from_cart",
+              product_handle: item.product?.node?.handle ?? null,
+              product_title: item.product?.node?.title ?? null,
+              variant_id: item.variantId,
+              variant_title: item.variantTitle,
+              price_usd: item.price ? Number(item.price.amount) : null,
+              quantity: item.quantity,
+            });
             const cur = get().items;
             const next = cur.filter((i) => i.variantId !== variantId);
             next.length === 0 ? clearCart() : set({ items: next });
