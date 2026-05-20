@@ -213,7 +213,7 @@ function parseQuery(query?: string | null): ParsedQuery {
 
 // ── ProductFilter[] (Storefront API style) → SQL filters ────────────────────
 type FilterInput = Record<string, unknown>;
-function applyFilters(builder: any, filters: FilterInput[] | undefined) {
+function applyFilters(builder: any, filters: object[] | undefined) {
   if (!filters || filters.length === 0) return builder;
   let b = builder;
   for (const f of filters) {
