@@ -1,51 +1,84 @@
-## Fix duplicates + unique images on /collections
+## Goal
 
-### Problem
-Shopify returns paired handles for the same category (`women-clothing` **and** `womens-clothing`, `men-shoes` **and** `mens-shoes`, etc.). My current allowlist accepts both, so each appears twice on the page. Several entries also share the same image asset (e.g. `women` and `womens-clothing` both resolve to `womensClothing.jpg`).
+Every `/collections/<handle>` link on the site resolves to a real Shopify collection — no more empty/404 category pages. Where Shopify is missing an obvious category, we create it as a smart collection.
 
-### Fix — two surgical edits, no new images required for the dedupe itself
+## Step 1 — Create missing Shopify smart collections
 
-**Edit 1 — `src/routes/collections.index.tsx`**
-Replace the allowlist + `isMainCollection` with a canonical-handle approach so each category appears exactly once.
+New script `scripts/shopify/create-category-collections.mjs` (modeled after the existing `create-smart-collections.mjs`). Idempotent: skips handles that already exist.
 
-- Add a `CANONICAL_HANDLE` map that collapses Shopify's pairs:
-  - `women-clothing` → `womens-clothing`
-  - `women-shoes` → `womens-shoes`
-  - `women-bags` → `womens-bags`
-  - `women-accessories` → `womens-accessories`
-  - `men-clothing` → `mens-clothing`
-  - `men-shoes` → `mens-shoes`
-  - `men-bags` → `mens-bags-wallets`
-  - `men-accessories` → `mens-accessories`
-- Build the displayed list by: filter via allowlist → map to canonical handle → dedupe by canonical handle (first occurrence wins).
-- Final unique main list (33 entries, no repeats):
-  `new-arrivals, women, men, unisex, womens-clothing, womens-shoes, women-bags, women-accessories, mens-clothing, mens-shoes, men-bags, men-accessories, accessories, bags, clothing, shoes, handbags, backpacks, clutch-bags, crossbody-bags, shoulder-bags, tote-bags, boots, loafers, hats, gloves, watches, shirts, skirts, suits, swimwear, sleepwear, other-accessories`
+Collections to create (handle → rules, all conjunctive `all`):
 
-**Edit 2 — `src/lib/collection-image.ts`**
-Re-point bare/entry handles so no two displayed collections share an image. Only the 6 highlighted rows below change; everything else keeps its current dedicated asset.
+**Women columns**
+- `womens-bags` — Tag=Women AND Type=Bags
+- `womens-accessories` — Tag=Women AND Type=Accessories
+- `womens-jewelry` — Tag=Women AND Type=Jewelry
+- `womens-watches` — Tag=Women AND Type=Watches
+- `womens-scarves` — Tag=Women AND Type=Scarves
+- `womens-hats` — Tag=Women AND Type=Hats
+- `womens-belts` — Tag=Women AND Type=Belts
+- `womens-wallets` — Tag=Women AND Type=Wallets
+- `womens-dresses` — Tag=Women AND Type=Dresses
+- `womens-skirts` — Tag=Women AND Type=Skirts
 
-| Handle | Current image | New image |
-|---|---|---|
-| `women` | `womensClothing` (dup) | **generate** `women.jpg` — editorial full-length female portrait, no garment focus |
-| `men` | `mensClothing` (dup) | **generate** `men.jpg` — editorial full-length male portrait |
-| `unisex` | fallback | **generate** `unisex.jpg` — gender-neutral pair, minimal |
-| `clothing` | `womensClothing` (dup) | **generate** `clothing.jpg` — garment rack, mixed pieces |
-| `shoes` | `womensShoes` (dup) | **generate** `shoes.jpg` — lineup of mixed footwear |
-| `bags` | `womensBags` (dup) | **generate** `bags.jpg` — lineup of mixed handbags |
-| `accessories` | `womensAccessories` (dup) | **generate** `accessories.jpg` — flatlay sunglasses/jewelry/belt |
-| `gloves` | `womensAccessories` (dup) | **generate** `gloves.jpg` — leather gloves close-up |
-| `shirts` | `womensTops` (dup) | **generate** `shirts.jpg` — folded/hung shirts |
-| `sleepwear` | `womensUnderwear` (dup) | **generate** `sleepwear.jpg` — silk pyjama editorial |
-| `other-accessories` | fallback | **generate** `other-accessories.jpg` — small leather goods, cufflinks |
-| `women-bags` (via canonical) | currently fallback | **generate** `women-bags.jpg` — woman carrying handbag, editorial |
+**Men columns**
+- `mens-bags-wallets` — Tag=Men AND Type=Bags (catch-all bags+wallets)
+- `mens-accessories` — Tag=Men AND Type=Accessories
+- `mens-suits` — Tag=Men AND Type=Suits
+- `mens-jackets-coats` — Tag=Men AND (Type contains Jacket OR Type contains Coat) [disjunctive sub, see Technical]
+- `mens-shirts` — Tag=Men AND Type=Shirts
+- `mens-tshirts-polos` — Tag=Men AND (Type contains T-Shirt OR Type contains Polo)
+- `mens-sweaters-knitwear` — Tag=Men AND (Type contains Sweater OR Type contains Knitwear)
+- `mens-hoodies-sweatshirts` — Tag=Men AND (Type contains Hoodie OR Type contains Sweatshirt)
+- `mens-pants-trousers` — Tag=Men AND (Type contains Pants OR Type contains Trousers)
+- `mens-shorts` — Tag=Men AND Type=Shorts
+- `mens-activewear` — Tag=Men AND Type=Activewear
+- `mens-swimwear` — Tag=Men AND Type=Swimwear
+- `mens-underwear-loungewear` — Tag=Men AND (Type contains Underwear OR Type contains Loungewear)
+- `mens-sneakers` — Tag=Men AND Type=Sneakers
+- `mens-boots` — Tag=Men AND Type=Boots
+- `mens-sandals-slides` — Tag=Men AND (Type contains Sandal OR Type contains Slide)
+- `mens-belts` — Tag=Men AND Type=Belts
+- `mens-watches-jewelry` — Tag=Men AND (Type contains Watch OR Type contains Jewelry)
 
-12 new images generated into `src/assets/collections/auto/`, all matching the Palace of Roman editorial style (muted, warm, film-grain, single subject), then wired into `BY_HANDLE`.
+**Generic (referenced by collections index + footer)**
+- `dresses`, `loafers`, `belts`, `wallets`, `jewelry`, `scarves`, `sunglasses` — each Type=<X>
 
-### Verification (after implementation)
-- `data-testid="collection-card"` count = 33 unique handles
-- Iterate displayed cards and assert no two share the same `img.src` (manual check via preview)
-- No `women-clothing`, `men-shoes`, `men-clothing`, `women-shoes` cards in DOM
+Each created with `published: true`, `sort_order: 'best-selling'`, and a short body_html. Dry-run first, then commit at ~2 req/s.
 
-### Out of scope
-- No changes to product pages, /collections/[handle], or any business logic
-- Brand collections (Gucci, Prada, etc.) — still excluded from the index by design
+## Step 2 — Update code references
+
+**`src/lib/nav-config.ts`** — leave WOMEN_RULES / MEN_RULES as-is. They already match the suffix scheme; once the collections exist in Shopify they'll auto-populate the megamenu. Add the new categories to the rule lists (`womens-jewelry`, `womens-watches`, etc.) so they actually slot in.
+
+**`src/components/site-footer.tsx`** — keep existing handles (`womens-clothing`, `mens-clothing`, etc.); they're real. No change needed.
+
+**`src/components/site-header.tsx`** — already uses real handles (`new-arrivals`, `best-sellers`). No change.
+
+**`src/routes/index.tsx`** — verify the four `*_HANDLE` constants point to real Shopify handles; remap if any are wrong (`mens-clothing`, `womens-clothing`, `mens-shoes`, `womens-shoes` all exist — likely fine).
+
+**`src/routes/editorial.may-2026.tsx`** — repoint:
+- `womens-bags` → (after Step 1 creates it) keep as-is
+- `womens-accessories-1` → `womens-accessories`
+- `mens-sweaters-knitwear`, `mens-bags-wallets`, `mens-sneakers` → all created in Step 1, keep
+- Hero fallback `womens-bags` → keep
+
+**`src/routes/collections.index.tsx`** — broaden `MAIN_HANDLE_ALLOWLIST` and `CANONICAL_HANDLE` to include the new handles. Collapse pairs the same way (e.g. `women-bags` ↔ `womens-bags`).
+
+**`src/lib/nav-config.ts` megamenu feature** — `mens-suits` will be real after Step 1, keep.
+
+## Step 3 — Verify
+
+- Re-fetch the Shopify collection list and assert every handle referenced by `rg "params={{ handle: \"" src/` exists.
+- Load `/collections` and confirm the cards render with their images.
+- Click through Women + Men megamenu items and the footer; none should land on an empty page.
+
+## Technical notes
+
+- Shopify smart collections support disjunctive rules via `disjunctive: true` at the collection level — that applies OR to ALL rules in the collection. For the "Tag=Men AND (Type=A OR Type=B)" pattern, smart collections can't natively combine AND + OR. **Fallback:** for those handles I'll create them as `Tag=Men, Type contains <broadest single keyword>` (e.g. `mens-jackets-coats` → Type contains "Coat" — covers "Coat" and "Jacket Coat" listings) OR create as a custom collection populated by a one-time tag scan. I'll prefer the first; if hit rate is low I'll convert to custom collections in a follow-up.
+- All scripts go in `scripts/shopify/`, never imported by the app.
+- Dry-run output will be shown before any writes hit Shopify.
+
+## Out of scope
+
+- Brand vendor collections (already work).
+- Fulfillment / inventory / product tag changes.
+- Hero imagery or focal points (separate workflow).
