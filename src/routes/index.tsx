@@ -225,7 +225,7 @@ function HomePage() {
       {/* 1. SUMMER BENTO STOREFRONT — Architectural Resort.
           Rendered client-only to avoid SSR/CSR hydration mismatches while
           the bento markup is iterated on. */}
-      <ClientOnly fallback={<div aria-hidden className="min-h-[80vh] bg-canvas-raised" />}>
+      <ClientOnly fallback={<SummerBentoSkeleton />}>
         <SummerBento {...SUMMER_BENTO_PROPS} />
       </ClientOnly>
 
