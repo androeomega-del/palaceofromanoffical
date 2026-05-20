@@ -1032,3 +1032,35 @@ function SummerBento({
     </section>
   );
 }
+
+/* -------------------------- SummerBentoSkeleton -------------------------- */
+/**
+ * Pixel-matching skeleton for SummerBento. Mirrors the exact grid container
+ * and every tile's `col-span` / `row-span` so the layout slot is identical
+ * before and after the real bento mounts — eliminating layout shift (CLS).
+ */
+function SummerBentoSkeleton() {
+  return (
+    <section
+      aria-hidden
+      className="px-4 md:px-8 lg:px-12 pt-6 md:pt-10 pb-12 md:pb-16"
+    >
+      <div className="max-w-[1600px] mx-auto grid grid-cols-12 auto-rows-[180px] md:auto-rows-[200px] gap-4">
+        {/* Main Hero */}
+        <div className="col-span-12 lg:col-span-8 row-span-3 lg:row-span-4 bg-canvas-raised animate-pulse" />
+        {/* Swim Promo */}
+        <div className="col-span-12 md:col-span-6 lg:col-span-4 row-span-2 bg-bronze/40 animate-pulse" />
+        {/* Women Tile */}
+        <div className="col-span-12 md:col-span-6 lg:col-span-4 row-span-2 bg-canvas-raised animate-pulse" />
+        {/* Brand Spotlight */}
+        <div className="col-span-12 md:col-span-4 lg:col-span-3 row-span-2 bg-ink/80 animate-pulse" />
+        {/* Men Tile */}
+        <div className="col-span-12 md:col-span-8 lg:col-span-5 row-span-2 bg-canvas-raised animate-pulse" />
+        {/* Accessories Tile */}
+        <div className="col-span-6 md:col-span-4 lg:col-span-2 row-span-2 bg-canvas-raised animate-pulse" />
+        {/* Summer Sale Tile */}
+        <div className="col-span-6 md:col-span-4 lg:col-span-2 row-span-2 bg-bronze/40 animate-pulse" />
+      </div>
+    </section>
+  );
+}
