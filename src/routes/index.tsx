@@ -104,10 +104,18 @@ function HomePage() {
   });
   const bestSellersQ = useQuery({
     queryKey: ["home", "best-sellers"],
-    queryFn: () =>
-      fetchSearchFiltered({ first: 8, sortKey: "BEST_SELLING", reverse: false }).then(
-        (r) => r.edges,
-      ),
+    queryFn: async () => {
+      // Primary: virtual /collections/best-sellers (Storefront search, BEST_SELLING)
+      const primary = await fetchSearchFiltered({
+        first: 8,
+        sortKey: "BEST_SELLING",
+        reverse: false,
+      }).then((r) => r.edges);
+      if (primary.length > 0) return primary;
+      // Fallback: global products endpoint sorted BEST_SELLING — guarantees
+      // the showcase is never empty even if the search index is cold.
+      return fetchProducts({ first: 8, sortKey: "BEST_SELLING" });
+    },
   });
   const swimwearQ = useQuery({
     queryKey: ["home", "swimwear"],
