@@ -110,11 +110,27 @@ export const Route = createFileRoute("/api/public/hooks/sync-collection-images")
   server: {
     handlers: {
       POST: async ({ request }) => {
-        // Auth: require Supabase anon apikey header (matches pg_cron convention).
-        const apiKey = request.headers.get("apikey");
-        const expected =
-          process.env.SUPABASE_PUBLISHABLE_KEY ?? process.env.SUPABASE_ANON_KEY;
-        if (!apiKey || !expected || apiKey !== expected) {
+        // Auth: require a server-only shared secret. Never accept the public
+        // anon/publishable key here — it is bundled in client JS and visible
+        // to any visitor, which would let anyone trigger costly AI image
+        // generation and admin DB writes.
+        const expected = process.env.SYNC_WEBHOOK_SECRET;
+        if (!expected) {
+          console.error("[sync-collection-images] SYNC_WEBHOOK_SECRET not configured");
+          return new Response("Server not configured", { status: 500 });
+        }
+        const provided =
+          request.headers.get("x-webhook-secret") ||
+          request.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ||
+          "";
+        // Constant-time comparison
+        const a = new TextEncoder().encode(provided);
+        const b = new TextEncoder().encode(expected);
+        let ok = a.length === b.length;
+        const len = Math.max(a.length, b.length);
+        let diff = a.length ^ b.length;
+        for (let i = 0; i < len; i++) diff |= (a[i] ?? 0) ^ (b[i] ?? 0);
+        if (!ok || diff !== 0) {
           return new Response("Unauthorized", { status: 401 });
         }
 
