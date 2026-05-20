@@ -1002,34 +1002,6 @@ function SummerBento({
           </div>
         </Link>
 
-        {/* Summer Sale Tile — full-bleed editorial */}
-        <Link
-          to="/collections/$handle"
-          params={{ handle: "high-discounts" }}
-          className="col-span-6 md:col-span-4 lg:col-span-2 row-span-2 relative group overflow-hidden bg-bronze"
-        >
-          {saleImage && (
-            <img
-              src={saleImage.url}
-              alt={saleImage.altText ?? "The Summer Sale"}
-              loading="lazy"
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-            />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/20 to-transparent" />
-          <div className="relative z-10 h-full flex flex-col items-center justify-center text-center p-5 md:p-6">
-            <h4 className="font-serif text-2xl md:text-3xl text-canvas mb-2 leading-tight">
-              The Summer
-              <br />
-              Sale
-            </h4>
-            <p className="text-[10px] uppercase tracking-[0.3em] text-canvas/85 mb-4">
-              Up to 40% Off
-            </p>
-            <div className="w-8 h-px bg-canvas transition-all group-hover:w-16" />
-          </div>
-        </Link>
-
       </div>
     </section>
   );
