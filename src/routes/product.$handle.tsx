@@ -361,7 +361,7 @@ function ProductView({
               <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] uppercase tracking-[0.2em] text-[var(--studio-bronze)] font-semibold pt-1">
                 <span>14-Day Returns</span>
                 <span className="opacity-30">·</span>
-                <span>Ships in 3–5 Days</span>
+                <span>Express Worldwide</span>
                 <span className="opacity-30">·</span>
                 <span>100% Authentic</span>
               </p>
@@ -435,7 +435,7 @@ function ProductView({
             {/* Trust strip — diamonds */}
             <ul className="grid grid-cols-3 gap-8 py-10 border-y border-[var(--studio-rule)]">
               <TrustItem title="100% Authentic" sub="BrandsGateway Partner" />
-              <TrustItem title="Express" sub="3–5 Day Global" />
+              <TrustItem title="Express" sub="Tracked Worldwide" />
               <TrustItem title="14 Day" sub="Returns" />
             </ul>
 
@@ -482,9 +482,11 @@ function ProductView({
                 </AccordionTrigger>
                 <AccordionContent>
                   <p className="text-sm leading-[1.85] text-[var(--studio-muted)]">
-                    Dispatched sealed from a brand-authorised European warehouse within 1–3
-                    business days. Express courier with full tracking; import duties and taxes
-                    handled on your behalf. Full details on the{" "}
+                    Dispatched sealed from a brand-authorised European or US partner warehouse
+                    within 24–48 hours. Express courier with full tracking and import duties
+                    handled on your behalf. Typical transit: 2–3 business days within the EU,
+                    3–5 to the UK, 4–7 to the US & Canada, and 5–10 to the rest of the world.
+                    Full details on the{" "}
                     <Link
                       to="/shipping-returns"
                       className="underline underline-offset-4 hover:text-[var(--studio-ink)]"
