@@ -12,6 +12,8 @@ const SB_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const DRY = process.argv.includes('--dry');
 const limitArg = process.argv.find((a) => a.startsWith('--limit='));
 const LIMIT = limitArg ? parseInt(limitArg.split('=')[1], 10) : Infinity;
+const skipArg = process.argv.find((a) => a.startsWith('--skip='));
+const SKIP = skipArg ? parseInt(skipArg.split('=')[1], 10) : 0;
 const PUBLICATION_NAME = 'Lovable';
 
 if (!TOKEN) { console.error('Missing SHOPIFY_ACCESS_TOKEN'); process.exit(1); }
