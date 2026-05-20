@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { fetchCollections, type ShopifyCollection } from "@/lib/shopify";
+import { collectionImage } from "@/lib/collection-image";
 import { routeHead } from "@/lib/seo";
 
 type FilterKey = "all" | "women" | "men" | "clothing" | "shoes" | "luxury";
