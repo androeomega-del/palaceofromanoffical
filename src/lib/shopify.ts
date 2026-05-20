@@ -69,10 +69,17 @@ export type FilteredResult = {
 };
 
 // ── Storefront stub (cart-store calls this; snapshot mode has no Shopify) ───
-export async function storefrontApiRequest<T = unknown>(): Promise<{ data?: T } | undefined> {
-  toast.error("Checkout is not connected", {
-    description: "This is a catalog snapshot. Checkout will activate once the BrandsGateway API + payments are wired.",
-  });
+let CHECKOUT_TOAST_SHOWN = false;
+export async function storefrontApiRequest<T = unknown>(
+  _query?: string,
+  _variables?: Record<string, unknown>,
+): Promise<{ data?: T } | undefined> {
+  if (!CHECKOUT_TOAST_SHOWN) {
+    CHECKOUT_TOAST_SHOWN = true;
+    toast.error("Checkout is not connected", {
+      description: "This is a catalog snapshot. Checkout will activate once the BrandsGateway API + payments are wired.",
+    });
+  }
   return undefined;
 }
 
