@@ -155,8 +155,10 @@ function CollectionsIndexPage() {
     queryFn: () => fetchCollections(100),
   });
 
+  // Show every collection on the index (deduped by canonical handle).
+  // Previously filtered to a curated "main" allowlist — now displays all.
   const all = useMemo(
-    () => dedupeByCanonical((q.data ?? []).filter(isMainCollection)),
+    () => dedupeByCanonical(q.data ?? []),
     [q.data],
   );
   const collections = useMemo(
