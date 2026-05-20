@@ -321,7 +321,7 @@ function CollectionPage() {
             hasSavedOverride={hasSavedOverride}
             onLiveChange={setLiveFocal}
             onExit={() =>
-              navigate({ search: (prev) => ({ ...prev, edit: undefined }), replace: true })
+              navigate({ search: ({ sort }) => ({ sort }), replace: true })
             }
           />
         )}
