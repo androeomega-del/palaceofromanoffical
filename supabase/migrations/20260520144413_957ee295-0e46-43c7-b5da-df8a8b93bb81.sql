@@ -1,0 +1,1 @@
+TRUNCATE TABLE public.bg_variants, public.bg_products;
