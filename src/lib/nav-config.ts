@@ -153,6 +153,12 @@ const CROSS_CATEGORIES: CrossEntry[] = [
   { handle: "swimwear-women",     label: "Swimwear",           women: { column: "Apparel", order: 24 }, men: null },
   { handle: "sportswear-women",   label: "Sportswear",         women: { column: "Apparel", order: 25 }, men: null },
   { handle: "lingerie",           label: "Lingerie & Underwear", women: { column: "Apparel", order: 26 }, men: null },
+  { handle: "midi-dresses",       label: "Midi Dresses",       women: { column: "Apparel", order: 27 }, men: null },
+  { handle: "long-sleeve-dresses", label: "Long Sleeve Dresses", women: { column: "Apparel", order: 28 }, men: null },
+  { handle: "mini-skirts",        label: "Mini Skirts",        women: { column: "Apparel", order: 29 }, men: null },
+  { handle: "midi-skirts",        label: "Midi Skirts",        women: { column: "Apparel", order: 30 }, men: null },
+
+
 
   // Men — apparel
   { handle: "tshirts-men",        label: "T-Shirts",           women: null, men: { column: "Shirts & Knitwear", order: 10 } },
@@ -161,11 +167,21 @@ const CROSS_CATEGORIES: CrossEntry[] = [
   { handle: "dress-shirts",       label: "Dress Shirts",       women: null, men: { column: "Shirts & Knitwear", order: 13 } },
   { handle: "pattern-shirts",     label: "Pattern Shirts",     women: null, men: { column: "Shirts & Knitwear", order: 14 } },
   { handle: "sweaters-men",       label: "Sweaters",           women: null, men: { column: "Shirts & Knitwear", order: 15 } },
-  { handle: "sweatshirts",        label: "Sweatshirts & Hoodies", women: null, men: { column: "Shirts & Knitwear", order: 16 } },
-  { handle: "blazers",            label: "Blazers",            women: null, men: { column: "Tailoring", order: 10 } },
+  { handle: "cardigans",          label: "Cardigans",          women: { column: "Apparel", order: 31 }, men: { column: "Shirts & Knitwear", order: 15 } },
+  { handle: "turtlenecks",        label: "Turtlenecks",        women: { column: "Apparel", order: 32 }, men: { column: "Shirts & Knitwear", order: 15 } },
+  { handle: "sweatshirts",        label: "Sweatshirts",        women: null, men: { column: "Shirts & Knitwear", order: 16 } },
+  { handle: "hoodies",            label: "Hoodies",            women: null, men: { column: "Shirts & Knitwear", order: 16 } },
+  { handle: "polo-shirts",        label: "Polo Shirts",        women: null, men: { column: "Shirts & Knitwear", order: 17 } },
+  { handle: "long-sleeve-tees",   label: "Long Sleeve Tees",   women: { column: "Apparel", order: 33 }, men: { column: "Shirts & Knitwear", order: 18 } },
+  { handle: "blazers",            label: "Blazers",            women: { column: "Apparel", order: 34 }, men: { column: "Tailoring", order: 10 } },
   { handle: "jackets-men",        label: "Jackets",            women: null, men: { column: "Tailoring", order: 11 } },
+  { handle: "bombers",            label: "Bomber Jackets",     women: null, men: { column: "Tailoring", order: 11 } },
+  { handle: "leather-jackets",    label: "Leather Jackets",    women: { column: "Apparel", order: 35 }, men: { column: "Tailoring", order: 11 } },
   { handle: "coats-men",          label: "Coats",              women: null, men: { column: "Tailoring", order: 12 } },
+  { handle: "trench-coats",       label: "Trench Coats",       women: { column: "Apparel", order: 36 }, men: { column: "Tailoring", order: 12 } },
+  { handle: "parkas",             label: "Parkas",             women: null, men: { column: "Tailoring", order: 12 } },
   { handle: "denim-men",          label: "Denim",              women: null, men: { column: "Bottoms & Beach", order: 10 } },
+
   { handle: "skinny-jeans",       label: "Skinny Jeans",       women: null, men: { column: "Bottoms & Beach", order: 11 } },
   { handle: "slim-fit-jeans",     label: "Slim Fit Jeans",     women: null, men: { column: "Bottoms & Beach", order: 12 } },
   { handle: "casual-pants",       label: "Casual Pants",       women: null, men: { column: "Bottoms & Beach", order: 13 } },
