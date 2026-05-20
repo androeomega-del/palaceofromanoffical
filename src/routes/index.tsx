@@ -1130,8 +1130,6 @@ function SummerBentoSkeleton() {
         <div className="col-span-12 md:col-span-6 lg:col-span-4 row-span-2 bg-bronze/40 animate-pulse" />
         {/* Women Tile */}
         <div className="col-span-12 md:col-span-6 lg:col-span-4 row-span-2 bg-canvas-raised animate-pulse" />
-        {/* Brand Spotlight */}
-        <div className="col-span-12 md:col-span-4 lg:col-span-3 row-span-2 bg-ink/80 animate-pulse" />
         {/* Men Tile */}
         <div className="col-span-12 md:col-span-8 lg:col-span-5 row-span-2 bg-canvas-raised animate-pulse" />
         {/* Accessories Tile */}
