@@ -473,13 +473,14 @@ export async function fetchVendorIndex(): Promise<Array<{ vendor: string; count:
   if (VENDOR_INDEX_CACHE) return VENDOR_INDEX_CACHE;
   const counts = new Map<string, number>();
   let after: string | null = null;
+  type VendorPageRes = {
+    products: {
+      edges: Array<{ node: { vendor: string } }>;
+      pageInfo: { hasNextPage: boolean; endCursor: string | null };
+    };
+  };
   for (let page = 0; page < 4; page++) {
-    const res = await storefrontApiRequest<{
-      products: {
-        edges: Array<{ node: { vendor: string } }>;
-        pageInfo: { hasNextPage: boolean; endCursor: string | null };
-      };
-    }>(
+    const res: { data?: VendorPageRes } | undefined = await storefrontApiRequest<VendorPageRes>(
       `query VendorPage($first: Int!, $after: String) {
         products(first: $first, after: $after, query: "available_for_sale:true", sortKey: BEST_SELLING) {
           edges { node { vendor } }
