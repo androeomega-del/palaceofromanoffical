@@ -530,9 +530,10 @@ const STATIC_COLLECTIONS: CollectionDef[] = [
 ];
 
 let DYNAMIC_COLLECTIONS_CACHE: CollectionDef[] | null = null;
+let INVENTORY_DIMENSION_ROWS_CACHE: Array<Pick<BgProductRow, "gender"|"category"|"subcategory"|"subsubcategory">> | null = null;
 
-async function getDynamicCollections(): Promise<CollectionDef[]> {
-  if (DYNAMIC_COLLECTIONS_CACHE) return DYNAMIC_COLLECTIONS_CACHE;
+async function getInventoryDimensionRows(): Promise<Array<Pick<BgProductRow, "gender"|"category"|"subcategory"|"subsubcategory">>> {
+  if (INVENTORY_DIMENSION_ROWS_CACHE) return INVENTORY_DIMENSION_ROWS_CACHE;
   const rows: Array<Pick<BgProductRow, "gender"|"category"|"subcategory"|"subsubcategory">> = [];
   const pageSize = 1000;
   for (let offset = 0; offset < 80000; offset += pageSize) {
@@ -549,6 +550,13 @@ async function getDynamicCollections(): Promise<CollectionDef[]> {
     rows.push(...page);
     if (page.length < pageSize) break;
   }
+  INVENTORY_DIMENSION_ROWS_CACHE = rows;
+  return INVENTORY_DIMENSION_ROWS_CACHE;
+}
+
+async function getDynamicCollections(): Promise<CollectionDef[]> {
+  if (DYNAMIC_COLLECTIONS_CACHE) return DYNAMIC_COLLECTIONS_CACHE;
+  const rows = await getInventoryDimensionRows();
   const subSet = new Map<string, CollectionDef>();
   for (const r of rows) {
     if (r.gender && r.subcategory) {
