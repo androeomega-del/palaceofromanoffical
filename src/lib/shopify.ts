@@ -410,28 +410,8 @@ export async function fetchProductByHandle(handle: string): Promise<ShopifyProdu
   const variants = (vRows ?? []) as BgVariantRow[];
 
   // Enrich with real Shopify variant GIDs so cart → cartCreate works.
-  const skus = variants.map((v) => v.product_sku).filter(Boolean);
-  let gidBySku = new Map<string, { gid: string; available: boolean }>();
-  if (skus.length > 0) {
-    const { data: mapRows } = await supabase
-      .from("shopify_variant_map")
-      .select("sku,variant_gid,available")
-      .in("sku", skus);
-    for (const m of (mapRows ?? []) as Array<{ sku: string; variant_gid: string; available: boolean }>) {
-      gidBySku.set(m.sku, { gid: m.variant_gid, available: m.available });
-    }
-  }
-
-  const node = rowToNode(product, variants);
-  node.variants.edges = node.variants.edges.map((e) => {
-    const mapped = gidBySku.get(e.node.id);
-    if (!mapped) {
-      // No Shopify mapping — variant is not purchasable yet.
-      return { node: { ...e.node, availableForSale: false } };
-    }
-    return { node: { ...e.node, id: mapped.gid, availableForSale: e.node.availableForSale && mapped.available } };
-  });
-  return node;
+  const gidBySku = await fetchVariantMap(variants.map((v) => v.product_sku));
+  return applyVariantMap(rowToNode(product, variants), gidBySku);
 }
 
 // ── Public API: collections ─────────────────────────────────────────────────
