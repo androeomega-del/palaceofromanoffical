@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 
-import { fetchCollectionFiltered, fetchCollection, type StorefrontFilterValue } from "@/lib/shopify";
+import { fetchCollectionFiltered, fetchCollection, fetchSearchFiltered, type StorefrontFilterValue } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
 import { pageTitle, metaDescription, absoluteUrl, SITE_URL } from "@/lib/seo";
 import { collectionSeo } from "@/lib/collection-seo";
@@ -160,19 +160,45 @@ function CollectionPage() {
   const reverse = reverseStr === "true";
 
   // For /collections/high-discounts, fetch a wider window and filter client-side
-  // to products that are 80–99% off (compareAtPrice vs price).
+  // to products that are 50%+ off (compareAtPrice vs price).
   const isHighDiscounts = handle === "high-discounts";
+  // /collections/best-sellers is a virtual collection — no Shopify collection
+  // exists by that handle, so we synthesize results from the global product
+  // catalog sorted by BEST_SELLING.
+  const isBestSellers = handle === "best-sellers";
 
   const q = useQuery({
-    queryKey: ["collection-filtered", handle, filterInputs, sortKey, reverse, isHighDiscounts],
-    queryFn: () =>
-      fetchCollectionFiltered({
+    queryKey: ["collection-filtered", handle, filterInputs, sortKey, reverse, isHighDiscounts, isBestSellers],
+    queryFn: async () => {
+      if (isBestSellers) {
+        const res = await fetchSearchFiltered({
+          first: 48,
+          filters: filterInputs,
+          sortKey,
+          reverse,
+        });
+        return {
+          collection: {
+            id: "virtual:best-sellers",
+            title: "Best Sellers",
+            handle: "best-sellers",
+            description:
+              "The pieces our clients reach for most — a live ranking of the boutique's most-ordered styles across every maison.",
+            image: null,
+          },
+          filters: res.filters,
+          edges: res.edges,
+          pageInfo: res.pageInfo,
+        };
+      }
+      return fetchCollectionFiltered({
         handle,
         first: isHighDiscounts ? 250 : 36,
         filters: filterInputs,
         sortKey,
         reverse,
-      }),
+      });
+    },
   });
 
   const data = q.data;
