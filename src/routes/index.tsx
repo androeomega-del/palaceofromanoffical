@@ -14,7 +14,6 @@ import marketingMen from "@/assets/marketing-men-summer.jpg";
 import marketingAccessories from "@/assets/marketing-accessories-summer.jpg";
 import marketingSwim from "@/assets/marketing-swim-summer.jpg";
 
-import marketingCalvinKlein from "@/assets/marketing-calvin-klein.jpg";
 import swimCampaignVideo from "@/assets/swim-campaign.mp4.asset.json";
 import { img } from "@/lib/editorial-library";
 
