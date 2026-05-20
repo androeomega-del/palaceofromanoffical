@@ -10,7 +10,7 @@ import { stabilize, test, expect, loadFixtures } from "./_helpers";
 const fixture = loadFixtures();
 
 test.describe("megamenu — desktop", () => {
-  test.skip(({}, testInfo) => testInfo.project.name !== "desktop-chromium", "Desktop-only layout");
+  test.skip(({}, testInfo) => !testInfo.project.name.startsWith("desktop"), "Desktop-only layout");
 
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
