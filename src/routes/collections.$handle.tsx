@@ -160,19 +160,45 @@ function CollectionPage() {
   const reverse = reverseStr === "true";
 
   // For /collections/high-discounts, fetch a wider window and filter client-side
-  // to products that are 80–99% off (compareAtPrice vs price).
+  // to products that are 50%+ off (compareAtPrice vs price).
   const isHighDiscounts = handle === "high-discounts";
+  // /collections/best-sellers is a virtual collection — no Shopify collection
+  // exists by that handle, so we synthesize results from the global product
+  // catalog sorted by BEST_SELLING.
+  const isBestSellers = handle === "best-sellers";
 
   const q = useQuery({
-    queryKey: ["collection-filtered", handle, filterInputs, sortKey, reverse, isHighDiscounts],
-    queryFn: () =>
-      fetchCollectionFiltered({
+    queryKey: ["collection-filtered", handle, filterInputs, sortKey, reverse, isHighDiscounts, isBestSellers],
+    queryFn: async () => {
+      if (isBestSellers) {
+        const res = await fetchSearchFiltered({
+          first: 48,
+          filters: filterInputs,
+          sortKey,
+          reverse,
+        });
+        return {
+          collection: {
+            id: "virtual:best-sellers",
+            title: "Best Sellers",
+            handle: "best-sellers",
+            description:
+              "The pieces our clients reach for most — a live ranking of the boutique's most-ordered styles across every maison.",
+            image: null,
+          },
+          filters: res.filters,
+          edges: res.edges,
+          pageInfo: res.pageInfo,
+        };
+      }
+      return fetchCollectionFiltered({
         handle,
         first: isHighDiscounts ? 250 : 36,
         filters: filterInputs,
         sortKey,
         reverse,
-      }),
+      });
+    },
   });
 
   const data = q.data;
