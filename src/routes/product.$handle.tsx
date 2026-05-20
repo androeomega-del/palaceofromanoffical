@@ -601,7 +601,38 @@ function ProductView({
           </div>
         </div>
 
+        {/* ===== Editorial notes (layering categories) ===== */}
+        {editorial && (
+          <section className="max-w-5xl mx-auto mt-32 pt-20 border-t border-[var(--studio-rule)]">
+            <div className="text-center max-w-2xl mx-auto space-y-5 mb-20">
+              <p className="text-[10px] tracking-[0.3em] uppercase text-[var(--studio-bronze)] font-semibold">
+                {editorial.eyebrow}
+              </p>
+              <h2 className="font-serif text-4xl md:text-5xl leading-[1.1] tracking-tight text-balance">
+                {editorial.tagline}
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-x-16 gap-y-14">
+              {[
+                { label: "The Piece", body: editorial.piece },
+                { label: "The Craft", body: editorial.craft },
+                { label: "How to Wear", body: editorial.styling },
+              ].map((block) => (
+                <div key={block.label} className="space-y-5">
+                  <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-[var(--studio-ink)] pb-3 border-b border-[var(--studio-rule)]">
+                    {block.label}
+                  </p>
+                  <p className="text-[15px] leading-[1.85] text-[var(--studio-muted)] font-serif italic">
+                    {block.body}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* ===== More from vendor ===== */}
+
         {related.length > 0 && (
           <section className="max-w-7xl mx-auto mt-32 pt-20 border-t border-[var(--studio-rule)]">
             <div className="flex items-end justify-between mb-12">
