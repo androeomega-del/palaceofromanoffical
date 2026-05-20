@@ -158,7 +158,7 @@ function ShopPage() {
 
   // URL helpers
   const update = (patch: Partial<typeof search>) =>
-    navigate({ search: (prev) => ({ ...prev, ...patch }), replace: true });
+    navigate({ search: { ...search, ...patch }, replace: true });
 
   const toggle = (filterId: string, v: StorefrontFilterValue) => {
     setSelections((curr) =>
