@@ -68,19 +68,48 @@ export type FilteredResult = {
   pageInfo: { hasNextPage: boolean; endCursor: string | null };
 };
 
-// ── Storefront stub (cart-store calls this; snapshot mode has no Shopify) ───
-let CHECKOUT_TOAST_SHOWN = false;
+// ── Storefront API (real fetch — used by cart-store for cartCreate/etc.) ────
+let BILLING_TOAST_SHOWN = false;
 export async function storefrontApiRequest<T = unknown>(
-  _query?: string,
-  _variables?: Record<string, unknown>,
+  query: string,
+  variables: Record<string, unknown> = {},
 ): Promise<{ data?: T } | undefined> {
-  if (!CHECKOUT_TOAST_SHOWN) {
-    CHECKOUT_TOAST_SHOWN = true;
-    toast.error("Checkout is not connected", {
-      description: "This is a catalog snapshot. Checkout will activate once the BrandsGateway API + payments are wired.",
+  try {
+    const res = await fetch(SHOPIFY_STOREFRONT_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Shopify-Storefront-Access-Token": SHOPIFY_STOREFRONT_TOKEN,
+      },
+      body: JSON.stringify({ query, variables }),
     });
+
+    if (res.status === 402) {
+      if (!BILLING_TOAST_SHOWN) {
+        BILLING_TOAST_SHOWN = true;
+        toast.error("Checkout temporarily unavailable", {
+          description: "Shopify billing needs to be active to process orders. Please try again shortly.",
+        });
+      }
+      return undefined;
+    }
+    if (!res.ok) {
+      console.error("Storefront API error", res.status, await res.text());
+      toast.error("Couldn't reach checkout", { description: "Please try again in a moment." });
+      return undefined;
+    }
+    const json = await res.json();
+    if (json.errors) {
+      console.error("Storefront API GraphQL errors", json.errors);
+      toast.error("Checkout error", { description: json.errors[0]?.message ?? "Unknown error" });
+      return undefined;
+    }
+    return json as { data?: T };
+  } catch (err) {
+    console.error("Storefront API fetch failed", err);
+    toast.error("Network error", { description: "Couldn't reach checkout." });
+    return undefined;
   }
-  return undefined;
 }
 
 // ── DB row → ShopifyProductNode ─────────────────────────────────────────────
