@@ -490,7 +490,6 @@ function CollectionPage() {
                   <ProductCard key={e.node.id} product={e} />
                 ))}
               </div>
-              </div>
             )}
           </div>
         </div>
