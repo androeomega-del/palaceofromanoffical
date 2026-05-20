@@ -14,7 +14,6 @@ import {
   type Selection,
   type SortValue,
 } from "@/components/catalog-filters";
-import { HeroFocalOverlay } from "@/components/hero-focal-overlay";
 
 const SORT_VALUES = SORT_OPTIONS.map((o) => o.value);
 
@@ -26,14 +25,13 @@ const INDEX_SORT_ALIASES: Record<string, SortValue> = {
 };
 
 export const Route = createFileRoute("/collections/$handle")({
-  validateSearch: (search: Record<string, unknown>): { sort: SortValue; edit?: "focal" } => {
+  validateSearch: (search: Record<string, unknown>): { sort: SortValue } => {
     const raw = typeof search.sort === "string" ? search.sort : "";
-    const edit = search.edit === "focal" ? ("focal" as const) : undefined;
     let sort: SortValue;
     if (SORT_VALUES.includes(raw as SortValue)) sort = raw as SortValue;
     else if (raw in INDEX_SORT_ALIASES) sort = INDEX_SORT_ALIASES[raw];
     else sort = "BEST_SELLING-false";
-    return edit ? { sort, edit } : { sort };
+    return { sort };
   },
   loader: async ({ params }) => {
     try {
@@ -110,7 +108,7 @@ function titleizeHandle(handle: string) {
 
 function CollectionPage() {
   const { handle } = Route.useParams();
-  const { sort, edit } = Route.useSearch();
+  const { sort } = Route.useSearch();
   const navigate = useNavigate({ from: "/collections/$handle" });
   const setSort = (v: SortValue) =>
     navigate({ search: (prev: { sort: SortValue }) => ({ ...prev, sort: v }), replace: true });
@@ -227,14 +225,11 @@ function CollectionPage() {
   const heroAlt = heroImage?.altText ?? `${title} collection at Palace of Roman`;
   const heroFocal = "50% 50%";
 
-  const editing = edit === "focal";
   const parsedFocal = (() => {
     const m = heroFocal.match(/(-?\d+(?:\.\d+)?)%\s+(-?\d+(?:\.\d+)?)%/);
     return m ? { x: parseFloat(m[1]), y: parseFloat(m[2]) } : { x: 50, y: 40 };
   })();
-  const [liveFocal, setLiveFocal] = useState<{ x: number; y: number } | null>(null);
-  const renderedFocal = liveFocal ?? parsedFocal;
-  const hasSavedOverride = false;
+  const renderedFocal = parsedFocal;
 
   return (
     <div>
