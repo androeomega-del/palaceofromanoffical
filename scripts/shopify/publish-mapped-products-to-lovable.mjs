@@ -59,7 +59,7 @@ async function getMappedProductGids() {
     if (!res.ok) throw new Error(`Supabase read ${res.status}: ${await res.text()}`);
     const rows = await res.json();
     for (const row of rows) gids.add(row.product_gid);
-    if (rows.length < pageSize || gids.size >= LIMIT) break;
+    if (rows.length < pageSize) break;
   }
   const all = Array.from(gids);
   return all.slice(SKIP, SKIP + (LIMIT === Infinity ? all.length : LIMIT));
