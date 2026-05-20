@@ -34,3 +34,4 @@ dist-ssr
 playwright-report/
 test-results/
 tests/visual/__snapshots__/**/*-actual.png
+tests/visual/.fixtures.json

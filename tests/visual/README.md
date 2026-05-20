@@ -34,11 +34,20 @@ baselines.
 
 ## What is covered
 
+The set of asserted collections and megamenu departments is **derived at
+test-setup time** by `tests/visual/global-setup.ts`, which calls
+`fetchCollections()` and `buildDepartments()` from `src/lib/` and writes
+`tests/visual/.fixtures.json`. Specs read that JSON and parameterise their
+tests, so adding/removing a collection or editing `src/lib/nav-config.ts`
+automatically updates the suite — no spec edits required.
+
 - **Collection cards** (`/collections`):
   - full grid snapshot per viewport
-  - per-card snapshot keyed by collection handle (first 12 cards)
+  - per-card snapshot for each handle returned by `fetchCollections()` (capped at 12)
 - **Megamenu**:
-  - desktop: each top-level department panel and its feature tile
+  - desktop: one test per department from `buildDepartments()`, snapshotting
+    both the panel and the feature tile (asserts the rendered `data-handle`
+    matches `nav-config.ts`)
   - mobile: the open nav drawer
 
 ## Viewports
