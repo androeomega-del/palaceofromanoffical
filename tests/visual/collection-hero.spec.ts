@@ -52,6 +52,9 @@ test.describe("collection hero — breakpoint matrix", () => {
       await hero.waitFor({ state: "visible" });
       await stabilize(page);
 
+      const img = hero.locator('[data-testid="collection-hero-img"]');
+      await attachImageContext(testInfo, page, img, { handle, label: `hero/${handle}` });
+
       // 1. Pixel snapshot of the cropped hero region
       await expect(hero).toHaveScreenshot(`hero-${handle}-${testInfo.project.name}.png`);
 
