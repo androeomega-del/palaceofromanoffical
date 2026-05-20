@@ -61,7 +61,8 @@ async function getMappedProductGids() {
     for (const row of rows) gids.add(row.product_gid);
     if (rows.length < pageSize || gids.size >= LIMIT) break;
   }
-  return Array.from(gids).slice(0, LIMIT);
+  const all = Array.from(gids);
+  return all.slice(SKIP, SKIP + (LIMIT === Infinity ? all.length : LIMIT));
 }
 
 async function publishProduct(productId, publicationId) {
