@@ -33,11 +33,14 @@ const INDEX_SORT_ALIASES: Record<string, SortValue> = {
 };
 
 export const Route = createFileRoute("/collections/$handle")({
-  validateSearch: (search: Record<string, unknown>): { sort: SortValue } => {
+  validateSearch: (search: Record<string, unknown>): { sort: SortValue; edit?: "focal" } => {
     const raw = typeof search.sort === "string" ? search.sort : "";
-    if (SORT_VALUES.includes(raw as SortValue)) return { sort: raw as SortValue };
-    if (raw in INDEX_SORT_ALIASES) return { sort: INDEX_SORT_ALIASES[raw] };
-    return { sort: "BEST_SELLING-false" };
+    const edit = search.edit === "focal" ? ("focal" as const) : undefined;
+    let sort: SortValue;
+    if (SORT_VALUES.includes(raw as SortValue)) sort = raw as SortValue;
+    else if (raw in INDEX_SORT_ALIASES) sort = INDEX_SORT_ALIASES[raw];
+    else sort = "BEST_SELLING-false";
+    return edit ? { sort, edit } : { sort };
   },
   loader: async ({ params }) => {
     try {
