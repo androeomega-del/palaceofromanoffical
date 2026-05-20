@@ -153,6 +153,12 @@ const CROSS_CATEGORIES: CrossEntry[] = [
   { handle: "swimwear-women",     label: "Swimwear",           women: { column: "Apparel", order: 24 }, men: null },
   { handle: "sportswear-women",   label: "Sportswear",         women: { column: "Apparel", order: 25 }, men: null },
   { handle: "lingerie",           label: "Lingerie & Underwear", women: { column: "Apparel", order: 26 }, men: null },
+  { handle: "midi-dresses",       label: "Midi Dresses",       women: { column: "Apparel", order: 27 }, men: null },
+  { handle: "long-sleeve-dresses", label: "Long Sleeve Dresses", women: { column: "Apparel", order: 28 }, men: null },
+  { handle: "mini-skirts",        label: "Mini Skirts",        women: { column: "Apparel", order: 29 }, men: null },
+  { handle: "midi-skirts",        label: "Midi Skirts",        women: { column: "Apparel", order: 30 }, men: null },
+
+
 
   // Men — apparel
   { handle: "tshirts-men",        label: "T-Shirts",           women: null, men: { column: "Shirts & Knitwear", order: 10 } },
