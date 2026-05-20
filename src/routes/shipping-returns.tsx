@@ -39,6 +39,25 @@ function ShippingReturnsPage() {
       heroImage={img(72)}
       heroAlt="Considered packaging"
     >
+      {/* At-a-glance callout — the three numbers that matter */}
+      <div className="max-w-5xl mx-auto -mt-6 mb-16 grid grid-cols-1 sm:grid-cols-3 gap-px bg-ink/10 border border-ink/10">
+        <div className="bg-canvas p-8 text-center">
+          <p className="font-serif text-5xl md:text-6xl tracking-tight text-ink leading-none">14</p>
+          <p className="mt-3 text-[10px] uppercase tracking-[0.3em] text-bronze font-semibold">Days to Return</p>
+          <p className="mt-2 text-xs text-muted-foreground leading-relaxed">From the day your parcel is delivered</p>
+        </div>
+        <div className="bg-canvas p-8 text-center">
+          <p className="font-serif text-5xl md:text-6xl tracking-tight text-ink leading-none">3–5</p>
+          <p className="mt-3 text-[10px] uppercase tracking-[0.3em] text-bronze font-semibold">Day Express</p>
+          <p className="mt-2 text-xs text-muted-foreground leading-relaxed">Tracked worldwide delivery</p>
+        </div>
+        <div className="bg-canvas p-8 text-center">
+          <p className="font-serif text-5xl md:text-6xl tracking-tight text-ink leading-none">100%</p>
+          <p className="mt-3 text-[10px] uppercase tracking-[0.3em] text-bronze font-semibold">Authentic</p>
+          <p className="mt-2 text-xs text-muted-foreground leading-relaxed">Sealed from a brand-authorised partner</p>
+        </div>
+      </div>
+
       <ProseColumn>
         <section>
           <SectionTitle kicker="Delivery">Where we ship from, and how long it takes</SectionTitle>

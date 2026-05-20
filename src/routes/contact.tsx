@@ -175,15 +175,20 @@ function ContactPage() {
           <div className="mt-16 pt-10 border-t border-ink/10 grid sm:grid-cols-3 gap-8 max-w-lg text-sm">
             <div>
               <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">Email</p>
-              <p className="text-ink/80">support@<br/>palaceofroman.com</p>
-            </div>
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">Where we ship from</p>
-              <p className="text-ink/80">Brand-authorised<br/>partner warehouses</p>
+              <a
+                href="mailto:support@palaceofroman.com"
+                className="text-ink/80 hover:text-bronze underline underline-offset-4 decoration-ink/20 hover:decoration-bronze transition-colors break-all"
+              >
+                support@palaceofroman.com
+              </a>
             </div>
             <div>
               <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">Reply time</p>
-              <p className="text-ink/80">Same business day<br/>Mon–Sat</p>
+              <p className="text-ink/80">Within 24 hours<br/>Mon–Sat</p>
+            </div>
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">Returns</p>
+              <p className="text-ink/80">14 days from<br/>delivery</p>
             </div>
           </div>
         </div>
