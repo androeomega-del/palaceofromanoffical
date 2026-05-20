@@ -7,11 +7,11 @@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-// Kept for compatibility with cart-store which references these constants.
+// Live Shopify storefront — checkout handoff routes through this domain/token.
 export const SHOPIFY_API_VERSION = "2025-07";
-export const SHOPIFY_STORE_PERMANENT_DOMAIN = "i1w7wx-gu.myshopify.com";
+export const SHOPIFY_STORE_PERMANENT_DOMAIN = "mwuwqi-vy.myshopify.com";
 export const SHOPIFY_STOREFRONT_URL = `https://${SHOPIFY_STORE_PERMANENT_DOMAIN}/api/${SHOPIFY_API_VERSION}/graphql.json`;
-export const SHOPIFY_STOREFRONT_TOKEN = "fe3b8c80fa66fbfd3c0bbe7a10ccd6b0";
+export const SHOPIFY_STOREFRONT_TOKEN = "3b02ce4f61d642096147b804ec7ba962";
 export const EXCLUDE_QUERY = "";
 
 // Query string constants kept as stubs for any leftover imports.
