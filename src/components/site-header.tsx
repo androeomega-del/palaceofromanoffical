@@ -1,11 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import { Search, User, ShoppingBag, Menu, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useCartStore } from "@/stores/cart-store";
 import { CartDrawer } from "@/components/cart-drawer";
 import { ReducedMotionToggle } from "@/components/reduced-motion-toggle";
 import { DesktopMegamenu, MobileMegamenu } from "@/components/megamenu";
 import { SearchOverlay } from "@/components/search-overlay";
+import { fetchCollections } from "@/lib/shopify";
 
 type FlatItem = {
   label: string;
@@ -52,6 +54,24 @@ export function SiteHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
+  // Live Shopify collection handles — used to hide flat links whose target
+  // collection no longer exists, so the header never shows broken links.
+  const { data: liveCollections } = useQuery({
+    queryKey: ["collections-all"],
+    queryFn: () => fetchCollections(100),
+    staleTime: 5 * 60_000,
+  });
+  const liveHandles = useMemo(
+    () => (liveCollections ? new Set(liveCollections.map((c) => c.handle)) : null),
+    [liveCollections],
+  );
+  const isLiveFlat = (n: FlatItem) =>
+    n.to !== "/collections/$handle" ||
+    !liveHandles ||
+    (!!n.params?.handle && liveHandles.has(n.params.handle));
+  const flatLeft = useMemo(() => FLAT_LEFT.filter(isLiveFlat), [liveHandles]);
+  const flatRight = useMemo(() => FLAT_RIGHT.filter(isLiveFlat), [liveHandles]);
+
 
   // Lock body scroll when mobile drawer is open
   useEffect(() => {
@@ -73,7 +93,7 @@ export function SiteHeader() {
         <div className="max-w-screen-2xl mx-auto px-6 md:px-10 h-20 grid grid-cols-[1fr_auto_1fr] items-center gap-6">
           {/* Left nav (desktop) */}
           <nav className="hidden lg:flex items-center gap-7 text-[11px] uppercase tracking-[0.25em] font-medium justify-self-end">
-            <FlatLinks items={FLAT_LEFT} />
+            <FlatLinks items={flatLeft} />
             <DesktopMegamenu />
           </nav>
 
@@ -96,7 +116,7 @@ export function SiteHeader() {
 
           <div className="flex items-center gap-7 justify-self-end">
             <nav className="hidden lg:flex items-center gap-7 text-[11px] uppercase tracking-[0.25em] font-medium">
-              <FlatLinks items={FLAT_RIGHT} />
+              <FlatLinks items={flatRight} />
             </nav>
             <div className="flex items-center gap-6">
               <button
@@ -163,7 +183,7 @@ export function SiteHeader() {
             >
               <MobileMegamenu />
               <div className="mt-4 pt-4 border-t border-ink/10 flex flex-col gap-1">
-                {[...FLAT_LEFT, ...FLAT_RIGHT].map((n) => (
+                {[...flatLeft, ...flatRight].map((n) => (
                   <Link
                     key={n.label}
                     to={n.to as any}
