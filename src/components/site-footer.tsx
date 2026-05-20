@@ -49,7 +49,7 @@ export function SiteFooter() {
         </div>
 
         <div className="flex flex-col md:flex-row gap-4 justify-between items-center pt-12 border-t border-ink/5 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Palace of Roman. All rights reserved.</p>
+          <p>&copy; {COPYRIGHT_YEAR} Palace of Roman. All rights reserved.</p>
           <div className="flex gap-8 items-center">
             <a
               href="https://www.instagram.com/palaceofroman/"
