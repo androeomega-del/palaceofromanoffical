@@ -1,0 +1,3 @@
+Handle,Command,Title,Body HTML,Sort Order,Published,Published Scope,Type,Match Column,Rule: Product Column,Rule: Relation,Rule: Condition
+in-stock,MERGE,In Stock,<p>Available now — ready to ship.</p>,best-selling,TRUE,global,Smart,all,Variant Inventory,Greater Than,0
+new-arrivals,MERGE,New Arrivals,<p>The latest additions to the Palace of Roman catalog.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,New

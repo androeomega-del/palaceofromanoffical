@@ -1,0 +1,10 @@
+Handle,Command,Title,Body HTML,Sort Order,Published,Published Scope,Type,Match Column,Rule: Product Column,Rule: Relation,Rule: Condition
+vans,MERGE,Vans,<p>Discover the Vans collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Vans
+adidas,MERGE,Adidas,<p>Discover the Adidas collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Adidas
+levi-s,MERGE,Levi's,<p>Discover the Levi's collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Levi's
+marciano-by-guess,MERGE,Marciano by Guess,<p>Discover the Marciano by Guess collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Marciano by Guess
+coveri-moving,MERGE,Coveri Moving,<p>Discover the Coveri Moving collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Coveri Moving
+philipp-plein,MERGE,Philipp Plein,<p>Discover the Philipp Plein collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Philipp Plein
+tod-s,MERGE,Tod's,<p>Discover the Tod's collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Tod's
+accademia-militare,MERGE,Accademia Militare,<p>Discover the Accademia Militare collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Accademia Militare
+john-galliano,MERGE,John Galliano,<p>Discover the John Galliano collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,John Galliano

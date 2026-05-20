@@ -1,0 +1,10 @@
+Handle,Command,Title,Body HTML,Sort Order,Published,Published Scope,Type,Match Column,Rule: Product Column,Rule: Relation,Rule: Condition
+alexander-wang,MERGE,Alexander Wang,<p>Discover the Alexander Wang collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Alexander Wang
+jack-jones,MERGE,Jack Jones,<p>Discover the Jack Jones collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Jack Jones
+celine,MERGE,Celine,<p>Discover the Celine collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Celine
+axel-arigato,MERGE,Axel Arigato,<p>Discover the Axel Arigato collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Axel Arigato
+ted-baker,MERGE,Ted Baker,<p>Discover the Ted Baker collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Ted Baker
+iceberg,MERGE,Iceberg,<p>Discover the Iceberg collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Iceberg
+victoria-s-secret,MERGE,Victoria's Secret,<p>Discover the Victoria's Secret collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Victoria's Secret
+luminox,MERGE,Luminox,<p>Discover the Luminox collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Luminox
+helly-hansen,MERGE,Helly Hansen,<p>Discover the Helly Hansen collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Helly Hansen

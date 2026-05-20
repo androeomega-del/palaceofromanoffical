@@ -1,0 +1,10 @@
+Handle,Command,Title,Body HTML,Sort Order,Published,Published Scope,Type,Match Column,Rule: Product Column,Rule: Relation,Rule: Condition
+herno,MERGE,Herno,<p>Discover the Herno collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Herno
+armani-exchange,MERGE,Armani Exchange,<p>Discover the Armani Exchange collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Armani Exchange
+costume-national,MERGE,Costume National,<p>Discover the Costume National collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Costume National
+patrizia-pepe,MERGE,Patrizia Pepe,<p>Discover the Patrizia Pepe collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Patrizia Pepe
+andy-wolf,MERGE,Andy Wolf,<p>Discover the Andy Wolf collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Andy Wolf
+gant,MERGE,Gant,<p>Discover the Gant collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Gant
+fendi,MERGE,Fendi,<p>Discover the Fendi collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Fendi
+ferragamo,MERGE,Ferragamo,<p>Discover the Ferragamo collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Ferragamo
+belstaff,MERGE,Belstaff,<p>Discover the Belstaff collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Belstaff

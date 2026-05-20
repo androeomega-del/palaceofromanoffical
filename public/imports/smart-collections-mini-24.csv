@@ -1,0 +1,10 @@
+Handle,Command,Title,Body HTML,Sort Order,Published,Published Scope,Type,Match Column,Rule: Product Column,Rule: Relation,Rule: Condition
+rinascimento,MERGE,Rinascimento,<p>Discover the Rinascimento collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Rinascimento
+fred-perry,MERGE,Fred Perry,<p>Discover the Fred Perry collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Fred Perry
+fabiana-filippi,MERGE,Fabiana Filippi,<p>Discover the Fabiana Filippi collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Fabiana Filippi
+diadora,MERGE,Diadora,<p>Discover the Diadora collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Diadora
+exte,MERGE,Exte,<p>Discover the Exte collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Exte
+p-a-r-o-s-h,MERGE,P.A.R.O.S.H.,<p>Discover the P.A.R.O.S.H. collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,P.A.R.O.S.H.
+peserico,MERGE,Peserico,<p>Discover the Peserico collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Peserico
+cavalli,MERGE,Cavalli,<p>Discover the Cavalli collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Cavalli
+sacai,MERGE,Sacai,<p>Discover the Sacai collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Sacai

@@ -1,0 +1,10 @@
+Handle,Command,Title,Body HTML,Sort Order,Published,Published Scope,Type,Match Column,Rule: Product Column,Rule: Relation,Rule: Condition
+etro,MERGE,Etro,<p>Discover the Etro collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Etro
+chanel,MERGE,Chanel,<p>Discover the Chanel collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Chanel
+gf-ferre,MERGE,GF Ferre,<p>Discover the GF Ferre collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,GF Ferre
+freddy,MERGE,Freddy,<p>Discover the Freddy collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Freddy
+pierre-cardin,MERGE,Pierre Cardin,<p>Discover the Pierre Cardin collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Pierre Cardin
+moncler,MERGE,Moncler,<p>Discover the Moncler collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Moncler
+lacoste,MERGE,Lacoste,<p>Discover the Lacoste collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Lacoste
+self-portrait,MERGE,Self-Portrait,<p>Discover the Self-Portrait collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Self-Portrait
+juicy-couture,MERGE,Juicy Couture,<p>Discover the Juicy Couture collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Juicy Couture

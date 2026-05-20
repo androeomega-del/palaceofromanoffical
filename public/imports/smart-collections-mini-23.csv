@@ -1,0 +1,10 @@
+Handle,Command,Title,Body HTML,Sort Order,Published,Published Scope,Type,Match Column,Rule: Product Column,Rule: Relation,Rule: Condition
+gran-sasso,MERGE,Gran Sasso,<p>Discover the Gran Sasso collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Gran Sasso
+ugg,MERGE,UGG,<p>Discover the UGG collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,UGG
+m-missoni,MERGE,M Missoni,<p>Discover the M Missoni collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,M Missoni
+zimmermann,MERGE,Zimmermann,<p>Discover the Zimmermann collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Zimmermann
+vila-clothes,MERGE,Vila Clothes,<p>Discover the Vila Clothes collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Vila Clothes
+gaelle-paris,MERGE,Gaelle Paris,<p>Discover the Gaelle Paris collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Gaelle Paris
+stuart-weitzman,MERGE,Stuart Weitzman,<p>Discover the Stuart Weitzman collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Stuart Weitzman
+y-3,MERGE,Y-3,<p>Discover the Y-3 collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Y-3
+premiata,MERGE,Premiata,<p>Discover the Premiata collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Premiata

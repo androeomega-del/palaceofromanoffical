@@ -1,0 +1,10 @@
+Handle,Command,Title,Body HTML,Sort Order,Published,Published Scope,Type,Match Column,Rule: Product Column,Rule: Relation,Rule: Condition
+r13,MERGE,R13,<p>Discover the R13 collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,R13
+roberto-pepe-luxury,MERGE,Roberto Pepe Luxury,<p>Discover the Roberto Pepe Luxury collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Roberto Pepe Luxury
+olivia-burton,MERGE,Olivia Burton,<p>Discover the Olivia Burton collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Olivia Burton
+casablanca,MERGE,Casablanca,<p>Discover the Casablanca collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Casablanca
+bolle,MERGE,Bolle,<p>Discover the Bolle collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Bolle
+loulou-de-saison,MERGE,Loulou De Saison,<p>Discover the Loulou De Saison collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Loulou De Saison
+swarovski,MERGE,Swarovski,<p>Discover the Swarovski collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Swarovski
+marina-yachting,MERGE,Marina Yachting,<p>Discover the Marina Yachting collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Marina Yachting
+colmar,MERGE,Colmar,<p>Discover the Colmar collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Colmar

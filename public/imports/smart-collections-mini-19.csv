@@ -1,0 +1,10 @@
+Handle,Command,Title,Body HTML,Sort Order,Published,Published Scope,Type,Match Column,Rule: Product Column,Rule: Relation,Rule: Condition
+dr-martens,MERGE,Dr. Martens,<p>Discover the Dr. Martens collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Dr. Martens
+barbour,MERGE,Barbour,<p>Discover the Barbour collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Barbour
+ralph-lauren,MERGE,Ralph Lauren,<p>Discover the Ralph Lauren collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Ralph Lauren
+gc,MERGE,GC,<p>Discover the GC collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,GC
+david-beckham,MERGE,David Beckham,<p>Discover the David Beckham collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,David Beckham
+max-co,MERGE,Max & Co,<p>Discover the Max & Co collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Max & Co
+rhude,MERGE,Rhude,<p>Discover the Rhude collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Rhude
+lyle-scott,MERGE,Lyle & Scott,<p>Discover the Lyle & Scott collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Lyle & Scott
+ice,MERGE,ICE,<p>Discover the ICE collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,ICE

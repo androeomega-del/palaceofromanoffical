@@ -1,0 +1,10 @@
+Handle,Command,Title,Body HTML,Sort Order,Published,Published Scope,Type,Match Column,Rule: Product Column,Rule: Relation,Rule: Condition
+try-cover-change,MERGE,TRY COVER CHANGE,<p>Discover the TRY COVER CHANGE collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,TRY COVER CHANGE
+sting,MERGE,Sting,<p>Discover the Sting collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Sting
+more-more,MERGE,More & More,<p>Discover the More & More collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,More & More
+moncler-grenoble,MERGE,Moncler Grenoble,<p>Discover the Moncler Grenoble collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Moncler Grenoble
+longines,MERGE,Longines,<p>Discover the Longines collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Longines
+borghese,MERGE,Borghese,<p>Discover the Borghese collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Borghese
+herm-s,MERGE,Hermès,<p>Discover the Hermès collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Hermès
+alpha-studio,MERGE,Alpha Studio,<p>Discover the Alpha Studio collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Alpha Studio
+gianvito-rossi,MERGE,Gianvito Rossi,<p>Discover the Gianvito Rossi collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Gianvito Rossi

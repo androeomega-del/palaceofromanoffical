@@ -1,0 +1,10 @@
+Handle,Command,Title,Body HTML,Sort Order,Published,Published Scope,Type,Match Column,Rule: Product Column,Rule: Relation,Rule: Condition
+lgr,MERGE,LGR,<p>Discover the LGR collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,LGR
+skechers,MERGE,SKECHERS,<p>Discover the SKECHERS collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,SKECHERS
+colmar-originals,MERGE,Colmar Originals,<p>Discover the Colmar Originals collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Colmar Originals
+church-s,MERGE,Church's,<p>Discover the Church's collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Church's
+guess-active,MERGE,Guess Active,<p>Discover the Guess Active collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Guess Active
+pierre-hardy,MERGE,Pierre Hardy,<p>Discover the Pierre Hardy collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Pierre Hardy
+avirex,MERGE,Avirex,<p>Discover the Avirex collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Avirex
+lisa-yang,MERGE,Lisa Yang,<p>Discover the Lisa Yang collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Lisa Yang
+nautica,MERGE,NAUTICA,<p>Discover the NAUTICA collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,NAUTICA

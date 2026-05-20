@@ -1,0 +1,10 @@
+Handle,Command,Title,Body HTML,Sort Order,Published,Published Scope,Type,Match Column,Rule: Product Column,Rule: Relation,Rule: Condition
+amiri,MERGE,Amiri,<p>Discover the Amiri collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Amiri
+darkpark,MERGE,Darkpark,<p>Discover the Darkpark collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Darkpark
+dior,MERGE,Dior,<p>Discover the Dior collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Dior
+havaianas,MERGE,HAVAIANAS,<p>Discover the HAVAIANAS collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,HAVAIANAS
+plein-sud,MERGE,PLEIN SUD,<p>Discover the PLEIN SUD collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,PLEIN SUD
+ducati,MERGE,Ducati,<p>Discover the Ducati collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Ducati
+nine-west,MERGE,Nine West,<p>Discover the Nine West collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Nine West
+jeckerson,MERGE,Jeckerson,<p>Discover the Jeckerson collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Jeckerson
+lemaire,MERGE,Lemaire,<p>Discover the Lemaire collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Lemaire

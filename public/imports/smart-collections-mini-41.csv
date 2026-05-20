@@ -1,0 +1,10 @@
+Handle,Command,Title,Body HTML,Sort Order,Published,Published Scope,Type,Match Column,Rule: Product Column,Rule: Relation,Rule: Condition
+crossbody-bags,MERGE,Crossbody Bags,<p>Curated crossbody bags from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Crossbody Bags
+other-accessories,MERGE,Other Accessories,<p>Curated other accessories from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Other Accessories
+backpacks,MERGE,Backpacks,<p>Curated backpacks from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Backpacks
+clutch-bags,MERGE,Clutch Bags,<p>Curated clutch bags from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Clutch Bags
+oxfords-and-derbies,MERGE,Oxfords and Derbies,<p>Curated oxfords and derbies from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Oxfords and Derbies
+tote-bags,MERGE,Tote Bags,<p>Curated tote bags from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Tote Bags
+gloves,MERGE,Gloves,<p>Curated gloves from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Gloves
+sleepwear,MERGE,Sleepwear,<p>Curated sleepwear from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Sleepwear
+women,MERGE,Women,"<p>The women collection — curated luxury, delivered worldwide.</p>",best-selling,TRUE,global,Smart,all,Tag,Equals,Women

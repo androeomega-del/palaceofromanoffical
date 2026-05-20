@@ -1,0 +1,10 @@
+Handle,Command,Title,Body HTML,Sort Order,Published,Published Scope,Type,Match Column,Rule: Product Column,Rule: Relation,Rule: Condition
+gcds,MERGE,GCDS,<p>Discover the GCDS collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,GCDS
+autry,MERGE,Autry,<p>Discover the Autry collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Autry
+the-attico,MERGE,The Attico,<p>Discover the The Attico collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,The Attico
+vivienne-westwood,MERGE,Vivienne Westwood,<p>Discover the Vivienne Westwood collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Vivienne Westwood
+salvatore-ferragamo,MERGE,Salvatore Ferragamo,<p>Discover the Salvatore Ferragamo collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Salvatore Ferragamo
+lozza,MERGE,Lozza,<p>Discover the Lozza collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Lozza
+scotch-soda,MERGE,Scotch & Soda,<p>Discover the Scotch & Soda collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Scotch & Soda
+amina-muaddi,MERGE,Amina Muaddi,<p>Discover the Amina Muaddi collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Amina Muaddi
+under-armour,MERGE,Under Armour,<p>Discover the Under Armour collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Under Armour

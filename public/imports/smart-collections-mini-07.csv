@@ -1,0 +1,10 @@
+Handle,Command,Title,Body HTML,Sort Order,Published,Published Scope,Type,Match Column,Rule: Product Column,Rule: Relation,Rule: Condition
+maison-margiela,MERGE,Maison Margiela,<p>Discover the Maison Margiela collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Maison Margiela
+u-s-polo-assn,MERGE,U.S. POLO ASSN.,<p>Discover the U.S. POLO ASSN. collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,U.S. POLO ASSN.
+ermanno-scervino,MERGE,Ermanno Scervino,<p>Discover the Ermanno Scervino collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Ermanno Scervino
+only,MERGE,Only,<p>Discover the Only collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Only
+champion,MERGE,Champion,<p>Discover the Champion collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Champion
+chlo,MERGE,Chloé,<p>Discover the Chloé collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Chloé
+carrera,MERGE,Carrera,<p>Discover the Carrera collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Carrera
+la-martina,MERGE,La Martina,<p>Discover the La Martina collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,La Martina
+liu-jo,MERGE,Liu Jo,<p>Discover the Liu Jo collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Liu Jo

@@ -1,0 +1,10 @@
+Handle,Command,Title,Body HTML,Sort Order,Published,Published Scope,Type,Match Column,Rule: Product Column,Rule: Relation,Rule: Condition
+carolina-herrera,MERGE,Carolina Herrera,<p>Discover the Carolina Herrera collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Carolina Herrera
+pink-memories,MERGE,PINK MEMORIES,<p>Discover the PINK MEMORIES collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,PINK MEMORIES
+veja,MERGE,Veja,<p>Discover the Veja collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Veja
+eleventy,MERGE,Eleventy,<p>Discover the Eleventy collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Eleventy
+vuarnet,MERGE,Vuarnet,<p>Discover the Vuarnet collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Vuarnet
+marine-serre,MERGE,Marine Serre,<p>Discover the Marine Serre collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Marine Serre
+forte-forte,MERGE,Forte_Forte,<p>Discover the Forte_Forte collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Forte_Forte
+arnette,MERGE,Arnette,<p>Discover the Arnette collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Arnette
+folli-follie,MERGE,Folli Follie,<p>Discover the Folli Follie collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Folli Follie
