@@ -1,57 +1,70 @@
-# Zero-Budget Launch Plan — First Order in 24–72h
+# Three Trust Fixes + Brand Search Ranking
 
-No ads. You drive traffic via IG/TikTok UGC. My job: make sure that when a stranger lands on the site from a reel, they trust it enough to check out.
+## What I found
 
-## Part 1 — What I'll do on the site (today)
+1. **Contact page email** — currently shown as plain text `support@\npalaceofroman.com` (line-broken, not a mailto link). Footer mailto is correct; contact card isn't. Fix.
+2. **Returns visibility** — "14 days" is in the shipping page accordion + PDP trust strip, but not surfaced as a hero number. Add an unmissable callout.
+3. **Brand search ranking** — editorial pages have proper `<title>` ending in "Palace of Roman" and are in sitemap. The actual blocker is that **Google has never crawled the site**: Google Search Console isn't connected, so Google has no signal the site exists. Without GSC verification + sitemap submission, ranking for "Palace of Roman" is luck. Fixing on-page copy is secondary.
 
-Goal: remove every reason a first-time visitor bounces.
+## Plan
 
-### A. Trust pass (the #1 conversion blocker for a no-name store)
-1. **Contact page audit** — make sure `support@palaceofroman.com` is visible, clickable, and replied-to. Add response-time line ("We reply within 24h").
-2. **Shipping & returns clarity** — surface "14-day returns" + "Ships from EU" as a strip on every product page, not buried in a policy page.
-3. **Authenticity strip on PDP** — short line: "100% authentic, sourced from the brands or their authorised distributors. Official BrandsGateway partner." Links to /reseller-certificate.pdf.
-4. **Footer trust row** — payment icons (Visa/MC/Amex), secure-checkout lock, return window, contact email.
-5. **Remove anything that screams "dropship"** — generic stock copy, "Lorem", empty review counts showing "0 (0)", broken size guides.
+### Fix 1 — Contact page: real, clickable email
+File: `src/routes/contact.tsx` (lines 175–188)
 
-### B. End-to-end checkout QA
-- Test add-to-cart → checkout on 3 random products across categories
-- Confirm shipping rates load, USD shows correctly, mobile cart drawer works at 440px
-- Fix anything broken before a single visitor sees it
+Replace the broken plain-text email card with a proper `mailto:` link, and add a second WhatsApp/concierge row so the page has more than one reply path.
 
-### C. One landing page per UGC angle
-You'll post reels around specific products/categories. Each viral angle needs a clean destination — not the homepage:
-- `/swim` (Dolce & Gabbana swim) — already exists, polish hero
-- `/sneakers` or `/men` — whichever category you'll push first
-- Each page = one hero image + 8–12 products + clear CTA. No fluff.
+```text
+Email           Reply time          WhatsApp (optional)
+support@…       Same business day   wa.me/… (if you give a number)
+[mailto link]   Mon–Sat
+```
 
-## Part 2 — What you do off-site (your job, I can't do it)
+### Fix 2 — 14-Day Returns number, unmissably visible
 
-I'll give you the assets, you post.
+Two surgical adds:
 
-### Content I'll generate for you
-- **5 caption templates** for IG/TikTok (hook + product + CTA + hashtags) tuned to luxury resale voice
-- **Link-in-bio page** (`/links` route) — clean Beacons-style hub linking to your top categories + WhatsApp + email
-- **3–5 product "hero shots"** ready for reels overlays (you film, drop the still over the video)
+**A. Shipping page hero callout** — add a 3-tile strip directly under the page intro:
+```text
+┌──────────────┬──────────────┬──────────────┐
+│   14 DAYS    │   3–5 DAYS   │   100%       │
+│   Returns    │   Express    │   Authentic  │
+│   from       │   Worldwide  │   Sealed,    │
+│   delivery   │              │   tagged     │
+└──────────────┴──────────────┴──────────────┘
+```
 
-### Posting rhythm that actually works at zero budget
-- **TikTok**: 3 posts/day for 14 days. Format: "POV: you found designer X for $Y" / unboxing-style / "tag a friend who'd wear this". Algorithm rewards volume early.
-- **Instagram Reels**: 1–2/day, same clips re-cut. Stories daily.
-- **Reddit soft drops**: r/femalefashionadvice, r/malefashionadvice "where to buy authentic X" threads — answer helpfully, mention the store once.
-- **WhatsApp**: DM 20 friends a personal "we launched, take a look" link in the next 48h. This is realistically where order #1 comes from.
+**B. PDP — promote returns line above the fold.** Today the trust strip sits *after* variant selectors and accordions. I'll add a single inline line directly under the price (where eyes already are):
+```text
+$1,240
+14-day returns · Ships in 3–5 days · 100% authentic
+```
+The existing trust-strip diamonds stay where they are.
 
-## Part 3 — Order of operations
+### Fix 3 — Get the site actually discoverable for "Palace of Roman"
 
-1. I do the trust pass + checkout QA + link-in-bio page (this session)
-2. I write the 5 caption templates + product hook list (this session)
-3. You start posting tonight + DM 20 friends
-4. We watch orders/analytics and iterate on whatever's converting
+This is two parts. The on-page part I can do now; the Google submission needs your one-tap approval.
 
-## What I need from you to start
+**3A. On-page (now)** — make sure every editorial page name-checks the brand in the H1 and in JSON-LD `publisher` (so Google links the editorial to the org). Spot-check the 3 editorial pages + journal index.
 
-Pick one to confirm and I'll execute:
+**3B. Google Search Console (needs you to connect the GSC integration once)**
 
-- **Go** — I run the full trust pass + QA + link-in-bio + caption pack now
-- **Just the trust pass** — skip caption/link-in-bio for now
-- **Different priority** — tell me
+Path:
+1. You connect Google Search Console in Connectors (one click — uses your existing Google account).
+2. I:
+   - Request a verification token from the Site Verification API for `https://palaceofroman.com/`
+   - Inject the `<meta name="google-site-verification">` tag in `src/routes/__root.tsx` head
+   - Wait for your next deploy, then call verify
+   - Add the site to Search Console and submit `https://palaceofroman.com/sitemap.xml`
+3. Within 1–3 days Google indexes the site; within 1–2 weeks "Palace of Roman" should return your homepage + at least one editorial page as a sitelink.
 
-No code/copy changes happen until you say go.
+Without 3B, nothing else on the site will move the brand ranking. **This is the single highest-leverage SEO action you can take.**
+
+## What I need from you
+
+Confirm one:
+
+- **Go all 3** — I do fixes 1, 2, 3A now; you connect GSC after and I finish 3B
+- **Skip GSC for now** — I do 1, 2, 3A only
+- **Different order / different scope** — tell me
+
+If you're going with the full plan, the only thing you'll need to do is click "Connect" on Google Search Console in Connectors when I tell you to.
