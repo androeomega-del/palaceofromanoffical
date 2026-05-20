@@ -9,59 +9,66 @@ const DRY_RUN = process.argv.includes('--dry');
 
 if (!TOKEN) { console.error('Missing SHOPIFY_ACCESS_TOKEN'); process.exit(1); }
 
-// Each entry: handle, title, body_html, and an array of tags that must ALL match.
-// Tag values must match real product tags exactly (case-sensitive in Shopify rules).
+// Each entry: handle, title, gender ('Men'|'Women'|null), category keyword.
+// Rules: tag EQUALS <gender>  AND  tag CONTAINS <keyword>
+// Using CONTAINS handles BrandsGateway's hierarchical tags
+// (e.g. "Belts - Accessories", "Sneakers - Shoes", "Coats - Coats - Clothing").
 const DEFS = [
-  // Women — top-level
-  { handle: 'womens-bags',         title: "Women's Bags",            tags: ['Women', 'Bags'] },
-  { handle: 'womens-accessories',  title: "Women's Accessories",     tags: ['Women', 'Accessories'] },
-  { handle: 'womens-jewelry',      title: "Women's Jewelry",         tags: ['Women', 'Jewelry'] },
-  { handle: 'womens-watches',      title: "Women's Watches",         tags: ['Women', 'Watches'] },
-  { handle: 'womens-scarves',      title: "Women's Scarves",         tags: ['Women', 'Scarves'] },
-  { handle: 'womens-hats',         title: "Women's Hats",            tags: ['Women', 'Hats'] },
-  { handle: 'womens-belts',        title: "Women's Belts",           tags: ['Women', 'Belts'] },
-  { handle: 'womens-wallets',      title: "Women's Wallets",         tags: ['Women', 'Wallets'] },
-  { handle: 'womens-dresses',      title: "Women's Dresses",         tags: ['Women', 'Dresses'] },
-  { handle: 'womens-skirts',       title: "Women's Skirts",          tags: ['Women', 'Skirts'] },
+  // Women
+  { handle: 'womens-bags',        title: "Women's Bags",        gender: 'Women', keyword: 'Bags' },
+  { handle: 'womens-accessories', title: "Women's Accessories", gender: 'Women', keyword: 'Accessories' },
+  { handle: 'womens-jewelry',     title: "Women's Jewelry",     gender: 'Women', keyword: 'Jewelry' },
+  { handle: 'womens-watches',     title: "Women's Watches",     gender: 'Women', keyword: 'Watches' },
+  { handle: 'womens-scarves',     title: "Women's Scarves",     gender: 'Women', keyword: 'Scarves' },
+  { handle: 'womens-hats',        title: "Women's Hats",        gender: 'Women', keyword: 'Hats' },
+  { handle: 'womens-belts',       title: "Women's Belts",       gender: 'Women', keyword: 'Belts' },
+  { handle: 'womens-wallets',     title: "Women's Wallets",     gender: 'Women', keyword: 'Wallets' },
+  { handle: 'womens-dresses',     title: "Women's Dresses",     gender: 'Women', keyword: 'Dresses' },
+  { handle: 'womens-skirts',      title: "Women's Skirts",      gender: 'Women', keyword: 'Skirts' },
 
-  // Men — top-level
-  { handle: 'mens-bags-wallets',          title: "Men's Bags & Wallets",         tags: ['Men', 'Bags'] },
-  { handle: 'mens-accessories',           title: "Men's Accessories",            tags: ['Men', 'Accessories'] },
-  { handle: 'mens-suits',                 title: "Men's Suits",                  tags: ['Men', 'Suits'] },
-  { handle: 'mens-jackets-coats',         title: "Men's Jackets & Coats",        tags: ['Men', 'Coats'] },
-  { handle: 'mens-shirts',                title: "Men's Shirts",                 tags: ['Men', 'Shirts'] },
-  { handle: 'mens-tshirts-polos',         title: "Men's T-Shirts & Polos",       tags: ['Men', 'T-Shirts'] },
-  { handle: 'mens-sweaters-knitwear',     title: "Men's Sweaters & Knitwear",    tags: ['Men', 'Sweaters'] },
-  { handle: 'mens-hoodies-sweatshirts',   title: "Men's Hoodies & Sweatshirts",  tags: ['Men', 'Sweatshirts'] },
-  { handle: 'mens-pants-trousers',        title: "Men's Pants & Trousers",       tags: ['Men', 'Pants'] },
-  { handle: 'mens-shorts',                title: "Men's Shorts",                 tags: ['Men', 'Shorts'] },
-  { handle: 'mens-activewear',            title: "Men's Activewear",             tags: ['Men', 'Activewear'] },
-  { handle: 'mens-swimwear',              title: "Men's Swimwear",               tags: ['Men', 'Swimwear'] },
-  { handle: 'mens-underwear-loungewear',  title: "Men's Underwear & Loungewear", tags: ['Men', 'Underwear'] },
-  { handle: 'mens-sneakers',              title: "Men's Sneakers",               tags: ['Men', 'Sneakers'] },
-  { handle: 'mens-boots',                 title: "Men's Boots",                  tags: ['Men', 'Boots'] },
-  { handle: 'mens-sandals-slides',        title: "Men's Sandals & Slides",       tags: ['Men', 'Sandals'] },
-  { handle: 'mens-watches-jewelry',       title: "Men's Watches & Jewelry",      tags: ['Men', 'Watches'] },
+  // Men
+  { handle: 'mens-bags-wallets',         title: "Men's Bags & Wallets",         gender: 'Men', keyword: 'Bags' },
+  { handle: 'mens-accessories',          title: "Men's Accessories",            gender: 'Men', keyword: 'Accessories' },
+  { handle: 'mens-suits',                title: "Men's Suits",                  gender: 'Men', keyword: 'Suits' },
+  { handle: 'mens-jackets-coats',        title: "Men's Jackets & Coats",        gender: 'Men', keyword: 'Coats' },
+  { handle: 'mens-shirts',               title: "Men's Shirts",                 gender: 'Men', keyword: 'Shirts' },
+  { handle: 'mens-tshirts-polos',        title: "Men's T-Shirts & Polos",       gender: 'Men', keyword: 'T-Shirts' },
+  { handle: 'mens-sweaters-knitwear',    title: "Men's Sweaters & Knitwear",    gender: 'Men', keyword: 'Sweaters' },
+  { handle: 'mens-hoodies-sweatshirts',  title: "Men's Hoodies & Sweatshirts",  gender: 'Men', keyword: 'Sweatshirts' },
+  { handle: 'mens-pants-trousers',       title: "Men's Pants & Trousers",       gender: 'Men', keyword: 'Pants' },
+  { handle: 'mens-shorts',               title: "Men's Shorts",                 gender: 'Men', keyword: 'Shorts' },
+  { handle: 'mens-activewear',           title: "Men's Activewear",             gender: 'Men', keyword: 'Sportswear' },
+  { handle: 'mens-swimwear',             title: "Men's Swimwear",               gender: 'Men', keyword: 'Swimwear' },
+  { handle: 'mens-underwear-loungewear', title: "Men's Underwear & Loungewear", gender: 'Men', keyword: 'Underwear' },
+  { handle: 'mens-sneakers',             title: "Men's Sneakers",               gender: 'Men', keyword: 'Sneakers' },
+  { handle: 'mens-boots',                title: "Men's Boots",                  gender: 'Men', keyword: 'Boots' },
+  { handle: 'mens-sandals-slides',       title: "Men's Sandals & Slides",       gender: 'Men', keyword: 'Sandals' },
+  { handle: 'mens-watches-jewelry',      title: "Men's Watches & Jewelry",      gender: 'Men', keyword: 'Watches' },
 
-  // Generic (single-tag) categories
-  { handle: 'dresses',    title: 'Dresses',    tags: ['Dresses'] },
-  { handle: 'loafers',    title: 'Loafers',    tags: ['Loafers'] },
-  { handle: 'belts',      title: 'Belts',      tags: ['Belts'] },
-  { handle: 'wallets',    title: 'Wallets',    tags: ['Wallets'] },
-  { handle: 'jewelry',    title: 'Jewelry',    tags: ['Jewelry'] },
-  { handle: 'scarves',    title: 'Scarves',    tags: ['Scarves'] },
-  { handle: 'sunglasses', title: 'Sunglasses', tags: ['Sunglasses'] },
+  // Generic (no gender filter)
+  { handle: 'dresses',    title: 'Dresses',    gender: null, keyword: 'Dresses' },
+  { handle: 'loafers',    title: 'Loafers',    gender: null, keyword: 'Loafers' },
+  { handle: 'belts',      title: 'Belts',      gender: null, keyword: 'Belts' },
+  { handle: 'wallets',    title: 'Wallets',    gender: null, keyword: 'Wallets' },
+  { handle: 'jewelry',    title: 'Jewelry',    gender: null, keyword: 'Jewelry' },
+  { handle: 'scarves',    title: 'Scarves',    gender: null, keyword: 'Scarves' },
+  { handle: 'sunglasses', title: 'Sunglasses', gender: null, keyword: 'Sunglasses' },
 ];
 
-const collections = DEFS.map(d => ({
-  handle: d.handle,
-  title: d.title,
-  body_html: d.body_html || `<p>${d.title} — curated selection.</p>`,
-  sort_order: 'best-selling',
-  published: true,
-  disjunctive: false, // ALL rules must match
-  rules: d.tags.map(t => ({ column: 'tag', relation: 'equals', condition: t })),
-}));
+const collections = DEFS.map(d => {
+  const rules = [];
+  if (d.gender) rules.push({ column: 'tag', relation: 'equals',   condition: d.gender });
+  rules.push({ column: 'tag', relation: 'contains', condition: d.keyword });
+  return {
+    handle: d.handle,
+    title: d.title,
+    body_html: `<p>${d.title} — curated selection.</p>`,
+    sort_order: 'best-selling',
+    published: true,
+    disjunctive: false, // ALL rules must match
+    rules,
+  };
+});
 
 console.log(`Prepared ${collections.length} collections`);
 console.log('Sample:', JSON.stringify(collections.slice(0, 3), null, 2));
