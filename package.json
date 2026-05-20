@@ -10,6 +10,9 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "test": "vitest run",
+    "test:visual": "playwright test",
+    "test:visual:update": "playwright test --update-snapshots",
+    "test:visual:install": "playwright install --with-deps chromium",
     "format": "prettier --write ."
   },
   "dependencies": {
