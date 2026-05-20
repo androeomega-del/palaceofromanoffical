@@ -12,7 +12,7 @@ import marketingWomen from "@/assets/marketing-women-summer.jpg";
 import marketingMen from "@/assets/marketing-men-summer.jpg";
 import marketingAccessories from "@/assets/marketing-accessories-summer.jpg";
 import marketingSwim from "@/assets/marketing-swim-summer.jpg";
-import marketingSummerSale from "@/assets/marketing-summer-sale.jpg";
+
 import marketingCalvinKlein from "@/assets/marketing-calvin-klein.jpg";
 import swimCampaignVideo from "@/assets/swim-campaign.mp4.asset.json";
 import { img } from "@/lib/editorial-library";
@@ -26,7 +26,7 @@ const SUMMER_BENTO_PROPS = {
   menImage: { url: marketingMen, altText: "Men's Resort 2026 — Amalfi Coast" },
   accessoriesImage: { url: marketingAccessories, altText: "Summer Accessories — Designer Edit" },
   swimImage: { url: marketingSwim, altText: "Designer Swimwear — Riviera Edit" },
-  saleImage: { url: marketingSummerSale, altText: "The Summer Sale — Up to 40% Off" },
+  
   spotlightImage: { url: marketingCalvinKlein, altText: "Calvin Klein — In Stock Now" },
   spotlightVendor: "Calvin Klein",
   spotlightSlug: "calvin-klein",
@@ -803,7 +803,6 @@ function SummerBento({
   menImage,
   accessoriesImage,
   swimImage,
-  saleImage,
   spotlightImage,
   spotlightVendor,
   spotlightSlug,
@@ -812,7 +811,6 @@ function SummerBento({
   menImage?: ShopifyImg;
   accessoriesImage?: ShopifyImg;
   swimImage?: ShopifyImg;
-  saleImage?: ShopifyImg;
   spotlightImage?: ShopifyImg;
   spotlightVendor?: string;
   spotlightSlug?: string;
@@ -1004,34 +1002,6 @@ function SummerBento({
           </div>
         </Link>
 
-        {/* Summer Sale Tile — full-bleed editorial */}
-        <Link
-          to="/collections/$handle"
-          params={{ handle: "high-discounts" }}
-          className="col-span-6 md:col-span-4 lg:col-span-2 row-span-2 relative group overflow-hidden bg-bronze"
-        >
-          {saleImage && (
-            <img
-              src={saleImage.url}
-              alt={saleImage.altText ?? "The Summer Sale"}
-              loading="lazy"
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-            />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/20 to-transparent" />
-          <div className="relative z-10 h-full flex flex-col items-center justify-center text-center p-5 md:p-6">
-            <h4 className="font-serif text-2xl md:text-3xl text-canvas mb-2 leading-tight">
-              The Summer
-              <br />
-              Sale
-            </h4>
-            <p className="text-[10px] uppercase tracking-[0.3em] text-canvas/85 mb-4">
-              Up to 40% Off
-            </p>
-            <div className="w-8 h-px bg-canvas transition-all group-hover:w-16" />
-          </div>
-        </Link>
-
       </div>
     </section>
   );
@@ -1062,8 +1032,6 @@ function SummerBentoSkeleton() {
         <div className="col-span-12 md:col-span-8 lg:col-span-5 row-span-2 bg-canvas-raised animate-pulse" />
         {/* Accessories Tile */}
         <div className="col-span-6 md:col-span-4 lg:col-span-2 row-span-2 bg-canvas-raised animate-pulse" />
-        {/* Summer Sale Tile */}
-        <div className="col-span-6 md:col-span-4 lg:col-span-2 row-span-2 bg-bronze/40 animate-pulse" />
       </div>
     </section>
   );

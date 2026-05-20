@@ -24,7 +24,6 @@ const FLAT_RIGHT: FlatItem[] = [
   { to: "/collections/$handle", params: { handle: "best-sellers" }, label: "Best Sellers" },
   { to: "/collections", label: "Collections" },
   { to: "/journal", label: "Journal" },
-  { to: "/collections/$handle", params: { handle: "high-discounts" }, label: "Sale", accent: true },
 ];
 
 function FlatLinks({ items }: { items: FlatItem[] }) {
