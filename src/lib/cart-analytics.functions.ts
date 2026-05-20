@@ -1,0 +1,111 @@
+import { createServerFn } from "@tanstack/react-start";
+import { requireAdmin } from "@/lib/admin-middleware";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
+
+export interface AnalyticsBucket {
+  date: string;
+  add_to_cart: number;
+  remove_from_cart: number;
+  checkout_started: number;
+}
+
+export interface TopProduct {
+  product_handle: string;
+  product_title: string | null;
+  adds: number;
+  checkouts: number;
+}
+
+export interface CartAnalytics {
+  totals: {
+    add_to_cart: number;
+    remove_from_cart: number;
+    checkout_started: number;
+    unique_sessions: number;
+    estimated_gmv: number;
+  };
+  buckets: AnalyticsBucket[];
+  top_products: TopProduct[];
+  recent: Array<{
+    id: string;
+    event_type: string;
+    product_handle: string | null;
+    product_title: string | null;
+    price_usd: number | null;
+    quantity: number;
+    created_at: string;
+  }>;
+}
+
+export const getCartAnalytics = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .handler(async (): Promise<CartAnalytics> => {
+    const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+
+    const { data: rows, error } = await supabaseAdmin
+      .from("cart_events")
+      .select("id,event_type,product_handle,product_title,price_usd,quantity,session_id,created_at")
+      .gte("created_at", since)
+      .order("created_at", { ascending: false })
+      .limit(5000);
+
+    if (error) throw new Error(error.message);
+
+    const totals = { add_to_cart: 0, remove_from_cart: 0, checkout_started: 0, unique_sessions: 0, estimated_gmv: 0 };
+    const sessions = new Set<string>();
+    const byDay = new Map<string, AnalyticsBucket>();
+    const byProduct = new Map<string, TopProduct>();
+
+    for (const r of rows ?? []) {
+      const type = r.event_type as keyof typeof totals;
+      if (type in totals) (totals as Record<string, number>)[type]++;
+      if (r.session_id) sessions.add(r.session_id);
+      if (r.event_type === "checkout_started") {
+        totals.estimated_gmv += Number(r.price_usd ?? 0) * (r.quantity ?? 1);
+      }
+
+      const day = r.created_at.slice(0, 10);
+      const b = byDay.get(day) ?? { date: day, add_to_cart: 0, remove_from_cart: 0, checkout_started: 0 };
+      if (type in b) (b as Record<string, number>)[type]++;
+      byDay.set(day, b);
+
+      if (r.product_handle && (r.event_type === "add_to_cart" || r.event_type === "checkout_started")) {
+        const p = byProduct.get(r.product_handle) ?? {
+          product_handle: r.product_handle,
+          product_title: r.product_title,
+          adds: 0,
+          checkouts: 0,
+        };
+        if (r.event_type === "add_to_cart") p.adds++;
+        else p.checkouts++;
+        if (!p.product_title && r.product_title) p.product_title = r.product_title;
+        byProduct.set(r.product_handle, p);
+      }
+    }
+
+    totals.unique_sessions = sessions.size;
+
+    const buckets: AnalyticsBucket[] = [];
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date();
+      d.setUTCDate(d.getUTCDate() - i);
+      const key = d.toISOString().slice(0, 10);
+      buckets.push(byDay.get(key) ?? { date: key, add_to_cart: 0, remove_from_cart: 0, checkout_started: 0 });
+    }
+
+    const top_products = [...byProduct.values()]
+      .sort((a, b) => b.adds + b.checkouts * 3 - (a.adds + a.checkouts * 3))
+      .slice(0, 15);
+
+    const recent = (rows ?? []).slice(0, 25).map((r) => ({
+      id: r.id,
+      event_type: r.event_type,
+      product_handle: r.product_handle,
+      product_title: r.product_title,
+      price_usd: r.price_usd != null ? Number(r.price_usd) : null,
+      quantity: r.quantity,
+      created_at: r.created_at,
+    }));
+
+    return { totals, buckets, top_products, recent };
+  });
