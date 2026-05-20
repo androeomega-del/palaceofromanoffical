@@ -44,6 +44,7 @@ async function fetchAccessToken(): Promise<string> {
  * The access token never leaves the server.
  */
 export const shopifyDiscoverSearch = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
   .inputValidator(
     z.object({
       searchId: z.string().min(1).max(128).regex(/^[a-zA-Z0-9_-]+$/),
