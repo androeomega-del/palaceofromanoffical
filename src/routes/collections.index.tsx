@@ -19,28 +19,33 @@ const FILTERS: { key: FilterKey; label: string }[] = [
 
 const FILTER_KEYS: FilterKey[] = FILTERS.map((f) => f.key);
 
-// Curated list of "main" collections shown on the index.
-// Sub-category handles (e.g. "women-crossbody-bags") are intentionally excluded —
-// they remain reachable from inside the parent collection page.
+// Curated list of "main" category collections shown on the index.
+// Brand collections (gucci, prada, etc.) and deep sub-categories are excluded —
+// they remain reachable from inside their parent collection / brand pages.
 const MAIN_HANDLE_ALLOWLIST = new Set<string>([
-  "women", "womens", "woman",
-  "men", "mens", "man",
-  "new-arrivals", "new", "newest",
-  "sale", "on-sale",
-  "bags", "shoes", "clothing", "accessories",
-  "sunglasses", "jewelry", "jewellery",
-  "dresses", "outerwear", "knitwear",
-  "sneakers", "boots",
-  "designer", "luxury",
-  "best-sellers", "bestsellers",
+  // Gender entry points
+  "women", "men",
+  // Gender × top-level category
+  "women-clothing", "womens-clothing",
+  "women-shoes", "womens-shoes",
+  "women-bags", "womens-bags",
+  "women-accessories", "womens-accessories", "womens-accessories-1",
+  "men-clothing", "mens-clothing",
+  "men-shoes", "mens-shoes",
+  "men-bags", "men-accessories", "mens-accessories",
+  // Unisex / universal categories
+  "accessories", "bags", "clothing", "shoes",
+  "handbags", "backpacks", "boots", "loafers",
+  "clutch-bags", "crossbody-bags", "shoulder-bags", "tote-bags",
+  "hats", "gloves", "scarves", "belts", "wallets",
+  "watches", "jewelry", "jewellery", "sunglasses", "necklaces",
+  "shirts", "skirts", "suits", "swimwear", "sleepwear", "dresses",
+  // Editorial / merchandising
+  "new-arrivals", "best-sellers", "best-selling-brands", "high-discounts", "sale", "on-sale",
 ]);
 
 function isMainCollection(c: ShopifyCollection): boolean {
-  const h = c.handle.toLowerCase();
-  if (MAIN_HANDLE_ALLOWLIST.has(h)) return true;
-  // Heuristic: single-word handles are typically top-level
-  if (!h.includes("-")) return true;
-  return false;
+  return MAIN_HANDLE_ALLOWLIST.has(c.handle.toLowerCase());
 }
 
 type SortKey = "popular" | "newest" | "alpha";
