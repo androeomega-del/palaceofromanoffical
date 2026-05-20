@@ -495,14 +495,20 @@ function ProductView({
                 <AccordionContent>
                   <p className="text-sm leading-[1.85] text-[var(--studio-muted)]">
                     Every piece is 100% authentic, sourced from the brands or their authorised
-                    distributors as an official BrandsGateway partner. If any independent
-                    authenticator finds otherwise within 90 days, Palace of Roman issues a full
-                    refund — no questions. See{" "}
+                    distributors as an official BrandsGateway partner. Returns are accepted within
+                    14 days of delivery — unworn, with original tags and packaging. See{" "}
                     <Link
                       to="/authentication"
                       className="underline underline-offset-4 hover:text-[var(--studio-ink)]"
                     >
                       our authenticity guarantee
+                    </Link>
+                    {" "}and{" "}
+                    <Link
+                      to="/shipping-returns"
+                      className="underline underline-offset-4 hover:text-[var(--studio-ink)]"
+                    >
+                      returns policy
                     </Link>
                     .
                   </p>
