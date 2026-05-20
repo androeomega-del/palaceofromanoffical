@@ -1,11 +1,29 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { test, expect, type Page } from "@playwright/test";
+import type { VisualFixture } from "./global-setup";
+
+const FIXTURE_PATH = path.resolve(process.cwd(), "tests/visual/.fixtures.json");
+
+let cached: VisualFixture | null = null;
 
 /**
- * Stabilize a page before snapshotting:
- *  - inject CSS that kills transitions/animations
- *  - wait for fonts to be ready
- *  - wait for all <img> elements to finish loading (or fail)
+ * Load the fixtures produced by `tests/visual/global-setup.ts`.
+ * Throws clearly if globalSetup did not run (e.g. running a spec in isolation).
  */
+export function loadFixtures(): VisualFixture {
+  if (cached) return cached;
+  try {
+    const raw = readFileSync(FIXTURE_PATH, "utf8");
+    cached = JSON.parse(raw) as VisualFixture;
+    return cached;
+  } catch (err) {
+    throw new Error(
+      `Visual fixtures missing at ${FIXTURE_PATH}. Run via \`bun run test:visual\` (which triggers globalSetup) or delete --no-globals.`,
+    );
+  }
+}
+
 export async function stabilize(page: Page): Promise<void> {
   await page.addStyleTag({
     content: `
@@ -33,9 +51,7 @@ export async function stabilize(page: Page): Promise<void> {
       ),
     );
   });
-  // Give layout one more frame to settle after font swap.
   await page.waitForTimeout(150);
 }
 
-/** Re-export to keep test files concise. */
 export { test, expect };
