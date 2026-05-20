@@ -10,7 +10,7 @@ import { stabilize, test, expect, loadFixtures } from "./_helpers";
 const fixture = loadFixtures();
 
 test.describe("megamenu — desktop", () => {
-  test.skip(({}, testInfo) => testInfo.project.name !== "desktop-chromium", "Desktop-only layout");
+  test.skip(({}, testInfo) => !testInfo.project.name.startsWith("desktop"), "Desktop-only layout");
 
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
@@ -46,7 +46,7 @@ test.describe("megamenu — desktop", () => {
 });
 
 test.describe("megamenu — mobile", () => {
-  test.skip(({}, testInfo) => testInfo.project.name !== "mobile-chromium", "Mobile-only layout");
+  test.skip(({}, testInfo) => !testInfo.project.name.startsWith("mobile"), "Mobile-only layout");
 
   test("drawer open snapshot", async ({ page }) => {
     await page.goto("/");

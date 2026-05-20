@@ -52,10 +52,13 @@ automatically updates the suite — no spec edits required.
 
 ## Viewports
 
-| project              | size           |
-| -------------------- | -------------- |
-| `desktop-chromium`   | 1440 x 900     |
-| `mobile-chromium`    | Pixel 7 preset |
+| project              | size              | covers                          |
+| -------------------- | ----------------- | ------------------------------- |
+| `mobile-375`         | 375 x 667         | small phone                     |
+| `tablet-768`         | 768 x 1024        | tablet portrait                 |
+| `desktop-1200`       | 1200 x 800        | small laptop                    |
+| `desktop-chromium`   | 1440 x 900        | standard desktop                |
+| `mobile-chromium`    | Pixel 7 preset    | modern phone (DPR 2.625)        |
 
 ## Stabilization
 
