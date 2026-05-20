@@ -59,7 +59,6 @@ test.describe("collection hero — breakpoint matrix", () => {
       await expect(hero).toHaveScreenshot(`hero-${handle}-${testInfo.project.name}.png`);
 
       // 2. Fingerprint: which ladder rung did the browser actually fetch?
-      const img = hero.locator('[data-testid="collection-hero-img"]');
       const { currentSrc, naturalWidth } = await img.evaluate((el) => {
         const i = el as HTMLImageElement;
         return { currentSrc: i.currentSrc, naturalWidth: i.naturalWidth };
