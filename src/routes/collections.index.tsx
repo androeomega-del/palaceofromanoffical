@@ -19,6 +19,30 @@ const FILTERS: { key: FilterKey; label: string }[] = [
 
 const FILTER_KEYS: FilterKey[] = FILTERS.map((f) => f.key);
 
+// Curated list of "main" collections shown on the index.
+// Sub-category handles (e.g. "women-crossbody-bags") are intentionally excluded —
+// they remain reachable from inside the parent collection page.
+const MAIN_HANDLE_ALLOWLIST = new Set<string>([
+  "women", "womens", "woman",
+  "men", "mens", "man",
+  "new-arrivals", "new", "newest",
+  "sale", "on-sale",
+  "bags", "shoes", "clothing", "accessories",
+  "sunglasses", "jewelry", "jewellery",
+  "dresses", "outerwear", "knitwear",
+  "sneakers", "boots",
+  "designer", "luxury",
+  "best-sellers", "bestsellers",
+]);
+
+function isMainCollection(c: ShopifyCollection): boolean {
+  const h = c.handle.toLowerCase();
+  if (MAIN_HANDLE_ALLOWLIST.has(h)) return true;
+  // Heuristic: single-word handles are typically top-level
+  if (!h.includes("-")) return true;
+  return false;
+}
+
 type SortKey = "popular" | "newest" | "alpha";
 const SORTS: { key: SortKey; label: string }[] = [
   { key: "popular", label: "Popularity" },
