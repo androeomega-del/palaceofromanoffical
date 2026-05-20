@@ -176,10 +176,10 @@ function ContactPage() {
             <div>
               <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">Email</p>
               <a
-                href="mailto:support@palaceofroman.com"
+                href="mailto:support@palaceofromanofficial.com"
                 className="text-ink/80 hover:text-bronze underline underline-offset-4 decoration-ink/20 hover:decoration-bronze transition-colors break-all"
               >
-                support@palaceofroman.com
+                support@palaceofromanofficial.com
               </a>
             </div>
             <div>

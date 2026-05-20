@@ -1,6 +1,6 @@
 // SEO helpers — keep all canonical URL + meta truncation logic in one place.
 
-export const SITE_URL = "https://palaceofroman.com";
+export const SITE_URL = "https://palaceofromanofficial.com";
 export const SITE_NAME = "Palace of Roman";
 
 /** Build an absolute URL from a site-relative path. */

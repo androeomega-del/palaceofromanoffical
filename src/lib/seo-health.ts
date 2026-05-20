@@ -1,15 +1,15 @@
 // Pure SEO health-check logic for the live homepage. No I/O — fetching is done
 // by the caller (server fn or public route) and parsed HTML is passed in here.
 
-export const HOMEPAGE_URL = "https://palaceofroman.com/";
+export const HOMEPAGE_URL = "https://palaceofromanofficial.com/";
 
 export const EXPECTED = {
   title: "Palace of Roman — Curated Luxury Fashion",
   description:
     "Curated luxury fashion from Gucci, Prada, Saint Laurent, Armani and 500+ designer houses. 100% authentic, shipped worldwide.",
-  canonical: "https://palaceofroman.com/",
+  canonical: "https://palaceofromanofficial.com/",
   ogType: "website",
-  ogUrl: "https://palaceofroman.com/",
+  ogUrl: "https://palaceofromanofficial.com/",
   twitterCard: "summary_large_image",
   googleSiteVerification: "fMHX1ox7fghr5UYvoTTCaxSRNcKuE5BEUuPd-tDZYE4",
 } as const;

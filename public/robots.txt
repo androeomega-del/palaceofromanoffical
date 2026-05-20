@@ -6,4 +6,4 @@ Disallow: /checkout
 Disallow: /account
 Disallow: /api/
 
-Sitemap: https://palaceofroman.com/sitemap.xml
+Sitemap: https://palaceofromanofficial.com/sitemap.xml

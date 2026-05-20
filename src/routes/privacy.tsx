@@ -92,7 +92,7 @@ function PrivacyPage() {
         <section>
           <SectionTitle kicker="07">Contact</SectionTitle>
           <p>
-            Questions about this notice may be sent to <span className="font-medium">privacy@palaceofroman.com</span> or
+            Questions about this notice may be sent to <span className="font-medium">privacy@palaceofromanofficial.com</span> or
             through our{" "}
             <Link to="/contact" className="underline decoration-bronze/60 underline-offset-4 hover:text-bronze">
               concierge form
