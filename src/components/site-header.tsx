@@ -93,7 +93,7 @@ export function SiteHeader() {
         <div className="max-w-screen-2xl mx-auto px-6 md:px-10 h-20 grid grid-cols-[1fr_auto_1fr] items-center gap-6">
           {/* Left nav (desktop) */}
           <nav className="hidden lg:flex items-center gap-7 text-[11px] uppercase tracking-[0.25em] font-medium justify-self-end">
-            <FlatLinks items={FLAT_LEFT} />
+            <FlatLinks items={flatLeft} />
             <DesktopMegamenu />
           </nav>
 
