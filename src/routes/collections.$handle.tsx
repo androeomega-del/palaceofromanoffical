@@ -121,18 +121,30 @@ function CollectionPage() {
   // Keyword-based product type derivation. The Shopify product_type field on
   // this store is inconsistent, so we infer category from the product title.
   // Order matters — more specific patterns first (t-shirt before shirt).
-  const TYPE_PATTERNS: { label: string; test: RegExp }[] = [
-    { label: "Dresses", test: /\b(dress|gown|kaftan)\b/i },
-    { label: "Knitwear", test: /\b(knit|sweater|jumper|cardigan|cashmere|wool top|pullover)\b/i },
-    { label: "Outerwear", test: /\b(coat|jacket|parka|trench|blazer|overcoat|puffer)\b/i },
-    { label: "Tops", test: /\b(t-shirt|tee|shirt|blouse|top|tank|polo|camisole)\b/i },
-    { label: "Trousers", test: /\b(trouser|pant|chino|legging|joggers)\b/i },
-    { label: "Denim", test: /\b(jean|denim)\b/i },
-    { label: "Skirts", test: /\b(skirt)\b/i },
-    { label: "Shoes", test: /\b(shoe|sneaker|boot|loafer|sandal|heel|pump|mule|trainer|slipper)\b/i },
-    { label: "Bags", test: /\b(bag|tote|clutch|backpack|crossbody|handbag|pouch|satchel)\b/i },
-    { label: "Accessories", test: /\b(belt|scarf|hat|cap|glove|wallet|sunglass|jewel|necklace|ring|earring|bracelet|watch|tie)\b/i },
-  ];
+  // For the curated "Layering Edit" virtual collection, swap in a layering-
+  // specific pattern set so the chips read as Polo / Long Sleeve / Turtleneck /
+  // Cardigan / Hoodie / Sweatshirt rather than the generic taxonomy.
+  const TYPE_PATTERNS: { label: string; test: RegExp }[] = handle === "layering-edit"
+    ? [
+        { label: "Polos",        test: /\bpolo\b/i },
+        { label: "Long Sleeves", test: /\b(long[\s-]?sleeve|longsleeve|l\/s)\b/i },
+        { label: "Turtlenecks",  test: /\b(turtleneck|roll[\s-]?neck|mock[\s-]?neck)\b/i },
+        { label: "Cardigans",    test: /\bcardigan\b/i },
+        { label: "Hoodies",      test: /\b(hoodie|hooded)\b/i },
+        { label: "Sweatshirts",  test: /\b(sweatshirt|crewneck|crew[\s-]?neck)\b/i },
+      ]
+    : [
+        { label: "Dresses", test: /\b(dress|gown|kaftan)\b/i },
+        { label: "Knitwear", test: /\b(knit|sweater|jumper|cardigan|cashmere|wool top|pullover)\b/i },
+        { label: "Outerwear", test: /\b(coat|jacket|parka|trench|blazer|overcoat|puffer)\b/i },
+        { label: "Tops", test: /\b(t-shirt|tee|shirt|blouse|top|tank|polo|camisole)\b/i },
+        { label: "Trousers", test: /\b(trouser|pant|chino|legging|joggers)\b/i },
+        { label: "Denim", test: /\b(jean|denim)\b/i },
+        { label: "Skirts", test: /\b(skirt)\b/i },
+        { label: "Shoes", test: /\b(shoe|sneaker|boot|loafer|sandal|heel|pump|mule|trainer|slipper)\b/i },
+        { label: "Bags", test: /\b(bag|tote|clutch|backpack|crossbody|handbag|pouch|satchel)\b/i },
+        { label: "Accessories", test: /\b(belt|scarf|hat|cap|glove|wallet|sunglass|jewel|necklace|ring|earring|bracelet|watch|tie)\b/i },
+      ];
 
   function inferType(title: string): string | null {
     for (const p of TYPE_PATTERNS) if (p.test.test(title)) return p.label;
