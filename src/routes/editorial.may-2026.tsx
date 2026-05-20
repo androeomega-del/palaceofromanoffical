@@ -167,8 +167,8 @@ function EditorialMay2026() {
             </h1>
           </div>
           <p className="max-w-md font-serif italic text-base md:text-lg text-ink/70">
-            A quiet study of the season — tailoring, footwear and house codes,
-            photographed in studio light. Shop the look throughout.
+            A quiet study of the season — bags, accessories, knitwear and
+            footwear, photographed in natural light. Shop the look throughout.
           </p>
         </div>
       </section>
