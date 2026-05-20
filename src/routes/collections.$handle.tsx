@@ -250,20 +250,7 @@ function CollectionPage() {
               data-testid="collection-hero-img"
             />
         )}
-        {!editing && (
-          <div className="absolute inset-0 bg-gradient-to-t from-canvas via-canvas/40 to-transparent" />
-        )}
-        {editing && (
-          <HeroFocalOverlay
-            handle={handle.toLowerCase()}
-            initialFocal={parsedFocal}
-            hasSavedOverride={hasSavedOverride}
-            onLiveChange={setLiveFocal}
-            onExit={() =>
-              navigate({ search: { sort }, replace: true })
-            }
-          />
-        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-canvas via-canvas/40 to-transparent" />
       </section>
 
 
