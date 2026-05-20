@@ -53,6 +53,7 @@ export interface ShopifyCollection {
   description: string;
   image: ShopifyImage | null;
   updatedAt?: string;
+  productCount?: number;
 }
 export type StorefrontFilterValue = { id: string; label: string; count: number; input: string };
 export type StorefrontFilter = {
@@ -529,15 +530,33 @@ const STATIC_COLLECTIONS: CollectionDef[] = [
 ];
 
 let DYNAMIC_COLLECTIONS_CACHE: CollectionDef[] | null = null;
+let INVENTORY_DIMENSION_ROWS_CACHE: Array<Pick<BgProductRow, "gender"|"category"|"subcategory"|"subsubcategory">> | null = null;
+
+async function getInventoryDimensionRows(): Promise<Array<Pick<BgProductRow, "gender"|"category"|"subcategory"|"subsubcategory">>> {
+  if (INVENTORY_DIMENSION_ROWS_CACHE) return INVENTORY_DIMENSION_ROWS_CACHE;
+  const rows: Array<Pick<BgProductRow, "gender"|"category"|"subcategory"|"subsubcategory">> = [];
+  const pageSize = 1000;
+  for (let offset = 0; offset < 80000; offset += pageSize) {
+    const { data, error } = await supabase
+      .from("bg_products")
+      .select("gender,category,subcategory,subsubcategory")
+      .eq("in_stock", true)
+      .range(offset, offset + pageSize - 1);
+    if (error) {
+      console.error("bg dynamic collections fetch error:", error);
+      break;
+    }
+    const page = (data ?? []) as Array<Pick<BgProductRow, "gender"|"category"|"subcategory"|"subsubcategory">>;
+    rows.push(...page);
+    if (page.length < pageSize) break;
+  }
+  INVENTORY_DIMENSION_ROWS_CACHE = rows;
+  return INVENTORY_DIMENSION_ROWS_CACHE;
+}
 
 async function getDynamicCollections(): Promise<CollectionDef[]> {
   if (DYNAMIC_COLLECTIONS_CACHE) return DYNAMIC_COLLECTIONS_CACHE;
-  // Pull the most common subcategories per gender from a sample of rows
-  // (a full GROUP BY would need an RPC; sample is acceptable for nav).
-  const { data } = await supabase
-    .from("bg_products").select("gender,category,subcategory,subsubcategory")
-    .eq("in_stock", true).limit(5000);
-  const rows = (data ?? []) as Array<Pick<BgProductRow, "gender"|"category"|"subcategory"|"subsubcategory">>;
+  const rows = await getInventoryDimensionRows();
   const subSet = new Map<string, CollectionDef>();
   for (const r of rows) {
     if (r.gender && r.subcategory) {
@@ -604,7 +623,7 @@ function collectionImageNode(def: CollectionDef): ShopifyImage | null {
   return null;
 }
 
-function defToShopify(def: CollectionDef): ShopifyCollection {
+function defToShopify(def: CollectionDef, productCount?: number): ShopifyCollection {
   return {
     id: `bg-collection:${def.handle}`,
     title: def.title,
@@ -612,6 +631,7 @@ function defToShopify(def: CollectionDef): ShopifyCollection {
     description: def.description,
     image: collectionImageNode(def),
     updatedAt: new Date().toISOString(),
+    productCount,
   };
 }
 
@@ -643,10 +663,30 @@ export async function fetchCollection(handle: string, first = 36) {
   };
 }
 
-export async function fetchCollections(first = 50): Promise<ShopifyCollection[]> {
+function rowMatchesCollectionFilter(
+  row: Pick<BgProductRow, "gender"|"category"|"subcategory"|"subsubcategory">,
+  def: CollectionDef,
+): boolean {
+  const f = def.filter;
+  const same = (a: string | null, b?: string) => !b || (a ?? "").toLowerCase() === b.toLowerCase();
+  const inList = (a: string | null, list?: string[]) => !list?.length || list.some((v) => same(a, v));
+  return same(row.gender, f.gender)
+    && same(row.category, f.category)
+    && same(row.subcategory, f.subcategory)
+    && same(row.subsubcategory, f.subsubcategory)
+    && inList(row.subcategory, f.subcategoryIn)
+    && inList(row.category, f.categoryIn);
+}
+
+export async function fetchCollections(first = 250): Promise<ShopifyCollection[]> {
   const dyn = await getDynamicCollections();
   const all = [...STATIC_COLLECTIONS, ...dyn];
-  return all.slice(0, first).map(defToShopify);
+  const rows = await getInventoryDimensionRows();
+  return all
+    .map((def) => ({ def, count: rows.filter((row) => rowMatchesCollectionFilter(row, def)).length }))
+    .filter(({ count }) => count > 0)
+    .slice(0, first)
+    .map(({ def, count }) => defToShopify(def, count));
 }
 
 export async function fetchCollectionFiltered(opts: {

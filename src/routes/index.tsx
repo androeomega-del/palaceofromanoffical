@@ -1,10 +1,11 @@
 import { createFileRoute, ClientOnly, Link, useRouter } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { fetchProducts, fetchCollection, fetchSearchFiltered, type ShopifyProduct } from "@/lib/shopify";
+import { fetchProducts, fetchCollection, fetchCollections, fetchSearchFiltered, type ShopifyCollection, type ShopifyProduct } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
 import { EditorialHotspots } from "@/components/editorial-hotspots";
 import { CampaignVideo } from "@/components/campaign-video";
+import { collectionImage, collectionImageAlt, collectionImageFocal } from "@/lib/collection-image";
 import heroImage from "@/assets/home-hero.jpg";
 import summerHero from "@/assets/summer-bento-hero.jpg";
 import editorialHero from "@/assets/editorial/may-2026/1.webp";
@@ -176,6 +177,10 @@ function HomePage() {
       sortKey: "BEST_SELLING",
     }).then((r) => r.edges),
   });
+  const inventoryCollectionsQ = useQuery({
+    queryKey: ["home", "inventory-collections"],
+    queryFn: () => fetchCollections(1000),
+  });
 
   // Editorial split sources — one image per panel, pulled from real data.
   const womenEditorialQ = useQuery({
@@ -232,6 +237,11 @@ function HomePage() {
       <ClientOnly fallback={<SummerBentoSkeleton />}>
         <SummerBento {...SUMMER_BENTO_PROPS} />
       </ClientOnly>
+
+      <InventoryCollectionsSection
+        collections={inventoryCollectionsQ.data ?? []}
+        loading={inventoryCollectionsQ.isLoading}
+      />
 
       {/* 1b. SWIMWEAR RAIL — Bikinis, Beachwear, Resort */}
       <section className="py-20 md:py-24 bg-canvas-raised">
@@ -514,6 +524,87 @@ function HomePage() {
       {/* 8. NEWSLETTER */}
       <NewsletterStrip />
     </>
+  );
+}
+
+function InventoryCollectionsSection({
+  collections,
+  loading,
+}: {
+  collections: ShopifyCollection[];
+  loading?: boolean;
+}) {
+  return (
+    <section className="py-20 md:py-24 border-y border-ink/5 bg-canvas">
+      <div className="max-w-screen-2xl mx-auto px-6">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-5 mb-10 md:mb-12">
+          <div>
+            <span className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-3 block">
+              In-Stock Index
+            </span>
+            <h2 className="text-3xl md:text-4xl font-serif">All Collections With Inventory</h2>
+          </div>
+          <Link
+            to="/collections"
+            className="text-[11px] uppercase tracking-[0.25em] border-b border-ink/20 pb-1 hover:border-ink w-fit"
+          >
+            View collection index
+          </Link>
+        </div>
+
+        {loading && collections.length === 0 ? (
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-5">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <div key={i} className="aspect-[4/5] bg-muted animate-pulse" />
+            ))}
+          </div>
+        ) : collections.length === 0 ? (
+          <p className="text-sm text-muted-foreground py-10">No stocked collections found.</p>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-5">
+            {collections.map((collection) => {
+              const src = collectionImage({
+                title: collection.title,
+                handle: collection.handle,
+                description: collection.description,
+              });
+              return (
+                <Link
+                  key={collection.id}
+                  to="/collections/$handle"
+                  params={{ handle: collection.handle }}
+                  className="group block"
+                >
+                  <div className="relative aspect-[4/5] overflow-hidden bg-muted mb-3">
+                    <img
+                      src={src}
+                      alt={collection.image?.altText ?? collectionImageAlt({
+                        handle: collection.handle,
+                        title: collection.title,
+                        description: collection.description,
+                      })}
+                      loading="lazy"
+                      decoding="async"
+                      style={{ objectPosition: collectionImageFocal({ handle: collection.handle, title: collection.title }) }}
+                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/20 to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0 p-3 md:p-4">
+                      <h3 className="font-serif text-lg md:text-xl leading-tight text-canvas text-balance">
+                        {collection.title}
+                      </h3>
+                    </div>
+                  </div>
+                  <p className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground group-hover:text-bronze transition-colors">
+                    {collection.productCount ?? 0} in stock
+                  </p>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </section>
   );
 }
 
