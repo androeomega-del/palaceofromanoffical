@@ -136,6 +136,51 @@ export type Database = {
           },
         ]
       }
+      cart_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          page_path: string | null
+          price_usd: number | null
+          product_handle: string | null
+          product_title: string | null
+          quantity: number
+          session_id: string | null
+          user_agent: string | null
+          variant_id: string | null
+          variant_title: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          page_path?: string | null
+          price_usd?: number | null
+          product_handle?: string | null
+          product_title?: string | null
+          quantity?: number
+          session_id?: string | null
+          user_agent?: string | null
+          variant_id?: string | null
+          variant_title?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          page_path?: string | null
+          price_usd?: number | null
+          product_handle?: string | null
+          product_title?: string | null
+          quantity?: number
+          session_id?: string | null
+          user_agent?: string | null
+          variant_id?: string | null
+          variant_title?: string | null
+        }
+        Relationships: []
+      }
       collection_images: {
         Row: {
           focal_x: number | null
