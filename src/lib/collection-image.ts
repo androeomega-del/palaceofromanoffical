@@ -61,6 +61,20 @@ import womensSportswear from "@/assets/collections/auto/womens-sportswear.jpg";
 import womensUnderwear from "@/assets/collections/auto/womens-underwear.jpg";
 import womensSuits from "@/assets/collections/auto/womens-suits.jpg";
 import womensSunglasses from "@/assets/collections/auto/womens-sunglasses.jpg";
+// New unique top-level / entry images (one per displayed main collection)
+import womenEntry from "@/assets/collections/auto/women.jpg";
+import menEntry from "@/assets/collections/auto/men.jpg";
+import unisexEntry from "@/assets/collections/auto/unisex.jpg";
+import clothingEntry from "@/assets/collections/auto/clothing.jpg";
+import shoesEntry from "@/assets/collections/auto/shoes.jpg";
+import bagsEntry from "@/assets/collections/auto/bags.jpg";
+import accessoriesEntry from "@/assets/collections/auto/accessories.jpg";
+import glovesImg from "@/assets/collections/auto/gloves.jpg";
+import shirtsImg from "@/assets/collections/auto/shirts.jpg";
+import sleepwearImg from "@/assets/collections/auto/sleepwear.jpg";
+import otherAccessoriesImg from "@/assets/collections/auto/other-accessories.jpg";
+import womenBagsImg from "@/assets/collections/auto/women-bags.jpg";
+
 
 const BY_HANDLE: Record<string, string> = {
   "all-products": allProducts,
