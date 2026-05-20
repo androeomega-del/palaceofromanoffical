@@ -176,7 +176,7 @@ const BY_HANDLE: Record<string, string> = {
   "clothing": clothingEntry,
   "shoes": shoesEntry,
   "hats": womensHats,
-  "gloves": womensAccessories,
+  "gloves": glovesImg,
   "scarves": womensScarves,
   "belts": womensBelts,
   "wallets": womensWallets,
