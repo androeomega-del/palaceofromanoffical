@@ -52,11 +52,11 @@ type SwimCategory = {
 };
 
 const SWIM_CATEGORIES: SwimCategory[] = [
-  { key: "all", label: "All Swim", query: "product_type:Swimwear" },
-  { key: "bikini-tops", label: "Bikini Tops", query: "product_type:Swimwear bikini top" },
-  { key: "bikini-bottoms", label: "Bikini Bottoms", query: "product_type:Swimwear bikini bottom" },
-  { key: "one-piece", label: "One-Piece", query: "product_type:Swimwear swimsuit" },
-  { key: "beachwear", label: "Beachwear", query: "product_type:Swimwear pareo" },
+  { key: "all", label: "All Swim", query: "tag:Swimwear OR tag:'Swimwear - Clothing' OR tag:'Bikinis - Swimwear - Clothing' OR title:beachwear OR title:bikini OR title:swimwear OR title:swimsuit" },
+  { key: "bikini-tops", label: "Bikini Tops", query: "title:bikini AND (title:top OR title:tops)" },
+  { key: "bikini-bottoms", label: "Bikini Bottoms", query: "title:bikini AND title:bottom" },
+  { key: "one-piece", label: "One-Piece", query: "title:swimsuit OR title:'one-piece' OR title:'one piece'" },
+  { key: "beachwear", label: "Beachwear", query: "title:beachwear OR title:pareo OR title:kaftan OR title:'cover up'" },
 ];
 
 function mapSort(sort: SortValue): { sortKey: string; reverse: boolean } {
