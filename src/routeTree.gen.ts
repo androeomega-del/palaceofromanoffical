@@ -31,6 +31,7 @@ import { Route as EditorialMay2026RouteImport } from './routes/editorial.may-202
 import { Route as CollectionsHandleRouteImport } from './routes/collections.$handle'
 import { Route as CampaignDolceGabbanaSwimRouteImport } from './routes/campaign.dolce-gabbana-swim'
 import { Route as BrandVendorRouteImport } from './routes/brand.$vendor'
+import { Route as AdminShopifySyncRouteImport } from './routes/admin.shopify-sync'
 import { Route as AdminCollectionImageQaRouteImport } from './routes/admin.collection-image-qa'
 import { Route as AdminCollectionImagePreviewRouteImport } from './routes/admin.collection-image-preview'
 import { Route as AdminCollectionHeroRegressionRouteImport } from './routes/admin.collection-hero-regression'
@@ -148,6 +149,11 @@ const BrandVendorRoute = BrandVendorRouteImport.update({
   path: '/brand/$vendor',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminShopifySyncRoute = AdminShopifySyncRouteImport.update({
+  id: '/admin/shopify-sync',
+  path: '/admin/shopify-sync',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminCollectionImageQaRoute = AdminCollectionImageQaRouteImport.update({
   id: '/admin/collection-image-qa',
   path: '/admin/collection-image-qa',
@@ -195,6 +201,7 @@ export interface FileRoutesByFullPath {
   '/admin/collection-hero-regression': typeof AdminCollectionHeroRegressionRoute
   '/admin/collection-image-preview': typeof AdminCollectionImagePreviewRoute
   '/admin/collection-image-qa': typeof AdminCollectionImageQaRoute
+  '/admin/shopify-sync': typeof AdminShopifySyncRoute
   '/brand/$vendor': typeof BrandVendorRoute
   '/campaign/dolce-gabbana-swim': typeof CampaignDolceGabbanaSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
@@ -224,6 +231,7 @@ export interface FileRoutesByTo {
   '/admin/collection-hero-regression': typeof AdminCollectionHeroRegressionRoute
   '/admin/collection-image-preview': typeof AdminCollectionImagePreviewRoute
   '/admin/collection-image-qa': typeof AdminCollectionImageQaRoute
+  '/admin/shopify-sync': typeof AdminShopifySyncRoute
   '/brand/$vendor': typeof BrandVendorRoute
   '/campaign/dolce-gabbana-swim': typeof CampaignDolceGabbanaSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
@@ -254,6 +262,7 @@ export interface FileRoutesById {
   '/admin/collection-hero-regression': typeof AdminCollectionHeroRegressionRoute
   '/admin/collection-image-preview': typeof AdminCollectionImagePreviewRoute
   '/admin/collection-image-qa': typeof AdminCollectionImageQaRoute
+  '/admin/shopify-sync': typeof AdminShopifySyncRoute
   '/brand/$vendor': typeof BrandVendorRoute
   '/campaign/dolce-gabbana-swim': typeof CampaignDolceGabbanaSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
@@ -285,6 +294,7 @@ export interface FileRouteTypes {
     | '/admin/collection-hero-regression'
     | '/admin/collection-image-preview'
     | '/admin/collection-image-qa'
+    | '/admin/shopify-sync'
     | '/brand/$vendor'
     | '/campaign/dolce-gabbana-swim'
     | '/collections/$handle'
@@ -314,6 +324,7 @@ export interface FileRouteTypes {
     | '/admin/collection-hero-regression'
     | '/admin/collection-image-preview'
     | '/admin/collection-image-qa'
+    | '/admin/shopify-sync'
     | '/brand/$vendor'
     | '/campaign/dolce-gabbana-swim'
     | '/collections/$handle'
@@ -343,6 +354,7 @@ export interface FileRouteTypes {
     | '/admin/collection-hero-regression'
     | '/admin/collection-image-preview'
     | '/admin/collection-image-qa'
+    | '/admin/shopify-sync'
     | '/brand/$vendor'
     | '/campaign/dolce-gabbana-swim'
     | '/collections/$handle'
@@ -373,6 +385,7 @@ export interface RootRouteChildren {
   AdminCollectionHeroRegressionRoute: typeof AdminCollectionHeroRegressionRoute
   AdminCollectionImagePreviewRoute: typeof AdminCollectionImagePreviewRoute
   AdminCollectionImageQaRoute: typeof AdminCollectionImageQaRoute
+  AdminShopifySyncRoute: typeof AdminShopifySyncRoute
   BrandVendorRoute: typeof BrandVendorRoute
   CampaignDolceGabbanaSwimRoute: typeof CampaignDolceGabbanaSwimRoute
   CollectionsHandleRoute: typeof CollectionsHandleRoute
@@ -540,6 +553,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BrandVendorRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/shopify-sync': {
+      id: '/admin/shopify-sync'
+      path: '/admin/shopify-sync'
+      fullPath: '/admin/shopify-sync'
+      preLoaderRoute: typeof AdminShopifySyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/collection-image-qa': {
       id: '/admin/collection-image-qa'
       path: '/admin/collection-image-qa'
@@ -606,6 +626,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminCollectionHeroRegressionRoute: AdminCollectionHeroRegressionRoute,
   AdminCollectionImagePreviewRoute: AdminCollectionImagePreviewRoute,
   AdminCollectionImageQaRoute: AdminCollectionImageQaRoute,
+  AdminShopifySyncRoute: AdminShopifySyncRoute,
   BrandVendorRoute: BrandVendorRoute,
   CampaignDolceGabbanaSwimRoute: CampaignDolceGabbanaSwimRoute,
   CollectionsHandleRoute: CollectionsHandleRoute,

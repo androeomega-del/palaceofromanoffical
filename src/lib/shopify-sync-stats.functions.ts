@@ -16,38 +16,30 @@ export type ShopifySyncStats = {
   recentSyncs: Array<{ product_handle: string | null; synced_at: string }>;
 };
 
-async function countTable(table: string): Promise<number> {
-  const { count, error } = await supabaseAdmin
-    .from(table)
-    .select("*", { count: "exact", head: true });
-  if (error) throw new Error(`count(${table}): ${error.message}`);
-  return count ?? 0;
+async function countOf(
+  q: { count: number | null; error: { message: string } | null },
+  label: string,
+): Promise<number> {
+  if (q.error) throw new Error(`${label}: ${q.error.message}`);
+  return q.count ?? 0;
 }
 
 export const getShopifySyncStats = createServerFn({ method: "GET" })
   .middleware([requireAdmin])
   .handler(async (): Promise<ShopifySyncStats> => {
-    const [bgProducts, bgVariants, mappedSkus, availableSkus] = await Promise.all([
-      countTable("bg_products"),
-      countTable("bg_variants"),
-      countTable("shopify_variant_map"),
+    const [bgProductsQ, bgVariantsQ, mappedSkusQ, availableSkusQ] = await Promise.all([
+      supabaseAdmin.from("bg_products").select("*", { count: "exact", head: true }),
+      supabaseAdmin.from("bg_variants").select("*", { count: "exact", head: true }),
+      supabaseAdmin.from("shopify_variant_map").select("*", { count: "exact", head: true }),
       supabaseAdmin
         .from("shopify_variant_map")
         .select("*", { count: "exact", head: true })
-        .eq("available", true)
-        .then(({ count, error }) => {
-          if (error) throw new Error(`available count: ${error.message}`);
-          return count ?? 0;
-        }),
+        .eq("available", true),
     ]);
-
-    // Distinct mapped product handles
-    const { data: handleRows, error: handleErr } = await supabaseAdmin
-      .rpc("strict_word_similarity", { _: "" } as never)
-      .then(() => ({ data: null as never, error: null }))
-      .catch(() => ({ data: null, error: null }));
-    // Fall back to a direct distinct query (rpc above is just a guard against type oddities)
-    void handleRows; void handleErr;
+    const bgProducts = await countOf(bgProductsQ, "bg_products");
+    const bgVariants = await countOf(bgVariantsQ, "bg_variants");
+    const mappedSkus = await countOf(mappedSkusQ, "shopify_variant_map");
+    const availableSkus = await countOf(availableSkusQ, "available");
 
     const { data: distinctHandles, error: dhErr } = await supabaseAdmin
       .from("shopify_variant_map")
