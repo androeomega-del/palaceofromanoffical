@@ -319,6 +319,30 @@ export type Database = {
         }
         Relationships: []
       }
+      shopify_tag_expirations: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          product_id: string
+          tag: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          id?: string
+          product_id: string
+          tag: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          product_id?: string
+          tag?: string
+        }
+        Relationships: []
+      }
       shopify_variant_map: {
         Row: {
           available: boolean
