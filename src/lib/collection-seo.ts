@@ -42,6 +42,11 @@ const BY_HANDLE: Record<string, Seo> = {
     description:
       "Shop designer fashion on sale at Palace of Roman. Authentic luxury pieces from leading maisons at up to 70% off, with worldwide shipping.",
   },
+  "best-sellers": {
+    title: "Best Sellers — Most-Loved Designer Pieces",
+    description:
+      "The pieces our clients reach for most — a live ranking of Palace of Roman's most-ordered designer styles across every luxury maison.",
+  },
 
   // Women's
   "womens-clothing": {
