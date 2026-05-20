@@ -362,7 +362,31 @@ export async function fetchProductByHandle(handle: string): Promise<ShopifyProdu
   const { data: vRows } = await supabase
     .from("bg_variants").select("product_sku,group_sku,size,quantity")
     .eq("group_sku", product.group_sku).order("size");
-  return rowToNode(product, (vRows ?? []) as BgVariantRow[]);
+  const variants = (vRows ?? []) as BgVariantRow[];
+
+  // Enrich with real Shopify variant GIDs so cart → cartCreate works.
+  const skus = variants.map((v) => v.product_sku).filter(Boolean);
+  let gidBySku = new Map<string, { gid: string; available: boolean }>();
+  if (skus.length > 0) {
+    const { data: mapRows } = await supabase
+      .from("shopify_variant_map")
+      .select("sku,variant_gid,available")
+      .in("sku", skus);
+    for (const m of (mapRows ?? []) as Array<{ sku: string; variant_gid: string; available: boolean }>) {
+      gidBySku.set(m.sku, { gid: m.variant_gid, available: m.available });
+    }
+  }
+
+  const node = rowToNode(product, variants);
+  node.variants.edges = node.variants.edges.map((e) => {
+    const mapped = gidBySku.get(e.node.id);
+    if (!mapped) {
+      // No Shopify mapping — variant is not purchasable yet.
+      return { node: { ...e.node, availableForSale: false } };
+    }
+    return { node: { ...e.node, id: mapped.gid, availableForSale: e.node.availableForSale && mapped.available } };
+  });
+  return node;
 }
 
 // ── Public API: collections ─────────────────────────────────────────────────
