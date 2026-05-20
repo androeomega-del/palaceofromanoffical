@@ -68,8 +68,8 @@ export function SiteFooter() {
             <span className="opacity-30">·</span>
             <span>Ships Worldwide</span>
             <span className="opacity-30">·</span>
-            <a href="mailto:support@palaceofroman.com" className="hover:text-ink transition-colors normal-case tracking-normal">
-              support@palaceofroman.com
+            <a href="mailto:support@palaceofromanofficial.com" className="hover:text-ink transition-colors normal-case tracking-normal">
+              support@palaceofromanofficial.com
             </a>
           </div>
         </div>

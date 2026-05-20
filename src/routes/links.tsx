@@ -42,8 +42,8 @@ const LINKS: LinkItem[] = [
   },
   {
     label: "Email Support",
-    sub: "support@palaceofroman.com",
-    href: "mailto:support@palaceofroman.com",
+    sub: "support@palaceofromanofficial.com",
+    href: "mailto:support@palaceofromanofficial.com",
     external: true,
   },
   {
@@ -126,7 +126,7 @@ function LinksPage() {
 
         {/* Footnote */}
         <p className="text-center text-[10px] uppercase tracking-[0.25em] text-muted-foreground mt-10">
-          palaceofroman.com
+          palaceofromanofficial.com
         </p>
       </div>
     </main>
