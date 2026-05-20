@@ -356,34 +356,49 @@ export function SortPresets({
 export function ActiveFilterPills({
   selections,
   priceRange,
+  gender,
+  category,
   onRemove,
   onClearPrice,
+  onClearGender,
+  onClearCategory,
   onClearAll,
 }: {
   selections: Selection[];
   priceRange: { min: number; max: number } | null;
+  gender?: Gender | null;
+  category?: Category | null;
   onRemove: (input: string) => void;
   onClearPrice: () => void;
+  onClearGender?: () => void;
+  onClearCategory?: () => void;
   onClearAll: () => void;
 }) {
-  if (selections.length === 0 && !priceRange) return null;
+  if (selections.length === 0 && !priceRange && !gender && !category) return null;
+  const pillCls =
+    "inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.15em] border border-ink/20 px-3 py-1.5 hover:bg-ink hover:text-canvas transition-colors";
   return (
     <div className="flex flex-wrap items-center gap-2 mb-6">
+      {gender && onClearGender && (
+        <button onClick={onClearGender} className={pillCls}>
+          {gender}
+          <X className="h-3 w-3" />
+        </button>
+      )}
+      {category && onClearCategory && (
+        <button onClick={onClearCategory} className={pillCls}>
+          {category.label}
+          <X className="h-3 w-3" />
+        </button>
+      )}
       {priceRange && (
-        <button
-          onClick={onClearPrice}
-          className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.15em] border border-ink/20 px-3 py-1.5 hover:bg-ink hover:text-canvas transition-colors"
-        >
+        <button onClick={onClearPrice} className={pillCls}>
           ${priceRange.min} – ${priceRange.max}
           <X className="h-3 w-3" />
         </button>
       )}
       {selections.map((s) => (
-        <button
-          key={s.input}
-          onClick={() => onRemove(s.input)}
-          className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.15em] border border-ink/20 px-3 py-1.5 hover:bg-ink hover:text-canvas transition-colors"
-        >
+        <button key={s.input} onClick={() => onRemove(s.input)} className={pillCls}>
           {s.label}
           <X className="h-3 w-3" />
         </button>
@@ -394,6 +409,103 @@ export function ActiveFilterPills({
       >
         Clear All
       </button>
+    </div>
+  );
+}
+
+// ---- Taxonomy (gender + category) block, sits above dynamic Shopify facets ----
+export function TaxonomyFilters({
+  gender,
+  category,
+  onGenderChange,
+  onCategoryChange,
+}: {
+  gender: Gender | null;
+  category: string | null;
+  onGenderChange: (g: Gender | null) => void;
+  onCategoryChange: (handle: string | null) => void;
+}) {
+  const [openCat, setOpenCat] = useState(true);
+  const grouped = useMemo(() => {
+    const by: Record<Gender, Category[]> = { Women: [], Men: [], Unisex: [] };
+    for (const c of CATEGORY_COLLECTIONS) by[c.group].push(c);
+    return by;
+  }, []);
+  const visibleGroups: Gender[] = gender ? [gender] : ["Women", "Men", "Unisex"];
+
+  return (
+    <div className="divide-y divide-ink/10 mb-2">
+      <div>
+        <FilterGroupHeader label="Gender" open={true} onToggle={() => {}} />
+        <div className="pb-4 flex flex-wrap gap-2">
+          {GENDERS.map((g) => {
+            const active = gender === g.value;
+            return (
+              <button
+                key={g.value}
+                onClick={() => onGenderChange(active ? null : g.value)}
+                aria-pressed={active}
+                className={cn(
+                  "px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] border transition-colors",
+                  active
+                    ? "bg-ink text-canvas border-ink"
+                    : "border-ink/20 hover:border-ink",
+                )}
+              >
+                {g.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+      <div>
+        <FilterGroupHeader
+          label="Category"
+          open={openCat}
+          onToggle={() => setOpenCat((s) => !s)}
+        />
+        {openCat && (
+          <div className="pb-3 space-y-4">
+            {visibleGroups.map((g) => (
+              <div key={g}>
+                {!gender && (
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mb-2">
+                    {g}
+                  </p>
+                )}
+                <ul className="space-y-1">
+                  {grouped[g].map((c) => {
+                    const active = category === c.handle;
+                    return (
+                      <li key={c.handle}>
+                        <button
+                          onClick={() => onCategoryChange(active ? null : c.handle)}
+                          className={cn(
+                            "text-xs text-left w-full py-1 transition-colors",
+                            active
+                              ? "text-ink font-medium"
+                              : "text-muted-foreground hover:text-ink",
+                          )}
+                        >
+                          <span
+                            className={cn(
+                              "inline-block w-2 mr-2",
+                              active ? "text-bronze" : "opacity-0",
+                            )}
+                          >
+                            •
+                          </span>
+                          {c.label}
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
