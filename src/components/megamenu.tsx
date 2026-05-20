@@ -314,6 +314,8 @@ function MegaPanel({
       onMouseLeave={onMouseLeave}
       onKeyDown={(e) => onPanelKeyDown(e, id)}
       className="fixed left-0 right-0 top-20 z-40 bg-canvas border-t border-ink/10 shadow-[0_40px_80px_-40px_rgba(0,0,0,0.12)]"
+      data-testid="megamenu-panel"
+      data-dept={dept.label}
     >
       <div className="max-w-screen-2xl mx-auto px-12 py-16 grid grid-cols-[1fr_minmax(340px,30%)] gap-16">
         <div
@@ -363,6 +365,8 @@ function MegaPanel({
           to="/collections/$handle"
           params={{ handle: dept.feature.handle }}
           className="group relative block aspect-[4/5] overflow-hidden bg-muted"
+          data-testid="megamenu-feature-tile"
+          data-handle={dept.feature.handle}
         >
           <img
             src={featureImg}
