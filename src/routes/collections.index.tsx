@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { fetchCollections, type ShopifyCollection } from "@/lib/shopify";
-import { collectionImage, collectionImageAlt, collectionImageFocal } from "@/lib/collection-image";
+import { collectionImage, collectionImageAlt, collectionImageFocal, responsiveCollectionImage, TILE_RESPONSIVE_WIDTHS } from "@/lib/collection-image";
 import { getCollectionImageMap, getCollectionFocalMap } from "@/lib/collection-image.functions";
 import { routeHead } from "@/lib/seo";
 
