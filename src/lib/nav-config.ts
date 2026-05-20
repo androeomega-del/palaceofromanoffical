@@ -129,6 +129,76 @@ const CROSS_CATEGORIES: CrossEntry[] = [
   { handle: "hats",           label: "Hats",           women: { column: "Fine Accessories", order: 3 },  men: { column: "Accessories", order: 3 } },
   { handle: "gloves",         label: "Gloves",         women: { column: "Fine Accessories", order: 4 },  men: { column: "Accessories", order: 4 } },
   { handle: "other-accessories", label: "Other Accessories", women: { column: "Fine Accessories", order: 8 }, men: { column: "Accessories", order: 8 } },
+
+  // ---------------------------------------------------------------------------
+  // Granular category collections built from BrandsGateway taxonomy
+  // (auto-created via scripts/shopify/create-category-smart-collections*.mjs)
+  // ---------------------------------------------------------------------------
+
+  // Women — apparel
+  { handle: "dresses",            label: "Dresses",            women: { column: "Apparel", order: 10 }, men: null },
+  { handle: "short-dresses",      label: "Short Dresses",      women: { column: "Apparel", order: 11 }, men: null },
+  { handle: "sleeveless-dresses", label: "Sleeveless Dresses", women: { column: "Apparel", order: 12 }, men: null },
+  { handle: "tops",               label: "Tops",               women: { column: "Apparel", order: 13 }, men: null },
+  { handle: "blouses",            label: "Blouses",            women: { column: "Apparel", order: 14 }, men: null },
+  { handle: "tshirts-women",      label: "T-Shirts",           women: { column: "Apparel", order: 15 }, men: null },
+  { handle: "shirts-women",       label: "Shirts",             women: { column: "Apparel", order: 16 }, men: null },
+  { handle: "knitwear-women",     label: "Knitwear",           women: { column: "Apparel", order: 17 }, men: null },
+  { handle: "jackets-women",      label: "Jackets",            women: { column: "Apparel", order: 18 }, men: null },
+  { handle: "coats-women",        label: "Coats",              women: { column: "Apparel", order: 19 }, men: null },
+  { handle: "denim-women",        label: "Denim",              women: { column: "Apparel", order: 20 }, men: null },
+  { handle: "pants-women",        label: "Pants",              women: { column: "Apparel", order: 21 }, men: null },
+  { handle: "shorts-women",       label: "Shorts",             women: { column: "Apparel", order: 22 }, men: null },
+  { handle: "jumpsuits",          label: "Jumpsuits",          women: { column: "Apparel", order: 23 }, men: null },
+  { handle: "swimwear-women",     label: "Swimwear",           women: { column: "Apparel", order: 24 }, men: null },
+  { handle: "sportswear-women",   label: "Sportswear",         women: { column: "Apparel", order: 25 }, men: null },
+  { handle: "lingerie",           label: "Lingerie & Underwear", women: { column: "Apparel", order: 26 }, men: null },
+
+  // Men — apparel
+  { handle: "tshirts-men",        label: "T-Shirts",           women: null, men: { column: "Shirts & Knitwear", order: 10 } },
+  { handle: "tank-tops",          label: "Tank Tops",          women: null, men: { column: "Shirts & Knitwear", order: 11 } },
+  { handle: "shirts-men",         label: "Casual Shirts",      women: null, men: { column: "Shirts & Knitwear", order: 12 } },
+  { handle: "dress-shirts",       label: "Dress Shirts",       women: null, men: { column: "Shirts & Knitwear", order: 13 } },
+  { handle: "pattern-shirts",     label: "Pattern Shirts",     women: null, men: { column: "Shirts & Knitwear", order: 14 } },
+  { handle: "sweaters-men",       label: "Sweaters",           women: null, men: { column: "Shirts & Knitwear", order: 15 } },
+  { handle: "sweatshirts",        label: "Sweatshirts & Hoodies", women: null, men: { column: "Shirts & Knitwear", order: 16 } },
+  { handle: "blazers",            label: "Blazers",            women: null, men: { column: "Tailoring", order: 10 } },
+  { handle: "jackets-men",        label: "Jackets",            women: null, men: { column: "Tailoring", order: 11 } },
+  { handle: "coats-men",          label: "Coats",              women: null, men: { column: "Tailoring", order: 12 } },
+  { handle: "denim-men",          label: "Denim",              women: null, men: { column: "Bottoms & Beach", order: 10 } },
+  { handle: "skinny-jeans",       label: "Skinny Jeans",       women: null, men: { column: "Bottoms & Beach", order: 11 } },
+  { handle: "slim-fit-jeans",     label: "Slim Fit Jeans",     women: null, men: { column: "Bottoms & Beach", order: 12 } },
+  { handle: "casual-pants",       label: "Casual Pants",       women: null, men: { column: "Bottoms & Beach", order: 13 } },
+  { handle: "dress-pants",        label: "Dress Pants",        women: null, men: { column: "Bottoms & Beach", order: 14 } },
+  { handle: "athletic-pants",     label: "Athletic Pants",     women: null, men: { column: "Bottoms & Beach", order: 15 } },
+  { handle: "joggers",            label: "Joggers",            women: null, men: { column: "Bottoms & Beach", order: 16 } },
+  { handle: "sportswear",         label: "Sportswear",         women: null, men: { column: "Bottoms & Beach", order: 17 } },
+  { handle: "bermuda-shorts",     label: "Bermuda Shorts",     women: null, men: { column: "Bottoms & Beach", order: 18 } },
+  { handle: "swimwear-men",       label: "Swimwear",           women: null, men: { column: "Bottoms & Beach", order: 19 } },
+  { handle: "underwear-men",      label: "Underwear",          women: null, men: { column: "Bottoms & Beach", order: 20 } },
+  { handle: "suits",              label: "Suits",              women: null, men: { column: "Tailoring", order: 13 } },
+
+  // Unisex — shoes
+  { handle: "sneakers",           label: "Sneakers",           women: { column: "Shoes", order: 10 }, men: { column: "Shoes", order: 10 } },
+  { handle: "athletic-sneakers",  label: "Athletic Sneakers",  women: { column: "Shoes", order: 11 }, men: { column: "Shoes", order: 11 } },
+  { handle: "low-top-sneakers",   label: "Low-Top Sneakers",   women: { column: "Shoes", order: 12 }, men: { column: "Shoes", order: 12 } },
+  { handle: "sandals-slides",     label: "Sandals & Slides",   women: { column: "Shoes", order: 13 }, men: { column: "Shoes", order: 13 } },
+  { handle: "flats",              label: "Flats",              women: { column: "Shoes", order: 14 }, men: null },
+  { handle: "espadrilles",        label: "Espadrilles",        women: { column: "Shoes", order: 15 }, men: { column: "Shoes", order: 15 } },
+  { handle: "slip-on-loafers",    label: "Slip-On Loafers",    women: { column: "Shoes", order: 16 }, men: { column: "Shoes", order: 16 } },
+
+  // Unisex — bags & leather
+  { handle: "leather-goods",      label: "Leather Goods",      women: { column: "Bags & Leather", order: 10 }, men: { column: "Accessories", order: 10 } },
+
+  // Unisex — accessories
+  { handle: "belts",              label: "Belts",              women: { column: "Fine Accessories", order: 10 }, men: { column: "Accessories", order: 11 } },
+  { handle: "regular-belts",      label: "Regular Belts",      women: { column: "Fine Accessories", order: 11 }, men: { column: "Accessories", order: 12 } },
+  { handle: "wallets",            label: "Wallets",            women: { column: "Bags & Leather", order: 11 }, men: { column: "Accessories", order: 13 } },
+  { handle: "scarves",            label: "Scarves",            women: { column: "Fine Accessories", order: 12 }, men: { column: "Accessories", order: 14 } },
+  { handle: "sunglasses",         label: "Sunglasses",         women: { column: "Fine Accessories", order: 13 }, men: { column: "Accessories", order: 15 } },
+  { handle: "eyewear",            label: "Eyewear",            women: { column: "Fine Accessories", order: 14 }, men: { column: "Accessories", order: 16 } },
+  { handle: "cashmere",           label: "Cashmere",           women: { column: "Apparel", order: 30 }, men: { column: "Shirts & Knitwear", order: 30 } },
+
   { handle: "unisex",         label: "Unisex",         women: { column: "More", order: 0 },              men: { column: "More", order: 0 } },
 ];
 
