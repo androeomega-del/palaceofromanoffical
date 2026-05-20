@@ -104,7 +104,10 @@ function HomePage() {
   });
   const bestSellersQ = useQuery({
     queryKey: ["home", "best-sellers"],
-    queryFn: () => fetchProducts({ first: 8, sortKey: "BEST_SELLING" }),
+    queryFn: () =>
+      fetchSearchFiltered({ first: 8, sortKey: "BEST_SELLING", reverse: false }).then(
+        (r) => r.edges,
+      ),
   });
   const swimwearQ = useQuery({
     queryKey: ["home", "swimwear"],
