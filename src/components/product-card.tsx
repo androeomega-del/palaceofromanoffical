@@ -38,7 +38,7 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
       navigate({ to: "/product/$handle", params: { handle: p.handle } });
       return;
     }
-    await addItem({
+    const added = await addItem({
       product,
       variantId: firstAvailable.id,
       variantTitle: firstAvailable.title,
@@ -46,6 +46,10 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
       quantity: 1,
       selectedOptions: firstAvailable.selectedOptions ?? [],
     });
+    if (!added) {
+      toast.error("Could not add this item to bag.", { description: "Please try another size or refresh the page." });
+      return;
+    }
     openDrawer();
     toast.success(`${p.title} — added to bag`);
   };
@@ -68,7 +72,7 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
 
     setBuyingNow(true);
     try {
-      await addItem({
+      const added = await addItem({
         product,
         variantId: firstAvailable.id,
         variantTitle: firstAvailable.title,
@@ -76,6 +80,10 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
         quantity: 1,
         selectedOptions: firstAvailable.selectedOptions ?? [],
       });
+      if (!added) {
+        toast.error("Could not add this item to bag.", { description: "Please try another size or refresh the page." });
+        return;
+      }
       const checkoutUrl = useCartStore.getState().checkoutUrl;
       if (checkoutUrl) {
         window.open(checkoutUrl, "_blank", "noopener,noreferrer");
