@@ -358,6 +358,18 @@ const STATIC_COLLECTIONS: CollectionDef[] = [
   { handle: "men-clothing", title: "Men · Clothing", description: "Men's ready-to-wear.", filter: { gender: "Men", category: "Clothing" } },
   { handle: "men-shoes", title: "Men · Shoes", description: "Men's footwear.", filter: { gender: "Men", category: "Shoes" } },
   { handle: "men-accessories", title: "Men · Accessories", description: "Men's accessories.", filter: { gender: "Men", category: "Accessories" } },
+  // Possessive-form aliases used throughout the site (links, nav, SEO map)
+  { handle: "womens-clothing", title: "Women's Clothing", description: "Women's ready-to-wear from every house.", filter: { gender: "Women", category: "Clothing" } },
+  { handle: "womens-shoes", title: "Women's Shoes", description: "Women's footwear from sneakers to soirée.", filter: { gender: "Women", category: "Shoes" } },
+  { handle: "womens-accessories", title: "Women's Accessories", description: "Women's bags, belts, jewellery and eyewear.", filter: { gender: "Women", category: "Accessories" } },
+  { handle: "womens-bags", title: "Women's Bags", description: "Women's handbags, shoulder bags and clutches.", filter: { gender: "Women", category: "Bags" } },
+  { handle: "mens-clothing", title: "Men's Clothing", description: "Men's ready-to-wear from every house.", filter: { gender: "Men", category: "Clothing" } },
+  { handle: "mens-shoes", title: "Men's Shoes", description: "Men's footwear from sneakers to dress.", filter: { gender: "Men", category: "Shoes" } },
+  { handle: "mens-accessories", title: "Men's Accessories", description: "Men's bags, belts, eyewear and small leather goods.", filter: { gender: "Men", category: "Accessories" } },
+  { handle: "mens-bags", title: "Men's Bags", description: "Men's bags and luggage.", filter: { gender: "Men", category: "Bags" } },
+  { handle: "kids-clothing", title: "Kids' Clothing", description: "Childrenswear from every house.", filter: { gender: "Kids", category: "Clothing" } },
+  { handle: "kids-shoes", title: "Kids' Shoes", description: "Children's footwear.", filter: { gender: "Kids", category: "Shoes" } },
+  { handle: "kids-accessories", title: "Kids' Accessories", description: "Children's accessories.", filter: { gender: "Kids", category: "Accessories" } },
 ];
 
 let DYNAMIC_COLLECTIONS_CACHE: CollectionDef[] | null = null;
