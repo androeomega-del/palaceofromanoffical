@@ -485,10 +485,11 @@ function CollectionPage() {
                 )}
               </div>
             ) : (
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-16">
-                {edges.map((e) => (
+              <div className={`grid grid-cols-2 lg:grid-cols-3 ${gridGap}`}>
+                {gridEdges.map((e) => (
                   <ProductCard key={e.node.id} product={e} />
                 ))}
+              </div>
               </div>
             )}
           </div>
