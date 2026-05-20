@@ -533,12 +533,22 @@ let DYNAMIC_COLLECTIONS_CACHE: CollectionDef[] | null = null;
 
 async function getDynamicCollections(): Promise<CollectionDef[]> {
   if (DYNAMIC_COLLECTIONS_CACHE) return DYNAMIC_COLLECTIONS_CACHE;
-  // Pull the most common subcategories per gender from a sample of rows
-  // (a full GROUP BY would need an RPC; sample is acceptable for nav).
-  const { data } = await supabase
-    .from("bg_products").select("gender,category,subcategory,subsubcategory")
-    .eq("in_stock", true).limit(5000);
-  const rows = (data ?? []) as Array<Pick<BgProductRow, "gender"|"category"|"subcategory"|"subsubcategory">>;
+  const rows: Array<Pick<BgProductRow, "gender"|"category"|"subcategory"|"subsubcategory">> = [];
+  const pageSize = 1000;
+  for (let offset = 0; offset < 80000; offset += pageSize) {
+    const { data, error } = await supabase
+      .from("bg_products")
+      .select("gender,category,subcategory,subsubcategory")
+      .eq("in_stock", true)
+      .range(offset, offset + pageSize - 1);
+    if (error) {
+      console.error("bg dynamic collections fetch error:", error);
+      break;
+    }
+    const page = (data ?? []) as Array<Pick<BgProductRow, "gender"|"category"|"subcategory"|"subsubcategory">>;
+    rows.push(...page);
+    if (page.length < pageSize) break;
+  }
   const subSet = new Map<string, CollectionDef>();
   for (const r of rows) {
     if (r.gender && r.subcategory) {
