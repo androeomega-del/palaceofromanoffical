@@ -248,17 +248,26 @@ function EditorialMay2026() {
         <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-4">End of issue</p>
         <h2 className="font-serif text-3xl md:text-5xl mb-8">Shop the season</h2>
         <div className="flex flex-wrap justify-center gap-3 md:gap-4">
+          <Link to="/collections/$handle" params={{ handle: "womens-bags" }} className="px-6 py-3 border border-ink hover:bg-ink hover:text-canvas transition-colors text-[11px] uppercase tracking-[0.25em]">
+            Women's Bags
+          </Link>
           <Link to="/collections/$handle" params={{ handle: "womens-clothing" }} className="px-6 py-3 border border-ink hover:bg-ink hover:text-canvas transition-colors text-[11px] uppercase tracking-[0.25em]">
             Women's Clothing
           </Link>
           <Link to="/collections/$handle" params={{ handle: "womens-shoes" }} className="px-6 py-3 border border-ink hover:bg-ink hover:text-canvas transition-colors text-[11px] uppercase tracking-[0.25em]">
             Women's Shoes
           </Link>
-          <Link to="/collections/$handle" params={{ handle: "mens-clothing" }} className="px-6 py-3 border border-ink hover:bg-ink hover:text-canvas transition-colors text-[11px] uppercase tracking-[0.25em]">
-            Men's Clothing
+          <Link to="/collections/$handle" params={{ handle: "womens-accessories-1" }} className="px-6 py-3 border border-ink hover:bg-ink hover:text-canvas transition-colors text-[11px] uppercase tracking-[0.25em]">
+            Women's Accessories
           </Link>
-          <Link to="/collections/$handle" params={{ handle: "mens-shoes" }} className="px-6 py-3 border border-ink hover:bg-ink hover:text-canvas transition-colors text-[11px] uppercase tracking-[0.25em]">
-            Men's Shoes
+          <Link to="/collections/$handle" params={{ handle: "mens-sweaters-knitwear" }} className="px-6 py-3 border border-ink hover:bg-ink hover:text-canvas transition-colors text-[11px] uppercase tracking-[0.25em]">
+            Men's Knitwear
+          </Link>
+          <Link to="/collections/$handle" params={{ handle: "mens-bags-wallets" }} className="px-6 py-3 border border-ink hover:bg-ink hover:text-canvas transition-colors text-[11px] uppercase tracking-[0.25em]">
+            Men's Bags &amp; Wallets
+          </Link>
+          <Link to="/collections/$handle" params={{ handle: "mens-sneakers" }} className="px-6 py-3 border border-ink hover:bg-ink hover:text-canvas transition-colors text-[11px] uppercase tracking-[0.25em]">
+            Men's Sneakers
           </Link>
         </div>
       </section>
