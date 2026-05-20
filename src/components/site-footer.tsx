@@ -1,6 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { NewsletterForm } from "@/components/newsletter-form";
 
+// Frozen at module load so the copyright year is identical on server and
+// client renders, avoiding any hydration mismatch around year boundaries.
+const COPYRIGHT_YEAR = new Date().getFullYear();
+
 export function SiteFooter() {
   return (
     <footer className="border-t border-ink/10 pt-32 pb-12 bg-canvas">
@@ -45,7 +49,7 @@ export function SiteFooter() {
         </div>
 
         <div className="flex flex-col md:flex-row gap-4 justify-between items-center pt-12 border-t border-ink/5 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Palace of Roman. All rights reserved.</p>
+          <p>&copy; {COPYRIGHT_YEAR} Palace of Roman. All rights reserved.</p>
           <div className="flex gap-8 items-center">
             <a
               href="https://www.instagram.com/palaceofroman/"
