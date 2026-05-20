@@ -405,7 +405,7 @@ function SwimPage() {
             <div className="mt-16 text-center">
               <Link
                 to="/shop"
-                search={{ q: "tag:Swimwear OR tag:Beachwear", title: "Swim & Beachwear" }}
+                search={{ q: "product_type:Swimwear", title: "Swim & Beachwear" }}
                 className="text-[10px] uppercase tracking-[0.3em] border-b border-ink pb-1 hover:text-bronze hover:border-bronze"
               >
                 Open in Full Catalog →
