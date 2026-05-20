@@ -7,6 +7,7 @@ import { fetchProductByHandle, formatPrice, type ShopifyProduct } from "@/lib/sh
 import { useCartStore } from "@/stores/cart-store";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { Loader2, Plus } from "lucide-react";
+import { toast } from "sonner";
 
 export type Hotspot = {
   /** Position in % of image width/height */
@@ -175,12 +176,13 @@ function QuickShopBody({ product, onClose }: { product: ShopifyProduct["node"]; 
   const [variantId, setVariantId] = useState(firstAvailable?.id);
   const selected = variants.find((v) => v.id === variantId) ?? firstAvailable;
   const addItem = useCartStore((s) => s.addItem);
+  const openDrawer = useCartStore((s) => s.openDrawer);
   const isLoading = useCartStore((s) => s.isLoading);
   const isSingleDefault = variants.length === 1 && /default title/i.test(variants[0]?.title ?? "");
 
   const handleAdd = async () => {
     if (!selected) return;
-    await addItem({
+    const added = await addItem({
       product: { node: product },
       variantId: selected.id,
       variantTitle: selected.title,
@@ -188,7 +190,12 @@ function QuickShopBody({ product, onClose }: { product: ShopifyProduct["node"]; 
       quantity: 1,
       selectedOptions: selected.selectedOptions || [],
     });
+    if (!added) {
+      toast.error("Could not add this item to bag.", { description: "Please try another size or refresh the page." });
+      return;
+    }
     onClose();
+    openDrawer();
   };
 
   return (
