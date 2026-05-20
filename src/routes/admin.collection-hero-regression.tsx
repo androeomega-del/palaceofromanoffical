@@ -7,6 +7,8 @@
 //
 // Sibling of /admin/collection-focal (the editor). Noindex, unlinked.
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { redirect } from "@tanstack/react-router";
+import { ensureAdmin } from "@/lib/admin-guard.functions";
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -23,6 +25,9 @@ import {
 } from "@/lib/collection-image.functions";
 
 export const Route = createFileRoute("/admin/collection-hero-regression")({
+  beforeLoad: async () => {
+    try { await ensureAdmin(); } catch { throw redirect({ to: "/authentication" }); }
+  },
   component: AdminHeroRegression,
   head: () => ({
     meta: [

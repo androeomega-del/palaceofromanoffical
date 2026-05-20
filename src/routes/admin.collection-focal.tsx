@@ -5,6 +5,8 @@
 // Sibling of /admin/collection-image-preview — same noindex, unlinked
 // "lock down before public deploy" pattern.
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { redirect } from "@tanstack/react-router";
+import { ensureAdmin } from "@/lib/admin-guard.functions";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -25,6 +27,9 @@ import {
 } from "@/lib/collection-image-admin.functions";
 
 export const Route = createFileRoute("/admin/collection-focal")({
+  beforeLoad: async () => {
+    try { await ensureAdmin(); } catch { throw redirect({ to: "/authentication" }); }
+  },
   component: AdminCollectionFocal,
   head: () => ({
     meta: [

@@ -1,11 +1,11 @@
 // Admin-only server functions for remapping collection hero images.
-// These use the admin client (bypasses RLS) — keep this route behind the
-// `/admin` prefix and rotate the table to require auth before shipping
-// publicly. For now they match the existing `/admin/collection-image-qa`
-// pattern (noindex, unlinked, internal use).
+// These use the admin client (bypasses RLS), so they are gated by the
+// `requireAdmin` middleware which validates the caller's Supabase JWT and
+// confirms an `admin` row in `user_roles` before any DB write runs.
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { requireAdmin } from "@/lib/admin-middleware";
 import { fetchCollections } from "@/lib/shopify";
 
 const handleSchema = z
@@ -17,6 +17,7 @@ const handleSchema = z
 const urlSchema = z.string().url().max(2048);
 
 export const upsertCollectionImageOverride = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
   .inputValidator((input) =>
     z
       .object({
@@ -39,6 +40,7 @@ export const upsertCollectionImageOverride = createServerFn({ method: "POST" })
   });
 
 export const deleteCollectionImageOverride = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
   .inputValidator((input) =>
     z.object({ handle: handleSchema }).parse(input),
   )
@@ -63,6 +65,7 @@ const percentSchema = z.number().min(0).max(100);
  * focal columns so we don't clobber `image_url` / `source` / `title`.
  */
 export const upsertCollectionFocal = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
   .inputValidator((input) =>
     z
       .object({
@@ -99,6 +102,7 @@ export const upsertCollectionFocal = createServerFn({ method: "POST" })
   });
 
 export const clearCollectionFocal = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
   .inputValidator((input) => z.object({ handle: handleSchema }).parse(input))
   .handler(async ({ data }) => {
     const { error } = await supabaseAdmin
@@ -110,6 +114,7 @@ export const clearCollectionFocal = createServerFn({ method: "POST" })
   });
 
 export const listCollectionImageOverrides = createServerFn({ method: "GET" })
+  .middleware([requireAdmin])
   .handler(async () => {
     const { data, error } = await supabaseAdmin
       .from("collection_images")
@@ -124,6 +129,7 @@ export const listCollectionImageOverrides = createServerFn({ method: "GET" })
  * existing `manual` overrides (they win over Shopify's image).
  */
 export const syncCollectionImagesFromShopify = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
   .handler(async () => {
     const collections = await fetchCollections(250);
 
