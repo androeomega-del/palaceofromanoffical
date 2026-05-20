@@ -309,4 +309,14 @@ if (!DRY && skuFlipped.length) {
   }
 }
 
+await patchRun({
+  status: 'success',
+  finished_at: new Date().toISOString(),
+  processed: resolved.length,
+  updated,
+  activated,
+  failed,
+  flipped: skuFlipped.length,
+});
+
 console.log('Done.');
