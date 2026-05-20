@@ -1,11 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import { Search, User, ShoppingBag, Menu, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useCartStore } from "@/stores/cart-store";
 import { CartDrawer } from "@/components/cart-drawer";
 import { ReducedMotionToggle } from "@/components/reduced-motion-toggle";
 import { DesktopMegamenu, MobileMegamenu } from "@/components/megamenu";
 import { SearchOverlay } from "@/components/search-overlay";
+import { fetchCollections } from "@/lib/shopify";
 
 type FlatItem = {
   label: string;
