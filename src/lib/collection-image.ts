@@ -36,7 +36,31 @@ import mensBelts from "@/assets/collections/auto/mens-belts.jpg";
 import mensWatchesJewelry from "@/assets/collections/auto/mens-watches-jewelry.jpg";
 import womensClothing from "@/assets/collections/auto/womens-clothing.jpg";
 import womensShoes from "@/assets/collections/auto/womens-shoes.jpg";
-import { imgForKey } from "@/lib/editorial-library";
+import womensHandbags from "@/assets/collections/auto/womens-handbags.jpg";
+import womensShoulderBags from "@/assets/collections/auto/womens-shoulder-bags.jpg";
+import womensCrossbodyBags from "@/assets/collections/auto/womens-crossbody-bags.jpg";
+import womensClutchBags from "@/assets/collections/auto/womens-clutch-bags.jpg";
+import womensBackpacks from "@/assets/collections/auto/womens-backpacks.jpg";
+import womensToteBags from "@/assets/collections/auto/womens-tote-bags.jpg";
+import womensSneakers from "@/assets/collections/auto/womens-sneakers.jpg";
+import womensBoots from "@/assets/collections/auto/womens-boots.jpg";
+import womensSandals from "@/assets/collections/auto/womens-sandals.jpg";
+import womensPumps from "@/assets/collections/auto/womens-pumps.jpg";
+import womensFlats from "@/assets/collections/auto/womens-flats.jpg";
+import womensLoafers from "@/assets/collections/auto/womens-loafers.jpg";
+import womensDresses from "@/assets/collections/auto/womens-dresses.jpg";
+import womensTops from "@/assets/collections/auto/womens-tops.jpg";
+import womensPants from "@/assets/collections/auto/womens-pants.jpg";
+import womensJeans from "@/assets/collections/auto/womens-jeans.jpg";
+import womensSkirts from "@/assets/collections/auto/womens-skirts.jpg";
+import womensJackets from "@/assets/collections/auto/womens-jackets.jpg";
+import womensKnitwear from "@/assets/collections/auto/womens-knitwear.jpg";
+import womensShorts from "@/assets/collections/auto/womens-shorts.jpg";
+import womensSwimwear from "@/assets/collections/auto/womens-swimwear.jpg";
+import womensSportswear from "@/assets/collections/auto/womens-sportswear.jpg";
+import womensUnderwear from "@/assets/collections/auto/womens-underwear.jpg";
+import womensSuits from "@/assets/collections/auto/womens-suits.jpg";
+import womensSunglasses from "@/assets/collections/auto/womens-sunglasses.jpg";
 
 const BY_HANDLE: Record<string, string> = {
   "all-products": allProducts,
@@ -74,6 +98,50 @@ const BY_HANDLE: Record<string, string> = {
   "mens-watches-jewelry": mensWatchesJewelry,
   "womens-clothing": womensClothing,
   "womens-shoes": womensShoes,
+  "womens-handbags": womensHandbags,
+  "womens-shoulder-bags": womensShoulderBags,
+  "womens-crossbody-bags": womensCrossbodyBags,
+  "womens-clutch-bags": womensClutchBags,
+  "womens-backpacks": womensBackpacks,
+  "womens-tote-bags": womensToteBags,
+  "womens-sneakers": womensSneakers,
+  "womens-boots": womensBoots,
+  "womens-sandals": womensSandals,
+  "womens-pumps": womensPumps,
+  "womens-flats": womensFlats,
+  "womens-loafers": womensLoafers,
+  "womens-dresses": womensDresses,
+  "womens-tops": womensTops,
+  "womens-shirts": womensTops,
+  "womens-t-shirts": womensTops,
+  "womens-blouses": womensTops,
+  "womens-pants": womensPants,
+  "womens-jeans": womensJeans,
+  "womens-jeans-denim": womensJeans,
+  "womens-skirts": womensSkirts,
+  "womens-jackets": womensJackets,
+  "womens-jackets-coats": womensJackets,
+  "womens-knitwear": womensKnitwear,
+  "womens-sweaters": womensKnitwear,
+  "womens-shorts": womensShorts,
+  "womens-swimwear": womensSwimwear,
+  "womens-sportswear": womensSportswear,
+  "womens-underwear": womensUnderwear,
+  "womens-sleepwear": womensUnderwear,
+  "womens-suits": womensSuits,
+  "womens-sunglasses": womensSunglasses,
+  "womens-glasses-and-sunglasses": womensSunglasses,
+  // Subsubcategory-only handles (dynamic produces these without a gender prefix)
+  "handbags": womensHandbags,
+  "shoulder-bags": womensShoulderBags,
+  "crossbody-bags": womensCrossbodyBags,
+  "clutch-bags": womensClutchBags,
+  "tote-bags": womensToteBags,
+  "pumps": womensPumps,
+  "flats": womensFlats,
+  "dresses": womensDresses,
+  "skirts": womensSkirts,
+  "jumpsuits": womensDresses,
 };
 
 // Fallback rules — first match wins. Used only for handles not in BY_HANDLE.
@@ -178,6 +246,17 @@ function resolveCanonicalHandle(raw: string): string {
   if (HANDLE_ALIASES[norm] && BY_HANDLE[HANDLE_ALIASES[norm]]) {
     return HANDLE_ALIASES[norm];
   }
+  // Prefix swap: dynamic collections produce `women-X` / `men-X` while
+  // curated assets live under `womens-X` / `mens-X`.
+  const prefixed = norm
+    .replace(/^women-/, "womens-")
+    .replace(/^men-/, "mens-");
+  if (prefixed !== norm) {
+    if (BY_HANDLE[prefixed]) return prefixed;
+    if (HANDLE_ALIASES[prefixed] && BY_HANDLE[HANDLE_ALIASES[prefixed]]) {
+      return HANDLE_ALIASES[prefixed];
+    }
+  }
   return "";
 }
 
@@ -248,24 +327,20 @@ export function collectionImage(input: {
   const canonical = resolveCanonicalHandle(rawHandle);
   if (canonical) return BY_HANDLE[canonical];
 
-  // 3. Unique per-handle fallback. Regex rules used to bucket many distinct
-  //    sub-collections (e.g. women-handbags, women-clutch-bags,
-  //    women-crossbody-bags) onto the same curated image, which produced
-  //    visible duplicates across women's collections. Use the editorial
-  //    library keyed by the handle so each unique handle gets a stable,
-  //    unique image — and only fall back to topical regex matching when
-  //    there is no handle to key on.
-  if (rawHandle) {
-    reportUnresolved(rawHandle, "rule", "editorial-library");
-    return imgForKey(rawHandle);
-  }
-
-  const hay = `${input.title ?? ""} ${input.description ?? ""}`
+  // 3. Topical regex rules — every fallback image must still represent the
+  //    subject of the collection title (women's bags → a bags photo, not a
+  //    random editorial). Duplicates within the same topic are accepted
+  //    over off-topic uniqueness.
+  const hay = `${input.title ?? ""} ${rawHandle} ${input.description ?? ""}`
     .toLowerCase()
     .replace(/[-_]+/g, " ");
   for (const rule of FALLBACK_RULES) {
-    if (rule.test.test(hay)) return rule.img;
+    if (rule.test.test(hay)) {
+      if (rawHandle) reportUnresolved(rawHandle, "rule", IMG_TO_TOPIC.get(rule.img) ?? "unknown");
+      return rule.img;
+    }
   }
+  if (rawHandle) reportUnresolved(rawHandle, "default", "all-products");
   return allProducts;
 }
 
