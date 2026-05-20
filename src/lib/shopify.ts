@@ -361,8 +361,22 @@ async function listProducts(opts: {
   const rows = (data ?? []) as BgProductRow[];
   const hasNext = rows.length > first;
   const slice = hasNext ? rows.slice(0, first) : rows;
+  const groupSkus = slice.map((r) => r.group_sku);
+  const { data: variantRows } = groupSkus.length
+    ? await supabase
+      .from("bg_variants")
+      .select("product_sku,group_sku,size,quantity")
+      .in("group_sku", groupSkus)
+    : { data: [] };
+  const variantsByGroup = new Map<string, BgVariantRow[]>();
+  for (const v of (variantRows ?? []) as BgVariantRow[]) {
+    const list = variantsByGroup.get(v.group_sku) ?? [];
+    list.push(v);
+    variantsByGroup.set(v.group_sku, list);
+  }
+  const gidBySku = await fetchVariantMap(((variantRows ?? []) as BgVariantRow[]).map((v) => v.product_sku));
   return {
-    edges: slice.map((r) => ({ node: rowToNode(r) })),
+    edges: slice.map((r) => ({ node: applyVariantMap(rowToNode(r, variantsByGroup.get(r.group_sku)), gidBySku) })),
     pageInfo: { hasNextPage: hasNext, endCursor: hasNext ? encodeCursor(offset + first) : null },
   };
 }
