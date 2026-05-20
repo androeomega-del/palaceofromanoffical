@@ -278,7 +278,7 @@ function CollectionPage() {
         filters: [],
         sortKey: "BEST_SELLING",
         reverse: false,
-      }).then((r) => r.edges),
+      }).then((r) => r?.edges ?? []),
     enabled: isEditorial,
   });
   const featuredIds = useMemo(
