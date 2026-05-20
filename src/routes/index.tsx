@@ -14,7 +14,6 @@ import marketingMen from "@/assets/marketing-men-summer.jpg";
 import marketingAccessories from "@/assets/marketing-accessories-summer.jpg";
 import marketingSwim from "@/assets/marketing-swim-summer.jpg";
 
-import marketingCalvinKlein from "@/assets/marketing-calvin-klein.jpg";
 import swimCampaignVideo from "@/assets/swim-campaign.mp4.asset.json";
 import { img } from "@/lib/editorial-library";
 
@@ -27,10 +26,6 @@ const SUMMER_BENTO_PROPS = {
   menImage: { url: marketingMen, altText: "Men's Resort 2026 — Amalfi Coast" },
   accessoriesImage: { url: marketingAccessories, altText: "Summer Accessories — Designer Edit" },
   swimImage: { url: marketingSwim, altText: "Designer Swimwear — Riviera Edit" },
-  
-  spotlightImage: { url: marketingCalvinKlein, altText: "Calvin Klein — In Stock Now" },
-  spotlightVendor: "Calvin Klein",
-  spotlightSlug: "calvin-klein",
 } as const;
 
 export const Route = createFileRoute("/")({
@@ -1027,34 +1022,38 @@ function SummerBento({
           </div>
         </Link>
 
-        {/* Brand Spotlight — Calvin Klein */}
-        <Link
-          to={spotlightSlug ? "/brand/$vendor" : "/brands"}
-          params={spotlightSlug ? { vendor: spotlightSlug } : undefined}
-          className="col-span-12 md:col-span-4 lg:col-span-3 row-span-2 bg-ink flex flex-col justify-between group overflow-hidden relative"
-        >
-          {spotlightImage && (
-            <img
-              src={spotlightImage.url}
-              alt={spotlightImage.altText ?? `${spotlightVendor ?? "Maison"} — In Stock`}
-              loading="lazy"
-              className="absolute inset-0 w-full h-full object-cover opacity-70 transition-transform duration-[1400ms] ease-out group-hover:scale-110"
-            />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/40 to-ink/20" />
-          <div className="relative z-10 p-6 md:p-8">
-            <span className="text-[9px] uppercase tracking-[0.4em] text-[var(--sea)] mb-3 block">
-              Brand Spotlight
-            </span>
-            <h4 className="font-serif text-2xl md:text-3xl text-canvas leading-tight">
-              {spotlightVendor ?? "The Maisons"}
-              <span className="block italic font-light mt-1">In Stock Now</span>
-            </h4>
-          </div>
-          <span className="relative z-10 m-6 md:m-8 text-[10px] uppercase tracking-[0.25em] text-canvas border-b border-canvas/40 pb-1 w-fit group-hover:border-canvas">
-            Shop the Edit
-          </span>
-        </Link>
+        {spotlightSlug && (
+          <>
+            {/* Brand Spotlight */}
+            <Link
+              to="/brand/$vendor"
+              params={{ vendor: spotlightSlug }}
+              className="col-span-12 md:col-span-4 lg:col-span-3 row-span-2 bg-ink flex flex-col justify-between group overflow-hidden relative"
+            >
+              {spotlightImage && (
+                <img
+                  src={spotlightImage.url}
+                  alt={spotlightImage.altText ?? `${spotlightVendor ?? "Maison"} — In Stock`}
+                  loading="lazy"
+                  className="absolute inset-0 w-full h-full object-cover opacity-70 transition-transform duration-[1400ms] ease-out group-hover:scale-110"
+                />
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/40 to-ink/20" />
+              <div className="relative z-10 p-6 md:p-8">
+                <span className="text-[9px] uppercase tracking-[0.4em] text-[var(--sea)] mb-3 block">
+                  Brand Spotlight
+                </span>
+                <h4 className="font-serif text-2xl md:text-3xl text-canvas leading-tight">
+                  {spotlightVendor ?? "The Maisons"}
+                  <span className="block italic font-light mt-1">In Stock Now</span>
+                </h4>
+              </div>
+              <span className="relative z-10 m-6 md:m-8 text-[10px] uppercase tracking-[0.25em] text-canvas border-b border-canvas/40 pb-1 w-fit group-hover:border-canvas">
+                Shop the Edit
+              </span>
+            </Link>
+          </>
+        )}
 
         {/* Men Category Tile */}
         <Link
@@ -1131,8 +1130,6 @@ function SummerBentoSkeleton() {
         <div className="col-span-12 md:col-span-6 lg:col-span-4 row-span-2 bg-bronze/40 animate-pulse" />
         {/* Women Tile */}
         <div className="col-span-12 md:col-span-6 lg:col-span-4 row-span-2 bg-canvas-raised animate-pulse" />
-        {/* Brand Spotlight */}
-        <div className="col-span-12 md:col-span-4 lg:col-span-3 row-span-2 bg-ink/80 animate-pulse" />
         {/* Men Tile */}
         <div className="col-span-12 md:col-span-8 lg:col-span-5 row-span-2 bg-canvas-raised animate-pulse" />
         {/* Accessories Tile */}
