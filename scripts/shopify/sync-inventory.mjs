@@ -275,6 +275,15 @@ for (let i = 0; i < resolved.length; i += 100) {
   }
 
   if ((i / 100) % 10 === 0) console.log(`  ${Math.min(i + 100, resolved.length)}/${resolved.length} synced`);
+
+  // Persist progress every ~5s so the dashboard can poll it.
+  const processed = Math.min(i + 100, resolved.length);
+  const now = Date.now();
+  if (now - lastPatch > 5000 || processed >= resolved.length) {
+    lastPatch = now;
+    await patchRun({ processed, updated, activated, failed });
+  }
+
   await sleep(150);
 }
 
