@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { SlidersHorizontal, X } from "lucide-react";
-import { fetchSearchFiltered, fetchCollectionFiltered, type StorefrontFilterValue } from "@/lib/shopify";
+import { fetchCollectionFiltered, type StorefrontFilterValue } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
 import {
   CatalogFilters,
@@ -48,15 +48,15 @@ export const Route = createFileRoute("/swim")({
 type SwimCategory = {
   key: string;
   label: string;
-  query: string;
+  tag?: string;
 };
 
 const SWIM_CATEGORIES: SwimCategory[] = [
-  { key: "all", label: "All Swim", query: "tag:Swimwear OR tag:'Swimwear - Clothing' OR tag:'Bikinis - Swimwear - Clothing' OR title:beachwear OR title:bikini OR title:swimwear OR title:swimsuit" },
-  { key: "bikini-tops", label: "Bikini Tops", query: "title:bikini AND (title:top OR title:tops)" },
-  { key: "bikini-bottoms", label: "Bikini Bottoms", query: "title:bikini AND title:bottom" },
-  { key: "one-piece", label: "One-Piece", query: "title:swimsuit OR title:'one-piece' OR title:'one piece'" },
-  { key: "beachwear", label: "Beachwear", query: "title:beachwear OR title:pareo OR title:kaftan OR title:'cover up'" },
+  { key: "all", label: "All Swim" },
+  { key: "bikini-tops", label: "Bikini Tops", tag: "Bikini Tops" },
+  { key: "bikini-bottoms", label: "Bikini Bottoms", tag: "Bikini Bottoms" },
+  { key: "one-piece", label: "One-Piece", tag: "One-Piece" },
+  { key: "beachwear", label: "Beachwear", tag: "Beachwear" },
 ];
 
 function mapSort(sort: SortValue): { sortKey: string; reverse: boolean } {
@@ -86,25 +86,16 @@ function SwimPage() {
     queryKey: ["swim-search", category.key, filterInputs, sortKey, reverse],
     initialPageParam: null as string | null,
     queryFn: async ({ pageParam }) => {
-      if (category.key === "all") {
-        const r = await fetchCollectionFiltered({
-          handle: "swimwear",
-          first: 36,
-          after: pageParam,
-          filters: filterInputs,
-          sortKey,
-          reverse,
-        });
-        return r ?? { edges: [], pageInfo: { hasNextPage: false, endCursor: null }, filters: [] };
-      }
-      return fetchSearchFiltered({
-        query: category.query,
+      const filters = category.tag ? [...filterInputs, { tag: category.tag }] : filterInputs;
+      const r = await fetchCollectionFiltered({
+        handle: "swimwear",
         first: 36,
         after: pageParam,
-        filters: filterInputs,
+        filters,
         sortKey,
         reverse,
       });
+      return r ?? { edges: [], pageInfo: { hasNextPage: false, endCursor: null }, filters: [] };
     },
     getNextPageParam: (last) => (last.pageInfo.hasNextPage ? last.pageInfo.endCursor : undefined),
   });
