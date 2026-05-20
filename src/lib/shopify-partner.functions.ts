@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { requireAdmin } from "@/lib/admin-middleware";
 
 const TOKEN_URL = "https://api.shopify.com/auth/access_token";
 
@@ -43,6 +44,7 @@ async function fetchAccessToken(): Promise<string> {
  * The access token never leaves the server.
  */
 export const shopifyDiscoverSearch = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
   .inputValidator(
     z.object({
       searchId: z.string().min(1).max(128).regex(/^[a-zA-Z0-9_-]+$/),
