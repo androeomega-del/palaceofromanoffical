@@ -447,6 +447,7 @@ const M = (handle: string, title: string, description: string, filter: Collectio
 const STATIC_COLLECTIONS: CollectionDef[] = [
   { handle: "best-sellers", title: "Best Sellers", description: "The pieces our clients reach for most.", filter: { available: true } },
   { handle: "new-arrivals", title: "New Arrivals", description: "Latest additions to the boutique.", filter: { available: true } },
+  { handle: "high-discounts", title: "High Discounts", description: "The boutique's most accessible designer pieces — lowest entry points across every maison.", filter: { available: true } },
   { handle: "women", title: "Women", description: "Womenswear edit.", filter: { gender: "Women" } },
   { handle: "men", title: "Men", description: "Menswear edit.", filter: { gender: "Men" } },
   { handle: "kids", title: "Kids", description: "Childrenswear.", filter: { gender: "Kids" } },
