@@ -17,6 +17,21 @@ import marketingCalvinKlein from "@/assets/marketing-calvin-klein.jpg";
 import swimCampaignVideo from "@/assets/swim-campaign.mp4.asset.json";
 import { img } from "@/lib/editorial-library";
 
+// Stable, module-level props for SummerBento. Hoisted out of the component
+// so the same object identity, same URLs, and same alt text are passed on
+// every render (server and client) — eliminates any risk of input drift
+// between the SSR pass and hydration.
+const SUMMER_BENTO_PROPS = {
+  womenImage: { url: marketingWomen, altText: "Women's Resort 2026 — Mediterranean Edit" },
+  menImage: { url: marketingMen, altText: "Men's Resort 2026 — Amalfi Coast" },
+  accessoriesImage: { url: marketingAccessories, altText: "Summer Accessories — Designer Edit" },
+  swimImage: { url: marketingSwim, altText: "Designer Swimwear — Riviera Edit" },
+  saleImage: { url: marketingSummerSale, altText: "The Summer Sale — Up to 40% Off" },
+  spotlightImage: { url: marketingCalvinKlein, altText: "Calvin Klein — In Stock Now" },
+  spotlightVendor: "Calvin Klein",
+  spotlightSlug: "calvin-klein",
+} as const;
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -211,16 +226,7 @@ function HomePage() {
           Rendered client-only to avoid SSR/CSR hydration mismatches while
           the bento markup is iterated on. */}
       <ClientOnly fallback={<div aria-hidden className="min-h-[80vh] bg-canvas-raised" />}>
-        <SummerBento
-          womenImage={{ url: marketingWomen, altText: "Women's Resort 2026 — Mediterranean Edit" }}
-          menImage={{ url: marketingMen, altText: "Men's Resort 2026 — Amalfi Coast" }}
-          accessoriesImage={{ url: marketingAccessories, altText: "Summer Accessories — Designer Edit" }}
-          swimImage={{ url: marketingSwim, altText: "Designer Swimwear — Riviera Edit" }}
-          saleImage={{ url: marketingSummerSale, altText: "The Summer Sale — Up to 40% Off" }}
-          spotlightImage={{ url: marketingCalvinKlein, altText: "Calvin Klein — In Stock Now" }}
-          spotlightVendor="Calvin Klein"
-          spotlightSlug="calvin-klein"
-        />
+        <SummerBento {...SUMMER_BENTO_PROPS} />
       </ClientOnly>
 
       {/* 1b. SWIMWEAR RAIL — Bikinis, Beachwear, Resort */}
