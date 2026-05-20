@@ -343,12 +343,28 @@ type CollectionDef = {
   handle: string;
   title: string;
   description: string;
-  filter: ParsedQuery & { gender?: string; category?: string; subcategory?: string; subsubcategory?: string };
+  filter: ParsedQuery & {
+    gender?: string;
+    category?: string;
+    subcategory?: string;
+    subsubcategory?: string;
+    /** Match if `subcategory` ILIKE any of these. Lets one nav bucket span
+     *  several BG subcategories (e.g. "tshirts-polos" -> T-Shirts + Polo). */
+    subcategoryIn?: string[];
+    /** Match if `category` ILIKE any of these. */
+    categoryIn?: string[];
+  };
 };
 
 function slug(s: string): string {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 }
+
+// Shortcuts for building the nav handle list below.
+const W = (handle: string, title: string, description: string, filter: CollectionDef["filter"]): CollectionDef =>
+  ({ handle, title, description, filter: { gender: "Women", ...filter } });
+const M = (handle: string, title: string, description: string, filter: CollectionDef["filter"]): CollectionDef =>
+  ({ handle, title, description, filter: { gender: "Men", ...filter } });
 
 const STATIC_COLLECTIONS: CollectionDef[] = [
   { handle: "best-sellers", title: "Best Sellers", description: "The pieces our clients reach for most.", filter: { available: true } },
@@ -360,26 +376,77 @@ const STATIC_COLLECTIONS: CollectionDef[] = [
   // Top-level categories
   { handle: "clothing", title: "Clothing", description: "Ready-to-wear across every house.", filter: { category: "Clothing" } },
   { handle: "shoes", title: "Shoes", description: "Footwear from sneakers to soirée.", filter: { category: "Shoes" } },
-  { handle: "accessories", title: "Accessories", description: "Bags, belts, jewellery, eyewear.", filter: { category: "Accessories" } },
-  // Common gender × category crosses
-  { handle: "women-clothing", title: "Women · Clothing", description: "Women's ready-to-wear.", filter: { gender: "Women", category: "Clothing" } },
-  { handle: "women-shoes", title: "Women · Shoes", description: "Women's footwear.", filter: { gender: "Women", category: "Shoes" } },
-  { handle: "women-accessories", title: "Women · Accessories", description: "Women's accessories.", filter: { gender: "Women", category: "Accessories" } },
-  { handle: "men-clothing", title: "Men · Clothing", description: "Men's ready-to-wear.", filter: { gender: "Men", category: "Clothing" } },
-  { handle: "men-shoes", title: "Men · Shoes", description: "Men's footwear.", filter: { gender: "Men", category: "Shoes" } },
-  { handle: "men-accessories", title: "Men · Accessories", description: "Men's accessories.", filter: { gender: "Men", category: "Accessories" } },
-  // Possessive-form aliases used throughout the site (links, nav, SEO map)
-  { handle: "womens-clothing", title: "Women's Clothing", description: "Women's ready-to-wear from every house.", filter: { gender: "Women", category: "Clothing" } },
-  { handle: "womens-shoes", title: "Women's Shoes", description: "Women's footwear from sneakers to soirée.", filter: { gender: "Women", category: "Shoes" } },
-  { handle: "womens-accessories", title: "Women's Accessories", description: "Women's bags, belts, jewellery and eyewear.", filter: { gender: "Women", category: "Accessories" } },
-  { handle: "womens-bags", title: "Women's Bags", description: "Women's handbags, shoulder bags and clutches.", filter: { gender: "Women", category: "Bags" } },
-  { handle: "mens-clothing", title: "Men's Clothing", description: "Men's ready-to-wear from every house.", filter: { gender: "Men", category: "Clothing" } },
-  { handle: "mens-shoes", title: "Men's Shoes", description: "Men's footwear from sneakers to dress.", filter: { gender: "Men", category: "Shoes" } },
-  { handle: "mens-accessories", title: "Men's Accessories", description: "Men's bags, belts, eyewear and small leather goods.", filter: { gender: "Men", category: "Accessories" } },
-  { handle: "mens-bags", title: "Men's Bags", description: "Men's bags and luggage.", filter: { gender: "Men", category: "Bags" } },
+  { handle: "accessories", title: "Accessories", description: "Bags, belts, jewellery, eyewear.", filter: { categoryIn: ["Accessories", "Bags"] } },
+  // Legacy short aliases kept for any pre-existing inbound link.
+  { handle: "women-clothing", title: "Women's Clothing", description: "Women's ready-to-wear.", filter: { gender: "Women", category: "Clothing" } },
+  { handle: "women-shoes", title: "Women's Shoes", description: "Women's footwear.", filter: { gender: "Women", category: "Shoes" } },
+  { handle: "women-accessories", title: "Women's Accessories", description: "Women's accessories.", filter: { gender: "Women", categoryIn: ["Accessories", "Bags"] } },
+  { handle: "men-clothing", title: "Men's Clothing", description: "Men's ready-to-wear.", filter: { gender: "Men", category: "Clothing" } },
+  { handle: "men-shoes", title: "Men's Shoes", description: "Men's footwear.", filter: { gender: "Men", category: "Shoes" } },
+  { handle: "men-accessories", title: "Men's Accessories", description: "Men's accessories.", filter: { gender: "Men", categoryIn: ["Accessories", "Bags"] } },
+
+  // ── Women — possessive-form nav handles ──────────────────────────────────
+  W("womens-clothing",    "Women's Clothing",     "Women's ready-to-wear from every house.",                { category: "Clothing" }),
+  W("womens-shoes",       "Women's Shoes",        "Women's footwear from sneakers to soirée.",              { category: "Shoes" }),
+  W("womens-accessories", "Women's Accessories",  "Women's bags, belts, jewellery and eyewear.",            { categoryIn: ["Accessories", "Bags"] }),
+  W("womens-bags",        "Women's Bags",         "Handbags, shoulder bags, crossbody and clutches.",       { categoryIn: ["Bags"], subcategoryIn: ["Handbags", "Shoulder Bags", "Crossbody Bags", "Clutch Bags", "Backpacks", "Belt Bags"] }),
+  W("womens-wallets",     "Women's Wallets",      "Small leather goods and cardholders.",                   { subcategoryIn: ["Wallets"] }),
+  W("womens-belts",       "Women's Belts",        "Leather belts and waist accessories.",                   { subcategoryIn: ["Belts"] }),
+  W("womens-jewelry",     "Women's Jewellery",    "Fine and fashion jewellery.",                            { subcategoryIn: ["Jewellery"] }),
+  W("womens-watches",     "Women's Watches",      "Wristwatches from celebrated maisons.",                  { subcategoryIn: ["Watches"] }),
+  W("womens-scarves",     "Women's Scarves & Shawls", "Silk scarves, shawls and wraps.",                    { subcategoryIn: ["Scarves"] }),
+  W("womens-hats",        "Women's Hats",         "Hats, caps and headwear.",                               { subcategoryIn: ["Hats"] }),
+  W("womens-sunglasses",  "Women's Sunglasses",   "Sunglasses and optical eyewear.",                        { subcategoryIn: ["Glasses and Sunglasses"] }),
+  W("womens-dresses",     "Women's Dresses",      "Day dresses, gowns and slips.",                          { subcategoryIn: ["Dresses"] }),
+  W("womens-jackets",     "Women's Jackets & Coats", "Outerwear from light layers to tailored coats.",      { subcategoryIn: ["Jackets", "Jackets & Coats"] }),
+  W("womens-knitwear",    "Women's Knitwear",     "Sweaters, cardigans and knit pieces.",                   { subcategoryIn: ["Sweaters"] }),
+  W("womens-tops",        "Women's Tops & Shirts","Shirts, blouses and T-shirts.",                          { subcategoryIn: ["Shirts", "T-Shirts"] }),
+  W("womens-pants",       "Women's Pants & Trousers", "Trousers, tailored pants and jeans.",                { subcategoryIn: ["Pants", "Jeans Denim"] }),
+  W("womens-skirts",      "Women's Skirts",       "Mini, midi and maxi skirts.",                            { subcategoryIn: ["Skirts"] }),
+  W("womens-shorts",      "Women's Shorts",       "Tailored and casual shorts.",                            { subcategoryIn: ["Shorts"] }),
+  W("womens-swimwear",    "Women's Swimwear",     "Swimsuits, bikinis and beachwear.",                      { subcategoryIn: ["Swimwear"] }),
+  W("womens-sportswear",  "Women's Sportswear",   "Performance and athleisure.",                            { subcategoryIn: ["Sportswear"] }),
+  W("womens-underwear",   "Women's Underwear & Loungewear", "Lingerie, loungewear and sleepwear.",          { subcategoryIn: ["Underwear", "Sleepwear"] }),
+  W("womens-suits",       "Women's Suits",        "Tailored suits and separates.",                          { subcategoryIn: ["Suits"] }),
+  W("womens-sneakers",    "Women's Sneakers",     "Designer sneakers and trainers.",                        { subcategoryIn: ["Sneakers"] }),
+  W("womens-boots",       "Women's Boots",        "Ankle boots, knee-high boots and booties.",              { subcategoryIn: ["Boots"] }),
+  W("womens-sandals",     "Women's Sandals",      "Flat sandals, slides and heeled sandals.",               { subcategoryIn: ["Sandals"] }),
+  W("womens-pumps",       "Women's Pumps & Heels","Pumps, heels and elevated evening shoes.",               { subcategoryIn: ["Pumps"] }),
+  W("womens-flats",       "Women's Flats",        "Ballet flats, loafers and flat shoes.",                  { subcategoryIn: ["Flats"] }),
+
+  // ── Men — possessive-form nav handles ────────────────────────────────────
+  M("mens-clothing",       "Men's Clothing",      "Men's ready-to-wear from every house.",                  { category: "Clothing" }),
+  M("mens-shoes",          "Men's Shoes",         "Men's footwear from sneakers to dress.",                 { category: "Shoes" }),
+  M("mens-accessories",    "Men's Accessories",   "Bags, belts, eyewear and small leather goods.",          { categoryIn: ["Accessories", "Bags"] }),
+  M("mens-bags",           "Men's Bags",          "Briefcases, backpacks and travel.",                      { categoryIn: ["Bags"] }),
+  M("mens-bags-wallets",   "Men's Bags & Wallets","Bags, backpacks and small leather goods.",               { subcategoryIn: ["Wallets", "Handbags", "Shoulder Bags", "Crossbody Bags", "Clutch Bags", "Backpacks", "Belt Bags", "Luggage and Travel"] }),
+  M("mens-belts",          "Men's Belts",         "Leather belts and waist accessories.",                   { subcategoryIn: ["Belts"] }),
+  M("mens-watches-jewelry","Men's Watches & Jewellery", "Wristwatches and fine jewellery for men.",         { subcategoryIn: ["Watches", "Jewellery"] }),
+  M("mens-sunglasses",     "Men's Sunglasses",    "Sunglasses and optical eyewear.",                        { subcategoryIn: ["Glasses and Sunglasses"] }),
+  M("mens-scarves",        "Men's Scarves",       "Silk and wool scarves.",                                 { subcategoryIn: ["Scarves"] }),
+  M("mens-hats",           "Men's Hats",          "Hats, caps and headwear.",                               { subcategoryIn: ["Hats"] }),
+  M("mens-ties",           "Men's Ties & Formal Accessories", "Ties, bowties and formal accessories.",      { subcategoryIn: ["Ties and Formal Accessories"] }),
+  M("mens-suits",          "Men's Suits",         "Two-piece, three-piece and tailored separates.",         { subcategoryIn: ["Suits", "Suits & Blazers", "Blazers"] }),
+  M("mens-jackets-coats",  "Men's Jackets & Coats", "Outerwear from light layers to overcoats.",            { subcategoryIn: ["Jackets", "Jackets & Coats"] }),
+  M("mens-shirts",         "Men's Shirts",        "Dress shirts, casual shirts and overshirts.",            { subcategoryIn: ["Shirts"] }),
+  M("mens-tshirts-polos",  "Men's T-Shirts & Polos", "T-shirts and polos.",                                 { subcategoryIn: ["T-Shirts"] }),
+  M("mens-sweaters-knitwear", "Men's Sweaters & Knitwear", "Sweaters, cardigans and knitwear.",             { subcategoryIn: ["Sweaters"] }),
+  M("mens-hoodies-sweatshirts", "Men's Hoodies & Sweatshirts", "Hoodies, sweatshirts and athleisure tops.", { subcategoryIn: ["Sportswear"] }),
+  M("mens-pants-trousers", "Men's Pants & Trousers", "Trousers, tailored pants and jeans.",                 { subcategoryIn: ["Pants", "Jeans Denim"] }),
+  M("mens-shorts",         "Men's Shorts",        "Tailored and casual shorts.",                            { subcategoryIn: ["Shorts", "Short"] }),
+  M("mens-activewear",     "Men's Activewear",    "Performance and athleisure.",                            { subcategoryIn: ["Sportswear"] }),
+  M("mens-swimwear",       "Men's Swimwear",      "Swim shorts and beachwear.",                             { subcategoryIn: ["Swimwear"] }),
+  M("mens-underwear-loungewear", "Men's Underwear & Loungewear", "Underwear, loungewear and sleepwear.",    { subcategoryIn: ["Underwear", "Sleepwear"] }),
+  M("mens-sneakers",       "Men's Sneakers",      "Designer sneakers and trainers.",                        { subcategoryIn: ["Sneakers"] }),
+  M("mens-boots",          "Men's Boots",         "Chelsea boots, ankle boots and lace-ups.",               { subcategoryIn: ["Boots"] }),
+  M("mens-sandals-slides", "Men's Sandals & Slides", "Sandals and slides for warm weather.",                { subcategoryIn: ["Sandals"] }),
+  M("mens-loafers",        "Men's Loafers",       "Loafers, moccasins and slip-ons.",                       { subcategoryIn: ["Loafers"] }),
+  M("mens-dress-shoes",    "Men's Dress Shoes",   "Oxfords, derbies and formal footwear.",                  { subcategoryIn: ["Oxfords and Derbies"] }),
+
+  // Kids
   { handle: "kids-clothing", title: "Kids' Clothing", description: "Childrenswear from every house.", filter: { gender: "Kids", category: "Clothing" } },
   { handle: "kids-shoes", title: "Kids' Shoes", description: "Children's footwear.", filter: { gender: "Kids", category: "Shoes" } },
-  { handle: "kids-accessories", title: "Kids' Accessories", description: "Children's accessories.", filter: { gender: "Kids", category: "Accessories" } },
+  { handle: "kids-accessories", title: "Kids' Accessories", description: "Children's accessories.", filter: { gender: "Kids", categoryIn: ["Accessories", "Bags"] } },
 ];
 
 let DYNAMIC_COLLECTIONS_CACHE: CollectionDef[] | null = null;
