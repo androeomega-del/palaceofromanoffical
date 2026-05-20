@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { SlidersHorizontal, X } from "lucide-react";
-import { fetchSearchFiltered, type StorefrontFilterValue } from "@/lib/shopify";
+import { fetchSearchFiltered, fetchCollectionFiltered, type StorefrontFilterValue } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
 import {
   CatalogFilters,
