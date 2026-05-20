@@ -153,8 +153,14 @@ function buildInput({ groupSku, parent, children }) {
     'bg-import', `bg-group:${groupSku}`,
   ].filter(Boolean);
 
-  const sizes = [...new Set(children.map((c) => c['Size'] || 'One Size'))];
-  const variants = children.map((c) => {
+  // Dedupe by Size (BG CSV sometimes lists the same size twice per group).
+  const bySize = new Map();
+  for (const c of children) {
+    const sz = c['Size'] || 'One Size';
+    if (!bySize.has(sz)) bySize.set(sz, c);
+  }
+  const sizes = [...bySize.keys()];
+  const variants = [...bySize.values()].map((c) => {
     const priceEur = parseFloat(c['Retail Price'] || parent['Retail Price'] || '0') || 0;
     return {
       optionValues: [{ optionName: 'Size', name: c['Size'] || 'One Size' }],
