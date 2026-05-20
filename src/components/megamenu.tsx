@@ -365,6 +365,8 @@ function MegaPanel({
           to="/collections/$handle"
           params={{ handle: dept.feature.handle }}
           className="group relative block aspect-[4/5] overflow-hidden bg-muted"
+          data-testid="megamenu-feature-tile"
+          data-handle={dept.feature.handle}
         >
           <img
             src={featureImg}
