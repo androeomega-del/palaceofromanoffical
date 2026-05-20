@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 
-import { fetchCollectionFiltered, fetchCollection, fetchSearchFiltered, type StorefrontFilterValue } from "@/lib/shopify";
+import { fetchCollectionFiltered, fetchCollection, type StorefrontFilterValue } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
 import { pageTitle, metaDescription, absoluteUrl, SITE_URL } from "@/lib/seo";
 import { collectionSeo } from "@/lib/collection-seo";
@@ -44,16 +44,6 @@ export const Route = createFileRoute("/collections/$handle")({
     return edit ? { sort, edit } : { sort };
   },
   loader: async ({ params }) => {
-    // /collections/best-sellers is a virtual collection — no Shopify
-    // collection exists by that handle, so synthesise the SEO surface.
-    if (params.handle === "best-sellers") {
-      return {
-        title: "Best Sellers",
-        description:
-          "The pieces our clients reach for most — a live ranking of the boutique's most-ordered styles across every maison.",
-        image: null,
-      };
-    }
     try {
       const c = await fetchCollection(params.handle, 1);
       return {
@@ -169,35 +159,9 @@ function CollectionPage() {
   const [sortKey, reverseStr] = sort.split("-");
   const reverse = reverseStr === "true";
 
-  // /collections/best-sellers is a virtual collection — no Shopify collection
-  // exists by that handle, so we synthesize results from the global product
-  // catalog sorted by BEST_SELLING.
-  const isBestSellers = handle === "best-sellers";
-
   const q = useQuery({
-    queryKey: ["collection-filtered", handle, filterInputs, sortKey, reverse, isBestSellers],
+    queryKey: ["collection-filtered", handle, filterInputs, sortKey, reverse],
     queryFn: async () => {
-      if (isBestSellers) {
-        const res = await fetchSearchFiltered({
-          first: 48,
-          filters: filterInputs,
-          sortKey,
-          reverse,
-        });
-        return {
-          collection: {
-            id: "virtual:best-sellers",
-            title: "Best Sellers",
-            handle: "best-sellers",
-            description:
-              "The pieces our clients reach for most — a live ranking of the boutique's most-ordered styles across every maison.",
-            image: null,
-          },
-          filters: res.filters,
-          edges: res.edges,
-          pageInfo: res.pageInfo,
-        };
-      }
       return fetchCollectionFiltered({
         handle,
         first: 36,
