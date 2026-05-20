@@ -622,9 +622,23 @@ export async function fetchCollection(handle: string, first = 36) {
   b = applySort(b, "BEST_SELLING", false).range(0, first - 1);
   const { data } = await b;
   const rows = (data ?? []) as BgProductRow[];
+  const groupSkus = rows.map((r) => r.group_sku);
+  const { data: variantRows } = groupSkus.length
+    ? await supabase
+      .from("bg_variants")
+      .select("product_sku,group_sku,size,quantity")
+      .in("group_sku", groupSkus)
+    : { data: [] };
+  const variantsByGroup = new Map<string, BgVariantRow[]>();
+  for (const v of (variantRows ?? []) as BgVariantRow[]) {
+    const list = variantsByGroup.get(v.group_sku) ?? [];
+    list.push(v);
+    variantsByGroup.set(v.group_sku, list);
+  }
+  const gidBySku = await fetchVariantMap(((variantRows ?? []) as BgVariantRow[]).map((v) => v.product_sku));
   return {
     ...defToShopify(def),
-    products: { edges: rows.map((r) => ({ node: rowToNode(r) })) },
+    products: { edges: rows.map((r) => ({ node: applyVariantMap(rowToNode(r, variantsByGroup.get(r.group_sku)), gidBySku) })) },
   };
 }
 
