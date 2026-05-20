@@ -223,15 +223,17 @@ function ProductView({
       toast.error("This variant is currently unavailable.");
       return;
     }
-    for (let i = 0; i < quantity; i++) {
-      await addItem({
-        product: { node: product },
-        variantId: selectedVariant.id,
-        variantTitle: selectedVariant.title,
-        price: selectedVariant.price,
-        quantity: 1,
-        selectedOptions: selectedVariant.selectedOptions ?? [],
-      });
+    const added = await addItem({
+      product: { node: product },
+      variantId: selectedVariant.id,
+      variantTitle: selectedVariant.title,
+      price: selectedVariant.price,
+      quantity,
+      selectedOptions: selectedVariant.selectedOptions ?? [],
+    });
+    if (!added) {
+      toast.error("Could not add this item to bag.", { description: "Please try another size or refresh the page." });
+      return;
     }
     openDrawer();
     toast.success(quantity === 1 ? "Added to bag" : `${quantity} added to bag`);
