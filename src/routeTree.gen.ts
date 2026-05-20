@@ -15,6 +15,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ShippingReturnsRouteImport } from './routes/shipping-returns'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as OrderConfirmedRouteImport } from './routes/order-confirmed'
 import { Route as LinksRouteImport } from './routes/links'
 import { Route as JournalRouteImport } from './routes/journal'
 import { Route as FaqRouteImport } from './routes/faq'
@@ -72,6 +73,11 @@ const ShippingReturnsRoute = ShippingReturnsRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrderConfirmedRoute = OrderConfirmedRouteImport.update({
+  id: '/order-confirmed',
+  path: '/order-confirmed',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LinksRoute = LinksRouteImport.update({
@@ -229,6 +235,7 @@ export interface FileRoutesByFullPath {
   '/faq': typeof FaqRoute
   '/journal': typeof JournalRoute
   '/links': typeof LinksRoute
+  '/order-confirmed': typeof OrderConfirmedRoute
   '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
@@ -265,6 +272,7 @@ export interface FileRoutesByTo {
   '/faq': typeof FaqRoute
   '/journal': typeof JournalRoute
   '/links': typeof LinksRoute
+  '/order-confirmed': typeof OrderConfirmedRoute
   '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
@@ -302,6 +310,7 @@ export interface FileRoutesById {
   '/faq': typeof FaqRoute
   '/journal': typeof JournalRoute
   '/links': typeof LinksRoute
+  '/order-confirmed': typeof OrderConfirmedRoute
   '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
@@ -340,6 +349,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/journal'
     | '/links'
+    | '/order-confirmed'
     | '/privacy'
     | '/shipping-returns'
     | '/shop'
@@ -376,6 +386,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/journal'
     | '/links'
+    | '/order-confirmed'
     | '/privacy'
     | '/shipping-returns'
     | '/shop'
@@ -412,6 +423,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/journal'
     | '/links'
+    | '/order-confirmed'
     | '/privacy'
     | '/shipping-returns'
     | '/shop'
@@ -449,6 +461,7 @@ export interface RootRouteChildren {
   FaqRoute: typeof FaqRoute
   JournalRoute: typeof JournalRoute
   LinksRoute: typeof LinksRoute
+  OrderConfirmedRoute: typeof OrderConfirmedRoute
   PrivacyRoute: typeof PrivacyRoute
   ShippingReturnsRoute: typeof ShippingReturnsRoute
   ShopRoute: typeof ShopRoute
@@ -518,6 +531,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/order-confirmed': {
+      id: '/order-confirmed'
+      path: '/order-confirmed'
+      fullPath: '/order-confirmed'
+      preLoaderRoute: typeof OrderConfirmedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/links': {
@@ -738,6 +758,7 @@ const rootRouteChildren: RootRouteChildren = {
   FaqRoute: FaqRoute,
   JournalRoute: JournalRoute,
   LinksRoute: LinksRoute,
+  OrderConfirmedRoute: OrderConfirmedRoute,
   PrivacyRoute: PrivacyRoute,
   ShippingReturnsRoute: ShippingReturnsRoute,
   ShopRoute: ShopRoute,
