@@ -185,7 +185,7 @@ function CollectionPage() {
       const compare = parseFloat(e.node.compareAtPriceRange?.minVariantPrice?.amount ?? "0");
       if (!price || !compare || compare <= price) return false;
       const pct = ((compare - price) / compare) * 100;
-      return pct >= 80 && pct <= 99;
+      return pct >= 50;
     });
   }, [rawEdges, isHighDiscounts]);
 
