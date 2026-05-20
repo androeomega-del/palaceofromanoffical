@@ -86,6 +86,39 @@ const MEN_RULES: ClassifierRule[] = [
 const WOMEN_COLUMN_ORDER = ["Apparel", "Shoes", "Bags & Leather", "Fine Accessories", "More"];
 const MEN_COLUMN_ORDER   = ["Apparel", "Tailoring", "Shirts & Knitwear", "Bottoms & Beach", "Shoes", "Accessories", "More"];
 
+/**
+ * Cross-gender category collections (no `women-`/`men-` prefix) that should
+ * still appear inside the Women / Men dropdowns. Each entry routes the same
+ * handle into the correct column for each gender.
+ *
+ * `women`/`men` is null when the category shouldn't appear in that gender
+ * (e.g. `skirts` only under Women, `suits` only under Men).
+ */
+type CrossEntry = {
+  handle: string;
+  label: string;
+  women: { column: string; order: number } | null;
+  men:   { column: string; order: number } | null;
+};
+const CROSS_CATEGORIES: CrossEntry[] = [
+  { handle: "best-sellers", label: "Best Sellers",  women: { column: "Apparel", order: 1 },           men: { column: "Apparel", order: 1 } },
+  { handle: "clothing",     label: "All Clothing",  women: { column: "Apparel", order: 2 },           men: { column: "Apparel", order: 2 } },
+  { handle: "shirts",       label: "Shirts",        women: { column: "Apparel", order: 5 },           men: { column: "Shirts & Knitwear", order: 0 } },
+  { handle: "skirts",       label: "Skirts",        women: { column: "Apparel", order: 6 },           men: null },
+  { handle: "suits",        label: "Suits",         women: null,                                       men: { column: "Tailoring", order: 0 } },
+  { handle: "swimwear",     label: "Swimwear",      women: { column: "Apparel", order: 7 },           men: { column: "Bottoms & Beach", order: 3 } },
+  { handle: "sleepwear",    label: "Sleepwear",     women: { column: "Apparel", order: 8 },           men: { column: "Bottoms & Beach", order: 5 } },
+  { handle: "shoes",        label: "All Shoes",     women: { column: "Shoes", order: 1 },             men: { column: "Shoes", order: 0 } },
+  { handle: "boots",        label: "Boots",         women: { column: "Shoes", order: 2 },             men: { column: "Shoes", order: 2 } },
+  { handle: "loafers",      label: "Loafers",       women: { column: "Shoes", order: 3 },             men: { column: "Shoes", order: 4 } },
+  { handle: "bags",         label: "Bags",          women: { column: "Bags & Leather", order: 1 },    men: { column: "Accessories", order: 0 } },
+  { handle: "accessories",  label: "All Accessories", women: { column: "Fine Accessories", order: 8 }, men: { column: "Accessories", order: 8 } },
+  { handle: "watches",      label: "Watches",       women: { column: "Fine Accessories", order: 1 },  men: { column: "Accessories", order: 2 } },
+  { handle: "hats",         label: "Hats",          women: { column: "Fine Accessories", order: 3 },  men: { column: "Accessories", order: 3 } },
+  { handle: "gloves",       label: "Gloves",        women: { column: "Fine Accessories", order: 4 },  men: { column: "Accessories", order: 4 } },
+  { handle: "unisex",       label: "Unisex",        women: { column: "More", order: 0 },              men: { column: "More", order: 0 } },
+];
+
 function cleanTitle(title: string, prefixWord: "Women's" | "Men's"): string {
   return title.replace(new RegExp(`^${prefixWord.replace("'", "['']")}\\s*`, "i"), "").trim() || title;
 }
