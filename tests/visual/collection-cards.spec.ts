@@ -33,6 +33,10 @@ test.describe("collection cards", () => {
       await expect(card, `collection-card[${handle}] should exist on /collections`).toHaveCount(1);
       await card.scrollIntoViewIfNeeded();
       await stabilize(page);
+      await attachImageContext(testInfo, page, card.locator("img").first(), {
+        handle,
+        label: `card/${handle}`,
+      });
       await expect(card).toHaveScreenshot(`card-${handle}-${testInfo.project.name}.png`);
     });
   }
