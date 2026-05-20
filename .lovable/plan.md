@@ -1,55 +1,51 @@
-# Ongoing Homepage SEO Checklist
+## Fix duplicates + unique images on /collections
 
-Add a repeatable check that verifies the live homepage at `https://palaceofroman.com` has the right `<title>`, meta description, canonical link, and Open Graph tags — so a regression (missing tag, wrong URL, truncated copy) is caught immediately instead of weeks later via Search Console.
+### Problem
+Shopify returns paired handles for the same category (`women-clothing` **and** `womens-clothing`, `men-shoes` **and** `mens-shoes`, etc.). My current allowlist accepts both, so each appears twice on the page. Several entries also share the same image asset (e.g. `women` and `womens-clothing` both resolve to `womensClothing.jpg`).
 
-## What gets checked
+### Fix — two surgical edits, no new images required for the dedupe itself
 
-For each run, fetch the live homepage HTML and assert:
+**Edit 1 — `src/routes/collections.index.tsx`**
+Replace the allowlist + `isMainCollection` with a canonical-handle approach so each category appears exactly once.
 
-1. **`<title>`** — present, non-empty, ≤ 60 chars, matches the expected "Palace of Roman — Curated Luxury Fashion".
-2. **`<meta name="description">`** — present, 50–160 chars, matches expected copy.
-3. **`<link rel="canonical">`** — present, exactly `https://palaceofroman.com/` (no preview/lovable host, no trailing junk).
-4. **Open Graph** — `og:title`, `og:description`, `og:type=website`, `og:url=https://palaceofroman.com/`, `og:image` (absolute https URL, reachable → HTTP 200).
-5. **Twitter card** — `twitter:card=summary_large_image`, `twitter:title`, `twitter:description`, `twitter:image`.
-6. **Robots** — `robots` meta does NOT contain `noindex` (catches accidental staging-style blocks).
-7. **Google verification** — `google-site-verification` tag still present with the known token.
+- Add a `CANONICAL_HANDLE` map that collapses Shopify's pairs:
+  - `women-clothing` → `womens-clothing`
+  - `women-shoes` → `womens-shoes`
+  - `women-bags` → `womens-bags`
+  - `women-accessories` → `womens-accessories`
+  - `men-clothing` → `mens-clothing`
+  - `men-shoes` → `mens-shoes`
+  - `men-bags` → `mens-bags-wallets`
+  - `men-accessories` → `mens-accessories`
+- Build the displayed list by: filter via allowlist → map to canonical handle → dedupe by canonical handle (first occurrence wins).
+- Final unique main list (33 entries, no repeats):
+  `new-arrivals, women, men, unisex, womens-clothing, womens-shoes, women-bags, women-accessories, mens-clothing, mens-shoes, men-bags, men-accessories, accessories, bags, clothing, shoes, handbags, backpacks, clutch-bags, crossbody-bags, shoulder-bags, tote-bags, boots, loafers, hats, gloves, watches, shirts, skirts, suits, swimwear, sleepwear, other-accessories`
 
-Each assertion returns pass / fail + the actual value, so a failure tells you exactly what changed.
+**Edit 2 — `src/lib/collection-image.ts`**
+Re-point bare/entry handles so no two displayed collections share an image. Only the 6 highlighted rows below change; everything else keeps its current dedicated asset.
 
-## How it's delivered
+| Handle | Current image | New image |
+|---|---|---|
+| `women` | `womensClothing` (dup) | **generate** `women.jpg` — editorial full-length female portrait, no garment focus |
+| `men` | `mensClothing` (dup) | **generate** `men.jpg` — editorial full-length male portrait |
+| `unisex` | fallback | **generate** `unisex.jpg` — gender-neutral pair, minimal |
+| `clothing` | `womensClothing` (dup) | **generate** `clothing.jpg` — garment rack, mixed pieces |
+| `shoes` | `womensShoes` (dup) | **generate** `shoes.jpg` — lineup of mixed footwear |
+| `bags` | `womensBags` (dup) | **generate** `bags.jpg` — lineup of mixed handbags |
+| `accessories` | `womensAccessories` (dup) | **generate** `accessories.jpg` — flatlay sunglasses/jewelry/belt |
+| `gloves` | `womensAccessories` (dup) | **generate** `gloves.jpg` — leather gloves close-up |
+| `shirts` | `womensTops` (dup) | **generate** `shirts.jpg` — folded/hung shirts |
+| `sleepwear` | `womensUnderwear` (dup) | **generate** `sleepwear.jpg` — silk pyjama editorial |
+| `other-accessories` | fallback | **generate** `other-accessories.jpg` — small leather goods, cufflinks |
+| `women-bags` (via canonical) | currently fallback | **generate** `women-bags.jpg` — woman carrying handbag, editorial |
 
-Two surfaces, same underlying checker so logic stays in one place:
+12 new images generated into `src/assets/collections/auto/`, all matching the Palace of Roman editorial style (muted, warm, film-grain, single subject), then wired into `BY_HANDLE`.
 
-### 1. Admin page — `/admin/seo-health`
-- New route `src/routes/admin.seo-health.tsx`, protected by the existing `admin-middleware` pattern used by `admin.analytics.tsx`.
-- Calls a new server function `checkHomepageSeo` (in `src/lib/seo-health.functions.ts`) that fetches the live URL server-side and runs all assertions.
-- Renders a clean editorial table: each check as a row with ✓ / ✗, the expected value, and the actual value pulled from the page. Single "Re-run checks" button.
-- Lets you eyeball the state of production SEO at any time without leaving the admin.
+### Verification (after implementation)
+- `data-testid="collection-card"` count = 33 unique handles
+- Iterate displayed cards and assert no two share the same `img.src` (manual check via preview)
+- No `women-clothing`, `men-shoes`, `men-clothing`, `women-shoes` cards in DOM
 
-### 2. Public health endpoint — `/api/public/seo-health`
-- New server route `src/routes/api/public/seo-health.ts`.
-- Returns JSON: `{ ok: boolean, checks: [{ id, label, ok, expected, actual }], checkedAt }`.
-- Returns HTTP 200 when everything passes, 503 when one or more checks fail — so it can be wired into an external uptime monitor (UptimeRobot, BetterStack, cron-job.org) for true ongoing monitoring with email/Slack alerts. No secrets required, safe to expose.
-
-## Technical details
-
-- **Parser**: lightweight regex over the fetched HTML (no extra deps). `<title>` and meta tags are simple enough that a parser isn't worth the bundle cost; the checker already runs server-side on the Worker.
-- **Source of truth for expected values**: a single `EXPECTED` const in `src/lib/seo-health.ts` (title, description, canonical, OG image URL). Update it once when copy changes; both the admin page and the API endpoint pick it up.
-- **OG image reachability**: HEAD request to the `og:image` URL; flag if non-200 (covers the case where the GCS-hosted image is deleted or moved).
-- **No edits to `__root.tsx`**: the existing tags there are already correct (confirmed in current code) — this work only adds verification, not changes to the tags themselves.
-- **No new dependencies, no DB changes, no migrations.**
-
-## Files
-
-```text
-src/lib/seo-health.ts                  # EXPECTED values + pure check functions
-src/lib/seo-health.functions.ts        # createServerFn wrapper that fetches + runs checks
-src/routes/admin.seo-health.tsx        # admin UI
-src/routes/api/public/seo-health.ts    # JSON endpoint for external monitors
-```
-
-## Out of scope (ask if you want them added)
-
-- Checking other routes (collections, product pages) — easy follow-up once the homepage checker is in place.
-- Slack/email alerting from inside the app — recommend wiring the public endpoint to an external uptime monitor instead.
-- Lighthouse / Core Web Vitals — different problem, handled by PageSpeed Insights.
+### Out of scope
+- No changes to product pages, /collections/[handle], or any business logic
+- Brand collections (Gucci, Prada, etc.) — still excluded from the index by design

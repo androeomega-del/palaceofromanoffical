@@ -23,29 +23,59 @@ const FILTER_KEYS: FilterKey[] = FILTERS.map((f) => f.key);
 // Brand collections (gucci, prada, etc.) and deep sub-categories are excluded —
 // they remain reachable from inside their parent collection / brand pages.
 const MAIN_HANDLE_ALLOWLIST = new Set<string>([
-  // Gender entry points
-  "women", "men",
-  // Gender × top-level category
+  "women", "men", "unisex",
   "women-clothing", "womens-clothing",
   "women-shoes", "womens-shoes",
   "women-bags", "womens-bags",
   "women-accessories", "womens-accessories", "womens-accessories-1",
   "men-clothing", "mens-clothing",
   "men-shoes", "mens-shoes",
-  "men-bags", "men-accessories", "mens-accessories",
-  // Unisex / universal categories
+  "men-bags", "mens-bags-wallets",
+  "men-accessories", "mens-accessories",
   "accessories", "bags", "clothing", "shoes",
   "handbags", "backpacks", "boots", "loafers",
   "clutch-bags", "crossbody-bags", "shoulder-bags", "tote-bags",
   "hats", "gloves", "scarves", "belts", "wallets",
   "watches", "jewelry", "jewellery", "sunglasses", "necklaces",
   "shirts", "skirts", "suits", "swimwear", "sleepwear", "dresses",
-  // Editorial / merchandising
+  "other-accessories",
   "new-arrivals", "best-sellers", "best-selling-brands", "high-discounts", "sale", "on-sale",
 ]);
 
+// Collapse Shopify's paired handles to a single canonical handle so the same
+// category never appears twice. The non-canonical (left) handles are hidden.
+const CANONICAL_HANDLE: Record<string, string> = {
+  "women-clothing": "womens-clothing",
+  "women-shoes": "womens-shoes",
+  "women-accessories": "womens-accessories",
+  "men-clothing": "mens-clothing",
+  "men-shoes": "mens-shoes",
+  "men-bags": "mens-bags-wallets",
+  "men-accessories": "mens-accessories",
+  "best-sellers": "best-selling-brands",
+  "sale": "high-discounts",
+  "on-sale": "high-discounts",
+};
+
+function canonicalHandle(h: string): string {
+  const lower = h.toLowerCase();
+  return CANONICAL_HANDLE[lower] ?? lower;
+}
+
 function isMainCollection(c: ShopifyCollection): boolean {
   return MAIN_HANDLE_ALLOWLIST.has(c.handle.toLowerCase());
+}
+
+function dedupeByCanonical(list: ShopifyCollection[]): ShopifyCollection[] {
+  const seen = new Set<string>();
+  const out: ShopifyCollection[] = [];
+  for (const c of list) {
+    const key = canonicalHandle(c.handle);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(c);
+  }
+  return out;
 }
 
 type SortKey = "popular" | "newest" | "alpha";
@@ -140,7 +170,10 @@ function CollectionsIndexPage() {
   });
   const dynamicFocal = focalMapQuery.data ?? {};
 
-  const all = useMemo(() => (q.data ?? []).filter(isMainCollection), [q.data]);
+  const all = useMemo(
+    () => dedupeByCanonical((q.data ?? []).filter(isMainCollection)),
+    [q.data],
+  );
   const collections = useMemo(
     () => sortCollections(all.filter((c) => matchesFilter(c, filter)), sort),
     [all, filter, sort],
