@@ -92,12 +92,12 @@ function cleanTitle(title: string, prefixWord: "Women's" | "Men's"): string {
 
 function buildDepartment(
   collections: ShopifyCollection[],
-  prefix: "womens-" | "mens-",
+  prefixes: string[],
   rules: ClassifierRule[],
   columnOrder: string[],
   dept: Omit<MegaDepartment, "columns">,
 ): MegaDepartment {
-  const prefixWord = prefix === "womens-" ? "Women's" : "Men's";
+  const prefixWord = prefixes[0].startsWith("women") ? "Women's" : "Men's";
 
   // Group rule matches by column.
   const grouped = new Map<string, MegaItem[]>();
@@ -111,11 +111,16 @@ function buildDepartment(
     grouped.set(colName, [{ handle: "new-arrivals", label: "New Arrivals" }]);
   }
 
+  // Dedupe by handle in case multiple prefixes match the same suffix.
+  const seen = new Set<string>();
   for (const c of collections) {
-    if (!c.handle.startsWith(prefix)) continue;
-    const suffix = c.handle.slice(prefix.length);
+    const matchedPrefix = prefixes.find((p) => c.handle.startsWith(p));
+    if (!matchedPrefix) continue;
+    if (seen.has(c.handle)) continue;
+    const suffix = c.handle.slice(matchedPrefix.length);
     const rule = rules.find((r) => r.match(suffix));
     if (!rule) continue;
+    seen.add(c.handle);
 
     const label = rule.label ?? cleanTitle(c.title, prefixWord);
     const arr = grouped.get(rule.column) ?? [];
@@ -142,10 +147,13 @@ function buildDepartment(
 /**
  * Build the Women / Men megamenu departments live from Shopify collections.
  * Pass the full collection list from `fetchCollections()`.
+ *
+ * Both `womens-` and `women-` prefixes are accepted (Shopify has a mix —
+ * `womens-clothing` and `women-bags` both exist as real collections).
  */
 export function buildDepartments(collections: ShopifyCollection[]): MegaDepartment[] {
   return [
-    buildDepartment(collections, "womens-", WOMEN_RULES, WOMEN_COLUMN_ORDER, {
+    buildDepartment(collections, ["womens-", "women-"], WOMEN_RULES, WOMEN_COLUMN_ORDER, {
       key: "women",
       label: "Women",
       rootHandle: "womens-clothing",
@@ -155,12 +163,12 @@ export function buildDepartments(collections: ShopifyCollection[]): MegaDepartme
         title: "A study in considered dressing.",
       },
     }),
-    buildDepartment(collections, "mens-", MEN_RULES, MEN_COLUMN_ORDER, {
+    buildDepartment(collections, ["mens-", "men-"], MEN_RULES, MEN_COLUMN_ORDER, {
       key: "men",
       label: "Men",
       rootHandle: "mens-clothing",
       feature: {
-        handle: "mens-suits",
+        handle: "mens-clothing",
         eyebrow: "The Tailoring Room",
         title: "Sharp lines, quiet codes.",
       },
