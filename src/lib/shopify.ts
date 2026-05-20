@@ -392,13 +392,14 @@ export async function fetchCollectionFiltered(opts: {
   });
   const c = res?.data?.collectionByHandle;
   if (!c) return null;
+  const firstProductImage = c.products.edges[0]?.node.images?.edges?.[0]?.node ?? null;
   return {
     collection: {
       id: c.id,
       title: c.title,
       handle: c.handle,
       description: c.description ?? "",
-      image: c.image,
+      image: c.image ?? firstProductImage,
       updatedAt: c.updatedAt,
     },
     filters: c.products.filters ?? [],
