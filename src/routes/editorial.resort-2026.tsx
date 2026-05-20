@@ -12,7 +12,7 @@ const SLIDES: StorySlide[] = [
   { n: 18, caption: "Late afternoon shade.", shopHandle: "womens-clothing" },
   { n: 20, caption: "Tonal study — sand on sand.", shopHandle: "mens-clothing", shopLabel: "Shop Men's" },
   { n: 22, caption: "Resort tailoring.", shopHandle: "mens-clothing" },
-  { n: 24, caption: "Travel cases, slowly opened.", shopHandle: "high-discounts", shopLabel: "Shop the Sale" },
+  { n: 24, caption: "Travel cases, slowly opened." },
   { n: 26, caption: "Loose cotton, salt air." },
   { n: 28, caption: "Footwear without ceremony.", shopHandle: "mens-shoes", shopLabel: "Shop Men's Shoes" },
   { n: 30, caption: "End of the long day." },
