@@ -15,6 +15,27 @@ import {
   type SortValue,
 } from "@/components/catalog-filters";
 
+// Curated handles that receive the Nordstrom-style editorial hero +
+// featured-three row + roomier grid. Adding a handle here is the only
+// change needed to opt another collection in.
+const EDITORIAL_HERO_COPY: Record<string, { eyebrow: string; tagline: string }> = {
+  "polo-shirts": {
+    eyebrow: "The Polo, Properly Considered",
+    tagline:
+      "Piqué cottons, fine knits, and the houses that have spent decades perfecting the collar that bridges sportswear and tailoring.",
+  },
+  "long-sleeve-tees": {
+    eyebrow: "The Shoulder-Season Essential",
+    tagline:
+      "Heavy jerseys, fine cottons, and the long-sleeve cuts that work alone or layered beneath everything else.",
+  },
+  "hoodies": {
+    eyebrow: "Soft Architecture",
+    tagline:
+      "Brushed cottons, heavyweight loopbacks, and the kind of hoods that hold their shape — off-duty luxury from the houses that taught the category how to behave.",
+  },
+};
+
 const SORT_VALUES = SORT_OPTIONS.map((o) => o.value);
 
 // Map collections-index sort keys → per-collection sort values
@@ -243,46 +264,141 @@ function CollectionPage() {
   })();
   const renderedFocal = parsedFocal;
 
+  const editorialCopy = EDITORIAL_HERO_COPY[handle];
+  const isEditorial = Boolean(editorialCopy);
+
+  // Curated "Featured" trio for editorial handles — top three best-sellers
+  // from the same collection, independent of the user's current sort.
+  const featuredQ = useQuery({
+    queryKey: ["collection-featured", handle],
+    queryFn: () =>
+      fetchCollectionFiltered({
+        handle,
+        first: 3,
+        filters: [],
+        sortKey: "BEST_SELLING",
+        reverse: false,
+      }).then((r) => r.edges),
+    enabled: isEditorial,
+  });
+  const featuredIds = useMemo(
+    () => new Set((featuredQ.data ?? []).map((e) => e.node.id)),
+    [featuredQ.data],
+  );
+  const gridEdges = isEditorial
+    ? edges.filter((e) => !featuredIds.has(e.node.id))
+    : edges;
+  const gridGap = isEditorial ? "gap-x-10 gap-y-20" : "gap-x-6 gap-y-16";
+
   return (
     <div>
-      <section
-        className="relative h-[42vh] min-h-[280px] max-h-[520px] w-full overflow-hidden bg-ink/5"
-        data-testid="collection-hero"
-        data-handle={handle.toLowerCase()}
-      >
-        {heroSrc && (
+      {isEditorial ? (
+        <section
+          className="relative h-[58vh] min-h-[420px] max-h-[680px] w-full overflow-hidden bg-ink"
+          data-testid="collection-hero"
+          data-handle={handle.toLowerCase()}
+        >
+          {heroSrc && (
             <img
               src={heroSrc}
               alt={heroAlt}
               loading="eager"
               fetchPriority="high"
               decoding="async"
-              className="absolute inset-0 h-full w-full object-cover"
+              className="absolute inset-0 h-full w-full object-cover opacity-90"
               style={{ objectPosition: `${renderedFocal.x}% ${renderedFocal.y}%` }}
               data-testid="collection-hero-img"
             />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-canvas via-canvas/40 to-transparent" />
-      </section>
-
-
-
-      <section className="px-6 pt-12 pb-8 border-b border-ink/5">
-        <div className="max-w-screen-2xl mx-auto">
-          <Link to="/" className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground hover:text-ink">
-            ← Boutique
-          </Link>
-          <div className="mt-6 flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <h1 className="text-4xl md:text-6xl font-serif text-balance">{title}</h1>
-            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-              {q.isLoading ? "Loading…" : `${edges.length} ${edges.length === 1 ? "Piece" : "Pieces"}`}
-            </p>
-          </div>
-          {description && (
-            <p className="mt-6 max-w-[64ch] text-sm text-muted-foreground leading-relaxed">{description}</p>
           )}
-        </div>
-      </section>
+          <div className="absolute inset-0 bg-gradient-to-b from-ink/30 via-ink/20 to-ink/70" />
+          <div className="relative h-full flex items-end">
+            <div className="max-w-screen-2xl mx-auto w-full px-6 pb-14 md:pb-20">
+              <Link
+                to="/"
+                className="text-[10px] uppercase tracking-[0.3em] text-canvas/70 hover:text-canvas inline-block mb-8"
+              >
+                ← Boutique
+              </Link>
+              <span className="block text-[10px] md:text-[11px] uppercase tracking-[0.4em] text-bronze mb-5">
+                {editorialCopy!.eyebrow}
+              </span>
+              <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl leading-[0.95] text-canvas text-balance max-w-4xl">
+                {title}
+              </h1>
+              <p className="mt-7 max-w-xl text-sm md:text-base text-canvas/80 leading-relaxed text-pretty">
+                {editorialCopy!.tagline}
+              </p>
+              <p className="mt-8 text-[10px] uppercase tracking-[0.3em] text-canvas/60">
+                {q.isLoading ? "Loading…" : `${edges.length} ${edges.length === 1 ? "Piece" : "Pieces"}`}
+              </p>
+            </div>
+          </div>
+        </section>
+      ) : (
+        <>
+          <section
+            className="relative h-[42vh] min-h-[280px] max-h-[520px] w-full overflow-hidden bg-ink/5"
+            data-testid="collection-hero"
+            data-handle={handle.toLowerCase()}
+          >
+            {heroSrc && (
+              <img
+                src={heroSrc}
+                alt={heroAlt}
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
+                className="absolute inset-0 h-full w-full object-cover"
+                style={{ objectPosition: `${renderedFocal.x}% ${renderedFocal.y}%` }}
+                data-testid="collection-hero-img"
+              />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-canvas via-canvas/40 to-transparent" />
+          </section>
+
+          <section className="px-6 pt-12 pb-8 border-b border-ink/5">
+            <div className="max-w-screen-2xl mx-auto">
+              <Link to="/" className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground hover:text-ink">
+                ← Boutique
+              </Link>
+              <div className="mt-6 flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <h1 className="text-4xl md:text-6xl font-serif text-balance">{title}</h1>
+                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                  {q.isLoading ? "Loading…" : `${edges.length} ${edges.length === 1 ? "Piece" : "Pieces"}`}
+                </p>
+              </div>
+              {description && (
+                <p className="mt-6 max-w-[64ch] text-sm text-muted-foreground leading-relaxed">{description}</p>
+              )}
+            </div>
+          </section>
+        </>
+      )}
+
+      {isEditorial && (featuredQ.data?.length ?? 0) > 0 && (
+        <section className="px-6 pt-16 pb-4">
+          <div className="max-w-screen-2xl mx-auto">
+            <div className="flex items-end justify-between mb-10">
+              <div>
+                <span className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-3 block">
+                  The Edit
+                </span>
+                <h2 className="font-serif text-2xl md:text-3xl">Featured this season</h2>
+              </div>
+              <p className="hidden md:block text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+                A curated three
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-x-10 gap-y-12">
+              {featuredQ.data!.map((e) => (
+                <ProductCard key={e.node.id} product={e} />
+              ))}
+            </div>
+            <div className="mt-16 border-t border-ink/10" />
+          </div>
+        </section>
+      )}
+
 
       <section className="px-6 py-12">
         <div className="max-w-screen-2xl mx-auto flex gap-10">
