@@ -287,12 +287,21 @@ type FilterInput = Record<string, unknown>;
 function applyFilters(builder: any, filters: object[] | undefined) {
   if (!filters || filters.length === 0) return builder;
   let b = builder;
+  // Group multi-select values per key so we can emit a single OR clause.
+  const multi: Record<string, string[]> = {
+    productVendor: [], gender: [], category: [], subcategory: [], color: [], material: [],
+  };
   for (const raw of filters) {
     const f = raw as FilterInput;
     if (typeof f.available === "boolean") {
       if (f.available) b = b.eq("in_stock", true);
     }
-    if (typeof f.productVendor === "string") b = b.ilike("brand", f.productVendor);
+    if (typeof f.productVendor === "string") multi.productVendor.push(f.productVendor);
+    if (typeof f.gender === "string") multi.gender.push(f.gender);
+    if (typeof f.category === "string") multi.category.push(f.category);
+    if (typeof f.subcategory === "string") multi.subcategory.push(f.subcategory);
+    if (typeof f.color === "string") multi.color.push(f.color);
+    if (typeof f.material === "string") multi.material.push(f.material);
     if (typeof f.productType === "string") {
       const t = f.productType;
       b = b.or(`category.ilike.${t},subcategory.ilike.${t},subsubcategory.ilike.${t}`);
@@ -303,6 +312,14 @@ function applyFilters(builder: any, filters: object[] | undefined) {
       if (typeof p.max === "number") b = b.lte("retail_price", p.max);
     }
   }
+  const orClause = (col: string, vals: string[]) =>
+    vals.map((v) => `${col}.ilike.${v.replace(/,/g, " ")}`).join(",");
+  if (multi.productVendor.length) b = b.or(orClause("brand", multi.productVendor));
+  if (multi.gender.length) b = b.or(orClause("gender", multi.gender));
+  if (multi.category.length) b = b.or(orClause("category", multi.category));
+  if (multi.subcategory.length) b = b.or(orClause("subcategory", multi.subcategory));
+  if (multi.color.length) b = b.or(orClause("color", multi.color));
+  if (multi.material.length) b = b.or(orClause("material", multi.material));
   return b;
 }
 
@@ -753,11 +770,16 @@ export async function fetchCollectionFiltered(opts: {
 export async function fetchSearchFiltered(opts: {
   query?: string; first?: number; after?: string | null;
   filters?: object[]; sortKey?: string; reverse?: boolean;
+  available?: boolean; // when true (default), pre-applies in_stock + drops $0 rows
 }): Promise<Omit<FilteredResult, "collection">> {
   const first = opts.first ?? 24;
   const offset = decodeCursor(opts.after);
+  const available = opts.available ?? true;
+
+  // ── Page query ────────────────────────────────────────────────────────────
   let b: any = supabase.from("bg_products").select(PRODUCT_COLUMNS);
   if (opts.query && opts.query !== "*") b = applyParsed(b, parseQuery(opts.query));
+  if (available) b = b.eq("in_stock", true).gt("retail_price", 0);
   b = applyFilters(b, opts.filters);
   b = applySort(b, opts.sortKey ?? "RELEVANCE", opts.reverse).range(offset, offset + first);
   const { data, error } = await b;
@@ -779,12 +801,72 @@ export async function fetchSearchFiltered(opts: {
     variantsByGroup.set(v.group_sku, list);
   }
   const gidBySku = await fetchVariantMap(((variantRows ?? []) as BgVariantRow[]).map((v) => v.product_sku));
+
+  // ── Facet aggregates (respect query + availability, not other facets) ────
+  let agg: any = supabase
+    .from("bg_products")
+    .select("gender,category,subcategory,brand,color,material,retail_price");
+  if (opts.query && opts.query !== "*") agg = applyParsed(agg, parseQuery(opts.query));
+  if (available) agg = agg.eq("in_stock", true).gt("retail_price", 0);
+  agg = agg.limit(5000);
+  const { data: aggRows } = await agg;
+  const aggData = (aggRows ?? []) as Array<{
+    gender: string | null; category: string | null; subcategory: string | null;
+    brand: string | null; color: string | null; material: string | null; retail_price: number | null;
+  }>;
+
+  const tally = (key: keyof typeof aggData[number]) => {
+    const m = new Map<string, number>();
+    for (const r of aggData) {
+      const v = r[key];
+      if (!v || typeof v !== "string") continue;
+      m.set(v, (m.get(v) ?? 0) + 1);
+    }
+    return m;
+  };
+  const toValues = (m: Map<string, number>, jsonKey: string, take: number): StorefrontFilterValue[] =>
+    Array.from(m.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, take)
+      .map(([label, count]) => ({
+        id: `${jsonKey}:${label}`,
+        label,
+        count,
+        input: JSON.stringify({ [jsonKey]: label }),
+      }));
+
+  let priceLo = Infinity, priceHi = 0;
+  for (const r of aggData) {
+    const p = Number(r.retail_price ?? 0);
+    if (p > 0) { priceLo = Math.min(priceLo, p); priceHi = Math.max(priceHi, p); }
+  }
+  if (!isFinite(priceLo)) priceLo = 0;
+
+  const filters: StorefrontFilter[] = [
+    { id: "filter.v.availability", label: "Availability", type: "BOOLEAN", values: [
+      { id: "available:true", label: "In stock", count: aggData.length,
+        input: JSON.stringify({ available: true }) },
+    ]},
+    { id: "filter.p.gender", label: "Gender", type: "LIST", values: toValues(tally("gender"), "gender", 10) },
+    { id: "filter.p.category", label: "Category", type: "LIST", values: toValues(tally("category"), "category", 10) },
+    { id: "filter.p.subcategory", label: "Subcategory", type: "LIST", values: toValues(tally("subcategory"), "subcategory", 40) },
+    { id: "filter.p.vendor", label: "Designer", type: "LIST", values: toValues(tally("brand"), "productVendor", 40) },
+    { id: "filter.p.color", label: "Color", type: "LIST", values: toValues(tally("color"), "color", 20) },
+    { id: "filter.p.material", label: "Material", type: "LIST", values: toValues(tally("material"), "material", 15) },
+    { id: "filter.v.price", label: "Price", type: "PRICE_RANGE", values: [
+      { id: "price:bounds", label: `$${Math.floor(priceLo)}–$${Math.ceil(priceHi)}`,
+        count: aggData.length,
+        input: JSON.stringify({ price: { min: Math.floor(priceLo), max: Math.ceil(priceHi) } }) },
+    ]},
+  ];
+
   return {
-    filters: [],
+    filters,
     edges: slice.map((r) => ({ node: applyVariantMap(rowToNode(r, variantsByGroup.get(r.group_sku)), gidBySku) })),
     pageInfo: { hasNextPage: hasNext, endCursor: hasNext ? encodeCursor(offset + first) : null },
   };
 }
+
 
 // ── Vendor index (used by /brands and megamenu) ─────────────────────────────
 let VENDOR_INDEX_CACHE: Array<{ vendor: string; count: number }> | null = null;

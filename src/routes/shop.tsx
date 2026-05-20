@@ -46,6 +46,7 @@ function ShopPage() {
   const [priceRange, setPriceRange] = useState<{ min: number; max: number } | null>(null);
   const [sort, setSort] = useState<SortValue>("BEST_SELLING-false");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [inStockOnly, setInStockOnly] = useState(true);
 
   const filterInputs = useMemo(() => {
     const arr: object[] = selections.map((s) => JSON.parse(s.input));
@@ -56,7 +57,7 @@ function ShopPage() {
   const { sortKey, reverse } = mapSort(sort);
 
   const q = useInfiniteQuery({
-    queryKey: ["shop-search", queryParam ?? "*", filterInputs, sortKey, reverse],
+    queryKey: ["shop-search", queryParam ?? "*", filterInputs, sortKey, reverse, inStockOnly],
     initialPageParam: null as string | null,
     queryFn: ({ pageParam }) =>
       fetchSearchFiltered({
@@ -66,9 +67,11 @@ function ShopPage() {
         filters: filterInputs,
         sortKey,
         reverse,
+        available: inStockOnly,
       }),
     getNextPageParam: (last) => (last.pageInfo.hasNextPage ? last.pageInfo.endCursor : undefined),
   });
+
 
   const filters = q.data?.pages?.[0]?.filters ?? [];
   const edges = useMemo(() => q.data?.pages.flatMap((p) => p.edges) ?? [], [q.data]);
@@ -100,7 +103,12 @@ function ShopPage() {
         <div className="max-w-screen-2xl mx-auto">
           <p className="text-[10px] uppercase tracking-[0.25em] text-bronze mb-3">{titleParam ? "Edit" : "Shop All"}</p>
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <h1 className="text-4xl md:text-6xl font-serif">{titleParam || "The Boutique"}</h1>
+            <div>
+              <h1 className="text-4xl md:text-6xl font-serif">{titleParam || "The Boutique"}</h1>
+              <p className="mt-2 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+                {inStockOnly ? "In stock now" : "Full archive"}
+              </p>
+            </div>
             <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
               {q.isLoading ? "Loading…" : `${edges.length}${q.hasNextPage ? "+" : ""} Pieces`}
             </p>
@@ -114,15 +122,30 @@ function ShopPage() {
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between gap-4 mb-6">
-              <button
-                onClick={() => setMobileFiltersOpen(true)}
-                className="lg:hidden inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] border border-ink/15 px-3 py-2"
-              >
-                <SlidersHorizontal className="h-3.5 w-3.5" /> Filters
-              </button>
-              <div className="hidden lg:block" />
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setMobileFiltersOpen(true)}
+                  className="lg:hidden inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] border border-ink/15 px-3 py-2"
+                >
+                  <SlidersHorizontal className="h-3.5 w-3.5" /> Filters
+                </button>
+                <button
+                  onClick={() => setInStockOnly((v) => !v)}
+                  aria-pressed={inStockOnly}
+                  className={
+                    "inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] border px-3 py-2 transition-colors " +
+                    (inStockOnly
+                      ? "bg-ink text-canvas border-ink"
+                      : "border-ink/20 hover:border-ink")
+                  }
+                >
+                  <span className={"h-1.5 w-1.5 rounded-full " + (inStockOnly ? "bg-canvas" : "bg-ink/40")} />
+                  In Stock Only
+                </button>
+              </div>
               <CatalogSort value={sort} onChange={setSort} />
             </div>
+
 
             <ActiveFilterPills
               selections={selections}

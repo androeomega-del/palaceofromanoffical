@@ -1,84 +1,49 @@
-## Goal
+## Why
 
-Every `/collections/<handle>` link on the site resolves to a real Shopify collection — no more empty/404 category pages. Where Shopify is missing an obvious category, we create it as a smart collection.
+`/shop` today:
+- shows **SOLD OUT** products by default
+- REFINE sidebar is empty (search path returns `filters: []`)
+- many cards display **$0** because rows with null `retail_price` are still rendered
 
-## Step 1 — Create missing Shopify smart collections
+The user wants the page to behave like the "in-stock collection" with **tag-shaped filters** (the same dimensions we just normalised on Shopify: Men/Women, Category, Subcategory, Brand, etc.).
 
-New script `scripts/shopify/create-category-collections.mjs` (modeled after the existing `create-smart-collections.mjs`). Idempotent: skips handles that already exist.
+## What changes
 
-Collections to create (handle → rules, all conjunctive `all`):
+### 1. `src/lib/shopify.ts` — `fetchSearchFiltered`
+- Add `available` to the opts (default `true`). The /shop tab will always pre-apply `{ available: true }` unless the user explicitly toggles it off — this *is* the "in-stock collection".
+- Drop rows with `retail_price <= 0` so no $0 cards leak through.
+- Compute real facet aggregates over the current query (mirroring `fetchCollectionFiltered`'s vendor agg, just broader). Each facet is built from `bg_products` columns and emits `StorefrontFilterValue.input` JSON that the existing `applyFilters` already understands:
+  - **Availability** — `{ available: true }` (pre-checked)
+  - **Gender** — `{ gender: "Women" | "Men" | ... }`
+  - **Category** — `{ category: "Clothing" | "Shoes" | "Bags" | "Accessories" }`
+  - **Subcategory** — `{ subcategory: "Sneakers" | "Handbags" | ... }` (top ~30 by count)
+  - **Brand / Designer** — `{ productVendor: "..." }` (top ~30, searchable in sidebar)
+  - **Color** — `{ color: "..." }` (top ~20)
+  - **Material** — `{ material: "..." }` (top ~15)
+  - **Price** — `{ price: { min, max } }` derived from row bounds
+- Extend `applyFilters` to recognise the new keys (`gender`, `category`, `subcategory`, `productVendor`, `color`, `material`) and map them to the matching `ilike` clauses already used elsewhere.
 
-**Women columns**
-- `womens-bags` — Tag=Women AND Type=Bags
-- `womens-accessories` — Tag=Women AND Type=Accessories
-- `womens-jewelry` — Tag=Women AND Type=Jewelry
-- `womens-watches` — Tag=Women AND Type=Watches
-- `womens-scarves` — Tag=Women AND Type=Scarves
-- `womens-hats` — Tag=Women AND Type=Hats
-- `womens-belts` — Tag=Women AND Type=Belts
-- `womens-wallets` — Tag=Women AND Type=Wallets
-- `womens-dresses` — Tag=Women AND Type=Dresses
-- `womens-skirts` — Tag=Women AND Type=Skirts
+### 2. `src/routes/shop.tsx`
+- Default selections to include `{ available: true }` on first load.
+- Show "In stock only" as a sticky pill above the grid that the user can toggle off.
+- Update piece count to reflect the filtered total (drop the `36+` placeholder once we have `pageInfo.totalCount` — if total is expensive, keep `36+` but qualify with "In stock").
+- Header subtitle: "The Boutique · In stock now".
 
-**Men columns**
-- `mens-bags-wallets` — Tag=Men AND Type=Bags (catch-all bags+wallets)
-- `mens-accessories` — Tag=Men AND Type=Accessories
-- `mens-suits` — Tag=Men AND Type=Suits
-- `mens-jackets-coats` — Tag=Men AND (Type contains Jacket OR Type contains Coat) [disjunctive sub, see Technical]
-- `mens-shirts` — Tag=Men AND Type=Shirts
-- `mens-tshirts-polos` — Tag=Men AND (Type contains T-Shirt OR Type contains Polo)
-- `mens-sweaters-knitwear` — Tag=Men AND (Type contains Sweater OR Type contains Knitwear)
-- `mens-hoodies-sweatshirts` — Tag=Men AND (Type contains Hoodie OR Type contains Sweatshirt)
-- `mens-pants-trousers` — Tag=Men AND (Type contains Pants OR Type contains Trousers)
-- `mens-shorts` — Tag=Men AND Type=Shorts
-- `mens-activewear` — Tag=Men AND Type=Activewear
-- `mens-swimwear` — Tag=Men AND Type=Swimwear
-- `mens-underwear-loungewear` — Tag=Men AND (Type contains Underwear OR Type contains Loungewear)
-- `mens-sneakers` — Tag=Men AND Type=Sneakers
-- `mens-boots` — Tag=Men AND Type=Boots
-- `mens-sandals-slides` — Tag=Men AND (Type contains Sandal OR Type contains Slide)
-- `mens-belts` — Tag=Men AND Type=Belts
-- `mens-watches-jewelry` — Tag=Men AND (Type contains Watch OR Type contains Jewelry)
+### 3. No new tags, no Shopify Storefront rewrite
+- We stay on Supabase (consistent with `/collections/*` and brand pages).
+- The facet labels are the **same vocabulary** as the Shopify tags we normalised, so the mental model is identical.
 
-**Generic (referenced by collections index + footer)**
-- `dresses`, `loafers`, `belts`, `wallets`, `jewelry`, `scarves`, `sunglasses` — each Type=<X>
+## Out of scope (ask before doing)
 
-Each created with `published: true`, `sort_order: 'best-selling'`, and a short body_html. Dry-run first, then commit at ~2 req/s.
+- Switching `/shop` to the Shopify Storefront API + `in-stock` smart collection.
+- Adding a hero/editorial banner above the grid.
+- Changing the product card design.
 
-## Step 2 — Update code references
+## Verification
 
-**`src/lib/nav-config.ts`** — leave WOMEN_RULES / MEN_RULES as-is. They already match the suffix scheme; once the collections exist in Shopify they'll auto-populate the megamenu. Add the new categories to the rule lists (`womens-jewelry`, `womens-watches`, etc.) so they actually slot in.
+1. Visit `/shop` → sidebar shows the 7 facet groups with counts, no SOLD OUT cards, no $0 prices.
+2. Tick "Sneakers" + "Men" → grid narrows, counts on other facets re-adjust on the next query.
+3. Toggle "In stock only" off → SOLD OUT cards reappear (proves the default is doing real work).
+4. Sort by Price ↑ / ↓ continues to work.
 
-**`src/components/site-footer.tsx`** — keep existing handles (`womens-clothing`, `mens-clothing`, etc.); they're real. No change needed.
-
-**`src/components/site-header.tsx`** — already uses real handles (`new-arrivals`, `best-sellers`). No change.
-
-**`src/routes/index.tsx`** — verify the four `*_HANDLE` constants point to real Shopify handles; remap if any are wrong (`mens-clothing`, `womens-clothing`, `mens-shoes`, `womens-shoes` all exist — likely fine).
-
-**`src/routes/editorial.may-2026.tsx`** — repoint:
-- `womens-bags` → (after Step 1 creates it) keep as-is
-- `womens-accessories-1` → `womens-accessories`
-- `mens-sweaters-knitwear`, `mens-bags-wallets`, `mens-sneakers` → all created in Step 1, keep
-- Hero fallback `womens-bags` → keep
-
-**`src/routes/collections.index.tsx`** — broaden `MAIN_HANDLE_ALLOWLIST` and `CANONICAL_HANDLE` to include the new handles. Collapse pairs the same way (e.g. `women-bags` ↔ `womens-bags`).
-
-**`src/lib/nav-config.ts` megamenu feature** — `mens-suits` will be real after Step 1, keep.
-
-## Step 3 — Verify
-
-- Re-fetch the Shopify collection list and assert every handle referenced by `rg "params={{ handle: \"" src/` exists.
-- Load `/collections` and confirm the cards render with their images.
-- Click through Women + Men megamenu items and the footer; none should land on an empty page.
-
-## Technical notes
-
-- Shopify smart collections support disjunctive rules via `disjunctive: true` at the collection level — that applies OR to ALL rules in the collection. For the "Tag=Men AND (Type=A OR Type=B)" pattern, smart collections can't natively combine AND + OR. **Fallback:** for those handles I'll create them as `Tag=Men, Type contains <broadest single keyword>` (e.g. `mens-jackets-coats` → Type contains "Coat" — covers "Coat" and "Jacket Coat" listings) OR create as a custom collection populated by a one-time tag scan. I'll prefer the first; if hit rate is low I'll convert to custom collections in a follow-up.
-- All scripts go in `scripts/shopify/`, never imported by the app.
-- Dry-run output will be shown before any writes hit Shopify.
-
-## Out of scope
-
-- Brand vendor collections (already work).
-- Fulfillment / inventory / product tag changes.
-- Hero imagery or focal points (separate workflow).
+Reply **"go"** to implement, or tell me which facets to add/remove.
