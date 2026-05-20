@@ -275,6 +275,19 @@ function CollectionPage() {
     dynamicFocal: dynamicFocalQ.data ?? {},
   });
 
+  const editing = edit === "focal";
+  const parsedFocal = (() => {
+    const m = heroFocal.match(/(-?\d+(?:\.\d+)?)%\s+(-?\d+(?:\.\d+)?)%/);
+    return m ? { x: parseFloat(m[1]), y: parseFloat(m[2]) } : { x: 50, y: 40 };
+  })();
+  const [liveFocal, setLiveFocal] = useState<{ x: number; y: number } | null>(null);
+  const renderedFocal = liveFocal ?? parsedFocal;
+  const hasSavedOverride =
+    heroMeta?.focalX !== null &&
+    heroMeta?.focalX !== undefined &&
+    heroMeta?.focalY !== null &&
+    heroMeta?.focalY !== undefined;
+
   return (
     <div>
       <section className="relative h-[42vh] min-h-[280px] max-h-[520px] w-full overflow-hidden bg-ink/5">
@@ -293,12 +306,26 @@ function CollectionPage() {
               fetchPriority="high"
               decoding="async"
               className="absolute inset-0 h-full w-full object-cover"
-              style={{ objectPosition: heroFocal }}
+              style={{ objectPosition: `${renderedFocal.x}% ${renderedFocal.y}%` }}
             />
           );
         })()}
-        <div className="absolute inset-0 bg-gradient-to-t from-canvas via-canvas/40 to-transparent" />
+        {!editing && (
+          <div className="absolute inset-0 bg-gradient-to-t from-canvas via-canvas/40 to-transparent" />
+        )}
+        {editing && (
+          <HeroFocalOverlay
+            handle={handle.toLowerCase()}
+            initialFocal={parsedFocal}
+            hasSavedOverride={hasSavedOverride}
+            onLiveChange={setLiveFocal}
+            onExit={() =>
+              navigate({ search: (prev) => ({ ...prev, edit: undefined }), replace: true })
+            }
+          />
+        )}
       </section>
+
 
 
       <section className="px-6 pt-12 pb-8 border-b border-ink/5">
