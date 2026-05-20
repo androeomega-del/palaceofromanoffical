@@ -53,6 +53,7 @@ export interface ShopifyCollection {
   description: string;
   image: ShopifyImage | null;
   updatedAt?: string;
+  productCount?: number;
 }
 export type StorefrontFilterValue = { id: string; label: string; count: number; input: string };
 export type StorefrontFilter = {
@@ -604,7 +605,7 @@ function collectionImageNode(def: CollectionDef): ShopifyImage | null {
   return null;
 }
 
-function defToShopify(def: CollectionDef): ShopifyCollection {
+function defToShopify(def: CollectionDef, productCount?: number): ShopifyCollection {
   return {
     id: `bg-collection:${def.handle}`,
     title: def.title,
@@ -612,6 +613,7 @@ function defToShopify(def: CollectionDef): ShopifyCollection {
     description: def.description,
     image: collectionImageNode(def),
     updatedAt: new Date().toISOString(),
+    productCount,
   };
 }
 
@@ -643,10 +645,29 @@ export async function fetchCollection(handle: string, first = 36) {
   };
 }
 
-export async function fetchCollections(first = 50): Promise<ShopifyCollection[]> {
+async function countCollectionInventory(def: CollectionDef): Promise<number> {
+  let b: any = supabase
+    .from("bg_products")
+    .select("id", { count: "exact", head: true })
+    .eq("in_stock", true);
+  b = applyCollectionFilter(b, def);
+  const { count, error } = await b;
+  if (error) {
+    console.error("bg collection inventory count error:", def.handle, error);
+    return 0;
+  }
+  return count ?? 0;
+}
+
+export async function fetchCollections(first = 250): Promise<ShopifyCollection[]> {
   const dyn = await getDynamicCollections();
   const all = [...STATIC_COLLECTIONS, ...dyn];
-  return all.slice(0, first).map(defToShopify);
+  const counts = await Promise.all(all.map((def) => countCollectionInventory(def)));
+  return all
+    .map((def, index) => ({ def, count: counts[index] ?? 0 }))
+    .filter(({ count }) => count > 0)
+    .slice(0, first)
+    .map(({ def, count }) => defToShopify(def, count));
 }
 
 export async function fetchCollectionFiltered(opts: {
