@@ -183,7 +183,7 @@ export function SiteHeader() {
             >
               <MobileMegamenu />
               <div className="mt-4 pt-4 border-t border-ink/10 flex flex-col gap-1">
-                {[...FLAT_LEFT, ...FLAT_RIGHT].map((n) => (
+                {[...flatLeft, ...flatRight].map((n) => (
                   <Link
                     key={n.label}
                     to={n.to as any}
