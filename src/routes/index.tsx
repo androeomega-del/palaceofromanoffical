@@ -1,10 +1,11 @@
 import { createFileRoute, ClientOnly, Link, useRouter } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { fetchProducts, fetchCollection, fetchSearchFiltered, type ShopifyProduct } from "@/lib/shopify";
+import { fetchProducts, fetchCollection, fetchCollections, fetchSearchFiltered, type ShopifyCollection, type ShopifyProduct } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
 import { EditorialHotspots } from "@/components/editorial-hotspots";
 import { CampaignVideo } from "@/components/campaign-video";
+import { collectionImage, collectionImageAlt, collectionImageFocal } from "@/lib/collection-image";
 import heroImage from "@/assets/home-hero.jpg";
 import summerHero from "@/assets/summer-bento-hero.jpg";
 import editorialHero from "@/assets/editorial/may-2026/1.webp";
@@ -176,6 +177,10 @@ function HomePage() {
       sortKey: "BEST_SELLING",
     }).then((r) => r.edges),
   });
+  const inventoryCollectionsQ = useQuery({
+    queryKey: ["home", "inventory-collections"],
+    queryFn: () => fetchCollections(500),
+  });
 
   // Editorial split sources — one image per panel, pulled from real data.
   const womenEditorialQ = useQuery({
@@ -232,6 +237,11 @@ function HomePage() {
       <ClientOnly fallback={<SummerBentoSkeleton />}>
         <SummerBento {...SUMMER_BENTO_PROPS} />
       </ClientOnly>
+
+      <InventoryCollectionsSection
+        collections={inventoryCollectionsQ.data ?? []}
+        loading={inventoryCollectionsQ.isLoading}
+      />
 
       {/* 1b. SWIMWEAR RAIL — Bikinis, Beachwear, Resort */}
       <section className="py-20 md:py-24 bg-canvas-raised">
