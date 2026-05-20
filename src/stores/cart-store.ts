@@ -141,6 +141,16 @@ export const useCartStore = create<CartStore>()(
       addItem: async (item) => {
         const { items, cartId, clearCart } = get();
         const existing = items.find((i) => i.variantId === item.variantId);
+        const trackAdd = () =>
+          trackCartEvent({
+            event_type: "add_to_cart",
+            product_handle: item.product?.handle ?? null,
+            product_title: item.product?.title ?? null,
+            variant_id: item.variantId,
+            variant_title: item.variantTitle,
+            price_usd: item.price ? Number(item.price.amount) : null,
+            quantity: item.quantity,
+          });
         set({ isLoading: true });
         try {
           if (!cartId) {
