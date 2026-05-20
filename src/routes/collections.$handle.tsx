@@ -22,6 +22,7 @@ import {
   type Selection,
   type SortValue,
 } from "@/components/catalog-filters";
+import { HeroFocalOverlay } from "@/components/hero-focal-overlay";
 
 const SORT_VALUES = SORT_OPTIONS.map((o) => o.value);
 
