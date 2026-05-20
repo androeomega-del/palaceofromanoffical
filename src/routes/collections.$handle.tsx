@@ -117,7 +117,7 @@ function titleizeHandle(handle: string) {
 
 function CollectionPage() {
   const { handle } = Route.useParams();
-  const { sort } = Route.useSearch();
+  const { sort, edit } = Route.useSearch();
   const navigate = useNavigate({ from: "/collections/$handle" });
   const setSort = (v: SortValue) =>
     navigate({ search: (prev: { sort: SortValue }) => ({ ...prev, sort: v }), replace: true });
