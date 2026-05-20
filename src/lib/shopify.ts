@@ -577,7 +577,7 @@ export function formatPrice(money: Money | undefined) {
   const amount = parseFloat(money.amount);
   return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: money.currencyCode || "EUR",
+    currency: money.currencyCode || "USD",
     maximumFractionDigits: 0,
   }).format(amount);
 }
