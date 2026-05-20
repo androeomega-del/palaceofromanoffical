@@ -190,7 +190,7 @@ function EditorialMay2026() {
             </span>
             <Link
               to="/collections/$handle"
-              params={{ handle: hero.shop.kind === "collection" ? hero.shop.handle : "womens-clothing" }}
+              params={{ handle: hero.shop.kind === "collection" ? hero.shop.handle : "womens-bags" }}
               className="text-[10px] uppercase tracking-[0.3em] text-white border-b border-white/60 hover:border-white pb-1"
             >
               {hero.shop.label} →
