@@ -54,6 +54,24 @@ export function SiteHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
+  // Live Shopify collection handles — used to hide flat links whose target
+  // collection no longer exists, so the header never shows broken links.
+  const { data: liveCollections } = useQuery({
+    queryKey: ["collections-all"],
+    queryFn: () => fetchCollections(100),
+    staleTime: 5 * 60_000,
+  });
+  const liveHandles = useMemo(
+    () => (liveCollections ? new Set(liveCollections.map((c) => c.handle)) : null),
+    [liveCollections],
+  );
+  const isLiveFlat = (n: FlatItem) =>
+    n.to !== "/collections/$handle" ||
+    !liveHandles ||
+    (!!n.params?.handle && liveHandles.has(n.params.handle));
+  const flatLeft = useMemo(() => FLAT_LEFT.filter(isLiveFlat), [liveHandles]);
+  const flatRight = useMemo(() => FLAT_RIGHT.filter(isLiveFlat), [liveHandles]);
+
 
   // Lock body scroll when mobile drawer is open
   useEffect(() => {
