@@ -295,12 +295,12 @@ export async function fetchCollections(max = 500): Promise<ShopifyCollection[]> 
     };
   };
   while (out.length < max) {
-    const res: { data?: Page } | null = await storefrontApiRequest<Page>(
+    const res = (await storefrontApiRequest<Page>(
       COLLECTIONS_LIST,
       { first: Math.min(pageSize, max - out.length), after },
-    );
+    )) as { data?: Page } | undefined;
     if (!res?.data) break;
-    const pg = res.data.collections;
+    const pg: Page["collections"] = res.data.collections;
     for (const { node } of pg.edges) {
       const firstProductImage = node.products?.edges?.[0]?.node?.images?.edges?.[0]?.node ?? null;
       out.push({
