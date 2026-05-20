@@ -22,7 +22,7 @@ interface CartStore {
   openDrawer: () => void;
   closeDrawer: () => void;
   setDrawerOpen: (v: boolean) => void;
-  addItem: (item: Omit<CartItem, "lineId">) => Promise<void>;
+  addItem: (item: Omit<CartItem, "lineId">) => Promise<boolean>;
   updateQuantity: (variantId: string, quantity: number) => Promise<void>;
   removeItem: (variantId: string) => Promise<void>;
   clearCart: () => void;
@@ -150,24 +150,46 @@ export const useCartStore = create<CartStore>()(
                 checkoutUrl: result.checkoutUrl,
                 items: [{ ...item, lineId: result.lineId }],
               });
+              return true;
             }
+            return false;
           } else if (existing) {
             const newQty = existing.quantity + item.quantity;
-            if (!existing.lineId) return;
+            if (!existing.lineId) return false;
             const r = await updateShopifyCartLine(cartId, existing.lineId, newQty);
             if (r.success) {
               const cur = get().items;
               set({ items: cur.map((i) => (i.variantId === item.variantId ? { ...i, quantity: newQty } : i)) });
-            } else if (r.cartNotFound) clearCart();
+              return true;
+            } else if (r.cartNotFound) {
+              clearCart();
+              const result = await createShopifyCart({ ...item, lineId: null, quantity: newQty });
+              if (result) {
+                set({ cartId: result.cartId, checkoutUrl: result.checkoutUrl, items: [{ ...item, quantity: newQty, lineId: result.lineId }] });
+                return true;
+              }
+            }
+            return false;
           } else {
             const r = await addLineToShopifyCart(cartId, { ...item, lineId: null });
             if (r.success) {
               const cur = get().items;
-              set({ items: [...cur, { ...item, lineId: r.lineId ?? null }] });
-            } else if (r.cartNotFound) clearCart();
+              if (!r.lineId) return false;
+              set({ items: [...cur, { ...item, lineId: r.lineId }] });
+              return true;
+            } else if (r.cartNotFound) {
+              clearCart();
+              const result = await createShopifyCart({ ...item, lineId: null });
+              if (result) {
+                set({ cartId: result.cartId, checkoutUrl: result.checkoutUrl, items: [{ ...item, lineId: result.lineId }] });
+                return true;
+              }
+            }
+            return false;
           }
         } catch (e) {
           console.error("addItem failed", e);
+          return false;
         } finally {
           set({ isLoading: false });
         }
