@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { fetchCollections, type ShopifyCollection } from "@/lib/shopify";
+import { collectionImage } from "@/lib/collection-image";
 import { routeHead } from "@/lib/seo";
 
 type FilterKey = "all" | "women" | "men" | "clothing" | "shoes" | "luxury";
@@ -303,9 +304,13 @@ function CollectionCard({
   slot: SlotKind;
   index: number;
 }) {
-  const image = c.image;
+  const shopifyImg = c.image;
+  const fallbackUrl = collectionImage({ title: c.title, handle: c.handle, description: c.description });
+  const imgUrl = shopifyImg?.url ?? fallbackUrl;
+  const imgWidth = shopifyImg?.width ?? 1200;
+  const imgHeight = shopifyImg?.height ?? 1500;
   const objectPosition = "50% 50%";
-  const alt = image?.altText ?? `${c.title} collection at Palace of Roman`;
+  const alt = shopifyImg?.altText ?? `${c.title} collection at Palace of Roman`;
 
   const wrapperClass =
     slot === "feature"
@@ -341,18 +346,16 @@ function CollectionCard({
       data-handle={c.handle}
     >
       <div className={`relative ${aspectClass} mb-7 overflow-hidden bg-canvas-raised`}>
-        {image && (
-          <img
-            src={image.url}
-            alt={alt}
-            loading={index < 2 ? "eager" : "lazy"}
-            decoding="async"
-            width={image.width ?? 1200}
-            height={image.height ?? 1500}
-            style={{ objectPosition }}
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1500ms] ease-out group-hover:scale-[1.05]"
-          />
-        )}
+        <img
+          src={imgUrl}
+          alt={alt}
+          loading={index < 2 ? "eager" : "lazy"}
+          decoding="async"
+          width={imgWidth}
+          height={imgHeight}
+          style={{ objectPosition }}
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1500ms] ease-out group-hover:scale-[1.05]"
+        />
 
         {slot === "feature" ? (
           <>
