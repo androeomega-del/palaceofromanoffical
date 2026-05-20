@@ -384,7 +384,16 @@ function HomePage() {
             <span className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-4 block">Most Coveted</span>
             <h2 className="text-3xl md:text-4xl font-serif">Best Sellers</h2>
           </div>
-          <ProductGrid edges={bestSellersQ.data ?? []} loading={bestSellersQ.isLoading} />
+          <ProductCarousel edges={bestSellersQ.data ?? []} loading={bestSellersQ.isLoading} />
+          <div className="mt-12 text-center">
+            <Link
+              to="/collections/$handle"
+              params={{ handle: "best-sellers" }}
+              className="text-[10px] uppercase tracking-[0.25em] border-b border-ink pb-1 hover:text-bronze hover:border-bronze transition-colors"
+            >
+              View all best sellers
+            </Link>
+          </div>
         </div>
       </section>
 
