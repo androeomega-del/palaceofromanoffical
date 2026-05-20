@@ -203,10 +203,10 @@ function CollectionPage() {
       }
       return fetchCollectionFiltered({
         handle,
-        first: isHighDiscounts ? 250 : 36,
+        first: 36,
         filters: filterInputs,
-        sortKey,
-        reverse,
+        sortKey: isHighDiscounts ? "PRICE" : sortKey,
+        reverse: isHighDiscounts ? false : reverse,
       });
     },
   });
@@ -214,16 +214,9 @@ function CollectionPage() {
   const data = q.data;
   const filters = data?.filters ?? [];
   const rawEdges = data?.edges ?? [];
-  const discountEdges = useMemo(() => {
-    if (!isHighDiscounts) return rawEdges;
-    return rawEdges.filter((e: any) => {
-      const price = parseFloat(e.node.priceRange?.minVariantPrice?.amount ?? "0");
-      const compare = parseFloat(e.node.compareAtPriceRange?.minVariantPrice?.amount ?? "0");
-      if (!price || !compare || compare <= price) return false;
-      const pct = ((compare - price) / compare) * 100;
-      return pct >= 50;
-    });
-  }, [rawEdges, isHighDiscounts]);
+  // High Discounts is the entry-price edit — surface lowest-priced in-stock items.
+  // (No synthetic % off; we have no MSRP-vs-sale data to anchor a real discount.)
+  const discountEdges = rawEdges;
 
   // Derive available product types from the current result set
   const typeCounts = useMemo(() => {
