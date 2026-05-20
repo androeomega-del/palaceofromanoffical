@@ -380,21 +380,27 @@ function ProductView({
 
             {/* Desktop: stacked tall frames */}
             <div className="hidden lg:flex flex-col gap-8">
-              {(images.length ? images : [{ url: "", altText: product.title }]).map((img, i) => (
-                <div
-                  key={img.url || i}
-                  className="bg-white aspect-[3/4] overflow-hidden shadow-[0_1px_2px_rgba(26,26,26,0.04),0_24px_48px_-24px_rgba(26,26,26,0.08)]"
-                >
-                  {img.url && (
-                    <img
-                      src={img.url}
-                      alt={img.altText ?? product.title}
-                      className="w-full h-full object-cover transition-transform duration-[1400ms] hover:scale-[1.02]"
-                    />
-                  )}
-                </div>
-              ))}
+              {(images.length ? images : [{ url: "", altText: product.title }]).map((img, i) => {
+                const oversized = editorial && i === 0;
+                return (
+                  <div
+                    key={img.url || i}
+                    className={`bg-white overflow-hidden shadow-[0_1px_2px_rgba(26,26,26,0.04),0_24px_48px_-24px_rgba(26,26,26,0.08)] ${
+                      oversized ? "aspect-[4/5]" : "aspect-[3/4]"
+                    }`}
+                  >
+                    {img.url && (
+                      <img
+                        src={img.url}
+                        alt={img.altText ?? product.title}
+                        className="w-full h-full object-cover transition-transform duration-[1400ms] hover:scale-[1.02]"
+                      />
+                    )}
+                  </div>
+                );
+              })}
             </div>
+
           </div>
 
           {/* ===== Info column ===== */}
