@@ -42,6 +42,7 @@ import { Route as AdminCollectionFocalRouteImport } from './routes/admin.collect
 import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 import { Route as ApiPublicSeoHealthRouteImport } from './routes/api/public/seo-health'
 import { Route as ApiPublicHooksSyncCollectionImagesRouteImport } from './routes/api/public/hooks/sync-collection-images'
+import { Route as ApiPublicHooksExpireShopifyTagsRouteImport } from './routes/api/public/hooks/expire-shopify-tags'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -212,6 +213,12 @@ const ApiPublicHooksSyncCollectionImagesRoute =
     path: '/api/public/hooks/sync-collection-images',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksExpireShopifyTagsRoute =
+  ApiPublicHooksExpireShopifyTagsRouteImport.update({
+    id: '/api/public/hooks/expire-shopify-tags',
+    path: '/api/public/hooks/expire-shopify-tags',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -246,6 +253,7 @@ export interface FileRoutesByFullPath {
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/collections/': typeof CollectionsIndexRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
+  '/api/public/hooks/expire-shopify-tags': typeof ApiPublicHooksExpireShopifyTagsRoute
   '/api/public/hooks/sync-collection-images': typeof ApiPublicHooksSyncCollectionImagesRoute
 }
 export interface FileRoutesByTo {
@@ -281,6 +289,7 @@ export interface FileRoutesByTo {
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/collections': typeof CollectionsIndexRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
+  '/api/public/hooks/expire-shopify-tags': typeof ApiPublicHooksExpireShopifyTagsRoute
   '/api/public/hooks/sync-collection-images': typeof ApiPublicHooksSyncCollectionImagesRoute
 }
 export interface FileRoutesById {
@@ -317,6 +326,7 @@ export interface FileRoutesById {
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/collections/': typeof CollectionsIndexRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
+  '/api/public/hooks/expire-shopify-tags': typeof ApiPublicHooksExpireShopifyTagsRoute
   '/api/public/hooks/sync-collection-images': typeof ApiPublicHooksSyncCollectionImagesRoute
 }
 export interface FileRouteTypes {
@@ -354,6 +364,7 @@ export interface FileRouteTypes {
     | '/swim/size-guide'
     | '/collections/'
     | '/api/public/seo-health'
+    | '/api/public/hooks/expire-shopify-tags'
     | '/api/public/hooks/sync-collection-images'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -389,6 +400,7 @@ export interface FileRouteTypes {
     | '/swim/size-guide'
     | '/collections'
     | '/api/public/seo-health'
+    | '/api/public/hooks/expire-shopify-tags'
     | '/api/public/hooks/sync-collection-images'
   id:
     | '__root__'
@@ -424,6 +436,7 @@ export interface FileRouteTypes {
     | '/swim/size-guide'
     | '/collections/'
     | '/api/public/seo-health'
+    | '/api/public/hooks/expire-shopify-tags'
     | '/api/public/hooks/sync-collection-images'
   fileRoutesById: FileRoutesById
 }
@@ -459,6 +472,7 @@ export interface RootRouteChildren {
   ProductHandleRoute: typeof ProductHandleRoute
   CollectionsIndexRoute: typeof CollectionsIndexRoute
   ApiPublicSeoHealthRoute: typeof ApiPublicSeoHealthRoute
+  ApiPublicHooksExpireShopifyTagsRoute: typeof ApiPublicHooksExpireShopifyTagsRoute
   ApiPublicHooksSyncCollectionImagesRoute: typeof ApiPublicHooksSyncCollectionImagesRoute
 }
 
@@ -695,6 +709,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksSyncCollectionImagesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/expire-shopify-tags': {
+      id: '/api/public/hooks/expire-shopify-tags'
+      path: '/api/public/hooks/expire-shopify-tags'
+      fullPath: '/api/public/hooks/expire-shopify-tags'
+      preLoaderRoute: typeof ApiPublicHooksExpireShopifyTagsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -740,6 +761,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProductHandleRoute: ProductHandleRoute,
   CollectionsIndexRoute: CollectionsIndexRoute,
   ApiPublicSeoHealthRoute: ApiPublicSeoHealthRoute,
+  ApiPublicHooksExpireShopifyTagsRoute: ApiPublicHooksExpireShopifyTagsRoute,
   ApiPublicHooksSyncCollectionImagesRoute:
     ApiPublicHooksSyncCollectionImagesRoute,
 }
