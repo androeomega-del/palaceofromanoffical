@@ -127,8 +127,7 @@ function ShopPage() {
           filters: [
             ...filterInputs,
             ...(search.inStock ? [{ available: true }] : []),
-            ...(gender ? [{ productMetafield: { namespace: "shopify", key: "target-gender", value: gender } }] : []),
-            ...(search.q ? [{ productMetafield: undefined } as never].filter(() => false) : []),
+            ...(gender ? [{ tag: gender }] : []),
           ],
           sortKey,
           reverse,
