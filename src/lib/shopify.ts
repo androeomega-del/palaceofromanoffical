@@ -288,13 +288,17 @@ export async function fetchCollections(max = 500): Promise<ShopifyCollection[]> 
   const out: ShopifyCollection[] = [];
   let after: string | null = null;
   const pageSize = 250;
+  type Page = {
+    collections: {
+      pageInfo: { hasNextPage: boolean; endCursor: string | null };
+      edges: Array<{ node: CollectionListNode }>;
+    };
+  };
   while (out.length < max) {
-    const res = await storefrontApiRequest<{
-      collections: {
-        pageInfo: { hasNextPage: boolean; endCursor: string | null };
-        edges: Array<{ node: CollectionListNode }>;
-      };
-    }>(COLLECTIONS_LIST, { first: Math.min(pageSize, max - out.length), after });
+    const res: { data?: Page } | null = await storefrontApiRequest<Page>(
+      COLLECTIONS_LIST,
+      { first: Math.min(pageSize, max - out.length), after },
+    );
     if (!res?.data) break;
     const pg = res.data.collections;
     for (const { node } of pg.edges) {
