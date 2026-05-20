@@ -178,6 +178,17 @@ function resolveCanonicalHandle(raw: string): string {
   if (HANDLE_ALIASES[norm] && BY_HANDLE[HANDLE_ALIASES[norm]]) {
     return HANDLE_ALIASES[norm];
   }
+  // Prefix swap: dynamic collections produce `women-X` / `men-X` while
+  // curated assets live under `womens-X` / `mens-X`.
+  const prefixed = norm
+    .replace(/^women-/, "womens-")
+    .replace(/^men-/, "mens-");
+  if (prefixed !== norm) {
+    if (BY_HANDLE[prefixed]) return prefixed;
+    if (HANDLE_ALIASES[prefixed] && BY_HANDLE[HANDLE_ALIASES[prefixed]]) {
+      return HANDLE_ALIASES[prefixed];
+    }
+  }
   return "";
 }
 
