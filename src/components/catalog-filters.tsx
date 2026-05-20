@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { ChevronDown, ChevronUp, Search, X } from "lucide-react";
 import type { StorefrontFilter, StorefrontFilterValue } from "@/lib/shopify";
+import { CATEGORY_COLLECTIONS, GENDERS, type Category, type Gender } from "@/lib/shop-taxonomy";
 import { cn } from "@/lib/utils";
 
 // Selection model: array of { id, label, input } where input is the JSON
