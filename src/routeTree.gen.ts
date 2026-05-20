@@ -38,6 +38,7 @@ import { Route as AdminCollectionImagePreviewRouteImport } from './routes/admin.
 import { Route as AdminCollectionHeroRegressionRouteImport } from './routes/admin.collection-hero-regression'
 import { Route as AdminCollectionFocalRouteImport } from './routes/admin.collection-focal'
 import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
+import { Route as ApiPublicSeoHealthRouteImport } from './routes/api/public/seo-health'
 import { Route as ApiPublicHooksSyncCollectionImagesRouteImport } from './routes/api/public/hooks/sync-collection-images'
 
 const TermsRoute = TermsRouteImport.update({
@@ -188,6 +189,11 @@ const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
   path: '/admin/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicSeoHealthRoute = ApiPublicSeoHealthRouteImport.update({
+  id: '/api/public/seo-health',
+  path: '/api/public/seo-health',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksSyncCollectionImagesRoute =
   ApiPublicHooksSyncCollectionImagesRouteImport.update({
     id: '/api/public/hooks/sync-collection-images',
@@ -225,6 +231,7 @@ export interface FileRoutesByFullPath {
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/collections/': typeof CollectionsIndexRoute
+  '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
   '/api/public/hooks/sync-collection-images': typeof ApiPublicHooksSyncCollectionImagesRoute
 }
 export interface FileRoutesByTo {
@@ -257,6 +264,7 @@ export interface FileRoutesByTo {
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/collections': typeof CollectionsIndexRoute
+  '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
   '/api/public/hooks/sync-collection-images': typeof ApiPublicHooksSyncCollectionImagesRoute
 }
 export interface FileRoutesById {
@@ -290,6 +298,7 @@ export interface FileRoutesById {
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/collections/': typeof CollectionsIndexRoute
+  '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
   '/api/public/hooks/sync-collection-images': typeof ApiPublicHooksSyncCollectionImagesRoute
 }
 export interface FileRouteTypes {
@@ -324,6 +333,7 @@ export interface FileRouteTypes {
     | '/product/$handle'
     | '/swim/size-guide'
     | '/collections/'
+    | '/api/public/seo-health'
     | '/api/public/hooks/sync-collection-images'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -356,6 +366,7 @@ export interface FileRouteTypes {
     | '/product/$handle'
     | '/swim/size-guide'
     | '/collections'
+    | '/api/public/seo-health'
     | '/api/public/hooks/sync-collection-images'
   id:
     | '__root__'
@@ -388,6 +399,7 @@ export interface FileRouteTypes {
     | '/product/$handle'
     | '/swim/size-guide'
     | '/collections/'
+    | '/api/public/seo-health'
     | '/api/public/hooks/sync-collection-images'
   fileRoutesById: FileRoutesById
 }
@@ -420,6 +432,7 @@ export interface RootRouteChildren {
   EditorialTheNewEveningRoute: typeof EditorialTheNewEveningRoute
   ProductHandleRoute: typeof ProductHandleRoute
   CollectionsIndexRoute: typeof CollectionsIndexRoute
+  ApiPublicSeoHealthRoute: typeof ApiPublicSeoHealthRoute
   ApiPublicHooksSyncCollectionImagesRoute: typeof ApiPublicHooksSyncCollectionImagesRoute
 }
 
@@ -628,6 +641,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/seo-health': {
+      id: '/api/public/seo-health'
+      path: '/api/public/seo-health'
+      fullPath: '/api/public/seo-health'
+      preLoaderRoute: typeof ApiPublicSeoHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/sync-collection-images': {
       id: '/api/public/hooks/sync-collection-images'
       path: '/api/public/hooks/sync-collection-images'
@@ -677,9 +697,20 @@ const rootRouteChildren: RootRouteChildren = {
   EditorialTheNewEveningRoute: EditorialTheNewEveningRoute,
   ProductHandleRoute: ProductHandleRoute,
   CollectionsIndexRoute: CollectionsIndexRoute,
+  ApiPublicSeoHealthRoute: ApiPublicSeoHealthRoute,
   ApiPublicHooksSyncCollectionImagesRoute:
     ApiPublicHooksSyncCollectionImagesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
