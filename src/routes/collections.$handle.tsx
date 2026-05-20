@@ -8,6 +8,8 @@ import { pageTitle, metaDescription, absoluteUrl, SITE_URL } from "@/lib/seo";
 import { collectionSeo } from "@/lib/collection-seo";
 import {
   collectionImage,
+  responsiveCollectionImage,
+  HERO_RESPONSIVE_WIDTHS,
   collectionImageAlt,
   collectionImageFocal,
 } from "@/lib/collection-image";
