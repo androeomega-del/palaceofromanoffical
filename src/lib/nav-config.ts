@@ -57,10 +57,11 @@ const WOMEN_RULES: ClassifierRule[] = [
   { column: "Fine Accessories", order: 1,  match: (s) => s === "watches",         label: "Watches" },
   { column: "Fine Accessories", order: 2,  match: (s) => s === "scarves",         label: "Scarves & Shawls" },
   { column: "Fine Accessories", order: 3,  match: (s) => s === "hats",            label: "Hats" },
-  { column: "Fine Accessories", order: 9,  match: (s) => s.startsWith("accessories"), label: "All Accessories" },
+  { column: "Fine Accessories", order: 9,  match: (s) => s === "accessories" || s.startsWith("accessories"), label: "All Accessories" },
 ];
 
 const MEN_RULES: ClassifierRule[] = [
+  { column: "Apparel",              order: 0, match: (s) => s === "clothing",               label: "All Clothing" },
   { column: "Tailoring",            order: 0, match: (s) => s === "suits",                  label: "Suits" },
   { column: "Tailoring",            order: 1, match: (s) => s === "jackets-coats",          label: "Jackets & Coats" },
   { column: "Shirts & Knitwear",    order: 0, match: (s) => s === "shirts",                 label: "Shirts" },
@@ -76,14 +77,14 @@ const MEN_RULES: ClassifierRule[] = [
   { column: "Shoes",                order: 1, match: (s) => s === "sneakers",               label: "Sneakers" },
   { column: "Shoes",                order: 2, match: (s) => s === "boots",                  label: "Boots" },
   { column: "Shoes",                order: 3, match: (s) => s === "sandals-slides",         label: "Sandals & Slides" },
-  { column: "Accessories",          order: 0, match: (s) => s === "bags-wallets",           label: "Bags & Wallets" },
+  { column: "Accessories",          order: 0, match: (s) => s === "bags" || s === "bags-wallets", label: "Bags" },
   { column: "Accessories",          order: 1, match: (s) => s === "belts",                  label: "Belts" },
   { column: "Accessories",          order: 2, match: (s) => s === "watches-jewelry",        label: "Watches & Jewellery" },
-  { column: "Accessories",          order: 9, match: (s) => s.startsWith("accessories"),    label: "All Accessories" },
+  { column: "Accessories",          order: 9, match: (s) => s === "accessories" || s.startsWith("accessories"), label: "All Accessories" },
 ];
 
 const WOMEN_COLUMN_ORDER = ["Apparel", "Shoes", "Bags & Leather", "Fine Accessories"];
-const MEN_COLUMN_ORDER   = ["Tailoring", "Shirts & Knitwear", "Bottoms & Beach", "Shoes", "Accessories"];
+const MEN_COLUMN_ORDER   = ["Apparel", "Tailoring", "Shirts & Knitwear", "Bottoms & Beach", "Shoes", "Accessories"];
 
 function cleanTitle(title: string, prefixWord: "Women's" | "Men's"): string {
   return title.replace(new RegExp(`^${prefixWord.replace("'", "['']")}\\s*`, "i"), "").trim() || title;
