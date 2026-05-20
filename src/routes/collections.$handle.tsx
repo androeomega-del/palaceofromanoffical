@@ -387,19 +387,9 @@ function CollectionPage() {
               <SortPresets
                 value={sort}
                 onChange={setSort}
-                extra={
-                  handle !== "high-discounts" && (
-                    <Link
-                      to="/collections/$handle"
-                      params={{ handle: "high-discounts" }}
-                      className="text-[10px] uppercase tracking-[0.2em] px-3 py-2 border border-bronze/40 text-bronze hover:bg-bronze hover:text-canvas transition-colors"
-                    >
-                      High Discounts
-                    </Link>
-                  )
-                }
               />
             </div>
+
 
 
             {/* Product type chips — derived from titles in the current result set */}
