@@ -803,7 +803,6 @@ function SummerBento({
   menImage,
   accessoriesImage,
   swimImage,
-  saleImage,
   spotlightImage,
   spotlightVendor,
   spotlightSlug,
@@ -812,7 +811,6 @@ function SummerBento({
   menImage?: ShopifyImg;
   accessoriesImage?: ShopifyImg;
   swimImage?: ShopifyImg;
-  saleImage?: ShopifyImg;
   spotlightImage?: ShopifyImg;
   spotlightVendor?: string;
   spotlightSlug?: string;
