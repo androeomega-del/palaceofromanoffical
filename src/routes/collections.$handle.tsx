@@ -44,16 +44,6 @@ export const Route = createFileRoute("/collections/$handle")({
     return edit ? { sort, edit } : { sort };
   },
   loader: async ({ params }) => {
-    // /collections/best-sellers is a virtual collection — no Shopify
-    // collection exists by that handle, so synthesise the SEO surface.
-    if (params.handle === "best-sellers") {
-      return {
-        title: "Best Sellers",
-        description:
-          "The pieces our clients reach for most — a live ranking of the boutique's most-ordered styles across every maison.",
-        image: null,
-      };
-    }
     try {
       const c = await fetchCollection(params.handle, 1);
       return {
