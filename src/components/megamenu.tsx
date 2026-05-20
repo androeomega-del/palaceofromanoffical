@@ -36,7 +36,7 @@ export function DesktopMegamenu() {
 
   const { data: liveCollections } = useQuery({
     queryKey: ["collections-all"],
-    queryFn: () => fetchCollections(100),
+    queryFn: () => fetchCollections(500),
     staleTime: 5 * 60_000,
   });
 
@@ -586,7 +586,7 @@ export function MobileMegamenu() {
 
   const { data: liveCollections } = useQuery({
     queryKey: ["collections-all"],
-    queryFn: () => fetchCollections(100),
+    queryFn: () => fetchCollections(500),
     staleTime: 5 * 60_000,
   });
   const liveHandles = liveCollections

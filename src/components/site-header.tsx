@@ -58,7 +58,7 @@ export function SiteHeader() {
   // collection no longer exists, so the header never shows broken links.
   const { data: liveCollections } = useQuery({
     queryKey: ["collections-all"],
-    queryFn: () => fetchCollections(100),
+    queryFn: () => fetchCollections(500),
     staleTime: 5 * 60_000,
   });
   const liveHandles = useMemo(
