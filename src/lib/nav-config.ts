@@ -113,20 +113,30 @@ function buildDepartment(
 
   // Dedupe by handle in case multiple prefixes match the same suffix.
   const seen = new Set<string>();
+  const moreItems: Array<MegaItem & { _order: number }> = [];
   for (const c of collections) {
     const matchedPrefix = prefixes.find((p) => c.handle.startsWith(p));
     if (!matchedPrefix) continue;
     if (seen.has(c.handle)) continue;
+    seen.add(c.handle);
     const suffix = c.handle.slice(matchedPrefix.length);
     const rule = rules.find((r) => r.match(suffix));
-    if (!rule) continue;
-    seen.add(c.handle);
 
-    const label = rule.label ?? cleanTitle(c.title, prefixWord);
-    const arr = grouped.get(rule.column) ?? [];
-    arr.push({ handle: c.handle, label, ...({ _order: rule.order } as object) } as MegaItem & { _order: number });
-    grouped.set(rule.column, arr);
+    if (rule) {
+      const label = rule.label ?? cleanTitle(c.title, prefixWord);
+      const arr = grouped.get(rule.column) ?? [];
+      arr.push({ handle: c.handle, label, _order: rule.order } as MegaItem & { _order: number });
+      grouped.set(rule.column, arr);
+    } else {
+      // Catchall — surface every prefix-matching collection so nothing is hidden.
+      moreItems.push({ handle: c.handle, label: cleanTitle(c.title, prefixWord), _order: 99 });
+    }
   }
+  if (moreItems.length > 0) {
+    moreItems.sort((a, b) => a.label.localeCompare(b.label));
+    grouped.set("More", moreItems);
+  }
+
 
   // Build columns in defined order, sorting items by their rule order.
   const columns: MegaColumn[] = [];
