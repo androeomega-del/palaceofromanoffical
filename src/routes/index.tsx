@@ -177,10 +177,6 @@ function HomePage() {
       sortKey: "BEST_SELLING",
     }).then((r) => r.edges),
   });
-  const inventoryCollectionsQ = useQuery({
-    queryKey: ["home", "inventory-collections"],
-    queryFn: () => fetchCollections(1000),
-  });
 
   // Editorial split sources — one image per panel, pulled from real data.
   const womenEditorialQ = useQuery({
