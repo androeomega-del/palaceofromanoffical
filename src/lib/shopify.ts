@@ -502,6 +502,18 @@ function applyCollectionFilter(builder: any, def: CollectionDef): any {
   if (f.category) b = b.ilike("category", f.category);
   if (f.subcategory) b = b.ilike("subcategory", f.subcategory);
   if (f.subsubcategory) b = b.ilike("subsubcategory", f.subsubcategory);
+  if (f.subcategoryIn && f.subcategoryIn.length > 0) {
+    const clause = f.subcategoryIn
+      .map((s) => `subcategory.ilike.${s.replace(/,/g, " ")}`)
+      .join(",");
+    b = b.or(clause);
+  }
+  if (f.categoryIn && f.categoryIn.length > 0) {
+    const clause = f.categoryIn
+      .map((s) => `category.ilike.${s.replace(/,/g, " ")}`)
+      .join(",");
+    b = b.or(clause);
+  }
   if (f.available) b = b.eq("in_stock", true);
   return b;
 }
