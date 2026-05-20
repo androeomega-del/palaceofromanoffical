@@ -85,15 +85,27 @@ function SwimPage() {
   const q = useInfiniteQuery({
     queryKey: ["swim-search", category.key, filterInputs, sortKey, reverse],
     initialPageParam: null as string | null,
-    queryFn: ({ pageParam }) =>
-      fetchSearchFiltered({
+    queryFn: async ({ pageParam }) => {
+      if (category.key === "all") {
+        const r = await fetchCollectionFiltered({
+          handle: "swimwear",
+          first: 36,
+          after: pageParam,
+          filters: filterInputs,
+          sortKey,
+          reverse,
+        });
+        return r ?? { edges: [], pageInfo: { hasNextPage: false, endCursor: null }, filters: [] };
+      }
+      return fetchSearchFiltered({
         query: category.query,
         first: 36,
         after: pageParam,
         filters: filterInputs,
         sortKey,
         reverse,
-      }),
+      });
+    },
     getNextPageParam: (last) => (last.pageInfo.hasNextPage ? last.pageInfo.endCursor : undefined),
   });
 
