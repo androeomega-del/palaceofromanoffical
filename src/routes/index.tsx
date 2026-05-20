@@ -813,15 +813,15 @@ function SummerBento({
   spotlightVendor?: string;
   spotlightSlug?: string;
 }) {
-  // Hydration-safe guard: render a placeholder on the first paint (and on
-  // any SSR pass that bypasses the parent ClientOnly) so SummerBento's
-  // markup never appears before React has finished hydrating.
+  // Hydration-safe guard: render the matching skeleton (same grid, same
+  // tile spans) on the first paint so the layout slot is reserved exactly
+  // and there's no CLS when the real bento mounts.
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
   }, []);
   if (!mounted) {
-    return <div aria-hidden className="min-h-[80vh] bg-canvas-raised" />;
+    return <SummerBentoSkeleton />;
   }
   return (
     <section className="px-4 md:px-8 lg:px-12 pt-6 md:pt-10 pb-12 md:pb-16">
