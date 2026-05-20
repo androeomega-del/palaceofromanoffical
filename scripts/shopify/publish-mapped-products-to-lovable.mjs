@@ -12,6 +12,8 @@ const SB_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const DRY = process.argv.includes('--dry');
 const limitArg = process.argv.find((a) => a.startsWith('--limit='));
 const LIMIT = limitArg ? parseInt(limitArg.split('=')[1], 10) : Infinity;
+const skipArg = process.argv.find((a) => a.startsWith('--skip='));
+const SKIP = skipArg ? parseInt(skipArg.split('=')[1], 10) : 0;
 const PUBLICATION_NAME = 'Lovable';
 
 if (!TOKEN) { console.error('Missing SHOPIFY_ACCESS_TOKEN'); process.exit(1); }
@@ -57,9 +59,10 @@ async function getMappedProductGids() {
     if (!res.ok) throw new Error(`Supabase read ${res.status}: ${await res.text()}`);
     const rows = await res.json();
     for (const row of rows) gids.add(row.product_gid);
-    if (rows.length < pageSize || gids.size >= LIMIT) break;
+    if (rows.length < pageSize) break;
   }
-  return Array.from(gids).slice(0, LIMIT);
+  const all = Array.from(gids);
+  return all.slice(SKIP, SKIP + (LIMIT === Infinity ? all.length : LIMIT));
 }
 
 async function publishProduct(productId, publicationId) {
