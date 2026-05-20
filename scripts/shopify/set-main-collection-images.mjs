@@ -26,24 +26,23 @@ const MARKETING = {
   'swim-campaign':        null, // skip
 };
 
-// Remaining main collections — assigned unique editorial library images.
-// Picked by category fit (editorial library has 99 images numbered 1-99).
+// Remaining main collections — assigned unique generated marketing images.
 const EDITORIAL = {
-  'womens-shoes':   'src/assets/editorial/library/12.png',
-  'women-bags':     'src/assets/editorial/library/23.png',
-  'mens-shoes':     'src/assets/editorial/library/41.png',
-  'men-bags':       'src/assets/editorial/library/55.png',
-  'women-accessories': 'src/assets/editorial/library/28.png',
-  'men-accessories':   'src/assets/editorial/library/63.png',
-  'shoes':          'src/assets/editorial/library/47.png',
-  'boots':          'src/assets/editorial/library/71.png',
-  'loafers':        'src/assets/editorial/library/82.png',
-  'hats':           'src/assets/editorial/library/35.png',
-  'gloves':         'src/assets/editorial/library/89.png',
-  'shirts':         'src/assets/editorial/library/19.png',
-  'skirts':         'src/assets/editorial/library/7.png',
-  'suits':          'src/assets/editorial/library/58.png',
-  'sleepwear':      'src/assets/editorial/library/94.png',
+  'womens-shoes':      'src/assets/marketing-collections/womens-shoes.jpg',
+  'women-bags':        'src/assets/marketing-collections/women-bags.jpg',
+  'mens-shoes':        'src/assets/marketing-collections/mens-shoes.jpg',
+  'men-bags':          'src/assets/marketing-collections/men-bags.jpg',
+  'women-accessories': 'src/assets/marketing-collections/women-accessories.jpg',
+  'men-accessories':   'src/assets/marketing-collections/men-accessories.jpg',
+  'shoes':             'src/assets/marketing-collections/shoes.jpg',
+  'boots':             'src/assets/marketing-collections/boots.jpg',
+  'loafers':           'src/assets/marketing-collections/loafers.jpg',
+  'hats':              'src/assets/marketing-collections/hats.jpg',
+  'gloves':            'src/assets/marketing-collections/gloves.jpg',
+  'shirts':            'src/assets/marketing-collections/shirts.jpg',
+  'skirts':            'src/assets/marketing-collections/skirts.jpg',
+  'suits':             'src/assets/marketing-collections/suits.jpg',
+  'sleepwear':         'src/assets/marketing-collections/sleepwear.jpg',
 };
 
 const ASSIGNMENTS = { ...MARKETING, ...EDITORIAL };
