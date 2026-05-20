@@ -1,0 +1,40 @@
+Handle,Command,Title,Body HTML,Sort Order,Published,Published Scope,Type,Match Column,Rule: Product Column,Rule: Relation,Rule: Condition
+handbags,MERGE,Handbags,<p>Curated handbags from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Handbags
+shirts,MERGE,Shirts,<p>Curated shirts from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Shirts
+watches,MERGE,Watches,<p>Curated watches from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Watches
+shoulder-bags,MERGE,Shoulder Bags,<p>Curated shoulder bags from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Shoulder Bags
+suits,MERGE,Suits,<p>Curated suits from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Suits
+boots,MERGE,Boots,<p>Curated boots from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Boots
+skirts,MERGE,Skirts,<p>Curated skirts from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Skirts
+loafers,MERGE,Loafers,<p>Curated loafers from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Loafers
+hats,MERGE,Hats,<p>Curated hats from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Hats
+swimwear,MERGE,Swimwear,<p>Curated swimwear from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Swimwear
+crossbody-bags,MERGE,Crossbody Bags,<p>Curated crossbody bags from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Crossbody Bags
+other-accessories,MERGE,Other Accessories,<p>Curated other accessories from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Other Accessories
+backpacks,MERGE,Backpacks,<p>Curated backpacks from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Backpacks
+clutch-bags,MERGE,Clutch Bags,<p>Curated clutch bags from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Clutch Bags
+oxfords-and-derbies,MERGE,Oxfords and Derbies,<p>Curated oxfords and derbies from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Oxfords and Derbies
+tote-bags,MERGE,Tote Bags,<p>Curated tote bags from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Tote Bags
+gloves,MERGE,Gloves,<p>Curated gloves from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Gloves
+sleepwear,MERGE,Sleepwear,<p>Curated sleepwear from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Sleepwear
+women,MERGE,Women,"<p>The women collection — curated luxury, delivered worldwide.</p>",best-selling,TRUE,global,Smart,all,Tag,Equals,Women
+men,MERGE,Men,"<p>The men collection — curated luxury, delivered worldwide.</p>",best-selling,TRUE,global,Smart,all,Tag,Equals,Men
+unisex,MERGE,Unisex,"<p>The unisex collection — curated luxury, delivered worldwide.</p>",best-selling,TRUE,global,Smart,all,Tag,Equals,Unisex
+women-bags,MERGE,Women Bags,<p>Women Bags — handpicked from our designer catalog.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Women
+women-bags,MERGE,,,,,,,,Type,Equals,Bags
+women-shoes,MERGE,Women Shoes,<p>Women Shoes — handpicked from our designer catalog.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Women
+women-shoes,MERGE,,,,,,,,Type,Equals,Shoes
+women-clothing,MERGE,Women Clothing,<p>Women Clothing — handpicked from our designer catalog.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Women
+women-clothing,MERGE,,,,,,,,Type,Equals,Clothing
+women-accessories,MERGE,Women Accessories,<p>Women Accessories — handpicked from our designer catalog.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Women
+women-accessories,MERGE,,,,,,,,Type,Equals,Accessories
+men-bags,MERGE,Men Bags,<p>Men Bags — handpicked from our designer catalog.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Men
+men-bags,MERGE,,,,,,,,Type,Equals,Bags
+men-shoes,MERGE,Men Shoes,<p>Men Shoes — handpicked from our designer catalog.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Men
+men-shoes,MERGE,,,,,,,,Type,Equals,Shoes
+men-clothing,MERGE,Men Clothing,<p>Men Clothing — handpicked from our designer catalog.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Men
+men-clothing,MERGE,,,,,,,,Type,Equals,Clothing
+men-accessories,MERGE,Men Accessories,<p>Men Accessories — handpicked from our designer catalog.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Men
+men-accessories,MERGE,,,,,,,,Type,Equals,Accessories
+in-stock,MERGE,In Stock,<p>Available now — ready to ship.</p>,best-selling,TRUE,global,Smart,all,Variant Inventory,Greater Than,0
+new-arrivals,MERGE,New Arrivals,<p>The latest additions to the Palace of Roman catalog.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,New
