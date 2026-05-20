@@ -106,20 +106,29 @@ const CROSS_CATEGORIES: CrossEntry[] = [
   // Gender dropdowns use the prefixed `womens-…` / `mens-…` variants as their
   // canonical "All …" links (handled by WOMEN_RULES / MEN_RULES). Do not
   // duplicate them here.
-  { handle: "shirts",       label: "Shirts",        women: { column: "Apparel", order: 5 },           men: { column: "Shirts & Knitwear", order: 0 } },
-  { handle: "skirts",       label: "Skirts",        women: { column: "Apparel", order: 6 },           men: null },
-  { handle: "suits",        label: "Suits",         women: null,                                       men: { column: "Tailoring", order: 0 } },
-  { handle: "swimwear",     label: "Swimwear",      women: { column: "Apparel", order: 7 },           men: { column: "Bottoms & Beach", order: 3 } },
-  { handle: "sleepwear",    label: "Sleepwear",     women: { column: "Apparel", order: 8 },           men: { column: "Bottoms & Beach", order: 5 } },
-  { handle: "boots",        label: "Boots",         women: { column: "Shoes", order: 2 },             men: { column: "Shoes", order: 2 } },
-  { handle: "loafers",      label: "Loafers",       women: { column: "Shoes", order: 3 },             men: { column: "Shoes", order: 4 } },
+  { handle: "shirts",         label: "Shirts",         women: { column: "Apparel", order: 5 },           men: { column: "Shirts & Knitwear", order: 0 } },
+  { handle: "skirts",         label: "Skirts",         women: { column: "Apparel", order: 6 },           men: null },
+  { handle: "suits",          label: "Suits",          women: null,                                       men: { column: "Tailoring", order: 0 } },
+  { handle: "swimwear",       label: "Swimwear",       women: { column: "Apparel", order: 7 },           men: { column: "Bottoms & Beach", order: 3 } },
+  { handle: "sleepwear",      label: "Sleepwear",      women: { column: "Apparel", order: 8 },           men: { column: "Bottoms & Beach", order: 5 } },
+  { handle: "boots",          label: "Boots",          women: { column: "Shoes", order: 2 },             men: { column: "Shoes", order: 2 } },
+  { handle: "loafers",        label: "Loafers",        women: { column: "Shoes", order: 3 },             men: { column: "Shoes", order: 4 } },
+  // Bag sub-types — surface in the Bags column for both genders so every
+  // category collection we built is reachable from the menu.
+  { handle: "handbags",       label: "Handbags",       women: { column: "Bags & Leather", order: 3 },    men: { column: "Accessories", order: 0 } },
+  { handle: "shoulder-bags",  label: "Shoulder Bags",  women: { column: "Bags & Leather", order: 4 },    men: { column: "Accessories", order: 0 } },
+  { handle: "crossbody-bags", label: "Crossbody Bags", women: { column: "Bags & Leather", order: 5 },    men: { column: "Accessories", order: 0 } },
+  { handle: "tote-bags",      label: "Tote Bags",      women: { column: "Bags & Leather", order: 6 },    men: { column: "Accessories", order: 0 } },
+  { handle: "clutch-bags",    label: "Clutch Bags",    women: { column: "Bags & Leather", order: 7 },    men: { column: "Accessories", order: 0 } },
+  { handle: "backpacks",      label: "Backpacks",      women: { column: "Bags & Leather", order: 8 },    men: { column: "Accessories", order: 0 } },
   // `accessories` is the global (unisex) collection — gender dropdowns use
   // the prefixed `women-accessories` / `mens-accessories` as "All Accessories"
   // (handled by WOMEN_RULES / MEN_RULES). Do not duplicate here.
-  { handle: "watches",      label: "Watches",       women: { column: "Fine Accessories", order: 1 },  men: { column: "Accessories", order: 2 } },
-  { handle: "hats",         label: "Hats",          women: { column: "Fine Accessories", order: 3 },  men: { column: "Accessories", order: 3 } },
-  { handle: "gloves",       label: "Gloves",        women: { column: "Fine Accessories", order: 4 },  men: { column: "Accessories", order: 4 } },
-  { handle: "unisex",       label: "Unisex",        women: { column: "More", order: 0 },              men: { column: "More", order: 0 } },
+  { handle: "watches",        label: "Watches",        women: { column: "Fine Accessories", order: 1 },  men: { column: "Accessories", order: 2 } },
+  { handle: "hats",           label: "Hats",           women: { column: "Fine Accessories", order: 3 },  men: { column: "Accessories", order: 3 } },
+  { handle: "gloves",         label: "Gloves",         women: { column: "Fine Accessories", order: 4 },  men: { column: "Accessories", order: 4 } },
+  { handle: "other-accessories", label: "Other Accessories", women: { column: "Fine Accessories", order: 8 }, men: { column: "Accessories", order: 8 } },
+  { handle: "unisex",         label: "Unisex",         women: { column: "More", order: 0 },              men: { column: "More", order: 0 } },
 ];
 
 function cleanTitle(title: string, prefixWord: "Women's" | "Men's"): string {
