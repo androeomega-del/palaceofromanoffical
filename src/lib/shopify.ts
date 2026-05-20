@@ -240,8 +240,9 @@ export async function fetchProductByHandle(handle: string): Promise<ShopifyProdu
 
 // ── Collections list ────────────────────────────────────────────────────────
 // Storefront API does not expose productCount on Collection; we ask for a
-// single sentinel product to flag "has products" (1) vs "empty" (0). UI uses
-// this only to hide empty collections.
+// single sentinel product to flag "has products" (1) vs "empty" (0). If a
+// Shopify collection has no collection image, the storefront uses the first
+// Shopify product image instead — never Cloud/BG image overrides.
 const COLLECTIONS_LIST = `
   query Collections($first: Int!) {
     collections(first: $first, sortKey: TITLE) {
@@ -253,7 +254,14 @@ const COLLECTIONS_LIST = `
           description
           updatedAt
           image { url altText width height }
-          products(first: 1) { edges { node { id } } }
+          products(first: 1) {
+            edges {
+              node {
+                id
+                images(first: 1) { edges { node { url altText width height } } }
+              }
+            }
+          }
         }
       }
     }
@@ -267,7 +275,7 @@ interface CollectionListNode {
   description: string | null;
   updatedAt: string;
   image: ShopifyImage | null;
-  products: { edges: Array<{ node: { id: string } }> };
+  products: { edges: Array<{ node: { id: string; images: { edges: Array<{ node: ShopifyImage }> } } }> };
 }
 
 export async function fetchCollections(first = 250): Promise<ShopifyCollection[]> {
@@ -276,15 +284,18 @@ export async function fetchCollections(first = 250): Promise<ShopifyCollection[]
     { first: Math.min(first, 250) },
   );
   if (!res?.data) return [];
-  return res.data.collections.edges.map(({ node }) => ({
-    id: node.id,
-    title: node.title,
-    handle: node.handle,
-    description: node.description ?? "",
-    image: node.image ?? null,
-    updatedAt: node.updatedAt,
-    productCount: (node.products?.edges?.length ?? 0) > 0 ? 1 : 0,
-  }));
+  return res.data.collections.edges.map(({ node }) => {
+    const firstProductImage = node.products?.edges?.[0]?.node?.images?.edges?.[0]?.node ?? null;
+    return {
+      id: node.id,
+      title: node.title,
+      handle: node.handle,
+      description: node.description ?? "",
+      image: node.image ?? firstProductImage,
+      updatedAt: node.updatedAt,
+      productCount: (node.products?.edges?.length ?? 0) > 0 ? 1 : 0,
+    };
+  });
 }
 
 // ── Collection by handle (simple list view) ─────────────────────────────────
@@ -319,12 +330,13 @@ export async function fetchCollection(handle: string, first = 36) {
   }>(COLLECTION_BY_HANDLE, { handle, first: Math.min(first, 250) });
   const c = res?.data?.collectionByHandle;
   if (!c) return null;
+  const firstProductImage = c.products.edges[0]?.node.images?.edges?.[0]?.node ?? null;
   return {
     id: c.id,
     title: c.title,
     handle: c.handle,
     description: c.description ?? "",
-    image: c.image ?? null,
+    image: c.image ?? firstProductImage,
     updatedAt: c.updatedAt,
     products: { edges: c.products.edges.map(({ node }) => ({ node })) },
   };
