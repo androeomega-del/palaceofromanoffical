@@ -61,7 +61,6 @@ import womensSportswear from "@/assets/collections/auto/womens-sportswear.jpg";
 import womensUnderwear from "@/assets/collections/auto/womens-underwear.jpg";
 import womensSuits from "@/assets/collections/auto/womens-suits.jpg";
 import womensSunglasses from "@/assets/collections/auto/womens-sunglasses.jpg";
-import { imgForKey } from "@/lib/editorial-library";
 
 const BY_HANDLE: Record<string, string> = {
   "all-products": allProducts,
