@@ -261,7 +261,7 @@ function CollectionCard({
   slot: SlotKind;
   index: number;
   dynamicMap: Record<string, string>;
-  dynamicFocal: Record<string, { x: number; y: number } | null>;
+  dynamicFocal: Record<string, string>;
 }) {
   const baseSrc = collectionImage({
     title: c.title,
