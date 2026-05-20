@@ -614,6 +614,57 @@ function CategoryTile({ tile }: { tile: CategoryTileDef }) {
   );
 }
 
+function EssentialTile({
+  image,
+  eyebrow,
+  heading,
+  copy,
+  handle,
+}: {
+  image?: { url: string; altText: string | null };
+  eyebrow: string;
+  heading: string;
+  copy: string;
+  handle: string;
+}) {
+  return (
+    <Link
+      to="/collections/$handle"
+      params={{ handle }}
+      className="group block"
+    >
+      <div className="w-full aspect-[4/5] bg-muted overflow-hidden mb-6 relative">
+        {image ? (
+          <img
+            src={image.url}
+            alt={image.altText ?? eyebrow}
+            loading="lazy"
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] group-hover:scale-[1.04]"
+          />
+        ) : (
+          <div className="absolute inset-0 grid place-items-center">
+            <span className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+              {eyebrow}
+            </span>
+          </div>
+        )}
+      </div>
+      <span className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-3 block">
+        {eyebrow}
+      </span>
+      <h3 className="text-2xl md:text-[1.65rem] font-serif leading-tight mb-4 text-balance">
+        {heading}
+      </h3>
+      <p className="text-sm text-muted-foreground leading-relaxed mb-6 text-pretty">
+        {copy}
+      </p>
+      <span className="text-[11px] uppercase tracking-[0.25em] border-b border-ink/20 pb-1 group-hover:border-ink transition-colors">
+        Shop the edit →
+      </span>
+    </Link>
+  );
+}
+
 type EditorialCta = {
   label: string;
   to: string;
