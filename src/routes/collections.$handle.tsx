@@ -291,7 +291,11 @@ function CollectionPage() {
 
   return (
     <div>
-      <section className="relative h-[42vh] min-h-[280px] max-h-[520px] w-full overflow-hidden bg-ink/5">
+      <section
+        className="relative h-[42vh] min-h-[280px] max-h-[520px] w-full overflow-hidden bg-ink/5"
+        data-testid="collection-hero"
+        data-handle={handle.toLowerCase()}
+      >
         {(() => {
           const r = responsiveCollectionImage(heroSrc, {
             widths: HERO_RESPONSIVE_WIDTHS,
@@ -308,6 +312,7 @@ function CollectionPage() {
               decoding="async"
               className="absolute inset-0 h-full w-full object-cover"
               style={{ objectPosition: `${renderedFocal.x}% ${renderedFocal.y}%` }}
+              data-testid="collection-hero-img"
             />
           );
         })()}
