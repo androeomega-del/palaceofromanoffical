@@ -142,6 +142,8 @@ type BgVariantRow = {
   quantity: number;
 };
 
+type VariantMapRow = { sku: string; variant_gid: string; available: boolean };
+
 const PRODUCT_COLUMNS =
   "id,handle,group_sku,brand,name,description,description_plain,gender,category,subcategory,subsubcategory,color,material,main_picture,pictures,retail_price,currency,in_stock,total_stock";
 
@@ -215,6 +217,35 @@ function rowToNode(r: BgProductRow, variants?: BgVariantRow[]): ShopifyProductNo
     variants: { edges: variantEdges },
     options,
   };
+}
+
+async function fetchVariantMap(skus: string[]): Promise<Map<string, { gid: string; available: boolean }>> {
+  const gidBySku = new Map<string, { gid: string; available: boolean }>();
+  const uniqueSkus = Array.from(new Set(skus.filter(Boolean)));
+  for (let i = 0; i < uniqueSkus.length; i += 200) {
+    const batch = uniqueSkus.slice(i, i + 200);
+    const { data, error } = await supabase
+      .from("shopify_variant_map")
+      .select("sku,variant_gid,available")
+      .in("sku", batch);
+    if (error) {
+      console.error("shopify_variant_map fetch error:", error);
+      continue;
+    }
+    for (const m of (data ?? []) as VariantMapRow[]) {
+      gidBySku.set(m.sku, { gid: m.variant_gid, available: m.available });
+    }
+  }
+  return gidBySku;
+}
+
+function applyVariantMap(node: ShopifyProductNode, gidBySku: Map<string, { gid: string; available: boolean }>) {
+  node.variants.edges = node.variants.edges.map((e) => {
+    const mapped = gidBySku.get(e.node.id);
+    if (!mapped) return { node: { ...e.node, availableForSale: false } };
+    return { node: { ...e.node, id: mapped.gid, availableForSale: e.node.availableForSale && mapped.available } };
+  });
+  return node;
 }
 
 // ── Cursor (base64-encoded offset) ──────────────────────────────────────────
@@ -330,8 +361,22 @@ async function listProducts(opts: {
   const rows = (data ?? []) as BgProductRow[];
   const hasNext = rows.length > first;
   const slice = hasNext ? rows.slice(0, first) : rows;
+  const groupSkus = slice.map((r) => r.group_sku);
+  const { data: variantRows } = groupSkus.length
+    ? await supabase
+      .from("bg_variants")
+      .select("product_sku,group_sku,size,quantity")
+      .in("group_sku", groupSkus)
+    : { data: [] };
+  const variantsByGroup = new Map<string, BgVariantRow[]>();
+  for (const v of (variantRows ?? []) as BgVariantRow[]) {
+    const list = variantsByGroup.get(v.group_sku) ?? [];
+    list.push(v);
+    variantsByGroup.set(v.group_sku, list);
+  }
+  const gidBySku = await fetchVariantMap(((variantRows ?? []) as BgVariantRow[]).map((v) => v.product_sku));
   return {
-    edges: slice.map((r) => ({ node: rowToNode(r) })),
+    edges: slice.map((r) => ({ node: applyVariantMap(rowToNode(r, variantsByGroup.get(r.group_sku)), gidBySku) })),
     pageInfo: { hasNextPage: hasNext, endCursor: hasNext ? encodeCursor(offset + first) : null },
   };
 }
@@ -365,28 +410,8 @@ export async function fetchProductByHandle(handle: string): Promise<ShopifyProdu
   const variants = (vRows ?? []) as BgVariantRow[];
 
   // Enrich with real Shopify variant GIDs so cart → cartCreate works.
-  const skus = variants.map((v) => v.product_sku).filter(Boolean);
-  let gidBySku = new Map<string, { gid: string; available: boolean }>();
-  if (skus.length > 0) {
-    const { data: mapRows } = await supabase
-      .from("shopify_variant_map")
-      .select("sku,variant_gid,available")
-      .in("sku", skus);
-    for (const m of (mapRows ?? []) as Array<{ sku: string; variant_gid: string; available: boolean }>) {
-      gidBySku.set(m.sku, { gid: m.variant_gid, available: m.available });
-    }
-  }
-
-  const node = rowToNode(product, variants);
-  node.variants.edges = node.variants.edges.map((e) => {
-    const mapped = gidBySku.get(e.node.id);
-    if (!mapped) {
-      // No Shopify mapping — variant is not purchasable yet.
-      return { node: { ...e.node, availableForSale: false } };
-    }
-    return { node: { ...e.node, id: mapped.gid, availableForSale: e.node.availableForSale && mapped.available } };
-  });
-  return node;
+  const gidBySku = await fetchVariantMap(variants.map((v) => v.product_sku));
+  return applyVariantMap(rowToNode(product, variants), gidBySku);
 }
 
 // ── Public API: collections ─────────────────────────────────────────────────
@@ -597,9 +622,23 @@ export async function fetchCollection(handle: string, first = 36) {
   b = applySort(b, "BEST_SELLING", false).range(0, first - 1);
   const { data } = await b;
   const rows = (data ?? []) as BgProductRow[];
+  const groupSkus = rows.map((r) => r.group_sku);
+  const { data: variantRows } = groupSkus.length
+    ? await supabase
+      .from("bg_variants")
+      .select("product_sku,group_sku,size,quantity")
+      .in("group_sku", groupSkus)
+    : { data: [] };
+  const variantsByGroup = new Map<string, BgVariantRow[]>();
+  for (const v of (variantRows ?? []) as BgVariantRow[]) {
+    const list = variantsByGroup.get(v.group_sku) ?? [];
+    list.push(v);
+    variantsByGroup.set(v.group_sku, list);
+  }
+  const gidBySku = await fetchVariantMap(((variantRows ?? []) as BgVariantRow[]).map((v) => v.product_sku));
   return {
     ...defToShopify(def),
-    products: { edges: rows.map((r) => ({ node: rowToNode(r) })) },
+    products: { edges: rows.map((r) => ({ node: applyVariantMap(rowToNode(r, variantsByGroup.get(r.group_sku)), gidBySku) })) },
   };
 }
 
@@ -627,6 +666,20 @@ export async function fetchCollectionFiltered(opts: {
   const rows = (data ?? []) as BgProductRow[];
   const hasNext = rows.length > first;
   const slice = hasNext ? rows.slice(0, first) : rows;
+  const groupSkus = slice.map((r) => r.group_sku);
+  const { data: variantRows } = groupSkus.length
+    ? await supabase
+      .from("bg_variants")
+      .select("product_sku,group_sku,size,quantity")
+      .in("group_sku", groupSkus)
+    : { data: [] };
+  const variantsByGroup = new Map<string, BgVariantRow[]>();
+  for (const v of (variantRows ?? []) as BgVariantRow[]) {
+    const list = variantsByGroup.get(v.group_sku) ?? [];
+    list.push(v);
+    variantsByGroup.set(v.group_sku, list);
+  }
+  const gidBySku = await fetchVariantMap(((variantRows ?? []) as BgVariantRow[]).map((v) => v.product_sku));
 
   // Filter aggregates: top vendors within this collection
   let agg: any = supabase.from("bg_products").select("brand").eq("in_stock", true);
@@ -651,7 +704,7 @@ export async function fetchCollectionFiltered(opts: {
   return {
     collection: defToShopify(def),
     filters,
-    edges: slice.map((r) => ({ node: rowToNode(r) })),
+    edges: slice.map((r) => ({ node: applyVariantMap(rowToNode(r, variantsByGroup.get(r.group_sku)), gidBySku) })),
     pageInfo: { hasNextPage: hasNext, endCursor: hasNext ? encodeCursor(offset + first) : null },
   };
 }
@@ -671,9 +724,23 @@ export async function fetchSearchFiltered(opts: {
   const rows = (data ?? []) as BgProductRow[];
   const hasNext = rows.length > first;
   const slice = hasNext ? rows.slice(0, first) : rows;
+  const groupSkus = slice.map((r) => r.group_sku);
+  const { data: variantRows } = groupSkus.length
+    ? await supabase
+      .from("bg_variants")
+      .select("product_sku,group_sku,size,quantity")
+      .in("group_sku", groupSkus)
+    : { data: [] };
+  const variantsByGroup = new Map<string, BgVariantRow[]>();
+  for (const v of (variantRows ?? []) as BgVariantRow[]) {
+    const list = variantsByGroup.get(v.group_sku) ?? [];
+    list.push(v);
+    variantsByGroup.set(v.group_sku, list);
+  }
+  const gidBySku = await fetchVariantMap(((variantRows ?? []) as BgVariantRow[]).map((v) => v.product_sku));
   return {
     filters: [],
-    edges: slice.map((r) => ({ node: rowToNode(r) })),
+    edges: slice.map((r) => ({ node: applyVariantMap(rowToNode(r, variantsByGroup.get(r.group_sku)), gidBySku) })),
     pageInfo: { hasNextPage: hasNext, endCursor: hasNext ? encodeCursor(offset + first) : null },
   };
 }
