@@ -112,7 +112,9 @@ const CROSS_CATEGORIES: CrossEntry[] = [
   { handle: "boots",        label: "Boots",         women: { column: "Shoes", order: 2 },             men: { column: "Shoes", order: 2 } },
   { handle: "loafers",      label: "Loafers",       women: { column: "Shoes", order: 3 },             men: { column: "Shoes", order: 4 } },
   { handle: "bags",         label: "Bags",          women: { column: "Bags & Leather", order: 1 },    men: { column: "Accessories", order: 0 } },
-  { handle: "accessories",  label: "All Accessories", women: { column: "Fine Accessories", order: 8 }, men: { column: "Accessories", order: 8 } },
+  // `accessories` is the global (unisex) collection — gender dropdowns use
+  // the prefixed `women-accessories` / `mens-accessories` as "All Accessories"
+  // (handled by WOMEN_RULES / MEN_RULES). Do not duplicate here.
   { handle: "watches",      label: "Watches",       women: { column: "Fine Accessories", order: 1 },  men: { column: "Accessories", order: 2 } },
   { handle: "hats",         label: "Hats",          women: { column: "Fine Accessories", order: 3 },  men: { column: "Accessories", order: 3 } },
   { handle: "gloves",       label: "Gloves",        women: { column: "Fine Accessories", order: 4 },  men: { column: "Accessories", order: 4 } },
