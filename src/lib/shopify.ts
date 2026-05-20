@@ -287,12 +287,21 @@ type FilterInput = Record<string, unknown>;
 function applyFilters(builder: any, filters: object[] | undefined) {
   if (!filters || filters.length === 0) return builder;
   let b = builder;
+  // Group multi-select values per key so we can emit a single OR clause.
+  const multi: Record<string, string[]> = {
+    productVendor: [], gender: [], category: [], subcategory: [], color: [], material: [],
+  };
   for (const raw of filters) {
     const f = raw as FilterInput;
     if (typeof f.available === "boolean") {
       if (f.available) b = b.eq("in_stock", true);
     }
-    if (typeof f.productVendor === "string") b = b.ilike("brand", f.productVendor);
+    if (typeof f.productVendor === "string") multi.productVendor.push(f.productVendor);
+    if (typeof f.gender === "string") multi.gender.push(f.gender);
+    if (typeof f.category === "string") multi.category.push(f.category);
+    if (typeof f.subcategory === "string") multi.subcategory.push(f.subcategory);
+    if (typeof f.color === "string") multi.color.push(f.color);
+    if (typeof f.material === "string") multi.material.push(f.material);
     if (typeof f.productType === "string") {
       const t = f.productType;
       b = b.or(`category.ilike.${t},subcategory.ilike.${t},subsubcategory.ilike.${t}`);
@@ -303,6 +312,14 @@ function applyFilters(builder: any, filters: object[] | undefined) {
       if (typeof p.max === "number") b = b.lte("retail_price", p.max);
     }
   }
+  const orClause = (col: string, vals: string[]) =>
+    vals.map((v) => `${col}.ilike.${v.replace(/,/g, " ")}`).join(",");
+  if (multi.productVendor.length) b = b.or(orClause("brand", multi.productVendor));
+  if (multi.gender.length) b = b.or(orClause("gender", multi.gender));
+  if (multi.category.length) b = b.or(orClause("category", multi.category));
+  if (multi.subcategory.length) b = b.or(orClause("subcategory", multi.subcategory));
+  if (multi.color.length) b = b.or(orClause("color", multi.color));
+  if (multi.material.length) b = b.or(orClause("material", multi.material));
   return b;
 }
 
