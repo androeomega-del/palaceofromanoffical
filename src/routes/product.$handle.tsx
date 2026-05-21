@@ -87,11 +87,50 @@ export const Route = createFileRoute("/product/$handle")({
               url,
               priceCurrency: price?.currencyCode ?? "USD",
               price: price?.amount ?? "0",
+              priceValidUntil: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365)
+                .toISOString()
+                .slice(0, 10),
               availability: anyAvailable
                 ? "https://schema.org/InStock"
                 : "https://schema.org/OutOfStock",
               itemCondition: "https://schema.org/NewCondition",
               seller: { "@type": "Organization", name: "Palace of Roman" },
+              shippingDetails: {
+                "@type": "OfferShippingDetails",
+                shippingRate: {
+                  "@type": "MonetaryAmount",
+                  value: Number(price?.amount ?? 0) >= 1200 ? "0" : "45",
+                  currency: price?.currencyCode ?? "USD",
+                },
+                shippingDestination: {
+                  "@type": "DefinedRegion",
+                  geoTargetName: "Worldwide",
+                },
+                deliveryTime: {
+                  "@type": "ShippingDeliveryTime",
+                  handlingTime: {
+                    "@type": "QuantitativeValue",
+                    minValue: 1,
+                    maxValue: 2,
+                    unitCode: "DAY",
+                  },
+                  transitTime: {
+                    "@type": "QuantitativeValue",
+                    minValue: 3,
+                    maxValue: 7,
+                    unitCode: "DAY",
+                  },
+                },
+              },
+              hasMerchantReturnPolicy: {
+                "@type": "MerchantReturnPolicy",
+                applicableCountry: "US",
+                returnPolicyCategory:
+                  "https://schema.org/MerchantReturnFiniteReturnWindow",
+                merchantReturnDays: 14,
+                returnMethod: "https://schema.org/ReturnByMail",
+                returnFees: "https://schema.org/FreeReturn",
+              },
             },
           }),
         },
