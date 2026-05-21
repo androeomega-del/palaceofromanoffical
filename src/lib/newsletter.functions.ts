@@ -8,6 +8,7 @@ const SubscribeInput = z.object({
   email: z.string().min(5).max(320).email(),
   source: z.string().max(64).optional(),
   userAgent: z.string().max(500).optional(),
+  marketingConsent: z.boolean().optional(),
 });
 
 export const subscribeNewsletter = createServerFn({ method: "POST" })
@@ -22,6 +23,7 @@ export const subscribeNewsletter = createServerFn({ method: "POST" })
         email,
         source: data.source ?? "welcome_modal",
         user_agent: data.userAgent ?? null,
+        marketing_consent: data.marketingConsent ?? true,
       })
       .select("id")
       .maybeSingle();

@@ -357,6 +357,7 @@ export type Database = {
           created_at: string
           email: string
           id: string
+          marketing_consent: boolean
           source: string | null
           user_agent: string | null
         }
@@ -364,6 +365,7 @@ export type Database = {
           created_at?: string
           email: string
           id?: string
+          marketing_consent?: boolean
           source?: string | null
           user_agent?: string | null
         }
@@ -371,6 +373,7 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+          marketing_consent?: boolean
           source?: string | null
           user_agent?: string | null
         }
