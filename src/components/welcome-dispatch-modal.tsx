@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import { useRouterState } from "@tanstack/react-router";
 import { rememberCustomerEmail, scheduleAbandonedCartSync } from "@/lib/abandoned-cart-capture";
 import { subscribeNewsletter } from "@/lib/newsletter.functions";
 
