@@ -27,7 +27,8 @@ export function NewsletterForm() {
         email: value,
         source: typeof window !== "undefined" ? window.location.pathname : null,
         user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
-      });
+        marketing_consent: true,
+      } as any);
 
     // Postgres unique-violation = already subscribed; treat as success for UX.
     if (insertError && insertError.code !== "23505") {
@@ -85,6 +86,12 @@ export function NewsletterForm() {
           {error}
         </p>
       )}
+      <p className="mt-3 text-[10px] text-ink/50 leading-relaxed">
+        By joining, you consent to receiving marketing emails — including cart recovery reminders.{" "}
+        <a href="/privacy" className="underline decoration-bronze/40 hover:text-bronze transition-colors">
+          Privacy Notice
+        </a>.
+      </p>
     </form>
   );
 }
