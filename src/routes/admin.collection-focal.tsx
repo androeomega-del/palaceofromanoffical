@@ -28,7 +28,7 @@ import {
 
 export const Route = createFileRoute("/admin/collection-focal")({
   beforeLoad: async () => {
-    try { await ensureAdmin(); } catch { throw redirect({ to: "/authentication" }); }
+    try { await ensureAdmin(); } catch { throw redirect({ to: "/login" }); }
   },
   component: AdminCollectionFocal,
   head: () => ({

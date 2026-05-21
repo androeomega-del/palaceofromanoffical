@@ -15,7 +15,7 @@ export const Route = createFileRoute("/admin/inventory-sync")({
     try {
       await ensureAdmin();
     } catch {
-      throw redirect({ to: "/authentication" });
+      throw redirect({ to: "/login" });
     }
   },
   component: AdminInventorySync,

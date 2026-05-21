@@ -26,7 +26,7 @@ import {
 
 export const Route = createFileRoute("/admin/collection-hero-regression")({
   beforeLoad: async () => {
-    try { await ensureAdmin(); } catch { throw redirect({ to: "/authentication" }); }
+    try { await ensureAdmin(); } catch { throw redirect({ to: "/login" }); }
   },
   component: AdminHeroRegression,
   head: () => ({
