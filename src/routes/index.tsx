@@ -1155,16 +1155,18 @@ function SummerBentoSkeleton() {
     >
       <div className="max-w-[1600px] mx-auto grid grid-cols-12 auto-rows-[180px] md:auto-rows-[200px] gap-4">
         {/* Main Hero */}
-        <div className="col-span-12 lg:col-span-8 row-span-3 lg:row-span-4 bg-canvas-raised animate-pulse" />
+        <div className="col-span-12 lg:col-span-8 row-span-3 lg:row-span-6 bg-canvas-raised animate-pulse" />
         {/* Swim Promo */}
         <div className="col-span-12 md:col-span-6 lg:col-span-4 row-span-2 bg-bronze/40 animate-pulse" />
         {/* Women Tile */}
         <div className="col-span-12 md:col-span-6 lg:col-span-4 row-span-2 bg-canvas-raised animate-pulse" />
-        {/* Men Tile */}
-        <div className="col-span-12 md:col-span-8 lg:col-span-4 row-span-2 bg-canvas-raised animate-pulse" />
-        {/* Accessories Tile */}
-        <div className="col-span-6 md:col-span-4 lg:col-span-2 row-span-2 bg-canvas-raised animate-pulse" />
         {/* Jewelry Tile */}
+        <div className="col-span-12 md:col-span-6 lg:col-span-4 row-span-2 bg-canvas-raised animate-pulse" />
+        {/* Brand Spotlight */}
+        <div className="col-span-12 md:col-span-4 lg:col-span-3 row-span-2 bg-ink/40 animate-pulse" />
+        {/* Men Tile */}
+        <div className="col-span-12 md:col-span-8 lg:col-span-5 row-span-2 bg-canvas-raised animate-pulse" />
+        {/* Accessories Tile */}
         <div className="col-span-6 md:col-span-4 lg:col-span-2 row-span-2 bg-canvas-raised animate-pulse" />
       </div>
     </section>
