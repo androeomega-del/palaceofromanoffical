@@ -1,53 +1,117 @@
-# Add "The Jewelry Edit" beside Accessories
+## Goal
+Drive discoverable, indexable traffic to palaceofromanofficial.com this week and convert it through organic IG/TikTok — no paid spend, no fabricated reviews, no claims the reseller certificate doesn't support.
 
-## What
+## What's already in place (verified)
+- `public/robots.txt` with proper disallow + sitemap reference
+- `src/routes/sitemap[.]xml.ts` (static routes + up to 5k product handles from Shopify)
+- Per-route `head()` metadata pattern in TanStack Start
+- Editorial routes (`editorial.may-2026`, `resort-2026`, `the-new-evening`, `journal`)
+- Shopify storefront wired to real catalog, USD pricing, cart→Storefront API checkout
 
-Add a new bento tile titled **The Jewelry Edit** immediately to the right of the existing Accessories tile on the homepage. Visually match Accessories so the two narrow tiles bookend the row and the grid stays balanced on a 12-column layout.
+So the gap is **not infrastructure**. It's: (1) topical authority pages targeting buyer-intent queries, (2) per-route metadata quality, (3) structured data depth, (4) a repeatable IG/TikTok content loop from assets we already own.
 
-## Where
+---
 
-`src/routes/index.tsx` — the bento `<section>` that ends with the Accessories `<Link>` (around lines 1084–1108) and its skeleton mirror `SummerBentoSkeleton` (lines 1120–1140).
+## Week-1 SEO work (in order of impact)
 
-## Layout math (lg breakpoint, 12 cols)
+### 1. Search Console + Bing Webmaster verification
+- Verify `palaceofromanofficial.com` in Google Search Console via META tag (Lovable has a connector for this — agent can run the 3-step token → embed → verify flow).
+- Submit `/sitemap.xml` once verified.
+- Mirror in Bing Webmaster (free, covers DuckDuckGo + ChatGPT search).
+- Outcome: Google starts crawling the ~5k product URLs within days instead of weeks.
 
-Current row containing Women / Men / Accessories:
+### 2. Per-route metadata audit
+Sweep every public route under `src/routes/` and confirm each defines a unique:
+- `title` (≤60 chars, includes the route's primary phrase)
+- `description` (≤160 chars, value + CTA)
+- `og:title`, `og:description`, `og:url`, `og:image` (the route's hero/product image)
+- `link rel="canonical"` on the leaf (already correct per `head-meta` rules)
 
-```text
-Women(4)  Men(5)  Accessories(2)  = 11   (1 col gap)
-```
+Highest-leverage routes to harden first: `/`, `/shop`, `/collections`, `/collections/$handle`, `/brand/$vendor`, `/product/$handle`, `/swim`, `/editorial/*`, `/journal`, `/about`, `/authentication` (the trust page).
 
-After change:
+### 3. Structured data (JSON-LD)
+Add schema only where it maps to real content — no fabrications.
+- `__root.tsx`: `Organization` + `WebSite` with `SearchAction` (sitelinks search box)
+- `product.$handle.tsx`: `Product` with `name`, `image`, `brand`, `offers.price`, `offers.priceCurrency: "USD"`, `availability` from Shopify variant data
+- `brand.$vendor.tsx`: `CollectionPage` + `BreadcrumbList`
+- `collections.$handle.tsx`: `CollectionPage` + `BreadcrumbList`
+- `editorial/*` and `journal`: `Article` with `headline`, `image`, `datePublished`, `author: "Palace of Roman"`
+- `faq.tsx`: `FAQPage` from the existing Q&A
+- `shipping-returns.tsx`: include shipping/returns policy text — Google surfaces this in the merchant knowledge panel
 
-```text
-Women(4)  Men(4)  Accessories(2)  Jewelry(2)  = 12
-```
+### 4. Topical-authority pages (the actual organic growth lever)
+With KDI low for long-tail luxury queries, the fastest path is buyer-intent landing pages built from the catalog we already have. Each one is a real route, real copy, real product grid — not a doorway page.
 
-- Women: `lg:col-span-4` (unchanged)
-- Men's Edit: `lg:col-span-5` → `lg:col-span-4` (one-col trim)
-- Accessories: `lg:col-span-2` (unchanged)
-- **Jewelry (new): `lg:col-span-2 row-span-2`**
+Proposed additions for this week (pick 2–3, not all):
+- `/edits/dolce-gabbana-swim` — already have the campaign; broaden into an "edit" with copy + filtered product grid
+- `/edits/black-tie` — pulls `productType:dress` + tag-based filters
+- `/guides/sizing-european-luxury` — practical sizing translation table (EU↔US↔UK); high search demand, zero competition for boutiques
+- `/guides/authenticity-luxury-resale` — explains the BrandsGateway sourcing chain (defensible per the certificate) — also doubles as a trust page linked from PDPs
 
-Mobile/tablet: mirror the Accessories breakpoint pattern — `col-span-6 md:col-span-4 lg:col-span-2` — so the two narrow tiles sit side-by-side on tablet and stack cleanly on mobile.
+Each gets its own `head()`, `Article`/`CollectionPage` JSON-LD, internal links from `/` and the global footer.
 
-## New tile spec
+### 5. Internal linking pass
+- Footer: link to every editorial + guide + brand index
+- PDP: link "More from {vendor}" → `/brand/$vendor`, "Shop the edit" → relevant `/edits/*`
+- Editorial: link out to 3–5 product URLs each (currently under-linked)
 
-- **Link target:** `to="/shop"` with `search={{ q: "tag:Jewelry", title: "Jewelry" }}` (same convention as Accessories).
-- **Image source:** reuse an existing editorial asset from `src/assets/editorial/library/` (no new asset import, no fabricated content). Pick a jewelry-appropriate frame from `editorial-library.ts`; if none reads as jewelry, fall back to a neutral luxury still and pass it in via the same `accessoriesImage`-style prop wiring (add a sibling `jewelryImage?: ShopifyImg` prop). I'll confirm the chosen image filename before writing.
-- **Copy (final, on-brand — no placeholder):**
-  - eyebrow: `Shop`
-  - title: `Jewelry`
-- **Styling:** copy the Accessories tile classes verbatim (gradient, hover scale, centered bottom label) so the two read as a matched pair.
+This is the single highest-ROI move after metadata — Google ranks pages partly by how reachable they are from the home page.
 
-## Skeleton
+### 6. Image SEO
+- Confirm every `<img>` in PDP, hero, editorial has descriptive `alt` (vendor + product + category, not the filename)
+- Add `loading="lazy"` everywhere except above-the-fold hero
+- Confirm `og:image` resolves to an absolute URL on each route (TanStack SSR head guidance)
 
-Add a matching `<div className="col-span-6 md:col-span-4 lg:col-span-2 row-span-2 bg-canvas-raised animate-pulse" />` to `SummerBentoSkeleton` and trim the Men skeleton from `lg:col-span-5` to `lg:col-span-4` so the placeholder matches the new live layout (no CLS regression).
+---
 
-## Out of scope
+## IG / TikTok content loop (zero budget, repeatable)
 
-- No new Shopify products, no BG re-imports.
-- No new image generation in this pass — reuse existing editorial library asset. If you'd rather a freshly generated jewelry hero, say so and I'll add one step (premium imagegen, ~1200×1600).
-- Header/nav, other sections untouched.
+We already own 99 editorial PNGs + the full Shopify product image library. The loop:
 
-## Verification
+**3 posts/week minimum, all sourced from existing assets:**
+1. **Carousel** (IG) — "The edit: {theme}" — 6–8 product stills + one editorial cover. Caption ends with `Shop the edit → palaceofromanofficial.com/edits/{slug}` (matches a real route from §4).
+2. **Reel / TikTok** (15–25s) — single product, slow zoom + price reveal. Trending audio. CC: brand + price in USD + "link in bio".
+3. **Story / TikTok B-roll** — "what arrived this week" — restock or new-in cycle.
 
-After the edit: visual check at the current 1276px viewport that the row reads Women | Men | Accessories | Jewelry with equal heights and no overflow, plus a quick mobile-width check that the narrow pair stacks correctly.
+**Profile setup:**
+- Single Linktree-style page already exists at `/links` — make sure it lists: Shop, Latest edit, Sizing guide, Authenticity.
+- Bio: "Curated European luxury. Authorised BrandsGateway partner. Worldwide shipping." (matches what the certificate supports)
+- Pinned posts: 3 best edits.
+
+**Hashtag strategy** (use 8–12, mix sizes):
+- Vendor-specific (`#dolcegabbana`, `#bottegaveneta`) — high reach, low conversion
+- Niche editorial (`#luxuryeditorial`, `#europeanluxury`) — better intent
+- Long-tail (`#luxuryswim2026`, `#resort26`) — small but converts
+
+**UGC seed:** as orders ship, include a printed card asking buyers to tag `@palaceofroman` — first source of real, on-policy social proof (which we can later surface as embedded posts, never as fabricated reviews).
+
+---
+
+## Out of scope this week
+- Paid ads (Meta/Google/TikTok) — deferred per zero budget
+- Email capture + Klaviyo welcome flow — strong next step, flag for week 2
+- Pinterest — high luxury fashion intent, also week 2
+- Blog content beyond the 2–3 guides above — month-2 cadence
+- Fabricated reviews / testimonials — never (per policy)
+
+---
+
+## Technical notes (for implementation phase)
+
+- Use `SITE_URL` from `@/lib/seo` for all canonical/og:url construction (already used by sitemap)
+- New routes go in `src/routes/` using the flat dot convention (`edits.dolce-gabbana-swim.tsx`, `guides.sizing-european-luxury.tsx`)
+- Add new route paths to `STATIC_ROUTES` in `src/routes/sitemap[.]xml.ts` so they ship in the sitemap
+- JSON-LD goes in each route's `head().scripts` as `type: "application/ld+json"`
+- For Search Console verification: use the META method via the Google Search Console connector — token goes into `__root.tsx` `head().meta`, then deploy, then call verify
+- Run `semrush--keyword_research` on candidate guide topics before writing copy, to confirm volume + difficulty for the `us` market
+
+---
+
+## Suggested execution order (4 implementation rounds)
+
+1. **Round 1 (foundations):** Search Console + Bing verification, per-route metadata sweep on the 6 highest-traffic route templates (`/`, `/shop`, `/collections/$handle`, `/product/$handle`, `/brand/$vendor`, `/editorial/*`).
+2. **Round 2 (schema):** Product + CollectionPage + Article + Organization + FAQPage JSON-LD.
+3. **Round 3 (content):** Build 2 new routes (1 edit + 1 guide), add to sitemap, internal-link from home and footer.
+4. **Round 4 (social kit):** `/links` audit, IG/TikTok post templates checked into `/public` or a `docs/` folder so the founder can post directly, no design work each time.
+
+Each round is one chat turn. Confirm which round to start with and I'll implement.
