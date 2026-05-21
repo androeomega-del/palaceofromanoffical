@@ -11,6 +11,7 @@ import {
 import appCss from "../styles.css?url";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { WelcomeDispatchModal } from "@/components/welcome-dispatch-modal";
 import { useCartSync } from "@/hooks/use-cart-sync";
 import { Toaster } from "@/components/ui/sonner";
 import { installHydrationMonitor } from "@/lib/hydration-monitor";
@@ -160,6 +161,7 @@ function RootComponent() {
         <SiteFooter />
       </div>
       <Toaster position="top-center" />
+      <WelcomeDispatchModal />
     </QueryClientProvider>
   );
 }
