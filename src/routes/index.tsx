@@ -1034,7 +1034,7 @@ function SummerBento({
             <Link
               to="/brand/$vendor"
               params={{ vendor: spotlightSlug }}
-              className="col-span-12 md:col-span-4 lg:col-span-3 row-span-2 bg-ink flex flex-col justify-between group overflow-hidden relative"
+              className="col-span-12 md:col-span-4 lg:col-span-3 row-span-3 bg-ink flex flex-col justify-between group overflow-hidden relative"
             >
               {spotlightImage && (
                 <img
@@ -1065,7 +1065,7 @@ function SummerBento({
         <Link
           to="/collections/$handle"
           params={{ handle: MENS_CLOTHING_HANDLE }}
-          className="col-span-12 md:col-span-8 lg:col-span-5 row-span-2 relative group overflow-hidden bg-canvas-raised"
+          className="col-span-12 md:col-span-8 lg:col-span-5 row-span-3 relative group overflow-hidden bg-canvas-raised"
         >
           {menImage && (
             <img
@@ -1091,7 +1091,7 @@ function SummerBento({
         <Link
           to="/shop"
           search={{ q: "tag:Accessories", title: "Accessories" }}
-          className="col-span-6 md:col-span-4 lg:col-span-2 row-span-2 relative group overflow-hidden bg-canvas-raised"
+          className="col-span-6 md:col-span-4 lg:col-span-2 row-span-3 relative group overflow-hidden bg-canvas-raised"
         >
           {accessoriesImage && (
             <img
@@ -1116,7 +1116,7 @@ function SummerBento({
         <Link
           to="/shop"
           search={{ q: "tag:Jewelry", title: "Jewelry" }}
-          className="col-span-6 md:col-span-4 lg:col-span-2 row-span-2 relative group overflow-hidden bg-canvas-raised"
+          className="col-span-6 md:col-span-4 lg:col-span-2 row-span-3 relative group overflow-hidden bg-canvas-raised"
         >
           {jewelryImage && (
             <img
@@ -1162,13 +1162,13 @@ function SummerBentoSkeleton() {
         {/* Women Tile */}
         <div className="col-span-12 md:col-span-6 lg:col-span-4 row-span-2 bg-canvas-raised animate-pulse" />
         {/* Brand Spotlight */}
-        <div className="col-span-12 md:col-span-4 lg:col-span-3 row-span-2 bg-ink/40 animate-pulse" />
+        <div className="col-span-12 md:col-span-4 lg:col-span-3 row-span-3 bg-ink/40 animate-pulse" />
         {/* Men Tile */}
-        <div className="col-span-12 md:col-span-8 lg:col-span-5 row-span-2 bg-canvas-raised animate-pulse" />
+        <div className="col-span-12 md:col-span-8 lg:col-span-5 row-span-3 bg-canvas-raised animate-pulse" />
         {/* Accessories Tile */}
-        <div className="col-span-6 md:col-span-4 lg:col-span-2 row-span-2 bg-canvas-raised animate-pulse" />
+        <div className="col-span-6 md:col-span-4 lg:col-span-2 row-span-3 bg-canvas-raised animate-pulse" />
         {/* Jewelry Tile */}
-        <div className="col-span-6 md:col-span-4 lg:col-span-2 row-span-2 bg-canvas-raised animate-pulse" />
+        <div className="col-span-6 md:col-span-4 lg:col-span-2 row-span-3 bg-canvas-raised animate-pulse" />
       </div>
     </section>
   );
