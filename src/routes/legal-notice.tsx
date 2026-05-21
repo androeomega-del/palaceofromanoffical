@@ -60,7 +60,7 @@ function LegalNoticePage() {
           </ul>
           <p className="mt-4 text-sm text-ink/70">
             <span className="text-muted-foreground">Registered business address:</span>{" "}
-            <em className="text-muted-foreground">[To be completed — please provide your official business address]</em>
+            Virtual mailbox / PO Box <em className="text-muted-foreground">[address to be added]</em>
           </p>
         </section>
 
@@ -70,12 +70,12 @@ function LegalNoticePage() {
             <span className="text-muted-foreground">Legal entity type:</span> Sole proprietorship
           </p>
           <p className="mt-2 text-sm text-ink/70">
-            <span className="text-muted-foreground">Business registration number / EIN:</span>{" "}
-            <em className="text-muted-foreground">[To be completed — if applicable]</em>
+            <span className="text-muted-foreground">EIN (Employer Identification Number):</span>{" "}
+            <em className="text-muted-foreground">[on file — to be displayed]</em>
           </p>
           <p className="mt-2 text-sm text-ink/70">
             <span className="text-muted-foreground">Tax / VAT ID:</span>{" "}
-            <em className="text-muted-foreground">[To be completed — if applicable]</em>
+            <em className="text-muted-foreground">[if applicable]</em>
           </p>
         </section>
 
