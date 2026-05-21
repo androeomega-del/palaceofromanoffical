@@ -451,6 +451,45 @@ export type Database = {
         }
         Relationships: []
       }
+      stock_alert_subscriptions: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          image_url: string | null
+          notified_at: string | null
+          price_usd: string | null
+          product_handle: string
+          product_title: string
+          variant_gid: string
+          variant_title: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          image_url?: string | null
+          notified_at?: string | null
+          price_usd?: string | null
+          product_handle: string
+          product_title: string
+          variant_gid: string
+          variant_title?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          image_url?: string | null
+          notified_at?: string | null
+          price_usd?: string | null
+          product_handle?: string
+          product_title?: string
+          variant_gid?: string
+          variant_title?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -469,6 +508,27 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      win_back_emails_sent: {
+        Row: {
+          id: string
+          recipient_email: string
+          recommendation_handles: string[] | null
+          sent_at: string
+        }
+        Insert: {
+          id?: string
+          recipient_email: string
+          recommendation_handles?: string[] | null
+          sent_at?: string
+        }
+        Update: {
+          id?: string
+          recipient_email?: string
+          recommendation_handles?: string[] | null
+          sent_at?: string
         }
         Relationships: []
       }
