@@ -120,6 +120,17 @@ export const Route = createFileRoute("/api/public/hooks/shopify-order-created")(
           return new Response("DB error", { status: 500 });
         }
 
+        // Mark any abandoned cart for this customer as recovered.
+        try {
+          await supabaseAdmin
+            .from("abandoned_carts")
+            .update({ recovered_at: new Date().toISOString() })
+            .eq("email", recipient)
+            .is("recovered_at", null);
+        } catch {
+          // Non-blocking — recovery is best-effort.
+        }
+
         try {
           const { subject, html, text } = renderPostPurchaseEmail({
             firstName: order.customer?.first_name ?? null,

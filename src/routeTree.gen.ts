@@ -42,10 +42,14 @@ import { Route as AdminCollectionHeroRegressionRouteImport } from './routes/admi
 import { Route as AdminCollectionFocalRouteImport } from './routes/admin.collection-focal'
 import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 import { Route as ApiPublicSeoHealthRouteImport } from './routes/api/public/seo-health'
+import { Route as ApiPublicStockAlertsSubscribeRouteImport } from './routes/api/public/stock-alerts/subscribe'
 import { Route as ApiPublicHooksSyncCollectionImagesRouteImport } from './routes/api/public/hooks/sync-collection-images'
 import { Route as ApiPublicHooksShopifyOrderCreatedRouteImport } from './routes/api/public/hooks/shopify-order-created'
 import { Route as ApiPublicHooksExpireShopifyTagsRouteImport } from './routes/api/public/hooks/expire-shopify-tags'
 import { Route as ApiPublicHooksDispatchCartRecoveryRouteImport } from './routes/api/public/hooks/dispatch-cart-recovery'
+import { Route as ApiPublicCronWinBackEmailsRouteImport } from './routes/api/public/cron/win-back-emails'
+import { Route as ApiPublicCronBackInStockNotifyRouteImport } from './routes/api/public/cron/back-in-stock-notify'
+import { Route as ApiPublicCronAbandonedCartRecoveryRouteImport } from './routes/api/public/cron/abandoned-cart-recovery'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -215,6 +219,12 @@ const ApiPublicSeoHealthRoute = ApiPublicSeoHealthRouteImport.update({
   path: '/api/public/seo-health',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicStockAlertsSubscribeRoute =
+  ApiPublicStockAlertsSubscribeRouteImport.update({
+    id: '/api/public/stock-alerts/subscribe',
+    path: '/api/public/stock-alerts/subscribe',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksSyncCollectionImagesRoute =
   ApiPublicHooksSyncCollectionImagesRouteImport.update({
     id: '/api/public/hooks/sync-collection-images',
@@ -237,6 +247,24 @@ const ApiPublicHooksDispatchCartRecoveryRoute =
   ApiPublicHooksDispatchCartRecoveryRouteImport.update({
     id: '/api/public/hooks/dispatch-cart-recovery',
     path: '/api/public/hooks/dispatch-cart-recovery',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicCronWinBackEmailsRoute =
+  ApiPublicCronWinBackEmailsRouteImport.update({
+    id: '/api/public/cron/win-back-emails',
+    path: '/api/public/cron/win-back-emails',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicCronBackInStockNotifyRoute =
+  ApiPublicCronBackInStockNotifyRouteImport.update({
+    id: '/api/public/cron/back-in-stock-notify',
+    path: '/api/public/cron/back-in-stock-notify',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicCronAbandonedCartRecoveryRoute =
+  ApiPublicCronAbandonedCartRecoveryRouteImport.update({
+    id: '/api/public/cron/abandoned-cart-recovery',
+    path: '/api/public/cron/abandoned-cart-recovery',
     getParentRoute: () => rootRouteImport,
   } as any)
 
@@ -274,10 +302,14 @@ export interface FileRoutesByFullPath {
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/collections/': typeof CollectionsIndexRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
+  '/api/public/cron/abandoned-cart-recovery': typeof ApiPublicCronAbandonedCartRecoveryRoute
+  '/api/public/cron/back-in-stock-notify': typeof ApiPublicCronBackInStockNotifyRoute
+  '/api/public/cron/win-back-emails': typeof ApiPublicCronWinBackEmailsRoute
   '/api/public/hooks/dispatch-cart-recovery': typeof ApiPublicHooksDispatchCartRecoveryRoute
   '/api/public/hooks/expire-shopify-tags': typeof ApiPublicHooksExpireShopifyTagsRoute
   '/api/public/hooks/shopify-order-created': typeof ApiPublicHooksShopifyOrderCreatedRoute
   '/api/public/hooks/sync-collection-images': typeof ApiPublicHooksSyncCollectionImagesRoute
+  '/api/public/stock-alerts/subscribe': typeof ApiPublicStockAlertsSubscribeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -313,10 +345,14 @@ export interface FileRoutesByTo {
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/collections': typeof CollectionsIndexRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
+  '/api/public/cron/abandoned-cart-recovery': typeof ApiPublicCronAbandonedCartRecoveryRoute
+  '/api/public/cron/back-in-stock-notify': typeof ApiPublicCronBackInStockNotifyRoute
+  '/api/public/cron/win-back-emails': typeof ApiPublicCronWinBackEmailsRoute
   '/api/public/hooks/dispatch-cart-recovery': typeof ApiPublicHooksDispatchCartRecoveryRoute
   '/api/public/hooks/expire-shopify-tags': typeof ApiPublicHooksExpireShopifyTagsRoute
   '/api/public/hooks/shopify-order-created': typeof ApiPublicHooksShopifyOrderCreatedRoute
   '/api/public/hooks/sync-collection-images': typeof ApiPublicHooksSyncCollectionImagesRoute
+  '/api/public/stock-alerts/subscribe': typeof ApiPublicStockAlertsSubscribeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -353,10 +389,14 @@ export interface FileRoutesById {
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/collections/': typeof CollectionsIndexRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
+  '/api/public/cron/abandoned-cart-recovery': typeof ApiPublicCronAbandonedCartRecoveryRoute
+  '/api/public/cron/back-in-stock-notify': typeof ApiPublicCronBackInStockNotifyRoute
+  '/api/public/cron/win-back-emails': typeof ApiPublicCronWinBackEmailsRoute
   '/api/public/hooks/dispatch-cart-recovery': typeof ApiPublicHooksDispatchCartRecoveryRoute
   '/api/public/hooks/expire-shopify-tags': typeof ApiPublicHooksExpireShopifyTagsRoute
   '/api/public/hooks/shopify-order-created': typeof ApiPublicHooksShopifyOrderCreatedRoute
   '/api/public/hooks/sync-collection-images': typeof ApiPublicHooksSyncCollectionImagesRoute
+  '/api/public/stock-alerts/subscribe': typeof ApiPublicStockAlertsSubscribeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -394,10 +434,14 @@ export interface FileRouteTypes {
     | '/swim/size-guide'
     | '/collections/'
     | '/api/public/seo-health'
+    | '/api/public/cron/abandoned-cart-recovery'
+    | '/api/public/cron/back-in-stock-notify'
+    | '/api/public/cron/win-back-emails'
     | '/api/public/hooks/dispatch-cart-recovery'
     | '/api/public/hooks/expire-shopify-tags'
     | '/api/public/hooks/shopify-order-created'
     | '/api/public/hooks/sync-collection-images'
+    | '/api/public/stock-alerts/subscribe'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -433,10 +477,14 @@ export interface FileRouteTypes {
     | '/swim/size-guide'
     | '/collections'
     | '/api/public/seo-health'
+    | '/api/public/cron/abandoned-cart-recovery'
+    | '/api/public/cron/back-in-stock-notify'
+    | '/api/public/cron/win-back-emails'
     | '/api/public/hooks/dispatch-cart-recovery'
     | '/api/public/hooks/expire-shopify-tags'
     | '/api/public/hooks/shopify-order-created'
     | '/api/public/hooks/sync-collection-images'
+    | '/api/public/stock-alerts/subscribe'
   id:
     | '__root__'
     | '/'
@@ -472,10 +520,14 @@ export interface FileRouteTypes {
     | '/swim/size-guide'
     | '/collections/'
     | '/api/public/seo-health'
+    | '/api/public/cron/abandoned-cart-recovery'
+    | '/api/public/cron/back-in-stock-notify'
+    | '/api/public/cron/win-back-emails'
     | '/api/public/hooks/dispatch-cart-recovery'
     | '/api/public/hooks/expire-shopify-tags'
     | '/api/public/hooks/shopify-order-created'
     | '/api/public/hooks/sync-collection-images'
+    | '/api/public/stock-alerts/subscribe'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -511,10 +563,14 @@ export interface RootRouteChildren {
   ProductHandleRoute: typeof ProductHandleRoute
   CollectionsIndexRoute: typeof CollectionsIndexRoute
   ApiPublicSeoHealthRoute: typeof ApiPublicSeoHealthRoute
+  ApiPublicCronAbandonedCartRecoveryRoute: typeof ApiPublicCronAbandonedCartRecoveryRoute
+  ApiPublicCronBackInStockNotifyRoute: typeof ApiPublicCronBackInStockNotifyRoute
+  ApiPublicCronWinBackEmailsRoute: typeof ApiPublicCronWinBackEmailsRoute
   ApiPublicHooksDispatchCartRecoveryRoute: typeof ApiPublicHooksDispatchCartRecoveryRoute
   ApiPublicHooksExpireShopifyTagsRoute: typeof ApiPublicHooksExpireShopifyTagsRoute
   ApiPublicHooksShopifyOrderCreatedRoute: typeof ApiPublicHooksShopifyOrderCreatedRoute
   ApiPublicHooksSyncCollectionImagesRoute: typeof ApiPublicHooksSyncCollectionImagesRoute
+  ApiPublicStockAlertsSubscribeRoute: typeof ApiPublicStockAlertsSubscribeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -750,6 +806,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicSeoHealthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/stock-alerts/subscribe': {
+      id: '/api/public/stock-alerts/subscribe'
+      path: '/api/public/stock-alerts/subscribe'
+      fullPath: '/api/public/stock-alerts/subscribe'
+      preLoaderRoute: typeof ApiPublicStockAlertsSubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/sync-collection-images': {
       id: '/api/public/hooks/sync-collection-images'
       path: '/api/public/hooks/sync-collection-images'
@@ -776,6 +839,27 @@ declare module '@tanstack/react-router' {
       path: '/api/public/hooks/dispatch-cart-recovery'
       fullPath: '/api/public/hooks/dispatch-cart-recovery'
       preLoaderRoute: typeof ApiPublicHooksDispatchCartRecoveryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/cron/win-back-emails': {
+      id: '/api/public/cron/win-back-emails'
+      path: '/api/public/cron/win-back-emails'
+      fullPath: '/api/public/cron/win-back-emails'
+      preLoaderRoute: typeof ApiPublicCronWinBackEmailsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/cron/back-in-stock-notify': {
+      id: '/api/public/cron/back-in-stock-notify'
+      path: '/api/public/cron/back-in-stock-notify'
+      fullPath: '/api/public/cron/back-in-stock-notify'
+      preLoaderRoute: typeof ApiPublicCronBackInStockNotifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/cron/abandoned-cart-recovery': {
+      id: '/api/public/cron/abandoned-cart-recovery'
+      path: '/api/public/cron/abandoned-cart-recovery'
+      fullPath: '/api/public/cron/abandoned-cart-recovery'
+      preLoaderRoute: typeof ApiPublicCronAbandonedCartRecoveryRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -824,6 +908,10 @@ const rootRouteChildren: RootRouteChildren = {
   ProductHandleRoute: ProductHandleRoute,
   CollectionsIndexRoute: CollectionsIndexRoute,
   ApiPublicSeoHealthRoute: ApiPublicSeoHealthRoute,
+  ApiPublicCronAbandonedCartRecoveryRoute:
+    ApiPublicCronAbandonedCartRecoveryRoute,
+  ApiPublicCronBackInStockNotifyRoute: ApiPublicCronBackInStockNotifyRoute,
+  ApiPublicCronWinBackEmailsRoute: ApiPublicCronWinBackEmailsRoute,
   ApiPublicHooksDispatchCartRecoveryRoute:
     ApiPublicHooksDispatchCartRecoveryRoute,
   ApiPublicHooksExpireShopifyTagsRoute: ApiPublicHooksExpireShopifyTagsRoute,
@@ -831,7 +919,18 @@ const rootRouteChildren: RootRouteChildren = {
     ApiPublicHooksShopifyOrderCreatedRoute,
   ApiPublicHooksSyncCollectionImagesRoute:
     ApiPublicHooksSyncCollectionImagesRoute,
+  ApiPublicStockAlertsSubscribeRoute: ApiPublicStockAlertsSubscribeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
