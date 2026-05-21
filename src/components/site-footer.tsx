@@ -37,6 +37,7 @@ export function SiteFooter() {
               <Link to="/contact" className="text-sm text-muted-foreground hover:text-ink transition-colors">Contact</Link>
               <Link to="/about" className="text-sm text-muted-foreground hover:text-ink transition-colors">About</Link>
               <Link to="/journal" className="text-sm text-muted-foreground hover:text-ink transition-colors">Journal</Link>
+              <Link to="/legal-notice" className="text-sm text-muted-foreground hover:text-ink transition-colors">Legal Notice</Link>
             </div>
             <div className="hidden md:flex flex-col gap-6">
               <h5 className="text-[10px] uppercase tracking-[0.2em] font-semibold">In Correspondence</h5>

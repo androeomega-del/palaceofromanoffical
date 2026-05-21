@@ -17,6 +17,7 @@ import { Route as ShippingReturnsRouteImport } from './routes/shipping-returns'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as OrderConfirmedRouteImport } from './routes/order-confirmed'
 import { Route as LinksRouteImport } from './routes/links'
+import { Route as LegalNoticeRouteImport } from './routes/legal-notice'
 import { Route as JournalRouteImport } from './routes/journal'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -89,6 +90,11 @@ const OrderConfirmedRoute = OrderConfirmedRouteImport.update({
 const LinksRoute = LinksRouteImport.update({
   id: '/links',
   path: '/links',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalNoticeRoute = LegalNoticeRouteImport.update({
+  id: '/legal-notice',
+  path: '/legal-notice',
   getParentRoute: () => rootRouteImport,
 } as any)
 const JournalRoute = JournalRouteImport.update({
@@ -276,6 +282,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/journal': typeof JournalRoute
+  '/legal-notice': typeof LegalNoticeRoute
   '/links': typeof LinksRoute
   '/order-confirmed': typeof OrderConfirmedRoute
   '/privacy': typeof PrivacyRoute
@@ -319,6 +326,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/journal': typeof JournalRoute
+  '/legal-notice': typeof LegalNoticeRoute
   '/links': typeof LinksRoute
   '/order-confirmed': typeof OrderConfirmedRoute
   '/privacy': typeof PrivacyRoute
@@ -363,6 +371,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/journal': typeof JournalRoute
+  '/legal-notice': typeof LegalNoticeRoute
   '/links': typeof LinksRoute
   '/order-confirmed': typeof OrderConfirmedRoute
   '/privacy': typeof PrivacyRoute
@@ -408,6 +417,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/faq'
     | '/journal'
+    | '/legal-notice'
     | '/links'
     | '/order-confirmed'
     | '/privacy'
@@ -451,6 +461,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/faq'
     | '/journal'
+    | '/legal-notice'
     | '/links'
     | '/order-confirmed'
     | '/privacy'
@@ -494,6 +505,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/faq'
     | '/journal'
+    | '/legal-notice'
     | '/links'
     | '/order-confirmed'
     | '/privacy'
@@ -538,6 +550,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   FaqRoute: typeof FaqRoute
   JournalRoute: typeof JournalRoute
+  LegalNoticeRoute: typeof LegalNoticeRoute
   LinksRoute: typeof LinksRoute
   OrderConfirmedRoute: typeof OrderConfirmedRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -629,6 +642,13 @@ declare module '@tanstack/react-router' {
       path: '/links'
       fullPath: '/links'
       preLoaderRoute: typeof LinksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal-notice': {
+      id: '/legal-notice'
+      path: '/legal-notice'
+      fullPath: '/legal-notice'
+      preLoaderRoute: typeof LegalNoticeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/journal': {
@@ -883,6 +903,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   FaqRoute: FaqRoute,
   JournalRoute: JournalRoute,
+  LegalNoticeRoute: LegalNoticeRoute,
   LinksRoute: LinksRoute,
   OrderConfirmedRoute: OrderConfirmedRoute,
   PrivacyRoute: PrivacyRoute,
