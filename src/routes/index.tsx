@@ -936,7 +936,7 @@ function SummerBento({
 
 
         {/* Main Hero: The Shoreline Perspective */}
-        <div className="col-span-12 lg:col-span-8 row-span-3 lg:row-span-6 relative group overflow-hidden bg-canvas-raised">
+        <div className="col-span-12 lg:col-span-8 row-span-3 lg:row-span-4 relative group overflow-hidden bg-canvas-raised">
           <img
             src={summerHero}
             alt="Resort 2026 — The Shoreline Perspective"
@@ -1026,30 +1026,6 @@ function SummerBento({
           </div>
         </Link>
 
-        {/* Jewelry Edit Tile — sits directly under Women on the right strip */}
-        <Link
-          to="/shop"
-          search={{ q: "tag:Jewelry", title: "Jewelry" }}
-          className="col-span-12 md:col-span-6 lg:col-span-4 row-span-2 relative group overflow-hidden bg-canvas-raised"
-        >
-          {jewelryImage && (
-            <img
-              src={jewelryImage.url}
-              alt={jewelryImage.altText ?? "The Jewelry Edit"}
-              loading="lazy"
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-            />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-ink/65 via-ink/15 to-transparent" />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center">
-              <h3 className="font-serif italic text-4xl md:text-5xl text-canvas">Jewelry</h3>
-              <span className="mt-4 inline-block text-[10px] uppercase tracking-[0.3em] text-canvas border-b border-canvas/40 pb-1 group-hover:border-canvas">
-                Shop the Edit
-              </span>
-            </div>
-          </div>
-        </Link>
 
 
         {spotlightSlug && (
@@ -1136,6 +1112,31 @@ function SummerBento({
           </div>
         </Link>
 
+        {/* Jewelry Tile — fills the bottom-right corner gap */}
+        <Link
+          to="/shop"
+          search={{ q: "tag:Jewelry", title: "Jewelry" }}
+          className="col-span-6 md:col-span-4 lg:col-span-2 row-span-2 relative group overflow-hidden bg-canvas-raised"
+        >
+          {jewelryImage && (
+            <img
+              src={jewelryImage.url}
+              alt={jewelryImage.altText ?? "Jewelry"}
+              loading="lazy"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/25 to-transparent" />
+          <div className="relative z-10 h-full flex flex-col justify-end p-5 md:p-6 text-center items-center">
+            <span className="text-[9px] uppercase tracking-[0.3em] text-canvas/85 mb-1">
+              Shop
+            </span>
+            <h4 className="text-base md:text-lg text-canvas uppercase tracking-[0.15em] font-medium">
+              Jewelry
+            </h4>
+          </div>
+        </Link>
+
       </div>
     </section>
   );
@@ -1155,18 +1156,18 @@ function SummerBentoSkeleton() {
     >
       <div className="max-w-[1600px] mx-auto grid grid-cols-12 auto-rows-[180px] md:auto-rows-[200px] gap-4">
         {/* Main Hero */}
-        <div className="col-span-12 lg:col-span-8 row-span-3 lg:row-span-6 bg-canvas-raised animate-pulse" />
+        <div className="col-span-12 lg:col-span-8 row-span-3 lg:row-span-4 bg-canvas-raised animate-pulse" />
         {/* Swim Promo */}
         <div className="col-span-12 md:col-span-6 lg:col-span-4 row-span-2 bg-bronze/40 animate-pulse" />
         {/* Women Tile */}
-        <div className="col-span-12 md:col-span-6 lg:col-span-4 row-span-2 bg-canvas-raised animate-pulse" />
-        {/* Jewelry Tile */}
         <div className="col-span-12 md:col-span-6 lg:col-span-4 row-span-2 bg-canvas-raised animate-pulse" />
         {/* Brand Spotlight */}
         <div className="col-span-12 md:col-span-4 lg:col-span-3 row-span-2 bg-ink/40 animate-pulse" />
         {/* Men Tile */}
         <div className="col-span-12 md:col-span-8 lg:col-span-5 row-span-2 bg-canvas-raised animate-pulse" />
         {/* Accessories Tile */}
+        <div className="col-span-6 md:col-span-4 lg:col-span-2 row-span-2 bg-canvas-raised animate-pulse" />
+        {/* Jewelry Tile */}
         <div className="col-span-6 md:col-span-4 lg:col-span-2 row-span-2 bg-canvas-raised animate-pulse" />
       </div>
     </section>
