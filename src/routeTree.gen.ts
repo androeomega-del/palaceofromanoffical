@@ -39,6 +39,7 @@ import { Route as BrandVendorRouteImport } from './routes/brand.$vendor'
 import { Route as AdminShopifySyncRouteImport } from './routes/admin.shopify-sync'
 import { Route as AdminSeoHealthRouteImport } from './routes/admin.seo-health'
 import { Route as AdminInventorySyncRouteImport } from './routes/admin.inventory-sync'
+import { Route as AdminEmailRecoveryRouteImport } from './routes/admin.email-recovery'
 import { Route as AdminCollectionImageQaRouteImport } from './routes/admin.collection-image-qa'
 import { Route as AdminCollectionImagePreviewRouteImport } from './routes/admin.collection-image-preview'
 import { Route as AdminCollectionHeroRegressionRouteImport } from './routes/admin.collection-hero-regression'
@@ -205,6 +206,11 @@ const AdminInventorySyncRoute = AdminInventorySyncRouteImport.update({
   path: '/admin/inventory-sync',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminEmailRecoveryRoute = AdminEmailRecoveryRouteImport.update({
+  id: '/admin/email-recovery',
+  path: '/admin/email-recovery',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminCollectionImageQaRoute = AdminCollectionImageQaRouteImport.update({
   id: '/admin/collection-image-qa',
   path: '/admin/collection-image-qa',
@@ -309,6 +315,7 @@ export interface FileRoutesByFullPath {
   '/admin/collection-hero-regression': typeof AdminCollectionHeroRegressionRoute
   '/admin/collection-image-preview': typeof AdminCollectionImagePreviewRoute
   '/admin/collection-image-qa': typeof AdminCollectionImageQaRoute
+  '/admin/email-recovery': typeof AdminEmailRecoveryRoute
   '/admin/inventory-sync': typeof AdminInventorySyncRoute
   '/admin/seo-health': typeof AdminSeoHealthRoute
   '/admin/shopify-sync': typeof AdminShopifySyncRoute
@@ -355,6 +362,7 @@ export interface FileRoutesByTo {
   '/admin/collection-hero-regression': typeof AdminCollectionHeroRegressionRoute
   '/admin/collection-image-preview': typeof AdminCollectionImagePreviewRoute
   '/admin/collection-image-qa': typeof AdminCollectionImageQaRoute
+  '/admin/email-recovery': typeof AdminEmailRecoveryRoute
   '/admin/inventory-sync': typeof AdminInventorySyncRoute
   '/admin/seo-health': typeof AdminSeoHealthRoute
   '/admin/shopify-sync': typeof AdminShopifySyncRoute
@@ -402,6 +410,7 @@ export interface FileRoutesById {
   '/admin/collection-hero-regression': typeof AdminCollectionHeroRegressionRoute
   '/admin/collection-image-preview': typeof AdminCollectionImagePreviewRoute
   '/admin/collection-image-qa': typeof AdminCollectionImageQaRoute
+  '/admin/email-recovery': typeof AdminEmailRecoveryRoute
   '/admin/inventory-sync': typeof AdminInventorySyncRoute
   '/admin/seo-health': typeof AdminSeoHealthRoute
   '/admin/shopify-sync': typeof AdminShopifySyncRoute
@@ -450,6 +459,7 @@ export interface FileRouteTypes {
     | '/admin/collection-hero-regression'
     | '/admin/collection-image-preview'
     | '/admin/collection-image-qa'
+    | '/admin/email-recovery'
     | '/admin/inventory-sync'
     | '/admin/seo-health'
     | '/admin/shopify-sync'
@@ -496,6 +506,7 @@ export interface FileRouteTypes {
     | '/admin/collection-hero-regression'
     | '/admin/collection-image-preview'
     | '/admin/collection-image-qa'
+    | '/admin/email-recovery'
     | '/admin/inventory-sync'
     | '/admin/seo-health'
     | '/admin/shopify-sync'
@@ -542,6 +553,7 @@ export interface FileRouteTypes {
     | '/admin/collection-hero-regression'
     | '/admin/collection-image-preview'
     | '/admin/collection-image-qa'
+    | '/admin/email-recovery'
     | '/admin/inventory-sync'
     | '/admin/seo-health'
     | '/admin/shopify-sync'
@@ -589,6 +601,7 @@ export interface RootRouteChildren {
   AdminCollectionHeroRegressionRoute: typeof AdminCollectionHeroRegressionRoute
   AdminCollectionImagePreviewRoute: typeof AdminCollectionImagePreviewRoute
   AdminCollectionImageQaRoute: typeof AdminCollectionImageQaRoute
+  AdminEmailRecoveryRoute: typeof AdminEmailRecoveryRoute
   AdminInventorySyncRoute: typeof AdminInventorySyncRoute
   AdminSeoHealthRoute: typeof AdminSeoHealthRoute
   AdminShopifySyncRoute: typeof AdminShopifySyncRoute
@@ -824,6 +837,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminInventorySyncRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/email-recovery': {
+      id: '/admin/email-recovery'
+      path: '/admin/email-recovery'
+      fullPath: '/admin/email-recovery'
+      preLoaderRoute: typeof AdminEmailRecoveryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/collection-image-qa': {
       id: '/admin/collection-image-qa'
       path: '/admin/collection-image-qa'
@@ -958,6 +978,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminCollectionHeroRegressionRoute: AdminCollectionHeroRegressionRoute,
   AdminCollectionImagePreviewRoute: AdminCollectionImagePreviewRoute,
   AdminCollectionImageQaRoute: AdminCollectionImageQaRoute,
+  AdminEmailRecoveryRoute: AdminEmailRecoveryRoute,
   AdminInventorySyncRoute: AdminInventorySyncRoute,
   AdminSeoHealthRoute: AdminSeoHealthRoute,
   AdminShopifySyncRoute: AdminShopifySyncRoute,
