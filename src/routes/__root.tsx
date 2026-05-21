@@ -69,6 +69,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { name: "google-site-verification", content: "fMHX1ox7fghr5UYvoTTCaxSRNcKuE5BEUuPd-tDZYE4" },
+      { name: "google-site-verification", content: "AtWXsRuhIBiU3qtuduY5QlJUXKCQipTKSAQ2_P9_fM4" },
       { title: "Palace of Roman — Curated Luxury Fashion" },
       { name: "description", content: "Curated luxury fashion from Gucci, Prada, Saint Laurent, Armani and 500+ designer houses. 100% authentic, shipped worldwide." },
       { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" },

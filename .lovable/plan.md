@@ -1,117 +1,92 @@
 ## Goal
-Drive discoverable, indexable traffic to palaceofromanofficial.com this week and convert it through organic IG/TikTok — no paid spend, no fabricated reviews, no claims the reseller certificate doesn't support.
+Make Palace of Roman discoverable, indexable, **and shoppable on every free surface that already lists product catalogs** — Google free listings, Meta/Instagram Shopping, TikTok Shop, Pinterest — plus the on-site SEO + organic social loop. Zero ad spend. No fabricated reviews or claims outside the BrandsGateway certificate.
 
 ## What's already in place (verified)
-- `public/robots.txt` with proper disallow + sitemap reference
-- `src/routes/sitemap[.]xml.ts` (static routes + up to 5k product handles from Shopify)
-- Per-route `head()` metadata pattern in TanStack Start
-- Editorial routes (`editorial.may-2026`, `resort-2026`, `the-new-evening`, `journal`)
-- Shopify storefront wired to real catalog, USD pricing, cart→Storefront API checkout
+- `public/robots.txt` with sane disallows + sitemap directive
+- `src/routes/sitemap[.]xml.ts` server route (static routes + up to 5k product handles, USD/EUR handled in `priceMoney`)
+- TanStack Start per-route `head()` pattern
+- Editorial routes, brand index, collections, PDP, swim campaign, journal
+- Real Shopify storefront with Storefront API checkout
 
-So the gap is **not infrastructure**. It's: (1) topical authority pages targeting buyer-intent queries, (2) per-route metadata quality, (3) structured data depth, (4) a repeatable IG/TikTok content loop from assets we already own.
-
----
-
-## Week-1 SEO work (in order of impact)
-
-### 1. Search Console + Bing Webmaster verification
-- Verify `palaceofromanofficial.com` in Google Search Console via META tag (Lovable has a connector for this — agent can run the 3-step token → embed → verify flow).
-- Submit `/sitemap.xml` once verified.
-- Mirror in Bing Webmaster (free, covers DuckDuckGo + ChatGPT search).
-- Outcome: Google starts crawling the ~5k product URLs within days instead of weeks.
-
-### 2. Per-route metadata audit
-Sweep every public route under `src/routes/` and confirm each defines a unique:
-- `title` (≤60 chars, includes the route's primary phrase)
-- `description` (≤160 chars, value + CTA)
-- `og:title`, `og:description`, `og:url`, `og:image` (the route's hero/product image)
-- `link rel="canonical"` on the leaf (already correct per `head-meta` rules)
-
-Highest-leverage routes to harden first: `/`, `/shop`, `/collections`, `/collections/$handle`, `/brand/$vendor`, `/product/$handle`, `/swim`, `/editorial/*`, `/journal`, `/about`, `/authentication` (the trust page).
-
-### 3. Structured data (JSON-LD)
-Add schema only where it maps to real content — no fabrications.
-- `__root.tsx`: `Organization` + `WebSite` with `SearchAction` (sitelinks search box)
-- `product.$handle.tsx`: `Product` with `name`, `image`, `brand`, `offers.price`, `offers.priceCurrency: "USD"`, `availability` from Shopify variant data
-- `brand.$vendor.tsx`: `CollectionPage` + `BreadcrumbList`
-- `collections.$handle.tsx`: `CollectionPage` + `BreadcrumbList`
-- `editorial/*` and `journal`: `Article` with `headline`, `image`, `datePublished`, `author: "Palace of Roman"`
-- `faq.tsx`: `FAQPage` from the existing Q&A
-- `shipping-returns.tsx`: include shipping/returns policy text — Google surfaces this in the merchant knowledge panel
-
-### 4. Topical-authority pages (the actual organic growth lever)
-With KDI low for long-tail luxury queries, the fastest path is buyer-intent landing pages built from the catalog we already have. Each one is a real route, real copy, real product grid — not a doorway page.
-
-Proposed additions for this week (pick 2–3, not all):
-- `/edits/dolce-gabbana-swim` — already have the campaign; broaden into an "edit" with copy + filtered product grid
-- `/edits/black-tie` — pulls `productType:dress` + tag-based filters
-- `/guides/sizing-european-luxury` — practical sizing translation table (EU↔US↔UK); high search demand, zero competition for boutiques
-- `/guides/authenticity-luxury-resale` — explains the BrandsGateway sourcing chain (defensible per the certificate) — also doubles as a trust page linked from PDPs
-
-Each gets its own `head()`, `Article`/`CollectionPage` JSON-LD, internal links from `/` and the global footer.
-
-### 5. Internal linking pass
-- Footer: link to every editorial + guide + brand index
-- PDP: link "More from {vendor}" → `/brand/$vendor`, "Shop the edit" → relevant `/edits/*`
-- Editorial: link out to 3–5 product URLs each (currently under-linked)
-
-This is the single highest-ROI move after metadata — Google ranks pages partly by how reachable they are from the home page.
-
-### 6. Image SEO
-- Confirm every `<img>` in PDP, hero, editorial has descriptive `alt` (vendor + product + category, not the filename)
-- Add `loading="lazy"` everywhere except above-the-fold hero
-- Confirm `og:image` resolves to an absolute URL on each route (TanStack SSR head guidance)
+So infrastructure exists. Gaps for catalog-sales + traffic: (1) product feeds aren't published to free shopping surfaces, (2) PDP lacks `Product` JSON-LD (which Google Free Listings reads), (3) no Search Console verification, (4) per-route metadata isn't unique on key templates, (5) no internal-linking from authority landing pages into the catalog, (6) no email-capture for retention.
 
 ---
 
-## IG / TikTok content loop (zero budget, repeatable)
+## Plan
 
-We already own 99 editorial PNGs + the full Shopify product image library. The loop:
+### Round 1 — Indexing foundations (highest ROI, zero risk)
+1. **Verify `palaceofromanofficial.com` in Google Search Console** via the META-tag flow (Lovable's Google Search Console connector handles token → embed → verify). Submit `/sitemap.xml`.
+2. **Verify in Bing Webmaster Tools** (covers DuckDuckGo + ChatGPT search).
+3. **Per-route metadata sweep** on the 6 highest-traffic templates: `/`, `/shop`, `/collections/$handle`, `/brand/$vendor`, `/product/$handle`, `/editorial/*`. Each gets unique `title` (≤60), `description` (≤160), `og:title`, `og:description`, `og:url`, `og:image` (route's hero), leaf-only `<link rel="canonical">`.
 
-**3 posts/week minimum, all sourced from existing assets:**
-1. **Carousel** (IG) — "The edit: {theme}" — 6–8 product stills + one editorial cover. Caption ends with `Shop the edit → palaceofromanofficial.com/edits/{slug}` (matches a real route from §4).
-2. **Reel / TikTok** (15–25s) — single product, slow zoom + price reveal. Trending audio. CC: brand + price in USD + "link in bio".
-3. **Story / TikTok B-roll** — "what arrived this week" — restock or new-in cycle.
+### Round 2 — Structured data (powers free catalog listings)
+The PDP `Product` schema is the single biggest catalog-sales lever — Google Shopping's free listings, Pinterest rich pins, and ChatGPT product answers all read it.
 
-**Profile setup:**
-- Single Linktree-style page already exists at `/links` — make sure it lists: Shop, Latest edit, Sizing guide, Authenticity.
-- Bio: "Curated European luxury. Authorised BrandsGateway partner. Worldwide shipping." (matches what the certificate supports)
-- Pinned posts: 3 best edits.
+- `__root.tsx`: `Organization` + `WebSite` with `SearchAction`
+- `product.$handle.tsx`: **`Product`** with `name`, `image[]`, `brand` (vendor), `sku`, `description`, `offers.price`, `offers.priceCurrency: "USD"`, `offers.availability`, `offers.itemCondition: NewCondition`, `offers.url` — pulled from the existing loader data
+- `collections.$handle.tsx` + `brand.$vendor.tsx`: `CollectionPage` + `BreadcrumbList` + `ItemList` of products on the page (rich result eligible)
+- `editorial/*` + `journal`: `Article`
+- `faq.tsx`: `FAQPage` from existing Q&A
+- `shipping-returns.tsx`: ensure shipping/return policy text is crawlable (Google merchant knowledge panel signal)
 
-**Hashtag strategy** (use 8–12, mix sizes):
-- Vendor-specific (`#dolcegabbana`, `#bottegaveneta`) — high reach, low conversion
-- Niche editorial (`#luxuryeditorial`, `#europeanluxury`) — better intent
-- Long-tail (`#luxuryswim2026`, `#resort26`) — small but converts
+### Round 3 — Product feed for free shopping surfaces
+Publish one canonical feed and reuse it across every free channel.
 
-**UGC seed:** as orders ship, include a printed card asking buyers to tag `@palaceofroman` — first source of real, on-policy social proof (which we can later surface as embedded posts, never as fabricated reviews).
+- **Add `/feed.xml` server route** at `src/routes/feed[.]xml.ts` — Google Merchant Center RSS 2.0 + `g:` namespace, pulls from the same Shopify Storefront query the sitemap uses. Fields: `g:id`, `g:title`, `g:description`, `g:link`, `g:image_link`, `g:additional_image_link`, `g:availability`, `g:price` (USD), `g:brand`, `g:condition: new`, `g:gtin` (when present), `g:product_type`, `g:google_product_category` (mapped from vendor/type).
+- **Submit feed to:**
+  - **Google Merchant Center → free product listings** (free, surfaces in the Shopping tab + image search). Verifies the same `palaceofromanofficial.com` Search Console property.
+  - **Meta Commerce Manager → catalog from data feed** (powers Instagram Shop tags, Facebook Shop, Reels product tags). All organic — paid ads optional.
+  - **Pinterest → product catalog** (powers free Product Pins, the highest-intent luxury-fashion surface).
+  - **TikTok Shop catalog** (region-gated; flag for US TikTok Shop if eligible).
+- A second feed `/feed/meta.xml` can be added if Meta's required fields diverge — usually one feed works for all four.
+
+### Round 4 — Topical-authority routes (drive organic traffic into the catalog)
+Real routes with real product grids — not doorway pages. Each links into the catalog.
+
+Pick 2 this round:
+- `/edits/dolce-gabbana-swim` — broaden the existing campaign into a permanent edit, with `CollectionPage` schema
+- `/edits/black-tie` — filtered grid (`productType:dress` + tags)
+- `/guides/sizing-european-luxury` — EU↔US↔UK translation table; very high search demand, near-zero competition
+- `/guides/authenticity-luxury-resale` — documents the BrandsGateway sourcing chain (defensible per the certificate); doubles as a trust page linked from every PDP
+
+Each: unique `head()`, `Article` or `CollectionPage` JSON-LD, internal links from `/`, footer, and PDP "you might also like".
+
+### Round 5 — Internal linking + image SEO
+- Footer: link to every editorial, guide, brand index, and `/feed.xml` (for transparency)
+- PDP: "More from {vendor}" → `/brand/$vendor`, "Shop the edit" → relevant `/edits/*`, "How we source" → `/guides/authenticity-luxury-resale`
+- Editorial: 3–5 outbound product links per post (currently under-linked)
+- Image `alt`: vendor + product + category (not filename); `loading="lazy"` everywhere except above-the-fold; absolute `og:image` URLs
+
+### Round 6 — Retention + traffic loops (still zero-budget)
+- **Email capture** in footer + post-purchase: Klaviyo free tier (up to 250 contacts) or a simple `subscribers` table in Lovable Cloud. Welcome series → first-purchase nudge → abandoned-cart (Shopify webhook).
+- **Linktree replacement** — already have `/links`; restructure to: Shop · Latest edit · Sizing guide · Authenticity · Worldwide shipping.
+- **IG/TikTok content loop** (3 posts/week from existing 99 editorial PNGs + Shopify product images):
+  1. Carousel — "The edit: {theme}" → CTA to `/edits/{slug}`
+  2. Reel/TikTok 15–25s — product zoom + price reveal → "link in bio"
+  3. Story / B-roll — "new in" cycle from Shopify webhook
+- **Hashtag mix** (8–12): vendor (`#dolcegabbana`) · niche editorial (`#europeanluxury`) · long-tail (`#luxuryswim2026`)
+- **UGC seed:** printed card in every shipment asking buyers to tag `@palaceofroman` — first source of real, on-policy social proof
 
 ---
 
-## Out of scope this week
-- Paid ads (Meta/Google/TikTok) — deferred per zero budget
-- Email capture + Klaviyo welcome flow — strong next step, flag for week 2
-- Pinterest — high luxury fashion intent, also week 2
-- Blog content beyond the 2–3 guides above — month-2 cadence
-- Fabricated reviews / testimonials — never (per policy)
+## Explicitly out of scope this turn
+- Paid ads (deferred per zero budget; the feed work above means we can flip them on later without rework)
+- Fabricated reviews/testimonials — never (per policy)
+- Klaviyo paid features, SMS, Pinterest paid
 
----
-
-## Technical notes (for implementation phase)
-
-- Use `SITE_URL` from `@/lib/seo` for all canonical/og:url construction (already used by sitemap)
-- New routes go in `src/routes/` using the flat dot convention (`edits.dolce-gabbana-swim.tsx`, `guides.sizing-european-luxury.tsx`)
-- Add new route paths to `STATIC_ROUTES` in `src/routes/sitemap[.]xml.ts` so they ship in the sitemap
+## Technical notes
+- All canonical/og:url construction goes through `SITE_URL` from `@/lib/seo`
+- Prices in feeds come from `priceMoney()` in `src/lib/shopify.ts` (already converts EUR→USD)
+- New routes use the flat dot convention (`edits.black-tie.tsx`, `guides.sizing-european-luxury.tsx`, `feed[.]xml.ts`)
+- Every new public route is added to `STATIC_ROUTES` in `sitemap[.]xml.ts`
 - JSON-LD goes in each route's `head().scripts` as `type: "application/ld+json"`
-- For Search Console verification: use the META method via the Google Search Console connector — token goes into `__root.tsx` `head().meta`, then deploy, then call verify
-- Run `semrush--keyword_research` on candidate guide topics before writing copy, to confirm volume + difficulty for the `us` market
+- For Google Search Console: META method via the connector, token in `__root.tsx` `head().meta`, deploy, then call verify
+- Run `semrush--keyword_research` on guide topics before writing copy, and `shopify--search_products` before filtering edits, to ground them in the real catalog
+- Per working-mode memory: each round is one chat turn; I'll wait for go-ahead between rounds and ship the smallest possible diff
 
 ---
 
-## Suggested execution order (4 implementation rounds)
+## Recommended order
+**Round 1 → Round 2 → Round 3** unlocks free catalog sales fastest (verification + Product schema + feed submitted to Google/Meta/Pinterest in one week). **Rounds 4–6** compound traffic and conversion after the catalog is live on those surfaces.
 
-1. **Round 1 (foundations):** Search Console + Bing verification, per-route metadata sweep on the 6 highest-traffic route templates (`/`, `/shop`, `/collections/$handle`, `/product/$handle`, `/brand/$vendor`, `/editorial/*`).
-2. **Round 2 (schema):** Product + CollectionPage + Article + Organization + FAQPage JSON-LD.
-3. **Round 3 (content):** Build 2 new routes (1 edit + 1 guide), add to sitemap, internal-link from home and footer.
-4. **Round 4 (social kit):** `/links` audit, IG/TikTok post templates checked into `/public` or a `docs/` folder so the founder can post directly, no design work each time.
-
-Each round is one chat turn. Confirm which round to start with and I'll implement.
+Confirm which round to start with.
