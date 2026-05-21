@@ -60,6 +60,7 @@ export function WelcomeDispatchModal() {
           email: value,
           source: "welcome_modal",
           userAgent: typeof navigator !== "undefined" ? navigator.userAgent : undefined,
+          marketingConsent: true,
         },
       });
       if (!result.ok) {
@@ -176,6 +177,13 @@ export function WelcomeDispatchModal() {
                   {error}
                 </p>
               )}
+              <p className="text-[10px] text-ink/50 leading-relaxed pt-2">
+                By joining, you consent to receiving marketing emails — including cart recovery reminders if you leave items behind. You may{" "}
+                <a href="/privacy" className="underline decoration-bronze/40 hover:text-bronze transition-colors">
+                  unsubscribe
+                </a>{" "}
+                at any time.
+              </p>
               <button
                 type="button"
                 onClick={dismiss}
