@@ -281,3 +281,11 @@ export const useCartStore = create<CartStore>()(
     }
   )
 );
+
+// Whenever the cart items change in the browser, debounce-sync the snapshot
+// to the abandoned_carts table so the recovery dispatcher can pick it up.
+if (typeof window !== "undefined") {
+  useCartStore.subscribe((state, prev) => {
+    if (state.items !== prev.items) scheduleAbandonedCartSync();
+  });
+}
