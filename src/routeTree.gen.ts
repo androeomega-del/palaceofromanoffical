@@ -26,6 +26,7 @@ import { Route as AuthenticationRouteImport } from './routes/authentication'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CollectionsIndexRouteImport } from './routes/collections.index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as SwimSizeGuideRouteImport } from './routes/swim.size-guide'
 import { Route as ProductHandleRouteImport } from './routes/product.$handle'
 import { Route as EditorialTheNewEveningRouteImport } from './routes/editorial.the-new-evening'
@@ -135,6 +136,11 @@ const IndexRoute = IndexRouteImport.update({
 const CollectionsIndexRoute = CollectionsIndexRouteImport.update({
   id: '/collections/',
   path: '/collections/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SwimSizeGuideRoute = SwimSizeGuideRouteImport.update({
@@ -307,6 +313,7 @@ export interface FileRoutesByFullPath {
   '/editorial/the-new-evening': typeof EditorialTheNewEveningRoute
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
+  '/admin/': typeof AdminIndexRoute
   '/collections/': typeof CollectionsIndexRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
   '/api/public/cron/abandoned-cart-recovery': typeof ApiPublicCronAbandonedCartRecoveryRoute
@@ -351,6 +358,7 @@ export interface FileRoutesByTo {
   '/editorial/the-new-evening': typeof EditorialTheNewEveningRoute
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
+  '/admin': typeof AdminIndexRoute
   '/collections': typeof CollectionsIndexRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
   '/api/public/cron/abandoned-cart-recovery': typeof ApiPublicCronAbandonedCartRecoveryRoute
@@ -396,6 +404,7 @@ export interface FileRoutesById {
   '/editorial/the-new-evening': typeof EditorialTheNewEveningRoute
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
+  '/admin/': typeof AdminIndexRoute
   '/collections/': typeof CollectionsIndexRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
   '/api/public/cron/abandoned-cart-recovery': typeof ApiPublicCronAbandonedCartRecoveryRoute
@@ -442,6 +451,7 @@ export interface FileRouteTypes {
     | '/editorial/the-new-evening'
     | '/product/$handle'
     | '/swim/size-guide'
+    | '/admin/'
     | '/collections/'
     | '/api/public/seo-health'
     | '/api/public/cron/abandoned-cart-recovery'
@@ -486,6 +496,7 @@ export interface FileRouteTypes {
     | '/editorial/the-new-evening'
     | '/product/$handle'
     | '/swim/size-guide'
+    | '/admin'
     | '/collections'
     | '/api/public/seo-health'
     | '/api/public/cron/abandoned-cart-recovery'
@@ -530,6 +541,7 @@ export interface FileRouteTypes {
     | '/editorial/the-new-evening'
     | '/product/$handle'
     | '/swim/size-guide'
+    | '/admin/'
     | '/collections/'
     | '/api/public/seo-health'
     | '/api/public/cron/abandoned-cart-recovery'
@@ -574,6 +586,7 @@ export interface RootRouteChildren {
   EditorialResort2026Route: typeof EditorialResort2026Route
   EditorialTheNewEveningRoute: typeof EditorialTheNewEveningRoute
   ProductHandleRoute: typeof ProductHandleRoute
+  AdminIndexRoute: typeof AdminIndexRoute
   CollectionsIndexRoute: typeof CollectionsIndexRoute
   ApiPublicSeoHealthRoute: typeof ApiPublicSeoHealthRoute
   ApiPublicCronAbandonedCartRecoveryRoute: typeof ApiPublicCronAbandonedCartRecoveryRoute
@@ -705,6 +718,13 @@ declare module '@tanstack/react-router' {
       path: '/collections'
       fullPath: '/collections/'
       preLoaderRoute: typeof CollectionsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/swim/size-guide': {
@@ -927,6 +947,7 @@ const rootRouteChildren: RootRouteChildren = {
   EditorialResort2026Route: EditorialResort2026Route,
   EditorialTheNewEveningRoute: EditorialTheNewEveningRoute,
   ProductHandleRoute: ProductHandleRoute,
+  AdminIndexRoute: AdminIndexRoute,
   CollectionsIndexRoute: CollectionsIndexRoute,
   ApiPublicSeoHealthRoute: ApiPublicSeoHealthRoute,
   ApiPublicCronAbandonedCartRecoveryRoute:
@@ -945,13 +966,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
