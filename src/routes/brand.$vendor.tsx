@@ -11,8 +11,8 @@ const SORT_KEYS: SortKey[] = SORT_OPTIONS.map((o) => o.value);
 
 export const Route = createFileRoute("/brand/$vendor")({
   validateSearch: (search: Record<string, unknown>): { sort: SortKey } => {
-    const raw = typeof search.sort === "string" ? (search.sort as SortKey) : "popular";
-    return { sort: SORT_KEYS.includes(raw) ? raw : "popular" };
+    const raw = typeof search.sort === "string" ? (search.sort as SortKey) : "BEST_SELLING-false";
+    return { sort: SORT_KEYS.includes(raw) ? raw : "BEST_SELLING-false" };
   },
   head: ({ params }) => {
     const name = unslug(params.vendor);
