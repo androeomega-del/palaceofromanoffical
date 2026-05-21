@@ -64,6 +64,7 @@ export const Route = createFileRoute("/api/public/cron/win-back-emails")({
         // 2. Keep most recent per email.
         const latestByEmail = new Map<string, string>();
         for (const o of (oldOrders ?? [])) {
+          if (!o.recipient_email || !o.sent_at) continue;
           if (!latestByEmail.has(o.recipient_email)) {
             latestByEmail.set(o.recipient_email, o.sent_at);
           }
