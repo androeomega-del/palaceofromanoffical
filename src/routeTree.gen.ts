@@ -43,6 +43,7 @@ import { Route as AdminCollectionFocalRouteImport } from './routes/admin.collect
 import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 import { Route as ApiPublicSeoHealthRouteImport } from './routes/api/public/seo-health'
 import { Route as ApiPublicHooksSyncCollectionImagesRouteImport } from './routes/api/public/hooks/sync-collection-images'
+import { Route as ApiPublicHooksShopifyOrderCreatedRouteImport } from './routes/api/public/hooks/shopify-order-created'
 import { Route as ApiPublicHooksExpireShopifyTagsRouteImport } from './routes/api/public/hooks/expire-shopify-tags'
 import { Route as ApiPublicHooksDispatchCartRecoveryRouteImport } from './routes/api/public/hooks/dispatch-cart-recovery'
 
@@ -220,6 +221,12 @@ const ApiPublicHooksSyncCollectionImagesRoute =
     path: '/api/public/hooks/sync-collection-images',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksShopifyOrderCreatedRoute =
+  ApiPublicHooksShopifyOrderCreatedRouteImport.update({
+    id: '/api/public/hooks/shopify-order-created',
+    path: '/api/public/hooks/shopify-order-created',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksExpireShopifyTagsRoute =
   ApiPublicHooksExpireShopifyTagsRouteImport.update({
     id: '/api/public/hooks/expire-shopify-tags',
@@ -269,6 +276,7 @@ export interface FileRoutesByFullPath {
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
   '/api/public/hooks/dispatch-cart-recovery': typeof ApiPublicHooksDispatchCartRecoveryRoute
   '/api/public/hooks/expire-shopify-tags': typeof ApiPublicHooksExpireShopifyTagsRoute
+  '/api/public/hooks/shopify-order-created': typeof ApiPublicHooksShopifyOrderCreatedRoute
   '/api/public/hooks/sync-collection-images': typeof ApiPublicHooksSyncCollectionImagesRoute
 }
 export interface FileRoutesByTo {
@@ -307,6 +315,7 @@ export interface FileRoutesByTo {
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
   '/api/public/hooks/dispatch-cart-recovery': typeof ApiPublicHooksDispatchCartRecoveryRoute
   '/api/public/hooks/expire-shopify-tags': typeof ApiPublicHooksExpireShopifyTagsRoute
+  '/api/public/hooks/shopify-order-created': typeof ApiPublicHooksShopifyOrderCreatedRoute
   '/api/public/hooks/sync-collection-images': typeof ApiPublicHooksSyncCollectionImagesRoute
 }
 export interface FileRoutesById {
@@ -346,6 +355,7 @@ export interface FileRoutesById {
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
   '/api/public/hooks/dispatch-cart-recovery': typeof ApiPublicHooksDispatchCartRecoveryRoute
   '/api/public/hooks/expire-shopify-tags': typeof ApiPublicHooksExpireShopifyTagsRoute
+  '/api/public/hooks/shopify-order-created': typeof ApiPublicHooksShopifyOrderCreatedRoute
   '/api/public/hooks/sync-collection-images': typeof ApiPublicHooksSyncCollectionImagesRoute
 }
 export interface FileRouteTypes {
@@ -386,6 +396,7 @@ export interface FileRouteTypes {
     | '/api/public/seo-health'
     | '/api/public/hooks/dispatch-cart-recovery'
     | '/api/public/hooks/expire-shopify-tags'
+    | '/api/public/hooks/shopify-order-created'
     | '/api/public/hooks/sync-collection-images'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -424,6 +435,7 @@ export interface FileRouteTypes {
     | '/api/public/seo-health'
     | '/api/public/hooks/dispatch-cart-recovery'
     | '/api/public/hooks/expire-shopify-tags'
+    | '/api/public/hooks/shopify-order-created'
     | '/api/public/hooks/sync-collection-images'
   id:
     | '__root__'
@@ -462,6 +474,7 @@ export interface FileRouteTypes {
     | '/api/public/seo-health'
     | '/api/public/hooks/dispatch-cart-recovery'
     | '/api/public/hooks/expire-shopify-tags'
+    | '/api/public/hooks/shopify-order-created'
     | '/api/public/hooks/sync-collection-images'
   fileRoutesById: FileRoutesById
 }
@@ -500,6 +513,7 @@ export interface RootRouteChildren {
   ApiPublicSeoHealthRoute: typeof ApiPublicSeoHealthRoute
   ApiPublicHooksDispatchCartRecoveryRoute: typeof ApiPublicHooksDispatchCartRecoveryRoute
   ApiPublicHooksExpireShopifyTagsRoute: typeof ApiPublicHooksExpireShopifyTagsRoute
+  ApiPublicHooksShopifyOrderCreatedRoute: typeof ApiPublicHooksShopifyOrderCreatedRoute
   ApiPublicHooksSyncCollectionImagesRoute: typeof ApiPublicHooksSyncCollectionImagesRoute
 }
 
@@ -743,6 +757,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksSyncCollectionImagesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/shopify-order-created': {
+      id: '/api/public/hooks/shopify-order-created'
+      path: '/api/public/hooks/shopify-order-created'
+      fullPath: '/api/public/hooks/shopify-order-created'
+      preLoaderRoute: typeof ApiPublicHooksShopifyOrderCreatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/expire-shopify-tags': {
       id: '/api/public/hooks/expire-shopify-tags'
       path: '/api/public/hooks/expire-shopify-tags'
@@ -806,6 +827,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicHooksDispatchCartRecoveryRoute:
     ApiPublicHooksDispatchCartRecoveryRoute,
   ApiPublicHooksExpireShopifyTagsRoute: ApiPublicHooksExpireShopifyTagsRoute,
+  ApiPublicHooksShopifyOrderCreatedRoute:
+    ApiPublicHooksShopifyOrderCreatedRoute,
   ApiPublicHooksSyncCollectionImagesRoute:
     ApiPublicHooksSyncCollectionImagesRoute,
 }

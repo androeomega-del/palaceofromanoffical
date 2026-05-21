@@ -376,6 +376,30 @@ export type Database = {
         }
         Relationships: []
       }
+      order_emails_sent: {
+        Row: {
+          email_type: string
+          id: string
+          order_id: string
+          recipient_email: string | null
+          sent_at: string
+        }
+        Insert: {
+          email_type: string
+          id?: string
+          order_id: string
+          recipient_email?: string | null
+          sent_at?: string
+        }
+        Update: {
+          email_type?: string
+          id?: string
+          order_id?: string
+          recipient_email?: string | null
+          sent_at?: string
+        }
+        Relationships: []
+      }
       shopify_tag_expirations: {
         Row: {
           created_at: string
