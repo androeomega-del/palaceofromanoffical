@@ -44,7 +44,8 @@ export const Route = createFileRoute("/api/public/cron/abandoned-cart-recovery")
         let failed =  0;
 
         for (const cart of (carts ?? [])) {
-          const lines = (cart.items ?? []).map((item: any) => ({
+          const rawItems = (cart.items ?? []) as any[];
+          const lines = rawItems.map((item) => ({
             title: item.title ?? "Item",
             variant: item.variant_title ?? null,
             image: item.image ?? null,
