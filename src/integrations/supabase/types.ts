@@ -14,6 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
+      abandoned_carts: {
+        Row: {
+          checkout_url: string | null
+          created_at: string
+          customer_name: string | null
+          email: string
+          id: string
+          item_count: number
+          items: Json
+          last_activity_at: string
+          page_path: string | null
+          recovered_at: string | null
+          recovery_email_count: number
+          recovery_email_sent_at: string | null
+          session_id: string
+          total_usd: number
+          updated_at: string
+          user_agent: string | null
+        }
+        Insert: {
+          checkout_url?: string | null
+          created_at?: string
+          customer_name?: string | null
+          email: string
+          id?: string
+          item_count?: number
+          items?: Json
+          last_activity_at?: string
+          page_path?: string | null
+          recovered_at?: string | null
+          recovery_email_count?: number
+          recovery_email_sent_at?: string | null
+          session_id: string
+          total_usd?: number
+          updated_at?: string
+          user_agent?: string | null
+        }
+        Update: {
+          checkout_url?: string | null
+          created_at?: string
+          customer_name?: string | null
+          email?: string
+          id?: string
+          item_count?: number
+          items?: Json
+          last_activity_at?: string
+          page_path?: string | null
+          recovered_at?: string | null
+          recovery_email_count?: number
+          recovery_email_sent_at?: string | null
+          session_id?: string
+          total_usd?: number
+          updated_at?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       bg_products: {
         Row: {
           brand: string | null

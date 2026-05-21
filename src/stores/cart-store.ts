@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { storefrontApiRequest, type ShopifyProduct, type Money } from "@/lib/shopify";
 import { trackCartEvent } from "@/lib/cart-analytics";
+import { scheduleAbandonedCartSync } from "@/lib/abandoned-cart-capture";
 
 export interface CartItem {
   lineId: string | null;
@@ -280,3 +281,11 @@ export const useCartStore = create<CartStore>()(
     }
   )
 );
+
+// Whenever the cart items change in the browser, debounce-sync the snapshot
+// to the abandoned_carts table so the recovery dispatcher can pick it up.
+if (typeof window !== "undefined") {
+  useCartStore.subscribe((state, prev) => {
+    if (state.items !== prev.items) scheduleAbandonedCartSync();
+  });
+}

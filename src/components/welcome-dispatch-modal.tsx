@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { rememberCustomerEmail, scheduleAbandonedCartSync } from "@/lib/abandoned-cart-capture";
 
 /**
  * First-visit welcome capture. Data-driven response to an early 91%+ bounce
@@ -64,6 +65,8 @@ export function WelcomeDispatchModal() {
       setError("Something went wrong. Please try again.");
       return;
     }
+    rememberCustomerEmail(value);
+    scheduleAbandonedCartSync();
     setStatus("ok");
     try {
       localStorage.setItem(STORAGE_KEY, new Date().toISOString());
