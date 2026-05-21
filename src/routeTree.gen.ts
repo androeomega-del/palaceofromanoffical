@@ -42,6 +42,7 @@ import { Route as AdminCollectionHeroRegressionRouteImport } from './routes/admi
 import { Route as AdminCollectionFocalRouteImport } from './routes/admin.collection-focal'
 import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 import { Route as ApiPublicSeoHealthRouteImport } from './routes/api/public/seo-health'
+import { Route as ApiPublicStockAlertsSubscribeRouteImport } from './routes/api/public/stock-alerts/subscribe'
 import { Route as ApiPublicHooksSyncCollectionImagesRouteImport } from './routes/api/public/hooks/sync-collection-images'
 import { Route as ApiPublicHooksShopifyOrderCreatedRouteImport } from './routes/api/public/hooks/shopify-order-created'
 import { Route as ApiPublicHooksExpireShopifyTagsRouteImport } from './routes/api/public/hooks/expire-shopify-tags'
@@ -218,6 +219,12 @@ const ApiPublicSeoHealthRoute = ApiPublicSeoHealthRouteImport.update({
   path: '/api/public/seo-health',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicStockAlertsSubscribeRoute =
+  ApiPublicStockAlertsSubscribeRouteImport.update({
+    id: '/api/public/stock-alerts/subscribe',
+    path: '/api/public/stock-alerts/subscribe',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksSyncCollectionImagesRoute =
   ApiPublicHooksSyncCollectionImagesRouteImport.update({
     id: '/api/public/hooks/sync-collection-images',
@@ -302,6 +309,7 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/expire-shopify-tags': typeof ApiPublicHooksExpireShopifyTagsRoute
   '/api/public/hooks/shopify-order-created': typeof ApiPublicHooksShopifyOrderCreatedRoute
   '/api/public/hooks/sync-collection-images': typeof ApiPublicHooksSyncCollectionImagesRoute
+  '/api/public/stock-alerts/subscribe': typeof ApiPublicStockAlertsSubscribeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -344,6 +352,7 @@ export interface FileRoutesByTo {
   '/api/public/hooks/expire-shopify-tags': typeof ApiPublicHooksExpireShopifyTagsRoute
   '/api/public/hooks/shopify-order-created': typeof ApiPublicHooksShopifyOrderCreatedRoute
   '/api/public/hooks/sync-collection-images': typeof ApiPublicHooksSyncCollectionImagesRoute
+  '/api/public/stock-alerts/subscribe': typeof ApiPublicStockAlertsSubscribeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -387,6 +396,7 @@ export interface FileRoutesById {
   '/api/public/hooks/expire-shopify-tags': typeof ApiPublicHooksExpireShopifyTagsRoute
   '/api/public/hooks/shopify-order-created': typeof ApiPublicHooksShopifyOrderCreatedRoute
   '/api/public/hooks/sync-collection-images': typeof ApiPublicHooksSyncCollectionImagesRoute
+  '/api/public/stock-alerts/subscribe': typeof ApiPublicStockAlertsSubscribeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -431,6 +441,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/expire-shopify-tags'
     | '/api/public/hooks/shopify-order-created'
     | '/api/public/hooks/sync-collection-images'
+    | '/api/public/stock-alerts/subscribe'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -473,6 +484,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/expire-shopify-tags'
     | '/api/public/hooks/shopify-order-created'
     | '/api/public/hooks/sync-collection-images'
+    | '/api/public/stock-alerts/subscribe'
   id:
     | '__root__'
     | '/'
@@ -515,6 +527,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/expire-shopify-tags'
     | '/api/public/hooks/shopify-order-created'
     | '/api/public/hooks/sync-collection-images'
+    | '/api/public/stock-alerts/subscribe'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -557,6 +570,7 @@ export interface RootRouteChildren {
   ApiPublicHooksExpireShopifyTagsRoute: typeof ApiPublicHooksExpireShopifyTagsRoute
   ApiPublicHooksShopifyOrderCreatedRoute: typeof ApiPublicHooksShopifyOrderCreatedRoute
   ApiPublicHooksSyncCollectionImagesRoute: typeof ApiPublicHooksSyncCollectionImagesRoute
+  ApiPublicStockAlertsSubscribeRoute: typeof ApiPublicStockAlertsSubscribeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -792,6 +806,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicSeoHealthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/stock-alerts/subscribe': {
+      id: '/api/public/stock-alerts/subscribe'
+      path: '/api/public/stock-alerts/subscribe'
+      fullPath: '/api/public/stock-alerts/subscribe'
+      preLoaderRoute: typeof ApiPublicStockAlertsSubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/sync-collection-images': {
       id: '/api/public/hooks/sync-collection-images'
       path: '/api/public/hooks/sync-collection-images'
@@ -898,6 +919,7 @@ const rootRouteChildren: RootRouteChildren = {
     ApiPublicHooksShopifyOrderCreatedRoute,
   ApiPublicHooksSyncCollectionImagesRoute:
     ApiPublicHooksSyncCollectionImagesRoute,
+  ApiPublicStockAlertsSubscribeRoute: ApiPublicStockAlertsSubscribeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
