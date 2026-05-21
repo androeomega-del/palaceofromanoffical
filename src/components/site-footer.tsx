@@ -1,11 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import { NewsletterForm } from "@/components/newsletter-form";
+import { useIsAdmin } from "@/hooks/use-is-admin";
 
 // Frozen at module load so the copyright year is identical on server and
 // client renders, avoiding any hydration mismatch around year boundaries.
 const COPYRIGHT_YEAR = new Date().getFullYear();
 
 export function SiteFooter() {
+  const isAdmin = useIsAdmin();
   return (
     <footer className="border-t border-ink/10 pt-32 pb-12 bg-canvas">
       <div className="max-w-screen-2xl mx-auto px-6">
@@ -107,6 +109,9 @@ export function SiteFooter() {
             </a>
             <Link to="/privacy" className="hover:text-ink transition-colors">Privacy</Link>
             <Link to="/terms" className="hover:text-ink transition-colors">Terms</Link>
+            {isAdmin ? (
+              <Link to="/admin" className="text-bronze hover:text-ink transition-colors">Admin</Link>
+            ) : null}
           </div>
         </div>
       </div>
