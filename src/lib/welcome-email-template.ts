@@ -25,7 +25,7 @@ export function renderWelcomeEmail(): { subject: string; html: string; text: str
         <tr><td align="center" style="font-family:Karla,Helvetica,sans-serif;font-size:12px;color:#9c8c70;padding:40px 0 0;line-height:1.6;">
           <a href="${SITE}/privacy" style="color:#7a6a55;text-decoration:none;">Privacy Notice</a> &mdash; you may unsubscribe at any time.
         </td></tr>
-        <tr><td align="center" style="font-family:Karla,Helvetica,sans-serif;font-size:12px;color:#9c8c70;padding:8px 1 0;line-height:1.6;">
+        <tr><td align="center" style="font-family:Karla,Helvetica,sans-serif;font-size:12px;color:#9c8c70;padding:8px 0 0;line-height:1.6;">
           <a href="${SITE}" style="color:#7a6a55;text-decoration:none;">palaceofromanofficial.com</a>
         </td></tr>
       </table>
