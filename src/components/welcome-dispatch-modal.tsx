@@ -91,7 +91,7 @@ export function WelcomeDispatchModal() {
     }
   };
 
-  if (!open) return null;
+  if (!open || suppressed) return null;
 
   return (
     <div
