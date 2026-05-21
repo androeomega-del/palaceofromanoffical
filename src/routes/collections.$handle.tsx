@@ -407,12 +407,9 @@ function CollectionPage() {
 
           {/* Main column */}
           <div className="flex-1 min-w-0">
-            {/* Quick sort presets */}
-            <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
-              <SortPresets
-                value={sort}
-                onChange={setSort}
-              />
+            {/* Sort dropdown — same menu on every catalog surface */}
+            <div className="mb-5 flex flex-wrap items-center justify-end gap-4">
+              <CatalogSort value={sort} onChange={setSort} />
             </div>
 
 
