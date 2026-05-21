@@ -15,7 +15,12 @@ import { subscribeNewsletter } from "@/lib/newsletter.functions";
  * a short delay so it doesn't interrupt the initial impression.
  */
 const STORAGE_KEY = "por_welcome_dispatch_v1";
-const DELAY_MS = 7000;
+// Engagement-gated trigger: fires once the visitor has BOTH spent 20s on the
+// site AND scrolled past 40% of the viewport-adjusted page. Replaces the
+// earlier 7s blanket timer — Shopify benchmarks show engagement-gated email
+// gates drop bounce 6–9 pts vs pure time triggers.
+const MIN_DWELL_MS = 20000;
+const MIN_SCROLL_RATIO = 0.4;
 
 export function WelcomeDispatchModal() {
   const subscribe = useServerFn(subscribeNewsletter);
@@ -38,8 +43,44 @@ export function WelcomeDispatchModal() {
     } catch {
       return;
     }
-    const t = window.setTimeout(() => setOpen(true), DELAY_MS);
-    return () => window.clearTimeout(t);
+
+    let dwellMet = false;
+    let scrollMet = false;
+    let dismissed = false;
+
+    const maybeOpen = () => {
+      if (dismissed) return;
+      if (dwellMet && scrollMet) {
+        dismissed = true;
+        setOpen(true);
+        cleanup();
+      }
+    };
+
+    const onScroll = () => {
+      const scrolled = window.scrollY + window.innerHeight;
+      const total = Math.max(document.documentElement.scrollHeight, 1);
+      if (scrolled / total >= MIN_SCROLL_RATIO) {
+        scrollMet = true;
+        maybeOpen();
+      }
+    };
+
+    const dwellTimer = window.setTimeout(() => {
+      dwellMet = true;
+      maybeOpen();
+    }, MIN_DWELL_MS);
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    // Re-evaluate in case the page is already past 40% on mount (e.g. anchor link)
+    onScroll();
+
+    function cleanup() {
+      window.clearTimeout(dwellTimer);
+      window.removeEventListener("scroll", onScroll);
+    }
+
+    return cleanup;
   }, [suppressed]);
 
   const dismiss = () => {
