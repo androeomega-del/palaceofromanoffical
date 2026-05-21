@@ -209,10 +209,25 @@ export const Route = createFileRoute("/api/public/hooks/dispatch-cart-recovery")
                 recovery_email_count: cart.recovery_email_count + 1,
               })
               .eq("id", cart.id);
+            await supabaseAdmin.from("email_dispatch_log").insert({
+              template_name: "cart-recovery",
+              recipient_email: cart.email,
+              status: "sent",
+              cart_id: cart.id,
+              metadata: { item_count: cart.item_count, total_usd: cart.total_usd },
+            });
             results.push({ id: cart.id, sent: true });
           } catch (e) {
             const msg = e instanceof Error ? e.message : String(e);
             console.error(`[cart-recovery] send failed for ${cart.id}:`, msg);
+            await supabaseAdmin.from("email_dispatch_log").insert({
+              template_name: "cart-recovery",
+              recipient_email: cart.email,
+              status: "failed",
+              error_message: msg.slice(0, 2000),
+              cart_id: cart.id,
+              metadata: { item_count: cart.item_count, total_usd: cart.total_usd },
+            });
             results.push({ id: cart.id, sent: false, error: msg });
           }
         }
