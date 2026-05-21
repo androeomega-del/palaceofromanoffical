@@ -1,0 +1,74 @@
+// Client-side helper for the abandoned-cart recovery system.
+// Stores the captured email locally so the cart store can link every cart
+// mutation to a known recipient, and exposes a debounced `syncAbandonedCart`
+// that upserts the latest cart snapshot through the server function.
+
+import { useCartStore, type CartItem } from "@/stores/cart-store";
+import { captureAbandonedCart } from "@/lib/abandoned-cart.functions";
+
+const EMAIL_KEY = "por-customer-email";
+const SESSION_KEY = "por-analytics-session";
+
+export function rememberCustomerEmail(email: string) {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(EMAIL_KEY, email.trim().toLowerCase());
+  } catch {
+    /* ignore */
+  }
+}
+
+export function getCustomerEmail(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return localStorage.getItem(EMAIL_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function getSessionId(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return localStorage.getItem(SESSION_KEY);
+  } catch {
+    return null;
+  }
+}
+
+let timer: ReturnType<typeof setTimeout> | null = null;
+
+export function scheduleAbandonedCartSync() {
+  if (typeof window === "undefined") return;
+  const email = getCustomerEmail();
+  const sessionId = getSessionId();
+  if (!email || !sessionId) return;
+
+  if (timer) clearTimeout(timer);
+  timer = setTimeout(() => {
+    const { items, checkoutUrl } = useCartStore.getState();
+    const snapshot = items.map((i: CartItem) => ({
+      handle: i.product?.node?.handle ?? null,
+      title: i.product?.node?.title ?? null,
+      variant_title: i.variantTitle ?? null,
+      image: i.product?.node?.images?.edges?.[0]?.node?.url ?? null,
+      price_usd: i.price ? Number(i.price.amount) : 0,
+      quantity: i.quantity,
+    }));
+    const total = snapshot.reduce((s, i) => s + i.price_usd * i.quantity, 0);
+    const itemCount = snapshot.reduce((s, i) => s + i.quantity, 0);
+
+    captureAbandonedCart({
+      data: {
+        session_id: sessionId,
+        email,
+        items: snapshot,
+        total_usd: Math.min(1_000_000, Math.max(0, total)),
+        item_count: Math.min(1000, Math.max(0, itemCount)),
+        checkout_url: checkoutUrl ?? null,
+        page_path: window.location.pathname.slice(0, 500),
+        user_agent: (navigator.userAgent ?? "").slice(0, 500),
+      },
+    }).catch((e) => console.debug("[abandoned-cart] sync failed:", e));
+  }, 1500);
+}
