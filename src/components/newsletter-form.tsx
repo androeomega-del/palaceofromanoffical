@@ -28,7 +28,7 @@ export function NewsletterForm() {
         source: typeof window !== "undefined" ? window.location.pathname : null,
         user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
         marketing_consent: true,
-      } as any);
+      });
 
     // Postgres unique-violation = already subscribed; treat as success for UX.
     if (insertError && insertError.code !== "23505") {
