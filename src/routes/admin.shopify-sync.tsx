@@ -12,7 +12,7 @@ export const Route = createFileRoute("/admin/shopify-sync")({
     try {
       await ensureAdmin();
     } catch {
-      throw redirect({ to: "/authentication" });
+      throw redirect({ to: "/login" });
     }
   },
   component: AdminShopifySync,

@@ -12,7 +12,7 @@ export const Route = createFileRoute("/admin/seo-health")({
     try {
       await ensureAdmin();
     } catch {
-      throw redirect({ to: "/authentication" });
+      throw redirect({ to: "/login" });
     }
   },
   component: AdminSeoHealth,

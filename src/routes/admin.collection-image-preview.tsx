@@ -28,7 +28,7 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/collection-image-preview")({
   beforeLoad: async () => {
-    try { await ensureAdmin(); } catch { throw redirect({ to: "/authentication" }); }
+    try { await ensureAdmin(); } catch { throw redirect({ to: "/login" }); }
   },
   component: AdminCollectionImagePreview,
   head: () => ({

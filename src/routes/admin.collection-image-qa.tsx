@@ -16,7 +16,7 @@ import { getCollectionImageMap } from "@/lib/collection-image.functions";
 
 export const Route = createFileRoute("/admin/collection-image-qa")({
   beforeLoad: async () => {
-    try { await ensureAdmin(); } catch { throw redirect({ to: "/authentication" }); }
+    try { await ensureAdmin(); } catch { throw redirect({ to: "/login" }); }
   },
   component: AdminCollectionImageQa,
   head: () => ({
