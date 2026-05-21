@@ -4,16 +4,10 @@ import { useMemo } from "react";
 import { fetchProductsPage } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
 import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
+import { CatalogSort, SORT_OPTIONS, type SortValue } from "@/components/catalog-filters";
 
-type SortKey = "popular" | "newest" | "price-asc" | "price-desc" | "alpha";
-const SORTS: { key: SortKey; label: string; sortKey: string; reverse: boolean }[] = [
-  { key: "popular", label: "Popularity", sortKey: "BEST_SELLING", reverse: false },
-  { key: "newest", label: "Newest", sortKey: "CREATED_AT", reverse: true },
-  { key: "price-asc", label: "Price · Low to High", sortKey: "PRICE", reverse: false },
-  { key: "price-desc", label: "Price · High to Low", sortKey: "PRICE", reverse: true },
-  { key: "alpha", label: "A–Z", sortKey: "TITLE", reverse: false },
-];
-const SORT_KEYS: SortKey[] = SORTS.map((s) => s.key);
+type SortKey = SortValue;
+const SORT_KEYS: SortKey[] = SORT_OPTIONS.map((o) => o.value);
 
 export const Route = createFileRoute("/brand/$vendor")({
   validateSearch: (search: Record<string, unknown>): { sort: SortKey } => {
