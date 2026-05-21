@@ -9,6 +9,7 @@ import {
   Image as ImageIcon,
   Crop,
   CheckSquare,
+  Mail,
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin/")({
@@ -41,6 +42,12 @@ const TILES: Tile[] = [
     label: "Cart Analytics",
     desc: "Funnel, revenue, top products, sessions",
     icon: BarChart3,
+  },
+  {
+    to: "/admin/email-recovery",
+    label: "Email Recovery",
+    desc: "Cart recovery, opt-ins, dispatch errors",
+    icon: Mail,
   },
   {
     to: "/admin/seo-health",
