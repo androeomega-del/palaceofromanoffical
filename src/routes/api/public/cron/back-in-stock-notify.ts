@@ -14,7 +14,7 @@ export const Route = createFileRoute("/api/public/cron/back-in-stock-notify")({
         // Get pending subscriptions
         const { data: subs, error: subError } = await supabaseAdmin
           .from("stock_alert_subscriptions")
-          .select("id, email, product_handle, product_title, variant_title, image_url, price_usd")
+          .select("id, email, variant_gid, product_handle, product_title, variant_title, image_url, price_usd")
           .is("notified_at", null)
           .limit(100);
 
