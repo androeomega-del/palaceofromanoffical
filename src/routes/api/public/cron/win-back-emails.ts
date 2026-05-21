@@ -34,7 +34,7 @@ async function getRecommendations(): Promise<
   const picked = shuffled.slice(0, 3);
 
   return picked.map((p) => ({
-    title: p.name,
+    title: p.name ?? "Piece",
     handle: p.handle,
     image: p.main_picture,
     price: formatPrice(p.retail_price),
@@ -46,52 +46,77 @@ export const Route = createFileRoute("/api/public/cron/win-back-emails")({
   server: {
     handlers: {
       POST: async () => {
-        // Find customers whose last thank-you email was 60+ days ago
-        // and who have not received a win-back email yet.
         const cutoff = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString();
 
-        const { data: lapsed, error } = await supabaseAdmin.rpc("get_lapsed_customers", {
-          cutoff_date: cutoff,
-        });
+        // 1. Get all thank-you emails older than cutoff.
+        const { data: oldOrders, error: q1 } = await supabaseAdmin
+          .from("order_emails_sent")
+          .select("recipient_email, sent_at")
+          .eq("email_type", "thank_you")
+          .lt("sent_at", cutoff)
+          .order("sent_at", { ascending: false });
 
-        if (error) {
-          console.error("[win-back-cron] query failed:", error.message);
+        if (q1) {
+          console.error("[win-back-cron] query failed:", q1.message);
           return new Response("DB error", { status: 500 });
         }
 
+        // 2. Keep most recent per email.
+        const latestByEmail = new Map<string, string>();
+        for (const o of (oldOrders ?? [])) {
+          if (!latestByEmail.has(o.recipient_email)) {
+            latestByEmail.set(o.recipient_email, o.sent_at);
+          }
+        }
+
+        // 3. Exclude emails already sent a win-back.
+        const { data: alreadySent } = await supabaseAdmin
+          .from("win_back_emails_sent")
+          .select("recipient_email");
+        const sentSet = new Set((alreadySent ?? []).map((r) => r.recipient_email));
+
+        const candidates: { email: string; lastOrderDate: string | null }[] = [];
+        for (const [email, sentAt] of latestByEmail) {
+          if (!sentSet.has(email)) {
+            const d = new Date(sentAt);
+            candidates.push({
+              email,
+              lastOrderDate: d.toLocaleDateString("en-US", { month: "long", year: "numeric" }),
+            });
+          }
+        }
+
         const recommendations = await getRecommendations();
-        if (recommendations.length ===  0) {
+        if (recommendations.length === 0) {
           return Response.json({ ok: true, sent: 0, reason: "no_recommendations" });
         }
 
         let sent = 0;
         let failed = 0;
 
-        const rows = (lapsed ?? []) as { recipient_email: string; last_order_date: string | null; first_name: string | null }[];
-
-        for (const row of rows.slice(0, 50)) {
+        for (const c of candidates.slice(0, 50)) {
           try {
             const { subject, html, text } = renderWinBackEmail({
-              firstName: row.first_name,
+              firstName: null,
               recommendations,
-              lastOrderDate: row.last_order_date,
+              lastOrderDate: c.lastOrderDate,
             });
-            await sendGmail(row.recipient_email, subject, html, text);
+            await sendGmail(c.email, subject, html, text);
 
             await supabaseAdmin.from("win_back_emails_sent").insert({
-              recipient_email: row.recipient_email,
+              recipient_email: c.email,
               recommendation_handles: recommendations.map((r) => r.handle),
             });
 
             sent++;
           } catch (e) {
             const msg = e instanceof Error ? e.message : String(e);
-            console.error(`[win-back-cron] send failed for ${row.recipient_email}:`, msg);
+            console.error(`[win-back-cron] send failed for ${c.email}:`, msg);
             failed++;
           }
         }
 
-        return Response.json({ ok: true, sent, failed, checked: rows.length });
+        return Response.json({ ok: true, sent, failed, checked: candidates.length });
       },
     },
   },
