@@ -12,6 +12,7 @@ import editorialHero from "@/assets/editorial/may-2026/1.webp";
 import marketingWomen from "@/assets/marketing-women-summer.jpg";
 import marketingMen from "@/assets/marketing-men-summer.jpg";
 import marketingAccessories from "@/assets/marketing-accessories-summer.jpg";
+import marketingJewelry from "@/assets/marketing-jewelry-summer.jpg";
 import marketingSwim from "@/assets/marketing-swim-summer.jpg";
 
 import swimCampaignVideo from "@/assets/swim-campaign.mp4.asset.json";
@@ -25,6 +26,7 @@ const SUMMER_BENTO_PROPS = {
   womenImage: { url: marketingWomen, altText: "Women's Resort 2026 — Mediterranean Edit" },
   menImage: { url: marketingMen, altText: "Men's Resort 2026 — Amalfi Coast" },
   accessoriesImage: { url: marketingAccessories, altText: "Summer Accessories — Designer Edit" },
+  jewelryImage: { url: marketingJewelry, altText: "The Jewelry Edit — Fine Gold & Diamonds" },
   swimImage: { url: marketingSwim, altText: "Designer Swimwear — Riviera Edit" },
 } as const;
 
@@ -903,6 +905,7 @@ function SummerBento({
   womenImage,
   menImage,
   accessoriesImage,
+  jewelryImage,
   swimImage,
   spotlightImage,
   spotlightVendor,
@@ -911,6 +914,7 @@ function SummerBento({
   womenImage?: ShopifyImg;
   menImage?: ShopifyImg;
   accessoriesImage?: ShopifyImg;
+  jewelryImage?: ShopifyImg;
   swimImage?: ShopifyImg;
   spotlightImage?: ShopifyImg;
   spotlightVendor?: string;
@@ -1059,7 +1063,7 @@ function SummerBento({
         <Link
           to="/collections/$handle"
           params={{ handle: MENS_CLOTHING_HANDLE }}
-          className="col-span-12 md:col-span-8 lg:col-span-5 row-span-2 relative group overflow-hidden bg-canvas-raised"
+          className="col-span-12 md:col-span-8 lg:col-span-4 row-span-2 relative group overflow-hidden bg-canvas-raised"
         >
           {menImage && (
             <img
@@ -1106,6 +1110,31 @@ function SummerBento({
           </div>
         </Link>
 
+        {/* Jewelry Tile — full-bleed, balances Accessories */}
+        <Link
+          to="/shop"
+          search={{ q: "tag:Jewelry", title: "Jewelry" }}
+          className="col-span-6 md:col-span-4 lg:col-span-2 row-span-2 relative group overflow-hidden bg-canvas-raised"
+        >
+          {jewelryImage && (
+            <img
+              src={jewelryImage.url}
+              alt={jewelryImage.altText ?? "Jewelry"}
+              loading="lazy"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/25 to-transparent" />
+          <div className="relative z-10 h-full flex flex-col justify-end p-5 md:p-6 text-center items-center">
+            <span className="text-[9px] uppercase tracking-[0.3em] text-canvas/85 mb-1">
+              Shop
+            </span>
+            <h4 className="text-base md:text-lg text-canvas uppercase tracking-[0.15em] font-medium">
+              Jewelry
+            </h4>
+          </div>
+        </Link>
+
       </div>
     </section>
   );
@@ -1131,8 +1160,10 @@ function SummerBentoSkeleton() {
         {/* Women Tile */}
         <div className="col-span-12 md:col-span-6 lg:col-span-4 row-span-2 bg-canvas-raised animate-pulse" />
         {/* Men Tile */}
-        <div className="col-span-12 md:col-span-8 lg:col-span-5 row-span-2 bg-canvas-raised animate-pulse" />
+        <div className="col-span-12 md:col-span-8 lg:col-span-4 row-span-2 bg-canvas-raised animate-pulse" />
         {/* Accessories Tile */}
+        <div className="col-span-6 md:col-span-4 lg:col-span-2 row-span-2 bg-canvas-raised animate-pulse" />
+        {/* Jewelry Tile */}
         <div className="col-span-6 md:col-span-4 lg:col-span-2 row-span-2 bg-canvas-raised animate-pulse" />
       </div>
     </section>
