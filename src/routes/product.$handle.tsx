@@ -269,6 +269,7 @@ function ProductView({
   const buyRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const [flashBuy, setFlashBuy] = useState(false);
+  const [showStickyBuy, setShowStickyBuy] = useState(false);
   useEffect(() => {
     if (location.hash !== "buy" && location.hash !== "#buy") return;
     const el = buyRef.current;
@@ -280,6 +281,19 @@ function ProductView({
     }, 120);
     return () => window.clearTimeout(t);
   }, [location.hash]);
+
+  // Sticky mobile Add-to-Bag: show once the inline ATC scrolls out of view.
+  useEffect(() => {
+    const el = buyRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const obs = new IntersectionObserver(
+      ([entry]) => setShowStickyBuy(!entry.isIntersecting),
+      { rootMargin: "0px 0px -40% 0px", threshold: 0 },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
 
 
   const handleAdd = async () => {
@@ -658,9 +672,53 @@ function ProductView({
           </section>
         )}
       </div>
+
+      {/* Sticky mobile Add-to-Bag — appears once inline ATC is scrolled past */}
+      <div
+        className={`md:hidden fixed inset-x-0 bottom-0 z-40 border-t border-[var(--studio-rule)] bg-[var(--studio-bg)]/95 backdrop-blur-md shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.18)] transition-transform duration-500 ${
+          showStickyBuy ? "translate-y-0" : "translate-y-full"
+        }`}
+        style={{ paddingBottom: "max(env(safe-area-inset-bottom), 0.5rem)" }}
+        aria-hidden={!showStickyBuy}
+      >
+        <div className="flex items-center gap-3 px-4 py-3">
+          {images[0]?.url && (
+            <img
+              src={images[0].url}
+              alt=""
+              className="w-12 h-14 object-cover flex-shrink-0"
+            />
+          )}
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-[var(--studio-bronze)] font-semibold truncate">
+              {product.vendor}
+            </p>
+            <p className="font-serif text-[15px] leading-tight truncate">
+              {formatPrice(currentPrice)}
+            </p>
+          </div>
+          <button
+            onClick={handleAdd}
+            disabled={isLoading || !selectedVariant?.availableForSale}
+            className="h-12 px-5 bg-[var(--studio-ink)] text-[var(--studio-bg)] hover:bg-[var(--studio-bronze)] transition-colors text-[10px] uppercase tracking-[0.25em] font-semibold disabled:opacity-50 inline-flex items-center justify-center gap-2 shadow-md"
+          >
+            {isLoading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : !selectedVariant?.availableForSale ? (
+              "Sold Out"
+            ) : (
+              <>
+                <Lock className="w-3 h-3" />
+                Add to Bag
+              </>
+            )}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
+
 
 function TrustItem({ title, sub }: { title: string; sub: string }) {
   return (
