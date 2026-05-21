@@ -198,7 +198,7 @@ export const Route = createFileRoute("/api/public/hooks/dispatch-cart-recovery")
         }
 
         const results: Array<{ id: string; sent: boolean; error?: string }> = [];
-        for (const cart of (carts ?? []) as AbandonedCart[]) {
+        for (const cart of (carts ?? []) as unknown as AbandonedCart[]) {
           try {
             const { subject, html, text } = renderEmail(cart);
             await sendGmail(cart.email, subject, html, text);

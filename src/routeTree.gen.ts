@@ -44,6 +44,7 @@ import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 import { Route as ApiPublicSeoHealthRouteImport } from './routes/api/public/seo-health'
 import { Route as ApiPublicHooksSyncCollectionImagesRouteImport } from './routes/api/public/hooks/sync-collection-images'
 import { Route as ApiPublicHooksExpireShopifyTagsRouteImport } from './routes/api/public/hooks/expire-shopify-tags'
+import { Route as ApiPublicHooksDispatchCartRecoveryRouteImport } from './routes/api/public/hooks/dispatch-cart-recovery'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -225,6 +226,12 @@ const ApiPublicHooksExpireShopifyTagsRoute =
     path: '/api/public/hooks/expire-shopify-tags',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksDispatchCartRecoveryRoute =
+  ApiPublicHooksDispatchCartRecoveryRouteImport.update({
+    id: '/api/public/hooks/dispatch-cart-recovery',
+    path: '/api/public/hooks/dispatch-cart-recovery',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -260,6 +267,7 @@ export interface FileRoutesByFullPath {
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/collections/': typeof CollectionsIndexRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
+  '/api/public/hooks/dispatch-cart-recovery': typeof ApiPublicHooksDispatchCartRecoveryRoute
   '/api/public/hooks/expire-shopify-tags': typeof ApiPublicHooksExpireShopifyTagsRoute
   '/api/public/hooks/sync-collection-images': typeof ApiPublicHooksSyncCollectionImagesRoute
 }
@@ -297,6 +305,7 @@ export interface FileRoutesByTo {
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/collections': typeof CollectionsIndexRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
+  '/api/public/hooks/dispatch-cart-recovery': typeof ApiPublicHooksDispatchCartRecoveryRoute
   '/api/public/hooks/expire-shopify-tags': typeof ApiPublicHooksExpireShopifyTagsRoute
   '/api/public/hooks/sync-collection-images': typeof ApiPublicHooksSyncCollectionImagesRoute
 }
@@ -335,6 +344,7 @@ export interface FileRoutesById {
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/collections/': typeof CollectionsIndexRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
+  '/api/public/hooks/dispatch-cart-recovery': typeof ApiPublicHooksDispatchCartRecoveryRoute
   '/api/public/hooks/expire-shopify-tags': typeof ApiPublicHooksExpireShopifyTagsRoute
   '/api/public/hooks/sync-collection-images': typeof ApiPublicHooksSyncCollectionImagesRoute
 }
@@ -374,6 +384,7 @@ export interface FileRouteTypes {
     | '/swim/size-guide'
     | '/collections/'
     | '/api/public/seo-health'
+    | '/api/public/hooks/dispatch-cart-recovery'
     | '/api/public/hooks/expire-shopify-tags'
     | '/api/public/hooks/sync-collection-images'
   fileRoutesByTo: FileRoutesByTo
@@ -411,6 +422,7 @@ export interface FileRouteTypes {
     | '/swim/size-guide'
     | '/collections'
     | '/api/public/seo-health'
+    | '/api/public/hooks/dispatch-cart-recovery'
     | '/api/public/hooks/expire-shopify-tags'
     | '/api/public/hooks/sync-collection-images'
   id:
@@ -448,6 +460,7 @@ export interface FileRouteTypes {
     | '/swim/size-guide'
     | '/collections/'
     | '/api/public/seo-health'
+    | '/api/public/hooks/dispatch-cart-recovery'
     | '/api/public/hooks/expire-shopify-tags'
     | '/api/public/hooks/sync-collection-images'
   fileRoutesById: FileRoutesById
@@ -485,6 +498,7 @@ export interface RootRouteChildren {
   ProductHandleRoute: typeof ProductHandleRoute
   CollectionsIndexRoute: typeof CollectionsIndexRoute
   ApiPublicSeoHealthRoute: typeof ApiPublicSeoHealthRoute
+  ApiPublicHooksDispatchCartRecoveryRoute: typeof ApiPublicHooksDispatchCartRecoveryRoute
   ApiPublicHooksExpireShopifyTagsRoute: typeof ApiPublicHooksExpireShopifyTagsRoute
   ApiPublicHooksSyncCollectionImagesRoute: typeof ApiPublicHooksSyncCollectionImagesRoute
 }
@@ -736,6 +750,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksExpireShopifyTagsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/dispatch-cart-recovery': {
+      id: '/api/public/hooks/dispatch-cart-recovery'
+      path: '/api/public/hooks/dispatch-cart-recovery'
+      fullPath: '/api/public/hooks/dispatch-cart-recovery'
+      preLoaderRoute: typeof ApiPublicHooksDispatchCartRecoveryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -782,6 +803,8 @@ const rootRouteChildren: RootRouteChildren = {
   ProductHandleRoute: ProductHandleRoute,
   CollectionsIndexRoute: CollectionsIndexRoute,
   ApiPublicSeoHealthRoute: ApiPublicSeoHealthRoute,
+  ApiPublicHooksDispatchCartRecoveryRoute:
+    ApiPublicHooksDispatchCartRecoveryRoute,
   ApiPublicHooksExpireShopifyTagsRoute: ApiPublicHooksExpireShopifyTagsRoute,
   ApiPublicHooksSyncCollectionImagesRoute:
     ApiPublicHooksSyncCollectionImagesRoute,
