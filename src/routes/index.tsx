@@ -936,7 +936,7 @@ function SummerBento({
 
 
         {/* Main Hero: The Shoreline Perspective */}
-        <div className="col-span-12 lg:col-span-8 row-span-3 lg:row-span-6 relative group overflow-hidden bg-canvas-raised">
+        <div className="col-span-12 lg:col-span-8 row-span-3 lg:row-span-4 relative group overflow-hidden bg-canvas-raised">
           <img
             src={summerHero}
             alt="Resort 2026 — The Shoreline Perspective"
