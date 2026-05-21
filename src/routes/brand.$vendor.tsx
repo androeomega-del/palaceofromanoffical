@@ -91,27 +91,15 @@ function BrandPage() {
 
       <section className="px-6 py-6 border-b border-ink/5">
         <div className="max-w-screen-2xl mx-auto flex items-center justify-end">
-          <label className="flex items-center gap-3 text-[11px] uppercase tracking-[0.25em] text-muted-foreground">
-            Sort
-            <select
-              value={sort}
-              onChange={(e) =>
-                navigate({
-                  search: () => ({ sort: e.target.value as SortKey }),
-                  replace: true,
-                })
-              }
-              className="bg-transparent border-b border-ink/30 focus:border-ink py-1 pr-6 text-[11px] uppercase tracking-[0.2em] text-ink focus:outline-none cursor-pointer"
-            >
-              {SORTS.map((s) => (
-                <option key={s.key} value={s.key}>
-                  {s.label}
-                </option>
-              ))}
-            </select>
-          </label>
+          <CatalogSort
+            value={sort}
+            onChange={(v) =>
+              navigate({ search: () => ({ sort: v }), replace: true })
+            }
+          />
         </div>
       </section>
+
 
       <section className="px-6 py-20">
         <div className="max-w-screen-2xl mx-auto">
