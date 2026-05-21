@@ -269,6 +269,7 @@ function ProductView({
   const buyRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const [flashBuy, setFlashBuy] = useState(false);
+  const [showStickyBuy, setShowStickyBuy] = useState(false);
   useEffect(() => {
     if (location.hash !== "buy" && location.hash !== "#buy") return;
     const el = buyRef.current;
@@ -280,6 +281,19 @@ function ProductView({
     }, 120);
     return () => window.clearTimeout(t);
   }, [location.hash]);
+
+  // Sticky mobile Add-to-Bag: show once the inline ATC scrolls out of view.
+  useEffect(() => {
+    const el = buyRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const obs = new IntersectionObserver(
+      ([entry]) => setShowStickyBuy(!entry.isIntersecting),
+      { rootMargin: "0px 0px -40% 0px", threshold: 0 },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
 
 
   const handleAdd = async () => {
