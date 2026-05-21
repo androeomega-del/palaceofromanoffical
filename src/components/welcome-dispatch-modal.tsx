@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import { useRouterState } from "@tanstack/react-router";
 import { rememberCustomerEmail, scheduleAbandonedCartSync } from "@/lib/abandoned-cart-capture";
 import { subscribeNewsletter } from "@/lib/newsletter.functions";
 
@@ -18,6 +19,12 @@ const DELAY_MS = 7000;
 
 export function WelcomeDispatchModal() {
   const subscribe = useServerFn(subscribeNewsletter);
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const suppressed =
+    pathname === "/login" ||
+    pathname.startsWith("/admin") ||
+    pathname === "/order-confirmed" ||
+    pathname === "/authentication";
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "ok" | "error">("idle");
@@ -25,6 +32,7 @@ export function WelcomeDispatchModal() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    if (suppressed) return;
     try {
       if (localStorage.getItem(STORAGE_KEY)) return;
     } catch {
@@ -32,7 +40,7 @@ export function WelcomeDispatchModal() {
     }
     const t = window.setTimeout(() => setOpen(true), DELAY_MS);
     return () => window.clearTimeout(t);
-  }, []);
+  }, [suppressed]);
 
   const dismiss = () => {
     setOpen(false);
@@ -83,7 +91,7 @@ export function WelcomeDispatchModal() {
     }
   };
 
-  if (!open) return null;
+  if (!open || suppressed) return null;
 
   return (
     <div
