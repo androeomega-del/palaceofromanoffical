@@ -8,7 +8,7 @@ import { absoluteUrl, SITE_URL } from "@/lib/seo";
 import { collectionSeo } from "@/lib/collection-seo";
 import {
   CatalogFilters,
-  SortPresets,
+  CatalogSort,
   ActiveFilterPills,
   SORT_OPTIONS,
   type Selection,
