@@ -17,6 +17,7 @@ const STORAGE_KEY = "por_welcome_dispatch_v1";
 const DELAY_MS = 7000;
 
 export function WelcomeDispatchModal() {
+  const subscribe = useServerFn(subscribeNewsletter);
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "ok" | "error">("idle");
@@ -53,15 +54,20 @@ export function WelcomeDispatchModal() {
     setStatus("sending");
     setError(null);
 
-    const { error: insertError } = await supabase
-      .from("newsletter_subscribers")
-      .insert({
-        email: value,
-        source: "welcome_modal",
-        user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
+    try {
+      const result = await subscribe({
+        data: {
+          email: value,
+          source: "welcome_modal",
+          userAgent: typeof navigator !== "undefined" ? navigator.userAgent : undefined,
+        },
       });
-
-    if (insertError && insertError.code !== "23505") {
+      if (!result.ok) {
+        setStatus("error");
+        setError(result.error ?? "Something went wrong. Please try again.");
+        return;
+      }
+    } catch {
       setStatus("error");
       setError("Something went wrong. Please try again.");
       return;
