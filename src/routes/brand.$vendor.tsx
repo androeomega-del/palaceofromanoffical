@@ -52,7 +52,8 @@ function BrandPage() {
   const navigate = useNavigate({ from: "/brand/$vendor" });
   const name = unslug(vendor);
 
-  const sortDef = useMemo(() => SORTS.find((s) => s.key === sort) ?? SORTS[0], [sort]);
+  const [sortKey, reverseStr] = sort.split("-");
+  const reverse = reverseStr === "true";
 
   const q = useInfiniteQuery({
     queryKey: ["brand", vendor, sort],
@@ -62,8 +63,8 @@ function BrandPage() {
         first: 48,
         after: pageParam,
         query: `vendor:"${name}"`,
-        sortKey: sortDef.sortKey,
-        reverse: sortDef.reverse,
+        sortKey,
+        reverse,
       }),
     getNextPageParam: (last) => (last.pageInfo.hasNextPage ? last.pageInfo.endCursor : undefined),
   });
