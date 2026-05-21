@@ -66,9 +66,23 @@ async function normalizeCatastrophicSsrResponse(response: Response): Promise<Res
   return brandedErrorResponse();
 }
 
+// Strip legacy /fr (French) URL prefix left over from a previous storefront.
+// Redirect /fr, /fr/, /fr/anything → / or /anything with a permanent 301.
+function legacyLocaleRedirect(request: Request): Response | null {
+  const url = new URL(request.url);
+  const { pathname } = url;
+  if (pathname !== "/fr" && !pathname.startsWith("/fr/")) return null;
+
+  const stripped = pathname === "/fr" ? "/" : pathname.slice(3) || "/";
+  const target = new URL(stripped + url.search + url.hash, url.origin);
+  return Response.redirect(target.toString(), 301);
+}
+
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
+      const redirect = legacyLocaleRedirect(request);
+      if (redirect) return redirect;
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
       return await normalizeCatastrophicSsrResponse(response);
