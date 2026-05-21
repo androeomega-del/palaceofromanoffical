@@ -1026,30 +1026,6 @@ function SummerBento({
           </div>
         </Link>
 
-        {/* Jewelry Edit Tile — sits directly under Women on the right strip */}
-        <Link
-          to="/shop"
-          search={{ q: "tag:Jewelry", title: "Jewelry" }}
-          className="col-span-12 md:col-span-6 lg:col-span-4 row-span-2 relative group overflow-hidden bg-canvas-raised"
-        >
-          {jewelryImage && (
-            <img
-              src={jewelryImage.url}
-              alt={jewelryImage.altText ?? "The Jewelry Edit"}
-              loading="lazy"
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-            />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-ink/65 via-ink/15 to-transparent" />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center">
-              <h3 className="font-serif italic text-4xl md:text-5xl text-canvas">Jewelry</h3>
-              <span className="mt-4 inline-block text-[10px] uppercase tracking-[0.3em] text-canvas border-b border-canvas/40 pb-1 group-hover:border-canvas">
-                Shop the Edit
-              </span>
-            </div>
-          </div>
-        </Link>
 
 
         {spotlightSlug && (
