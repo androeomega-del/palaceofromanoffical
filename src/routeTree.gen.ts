@@ -16,6 +16,7 @@ import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ShippingReturnsRouteImport } from './routes/shipping-returns'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as OrderConfirmedRouteImport } from './routes/order-confirmed'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as LinksRouteImport } from './routes/links'
 import { Route as LegalNoticeRouteImport } from './routes/legal-notice'
 import { Route as JournalRouteImport } from './routes/journal'
@@ -86,6 +87,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
 const OrderConfirmedRoute = OrderConfirmedRouteImport.update({
   id: '/order-confirmed',
   path: '/order-confirmed',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LinksRoute = LinksRouteImport.update({
@@ -290,6 +296,7 @@ export interface FileRoutesByFullPath {
   '/journal': typeof JournalRoute
   '/legal-notice': typeof LegalNoticeRoute
   '/links': typeof LinksRoute
+  '/login': typeof LoginRoute
   '/order-confirmed': typeof OrderConfirmedRoute
   '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
@@ -335,6 +342,7 @@ export interface FileRoutesByTo {
   '/journal': typeof JournalRoute
   '/legal-notice': typeof LegalNoticeRoute
   '/links': typeof LinksRoute
+  '/login': typeof LoginRoute
   '/order-confirmed': typeof OrderConfirmedRoute
   '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
@@ -381,6 +389,7 @@ export interface FileRoutesById {
   '/journal': typeof JournalRoute
   '/legal-notice': typeof LegalNoticeRoute
   '/links': typeof LinksRoute
+  '/login': typeof LoginRoute
   '/order-confirmed': typeof OrderConfirmedRoute
   '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
@@ -428,6 +437,7 @@ export interface FileRouteTypes {
     | '/journal'
     | '/legal-notice'
     | '/links'
+    | '/login'
     | '/order-confirmed'
     | '/privacy'
     | '/shipping-returns'
@@ -473,6 +483,7 @@ export interface FileRouteTypes {
     | '/journal'
     | '/legal-notice'
     | '/links'
+    | '/login'
     | '/order-confirmed'
     | '/privacy'
     | '/shipping-returns'
@@ -518,6 +529,7 @@ export interface FileRouteTypes {
     | '/journal'
     | '/legal-notice'
     | '/links'
+    | '/login'
     | '/order-confirmed'
     | '/privacy'
     | '/shipping-returns'
@@ -564,6 +576,7 @@ export interface RootRouteChildren {
   JournalRoute: typeof JournalRoute
   LegalNoticeRoute: typeof LegalNoticeRoute
   LinksRoute: typeof LinksRoute
+  LoginRoute: typeof LoginRoute
   OrderConfirmedRoute: typeof OrderConfirmedRoute
   PrivacyRoute: typeof PrivacyRoute
   ShippingReturnsRoute: typeof ShippingReturnsRoute
@@ -648,6 +661,13 @@ declare module '@tanstack/react-router' {
       path: '/order-confirmed'
       fullPath: '/order-confirmed'
       preLoaderRoute: typeof OrderConfirmedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/links': {
@@ -925,6 +945,7 @@ const rootRouteChildren: RootRouteChildren = {
   JournalRoute: JournalRoute,
   LegalNoticeRoute: LegalNoticeRoute,
   LinksRoute: LinksRoute,
+  LoginRoute: LoginRoute,
   OrderConfirmedRoute: OrderConfirmedRoute,
   PrivacyRoute: PrivacyRoute,
   ShippingReturnsRoute: ShippingReturnsRoute,
@@ -966,13 +987,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
