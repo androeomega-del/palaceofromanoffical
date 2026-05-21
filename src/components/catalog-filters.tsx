@@ -9,27 +9,30 @@ import { cn } from "@/lib/utils";
 export type Selection = { id: string; label: string; input: string; filterId: string };
 
 export type SortValue =
+  | "MANUAL-false"
   | "BEST_SELLING-false"
   | "CREATED-true"
+  | "CREATED-false"
   | "PRICE-false"
   | "PRICE-true"
-  | "TITLE-false";
+  | "TITLE-false"
+  | "TITLE-true";
 
+// Unified sort menu — used across collections, brand, shop, swim pages so
+// merchandising language stays consistent everywhere.
 export const SORT_OPTIONS: { value: SortValue; label: string }[] = [
-  { value: "BEST_SELLING-false", label: "Best Selling" },
+  { value: "MANUAL-false", label: "Featured" },
+  { value: "BEST_SELLING-false", label: "Best Sellers" },
   { value: "CREATED-true", label: "New Arrivals" },
-  { value: "TITLE-false", label: "A–Z" },
+  { value: "CREATED-false", label: "Oldest First" },
   { value: "PRICE-false", label: "Price: Low to High" },
   { value: "PRICE-true", label: "Price: High to Low" },
+  { value: "TITLE-false", label: "Name: A → Z" },
+  { value: "TITLE-true", label: "Name: Z → A" },
 ];
 
-// Compact quick-preset pills surfaced above the grid on collection pages
-export const SORT_PRESETS: { value: SortValue; label: string }[] = [
-  { value: "CREATED-true", label: "New Arrivals" },
-  { value: "BEST_SELLING-false", label: "Best Selling" },
-  { value: "PRICE-false", label: "Price ↑" },
-  { value: "PRICE-true", label: "Price ↓" },
-];
+// Kept as an alias of SORT_OPTIONS so any legacy callers stay in sync.
+export const SORT_PRESETS = SORT_OPTIONS;
 
 // --- Helpers ---
 
