@@ -78,10 +78,20 @@ function legacyLocaleRedirect(request: Request): Response | null {
   return Response.redirect(target.toString(), 301);
 }
 
+// Map dead Shopify-style /blogs/* URLs (leftover from a prior storefront) to
+// our editorial hub at /journal. Bounce-rate fix — these account for ~5% of
+// recent inbound traffic and currently 404.
+function legacyBlogRedirect(request: Request): Response | null {
+  const url = new URL(request.url);
+  if (!url.pathname.startsWith("/blogs/") && url.pathname !== "/blogs") return null;
+  const target = new URL("/journal" + url.search, url.origin);
+  return Response.redirect(target.toString(), 301);
+}
+
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
-      const redirect = legacyLocaleRedirect(request);
+      const redirect = legacyLocaleRedirect(request) ?? legacyBlogRedirect(request);
       if (redirect) return redirect;
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
