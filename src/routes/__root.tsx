@@ -23,15 +23,66 @@ if (typeof window !== "undefined") {
 }
 
 function NotFoundComponent() {
+  const recoveryLinks: { to: string; label: string; eyebrow: string }[] = [
+    { to: "/shop", label: "The Boutique", eyebrow: "All Pieces" },
+    { to: "/collections/best-sellers", label: "Best Sellers", eyebrow: "Most Loved" },
+    { to: "/collections/womens-clothing", label: "Women", eyebrow: "Edit" },
+    { to: "/collections/mens-clothing", label: "Men", eyebrow: "Edit" },
+    { to: "/swim", label: "Swim", eyebrow: "Resort" },
+    { to: "/journal", label: "The Journal", eyebrow: "Editorial" },
+  ];
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-canvas px-4">
-      <div className="max-w-md text-center">
+    <div className="min-h-screen bg-canvas px-6 py-24">
+      <div className="max-w-3xl mx-auto text-center">
         <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-6">Error 404</p>
-        <h1 className="text-5xl font-serif mb-6">Page not found</h1>
-        <p className="text-sm text-muted-foreground mb-10">The page you're looking for has moved or no longer exists.</p>
+        <h1 className="text-5xl md:text-6xl font-serif mb-6">This page has moved on</h1>
+        <p className="text-sm text-muted-foreground mb-10 max-w-lg mx-auto">
+          The address you followed no longer exists, but the collection is still here. Search the boutique or pick up where the catalogue continues.
+        </p>
+
+        <form
+          action="/shop"
+          method="get"
+          className="flex max-w-md mx-auto border-b border-ink/30 focus-within:border-ink mb-14"
+        >
+          <input
+            type="search"
+            name="q"
+            placeholder="Search designers, pieces, categories…"
+            className="flex-1 bg-transparent py-3 text-sm focus:outline-none placeholder:text-muted-foreground/70"
+            aria-label="Search the boutique"
+          />
+          <button
+            type="submit"
+            className="text-[10px] uppercase tracking-[0.25em] pl-4 hover:text-bronze"
+          >
+            Search
+          </button>
+        </form>
+
+        <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-6">
+          Continue browsing
+        </p>
+        <ul className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
+          {recoveryLinks.map((l) => (
+            <li key={l.to}>
+              <Link
+                to={l.to}
+                className="block border border-ink/10 py-5 px-4 hover:border-ink transition-colors text-left"
+              >
+                <span className="block text-[9px] uppercase tracking-[0.3em] text-bronze mb-2">
+                  {l.eyebrow}
+                </span>
+                <span className="block text-sm font-serif">{l.label}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+
         <Link
           to="/"
-          className="inline-block text-[11px] uppercase tracking-[0.25em] border-b border-ink pb-1 hover:text-bronze hover:border-bronze transition-colors"
+          className="inline-block mt-14 text-[11px] uppercase tracking-[0.25em] border-b border-ink pb-1 hover:text-bronze hover:border-bronze transition-colors"
         >
           Return to Boutique
         </Link>
