@@ -1102,7 +1102,7 @@ function SummerBento({
             />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/25 to-transparent" />
-          <div className="relative z-10 h-full flex flex-col justify-end p-5 md:p-6 text-center items-center">
+          <div className="relative z-10 h-full p-5 md:p-6 text-right flex-col flex items-center justify-end">
             <span className="text-[9px] uppercase tracking-[0.3em] text-canvas/85 mb-1">
               Shop
             </span>
@@ -1127,7 +1127,7 @@ function SummerBento({
             />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/25 to-transparent" />
-          <div className="relative z-10 h-full flex flex-col justify-end p-5 md:p-6 text-center items-center">
+          <div className="relative z-10 h-full p-5 md:p-6 text-right flex-col flex items-center justify-end">
             <span className="text-[9px] uppercase tracking-[0.3em] text-canvas/85 mb-1">
               Shop
             </span>
