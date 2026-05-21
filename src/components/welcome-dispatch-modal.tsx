@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
 import { rememberCustomerEmail, scheduleAbandonedCartSync } from "@/lib/abandoned-cart-capture";
+import { subscribeNewsletter } from "@/lib/newsletter.functions";
 
 /**
  * First-visit welcome capture. Data-driven response to an early 91%+ bounce
