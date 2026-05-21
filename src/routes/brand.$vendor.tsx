@@ -4,21 +4,15 @@ import { useMemo } from "react";
 import { fetchProductsPage } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
 import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
+import { CatalogSort, SORT_OPTIONS, type SortValue } from "@/components/catalog-filters";
 
-type SortKey = "popular" | "newest" | "price-asc" | "price-desc" | "alpha";
-const SORTS: { key: SortKey; label: string; sortKey: string; reverse: boolean }[] = [
-  { key: "popular", label: "Popularity", sortKey: "BEST_SELLING", reverse: false },
-  { key: "newest", label: "Newest", sortKey: "CREATED_AT", reverse: true },
-  { key: "price-asc", label: "Price · Low to High", sortKey: "PRICE", reverse: false },
-  { key: "price-desc", label: "Price · High to Low", sortKey: "PRICE", reverse: true },
-  { key: "alpha", label: "A–Z", sortKey: "TITLE", reverse: false },
-];
-const SORT_KEYS: SortKey[] = SORTS.map((s) => s.key);
+type SortKey = SortValue;
+const SORT_KEYS: SortKey[] = SORT_OPTIONS.map((o) => o.value);
 
 export const Route = createFileRoute("/brand/$vendor")({
   validateSearch: (search: Record<string, unknown>): { sort: SortKey } => {
-    const raw = typeof search.sort === "string" ? (search.sort as SortKey) : "popular";
-    return { sort: SORT_KEYS.includes(raw) ? raw : "popular" };
+    const raw = typeof search.sort === "string" ? (search.sort as SortKey) : "BEST_SELLING-false";
+    return { sort: SORT_KEYS.includes(raw) ? raw : "BEST_SELLING-false" };
   },
   head: ({ params }) => {
     const name = unslug(params.vendor);
@@ -58,7 +52,8 @@ function BrandPage() {
   const navigate = useNavigate({ from: "/brand/$vendor" });
   const name = unslug(vendor);
 
-  const sortDef = useMemo(() => SORTS.find((s) => s.key === sort) ?? SORTS[0], [sort]);
+  const [sortKey, reverseStr] = sort.split("-");
+  const reverse = reverseStr === "true";
 
   const q = useInfiniteQuery({
     queryKey: ["brand", vendor, sort],
@@ -68,8 +63,8 @@ function BrandPage() {
         first: 48,
         after: pageParam,
         query: `vendor:"${name}"`,
-        sortKey: sortDef.sortKey,
-        reverse: sortDef.reverse,
+        sortKey,
+        reverse,
       }),
     getNextPageParam: (last) => (last.pageInfo.hasNextPage ? last.pageInfo.endCursor : undefined),
   });
@@ -96,27 +91,15 @@ function BrandPage() {
 
       <section className="px-6 py-6 border-b border-ink/5">
         <div className="max-w-screen-2xl mx-auto flex items-center justify-end">
-          <label className="flex items-center gap-3 text-[11px] uppercase tracking-[0.25em] text-muted-foreground">
-            Sort
-            <select
-              value={sort}
-              onChange={(e) =>
-                navigate({
-                  search: () => ({ sort: e.target.value as SortKey }),
-                  replace: true,
-                })
-              }
-              className="bg-transparent border-b border-ink/30 focus:border-ink py-1 pr-6 text-[11px] uppercase tracking-[0.2em] text-ink focus:outline-none cursor-pointer"
-            >
-              {SORTS.map((s) => (
-                <option key={s.key} value={s.key}>
-                  {s.label}
-                </option>
-              ))}
-            </select>
-          </label>
+          <CatalogSort
+            value={sort}
+            onChange={(v) =>
+              navigate({ search: () => ({ sort: v }), replace: true })
+            }
+          />
         </div>
       </section>
+
 
       <section className="px-6 py-20">
         <div className="max-w-screen-2xl mx-auto">

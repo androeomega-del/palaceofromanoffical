@@ -8,7 +8,7 @@ import { absoluteUrl, SITE_URL } from "@/lib/seo";
 import { collectionSeo } from "@/lib/collection-seo";
 import {
   CatalogFilters,
-  SortPresets,
+  CatalogSort,
   ActiveFilterPills,
   SORT_OPTIONS,
   type Selection,
@@ -19,6 +19,11 @@ import {
 // featured-three row + roomier grid. Adding a handle here is the only
 // change needed to opt another collection in.
 const EDITORIAL_HERO_COPY: Record<string, { eyebrow: string; tagline: string }> = {
+  "best-sellers": {
+    eyebrow: "Most-Loved at Palace of Roman",
+    tagline:
+      "The pieces our clients return for — runway-grade silhouettes from Gucci, Prada, Saint Laurent and the houses defining this season. Sourced through our authorised distributor network, shipped worldwide.",
+  },
   "polo-shirts": {
     eyebrow: "The Polo, Properly Considered",
     tagline:
@@ -407,12 +412,9 @@ function CollectionPage() {
 
           {/* Main column */}
           <div className="flex-1 min-w-0">
-            {/* Quick sort presets */}
-            <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
-              <SortPresets
-                value={sort}
-                onChange={setSort}
-              />
+            {/* Sort dropdown — same menu on every catalog surface */}
+            <div className="mb-5 flex flex-wrap items-center justify-end gap-4">
+              <CatalogSort value={sort} onChange={setSort} />
             </div>
 
 
