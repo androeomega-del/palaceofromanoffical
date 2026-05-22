@@ -57,8 +57,9 @@ export const Route = createFileRoute("/api/public/ai/recommendations")({
             headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" },
           });
         } catch (error) {
+          console.error("[ai.recommendations] error:", error);
           return new Response(
-            JSON.stringify({ error: error instanceof Error ? error.message : String(error) }),
+            JSON.stringify({ error: "An internal error occurred" }),
             { status: 500, headers: { "content-type": "application/json; charset=utf-8" } },
           );
         }

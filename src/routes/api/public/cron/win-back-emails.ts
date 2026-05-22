@@ -8,6 +8,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { sendGmail } from "@/lib/gmail-send";
 import { renderWinBackEmail } from "@/lib/win-back-email-template";
+import { checkWebhookSecret } from "@/lib/webhook-secret";
 
 const EUR_TO_USD = 1.08;
 
@@ -45,7 +46,9 @@ async function getRecommendations(): Promise<
 export const Route = createFileRoute("/api/public/cron/win-back-emails")({
   server: {
     handlers: {
-      POST: async () => {
+      POST: async ({ request }) => {
+        const unauthorized = checkWebhookSecret(request);
+        if (unauthorized) return unauthorized;
         const cutoff = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString();
 
         // 1. Get all thank-you emails older than cutoff.

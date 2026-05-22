@@ -9,6 +9,7 @@
 
 import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { checkWebhookSecret } from "@/lib/webhook-secret";
 
 const GMAIL_GATEWAY = "https://connector-gateway.lovable.dev/google_mail/gmail/v1";
 const FROM = "Palace of Roman <notify@palaceofromanofficial.com>";
@@ -169,7 +170,9 @@ async function sendGmail(to: string, subject: string, html: string, text: string
 export const Route = createFileRoute("/api/public/hooks/dispatch-cart-recovery")({
   server: {
     handlers: {
-      POST: async () => {
+      POST: async ({ request }) => {
+        const unauthorized = checkWebhookSecret(request);
+        if (unauthorized) return unauthorized;
         // Find carts that have been quiet for 1h-24h, have items, and have
         // not yet received a recovery email.
         const nowMs = Date.now();

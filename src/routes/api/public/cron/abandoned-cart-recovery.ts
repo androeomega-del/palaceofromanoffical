@@ -11,6 +11,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { sendGmail } from "@/lib/gmail-send";
 import { renderCartAbandonmentEmail } from "@/lib/cart-abandonment-email-template";
+import { checkWebhookSecret } from "@/lib/webhook-secret";
 
 const EUR_TO_USD = 1.08;
 
@@ -22,7 +23,9 @@ function priceMoney(centsEur: number | null): string {
 export const Route = createFileRoute("/api/public/cron/abandoned-cart-recovery")({
   server: {
     handlers: {
-      POST: async () => {
+      POST: async ({ request }) => {
+        const unauthorized = checkWebhookSecret(request);
+        if (unauthorized) return unauthorized;
         const { data: carts, error } = await supabaseAdmin
           .from("abandoned_carts")
           .select("id, email, customer_name, items, total_usd, checkout_url, recovery_email_count, recovery_email_sent_at")

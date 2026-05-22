@@ -15,10 +15,11 @@ export const Route = createFileRoute("/api/public/seo-health")({
             },
           });
         } catch (error) {
+          console.error("[seo-health] error:", error);
           return new Response(
             JSON.stringify({
               ok: false,
-              error: error instanceof Error ? error.message : String(error),
+              error: "An internal error occurred",
               checkedAt: new Date().toISOString(),
             }),
             { status: 500, headers: { "content-type": "application/json" } },
