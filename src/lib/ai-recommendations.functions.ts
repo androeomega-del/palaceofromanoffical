@@ -11,6 +11,7 @@ import { isAllowedLuxuryBrand } from "@/lib/nav-config";
 const Input = z.object({
   wishlistHandles: z.array(z.string().trim().min(1).max(120)).max(40).default([]),
   recentHandles: z.array(z.string().trim().min(1).max(120)).max(40).default([]),
+  interactionHandles: z.array(z.string().trim().min(1).max(120)).max(40).default([]),
 });
 
 export type Recommendation = {
