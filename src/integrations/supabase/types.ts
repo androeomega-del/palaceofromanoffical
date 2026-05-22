@@ -337,6 +337,42 @@ export type Database = {
         }
         Relationships: []
       }
+      interaction_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          handle: string
+          id: string
+          page_path: string | null
+          product_type: string | null
+          session_id: string | null
+          user_agent: string | null
+          vendor: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          handle: string
+          id?: string
+          page_path?: string | null
+          product_type?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          vendor?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          handle?: string
+          id?: string
+          page_path?: string | null
+          product_type?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          vendor?: string | null
+        }
+        Relationships: []
+      }
       inventory_sync_runs: {
         Row: {
           activated: number

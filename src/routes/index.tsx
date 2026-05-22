@@ -9,6 +9,7 @@ import { EditorialHotspots } from "@/components/editorial-hotspots";
 import { CampaignVideo } from "@/components/campaign-video";
 import { LUXURY_TIERS } from "@/lib/luxury-brands";
 import { ForYouFeed } from "@/components/for-you-feed";
+import { TrendingNowRail } from "@/components/trending-now";
 
 import heroImage from "@/assets/home-hero.jpg";
 import summerHero from "@/assets/summer-bento-hero.jpg";
@@ -278,10 +279,17 @@ function HomePage() {
         </div>
       </section>
 
+      {/* Trending This Week — data-driven, hidden until signal volume is real. */}
+      <HydrationSafeClientOnly fallback={null}>
+        <TrendingNowRail />
+      </HydrationSafeClientOnly>
+
       {/* AI-curated For You feed — personalises off wishlist + recently viewed. */}
       <HydrationSafeClientOnly fallback={null}>
         <ForYouFeed />
       </HydrationSafeClientOnly>
+
+
 
 
       {/* 1b. SWIMWEAR RAIL — Bikinis, Beachwear, Resort (with hoodies fallback) */}
