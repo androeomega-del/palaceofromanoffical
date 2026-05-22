@@ -23,13 +23,6 @@ export const Route = createFileRoute("/admin/")({
     ],
   }),
 });
-  head: () => ({
-    meta: [
-      { title: "Admin — Palace of Roman" },
-      { name: "robots", content: "noindex, nofollow" },
-    ],
-  }),
-});
 
 type Tile = {
   to: string;
