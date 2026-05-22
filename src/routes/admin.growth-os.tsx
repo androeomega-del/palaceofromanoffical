@@ -421,6 +421,11 @@ function PreviewBody({ item, onClose }: { item: Record<string, unknown>; onClose
       {kind === "social_pin" && <PinterestPreview payload={payload} productUrl={productUrl} />}
       {kind === "social_thread" && <XThreadPreview payload={payload} />}
       {kind === "social_hook" && <TikTokPreview payload={payload} />}
+      {(kind === "email_flow" || kind === "ugc_brief" || kind === "seo_page" || kind === "ad_set") && (
+        <pre className="whitespace-pre-wrap rounded-md border bg-muted/40 p-3 text-xs font-mono max-h-[60vh] overflow-auto">
+{JSON.stringify(payload, null, 2)}
+        </pre>
+      )}
     </>
   );
 }
