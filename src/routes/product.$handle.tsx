@@ -366,6 +366,20 @@ function ProductView({
     .filter((e) => e.node.handle !== product.handle)
     .slice(0, 4);
 
+  // Cross-sell "Style It With" — pieces from other houses to complete the look.
+  const styleItWithQ = useQuery({
+    queryKey: ["style-it-with", product.handle, product.vendor],
+    queryFn: () =>
+      fetchProducts({
+        first: 16,
+        sortKey: "BEST_SELLING",
+        query: `-vendor:"${product.vendor}"`,
+      }),
+  });
+  const styleItWith = (styleItWithQ.data ?? [])
+    .filter((e) => e.node.handle !== product.handle && e.node.vendor !== product.vendor)
+    .slice(0, 8);
+
   const vendorHandle = product.vendor.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
   const layering = layeringKey(product);
   const editorial = layering ? LAYERING_COPY[layering] : null;
