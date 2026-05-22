@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Search, X, Loader2 } from "lucide-react";
 import { fetchCollections, fetchProductsPage, formatPrice, type ShopifyProduct, type ShopifyCollection } from "@/lib/shopify";
 import { TRENDING_BRANDS } from "@/lib/luxury-brands";
+import { AiSearchBar } from "@/components/ai-search-bar";
 
 type Props = { open: boolean; onOpenChange: (v: boolean) => void };
 
@@ -109,6 +110,10 @@ export function SearchOverlay({ open, onOpenChange }: Props) {
           <div className="mt-6 max-h-[70vh] overflow-y-auto">
             {!debounced && (
               <div>
+                <AiSearchBar
+                  onComplete={() => onOpenChange(false)}
+                  className="mb-10"
+                />
                 <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-5">
                   Trending Brands
                 </p>

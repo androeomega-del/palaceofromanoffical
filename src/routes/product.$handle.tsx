@@ -11,6 +11,7 @@ import {
 } from "@/lib/shopify";
 import { pageTitle, metaDescription, absoluteUrl, SITE_URL } from "@/lib/seo";
 import { useCartStore } from "@/stores/cart-store";
+import { useRecentlyViewedStore } from "@/stores/recently-viewed-store";
 import { Loader2, Minus, Plus, ShieldCheck, Truck, RotateCcw, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { ProductCard } from "@/components/product-card";
@@ -298,6 +299,19 @@ function ProductView({
   const addItem = useCartStore((s) => s.addItem);
   const openDrawer = useCartStore((s) => s.openDrawer);
   const isLoading = useCartStore((s) => s.isLoading);
+
+  // Track recently-viewed for the personalised "For You" feed on /.
+  const pushRecent = useRecentlyViewedStore((s) => s.push);
+  useEffect(() => {
+    if (!product?.handle) return;
+    pushRecent({
+      handle: product.handle,
+      vendor: product.vendor || "",
+      productType: product.productType || undefined,
+    });
+    // Track on entry only — don't re-fire on every variant change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product.handle]);
 
 
   const compareAt = product.compareAtPriceRange?.minVariantPrice;

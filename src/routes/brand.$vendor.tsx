@@ -5,6 +5,7 @@ import { fetchProductsPage } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
 import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
 import { CatalogSort, SORT_OPTIONS, type SortValue } from "@/components/catalog-filters";
+import { brandFromSlug, heritageFor } from "@/lib/brand-heritage";
 
 type SortKey = SortValue;
 const SORT_KEYS: SortKey[] = SORT_OPTIONS.map((o) => o.value);
@@ -15,13 +16,21 @@ export const Route = createFileRoute("/brand/$vendor")({
     return { sort: SORT_KEYS.includes(raw) ? raw : "BEST_SELLING-false" };
   },
   head: ({ params }) => {
-    const name = unslug(params.vendor);
+    // Prefer the canonical brand name from the curated 100; fall back to slug.
+    const canonical = brandFromSlug(params.vendor);
+    const name = canonical ?? unslug(params.vendor);
+    const heritage = heritageFor(name);
     const path = `/brand/${params.vendor}`;
-    const title = `${name} — Palace of Roman`;
-    const desc = `Shop the curated ${name} edit at Palace of Roman. 100% authentic luxury pieces, sourced from the brands or their authorised distributors, with worldwide tracked shipping.`;
+    const title = `${name} — Authentic ${heritage.signatures[0] ?? "Luxury"} | ${SITE_NAME}`;
+    const desc = `Shop authentic ${name} at ${SITE_NAME}. ${heritage.tagline} 100% genuine, sourced from the brand or its authorised distributors, with worldwide tracked shipping.`;
     const rh = routeHead({ path, title, description: desc });
     return {
-      meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
+      meta: [
+        { title },
+        { name: "description", content: desc },
+        { name: "keywords", content: `${name}, ${heritage.signatures.join(", ")}, authentic ${name}, buy ${name} online` },
+        ...rh.meta,
+      ],
       links: rh.links,
       scripts: [
         {
@@ -33,7 +42,25 @@ export const Route = createFileRoute("/brand/$vendor")({
             description: desc,
             url: absoluteUrl(path),
             isPartOf: { "@type": "WebSite", name: SITE_NAME, url: absoluteUrl("/") },
-            about: { "@type": "Brand", name },
+            about: {
+              "@type": "Brand",
+              name,
+              description: heritage.description,
+              foundingDate: heritage.founded !== "—" ? heritage.founded : undefined,
+              foundingLocation: heritage.country !== "—" ? heritage.country : undefined,
+            },
+          }),
+        },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Boutique", item: absoluteUrl("/") },
+              { "@type": "ListItem", position: 2, name: "Brands", item: absoluteUrl("/brands") },
+              { "@type": "ListItem", position: 3, name, item: absoluteUrl(path) },
+            ],
           }),
         },
       ],
@@ -50,7 +77,9 @@ function BrandPage() {
   const { vendor } = Route.useParams();
   const { sort } = Route.useSearch();
   const navigate = useNavigate({ from: "/brand/$vendor" });
-  const name = unslug(vendor);
+  const canonical = brandFromSlug(vendor);
+  const name = canonical ?? unslug(vendor);
+  const heritage = heritageFor(name);
 
   const [sortKey, reverseStr] = sort.split("-");
   const reverse = reverseStr === "true";
@@ -72,19 +101,56 @@ function BrandPage() {
   const edges = useMemo(() => q.data?.pages.flatMap((p) => p.edges) ?? [], [q.data]);
 
   return (
-    <div>
-      <section className="px-6 pt-16 pb-12 border-b border-ink/5">
+    <div data-testid={`brand-page-${vendor}`}>
+      {/* SEO-rich heritage hero — captures long-tail brand-name search intent */}
+      <section className="px-6 pt-16 pb-14 border-b border-ink/5 bg-canvas">
         <div className="max-w-screen-2xl mx-auto">
-          <Link to="/brands" className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground hover:text-ink">
-            ← All Brands
+          <Link
+            to="/brands"
+            className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground hover:text-ink"
+          >
+            ← All Houses
           </Link>
-          <div className="mt-6 flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <h1 className="text-5xl md:text-7xl font-serif">{name}</h1>
-            {edges.length > 0 && (
-              <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                {edges.length}{q.hasNextPage ? "+" : ""} {edges.length === 1 ? "Piece" : "Pieces"}
+          <div className="mt-8 grid grid-cols-1 lg:grid-cols-12 gap-10">
+            <div className="lg:col-span-7">
+              <p className="text-[11px] uppercase tracking-[0.3em] text-bronze mb-4">
+                {heritage.meta}
               </p>
-            )}
+              <h1
+                className="text-5xl md:text-7xl font-serif text-balance mb-5"
+                data-testid="brand-hero-title"
+              >
+                {name}
+              </h1>
+              <p className="text-base md:text-lg font-serif italic text-ink/80 max-w-[42ch] mb-6">
+                {heritage.tagline}
+              </p>
+              <p className="text-sm text-muted-foreground leading-relaxed max-w-[60ch]">
+                {heritage.description}
+              </p>
+            </div>
+            <div className="lg:col-span-5 lg:border-l lg:border-ink/10 lg:pl-10 flex flex-col justify-end">
+              <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-4">
+                Iconic Pieces
+              </p>
+              <ul className="space-y-2.5">
+                {heritage.signatures.map((s) => (
+                  <li
+                    key={s}
+                    className="text-sm border-b border-ink/5 pb-2.5 flex items-center gap-3"
+                  >
+                    <span className="text-bronze text-xs">◆</span>
+                    {s}
+                  </li>
+                ))}
+              </ul>
+              {edges.length > 0 && (
+                <p className="mt-8 text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                  {edges.length}
+                  {q.hasNextPage ? "+" : ""} {edges.length === 1 ? "Piece" : "Pieces"} in stock
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </section>
@@ -93,13 +159,10 @@ function BrandPage() {
         <div className="max-w-screen-2xl mx-auto flex items-center justify-end">
           <CatalogSort
             value={sort}
-            onChange={(v) =>
-              navigate({ search: () => ({ sort: v }), replace: true })
-            }
+            onChange={(v) => navigate({ search: () => ({ sort: v }), replace: true })}
           />
         </div>
       </section>
-
 
       <section className="px-6 py-20">
         <div className="max-w-screen-2xl mx-auto">
@@ -115,7 +178,14 @@ function BrandPage() {
             </div>
           ) : edges.length === 0 ? (
             <div className="py-32 text-center">
-              <p className="text-sm text-muted-foreground">No pieces currently available from {name}.</p>
+              <p className="text-sm text-muted-foreground">
+                No pieces currently available from {name}. The buyers refresh the {name} edit
+                weekly — check back shortly or browse adjacent houses on the{" "}
+                <Link to="/brands" className="underline hover:text-bronze">
+                  brand index
+                </Link>
+                .
+              </p>
             </div>
           ) : (
             <>

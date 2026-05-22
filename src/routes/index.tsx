@@ -7,6 +7,7 @@ import { ProductCard } from "@/components/product-card";
 import { EditorialHotspots } from "@/components/editorial-hotspots";
 import { CampaignVideo } from "@/components/campaign-video";
 import { LUXURY_TIERS } from "@/lib/luxury-brands";
+import { ForYouFeed } from "@/components/for-you-feed";
 
 import heroImage from "@/assets/home-hero.jpg";
 import summerHero from "@/assets/summer-bento-hero.jpg";
@@ -246,6 +247,11 @@ function HomePage() {
           the bento markup is iterated on. */}
       <ClientOnly fallback={<SummerBentoSkeleton />}>
         <SummerBento {...SUMMER_BENTO_PROPS} />
+      </ClientOnly>
+
+      {/* AI-curated For You feed — personalises off wishlist + recently viewed. */}
+      <ClientOnly fallback={null}>
+        <ForYouFeed />
       </ClientOnly>
 
 

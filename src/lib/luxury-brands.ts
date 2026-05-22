@@ -43,6 +43,7 @@ export const TIER_2_HIGH_DEMAND = make([
   "Valentino",
   "Tom Ford",
   "Giorgio Armani",
+  "Dolce & Gabbana",
   "Alexander McQueen",
   "Jacquemus",
   "Balmain",
@@ -85,7 +86,7 @@ export const TIER_4_VANGUARDS = make([
   "Issey Miyake",
   "Jil Sander",
   "Sacai",
-  "Alexander Wang",
+  "Calvin Klein",
   "Moschino",
   "Schiaparelli",
   "Marni",
@@ -127,7 +128,6 @@ export const TIER_5_NICHE_HARD_LUXURY = make([
   "JW Anderson",
   "Peter Do",
   "Ludovic de Saint Sernin",
-  "Bode",
 ]);
 
 export const LUXURY_TIERS = [
