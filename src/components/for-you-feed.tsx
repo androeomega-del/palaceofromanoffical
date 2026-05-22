@@ -7,6 +7,7 @@ import {
 } from "@/lib/ai-recommendations.functions";
 import { useWishlistStore } from "@/stores/wishlist-store";
 import { useRecentlyViewedStore } from "@/stores/recently-viewed-store";
+import { useInteractionStore } from "@/stores/interaction-store";
 import { formatPrice } from "@/lib/shopify";
 
 /**
