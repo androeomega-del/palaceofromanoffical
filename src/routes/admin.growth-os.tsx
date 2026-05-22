@@ -238,12 +238,15 @@ function GrowthOsPage() {
             </p>
           ) : (
             <div className="divide-y">
-              {items.map((it) => (
+              {items.map((it) => {
+                const isSocial = it.kind.startsWith("social_");
+                return (
                 <div key={it.id} className="flex flex-col gap-3 py-3 md:flex-row md:items-center md:justify-between">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
                       <Badge variant="outline" className={STATUS_TONE[it.status] ?? ""}>{it.status}</Badge>
-                      <span className="text-xs uppercase tracking-wider text-muted-foreground">{it.kind} → {it.channel}</span>
+                      <Badge variant="outline" className={CHANNEL_TONE[it.channel] ?? ""}>{it.channel}</Badge>
+                      <span className="text-xs uppercase tracking-wider text-muted-foreground">{it.kind}</span>
                       <span className="text-xs text-muted-foreground">${(Number(it.cost_cents) / 100).toFixed(3)}</span>
                     </div>
                     <p className="mt-1 truncate font-medium">{it.title ?? "Untitled"}</p>
@@ -255,9 +258,15 @@ function GrowthOsPage() {
                     </Button>
                     {it.status === "draft" && (
                       <>
-                        <Button size="sm" disabled={approve.isPending} onClick={() => approve.mutate(it.id)}>
-                          <CheckCircle2 className="mr-1 h-4 w-4" /> Approve & publish
-                        </Button>
+                        {isSocial ? (
+                          <Button size="sm" disabled={approveSocial.isPending} onClick={() => approveSocial.mutate(it.id)}>
+                            <CheckCircle2 className="mr-1 h-4 w-4" /> Approve
+                          </Button>
+                        ) : (
+                          <Button size="sm" disabled={approve.isPending} onClick={() => approve.mutate(it.id)}>
+                            <CheckCircle2 className="mr-1 h-4 w-4" /> Approve & publish
+                          </Button>
+                        )}
                         <Button size="sm" variant="outline" onClick={() => reject.mutate(it.id)}>
                           <XCircle className="mr-1 h-4 w-4" /> Reject
                         </Button>
@@ -265,7 +274,8 @@ function GrowthOsPage() {
                     )}
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </Card>
