@@ -12,6 +12,7 @@ import {
 import { pageTitle, metaDescription, absoluteUrl, SITE_URL } from "@/lib/seo";
 import { useCartStore } from "@/stores/cart-store";
 import { useRecentlyViewedStore } from "@/stores/recently-viewed-store";
+import { useInteractionStore } from "@/stores/interaction-store";
 import { Loader2, Minus, Plus, ShieldCheck, Truck, RotateCcw, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { ProductCard } from "@/components/product-card";
