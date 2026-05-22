@@ -117,7 +117,7 @@ export function ConciergeWidget() {
         onClick={() => setOpen(true)}
         aria-label="Open AI concierge"
         data-testid="concierge-launcher"
-        className="fixed bottom-6 right-6 z-40 group flex items-center gap-2.5 bg-ink text-canvas pl-4 pr-5 py-3.5 rounded-full shadow-lg shadow-ink/30 hover:bg-bronze transition-colors"
+        className="fixed bottom-24 md:bottom-6 right-6 z-40 group flex items-center gap-2.5 bg-ink text-canvas pl-4 pr-5 py-3.5 rounded-full shadow-lg shadow-ink/30 hover:bg-bronze transition-colors"
       >
         <span className="relative flex">
           <Sparkles className="w-4 h-4" strokeWidth={1.5} />
