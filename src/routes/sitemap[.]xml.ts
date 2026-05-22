@@ -98,10 +98,14 @@ export const Route = createFileRoute("/sitemap.xml")({
 
         try {
           const collections = await fetchCollections(500);
+          const seenHandles = new Set<string>();
           for (const c of collections) {
+            const canonical = canonicalCollectionHandle(c.handle);
+            if (seenHandles.has(canonical)) continue;
+            seenHandles.add(canonical);
             entries.push(
               urlEntry({
-                path: `/collections/${c.handle}`,
+                path: `/collections/${canonical}`,
                 lastmod: c.updatedAt,
                 changefreq: "daily",
                 priority: "0.8",
