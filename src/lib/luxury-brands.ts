@@ -1,4 +1,5 @@
-// Curated index of the Top 100 luxury houses we feature.
+// Curated index of luxury houses we feature.
+// SYNCED FROM SHOPIFY VENDOR DATA - matches actual store inventory
 // Used by megamenus, search trending chips, brand directory boosts,
 // and the homepage "Top Brands" tiered section.
 
@@ -8,73 +9,76 @@ const slug = (s: string) =>
   s
     .toLowerCase()
     .replace(/&/g, "and")
-    .replace(/['’.]/g, "")
+    .replace(/[''.]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 
 const make = (names: string[]): BrandEntry[] =>
   names.map((n) => ({ name: n, slug: slug(n) }));
 
+// TIER 1: Most prominent/frequent in catalog
 export const TIER_1_WORLD_LEADERS = make([
-  "Louis Vuitton",
-  "Chanel",
-  "Hermès",
-  "Saint Laurent",
-  "Dior",
+  "Dolce & Gabbana",
   "Gucci",
   "Prada",
-  "Miu Miu",
-  "Cartier",
-  "Rolex",
+  "Louis Vuitton",
+  "Chanel",
+  "Saint Laurent",
+  "Dior",
+  "Hermès",
+  "Fendi",
+  "Valentino",
 ]);
 
+// TIER 2: High demand/frequently stocked
 export const TIER_2_HIGH_DEMAND = make([
-  "Loewe",
-  "Tiffany & Co.",
-  "Celine",
-  "Bottega Veneta",
-  "Fendi",
-  "Burberry",
-  "Versace",
   "Balenciaga",
-  "The Row",
-  "Moncler",
+  "Bottega Veneta",
+  "Burberry",
+  "Celine",
+  "Coach",
+  "Loewe",
+  "Miu Miu",
+  "Versace",
+  "Alexander McQueen",
   "Givenchy",
-  "Valentino",
   "Tom Ford",
   "Giorgio Armani",
-  "Dolce & Gabbana",
-  "Alexander McQueen",
-  "Jacquemus",
+  "The Row",
   "Balmain",
+  "Cartier",
   "Bvlgari",
+  "Van Cleef & Arpels",
   "Alaïa",
   "Ralph Lauren",
+  "Tory Burch",
 ]);
 
+// TIER 3: Heritage/established houses
 export const TIER_3_HERITAGE = make([
   "Brunello Cucinelli",
   "Ermenegildo Zegna",
-  "Coach",
-  "Maison Margiela",
   "Christian Louboutin",
   "Vivienne Westwood",
   "Ferragamo",
-  "Van Cleef & Arpels",
   "Chloé",
   "Goyard",
   "Thom Browne",
   "Brioni",
   "Longchamp",
   "Michael Kors",
-  "Tory Burch",
   "Stella McCartney",
   "Marc Jacobs",
   "Jimmy Choo",
   "Manolo Blahnik",
   "Rimowa",
+  "Maison Margiela",
+  "Jacquemus",
+  "Rolex",
+  "Moncler",
 ]);
 
+// TIER 4: Contemporary/vanguard designers
 export const TIER_4_VANGUARDS = make([
   "Acne Studios",
   "Rick Owens",
@@ -103,6 +107,7 @@ export const TIER_4_VANGUARDS = make([
   "Bally",
 ]);
 
+// TIER 5: Niche/specialized luxury
 export const TIER_5_NICHE_HARD_LUXURY = make([
   "Patek Philippe",
   "Audemars Piguet",
@@ -142,16 +147,16 @@ export const ALL_LUXURY_BRANDS: BrandEntry[] = LUXURY_TIERS.flatMap((t) => t.bra
 
 // Curated 12 most-searched houses for the search overlay "Trending Brands" chips.
 export const TRENDING_BRANDS: BrandEntry[] = make([
-  "Louis Vuitton",
-  "Chanel",
-  "Hermès",
+  "Dolce & Gabbana",
   "Gucci",
   "Prada",
-  "Dior",
+  "Louis Vuitton",
+  "Chanel",
   "Saint Laurent",
-  "Bottega Veneta",
-  "Loewe",
-  "Celine",
+  "Dior",
+  "Hermès",
+  "Fendi",
+  "Valentino",
   "Balenciaga",
-  "The Row",
+  "Bottega Veneta",
 ]);
