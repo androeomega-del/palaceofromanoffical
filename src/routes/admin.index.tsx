@@ -10,6 +10,7 @@ import {
   Crop,
   CheckSquare,
   Mail,
+  Sparkles,
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin/")({
@@ -37,6 +38,12 @@ type Tile = {
 };
 
 const TILES: Tile[] = [
+  {
+    to: "/admin/growth-os",
+    label: "Growth OS",
+    desc: "AI editorial, social, email & UGC — one queue",
+    icon: Sparkles,
+  },
   {
     to: "/admin/analytics",
     label: "Cart Analytics",
