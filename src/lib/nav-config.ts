@@ -345,35 +345,51 @@ export function buildDepartments(collections: ShopifyCollection[]): MegaDepartme
 }
 
 // -----------------------------------------------------------------------------
-// Brands — every vendor surfaced from live product data, no allowlist
+// Brands — STRICT whitelist. Only the curated 100 luxury houses defined in
+// `LUXURY_TIERS` are ever surfaced anywhere in the UI (filters, megamenu,
+// brand index, search). Any vendor not in that list is hidden.
 // -----------------------------------------------------------------------------
 
 export type BrandEntry = { vendor: string; count: number };
 
-/** Return every vendor, sorted alphabetically. No curation. */
+const normBrand = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "");
+
+/** Set of normalised names of the 100 allowed luxury houses. */
+const ALLOWED_BRAND_KEYS = new Set(
+  LUXURY_TIERS.flatMap((t) => t.brands).map((b) => normBrand(b.name)),
+);
+
+/** True if a vendor name maps to one of the curated 100 luxury houses. */
+export function isAllowedLuxuryBrand(vendor: string): boolean {
+  if (!vendor) return false;
+  return ALLOWED_BRAND_KEYS.has(normBrand(vendor));
+}
+
+/** Return only the curated 100 luxury vendors, sorted alphabetically. */
 export function buildBrandList(vendors: BrandEntry[]): BrandEntry[] {
   return vendors
-    .filter((v) => v.vendor && v.vendor.trim().length > 0)
+    .filter((v) => v.vendor && isAllowedLuxuryBrand(v.vendor))
     .sort((a, b) => a.vendor.localeCompare(b.vendor));
 }
 
-
 /**
- * Group brands into curated luxury tiers for the megamenu panel.
- * Each tier column only shows houses that are actually live in the catalog.
- * Any live vendor not in the curated tiers falls into "More Houses" at the
- * end (alphabetical), so nothing is hidden but the marquee names lead.
+ * Group brands into the 5 curated luxury tiers for the megamenu panel.
+ * Only houses live in the catalog AND in the curated 100 are shown.
+ * No "More Houses" overflow — the whitelist is the entire universe.
  */
 export function groupBrandsForMenu(brands: BrandEntry[]): { heading: string; items: BrandEntry[] }[] {
   if (brands.length === 0) return [];
-  const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "");
-  const liveByKey = new Map(brands.map((b) => [norm(b.vendor), b]));
+  const liveByKey = new Map(
+    brands
+      .filter((b) => isAllowedLuxuryBrand(b.vendor))
+      .map((b) => [normBrand(b.vendor), b]),
+  );
   const used = new Set<string>();
 
-  const tierColumns: { heading: string; items: BrandEntry[] }[] = LUXURY_TIERS.map((t) => {
+  return LUXURY_TIERS.map((t) => {
     const items: BrandEntry[] = [];
     for (const lb of t.brands) {
-      const hit = liveByKey.get(norm(lb.name));
+      const hit = liveByKey.get(normBrand(lb.name));
       if (hit && !used.has(hit.vendor)) {
         items.push(hit);
         used.add(hit.vendor);
@@ -381,14 +397,6 @@ export function groupBrandsForMenu(brands: BrandEntry[]): { heading: string; ite
     }
     return { heading: t.label as string, items };
   }).filter((c) => c.items.length > 0);
-
-  const rest = brands
-    .filter((b) => !used.has(b.vendor))
-    .sort((a, b) => a.vendor.localeCompare(b.vendor));
-  if (rest.length > 0) {
-    tierColumns.push({ heading: "More Houses", items: rest });
-  }
-  return tierColumns;
 }
 
 /** Convert a vendor display name to its `/brand/$vendor` URL slug.
