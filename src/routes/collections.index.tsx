@@ -42,8 +42,6 @@ const MAIN_HANDLE_ALLOWLIST = new Set<string>([
   "new-arrivals", "best-sellers", "best-selling-brands", "high-discounts", "sale", "on-sale",
 ]);
 
-import { canonicalCollectionHandle as canonicalHandle } from "@/lib/collection-canonical";
-
 function isMainCollection(c: ShopifyCollection): boolean {
   return MAIN_HANDLE_ALLOWLIST.has(c.handle.toLowerCase());
 }
