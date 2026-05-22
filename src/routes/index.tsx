@@ -279,10 +279,17 @@ function HomePage() {
         </div>
       </section>
 
+      {/* Trending This Week — data-driven, hidden until signal volume is real. */}
+      <HydrationSafeClientOnly fallback={null}>
+        <TrendingNowRail />
+      </HydrationSafeClientOnly>
+
       {/* AI-curated For You feed — personalises off wishlist + recently viewed. */}
       <HydrationSafeClientOnly fallback={null}>
         <ForYouFeed />
       </HydrationSafeClientOnly>
+
+
 
 
       {/* 1b. SWIMWEAR RAIL — Bikinis, Beachwear, Resort (with hoodies fallback) */}
