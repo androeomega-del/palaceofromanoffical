@@ -1,9 +1,10 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Loader2, ShoppingBag, Zap } from "lucide-react";
+import { Heart, Loader2, ShoppingBag, Zap } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { formatPrice, type ShopifyProduct } from "@/lib/shopify";
 import { useCartStore } from "@/stores/cart-store";
+import { useWishlistStore } from "@/stores/wishlist-store";
 
 
 export function ProductCard({ product }: { product: ShopifyProduct }) {
