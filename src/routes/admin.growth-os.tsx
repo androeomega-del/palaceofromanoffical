@@ -1,8 +1,8 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { ensureAdmin } from "@/lib/admin-guard.functions";
+import { adminBeforeLoad } from "@/lib/admin-route-guard";
 import {
   listQueue,
   generateEditorial,
@@ -12,16 +12,21 @@ import {
   getQueueItem,
 } from "@/lib/growth-os.functions";
 import { generateSocialPack, approveSocialItem } from "@/lib/social-pilot.functions";
+import {
+  generateEmailFlow,
+  generateUgcBrief,
+  generateSeoPage,
+  generateAdCreative,
+  approveQueueItem,
+} from "@/lib/growth-os-extra.functions";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Sparkles, CheckCircle2, XCircle, Eye, Loader2, DollarSign, TrendingUp, Share2, Copy } from "lucide-react";
+import { Sparkles, CheckCircle2, XCircle, Eye, Loader2, DollarSign, TrendingUp, Share2, Copy, Mail, Video, Search, Megaphone } from "lucide-react";
 
 export const Route = createFileRoute("/admin/growth-os")({
-  beforeLoad: async () => {
-    try { await ensureAdmin(); } catch { throw redirect({ to: "/login" }); }
-  },
+  beforeLoad: adminBeforeLoad,
   component: GrowthOsPage,
   head: () => ({
     meta: [
