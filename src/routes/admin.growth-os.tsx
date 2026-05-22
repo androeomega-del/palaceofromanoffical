@@ -290,14 +290,7 @@ function GrowthOsPage() {
               className="max-h-[85vh] w-full max-w-3xl overflow-auto rounded-lg bg-background p-6 shadow-xl"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="mb-4 flex items-center justify-between">
-                <h3 className="text-xl font-serif">{preview.title}</h3>
-                <Button size="sm" variant="ghost" onClick={() => setPreview(null)}>Close</Button>
-              </div>
-              <article
-                className="prose prose-sm max-w-none prose-headings:font-serif prose-a:text-primary"
-                dangerouslySetInnerHTML={{ __html: preview.html }}
-              />
+              <PreviewBody item={preview.item} onClose={() => setPreview(null)} />
             </div>
           </div>
         )}
