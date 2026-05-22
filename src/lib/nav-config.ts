@@ -13,6 +13,7 @@
 // values; everything else flows from Shopify.
 
 import type { ShopifyCollection } from "@/lib/shopify";
+import { LUXURY_TIERS } from "@/lib/luxury-brands";
 
 export type MegaItem = { handle: string; label: string };
 export type MegaColumn = { heading: string; items: MegaItem[] };
