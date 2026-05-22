@@ -116,7 +116,7 @@ function GrowthOsPage() {
     setUgcRunning(true);
     try {
       const r = await ugcGenFn();
-      setUgc(r);
+      setUgcIdeas(r);
       if (r.signalCount === 0) toast.info("No buyer-behavior signals yet. Drive some traffic, then try again.");
       else toast.success(`${r.drafts.length} ideas drafted (~$${r.totalCostUsd.toFixed(3)})`);
     } catch (e) {
