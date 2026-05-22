@@ -23,14 +23,22 @@ export function NewsletterForm() {
     setStatus("sending");
     setError(null);
 
-    const { error: insertError } = await supabase
-      .from("newsletter_subscribers")
-      .insert({
-        email: value,
-        source: typeof window !== "undefined" ? `vip-drop-registry:${window.location.pathname}` : "vip-drop-registry",
-        user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
-        marketing_consent: true,
-      });
+    let insertError: { code?: string } | null = null;
+    try {
+      ({ error: insertError } = await supabase
+        .from("newsletter_subscribers")
+        .insert({
+          email: value,
+          source: typeof window !== "undefined" ? `vip-drop-registry:${window.location.pathname}` : "vip-drop-registry",
+          user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
+          marketing_consent: true,
+        }));
+    } catch (error) {
+      console.debug("[newsletter] Registry unavailable.", error);
+      setStatus("error");
+      setError("Something went wrong. Please try again.");
+      return;
+    }
 
     if (insertError && insertError.code !== "23505") {
       setStatus("error");
