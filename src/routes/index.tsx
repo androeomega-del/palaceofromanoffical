@@ -1228,7 +1228,7 @@ function SummerBento({
         <Link
           to="/shop"
           search={{ q: "tag:Accessories", title: "Accessories" }}
-          className="col-span-6 md:col-span-4 lg:col-span-4 row-span-2 relative group overflow-hidden bg-canvas-raised"
+          className="col-span-12 md:col-span-4 lg:col-span-4 row-span-2 relative group overflow-hidden bg-canvas-raised"
         >
           {accessoriesImage && (
             <img
@@ -1279,7 +1279,7 @@ function SummerBentoSkeleton() {
         {/* Men Tile */}
         <div className="col-span-12 md:col-span-8 lg:col-span-5 row-span-2 bg-canvas-raised animate-pulse" />
         {/* Accessories Tile */}
-        <div className="col-span-6 md:col-span-4 lg:col-span-4 row-span-2 bg-canvas-raised animate-pulse" />
+        <div className="col-span-12 md:col-span-4 lg:col-span-4 row-span-2 bg-canvas-raised animate-pulse" />
       </div>
     </section>
   );
