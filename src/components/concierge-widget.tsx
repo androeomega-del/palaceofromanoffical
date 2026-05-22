@@ -117,7 +117,7 @@ export function ConciergeWidget() {
         onClick={() => setOpen(true)}
         aria-label="Open AI concierge"
         data-testid="concierge-launcher"
-        className="fixed bottom-6 right-6 z-40 group flex items-center gap-2.5 bg-ink text-canvas pl-4 pr-5 py-3.5 rounded-full shadow-lg shadow-ink/30 hover:bg-bronze transition-colors"
+        className="fixed bottom-24 md:bottom-6 right-6 z-40 group flex items-center gap-2.5 bg-ink text-canvas pl-4 pr-5 py-3.5 rounded-full shadow-lg shadow-ink/30 hover:bg-bronze transition-colors"
       >
         <span className="relative flex">
           <Sparkles className="w-4 h-4" strokeWidth={1.5} />
@@ -131,7 +131,7 @@ export function ConciergeWidget() {
       {/* One-time nudge tooltip pointing to the launcher. */}
       {showNudge && (
         <div
-          className="fixed bottom-24 right-6 z-40 max-w-[280px] bg-canvas border border-ink/15 px-4 py-3 shadow-xl text-xs leading-relaxed text-ink/80 animate-in fade-in slide-in-from-bottom-2 duration-500"
+          className="fixed bottom-44 md:bottom-24 right-6 z-40 max-w-[280px] bg-canvas border border-ink/15 px-4 py-3 shadow-xl text-xs leading-relaxed text-ink/80 animate-in fade-in slide-in-from-bottom-2 duration-500"
           data-testid="concierge-nudge"
         >
           <p className="text-[10px] uppercase tracking-[0.22em] text-bronze mb-1.5">
