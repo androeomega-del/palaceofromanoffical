@@ -15,6 +15,7 @@ import { useRecentlyViewedStore } from "@/stores/recently-viewed-store";
 import { Loader2, Minus, Plus, ShieldCheck, Truck, RotateCcw, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { ProductCard } from "@/components/product-card";
+import AIRecommendations from "@/components/ai-recommendations";
 import {
   Accordion,
   AccordionContent,
@@ -738,6 +739,9 @@ function ProductView({
             </div>
           </section>
         )}
+
+        {/* ===== AI Recommendations (server-assisted) ===== */}
+        <AIRecommendations product={product} />
 
         {/* ===== Style It With — cross-house cross-sell rail ===== */}
         {styleItWith.length > 0 && (

@@ -54,6 +54,7 @@ import { Route as ApiPublicHooksDispatchCartRecoveryRouteImport } from './routes
 import { Route as ApiPublicCronWinBackEmailsRouteImport } from './routes/api/public/cron/win-back-emails'
 import { Route as ApiPublicCronBackInStockNotifyRouteImport } from './routes/api/public/cron/back-in-stock-notify'
 import { Route as ApiPublicCronAbandonedCartRecoveryRouteImport } from './routes/api/public/cron/abandoned-cart-recovery'
+import { Route as ApiPublicAiRecommendationsRouteImport } from './routes/api/public/ai.recommendations'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -291,6 +292,12 @@ const ApiPublicCronAbandonedCartRecoveryRoute =
     path: '/api/public/cron/abandoned-cart-recovery',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicAiRecommendationsRoute =
+  ApiPublicAiRecommendationsRouteImport.update({
+    id: '/api/public/ai/recommendations',
+    path: '/api/public/ai/recommendations',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -330,6 +337,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/collections/': typeof CollectionsIndexRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
+  '/api/public/ai/recommendations': typeof ApiPublicAiRecommendationsRoute
   '/api/public/cron/abandoned-cart-recovery': typeof ApiPublicCronAbandonedCartRecoveryRoute
   '/api/public/cron/back-in-stock-notify': typeof ApiPublicCronBackInStockNotifyRoute
   '/api/public/cron/win-back-emails': typeof ApiPublicCronWinBackEmailsRoute
@@ -377,6 +385,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/collections': typeof CollectionsIndexRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
+  '/api/public/ai/recommendations': typeof ApiPublicAiRecommendationsRoute
   '/api/public/cron/abandoned-cart-recovery': typeof ApiPublicCronAbandonedCartRecoveryRoute
   '/api/public/cron/back-in-stock-notify': typeof ApiPublicCronBackInStockNotifyRoute
   '/api/public/cron/win-back-emails': typeof ApiPublicCronWinBackEmailsRoute
@@ -425,6 +434,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/collections/': typeof CollectionsIndexRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
+  '/api/public/ai/recommendations': typeof ApiPublicAiRecommendationsRoute
   '/api/public/cron/abandoned-cart-recovery': typeof ApiPublicCronAbandonedCartRecoveryRoute
   '/api/public/cron/back-in-stock-notify': typeof ApiPublicCronBackInStockNotifyRoute
   '/api/public/cron/win-back-emails': typeof ApiPublicCronWinBackEmailsRoute
@@ -474,6 +484,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/collections/'
     | '/api/public/seo-health'
+    | '/api/public/ai/recommendations'
     | '/api/public/cron/abandoned-cart-recovery'
     | '/api/public/cron/back-in-stock-notify'
     | '/api/public/cron/win-back-emails'
@@ -521,6 +532,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/collections'
     | '/api/public/seo-health'
+    | '/api/public/ai/recommendations'
     | '/api/public/cron/abandoned-cart-recovery'
     | '/api/public/cron/back-in-stock-notify'
     | '/api/public/cron/win-back-emails'
@@ -568,6 +580,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/collections/'
     | '/api/public/seo-health'
+    | '/api/public/ai/recommendations'
     | '/api/public/cron/abandoned-cart-recovery'
     | '/api/public/cron/back-in-stock-notify'
     | '/api/public/cron/win-back-emails'
@@ -615,6 +628,7 @@ export interface RootRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   CollectionsIndexRoute: typeof CollectionsIndexRoute
   ApiPublicSeoHealthRoute: typeof ApiPublicSeoHealthRoute
+  ApiPublicAiRecommendationsRoute: typeof ApiPublicAiRecommendationsRoute
   ApiPublicCronAbandonedCartRecoveryRoute: typeof ApiPublicCronAbandonedCartRecoveryRoute
   ApiPublicCronBackInStockNotifyRoute: typeof ApiPublicCronBackInStockNotifyRoute
   ApiPublicCronWinBackEmailsRoute: typeof ApiPublicCronWinBackEmailsRoute
@@ -942,6 +956,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicCronAbandonedCartRecoveryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/ai/recommendations': {
+      id: '/api/public/ai/recommendations'
+      path: '/api/public/ai/recommendations'
+      fullPath: '/api/public/ai/recommendations'
+      preLoaderRoute: typeof ApiPublicAiRecommendationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -992,6 +1013,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   CollectionsIndexRoute: CollectionsIndexRoute,
   ApiPublicSeoHealthRoute: ApiPublicSeoHealthRoute,
+  ApiPublicAiRecommendationsRoute: ApiPublicAiRecommendationsRoute,
   ApiPublicCronAbandonedCartRecoveryRoute:
     ApiPublicCronAbandonedCartRecoveryRoute,
   ApiPublicCronBackInStockNotifyRoute: ApiPublicCronBackInStockNotifyRoute,

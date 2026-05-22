@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import {
   Outlet,
   Link,
@@ -12,6 +13,7 @@ import appCss from "../styles.css?url";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { WelcomeDispatchModal } from "@/components/welcome-dispatch-modal";
+import { ConciergeWidget } from "@/components/concierge-widget";
 import { useCartSync } from "@/hooks/use-cart-sync";
 import { Toaster } from "@/components/ui/sonner";
 import { installHydrationMonitor } from "@/lib/hydration-monitor";
@@ -217,8 +219,17 @@ function RootComponent() {
       </div>
       <Toaster position="top-center" />
       <WelcomeDispatchModal />
+      <ClientOnlyConcierge />
     </QueryClientProvider>
   );
+}
+
+function ClientOnlyConcierge() {
+  // Browser-only — depends on localStorage stores (wishlist, recently-viewed).
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
+  return <ConciergeWidget />;
 }
 
 function CartSyncBoundary() {
