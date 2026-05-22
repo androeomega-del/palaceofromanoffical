@@ -124,11 +124,32 @@ function GrowthOsPage() {
     },
   });
 
+  const social = useMutation({
+    mutationFn: () => socialFn({ data: {} }),
+    onSuccess: (res) => {
+      if (res.ok) {
+        toast.success(`Social pack drafted for "${res.product.title}" (~$${res.costUsd.toFixed(3)})`);
+        qc.invalidateQueries({ queryKey: ["growth-os"] });
+      } else {
+        toast.error(res.error);
+      }
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const approveSocial = useMutation({
+    mutationFn: (id: string) => approveSocialFn({ data: { id } }),
+    onSuccess: () => {
+      toast.success("Approved — copy & post");
+      qc.invalidateQueries({ queryKey: ["growth-os"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   const openPreview = async (id: string) => {
     try {
       const item = await getItemFn({ data: { id } });
-      const html = (item.payload as { bodyHtml?: string })?.bodyHtml ?? "<p>No body</p>";
-      setPreview({ id, html, title: item.title ?? "Untitled" });
+      setPreview({ item: item as unknown as Record<string, unknown> });
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to load");
     }
