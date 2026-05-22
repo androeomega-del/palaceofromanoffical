@@ -13,6 +13,7 @@
 // values; everything else flows from Shopify.
 
 import type { ShopifyCollection } from "@/lib/shopify";
+import { LUXURY_TIERS } from "@/lib/luxury-brands";
 
 export type MegaItem = { handle: string; label: string };
 export type MegaColumn = { heading: string; items: MegaItem[] };
@@ -357,19 +358,37 @@ export function buildBrandList(vendors: BrandEntry[]): BrandEntry[] {
 }
 
 
-/** Group brands into A–G / H–N / O–Z columns for the megamenu panel. */
+/**
+ * Group brands into curated luxury tiers for the megamenu panel.
+ * Each tier column only shows houses that are actually live in the catalog.
+ * Any live vendor not in the curated tiers falls into "More Houses" at the
+ * end (alphabetical), so nothing is hidden but the marquee names lead.
+ */
 export function groupBrandsForMenu(brands: BrandEntry[]): { heading: string; items: BrandEntry[] }[] {
-  const buckets: { heading: string; range: (c: string) => boolean }[] = [
-    { heading: "A — G", range: (c) => c >= "A" && c <= "G" },
-    { heading: "H — N", range: (c) => c >= "H" && c <= "N" },
-    { heading: "O — Z", range: (c) => c >= "O" && c <= "Z" },
-  ];
-  return buckets
-    .map((b) => ({
-      heading: b.heading,
-      items: brands.filter((br) => b.range(br.vendor[0]?.toUpperCase() ?? "")),
-    }))
-    .filter((b) => b.items.length > 0);
+  if (brands.length === 0) return [];
+  const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "");
+  const liveByKey = new Map(brands.map((b) => [norm(b.vendor), b]));
+  const used = new Set<string>();
+
+  const tierColumns: { heading: string; items: BrandEntry[] }[] = LUXURY_TIERS.map((t) => {
+    const items: BrandEntry[] = [];
+    for (const lb of t.brands) {
+      const hit = liveByKey.get(norm(lb.name));
+      if (hit && !used.has(hit.vendor)) {
+        items.push(hit);
+        used.add(hit.vendor);
+      }
+    }
+    return { heading: t.label as string, items };
+  }).filter((c) => c.items.length > 0);
+
+  const rest = brands
+    .filter((b) => !used.has(b.vendor))
+    .sort((a, b) => a.vendor.localeCompare(b.vendor));
+  if (rest.length > 0) {
+    tierColumns.push({ heading: "More Houses", items: rest });
+  }
+  return tierColumns;
 }
 
 /** Convert a vendor display name to its `/brand/$vendor` URL slug.
