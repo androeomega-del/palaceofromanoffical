@@ -160,7 +160,14 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
 
 
   return (
-    <Link to="/product/$handle" params={{ handle: p.handle }} className="group block">
+    <Link
+      to="/product/$handle"
+      params={{ handle: p.handle }}
+      className="group block"
+      onClick={onCardClick}
+      onMouseEnter={onCardEnter}
+      onMouseLeave={onCardLeave}
+    >
       <div className="w-full aspect-[4/5] bg-muted relative overflow-hidden mb-5">
         {img && (
           <img
