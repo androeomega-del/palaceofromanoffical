@@ -1,109 +1,65 @@
+# Execution Plan — 3 Waves
 
-## Intent (restated)
-
-Five workstreams, ordered by risk. Nothing internal/marketing/dev-facing stays exposed to the public.
-
----
-
-### 1. Security lockdown — first, before anything else
-
-**Critical finding flagged by the scanner**: `bg_products.wholesale_price` is publicly readable. That's our cost basis. Fix:
-- Revoke public SELECT on `bg_products` and `bg_variants`
-- Create a `bg_products_public` view that exposes only customer-safe columns (handle, brand, name, description, gender/category, colour, material, pictures, retail_price, in_stock, total_stock) — **excludes** wholesale_price, currency, modified_at, group_sku, mpn, weight
-- Grant SELECT on the view only
-- Point any client-side reads at the view
-
-**Audit pass on every other internal surface** — anything not strictly needed for shoppers gets locked behind `has_role('admin')` or removed from the client bundle:
-- `/admin/*` routes: confirm every one is gated by `_authenticated` + `has_role` check (the login-loop fix earlier suggests this is partially working but I'll verify each admin route)
-- Server fns that return marketing/inventory/cost/recommender internals: confirm `requireSupabaseAuth` + admin role check, not just auth
-- `/api/public/*` routes: confirm none leak PII, internal queue state, or AI usage costs
-- `llms.txt` and `robots.txt`: confirm they aren't advertising admin paths
-- Growth OS, AI usage ledger, email dispatch log, abandoned carts, contact messages, search queries, interaction events, inventory sync runs — all already admin-only by RLS; I'll verify no server fn returns them via an unauthenticated path
-- Any "dev/marketing" page that exists as a public route gets either deleted or moved under `_authenticated/_admin`
+Working mode: per-wave approval. I will pause after each wave and wait for your signal before starting the next. Smallest viable diffs; nothing customer-facing unless it sells product; everything else admin-gated.
 
 ---
 
-### 2. Admin queue stuck — fix
+## Wave 1 — Security & Infrastructure
 
-Symptoms from session replay: "Unauthorized: No authorization header provided" toast on a share/draft button, then 16 min of "Queue is empty" with no jobs draining. Plan:
-- Verify `attachSupabaseAuth` is registered in `src/start.ts`
-- Read `admin.growth-os.tsx` + `growth-os.functions.ts` to find which fn fires from the share/draft button and is missing middleware or returning early
-- Check `growth_jobs` table for stuck `pending` rows (high `attempts`, old `run_after`)
-- Add a manual "Run queue now" admin button as the always-available drain so you're never stuck waiting on a scheduler
-- If no cron exists, propose (not auto-add) a pg_cron → `/api/public/cron/...` setup as a follow-up
+**1.1 `/api/public/*` audit pass**
+- Enumerate every file under `src/routes/api/public/` (cron hooks, AI recs, SEO health, stock alerts, webhooks).
+- For each: confirm (a) signature/secret verification on writes, (b) explicit column projection on any DB read (no `select('*')`), (c) no PII or wholesale/cost data in the response, (d) Zod validation on body/query.
+- Fix any leaks in place; document each route's surface in a short comment block at the top of the file.
+- Re-confirm admin server functions all chain `requireAdmin` (not just `requireSupabaseAuth`). Grep + fix any stragglers.
 
----
-
-### 3. `/limited-finds` editorial landing page — build it
-
-Customer-facing, public, indexable. This is the one new public page.
-
-- New route `src/routes/limited-finds.tsx` with full `head()` SEO meta (title, description, og:title, og:description, og:image from an editorial-library picture, canonical)
-- Layout matches homepage rhythm — oversized editorial hero, generous whitespace, tier-sectioned product blocks:
-  - **Final Pieces** (`finalPiece` tier) — 2-up large grid
-  - **Archive Editions** (`archive` tier, ≥$1800) — 3-up
-  - **Rare Finds** (`rareFind` tier) — 4-up
-  - **Last at Markdown** (`lastMarkdown` tier) — 4-up
-- Empty tier sections auto-hide so the page never looks thin
-- Data via new server fn `src/lib/limited-finds.functions.ts` that pulls Shopify products + runs them through the existing `computeScarcitySignal()` — single source of truth, no parallel logic
+**1.2 Queue drain endpoint + cron**
+- New route: `src/routes/api/public/cron/drain-growth-jobs.ts` — POST, verifies `apikey` header against `SUPABASE_PUBLISHABLE_KEY` (anon key pattern per docs; no new `CRON_SECRET` needed).
+- Handler pulls up to N `pending` rows from `growth_jobs` where `run_after <= now()`, dispatches by `job_type`, updates status/attempts/last_error. Idempotent, bounded batch (e.g. 25/run).
+- `pg_cron` every 5 min → POSTs to `project--<id>.lovable.app/api/public/cron/drain-growth-jobs` with `apikey` header. Installed via `supabase--insert` (not migration — contains URLs).
+- New admin server fn `drainGrowthJobsNow` (admin-gated) that calls the same handler logic. Wire a "Run queue now" button on `admin.growth-os.tsx` with loading state + toast.
 
 ---
 
-### 4. Urgency conversion tracking — admin-only insights
+## Wave 2 — Frontend Trust (PDP)
 
-- Extend `interaction_events` CHECK to accept `scarcity_view`, `scarcity_click`, `scarcity_cart`
-- Fire from `ProductCard` (impression + click when scarcity tier ≠ none) and PDP (cart event when scarcity tier ≠ none)
-- New admin panel in Growth OS: impressions → clicks → carts funnel per tier, last 7 / 30 days. **Admin-only**, server-fn protected by `requireSupabaseAuth` + role check.
+**2.1 Authenticity strip**
+- New component `src/components/pdp-authenticity-strip.tsx`.
+- Renders below the buy box on `product.$handle.tsx`. 3 pillars only (avoid clutter): "100% Authentic", "Sourced from the brands or their authorised distributors", "Inspected before dispatch". Icons from `lucide-react`, bronze/ink palette, semantic tokens only.
+- Copy aligned to mem://business/reseller-status — no claims beyond the signed certificate.
 
----
+**2.2 Brand heritage accordion**
+- Already have `src/lib/brand-heritage.ts`. Add a collapsible "The {Vendor} Story" section further down PDP using the existing `accordion` UI primitive, fed by vendor lookup. Auto-hide if no heritage entry exists.
 
-### 5. Reviews — declining the import, proposing a trust-lift instead
-
-Per memory rule and Shopify reviews policy: we cannot import third-party reviews (Trustpilot/Yotpo/brand sites/BG/etc.) — TOS violation everywhere, deceptive to shoppers, puts the reseller certificate at risk. Store is brand new so there's no authentic POR review pool yet. Keep "No reviews yet" on PDPs.
-
-What I'll do instead (all customer-facing, all honest):
-- **Authenticity & sourcing strip** on PDP — "Sourced via our authorised BrandsGateway partnership · Original packaging · 14-day returns" with link to reseller-certificate.pdf
-- **Brand heritage** block on PDP — surface the existing `brand-heritage.ts` content more prominently
-- **First-party review collection** — wire the existing `post-purchase-email-template.ts` to request a review 10 days after order; reviews flow into a new `product_reviews` table (admin-moderated before publish)
-- "As seen in" / editorial mentions — only when real, blank when not
-
-If you have specific written permission from a source, name it and I'll revisit.
+**2.3 Reviews empty state UI**
+- New component `src/components/product-reviews.tsx` on PDP.
+- Reads from `product_reviews` (status='approved', handle=...). Renders list if any, else editorial empty state: faded icon, copy "Be the first to share your thoughts on this piece.", "Write a Review" button opens a modal form posting to a new `submitReview` server fn (anon allowed per existing RLS, status='pending').
+- Form: rating (1-5), title, body (10-4000 chars), name, email. Client-side validation matches DB CHECK. Honeypot field for spam.
+- Per Shopify reviews policy + mem://core: never fabricate. Empty state stays honest.
 
 ---
 
-## What's customer-facing vs locked
+## Wave 3 — Post-Purchase Loop + Urgency Funnel
 
-**Public / customer-facing** (storefront):
-- All existing storefront routes
-- New: `/limited-finds`
-- New PDP authenticity strip + first-party reviews UI (empty until real reviews come in)
+**3.1 Post-purchase review request**
+- Existing `post-purchase-email-template.ts` is order-confirmation. New template `review-request-email-template.ts` — single column, "How was {product}?", deep links to `/product/{handle}#reviews?token=...`.
+- Token: HMAC-signed `{order_id, handle, email, exp}` using `SHOPIFY_WEBHOOK_SECRET` (already exists, server-only). PDP review form prefills + marks `verified_purchase=true` when token validates.
+- Trigger: extend the existing Shopify order webhook handler — on `fulfillments/update` with status `delivered` (or fallback: T+10 days after `paid`), enqueue a `send_review_request` job in `growth_jobs`. Queue worker (Wave 1.2) dispatches it, dedupes via `order_emails_sent` (`email_type='review_request'`).
 
-**Locked / admin-only** (no public exposure):
-- All `/admin/*` routes (verified per-route)
-- All marketing/dev/growth/AI-usage/email-dispatch/queue surfaces
-- Urgency conversion analytics
-- Anything BG-internal (wholesale, group SKU, MPN, supplier metadata)
-
----
-
-## Files I expect to touch
-
-- `supabase/migrations/...` — bg_products view + RLS lockdown + interaction_events CHECK extension + `product_reviews` table
-- `src/routes/limited-finds.tsx` (new, public)
-- `src/lib/limited-finds.functions.ts` (new, public-safe)
-- `src/components/product-card.tsx` + `src/routes/product.$handle.tsx` — fire urgency events
-- `src/routes/admin.growth-os.tsx` + `src/lib/growth-os.functions.ts` — fix stuck queue, add manual drain
-- `src/start.ts` — verify `attachSupabaseAuth`
-- `src/components/site-header.tsx` — add "Limited Finds" nav entry (pending answer to Q2)
-- PDP trust-lift components (authenticity strip, brand heritage surfacing, reviews empty state)
-- Audit pass on every file under `src/routes/api/public/*` and every `*.functions.ts` to confirm no internal data leaks
+**3.2 Urgency-conversion funnel panel**
+- New section on `admin.growth-os.tsx`, server fn `getUrgencyFunnel` (admin-gated) aggregates last 30d from `interaction_events`:
+  - Scarcity views, scarcity clicks, scarcity carts, scarcity→checkout (joined to `cart_events`).
+  - Derived: CTR (click/view), Cart rate (cart/click), Tier breakdown by `vendor`/`product_type`.
+- UI: 4 metric cards + simple funnel bar (no chart lib needed — flex bars sized by ratio). All numbers, no PII.
 
 ---
 
-## Three questions before I execute
+## Out of scope (will not do unless asked)
+- Fake countdown timers / fabricated stock numbers.
+- Third-party review scraping (declined on ethical/TOS grounds, per prior turn).
+- Homepage redesign.
+- New `CRON_SECRET` (using anon-key `apikey` header per Lovable docs).
 
-1. **Approve declining the reviews import** + the first-party review collection path?
-2. **Should `/limited-finds` appear in main nav**, or stay unlinked (only reachable from emails, homepage tile, social)?
-3. **If the stuck queue is a missing scheduler**, do you want me to wire pg_cron → `/api/public/cron/drain-growth-jobs` now, or leave that as a follow-up and ship only the manual "Run queue now" button?
+---
 
-Execution order once approved: security lockdown → admin queue fix → Limited Finds + tracking → PDP trust-lift.
+## Confirm to proceed
+Reply **"go wave 1"** to start with security audit + queue drain. I will stop and report before touching Wave 2.
