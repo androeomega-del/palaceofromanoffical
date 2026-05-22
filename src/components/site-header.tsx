@@ -53,6 +53,19 @@ export function SiteHeader() {
   const setCartOpen = useCartStore((s) => s.setDrawerOpen);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const ANNOUNCE_KEY = "por-announce-dismissed-v1";
+  const [announceOpen, setAnnounceOpen] = useState(true);
+  useEffect(() => {
+    try {
+      if (localStorage.getItem(ANNOUNCE_KEY) === "1") setAnnounceOpen(false);
+    } catch {}
+  }, []);
+  const dismissAnnounce = () => {
+    setAnnounceOpen(false);
+    try {
+      localStorage.setItem(ANNOUNCE_KEY, "1");
+    } catch {}
+  };
 
   // Live Shopify collection handles — used to hide flat links whose target
   // collection no longer exists, so the header never shows broken links.
