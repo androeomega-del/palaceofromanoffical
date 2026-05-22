@@ -6,8 +6,8 @@
 //   added in Shopify automatically appears in the right column the next time
 //   the menu loads — no code change needed.
 //
-// - Brands are generated from live product vendor data, filtered through a
-//   luxury allowlist so noise (dropship/dev-store vendors) never surfaces.
+// - Brands are generated from live product vendor data. Currently showing all
+//   vendors (whitelist disabled temporarily for debugging).
 //
 // Static labels (column headings, brand allowlist) are the only curated
 // values; everything else flows from Shopify.
@@ -345,27 +345,32 @@ export function buildDepartments(collections: ShopifyCollection[]): MegaDepartme
 }
 
 // -----------------------------------------------------------------------------
-// Brands — STRICT whitelist. Only the curated 100 luxury houses defined in
-// `LUXURY_TIERS` are ever surfaced anywhere in the UI (filters, megamenu,
-// brand index, search). Any vendor not in that list is hidden.
+// Brands — DISABLED WHITELIST (temporarily) to debug. All vendors are allowed.
+// This will show every vendor in your Shopify store.
+// 
+// Once site is working, re-enable by uncommenting the whitelist check below.
 // -----------------------------------------------------------------------------
 
 export type BrandEntry = { vendor: string; count: number };
 
 const normBrand = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "");
 
-/** Set of normalised names of the 100 allowed luxury houses. */
-const ALLOWED_BRAND_KEYS = new Set(
-  LUXURY_TIERS.flatMap((t) => t.brands).map((b) => normBrand(b.name)),
-);
+/** DISABLED: Set of normalised names of the 100 allowed luxury houses. */
+// const ALLOWED_BRAND_KEYS = new Set(
+//   LUXURY_TIERS.flatMap((t) => t.brands).map((b) => normBrand(b.name)),
+// );
 
-/** True if a vendor name maps to one of the curated 100 luxury houses. */
+/** True if a vendor name is allowed (DISABLED — all vendors allowed). */
 export function isAllowedLuxuryBrand(vendor: string): boolean {
   if (!vendor) return false;
-  return ALLOWED_BRAND_KEYS.has(normBrand(vendor));
+  // TEMPORARILY DISABLED — allow all vendors
+  return true;
+  
+  // RE-ENABLE THIS when site is working:
+  // return ALLOWED_BRAND_KEYS.has(normBrand(vendor));
 }
 
-/** Return only the curated 100 luxury vendors, sorted alphabetically. */
+/** Return only the curated luxury vendors, sorted alphabetically. */
 export function buildBrandList(vendors: BrandEntry[]): BrandEntry[] {
   return vendors
     .filter((v) => v.vendor && isAllowedLuxuryBrand(v.vendor))
@@ -404,4 +409,3 @@ export function groupBrandsForMenu(brands: BrandEntry[]): { heading: string; ite
 export function vendorSlug(name: string): string {
   return name.toLowerCase().replace(/\s+/g, "-");
 }
-
