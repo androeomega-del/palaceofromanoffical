@@ -68,6 +68,18 @@ export function SearchOverlay({ open, onOpenChange }: Props) {
 
   const products: ShopifyProduct[] = productsQ.data?.edges ?? [];
 
+  // Log every settled search so the UGC recommender can surface high-intent
+  // queries that returned nothing. Fire-and-forget; RLS allows anon inserts.
+  useEffect(() => {
+    if (!debounced || debounced.length < 2 || productsQ.isFetching || !productsQ.isFetched) return;
+    void supabase.from("search_queries").insert({
+      query: debounced.slice(0, 200),
+      result_count: products.length,
+      page_path: typeof window !== "undefined" ? window.location.pathname.slice(0, 500) : null,
+      user_agent: typeof navigator !== "undefined" ? navigator.userAgent.slice(0, 500) : null,
+    });
+  }, [debounced, productsQ.isFetched, productsQ.isFetching, products.length]);
+
   function submitFullSearch(e: React.FormEvent) {
     e.preventDefault();
     if (!debounced) return;
