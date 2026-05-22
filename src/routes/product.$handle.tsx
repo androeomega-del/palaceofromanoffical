@@ -13,7 +13,7 @@ import { pageTitle, metaDescription, absoluteUrl, SITE_URL } from "@/lib/seo";
 import { useCartStore } from "@/stores/cart-store";
 import { useRecentlyViewedStore } from "@/stores/recently-viewed-store";
 import { useInteractionStore } from "@/stores/interaction-store";
-import { Loader2, Minus, Plus, ShieldCheck, Truck, RotateCcw, Lock } from "lucide-react";
+import { Loader2, Minus, Plus, ShieldCheck, Truck, RotateCcw, Lock, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { ProductCard } from "@/components/product-card";
 import AIRecommendations from "@/components/ai-recommendations";
@@ -754,28 +754,7 @@ function ProductView({
         {/* ===== Style It With — cross-house cross-sell rail ===== */}
         {styleItWith.length > 0 && (
           <section className="max-w-7xl mx-auto mt-32 pt-20 border-t border-[var(--studio-rule)]">
-            <div className="flex items-end justify-between mb-10">
-              <div className="space-y-3">
-                <p className="text-[10px] tracking-[0.32em] uppercase text-[var(--studio-bronze)] font-semibold">
-                  Complete the Look
-                </p>
-                <h2 className="font-serif text-3xl md:text-4xl">Style It With</h2>
-              </div>
-            </div>
-            <div
-              className="flex gap-5 md:gap-6 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-4 -mx-6 px-6"
-              role="region"
-              aria-label="Style it with — recommended pieces"
-            >
-              {styleItWith.map((e) => (
-                <div
-                  key={e.node.id}
-                  className="snap-start flex-shrink-0 w-[68%] sm:w-[42%] md:w-[28%] lg:w-[22%]"
-                >
-                  <ProductCard product={e} />
-                </div>
-              ))}
-            </div>
+            <StyleItWithRail items={styleItWith} />
           </section>
         )}
       </div>
@@ -823,6 +802,89 @@ function ProductView({
         </div>
       </div>
     </div>
+  );
+}
+
+
+function StyleItWithRail({ items }: { items: Awaited<ReturnType<typeof fetchProducts>> }) {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [canPrev, setCanPrev] = useState(false);
+  const [canNext, setCanNext] = useState(true);
+
+  const updateEdges = () => {
+    const el = trackRef.current;
+    if (!el) return;
+    setCanPrev(el.scrollLeft > 4);
+    setCanNext(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+  };
+
+  useEffect(() => {
+    updateEdges();
+    const el = trackRef.current;
+    if (!el) return;
+    el.addEventListener("scroll", updateEdges, { passive: true });
+    window.addEventListener("resize", updateEdges);
+    return () => {
+      el.removeEventListener("scroll", updateEdges);
+      window.removeEventListener("resize", updateEdges);
+    };
+  }, [items.length]);
+
+  const scrollByPage = (dir: 1 | -1) => {
+    const el = trackRef.current;
+    if (!el) return;
+    const first = el.querySelector<HTMLElement>("[data-rail-item]");
+    const step = first ? first.offsetWidth + 24 : el.clientWidth * 0.8;
+    el.scrollBy({ left: dir * step, behavior: "smooth" });
+  };
+
+  return (
+    <>
+      <div className="flex items-end justify-between mb-10 gap-6">
+        <div className="space-y-3">
+          <p className="text-[10px] tracking-[0.32em] uppercase text-[var(--studio-bronze)] font-semibold">
+            Complete the Look
+          </p>
+          <h2 className="font-serif text-3xl md:text-4xl">Style It With</h2>
+        </div>
+        <div className="hidden md:flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => scrollByPage(-1)}
+            disabled={!canPrev}
+            aria-label="Previous pieces"
+            className="w-11 h-11 grid place-items-center border border-[var(--studio-rule)] hover:border-[var(--studio-ink)] hover:text-[var(--studio-bronze)] transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-[var(--studio-rule)] disabled:hover:text-current"
+          >
+            <ChevronLeft className="w-4 h-4" strokeWidth={1.5} />
+          </button>
+          <button
+            type="button"
+            onClick={() => scrollByPage(1)}
+            disabled={!canNext}
+            aria-label="Next pieces"
+            className="w-11 h-11 grid place-items-center border border-[var(--studio-rule)] hover:border-[var(--studio-ink)] hover:text-[var(--studio-bronze)] transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-[var(--studio-rule)] disabled:hover:text-current"
+          >
+            <ChevronRight className="w-4 h-4" strokeWidth={1.5} />
+          </button>
+        </div>
+      </div>
+      <div
+        ref={trackRef}
+        className="flex gap-5 md:gap-6 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-4 -mx-6 px-6 scroll-pl-6 scroll-pr-6"
+        role="region"
+        aria-label="Style it with — recommended pieces"
+      >
+        {items.map((e) => (
+          <div
+            key={e.node.id}
+            data-rail-item
+            className="snap-start flex-shrink-0 w-[68%] sm:w-[42%] md:w-[28%] lg:w-[22%]"
+          >
+            <ProductCard product={e} />
+          </div>
+        ))}
+      </div>
+    </>
   );
 }
 
