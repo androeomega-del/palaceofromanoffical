@@ -5,6 +5,7 @@ import { Search, X, Loader2 } from "lucide-react";
 import { fetchCollections, fetchProductsPage, formatPrice, type ShopifyProduct, type ShopifyCollection } from "@/lib/shopify";
 import { TRENDING_BRANDS } from "@/lib/luxury-brands";
 import { AiSearchBar } from "@/components/ai-search-bar";
+import { supabase } from "@/integrations/supabase/client";
 
 type Props = { open: boolean; onOpenChange: (v: boolean) => void };
 
@@ -66,6 +67,18 @@ export function SearchOverlay({ open, onOpenChange }: Props) {
   });
 
   const products: ShopifyProduct[] = productsQ.data?.edges ?? [];
+
+  // Log every settled search so the UGC recommender can surface high-intent
+  // queries that returned nothing. Fire-and-forget; RLS allows anon inserts.
+  useEffect(() => {
+    if (!debounced || debounced.length < 2 || productsQ.isFetching || !productsQ.isFetched) return;
+    void supabase.from("search_queries").insert({
+      query: debounced.slice(0, 200),
+      result_count: products.length,
+      page_path: typeof window !== "undefined" ? window.location.pathname.slice(0, 500) : null,
+      user_agent: typeof navigator !== "undefined" ? navigator.userAgent.slice(0, 500) : null,
+    });
+  }, [debounced, productsQ.isFetched, productsQ.isFetching, products.length]);
 
   function submitFullSearch(e: React.FormEvent) {
     e.preventDefault();

@@ -23,7 +23,9 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Sparkles, CheckCircle2, XCircle, Eye, Loader2, DollarSign, TrendingUp, Share2, Copy, Mail, Video, Search, Megaphone } from "lucide-react";
+import { Sparkles, CheckCircle2, XCircle, Eye, Loader2, DollarSign, TrendingUp, Share2, Copy, Mail, Video, Search, Megaphone, ShieldCheck, Lightbulb, AlertTriangle, CircleDot } from "lucide-react";
+import { runActiveAudit, type AuditReport, type AuditSeverity } from "@/lib/active-audit.functions";
+import { generateUgcIdeas, queueUgcDraft, type UgcDraft } from "@/lib/ugc-recommender.functions";
 
 export const Route = createFileRoute("/admin/growth-os")({
   beforeLoad: adminBeforeLoad,
@@ -88,6 +90,65 @@ function GrowthOsPage() {
   const approveGenericFn = useServerFn(approveQueueItem);
 
   const [preview, setPreview] = useState<{ item: Record<string, unknown> } | null>(null);
+  const [tab, setTab] = useState<"studio" | "audit" | "ugc">("studio");
+  const auditFn = useServerFn(runActiveAudit);
+  const ugcGenFn = useServerFn(generateUgcIdeas);
+  const ugcQueueFn = useServerFn(queueUgcDraft);
+  const [audit, setAudit] = useState<AuditReport | null>(null);
+  const [auditRunning, setAuditRunning] = useState(false);
+  const [ugcIdeas, setUgcIdeas] = useState<{ drafts: UgcDraft[]; totalCostUsd: number; signalCount: number } | null>(null);
+  const [ugcRunning, setUgcRunning] = useState(false);
+
+  const runAudit = async () => {
+    setAuditRunning(true);
+    try {
+      const r = await auditFn();
+      setAudit(r);
+      toast.success(`Audit complete · ${r.summary.pass} pass · ${r.summary.warn} warn · ${r.summary.fail} fail`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Audit failed");
+    } finally {
+      setAuditRunning(false);
+    }
+  };
+
+  const runUgc = async () => {
+    setUgcRunning(true);
+    try {
+      const r = await ugcGenFn();
+      setUgcIdeas(r);
+      if (r.signalCount === 0) toast.info("No buyer-behavior signals yet. Drive some traffic, then try again.");
+      else toast.success(`${r.drafts.length} ideas drafted (~$${r.totalCostUsd.toFixed(3)})`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Generation failed");
+    } finally {
+      setUgcRunning(false);
+    }
+  };
+
+  const queueDraft = async (draft: UgcDraft, channel: "instagram" | "pinterest" | "x") => {
+    const caption = channel === "instagram" ? draft.instagram_caption : channel === "pinterest" ? draft.pinterest_caption : draft.x_caption;
+    try {
+      const res = await ugcQueueFn({
+        data: {
+          channel,
+          caption,
+          hook: draft.hook,
+          productHandle: draft.opportunity.productHandle,
+          searchQuery: draft.opportunity.searchQuery,
+          signal: draft.opportunity.signal,
+        },
+      });
+      if (res.ok) {
+        toast.success(`Sent to ${channel} queue`);
+        qc.invalidateQueries({ queryKey: ["growth-os"] });
+      } else {
+        toast.error(res.error ?? "Failed");
+      }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed");
+    }
+  };
 
   const budget = useQuery({
     queryKey: ["growth-os", "budget"],
@@ -210,6 +271,26 @@ function GrowthOsPage() {
           </p>
         </header>
 
+        {/* Tab strip */}
+        <div className="mb-8 flex flex-wrap gap-1 border-b">
+          {[
+            { k: "studio" as const, label: "Studio", icon: Sparkles },
+            { k: "audit" as const, label: "Active Audit", icon: ShieldCheck },
+            { k: "ugc" as const, label: "UGC Ideas", icon: Lightbulb },
+          ].map(({ k, label, icon: Icon }) => (
+            <button
+              key={k}
+              onClick={() => setTab(k)}
+              className={`flex items-center gap-2 px-4 py-2 text-sm border-b-2 -mb-px transition-colors ${
+                tab === k ? "border-primary text-foreground font-medium" : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Icon className="h-4 w-4" /> {label}
+            </button>
+          ))}
+        </div>
+
+        {tab === "studio" && (<>
         {/* Budget */}
         <Card className="mb-8 p-5">
           <div className="flex items-center justify-between gap-4">
@@ -351,6 +432,12 @@ function GrowthOsPage() {
             </div>
           )}
         </Card>
+        </>)}
+
+        {tab === "audit" && <AuditPanel report={audit} running={auditRunning} onRun={runAudit} />}
+        {tab === "ugc" && <UgcPanel data={ugcIdeas} running={ugcRunning} onRun={runUgc} onQueue={queueDraft} />}
+
+
 
         {/* Preview modal */}
         {preview && (
@@ -518,3 +605,167 @@ function TikTokPreview({ payload }: { payload: Record<string, unknown> }) {
     </div>
   );
 }
+
+function SeverityDot({ s }: { s: AuditSeverity }) {
+  const tone = s === "pass" ? "text-emerald-600" : s === "warn" ? "text-amber-600" : "text-red-600";
+  const Icon = s === "pass" ? CheckCircle2 : s === "warn" ? AlertTriangle : XCircle;
+  return <Icon className={`h-4 w-4 shrink-0 ${tone}`} />;
+}
+
+function AuditPanel({ report, running, onRun }: { report: AuditReport | null; running: boolean; onRun: () => void }) {
+  return (
+    <div className="space-y-6">
+      <Card className="p-5">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h2 className="text-lg font-medium">Active Audit</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              On-demand runtime checks across Technical, Security, SEO, Performance, Sales, and UX/Accessibility.
+              Targets the live published site.
+            </p>
+          </div>
+          <Button onClick={onRun} disabled={running}>
+            {running ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldCheck className="mr-2 h-4 w-4" />}
+            {report ? "Re-run audit" : "Run audit"}
+          </Button>
+        </div>
+        {report && (
+          <div className="mt-4 flex flex-wrap gap-3 text-sm">
+            <Badge className="bg-emerald-100 text-emerald-900 border-emerald-200" variant="outline">{report.summary.pass} pass</Badge>
+            <Badge className="bg-amber-100 text-amber-900 border-amber-200" variant="outline">{report.summary.warn} warn</Badge>
+            <Badge className="bg-red-100 text-red-900 border-red-200" variant="outline">{report.summary.fail} fail</Badge>
+            <span className="text-xs text-muted-foreground self-center">
+              Ran in {report.durationMs}ms · {new Date(report.ranAt).toLocaleString()}
+            </span>
+          </div>
+        )}
+      </Card>
+
+      {!report && !running && (
+        <Card className="p-8 text-center text-sm text-muted-foreground">
+          <CircleDot className="mx-auto mb-3 h-8 w-8 opacity-40" />
+          Click <strong>Run audit</strong> to scan the live site.
+        </Card>
+      )}
+
+      {report?.categories.map((cat) => (
+        <Card key={cat.key} className="p-5">
+          <h3 className="mb-3 text-base font-medium">{cat.label}</h3>
+          <div className="divide-y">
+            {cat.checks.map((c) => (
+              <div key={c.id} className="flex items-start gap-3 py-3">
+                <SeverityDot s={c.severity} />
+                <div className="min-w-0 flex-1">
+                  <p className="font-medium text-sm">{c.label}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{c.detail}</p>
+                  {c.remediation && <p className="text-xs text-amber-700 mt-1">→ {c.remediation}</p>}
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+const SIGNAL_TONE: Record<string, string> = {
+  top_viewed: "bg-blue-50 text-blue-900 border-blue-200",
+  wishlist_no_cart: "bg-purple-50 text-purple-900 border-purple-200",
+  abandoned: "bg-amber-50 text-amber-900 border-amber-200",
+  no_results_search: "bg-rose-50 text-rose-900 border-rose-200",
+};
+
+function UgcPanel({
+  data, running, onRun, onQueue,
+}: {
+  data: { drafts: UgcDraft[]; totalCostUsd: number; signalCount: number } | null;
+  running: boolean;
+  onRun: () => void;
+  onQueue: (draft: UgcDraft, channel: "instagram" | "pinterest" | "x") => void;
+}) {
+  return (
+    <div className="space-y-6">
+      <Card className="p-5">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h2 className="text-lg font-medium">UGC Content Ideas</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Pulls top-viewed products, wishlist-without-cart, most-abandoned items, and zero-result searches
+              from the last 14 days. Drafts brief + per-channel captions in Palace voice.
+            </p>
+          </div>
+          <Button onClick={onRun} disabled={running}>
+            {running ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Lightbulb className="mr-2 h-4 w-4" />}
+            {data ? "Refresh ideas" : "Generate ideas"}
+          </Button>
+        </div>
+        {data && (
+          <p className="mt-3 text-xs text-muted-foreground">
+            {data.drafts.length} drafts from {data.signalCount} signal{data.signalCount === 1 ? "" : "s"} · ~${data.totalCostUsd.toFixed(3)}
+          </p>
+        )}
+      </Card>
+
+      {!data && !running && (
+        <Card className="p-8 text-center text-sm text-muted-foreground">
+          <Lightbulb className="mx-auto mb-3 h-8 w-8 opacity-40" />
+          Click <strong>Generate ideas</strong> to surface content opportunities from buyer behavior.
+        </Card>
+      )}
+
+      {data && data.drafts.length === 0 && !running && (
+        <Card className="p-8 text-center text-sm text-muted-foreground">
+          Not enough buyer-behavior data yet. Drive traffic for a few days and try again.
+        </Card>
+      )}
+
+      {data?.drafts.map((d, i) => {
+        const subject = d.opportunity.productHandle ?? `"${d.opportunity.searchQuery}"`;
+        return (
+          <Card key={i} className="p-5 space-y-4">
+            <div className="flex items-start justify-between gap-3 flex-wrap">
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <Badge variant="outline" className={SIGNAL_TONE[d.opportunity.signal]}>
+                    {d.opportunity.signalLabel}
+                  </Badge>
+                  <span className="text-xs text-muted-foreground">{d.opportunity.metric}</span>
+                </div>
+                <p className="mt-1.5 font-medium truncate">{subject}</p>
+                <p className="text-sm text-muted-foreground italic mt-1">{d.rationale}</p>
+              </div>
+            </div>
+
+            <div className="rounded-md border bg-muted/40 p-3">
+              <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1">Hook</p>
+              <p className="font-serif text-lg">{d.hook}</p>
+            </div>
+
+            {[
+              { ch: "instagram" as const, label: "Instagram", text: d.instagram_caption },
+              { ch: "pinterest" as const, label: "Pinterest", text: d.pinterest_caption },
+              { ch: "x" as const, label: "X", text: d.x_caption },
+            ].map(({ ch, label, text }) => (
+              <div key={ch} className="rounded-md border p-3">
+                <div className="flex items-center justify-between mb-1.5">
+                  <p className="text-xs uppercase tracking-wider text-muted-foreground">{label} · {text.length} chars</p>
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="outline" onClick={() => copy(text, `${label} caption`)}>
+                      <Copy className="mr-1 h-3 w-3" /> Copy
+                    </Button>
+                    <Button size="sm" onClick={() => onQueue(d, ch)}>
+                      Send to queue
+                    </Button>
+                  </div>
+                </div>
+                <p className="text-sm whitespace-pre-wrap">{text}</p>
+              </div>
+            ))}
+          </Card>
+        );
+      })}
+    </div>
+  );
+}
+
