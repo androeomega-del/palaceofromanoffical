@@ -5,6 +5,7 @@ import { Search, X, Loader2 } from "lucide-react";
 import { fetchCollections, fetchProductsPage, formatPrice, type ShopifyProduct, type ShopifyCollection } from "@/lib/shopify";
 import { TRENDING_BRANDS } from "@/lib/luxury-brands";
 import { AiSearchBar } from "@/components/ai-search-bar";
+import { supabase } from "@/integrations/supabase/client";
 
 type Props = { open: boolean; onOpenChange: (v: boolean) => void };
 
