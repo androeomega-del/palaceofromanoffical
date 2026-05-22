@@ -169,7 +169,9 @@ async function sendGmail(to: string, subject: string, html: string, text: string
 export const Route = createFileRoute("/api/public/hooks/dispatch-cart-recovery")({
   server: {
     handlers: {
-      POST: async () => {
+      POST: async ({ request }) => {
+        const unauthorized = checkWebhookSecret(request);
+        if (unauthorized) return unauthorized;
         // Find carts that have been quiet for 1h-24h, have items, and have
         // not yet received a recovery email.
         const nowMs = Date.now();
