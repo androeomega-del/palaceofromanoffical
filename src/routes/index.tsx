@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { ReactNode } from "react";
 import { ShieldCheck, Plane, RotateCcw, Sparkles } from "lucide-react";
 import { fetchProducts, fetchCollection, fetchSearchFiltered, type ShopifyProduct } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
@@ -635,8 +636,8 @@ function HydrationSafeClientOnly({
   children,
   fallback = null,
 }: {
-  children: React.ReactNode;
-  fallback?: React.ReactNode;
+  children: ReactNode;
+  fallback?: ReactNode;
 }) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
