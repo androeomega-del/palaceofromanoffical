@@ -53,9 +53,19 @@ async function insertQueueRow(row: {
   cost_cents: number;
   payload: Record<string, unknown>;
 }) {
+  // payload is JSONB on the server; cast through unknown to satisfy the
+  // generated `Json` recursive type which doesn't accept Record<string, unknown> directly.
+  const insertRow = {
+    kind: row.kind,
+    channel: row.channel,
+    title: row.title,
+    cost_cents: row.cost_cents,
+    payload: row.payload as unknown as never,
+    status: "draft",
+  };
   const { data, error } = await supabaseAdmin
     .from("content_queue")
-    .insert({ ...row, status: "draft" })
+    .insert(insertRow)
     .select()
     .single();
   if (error) throw new Error(error.message);
