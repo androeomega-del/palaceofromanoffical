@@ -81,6 +81,11 @@ function GrowthOsPage() {
   const getItemFn = useServerFn(getQueueItem);
   const socialFn = useServerFn(generateSocialPack);
   const approveSocialFn = useServerFn(approveSocialItem);
+  const emailFn = useServerFn(generateEmailFlow);
+  const ugcFn = useServerFn(generateUgcBrief);
+  const seoFn = useServerFn(generateSeoPage);
+  const adsFn = useServerFn(generateAdCreative);
+  const approveGenericFn = useServerFn(approveQueueItem);
 
   const [preview, setPreview] = useState<{ item: Record<string, unknown> } | null>(null);
 
@@ -146,6 +151,34 @@ function GrowthOsPage() {
     mutationFn: (id: string) => approveSocialFn({ data: { id } }),
     onSuccess: () => {
       toast.success("Approved — copy & post");
+      qc.invalidateQueries({ queryKey: ["growth-os"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  // Wave 3 + 4 generators all follow the same shape
+  const mkDraftMutation = (fn: (args: { data: Record<string, never> }) => Promise<{ ok: boolean; error?: string; costUsd?: number }>, label: string) => useMutation({
+    mutationFn: () => fn({ data: {} as Record<string, never> }),
+    onSuccess: (res) => {
+      if (res.ok) {
+        toast.success(`${label} drafted${res.costUsd ? ` (~$${res.costUsd.toFixed(3)})` : ""}`);
+        qc.invalidateQueries({ queryKey: ["growth-os"] });
+      } else {
+        toast.error(res.error ?? `${label} failed`);
+      }
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const email = mkDraftMutation(emailFn as never, "Email flow");
+  const ugc = mkDraftMutation(ugcFn as never, "UGC brief");
+  const seo = mkDraftMutation(seoFn as never, "SEO page");
+  const ads = mkDraftMutation(adsFn as never, "Ad set");
+
+  const approveGeneric = useMutation({
+    mutationFn: (id: string) => approveGenericFn({ data: { id } }),
+    onSuccess: () => {
+      toast.success("Approved");
       qc.invalidateQueries({ queryKey: ["growth-os"] });
     },
     onError: (e: Error) => toast.error(e.message),
