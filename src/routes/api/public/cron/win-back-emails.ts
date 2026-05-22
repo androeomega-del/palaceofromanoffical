@@ -8,6 +8,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { sendGmail } from "@/lib/gmail-send";
 import { renderWinBackEmail } from "@/lib/win-back-email-template";
+import { checkWebhookSecret } from "@/lib/webhook-secret";
 
 const EUR_TO_USD = 1.08;
 
