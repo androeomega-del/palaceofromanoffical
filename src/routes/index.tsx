@@ -9,6 +9,7 @@ import { EditorialHotspots } from "@/components/editorial-hotspots";
 import { CampaignVideo } from "@/components/campaign-video";
 import { LUXURY_TIERS } from "@/lib/luxury-brands";
 import { ForYouFeed } from "@/components/for-you-feed";
+import { TrendingNowRail } from "@/components/trending-now";
 
 import heroImage from "@/assets/home-hero.jpg";
 import summerHero from "@/assets/summer-bento-hero.jpg";
