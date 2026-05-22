@@ -98,6 +98,7 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
       toast.error("Could not add this item to bag.", { description: "Please try another size or refresh the page." });
       return;
     }
+    track({ handle: p.handle, event: "cart", ...meta });
     openDrawer();
     toast.success(`${p.title} — added to bag`);
   };
