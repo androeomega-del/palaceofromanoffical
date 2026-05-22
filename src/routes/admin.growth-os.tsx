@@ -23,7 +23,9 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Sparkles, CheckCircle2, XCircle, Eye, Loader2, DollarSign, TrendingUp, Share2, Copy, Mail, Video, Search, Megaphone } from "lucide-react";
+import { Sparkles, CheckCircle2, XCircle, Eye, Loader2, DollarSign, TrendingUp, Share2, Copy, Mail, Video, Search, Megaphone, ShieldCheck, Lightbulb, AlertTriangle, CircleDot } from "lucide-react";
+import { runActiveAudit, type AuditReport, type AuditSeverity } from "@/lib/active-audit.functions";
+import { generateUgcIdeas, queueUgcDraft, type UgcDraft } from "@/lib/ugc-recommender.functions";
 
 export const Route = createFileRoute("/admin/growth-os")({
   beforeLoad: adminBeforeLoad,
