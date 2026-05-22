@@ -1,8 +1,8 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { ensureAdmin } from "@/lib/admin-guard.functions";
+import { adminBeforeLoad } from "@/lib/admin-route-guard";
 import {
   listQueue,
   generateEditorial,
@@ -12,16 +12,21 @@ import {
   getQueueItem,
 } from "@/lib/growth-os.functions";
 import { generateSocialPack, approveSocialItem } from "@/lib/social-pilot.functions";
+import {
+  generateEmailFlow,
+  generateUgcBrief,
+  generateSeoPage,
+  generateAdCreative,
+  approveQueueItem,
+} from "@/lib/growth-os-extra.functions";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Sparkles, CheckCircle2, XCircle, Eye, Loader2, DollarSign, TrendingUp, Share2, Copy } from "lucide-react";
+import { Sparkles, CheckCircle2, XCircle, Eye, Loader2, DollarSign, TrendingUp, Share2, Copy, Mail, Video, Search, Megaphone } from "lucide-react";
 
 export const Route = createFileRoute("/admin/growth-os")({
-  beforeLoad: async () => {
-    try { await ensureAdmin(); } catch { throw redirect({ to: "/login" }); }
-  },
+  beforeLoad: adminBeforeLoad,
   component: GrowthOsPage,
   head: () => ({
     meta: [
@@ -76,6 +81,11 @@ function GrowthOsPage() {
   const getItemFn = useServerFn(getQueueItem);
   const socialFn = useServerFn(generateSocialPack);
   const approveSocialFn = useServerFn(approveSocialItem);
+  const emailFn = useServerFn(generateEmailFlow);
+  const ugcFn = useServerFn(generateUgcBrief);
+  const seoFn = useServerFn(generateSeoPage);
+  const adsFn = useServerFn(generateAdCreative);
+  const approveGenericFn = useServerFn(approveQueueItem);
 
   const [preview, setPreview] = useState<{ item: Record<string, unknown> } | null>(null);
 
@@ -146,6 +156,34 @@ function GrowthOsPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  // Wave 3 + 4 generators all follow the same shape
+  const mkDraftMutation = (fn: (args: { data: Record<string, never> }) => Promise<{ ok: boolean; error?: string; costUsd?: number }>, label: string) => useMutation({
+    mutationFn: () => fn({ data: {} as Record<string, never> }),
+    onSuccess: (res) => {
+      if (res.ok) {
+        toast.success(`${label} drafted${res.costUsd ? ` (~$${res.costUsd.toFixed(3)})` : ""}`);
+        qc.invalidateQueries({ queryKey: ["growth-os"] });
+      } else {
+        toast.error(res.error ?? `${label} failed`);
+      }
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const email = mkDraftMutation(emailFn as never, "Email flow");
+  const ugc = mkDraftMutation(ugcFn as never, "UGC brief");
+  const seo = mkDraftMutation(seoFn as never, "SEO page");
+  const ads = mkDraftMutation(adsFn as never, "Ad set");
+
+  const approveGeneric = useMutation({
+    mutationFn: (id: string) => approveGenericFn({ data: { id } }),
+    onSuccess: () => {
+      toast.success("Approved");
+      qc.invalidateQueries({ queryKey: ["growth-os"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   const openPreview = async (id: string) => {
     try {
       const item = await getItemFn({ data: { id } });
@@ -196,11 +234,9 @@ function GrowthOsPage() {
         </Card>
 
         {/* Module strip */}
-        <div className="mb-8 grid gap-3 md:grid-cols-4">
+        <div className="mb-8 grid gap-3 md:grid-cols-3 lg:grid-cols-6">
           <ModuleTile
-            active
-            title="Editorial Engine"
-            desc="AI long-form blog → Shopify"
+            active title="Editorial Engine" desc="AI long-form blog → Shopify"
             action={
               <Button size="sm" disabled={generate.isPending} onClick={() => generate.mutate()}>
                 {generate.isPending ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Sparkles className="mr-1.5 h-4 w-4" />}
@@ -209,9 +245,7 @@ function GrowthOsPage() {
             }
           />
           <ModuleTile
-            active
-            title="Social Pilot"
-            desc="IG, Pinterest, X, TikTok pack from a random in-stock product"
+            active title="Social Pilot" desc="IG, Pinterest, X, TikTok pack"
             action={
               <Button size="sm" variant="outline" disabled={social.isPending} onClick={() => social.mutate()}>
                 {social.isPending ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Share2 className="mr-1.5 h-4 w-4" />}
@@ -219,8 +253,42 @@ function GrowthOsPage() {
               </Button>
             }
           />
-          <ModuleTile title="Lifecycle Autopilot" desc="Email + SMS flows" comingSoon />
-          <ModuleTile title="UGC Studio" desc="HeyGen + image-to-video" comingSoon />
+          <ModuleTile
+            active title="Lifecycle Autopilot" desc="Multi-step email & SMS flows"
+            action={
+              <Button size="sm" variant="outline" disabled={email.isPending} onClick={() => email.mutate()}>
+                {email.isPending ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Mail className="mr-1.5 h-4 w-4" />}
+                Draft flow
+              </Button>
+            }
+          />
+          <ModuleTile
+            active title="UGC Studio" desc="HeyGen avatar + TikTok shot list"
+            action={
+              <Button size="sm" variant="outline" disabled={ugc.isPending} onClick={() => ugc.mutate()}>
+                {ugc.isPending ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Video className="mr-1.5 h-4 w-4" />}
+                Draft brief
+              </Button>
+            }
+          />
+          <ModuleTile
+            active title="SEO Factory" desc="Programmatic long-tail landing pages"
+            action={
+              <Button size="sm" variant="outline" disabled={seo.isPending} onClick={() => seo.mutate()}>
+                {seo.isPending ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Search className="mr-1.5 h-4 w-4" />}
+                Draft page
+              </Button>
+            }
+          />
+          <ModuleTile
+            active title="Ad Forge" desc="6-angle paid set: Meta + TikTok + Pinterest"
+            action={
+              <Button size="sm" variant="outline" disabled={ads.isPending} onClick={() => ads.mutate()}>
+                {ads.isPending ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Megaphone className="mr-1.5 h-4 w-4" />}
+                Draft ads
+              </Button>
+            }
+          />
         </div>
 
         {/* Queue */}
@@ -258,13 +326,17 @@ function GrowthOsPage() {
                     </Button>
                     {it.status === "draft" && (
                       <>
-                        {isSocial ? (
+                        {it.kind === "editorial" ? (
+                          <Button size="sm" disabled={approve.isPending} onClick={() => approve.mutate(it.id)}>
+                            <CheckCircle2 className="mr-1 h-4 w-4" /> Approve & publish
+                          </Button>
+                        ) : isSocial ? (
                           <Button size="sm" disabled={approveSocial.isPending} onClick={() => approveSocial.mutate(it.id)}>
                             <CheckCircle2 className="mr-1 h-4 w-4" /> Approve
                           </Button>
                         ) : (
-                          <Button size="sm" disabled={approve.isPending} onClick={() => approve.mutate(it.id)}>
-                            <CheckCircle2 className="mr-1 h-4 w-4" /> Approve & publish
+                          <Button size="sm" disabled={approveGeneric.isPending} onClick={() => approveGeneric.mutate(it.id)}>
+                            <CheckCircle2 className="mr-1 h-4 w-4" /> Approve
                           </Button>
                         )}
                         <Button size="sm" variant="outline" onClick={() => reject.mutate(it.id)}>
@@ -349,6 +421,11 @@ function PreviewBody({ item, onClose }: { item: Record<string, unknown>; onClose
       {kind === "social_pin" && <PinterestPreview payload={payload} productUrl={productUrl} />}
       {kind === "social_thread" && <XThreadPreview payload={payload} />}
       {kind === "social_hook" && <TikTokPreview payload={payload} />}
+      {(kind === "email_flow" || kind === "ugc_brief" || kind === "seo_page" || kind === "ad_set") && (
+        <pre className="whitespace-pre-wrap rounded-md border bg-muted/40 p-3 text-xs font-mono max-h-[60vh] overflow-auto">
+{JSON.stringify(payload, null, 2)}
+        </pre>
+      )}
     </>
   );
 }

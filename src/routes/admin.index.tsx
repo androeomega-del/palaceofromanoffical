@@ -1,5 +1,5 @@
-import { createFileRoute, redirect, Link } from "@tanstack/react-router";
-import { ensureAdmin } from "@/lib/admin-guard.functions";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { adminBeforeLoad } from "@/lib/admin-route-guard";
 import { Card } from "@/components/ui/card";
 import {
   BarChart3,
@@ -14,13 +14,7 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin/")({
-  beforeLoad: async () => {
-    try {
-      await ensureAdmin();
-    } catch {
-      throw redirect({ to: "/login" });
-    }
-  },
+  beforeLoad: adminBeforeLoad,
   component: AdminHub,
   head: () => ({
     meta: [
