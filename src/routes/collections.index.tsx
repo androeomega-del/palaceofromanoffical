@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { fetchCollections, type ShopifyCollection } from "@/lib/shopify";
 import { collectionImage } from "@/lib/collection-image";
 import { routeHead } from "@/lib/seo";
+import { canonicalCollectionHandle as canonicalHandle } from "@/lib/collection-canonical";
 
 type FilterKey = "all" | "women" | "men" | "clothing" | "shoes" | "luxury";
 
@@ -40,26 +41,6 @@ const MAIN_HANDLE_ALLOWLIST = new Set<string>([
   "other-accessories",
   "new-arrivals", "best-sellers", "best-selling-brands", "high-discounts", "sale", "on-sale",
 ]);
-
-// Collapse Shopify's paired handles to a single canonical handle so the same
-// category never appears twice. The non-canonical (left) handles are hidden.
-const CANONICAL_HANDLE: Record<string, string> = {
-  "women-clothing": "womens-clothing",
-  "women-shoes": "womens-shoes",
-  "women-accessories": "womens-accessories",
-  "men-clothing": "mens-clothing",
-  "men-shoes": "mens-shoes",
-  "men-bags": "mens-bags-wallets",
-  "men-accessories": "mens-accessories",
-  "best-sellers": "best-selling-brands",
-  "sale": "high-discounts",
-  "on-sale": "high-discounts",
-};
-
-function canonicalHandle(h: string): string {
-  const lower = h.toLowerCase();
-  return CANONICAL_HANDLE[lower] ?? lower;
-}
 
 function isMainCollection(c: ShopifyCollection): boolean {
   return MAIN_HANDLE_ALLOWLIST.has(c.handle.toLowerCase());
