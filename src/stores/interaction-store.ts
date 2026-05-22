@@ -67,6 +67,9 @@ export const useInteractionStore = create<InteractionStore>()(
         if (!handle) return;
         const weight = WEIGHTS[event] ?? 0;
         if (weight === 0) return;
+        // Mirror the signal to the server-side append-only log so trending
+        // / aggregate analytics can read it cross-device. Fire-and-forget.
+        enqueueInteractionEvent({ handle, event_type: event, vendor, productType });
         set((state) => {
           const prev = state.records[handle];
           const next: InteractionRecord = {
