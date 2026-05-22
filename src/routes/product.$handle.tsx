@@ -542,6 +542,14 @@ function ProductView({
               }`}
             >
 
+              <ScarcityPanel
+                availableCount={variants.filter((v) => v.availableForSale).length}
+                totalVariants={variants.length}
+                priceUsd={parseFloat(currentPrice.amount)}
+                onSale={off > 0}
+              />
+
+
               {product.options
                 .filter((o) => o.values.length > 1 || o.name.toLowerCase() !== "title")
                 .map((option) => (
