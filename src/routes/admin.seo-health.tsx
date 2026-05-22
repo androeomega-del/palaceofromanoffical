@@ -1,6 +1,6 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ensureAdmin } from "@/lib/admin-guard.functions";
+import { adminBeforeLoad } from "@/lib/admin-route-guard";
 import { checkHomepageSeo } from "@/lib/seo-health.functions";
 import { HOMEPAGE_URL } from "@/lib/seo-health";
 import { Card } from "@/components/ui/card";
@@ -8,13 +8,7 @@ import { Button } from "@/components/ui/button";
 import { RefreshCw, Check, X } from "lucide-react";
 
 export const Route = createFileRoute("/admin/seo-health")({
-  beforeLoad: async () => {
-    try {
-      await ensureAdmin();
-    } catch {
-      throw redirect({ to: "/login" });
-    }
-  },
+  beforeLoad: adminBeforeLoad,
   component: AdminSeoHealth,
   head: () => ({
     meta: [
