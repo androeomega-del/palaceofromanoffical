@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { redirect } from "@tanstack/react-router";
-import { ensureAdmin } from "@/lib/admin-guard.functions";
+import { adminBeforeLoad } from "@/lib/admin-route-guard";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { fetchCollections, type ShopifyCollection } from "@/lib/shopify";
@@ -15,9 +14,7 @@ import {
 import { getCollectionImageMap } from "@/lib/collection-image.functions";
 
 export const Route = createFileRoute("/admin/collection-image-qa")({
-  beforeLoad: async () => {
-    try { await ensureAdmin(); } catch { throw redirect({ to: "/login" }); }
-  },
+  beforeLoad: adminBeforeLoad,
   component: AdminCollectionImageQa,
   head: () => ({
     meta: [

@@ -1,19 +1,13 @@
-import { createFileRoute, redirect, Link } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ensureAdmin } from "@/lib/admin-guard.functions";
+import { adminBeforeLoad } from "@/lib/admin-route-guard";
 import { getCartAnalytics } from "@/lib/cart-analytics.functions";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/admin/analytics")({
-  beforeLoad: async () => {
-    try {
-      await ensureAdmin();
-    } catch {
-      throw redirect({ to: "/login" });
-    }
-  },
+  beforeLoad: adminBeforeLoad,
   component: AdminAnalytics,
   head: () => ({
     meta: [
