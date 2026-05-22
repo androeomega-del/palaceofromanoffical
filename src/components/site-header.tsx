@@ -99,16 +99,26 @@ export function SiteHeader() {
 
   return (
     <>
-      <div className="w-full bg-ink text-canvas text-[10px] py-2.5 uppercase tracking-[0.32em] text-center border-b border-ink/10">
-        <span className="text-bronze">●</span>{" "}
-        <span className="font-medium">The Curated Luxury Hunt</span>
-        <span className="opacity-50 mx-2">·</span>
-        Weekly Limited-Edition Drops
-        <span className="opacity-50 mx-2">·</span>
-        <Link to="/collections/$handle" params={{ handle: "new-arrivals" }} className="underline decoration-bronze/60 underline-offset-4 hover:text-bronze transition-colors">
-          See This Week's Edit →
-        </Link>
-      </div>
+      {announceOpen && (
+        <div className="relative w-full bg-ink text-canvas text-[10px] py-2.5 uppercase tracking-[0.32em] text-center border-b border-ink/10">
+          <span className="text-bronze">●</span>{" "}
+          <span className="font-medium">The Curated Luxury Hunt</span>
+          <span className="opacity-50 mx-2">·</span>
+          Weekly Limited-Edition Drops
+          <span className="opacity-50 mx-2">·</span>
+          <Link to="/collections/$handle" params={{ handle: "new-arrivals" }} className="underline decoration-bronze/60 underline-offset-4 hover:text-bronze transition-colors">
+            See This Week's Edit →
+          </Link>
+          <button
+            type="button"
+            aria-label="Dismiss announcement"
+            onClick={dismissAnnounce}
+            className="absolute right-3 top-1/2 -translate-y-1/2 inline-flex items-center justify-center w-7 h-7 text-canvas/70 hover:text-bronze transition-colors"
+          >
+            <X className="w-3.5 h-3.5" strokeWidth={1.5} />
+          </button>
+        </div>
+      )}
       <header className="sticky top-0 z-50 bg-canvas/95 backdrop-blur-md border-b border-ink/10">
         <div className="max-w-screen-2xl mx-auto px-6 md:px-10 h-20 grid grid-cols-[1fr_auto_1fr] items-center gap-6">
           {/* Left nav (desktop) */}
