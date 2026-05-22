@@ -542,9 +542,11 @@ export async function fetchVendorIndex(): Promise<Array<{ vendor: string; count:
 export function formatPrice(money: Money | undefined) {
   if (!money) return "";
   const amount = parseFloat(money.amount);
+  // Luxury convention: whole-dollar prices, no decimals (e.g. $250 not $250.00).
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: money.currencyCode || "USD",
+    minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-  }).format(amount);
+  }).format(Math.round(amount));
 }
