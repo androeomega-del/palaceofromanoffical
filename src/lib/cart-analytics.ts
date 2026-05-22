@@ -47,10 +47,17 @@ export function trackCartEvent(p: TrackPayload): void {
   };
 
   // Fire and forget — never block UX, never throw
-  supabase
-    .from("cart_events")
-    .insert(row)
-    .then(({ error }) => {
-      if (error) console.debug("[cart-analytics] insert failed:", error.message);
-    });
+  try {
+    supabase
+      .from("cart_events")
+      .insert(row)
+      .then(({ error }) => {
+        if (error) console.debug("[cart-analytics] insert failed:", error.message);
+      })
+      .catch((error) => {
+        console.debug("[cart-analytics] unavailable:", error);
+      });
+  } catch (error) {
+    console.debug("[cart-analytics] unavailable:", error);
+  }
 }
