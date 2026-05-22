@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import { enqueueInteractionEvent } from "@/lib/interaction-flush";
 
 /**
  * Lightweight per-handle interaction scoring. Feeds the AI personalisation
