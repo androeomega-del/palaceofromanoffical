@@ -131,7 +131,7 @@ export function ConciergeWidget() {
       {/* One-time nudge tooltip pointing to the launcher. */}
       {showNudge && (
         <div
-          className="fixed bottom-24 right-6 z-40 max-w-[280px] bg-canvas border border-ink/15 px-4 py-3 shadow-xl text-xs leading-relaxed text-ink/80 animate-in fade-in slide-in-from-bottom-2 duration-500"
+          className="fixed bottom-44 md:bottom-24 right-6 z-40 max-w-[280px] bg-canvas border border-ink/15 px-4 py-3 shadow-xl text-xs leading-relaxed text-ink/80 animate-in fade-in slide-in-from-bottom-2 duration-500"
           data-testid="concierge-nudge"
         >
           <p className="text-[10px] uppercase tracking-[0.22em] text-bronze mb-1.5">
