@@ -13,25 +13,35 @@ export function useIsAdmin() {
     let cancelled = false;
 
     const check = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          if (!cancelled) setIsAdmin(false);
+          return;
+        }
+        const { data } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", user.id)
+          .eq("role", "admin")
+          .maybeSingle();
+        if (!cancelled) setIsAdmin(!!data);
+      } catch (error) {
+        console.debug("[admin] Admin status unavailable.", error);
         if (!cancelled) setIsAdmin(false);
-        return;
       }
-      const { data } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", user.id)
-        .eq("role", "admin")
-        .maybeSingle();
-      if (!cancelled) setIsAdmin(!!data);
     };
 
     check();
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => check());
+    let subscription: { unsubscribe: () => void } | undefined;
+    try {
+      ({ data: { subscription } } = supabase.auth.onAuthStateChange(() => check()));
+    } catch (error) {
+      console.debug("[admin] Auth listener unavailable.", error);
+    }
     return () => {
       cancelled = true;
-      subscription.unsubscribe();
+      subscription?.unsubscribe();
     };
   }, []);
 
