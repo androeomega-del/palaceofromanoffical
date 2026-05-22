@@ -97,7 +97,10 @@ export function enqueueInteractionEvent(input: {
     | "click"
     | "pdp_view"
     | "wishlist"
-    | "cart";
+    | "cart"
+    | "scarcity_view"
+    | "scarcity_click"
+    | "scarcity_cart";
   vendor?: string;
   productType?: string;
 }): void {
