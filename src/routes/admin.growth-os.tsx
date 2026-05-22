@@ -51,6 +51,21 @@ const STATUS_TONE: Record<string, string> = {
   rejected: "bg-zinc-100 text-zinc-700 border-zinc-200",
 };
 
+const CHANNEL_TONE: Record<string, string> = {
+  instagram: "bg-pink-50 text-pink-900 border-pink-200",
+  pinterest: "bg-red-50 text-red-900 border-red-200",
+  x: "bg-zinc-900 text-white border-zinc-900",
+  tiktok: "bg-zinc-50 text-zinc-900 border-zinc-300",
+  shopify_blog: "bg-emerald-50 text-emerald-900 border-emerald-200",
+};
+
+function copy(text: string, label = "Copied") {
+  navigator.clipboard.writeText(text).then(
+    () => toast.success(label),
+    () => toast.error("Copy failed")
+  );
+}
+
 function GrowthOsPage() {
   const qc = useQueryClient();
   const listFn = useServerFn(listQueue);
