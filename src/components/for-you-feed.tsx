@@ -18,8 +18,18 @@ import { formatPrice } from "@/lib/shopify";
 export function ForYouFeed() {
   const wishlist = useWishlistStore((s) => s.handles);
   const recent = useRecentlyViewedStore((s) => s.items);
-  const interactions = useInteractionStore((s) =>
-    s.topHandles(20),
+  // Select the raw records map (stable reference) and derive top handles
+  // in a memo. Calling `topHandles()` inside the selector returns a new
+  // array on every render, which Zustand treats as state changing →
+  // infinite re-render loop (React #185).
+  const records = useInteractionStore((s) => s.records);
+  const interactions = useMemo(
+    () =>
+      Object.values(records)
+        .sort((a, b) => b.score - a.score || b.lastTs - a.lastTs)
+        .slice(0, 20)
+        .map((r) => r.handle),
+    [records],
   );
   const [state, setState] = useState<{
     loading: boolean;
