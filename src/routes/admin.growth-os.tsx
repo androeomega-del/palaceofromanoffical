@@ -432,6 +432,12 @@ function GrowthOsPage() {
             </div>
           )}
         </Card>
+        </>)}
+
+        {tab === "audit" && <AuditPanel report={audit} running={auditRunning} onRun={runAudit} />}
+        {tab === "ugc" && <UgcPanel data={ugcIdeas} running={ugcRunning} onRun={runUgc} onQueue={queueDraft} />}
+
+
 
         {/* Preview modal */}
         {preview && (
