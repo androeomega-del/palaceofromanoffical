@@ -48,11 +48,17 @@ function FlatLinks({ items }: { items: FlatItem[] }) {
 }
 
 export function SiteHeader() {
-  const totalItems = useCartStore((s) => s.items.reduce((sum, i) => sum + i.quantity, 0));
+  const totalItemsRaw = useCartStore((s) => s.items.reduce((sum, i) => sum + i.quantity, 0));
   const cartOpen = useCartStore((s) => s.isDrawerOpen);
   const setCartOpen = useCartStore((s) => s.setDrawerOpen);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  // Cart state is hydrated from localStorage on the client, so the SSR
+  // count (always 0) can disagree with the first client render. Defer to
+  // a mounted flag to avoid React #418 hydration text mismatch.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const totalItems = mounted ? totalItemsRaw : 0;
   const ANNOUNCE_KEY = "por-announce-dismissed-v1";
   const [announceOpen, setAnnounceOpen] = useState(true);
   useEffect(() => {
