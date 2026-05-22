@@ -1,70 +1,125 @@
 
-# Abandoned cart recovery for Palace of Roman
+# Palace of Roman — Growth OS (8-figure scale, $0 SaaS)
 
-## Split the problem first
+A single in-house operating system that replaces the entire paid martech stack and is engineered to handle 7–8 figure monthly volume. Built on what you already own: Lovable Cloud, Lovable AI Gateway, Shopify Admin API, HeyGen MCP, TikTok connector, Lovable Emails.
 
-| Stage | Who owns recovery | Action |
+## What it replaces
+
+| Category | Paid tool ($/mo at scale) | In-house module |
 |---|---|---|
-| Items in cart, never reached checkout (no Shopify email yet) | **We build it** (Lovable Emails) | Phases below |
-| Reached Shopify checkout, entered email, abandoned | **Shopify built-in** | Enable + customize in Shopify admin, no code |
-| Reached checkout, paid, then refunded/etc. | Out of scope | — |
+| AI blog publishing | Click from AI, Bramework, Koala ($49–$500) | **Editorial Engine** |
+| AI social pilot | Xyla, Ocoya, Predis ($39–$299) | **Social Pilot** (IG, Pinterest, X, Threads, TikTok) |
+| Email/SMS marketing | Klaviyo ($150–$2,500 at 100k contacts) | **Lifecycle Autopilot** (uses your Lovable Emails) |
+| AI UGC / avatars | HeyGen ($29–$330), Arcads ($110+) | **UGC Studio** (HeyGen MCP + Nano Banana + Gemini Veo prompts) |
+| Programmatic SEO | Bramework, Byword ($59–$499) | **SEO Content Factory** |
+| Influencer outreach | Modash, Aspire ($299+) | **Outreach CRM** (Gmail connector + Instantly-style sequencer) |
+| Ads creative testing | AdCreative.ai, Pencil ($109–$649) | **Ad Forge** (static + video variants → Meta/TikTok ad library) |
+| Reviews + UGC | Yotpo, Okendo ($79–$799) | **Review Orchestrator** (post-purchase trigger → real customer asks only) |
+| Analytics + attribution | Triple Whale, Northbeam ($129–$1,000+) | **Attribution Lens** (UTM + cart events you already track) |
+| CRO / on-site personalization | Nosto, Rebuy ($99–$899) | **Personalization Layer** (extends your existing interaction store) |
+| Influencer affiliate | Refersion, GoAffPro ($99+) | **Affiliate Console** (Shopify discount codes + tracked links) |
+| Loyalty / VIP | Smile, LoyaltyLion ($49+) | **VIP Tier System** (Shopify customer tags + gated drops) |
 
-I will only build the first row. For the second, I'll give you a one-paragraph briefing on what to toggle in the Shopify admin — Shopify's abandoned checkout email beats anything we'd custom-build for that stage because it includes the live checkout-recovery URL Shopify generates server-side.
+**Estimated annual SaaS savings at scale: $30k–$120k.**
 
-## What needs to exist for pre-checkout recovery
+## North-star architecture
 
-Three pieces, in order:
+```text
+                    ┌─────────────────────────────┐
+                    │  /admin/growth-os           │
+                    │  ─ Command center           │
+                    │  ─ 12 modules, 1 inbox      │
+                    └──────────┬──────────────────┘
+                               │ approve / schedule / reject
+                               ▼
+              ┌──────────────────────────────────────┐
+              │  content_queue  (single source)      │
+              │  growth_jobs    (workers)            │
+              │  ai_usage_ledger  (cost guard)       │
+              │  audience_segments (live RFM)        │
+              │  growth_metrics  (north-star KPIs)   │
+              └──────┬──────────┬──────────┬─────────┘
+                     │          │          │
+              pg_cron + Inngest-style worker queue
+                     │          │          │
+                     ▼          ▼          ▼
+              Shopify    Social APIs    Email/SMS
+              (blog,     (IG, Pin, X,   (Lovable
+              products,  Threads,       Emails +
+              orders,    TikTok)        Twilio
+              discounts)                 SMS)
+```
 
-### Phase 1 — Email + cart linkage (data foundation)
-Right now the welcome modal stores emails in `newsletter_subscribers` with no session link. The cart store has no email. Without linkage, we cannot know *whose* cart was abandoned.
+## The 12 modules
 
-- New table `cart_sessions` (session_id, email, cart_snapshot JSON, last_activity_at, recovery_sent_at, recovered_at, opted_out_at)
-- When the welcome modal captures an email → write `session_id` (from localStorage) into `cart_sessions` alongside the email
-- When `cart-store` mutates → upsert latest snapshot (items, subtotal in USD, generated recovery URL) into the row for that session
-- RLS: anon can INSERT/UPDATE their own session row only; admin can SELECT
+1. **Editorial Engine** — Auto-drafts SEO blogs from real catalog + trends. Article schema, internal linking graph, hero image. Target: 4 posts/week.
+2. **Social Pilot** — One brief → 6-channel pack (IG carousel, Pin SEO, X thread, Threads post, TikTok script, LinkedIn). Posts via connectors.
+3. **Lifecycle Autopilot** — Welcome, browse abandon, cart abandon, post-purchase, replenishment, win-back, VIP drops, segment campaigns. RFM segmentation calculated nightly.
+4. **UGC Studio** — Image-to-video product shorts (Nano Banana), avatar talking-product (HeyGen MCP), voiceover scripts, B-roll shotlists, English/ES/FR/IT/AR localization.
+5. **SEO Content Factory** — Programmatic landing pages: `/edit/best-{cat}-under-{price}`, `/heritage/{brand}`, `/style/{occasion}`, `/gift-guides/{persona}`. Built on top of catalog with internal link graph.
+6. **Outreach CRM** — Influencer + press list, AI-personalized cold emails via your Gmail connector, sequence + reply detection, gifted-product offer codes.
+7. **Ad Forge** — Daily AI-generated ad variants (5 static + 2 video), brand-safe copy, ready-to-paste for Meta Ads Manager + TikTok Ads Manager. Tracks which creative drove which order via UTM.
+8. **Review Orchestrator** — Post-purchase trigger (real customers only, no fabrication) asks for review + UGC photo via email. Approved reviews surface on PDP.
+9. **Attribution Lens** — Multi-touch attribution from your existing `interaction_events` + `cart_events` + UTMs. CAC, LTV, channel ROAS, payback period.
+10. **Personalization Layer** — Homepage hero, PDP cross-sells, cart upsells, email content all served from same `audience_segments` table. A/B test framework built in.
+11. **Affiliate Console** — Creator dashboard with unique discount codes, real-time sales attribution, automated commission payouts via Shopify discount API.
+12. **VIP Tier System** — Lifetime spend → Bronze / Silver / Gold / Maison. Auto-tags Shopify customers, gates early-access drops, triggers concierge emails.
 
-### Phase 2 — Email infrastructure (prereq for sending anything)
-You don't have Lovable Emails set up yet. This is a one-time setup:
-1. Email domain on `notify.palaceofromanofficial.com` (delegated NS — needs DNS records added at your registrar; DNS can verify in background, sending starts once verified)
-2. `setup_email_infra` — provisions the email queue, suppression list, unsubscribe tokens, cron dispatcher
-3. `scaffold_transactional_email` — creates the generic sender route + unsubscribe page
+## Data model (new tables)
 
-If you'd rather route through an existing provider (e.g. Klaviyo, Mailchimp, Brevo) tell me and I'll wire that instead — but Lovable Emails is the lowest-friction default and matches the editorial brand voice without a third bill.
+- `content_queue` (id, kind, channel, payload jsonb, status, scheduled_for, approved_by, cost_cents, parent_id)
+- `growth_jobs` (worker queue with retry + dead-letter)
+- `ai_usage_ledger` (every gateway call: model, tokens, cost, module) → **enforces $160 hard cap**
+- `audience_segments` (customer_id, recency, frequency, monetary, ltv, tier, computed_at)
+- `growth_metrics` (date, channel, impressions, clicks, sessions, orders, revenue, attributed_to)
+- `outreach_contacts` + `outreach_sequences` + `outreach_messages`
+- `ad_creatives` + `ad_variants` + `ad_performance`
+- `reviews` + `review_requests`
+- `affiliate_creators` + `affiliate_orders`
+- `vip_tiers` + `vip_perks_unlocked`
 
-### Phase 3 — Editorial recovery templates + dispatch
-- Two React Email templates in `src/lib/email-templates/`, both styled to match the site (Cormorant Garamond + Karla, ivory/bronze palette, the actual product images from the snapshot):
-  - **`cart-recovery-1h.tsx`** — "Your selection awaits" — 1 hour after abandonment, soft tone, shows up to 3 items with image/name/price, single "Return to your selection" button
-  - **`cart-recovery-24h.tsx`** — "A quiet reminder from the boutique" — 24 hours after, slightly warmer, same items, single button. **No discount code** — Palace of Roman doesn't discount; we use scarcity + service language instead. (If you ever want a discount variant, that's a separate decision and I'd want your approval before adding it.)
-- New cron-triggered server route `/api/public/hooks/dispatch-cart-recovery` (pg_cron, every 15 min):
-  - Find `cart_sessions` where `last_activity_at` is between 1h–2h ago AND `recovery_sent_at IS NULL` AND `opted_out_at IS NULL` AND `email IS NOT NULL` AND cart_snapshot has items → send 1h template, set `recovery_sent_at`
-  - Find rows where 1h email sent >23h ago AND no second email → send 24h template, set `recovery_sent_at_2`
-  - Skip any row whose `session_id` shows a successful Shopify checkout (we already track this via cart-store on checkout button click — we'd extend it to write `checkout_started_at` so we can suppress)
-- Idempotency keys: `cart-recovery-1h-{session_id}`, `cart-recovery-24h-{session_id}` — Lovable Email's queue dedupes automatically
+## Budget & guardrails ($160/mo cap)
 
-### Suppression + compliance
-- Lovable Emails appends the unsubscribe footer automatically
-- An unsubscribe writes to `suppressed_emails` and the dispatcher skips suppressed addresses
-- Welcome modal copy already implies marketing consent; I'll add a tiny "you'll also receive cart reminders" line so this is clean under GDPR/CAN-SPAM
+- Every AI call writes to `ai_usage_ledger` first. If MTD spend + estimated cost > $160 → **block + alert**.
+- Model cascade: Gemini Flash Lite (classify/short) → Flash (social/email) → Pro (long-form editorial) → GPT-5 (only when explicitly needed for tone).
+- Image gen rate-limited: 50/day default, configurable per module.
+- All long-form generations cached by content hash (dedup on regenerate).
+- Live dashboard widget: MTD spend, projection to month-end, per-module breakdown.
 
-## Shopify-side briefing (one-time, no code)
+## Build sequence (you approve module-by-module so we don't drown)
 
-In Shopify admin → **Settings → Notifications → Customer notifications → Abandoned checkout** — enable, set to send at 1 hour and 24 hours, and customize the template HTML to match the boutique aesthetic. This covers every shopper who got far enough to type their email into the Shopify checkout. I'll write you the exact HTML to paste in once you say go.
+**Wave 1 — foundation + first revenue engine (this turn if you say go)**
+1. `growth-os` schema (content_queue, ai_usage_ledger, growth_jobs, audience_segments, growth_metrics)
+2. `/admin/growth-os` dashboard shell with budget widget
+3. Editorial Engine (live: drafts → approve → publishes to Shopify blog + `/journal`)
 
-## Open decisions I need from you before I build
+**Wave 2 — distribution**
+4. Social Pilot (IG, Pinterest, X/Threads, TikTok scripts)
+5. UGC Studio (HeyGen MCP + Nano Banana image-to-video)
 
-1. **Scope confirmation** — build Phase 1+2+3 for pre-checkout recovery, leaving Shopify to handle post-checkout? Or do you want me to skip the pre-checkout build entirely (since your traffic is still ramping) and just give you the Shopify customization?
-2. **Email provider** — Lovable Emails (recommended) or another?
-3. **Sending subdomain** — confirm `notify.palaceofromanofficial.com`?
-4. **Tone of the 24h email** — pure editorial reminder (my recommendation, on brand), or do you want to test a soft offer like "complimentary shipping" or "concierge styling call"?
-5. **Consent line wording** — happy to draft, but want your approval since it touches the welcome modal users already see
+**Wave 3 — retention**
+6. Lifecycle Autopilot + RFM segments
+7. Review Orchestrator
+8. VIP Tier System
 
-## Technical notes (you can skip)
+**Wave 4 — acquisition & scale**
+9. SEO Content Factory (programmatic pages)
+10. Ad Forge (Meta + TikTok creative variants)
+11. Outreach CRM (influencer + press)
+12. Affiliate Console
+13. Attribution Lens (unifies everything)
+14. Personalization Layer (last — feeds on data from all prior modules)
 
-- Cart snapshot stored as JSONB to survive product deletions/price changes
-- Recovery URL is `https://palaceofromanofficial.com/cart?recover={session_id}` — a tiny client effect rehydrates cart-store from the snapshot if local cart is empty
-- Cron schedule kept at 15 min, not 5 min, to stay well under pg_net quotas
-- Server route lives at `/api/public/hooks/dispatch-cart-recovery` with `apikey` header (standard cron auth pattern), not a custom shared secret
-- All admin views (`/admin/cart-recovery`) gated by `has_role(auth.uid(), 'admin')` like existing admin routes
-- No new dependencies — uses existing `@react-email/components`, pg_cron, Lovable Email queue
+## Realistic timeline
 
-Awaiting your call on the five questions above before I start.
+- **Wave 1:** today's turn
+- **Wave 2–3:** next 2–4 build sessions
+- **Wave 4:** next 4–6 build sessions
+
+This is genuinely the scope of a 6-person product team — the only way it works in one repo is by reusing your existing infra (Shopify, Lovable Emails, interaction store, HeyGen MCP, TikTok connector) and keeping all generation server-side with a single approval queue.
+
+## What I need from you to start Wave 1
+
+Just a **yes**. I'll build the schema, the dashboard shell, the budget guard, and a working Editorial Engine that drafts and publishes its first AI blog post end-to-end in this turn. Future waves will need you to connect Pinterest + Meta + (optionally) Twilio for SMS — I'll prompt you exactly when needed.
+
+**Approve and ship Wave 1?**
