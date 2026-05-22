@@ -6,8 +6,7 @@
 // Sibling of /admin/collection-image-qa — same unprotected-by-obscurity
 // pattern (noindex, unlinked). Lock down before public deploy.
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { redirect } from "@tanstack/react-router";
-import { ensureAdmin } from "@/lib/admin-guard.functions";
+import { adminBeforeLoad } from "@/lib/admin-route-guard";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { fetchCollections, type ShopifyCollection } from "@/lib/shopify";
@@ -27,9 +26,7 @@ import {
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/collection-image-preview")({
-  beforeLoad: async () => {
-    try { await ensureAdmin(); } catch { throw redirect({ to: "/login" }); }
-  },
+  beforeLoad: adminBeforeLoad,
   component: AdminCollectionImagePreview,
   head: () => ({
     meta: [
