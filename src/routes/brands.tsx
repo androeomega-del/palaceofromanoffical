@@ -59,7 +59,7 @@ function BrandsPage() {
     const map = new Map<string, number>();
     for (const e of allEdges) {
       const v = e.node.vendor?.trim();
-      if (!v) continue;
+      if (!v || !isAllowedLuxuryBrand(v)) continue;
       map.set(v, (map.get(v) ?? 0) + 1);
     }
     const list = Array.from(map.entries()).sort((a, b) => a[0].localeCompare(b[0]));
