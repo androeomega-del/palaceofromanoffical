@@ -234,11 +234,9 @@ function GrowthOsPage() {
         </Card>
 
         {/* Module strip */}
-        <div className="mb-8 grid gap-3 md:grid-cols-4">
+        <div className="mb-8 grid gap-3 md:grid-cols-3 lg:grid-cols-6">
           <ModuleTile
-            active
-            title="Editorial Engine"
-            desc="AI long-form blog → Shopify"
+            active title="Editorial Engine" desc="AI long-form blog → Shopify"
             action={
               <Button size="sm" disabled={generate.isPending} onClick={() => generate.mutate()}>
                 {generate.isPending ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Sparkles className="mr-1.5 h-4 w-4" />}
@@ -247,9 +245,7 @@ function GrowthOsPage() {
             }
           />
           <ModuleTile
-            active
-            title="Social Pilot"
-            desc="IG, Pinterest, X, TikTok pack from a random in-stock product"
+            active title="Social Pilot" desc="IG, Pinterest, X, TikTok pack"
             action={
               <Button size="sm" variant="outline" disabled={social.isPending} onClick={() => social.mutate()}>
                 {social.isPending ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Share2 className="mr-1.5 h-4 w-4" />}
@@ -257,8 +253,42 @@ function GrowthOsPage() {
               </Button>
             }
           />
-          <ModuleTile title="Lifecycle Autopilot" desc="Email + SMS flows" comingSoon />
-          <ModuleTile title="UGC Studio" desc="HeyGen + image-to-video" comingSoon />
+          <ModuleTile
+            active title="Lifecycle Autopilot" desc="Multi-step email & SMS flows"
+            action={
+              <Button size="sm" variant="outline" disabled={email.isPending} onClick={() => email.mutate()}>
+                {email.isPending ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Mail className="mr-1.5 h-4 w-4" />}
+                Draft flow
+              </Button>
+            }
+          />
+          <ModuleTile
+            active title="UGC Studio" desc="HeyGen avatar + TikTok shot list"
+            action={
+              <Button size="sm" variant="outline" disabled={ugc.isPending} onClick={() => ugc.mutate()}>
+                {ugc.isPending ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Video className="mr-1.5 h-4 w-4" />}
+                Draft brief
+              </Button>
+            }
+          />
+          <ModuleTile
+            active title="SEO Factory" desc="Programmatic long-tail landing pages"
+            action={
+              <Button size="sm" variant="outline" disabled={seo.isPending} onClick={() => seo.mutate()}>
+                {seo.isPending ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Search className="mr-1.5 h-4 w-4" />}
+                Draft page
+              </Button>
+            }
+          />
+          <ModuleTile
+            active title="Ad Forge" desc="6-angle paid set: Meta + TikTok + Pinterest"
+            action={
+              <Button size="sm" variant="outline" disabled={ads.isPending} onClick={() => ads.mutate()}>
+                {ads.isPending ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Megaphone className="mr-1.5 h-4 w-4" />}
+                Draft ads
+              </Button>
+            }
+          />
         </div>
 
         {/* Queue */}
@@ -296,13 +326,17 @@ function GrowthOsPage() {
                     </Button>
                     {it.status === "draft" && (
                       <>
-                        {isSocial ? (
+                        {it.kind === "editorial" ? (
+                          <Button size="sm" disabled={approve.isPending} onClick={() => approve.mutate(it.id)}>
+                            <CheckCircle2 className="mr-1 h-4 w-4" /> Approve & publish
+                          </Button>
+                        ) : isSocial ? (
                           <Button size="sm" disabled={approveSocial.isPending} onClick={() => approveSocial.mutate(it.id)}>
                             <CheckCircle2 className="mr-1 h-4 w-4" /> Approve
                           </Button>
                         ) : (
-                          <Button size="sm" disabled={approve.isPending} onClick={() => approve.mutate(it.id)}>
-                            <CheckCircle2 className="mr-1 h-4 w-4" /> Approve & publish
+                          <Button size="sm" disabled={approveGeneric.isPending} onClick={() => approveGeneric.mutate(it.id)}>
+                            <CheckCircle2 className="mr-1 h-4 w-4" /> Approve
                           </Button>
                         )}
                         <Button size="sm" variant="outline" onClick={() => reject.mutate(it.id)}>
