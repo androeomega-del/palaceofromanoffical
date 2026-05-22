@@ -90,6 +90,65 @@ function GrowthOsPage() {
   const approveGenericFn = useServerFn(approveQueueItem);
 
   const [preview, setPreview] = useState<{ item: Record<string, unknown> } | null>(null);
+  const [tab, setTab] = useState<"studio" | "audit" | "ugc">("studio");
+  const auditFn = useServerFn(runActiveAudit);
+  const ugcGenFn = useServerFn(generateUgcIdeas);
+  const ugcQueueFn = useServerFn(queueUgcDraft);
+  const [audit, setAudit] = useState<AuditReport | null>(null);
+  const [auditRunning, setAuditRunning] = useState(false);
+  const [ugc, setUgc] = useState<{ drafts: UgcDraft[]; totalCostUsd: number; signalCount: number } | null>(null);
+  const [ugcRunning, setUgcRunning] = useState(false);
+
+  const runAudit = async () => {
+    setAuditRunning(true);
+    try {
+      const r = await auditFn();
+      setAudit(r);
+      toast.success(`Audit complete · ${r.summary.pass} pass · ${r.summary.warn} warn · ${r.summary.fail} fail`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Audit failed");
+    } finally {
+      setAuditRunning(false);
+    }
+  };
+
+  const runUgc = async () => {
+    setUgcRunning(true);
+    try {
+      const r = await ugcGenFn();
+      setUgc(r);
+      if (r.signalCount === 0) toast.info("No buyer-behavior signals yet. Drive some traffic, then try again.");
+      else toast.success(`${r.drafts.length} ideas drafted (~$${r.totalCostUsd.toFixed(3)})`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Generation failed");
+    } finally {
+      setUgcRunning(false);
+    }
+  };
+
+  const queueDraft = async (draft: UgcDraft, channel: "instagram" | "pinterest" | "x") => {
+    const caption = channel === "instagram" ? draft.instagram_caption : channel === "pinterest" ? draft.pinterest_caption : draft.x_caption;
+    try {
+      const res = await ugcQueueFn({
+        data: {
+          channel,
+          caption,
+          hook: draft.hook,
+          productHandle: draft.opportunity.productHandle,
+          searchQuery: draft.opportunity.searchQuery,
+          signal: draft.opportunity.signal,
+        },
+      });
+      if (res.ok) {
+        toast.success(`Sent to ${channel} queue`);
+        qc.invalidateQueries({ queryKey: ["growth-os"] });
+      } else {
+        toast.error(res.error ?? "Failed");
+      }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed");
+    }
+  };
 
   const budget = useQuery({
     queryKey: ["growth-os", "budget"],
