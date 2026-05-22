@@ -604,6 +604,36 @@ export type Database = {
         }
         Relationships: []
       }
+      search_queries: {
+        Row: {
+          created_at: string
+          id: string
+          page_path: string | null
+          query: string
+          result_count: number
+          session_id: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          page_path?: string | null
+          query: string
+          result_count?: number
+          session_id?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          page_path?: string | null
+          query?: string
+          result_count?: number
+          session_id?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       shopify_tag_expirations: {
         Row: {
           created_at: string
