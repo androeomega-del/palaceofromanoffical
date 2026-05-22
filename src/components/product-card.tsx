@@ -3,6 +3,7 @@ import { Heart, Loader2, ShoppingBag, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { formatPrice, type ShopifyProduct } from "@/lib/shopify";
+import { computeScarcitySignal } from "@/lib/scarcity-signal";
 import { useCartStore } from "@/stores/cart-store";
 import { useWishlistStore } from "@/stores/wishlist-store";
 import { useInteractionStore } from "@/stores/interaction-store";
@@ -24,16 +25,15 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
     ) || variants.length > 1;
   const soldOut = variants.length > 0 && !firstAvailable;
   const availableCount = variants.filter((v) => v.availableForSale).length;
-  // Scarcity tag — uses available-variant count as a proxy for inventory.
-  // Single-variant items skip the tag (always reads "Only 1 Left" otherwise).
-  const scarcityTag =
-    !soldOut && variants.length > 1
-      ? availableCount === 1
-        ? "Only 1 Left"
-        : availableCount <= 3
-          ? `Only ${availableCount} Left`
-          : null
-      : null;
+  // Availability Urgency for designer retail — tiered, evidence-based copy.
+  // See src/lib/scarcity-signal.ts for the tactic stack & tier definitions.
+  const scarcity = computeScarcitySignal({
+    availableCount,
+    totalVariants: variants.length,
+    priceUsd: parseFloat(price.amount),
+    onSale: Boolean(onSale),
+  });
+  const showScarcityBadge = !soldOut && scarcity.tier !== "none" && scarcity.tier !== "soldOut";
 
   const navigate = useNavigate();
   const addItem = useCartStore((s) => s.addItem);
@@ -241,10 +241,13 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
             Sold Out
           </span>
         )}
-        {scarcityTag && !onSale && (
-          <span className="absolute top-3 left-3 text-[10px] uppercase tracking-[0.25em] bg-ink text-canvas px-2 py-1 font-medium">
-            <span className="text-bronze mr-1">●</span>
-            {scarcityTag}
+        {showScarcityBadge && !onSale && (
+          <span
+            className="absolute top-3 left-3 text-[10px] uppercase tracking-[0.25em] bg-ink text-canvas px-2 py-1 font-medium"
+            title={scarcity.rationale}
+          >
+            <span className="text-bronze mr-1 animate-pulse">●</span>
+            {scarcity.label}
           </span>
         )}
 
