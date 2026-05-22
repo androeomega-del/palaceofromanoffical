@@ -96,7 +96,7 @@ function GrowthOsPage() {
   const ugcQueueFn = useServerFn(queueUgcDraft);
   const [audit, setAudit] = useState<AuditReport | null>(null);
   const [auditRunning, setAuditRunning] = useState(false);
-  const [ugc, setUgc] = useState<{ drafts: UgcDraft[]; totalCostUsd: number; signalCount: number } | null>(null);
+  const [ugcIdeas, setUgcIdeas] = useState<{ drafts: UgcDraft[]; totalCostUsd: number; signalCount: number } | null>(null);
   const [ugcRunning, setUgcRunning] = useState(false);
 
   const runAudit = async () => {
