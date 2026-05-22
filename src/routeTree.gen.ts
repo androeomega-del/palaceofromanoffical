@@ -54,6 +54,7 @@ import { Route as ApiPublicHooksShopifyOrderCreatedRouteImport } from './routes/
 import { Route as ApiPublicHooksExpireShopifyTagsRouteImport } from './routes/api/public/hooks/expire-shopify-tags'
 import { Route as ApiPublicHooksDispatchCartRecoveryRouteImport } from './routes/api/public/hooks/dispatch-cart-recovery'
 import { Route as ApiPublicCronWinBackEmailsRouteImport } from './routes/api/public/cron/win-back-emails'
+import { Route as ApiPublicCronDrainGrowthJobsRouteImport } from './routes/api/public/cron/drain-growth-jobs'
 import { Route as ApiPublicCronBackInStockNotifyRouteImport } from './routes/api/public/cron/back-in-stock-notify'
 import { Route as ApiPublicCronAbandonedCartRecoveryRouteImport } from './routes/api/public/cron/abandoned-cart-recovery'
 import { Route as ApiPublicAiRecommendationsRouteImport } from './routes/api/public/ai.recommendations'
@@ -292,6 +293,12 @@ const ApiPublicCronWinBackEmailsRoute =
     path: '/api/public/cron/win-back-emails',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicCronDrainGrowthJobsRoute =
+  ApiPublicCronDrainGrowthJobsRouteImport.update({
+    id: '/api/public/cron/drain-growth-jobs',
+    path: '/api/public/cron/drain-growth-jobs',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicCronBackInStockNotifyRoute =
   ApiPublicCronBackInStockNotifyRouteImport.update({
     id: '/api/public/cron/back-in-stock-notify',
@@ -354,6 +361,7 @@ export interface FileRoutesByFullPath {
   '/api/public/ai/recommendations': typeof ApiPublicAiRecommendationsRoute
   '/api/public/cron/abandoned-cart-recovery': typeof ApiPublicCronAbandonedCartRecoveryRoute
   '/api/public/cron/back-in-stock-notify': typeof ApiPublicCronBackInStockNotifyRoute
+  '/api/public/cron/drain-growth-jobs': typeof ApiPublicCronDrainGrowthJobsRoute
   '/api/public/cron/win-back-emails': typeof ApiPublicCronWinBackEmailsRoute
   '/api/public/hooks/dispatch-cart-recovery': typeof ApiPublicHooksDispatchCartRecoveryRoute
   '/api/public/hooks/expire-shopify-tags': typeof ApiPublicHooksExpireShopifyTagsRoute
@@ -404,6 +412,7 @@ export interface FileRoutesByTo {
   '/api/public/ai/recommendations': typeof ApiPublicAiRecommendationsRoute
   '/api/public/cron/abandoned-cart-recovery': typeof ApiPublicCronAbandonedCartRecoveryRoute
   '/api/public/cron/back-in-stock-notify': typeof ApiPublicCronBackInStockNotifyRoute
+  '/api/public/cron/drain-growth-jobs': typeof ApiPublicCronDrainGrowthJobsRoute
   '/api/public/cron/win-back-emails': typeof ApiPublicCronWinBackEmailsRoute
   '/api/public/hooks/dispatch-cart-recovery': typeof ApiPublicHooksDispatchCartRecoveryRoute
   '/api/public/hooks/expire-shopify-tags': typeof ApiPublicHooksExpireShopifyTagsRoute
@@ -455,6 +464,7 @@ export interface FileRoutesById {
   '/api/public/ai/recommendations': typeof ApiPublicAiRecommendationsRoute
   '/api/public/cron/abandoned-cart-recovery': typeof ApiPublicCronAbandonedCartRecoveryRoute
   '/api/public/cron/back-in-stock-notify': typeof ApiPublicCronBackInStockNotifyRoute
+  '/api/public/cron/drain-growth-jobs': typeof ApiPublicCronDrainGrowthJobsRoute
   '/api/public/cron/win-back-emails': typeof ApiPublicCronWinBackEmailsRoute
   '/api/public/hooks/dispatch-cart-recovery': typeof ApiPublicHooksDispatchCartRecoveryRoute
   '/api/public/hooks/expire-shopify-tags': typeof ApiPublicHooksExpireShopifyTagsRoute
@@ -507,6 +517,7 @@ export interface FileRouteTypes {
     | '/api/public/ai/recommendations'
     | '/api/public/cron/abandoned-cart-recovery'
     | '/api/public/cron/back-in-stock-notify'
+    | '/api/public/cron/drain-growth-jobs'
     | '/api/public/cron/win-back-emails'
     | '/api/public/hooks/dispatch-cart-recovery'
     | '/api/public/hooks/expire-shopify-tags'
@@ -557,6 +568,7 @@ export interface FileRouteTypes {
     | '/api/public/ai/recommendations'
     | '/api/public/cron/abandoned-cart-recovery'
     | '/api/public/cron/back-in-stock-notify'
+    | '/api/public/cron/drain-growth-jobs'
     | '/api/public/cron/win-back-emails'
     | '/api/public/hooks/dispatch-cart-recovery'
     | '/api/public/hooks/expire-shopify-tags'
@@ -607,6 +619,7 @@ export interface FileRouteTypes {
     | '/api/public/ai/recommendations'
     | '/api/public/cron/abandoned-cart-recovery'
     | '/api/public/cron/back-in-stock-notify'
+    | '/api/public/cron/drain-growth-jobs'
     | '/api/public/cron/win-back-emails'
     | '/api/public/hooks/dispatch-cart-recovery'
     | '/api/public/hooks/expire-shopify-tags'
@@ -657,6 +670,7 @@ export interface RootRouteChildren {
   ApiPublicAiRecommendationsRoute: typeof ApiPublicAiRecommendationsRoute
   ApiPublicCronAbandonedCartRecoveryRoute: typeof ApiPublicCronAbandonedCartRecoveryRoute
   ApiPublicCronBackInStockNotifyRoute: typeof ApiPublicCronBackInStockNotifyRoute
+  ApiPublicCronDrainGrowthJobsRoute: typeof ApiPublicCronDrainGrowthJobsRoute
   ApiPublicCronWinBackEmailsRoute: typeof ApiPublicCronWinBackEmailsRoute
   ApiPublicHooksDispatchCartRecoveryRoute: typeof ApiPublicHooksDispatchCartRecoveryRoute
   ApiPublicHooksExpireShopifyTagsRoute: typeof ApiPublicHooksExpireShopifyTagsRoute
@@ -982,6 +996,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicCronWinBackEmailsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/cron/drain-growth-jobs': {
+      id: '/api/public/cron/drain-growth-jobs'
+      path: '/api/public/cron/drain-growth-jobs'
+      fullPath: '/api/public/cron/drain-growth-jobs'
+      preLoaderRoute: typeof ApiPublicCronDrainGrowthJobsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/cron/back-in-stock-notify': {
       id: '/api/public/cron/back-in-stock-notify'
       path: '/api/public/cron/back-in-stock-notify'
@@ -1059,6 +1080,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicCronAbandonedCartRecoveryRoute:
     ApiPublicCronAbandonedCartRecoveryRoute,
   ApiPublicCronBackInStockNotifyRoute: ApiPublicCronBackInStockNotifyRoute,
+  ApiPublicCronDrainGrowthJobsRoute: ApiPublicCronDrainGrowthJobsRoute,
   ApiPublicCronWinBackEmailsRoute: ApiPublicCronWinBackEmailsRoute,
   ApiPublicHooksDispatchCartRecoveryRoute:
     ApiPublicHooksDispatchCartRecoveryRoute,

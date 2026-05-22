@@ -19,11 +19,12 @@ import {
   generateAdCreative,
   approveQueueItem,
 } from "@/lib/growth-os-extra.functions";
+import { drainGrowthJobsNow, getGrowthJobsSummary } from "@/lib/growth-jobs.functions";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Sparkles, CheckCircle2, XCircle, Eye, Loader2, DollarSign, TrendingUp, Share2, Copy, Mail, Video, Search, Megaphone, ShieldCheck, Lightbulb, AlertTriangle, CircleDot } from "lucide-react";
+import { Sparkles, CheckCircle2, XCircle, Eye, Loader2, DollarSign, TrendingUp, Share2, Copy, Mail, Video, Search, Megaphone, ShieldCheck, Lightbulb, AlertTriangle, CircleDot, PlayCircle } from "lucide-react";
 import { runActiveAudit, type AuditReport, type AuditSeverity } from "@/lib/active-audit.functions";
 import { generateUgcIdeas, queueUgcDraft, type UgcDraft } from "@/lib/ugc-recommender.functions";
 
@@ -159,6 +160,24 @@ function GrowthOsPage() {
   const queue = useQuery({
     queryKey: ["growth-os", "queue"],
     queryFn: () => listFn({ data: {} }),
+  });
+
+  const drainFn = useServerFn(drainGrowthJobsNow);
+  const jobsSummaryFn = useServerFn(getGrowthJobsSummary);
+  const jobsSummary = useQuery({
+    queryKey: ["growth-os", "jobs-summary"],
+    queryFn: () => jobsSummaryFn(),
+    refetchInterval: 30_000,
+  });
+  const drain = useMutation({
+    mutationFn: () => drainFn(),
+    onSuccess: (r) => {
+      toast.success(
+        `Queue drained — ${r.succeeded} ok · ${r.failed} failed · ${r.skipped_unknown_type} skipped`,
+      );
+      qc.invalidateQueries({ queryKey: ["growth-os", "jobs-summary"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
   });
 
   const generate = useMutation({
