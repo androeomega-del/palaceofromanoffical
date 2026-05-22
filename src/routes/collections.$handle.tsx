@@ -52,6 +52,17 @@ const INDEX_SORT_ALIASES: Record<string, SortValue> = {
 };
 
 export const Route = createFileRoute("/collections/$handle")({
+  beforeLoad: ({ params, search }) => {
+    const canonical = canonicalCollectionHandle(params.handle);
+    if (canonical !== params.handle.toLowerCase()) {
+      throw redirect({
+        to: "/collections/$handle",
+        params: { handle: canonical },
+        search,
+        replace: true,
+      });
+    }
+  },
   validateSearch: (search: Record<string, unknown>): { sort: SortValue } => {
     const raw = typeof search.sort === "string" ? search.sort : "";
     let sort: SortValue;
