@@ -183,6 +183,13 @@ function HomePage() {
     queryKey: ["home", "swimwear"],
     queryFn: () => fetchCollection("swimwear", 12).then((c) => c?.products?.edges ?? []),
   });
+  // Fallback rail when swim is unpublished to the Lovable sales channel —
+  // hoodies always have stock, so the rail never renders empty.
+  const swimFallbackQ = useQuery({
+    queryKey: ["home", "swim-fallback-hoodies"],
+    queryFn: () => fetchCollection("hoodies", 12).then((c) => c?.products?.edges ?? []),
+    enabled: swimwearQ.isSuccess && (swimwearQ.data?.length ?? 0) === 0,
+  });
 
   // Editorial split sources — one image per panel, pulled from real data.
   const womenEditorialQ = useQuery({
