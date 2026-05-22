@@ -18,6 +18,7 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as OrderConfirmedRouteImport } from './routes/order-confirmed'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LinksRouteImport } from './routes/links'
+import { Route as LimitedFindsRouteImport } from './routes/limited-finds'
 import { Route as LegalNoticeRouteImport } from './routes/legal-notice'
 import { Route as JournalRouteImport } from './routes/journal'
 import { Route as FaqRouteImport } from './routes/faq'
@@ -100,6 +101,11 @@ const LoginRoute = LoginRouteImport.update({
 const LinksRoute = LinksRouteImport.update({
   id: '/links',
   path: '/links',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LimitedFindsRoute = LimitedFindsRouteImport.update({
+  id: '/limited-finds',
+  path: '/limited-finds',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LegalNoticeRoute = LegalNoticeRouteImport.update({
@@ -314,6 +320,7 @@ export interface FileRoutesByFullPath {
   '/faq': typeof FaqRoute
   '/journal': typeof JournalRoute
   '/legal-notice': typeof LegalNoticeRoute
+  '/limited-finds': typeof LimitedFindsRoute
   '/links': typeof LinksRoute
   '/login': typeof LoginRoute
   '/order-confirmed': typeof OrderConfirmedRoute
@@ -363,6 +370,7 @@ export interface FileRoutesByTo {
   '/faq': typeof FaqRoute
   '/journal': typeof JournalRoute
   '/legal-notice': typeof LegalNoticeRoute
+  '/limited-finds': typeof LimitedFindsRoute
   '/links': typeof LinksRoute
   '/login': typeof LoginRoute
   '/order-confirmed': typeof OrderConfirmedRoute
@@ -413,6 +421,7 @@ export interface FileRoutesById {
   '/faq': typeof FaqRoute
   '/journal': typeof JournalRoute
   '/legal-notice': typeof LegalNoticeRoute
+  '/limited-finds': typeof LimitedFindsRoute
   '/links': typeof LinksRoute
   '/login': typeof LoginRoute
   '/order-confirmed': typeof OrderConfirmedRoute
@@ -464,6 +473,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/journal'
     | '/legal-notice'
+    | '/limited-finds'
     | '/links'
     | '/login'
     | '/order-confirmed'
@@ -513,6 +523,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/journal'
     | '/legal-notice'
+    | '/limited-finds'
     | '/links'
     | '/login'
     | '/order-confirmed'
@@ -562,6 +573,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/journal'
     | '/legal-notice'
+    | '/limited-finds'
     | '/links'
     | '/login'
     | '/order-confirmed'
@@ -612,6 +624,7 @@ export interface RootRouteChildren {
   FaqRoute: typeof FaqRoute
   JournalRoute: typeof JournalRoute
   LegalNoticeRoute: typeof LegalNoticeRoute
+  LimitedFindsRoute: typeof LimitedFindsRoute
   LinksRoute: typeof LinksRoute
   LoginRoute: typeof LoginRoute
   OrderConfirmedRoute: typeof OrderConfirmedRoute
@@ -715,6 +728,13 @@ declare module '@tanstack/react-router' {
       path: '/links'
       fullPath: '/links'
       preLoaderRoute: typeof LinksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/limited-finds': {
+      id: '/limited-finds'
+      path: '/limited-finds'
+      fullPath: '/limited-finds'
+      preLoaderRoute: typeof LimitedFindsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/legal-notice': {
@@ -1005,6 +1025,7 @@ const rootRouteChildren: RootRouteChildren = {
   FaqRoute: FaqRoute,
   JournalRoute: JournalRoute,
   LegalNoticeRoute: LegalNoticeRoute,
+  LimitedFindsRoute: LimitedFindsRoute,
   LinksRoute: LinksRoute,
   LoginRoute: LoginRoute,
   OrderConfirmedRoute: OrderConfirmedRoute,
