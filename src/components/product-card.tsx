@@ -196,6 +196,7 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
 
   return (
     <Link
+      ref={cardRef}
       to="/product/$handle"
       params={{ handle: p.handle }}
       className="group block"
