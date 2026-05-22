@@ -1,10 +1,11 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Heart, Loader2, ShoppingBag, Zap } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { formatPrice, type ShopifyProduct } from "@/lib/shopify";
 import { useCartStore } from "@/stores/cart-store";
 import { useWishlistStore } from "@/stores/wishlist-store";
+import { useInteractionStore } from "@/stores/interaction-store";
 
 
 export function ProductCard({ product }: { product: ShopifyProduct }) {
@@ -41,12 +42,36 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
   const wishlisted = useWishlistStore((s) => s.handles.includes(p.handle));
   const toggleWishlist = useWishlistStore((s) => s.toggle);
   const [buyingNow, setBuyingNow] = useState(false);
+  const track = useInteractionStore((s) => s.track);
+  const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const meta = { vendor: p.vendor, productType: p.productType };
+
+  const onCardClick = () => {
+    track({ handle: p.handle, event: "click", ...meta });
+  };
+
+  const onCardEnter = () => {
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    hoverTimer.current = setTimeout(() => {
+      track({ handle: p.handle, event: "hover", ...meta });
+    }, 800);
+  };
+
+  const onCardLeave = () => {
+    if (hoverTimer.current) {
+      clearTimeout(hoverTimer.current);
+      hoverTimer.current = null;
+    }
+  };
 
   const onToggleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    const wasOn = wishlisted;
     toggleWishlist(p.handle);
-    toast.success(wishlisted ? "Removed from wishlist" : "Saved to wishlist", {
+    if (!wasOn) track({ handle: p.handle, event: "wishlist", ...meta });
+    toast.success(wasOn ? "Removed from wishlist" : "Saved to wishlist", {
       description: p.title,
     });
   };
@@ -73,6 +98,7 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
       toast.error("Could not add this item to bag.", { description: "Please try another size or refresh the page." });
       return;
     }
+    track({ handle: p.handle, event: "cart", ...meta });
     openDrawer();
     toast.success(`${p.title} — added to bag`);
   };
@@ -107,6 +133,7 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
         toast.error("Could not add this item to bag.", { description: "Please try another size or refresh the page." });
         return;
       }
+      track({ handle: p.handle, event: "cart", ...meta });
       const checkoutUrl = useCartStore.getState().checkoutUrl;
       if (checkoutUrl) {
         const { trackCartEvent } = await import("@/lib/cart-analytics");
@@ -133,7 +160,14 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
 
 
   return (
-    <Link to="/product/$handle" params={{ handle: p.handle }} className="group block">
+    <Link
+      to="/product/$handle"
+      params={{ handle: p.handle }}
+      className="group block"
+      onClick={onCardClick}
+      onMouseEnter={onCardEnter}
+      onMouseLeave={onCardLeave}
+    >
       <div className="w-full aspect-[4/5] bg-muted relative overflow-hidden mb-5">
         {img && (
           <img

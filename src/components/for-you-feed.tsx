@@ -7,6 +7,7 @@ import {
 } from "@/lib/ai-recommendations.functions";
 import { useWishlistStore } from "@/stores/wishlist-store";
 import { useRecentlyViewedStore } from "@/stores/recently-viewed-store";
+import { useInteractionStore } from "@/stores/interaction-store";
 import { formatPrice } from "@/lib/shopify";
 
 /**
@@ -17,6 +18,9 @@ import { formatPrice } from "@/lib/shopify";
 export function ForYouFeed() {
   const wishlist = useWishlistStore((s) => s.handles);
   const recent = useRecentlyViewedStore((s) => s.items);
+  const interactions = useInteractionStore((s) =>
+    s.topHandles(20),
+  );
   const [state, setState] = useState<{
     loading: boolean;
     data: RecommendationsResult | null;
@@ -29,6 +33,7 @@ export function ForYouFeed() {
       data: {
         wishlistHandles: wishlist.slice(0, 20),
         recentHandles: recent.slice(0, 20).map((r) => r.handle),
+        interactionHandles: interactions,
       },
     })
       .then((data) => {
@@ -43,9 +48,14 @@ export function ForYouFeed() {
     };
     // Stable identity — only re-run when handles meaningfully change.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wishlist.join(","), recent.map((r) => r.handle).join(",")]);
+  }, [
+    wishlist.join(","),
+    recent.map((r) => r.handle).join(","),
+    interactions.join(","),
+  ]);
 
-  const isPersonalized = wishlist.length + recent.length > 0;
+  const isPersonalized =
+    wishlist.length + recent.length + interactions.length > 0;
 
   return (
     <section

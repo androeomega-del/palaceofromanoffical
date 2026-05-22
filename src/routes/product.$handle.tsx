@@ -12,6 +12,7 @@ import {
 import { pageTitle, metaDescription, absoluteUrl, SITE_URL } from "@/lib/seo";
 import { useCartStore } from "@/stores/cart-store";
 import { useRecentlyViewedStore } from "@/stores/recently-viewed-store";
+import { useInteractionStore } from "@/stores/interaction-store";
 import { Loader2, Minus, Plus, ShieldCheck, Truck, RotateCcw, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { ProductCard } from "@/components/product-card";
@@ -301,13 +302,20 @@ function ProductView({
   const openDrawer = useCartStore((s) => s.openDrawer);
   const isLoading = useCartStore((s) => s.isLoading);
 
-  // Track recently-viewed for the personalised "For You" feed on /.
+  // Track recently-viewed + interaction signal for the personalised feed.
   const pushRecent = useRecentlyViewedStore((s) => s.push);
+  const trackInteraction = useInteractionStore((s) => s.track);
   useEffect(() => {
     if (!product?.handle) return;
     pushRecent({
       handle: product.handle,
       vendor: product.vendor || "",
+      productType: product.productType || undefined,
+    });
+    trackInteraction({
+      handle: product.handle,
+      event: "pdp_view",
+      vendor: product.vendor || undefined,
       productType: product.productType || undefined,
     });
     // Track on entry only — don't re-fire on every variant change.
