@@ -74,8 +74,10 @@ function GrowthOsPage() {
   const approveFn = useServerFn(approveAndPublish);
   const rejectFn = useServerFn(rejectItem);
   const getItemFn = useServerFn(getQueueItem);
+  const socialFn = useServerFn(generateSocialPack);
+  const approveSocialFn = useServerFn(approveSocialItem);
 
-  const [preview, setPreview] = useState<{ id: string; html: string; title: string } | null>(null);
+  const [preview, setPreview] = useState<{ item: Record<string, unknown> } | null>(null);
 
   const budget = useQuery({
     queryKey: ["growth-os", "budget"],
