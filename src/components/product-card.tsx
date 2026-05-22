@@ -51,12 +51,6 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
     });
   };
 
-  const navigate = useNavigate();
-  const addItem = useCartStore((s) => s.addItem);
-  const openDrawer = useCartStore((s) => s.openDrawer);
-  const isLoading = useCartStore((s) => s.isLoading);
-  const [buyingNow, setBuyingNow] = useState(false);
-
   const altBase = p.vendor ? `${p.title} — ${p.vendor}` : p.title;
 
   const onAdd = async (e: React.MouseEvent) => {
