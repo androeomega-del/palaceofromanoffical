@@ -22,6 +22,34 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
       (o) => o.values.length > 1 || o.name.toLowerCase() !== "title",
     ) || variants.length > 1;
   const soldOut = variants.length > 0 && !firstAvailable;
+  const availableCount = variants.filter((v) => v.availableForSale).length;
+  // Scarcity tag — uses available-variant count as a proxy for inventory.
+  // Single-variant items skip the tag (always reads "Only 1 Left" otherwise).
+  const scarcityTag =
+    !soldOut && variants.length > 1
+      ? availableCount === 1
+        ? "Only 1 Left"
+        : availableCount <= 3
+          ? `Only ${availableCount} Left`
+          : null
+      : null;
+
+  const navigate = useNavigate();
+  const addItem = useCartStore((s) => s.addItem);
+  const openDrawer = useCartStore((s) => s.openDrawer);
+  const isLoading = useCartStore((s) => s.isLoading);
+  const wishlisted = useWishlistStore((s) => s.handles.includes(p.handle));
+  const toggleWishlist = useWishlistStore((s) => s.toggle);
+  const [buyingNow, setBuyingNow] = useState(false);
+
+  const onToggleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleWishlist(p.handle);
+    toast.success(wishlisted ? "Removed from wishlist" : "Saved to wishlist", {
+      description: p.title,
+    });
+  };
 
   const navigate = useNavigate();
   const addItem = useCartStore((s) => s.addItem);
