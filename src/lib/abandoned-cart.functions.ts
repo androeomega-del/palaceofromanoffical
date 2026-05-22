@@ -50,7 +50,7 @@ export const captureAbandonedCart = createServerFn({ method: "POST" })
 
     if (error) {
       console.error("[abandoned-cart] upsert failed:", error.message);
-      return { ok: false, error: error.message };
+      return { ok: false, error: "Could not save cart" };
     }
     return { ok: true };
   });
