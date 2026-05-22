@@ -171,6 +171,30 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
             Sold Out
           </span>
         )}
+        {scarcityTag && !onSale && (
+          <span className="absolute top-3 left-3 text-[10px] uppercase tracking-[0.25em] bg-ink text-canvas px-2 py-1 font-medium">
+            <span className="text-bronze mr-1">●</span>
+            {scarcityTag}
+          </span>
+        )}
+
+        {/* Wishlist heart — top right, always visible */}
+        <button
+          type="button"
+          onClick={onToggleWishlist}
+          aria-label={wishlisted ? "Remove from wishlist" : "Save to wishlist"}
+          aria-pressed={wishlisted}
+          className="absolute top-3 right-3 w-9 h-9 grid place-items-center bg-canvas/85 backdrop-blur-sm hover:bg-canvas transition-colors group/heart"
+        >
+          <Heart
+            className={`w-4 h-4 transition-all duration-300 ${
+              wishlisted
+                ? "fill-bronze stroke-bronze scale-110"
+                : "stroke-ink group-hover/heart:stroke-bronze"
+            }`}
+            strokeWidth={1.5}
+          />
+        </button>
 
         {/* CTAs — visible on hover (desktop), always on touch */}
         <div className="absolute inset-x-3 bottom-3 flex gap-2 opacity-100 lg:opacity-0 lg:translate-y-2 lg:group-hover:opacity-100 lg:group-hover:translate-y-0 transition-all duration-500">
