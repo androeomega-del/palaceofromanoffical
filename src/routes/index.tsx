@@ -1,4 +1,4 @@
-import { createFileRoute, ClientOnly, Link, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ShieldCheck, Plane, RotateCcw, Sparkles } from "lucide-react";
@@ -245,14 +245,14 @@ function HomePage() {
       {/* 1. SUMMER BENTO STOREFRONT — Architectural Resort.
           Rendered client-only to avoid SSR/CSR hydration mismatches while
           the bento markup is iterated on. */}
-      <ClientOnly fallback={<SummerBentoSkeleton />}>
+      <HydrationSafeClientOnly fallback={<SummerBentoSkeleton />}>
         <SummerBento {...SUMMER_BENTO_PROPS} />
-      </ClientOnly>
+      </HydrationSafeClientOnly>
 
       {/* AI-curated For You feed — personalises off wishlist + recently viewed. */}
-      <ClientOnly fallback={null}>
+      <HydrationSafeClientOnly fallback={null}>
         <ForYouFeed />
-      </ClientOnly>
+      </HydrationSafeClientOnly>
 
 
       {/* 1b. SWIMWEAR RAIL — Bikinis, Beachwear, Resort */}
@@ -629,6 +629,18 @@ function HomePage() {
       <NewsletterStrip />
     </>
   );
+}
+
+function HydrationSafeClientOnly({
+  children,
+  fallback = null,
+}: {
+  children: React.ReactNode;
+  fallback?: React.ReactNode;
+}) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  return mounted ? <>{children}</> : <>{fallback}</>;
 }
 
 
