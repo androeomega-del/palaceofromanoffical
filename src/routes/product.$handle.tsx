@@ -1030,3 +1030,51 @@ function ProductSkeleton() {
     </div>
   );
 }
+
+function ScarcityPanel({
+  availableCount,
+  totalVariants,
+  priceUsd,
+  onSale,
+}: {
+  availableCount: number;
+  totalVariants: number;
+  priceUsd: number;
+  onSale: boolean;
+}) {
+  const signal = computeScarcitySignal({ availableCount, totalVariants, priceUsd, onSale });
+  if (signal.tier === "none") return null;
+
+  const isSoldOut = signal.tier === "soldOut";
+  const accent = isSoldOut
+    ? "border-[var(--studio-ink)]/20 bg-[var(--studio-ink)]/[0.03]"
+    : "border-[var(--studio-bronze)]/40 bg-[color-mix(in_oklab,var(--studio-bronze)_6%,transparent)]";
+
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      className={`flex items-start gap-3 border-l-2 px-4 py-3 ${accent}`}
+    >
+      <Sparkles
+        className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${
+          isSoldOut ? "text-[var(--studio-muted)]" : "text-[var(--studio-bronze)]"
+        }`}
+        strokeWidth={1.5}
+      />
+      <div className="space-y-1">
+        <p
+          className={`text-[11px] uppercase tracking-[0.25em] font-semibold ${
+            isSoldOut ? "text-[var(--studio-ink)]" : "text-[var(--studio-bronze)]"
+          }`}
+        >
+          {signal.headline}
+        </p>
+        <p className="text-xs leading-relaxed text-[var(--studio-muted)] font-serif italic">
+          {signal.rationale}
+        </p>
+      </div>
+    </div>
+  );
+}
+
