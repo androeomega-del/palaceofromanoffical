@@ -370,7 +370,7 @@ export function groupBrandsForMenu(brands: BrandEntry[]): { heading: string; ite
   const liveByKey = new Map(brands.map((b) => [norm(b.vendor), b]));
   const used = new Set<string>();
 
-  const tierColumns = LUXURY_TIERS.map((t) => {
+  const tierColumns: { heading: string; items: BrandEntry[] }[] = LUXURY_TIERS.map((t) => {
     const items: BrandEntry[] = [];
     for (const lb of t.brands) {
       const hit = liveByKey.get(norm(lb.name));
@@ -379,7 +379,7 @@ export function groupBrandsForMenu(brands: BrandEntry[]): { heading: string; ite
         used.add(hit.vendor);
       }
     }
-    return { heading: t.label, items };
+    return { heading: t.label as string, items };
   }).filter((c) => c.items.length > 0);
 
   const rest = brands
