@@ -1,6 +1,6 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ensureAdmin } from "@/lib/admin-guard.functions";
+import { adminBeforeLoad } from "@/lib/admin-route-guard";
 import {
   getInventorySyncDashboard,
   type InventorySyncRun,
@@ -11,13 +11,7 @@ import { Button } from "@/components/ui/button";
 import { RefreshCw, CheckCircle2, XCircle, Loader2, Circle } from "lucide-react";
 
 export const Route = createFileRoute("/admin/inventory-sync")({
-  beforeLoad: async () => {
-    try {
-      await ensureAdmin();
-    } catch {
-      throw redirect({ to: "/login" });
-    }
-  },
+  beforeLoad: adminBeforeLoad,
   component: AdminInventorySync,
   head: () => ({
     meta: [
