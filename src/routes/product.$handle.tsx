@@ -13,7 +13,7 @@ import { pageTitle, metaDescription, absoluteUrl, SITE_URL } from "@/lib/seo";
 import { useCartStore } from "@/stores/cart-store";
 import { useRecentlyViewedStore } from "@/stores/recently-viewed-store";
 import { useInteractionStore } from "@/stores/interaction-store";
-import { Loader2, Minus, Plus, ShieldCheck, Truck, RotateCcw, Lock } from "lucide-react";
+import { Loader2, Minus, Plus, ShieldCheck, Truck, RotateCcw, Lock, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { ProductCard } from "@/components/product-card";
 import AIRecommendations from "@/components/ai-recommendations";
@@ -754,28 +754,7 @@ function ProductView({
         {/* ===== Style It With — cross-house cross-sell rail ===== */}
         {styleItWith.length > 0 && (
           <section className="max-w-7xl mx-auto mt-32 pt-20 border-t border-[var(--studio-rule)]">
-            <div className="flex items-end justify-between mb-10">
-              <div className="space-y-3">
-                <p className="text-[10px] tracking-[0.32em] uppercase text-[var(--studio-bronze)] font-semibold">
-                  Complete the Look
-                </p>
-                <h2 className="font-serif text-3xl md:text-4xl">Style It With</h2>
-              </div>
-            </div>
-            <div
-              className="flex gap-5 md:gap-6 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-4 -mx-6 px-6"
-              role="region"
-              aria-label="Style it with — recommended pieces"
-            >
-              {styleItWith.map((e) => (
-                <div
-                  key={e.node.id}
-                  className="snap-start flex-shrink-0 w-[68%] sm:w-[42%] md:w-[28%] lg:w-[22%]"
-                >
-                  <ProductCard product={e} />
-                </div>
-              ))}
-            </div>
+            <StyleItWithRail items={styleItWith} />
           </section>
         )}
       </div>
