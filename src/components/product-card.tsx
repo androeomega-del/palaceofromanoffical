@@ -42,12 +42,36 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
   const wishlisted = useWishlistStore((s) => s.handles.includes(p.handle));
   const toggleWishlist = useWishlistStore((s) => s.toggle);
   const [buyingNow, setBuyingNow] = useState(false);
+  const track = useInteractionStore((s) => s.track);
+  const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const meta = { vendor: p.vendor, productType: p.productType };
+
+  const onCardClick = () => {
+    track({ handle: p.handle, event: "click", ...meta });
+  };
+
+  const onCardEnter = () => {
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    hoverTimer.current = setTimeout(() => {
+      track({ handle: p.handle, event: "hover", ...meta });
+    }, 800);
+  };
+
+  const onCardLeave = () => {
+    if (hoverTimer.current) {
+      clearTimeout(hoverTimer.current);
+      hoverTimer.current = null;
+    }
+  };
 
   const onToggleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    const wasOn = wishlisted;
     toggleWishlist(p.handle);
-    toast.success(wishlisted ? "Removed from wishlist" : "Saved to wishlist", {
+    if (!wasOn) track({ handle: p.handle, event: "wishlist", ...meta });
+    toast.success(wasOn ? "Removed from wishlist" : "Saved to wishlist", {
       description: p.title,
     });
   };
