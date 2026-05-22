@@ -86,8 +86,15 @@ export function SiteHeader() {
 
   return (
     <>
-      <div className="w-full bg-canvas-raised text-bronze/90 text-[10px] py-2 uppercase tracking-[0.3em] text-center border-b border-ink/5">
-        Authenticity Guaranteed — Complimentary Global Shipping over $1,200
+      <div className="w-full bg-ink text-canvas text-[10px] py-2.5 uppercase tracking-[0.32em] text-center border-b border-ink/10">
+        <span className="text-bronze">●</span>{" "}
+        <span className="font-medium">The Curated Luxury Hunt</span>
+        <span className="opacity-50 mx-2">·</span>
+        Weekly Limited-Edition Drops
+        <span className="opacity-50 mx-2">·</span>
+        <Link to="/collections/$handle" params={{ handle: "new-arrivals" }} className="underline decoration-bronze/60 underline-offset-4 hover:text-bronze transition-colors">
+          See This Week's Edit →
+        </Link>
       </div>
       <header className="sticky top-0 z-50 bg-canvas/95 backdrop-blur-md border-b border-ink/10">
         <div className="max-w-screen-2xl mx-auto px-6 md:px-10 h-20 grid grid-cols-[1fr_auto_1fr] items-center gap-6">

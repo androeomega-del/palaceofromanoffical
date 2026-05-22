@@ -1,9 +1,10 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Loader2, ShoppingBag, Zap } from "lucide-react";
+import { Heart, Loader2, ShoppingBag, Zap } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { formatPrice, type ShopifyProduct } from "@/lib/shopify";
 import { useCartStore } from "@/stores/cart-store";
+import { useWishlistStore } from "@/stores/wishlist-store";
 
 
 export function ProductCard({ product }: { product: ShopifyProduct }) {
@@ -21,12 +22,34 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
       (o) => o.values.length > 1 || o.name.toLowerCase() !== "title",
     ) || variants.length > 1;
   const soldOut = variants.length > 0 && !firstAvailable;
+  const availableCount = variants.filter((v) => v.availableForSale).length;
+  // Scarcity tag — uses available-variant count as a proxy for inventory.
+  // Single-variant items skip the tag (always reads "Only 1 Left" otherwise).
+  const scarcityTag =
+    !soldOut && variants.length > 1
+      ? availableCount === 1
+        ? "Only 1 Left"
+        : availableCount <= 3
+          ? `Only ${availableCount} Left`
+          : null
+      : null;
 
   const navigate = useNavigate();
   const addItem = useCartStore((s) => s.addItem);
   const openDrawer = useCartStore((s) => s.openDrawer);
   const isLoading = useCartStore((s) => s.isLoading);
+  const wishlisted = useWishlistStore((s) => s.handles.includes(p.handle));
+  const toggleWishlist = useWishlistStore((s) => s.toggle);
   const [buyingNow, setBuyingNow] = useState(false);
+
+  const onToggleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleWishlist(p.handle);
+    toast.success(wishlisted ? "Removed from wishlist" : "Saved to wishlist", {
+      description: p.title,
+    });
+  };
 
   const altBase = p.vendor ? `${p.title} — ${p.vendor}` : p.title;
 
@@ -148,6 +171,30 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
             Sold Out
           </span>
         )}
+        {scarcityTag && !onSale && (
+          <span className="absolute top-3 left-3 text-[10px] uppercase tracking-[0.25em] bg-ink text-canvas px-2 py-1 font-medium">
+            <span className="text-bronze mr-1">●</span>
+            {scarcityTag}
+          </span>
+        )}
+
+        {/* Wishlist heart — top right, always visible */}
+        <button
+          type="button"
+          onClick={onToggleWishlist}
+          aria-label={wishlisted ? "Remove from wishlist" : "Save to wishlist"}
+          aria-pressed={wishlisted}
+          className="absolute top-3 right-3 w-9 h-9 grid place-items-center bg-canvas/85 backdrop-blur-sm hover:bg-canvas transition-colors group/heart"
+        >
+          <Heart
+            className={`w-4 h-4 transition-all duration-300 ${
+              wishlisted
+                ? "fill-bronze stroke-bronze scale-110"
+                : "stroke-ink group-hover/heart:stroke-bronze"
+            }`}
+            strokeWidth={1.5}
+          />
+        </button>
 
         {/* CTAs — visible on hover (desktop), always on touch */}
         <div className="absolute inset-x-3 bottom-3 flex gap-2 opacity-100 lg:opacity-0 lg:translate-y-2 lg:group-hover:opacity-100 lg:group-hover:translate-y-0 transition-all duration-500">
