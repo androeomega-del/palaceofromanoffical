@@ -6,11 +6,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { sendGmail } from "@/lib/gmail-send";
 import { renderBackInStockEmail } from "@/lib/back-in-stock-email-template";
+import { checkWebhookSecret } from "@/lib/webhook-secret";
 
 export const Route = createFileRoute("/api/public/cron/back-in-stock-notify")({
   server: {
     handlers: {
-      POST: async () => {
+      POST: async ({ request }) => {
+        const unauthorized = checkWebhookSecret(request);
+        if (unauthorized) return unauthorized;
         // Get pending subscriptions
         const { data: subs, error: subError } = await supabaseAdmin
           .from("stock_alert_subscriptions")
