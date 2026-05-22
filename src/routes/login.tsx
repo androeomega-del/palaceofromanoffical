@@ -48,12 +48,7 @@ function LoginPage() {
         });
         if (signInError) throw signInError;
       }
-      // Claim admin if vacant (founder bootstrap). Fire-and-forget so it
-      // never blocks navigation and never surfaces an aborted-fetch rejection
-      // when the page unloads.
-      bootstrapAdminIfFirst().catch(() => {
-        /* non-fatal: ensureAdmin will gate access if needed */
-      });
+      await bootstrapAdminIfFirst();
       navigate({ to: redirectTo });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Authentication failed");
