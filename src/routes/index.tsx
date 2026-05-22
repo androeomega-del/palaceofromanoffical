@@ -18,7 +18,7 @@ import marketingMen from "@/assets/marketing-men-summer.jpg";
 import marketingAccessories from "@/assets/marketing-accessories-summer.jpg";
 
 import marketingSwim from "@/assets/marketing-swim-summer.jpg";
-import marketingCalvinKlein from "@/assets/marketing-calvin-klein.jpg";
+import marketingVersace from "@/assets/marketing-versace.jpg";
 
 import swimCampaignVideo from "@/assets/swim-campaign.mp4.asset.json";
 import { img } from "@/lib/editorial-library";
@@ -33,9 +33,9 @@ const SUMMER_BENTO_PROPS = {
   accessoriesImage: { url: marketingAccessories, altText: "Summer Accessories — Designer Edit" },
   
   swimImage: { url: marketingSwim, altText: "Designer Swimwear — Riviera Edit" },
-  spotlightImage: { url: marketingCalvinKlein, altText: "Calvin Klein — In Stock Now" },
-  spotlightVendor: "Calvin Klein",
-  spotlightSlug: "calvin-klein",
+  spotlightImage: { url: marketingVersace, altText: "Versace — Baroque Edit, In Stock Now" },
+  spotlightVendor: "Versace",
+  spotlightSlug: "versace",
 } as const;
 
 export const Route = createFileRoute("/")({

@@ -90,7 +90,6 @@ export const TIER_4_VANGUARDS = make([
   "Issey Miyake",
   "Jil Sander",
   "Sacai",
-  "Calvin Klein",
   "Moschino",
   "Schiaparelli",
   "Marni",
