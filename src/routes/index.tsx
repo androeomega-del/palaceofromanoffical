@@ -508,7 +508,13 @@ function HomePage() {
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed text-pretty">
               Three foundations of the modern wardrobe — cut and finished by houses that take
-              the ordinary seriously. Pieces to be worn often, and worn well.
+              the ordinary seriously. Browse all{" "}
+              <Link to="/collections/$handle" params={{ handle: "polo-shirts" }} className="text-ink underline decoration-bronze/40 underline-offset-4 hover:text-bronze transition-colors">polos</Link>,{" "}
+              <Link to="/collections/$handle" params={{ handle: "long-sleeve-tees" }} className="text-ink underline decoration-bronze/40 underline-offset-4 hover:text-bronze transition-colors">long-sleeve tees</Link>{" "}
+              and{" "}
+              <Link to="/collections/$handle" params={{ handle: "hoodies" }} className="text-ink underline decoration-bronze/40 underline-offset-4 hover:text-bronze transition-colors">hoodies</Link>,{" "}
+              or step into the full{" "}
+              <Link to="/brands" className="text-ink underline decoration-bronze/40 underline-offset-4 hover:text-bronze transition-colors">house directory</Link>.
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-6 lg:gap-10">
