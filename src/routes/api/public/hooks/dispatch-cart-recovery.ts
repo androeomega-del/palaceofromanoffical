@@ -9,6 +9,7 @@
 
 import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { checkWebhookSecret } from "@/lib/webhook-secret";
 
 const GMAIL_GATEWAY = "https://connector-gateway.lovable.dev/google_mail/gmail/v1";
 const FROM = "Palace of Roman <notify@palaceofromanofficial.com>";
