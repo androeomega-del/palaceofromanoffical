@@ -441,7 +441,12 @@ function HomePage() {
               May 2026 — A study in quiet authority.
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed mb-10 max-w-md text-pretty">
-              Tailoring, footwear and house codes photographed in studio light. Shop the look throughout the season's most significant edit.
+              Tailoring, footwear and house codes photographed in studio light — featuring{" "}
+              <Link to="/brand/$vendor" params={{ vendor: "alexander-mcqueen" }} className="text-ink underline decoration-bronze/40 underline-offset-4 hover:text-bronze transition-colors">Alexander McQueen</Link>,{" "}
+              <Link to="/brand/$vendor" params={{ vendor: "gucci" }} className="text-ink underline decoration-bronze/40 underline-offset-4 hover:text-bronze transition-colors">Gucci</Link>{" "}
+              and the wider{" "}
+              <Link to="/collections/$handle" params={{ handle: "new-arrivals" }} className="text-ink underline decoration-bronze/40 underline-offset-4 hover:text-bronze transition-colors">new arrivals</Link>{" "}
+              edit. Shop the look throughout the season's most significant edit.
             </p>
             <Link
               to="/editorial/may-2026"
