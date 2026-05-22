@@ -25,7 +25,10 @@ export type InteractionEvent =
   | "click"
   | "pdp_view"
   | "wishlist"
-  | "cart";
+  | "cart"
+  | "scarcity_view"
+  | "scarcity_click"
+  | "scarcity_cart";
 
 const WEIGHTS: Record<InteractionEvent, number> = {
   impression: 0.1,
@@ -34,6 +37,12 @@ const WEIGHTS: Record<InteractionEvent, number> = {
   pdp_view: 2,
   wishlist: 3,
   cart: 5,
+  // Scarcity events don't add to personalisation score (would double-count
+  // the underlying impression/click/cart). They flow through to the
+  // interaction_events table for urgency-funnel reporting only.
+  scarcity_view: 0,
+  scarcity_click: 0,
+  scarcity_cart: 0,
 };
 
 type InteractionRecord = {

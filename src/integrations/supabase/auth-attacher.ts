@@ -4,10 +4,27 @@ import { supabase } from './client'
 
 // Must be registered as a global `functionMiddleware` in `src/start.ts`; otherwise
 // the browser never attaches the bearer token to serverFn RPCs.
+//
+// Hardening: if `getSession()` returns no token (idle tab, refresh race) we
+// fall back to `getUser()` which forces a session restore + refresh from
+// storage / network. That fixes the "Unauthorized: No authorization header
+// provided" toast that fires after a long idle on protected admin pages.
 export const attachSupabaseAuth = createMiddleware({ type: 'function' }).client(
   async ({ next }) => {
-    const { data } = await supabase.auth.getSession()
-    const token = data.session?.access_token
+    let token: string | undefined
+    try {
+      const { data } = await supabase.auth.getSession()
+      token = data.session?.access_token
+      if (!token) {
+        // Session may have expired in memory but still exist in storage —
+        // getUser() revalidates and refreshes if possible.
+        await supabase.auth.getUser()
+        const refreshed = await supabase.auth.getSession()
+        token = refreshed.data.session?.access_token
+      }
+    } catch {
+      // Swallow — we'll let the server reject and surface a clean error.
+    }
     return next({
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     })

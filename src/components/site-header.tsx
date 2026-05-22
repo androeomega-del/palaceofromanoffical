@@ -21,6 +21,7 @@ type FlatItem = {
 const FLAT_LEFT: FlatItem[] = [
   { to: "/shop", label: "Shop" },
   { to: "/collections/$handle", params: { handle: "new-arrivals" }, label: "New Arrivals" },
+  { to: "/limited-finds", label: "Limited Finds", accent: true },
 ];
 const FLAT_RIGHT: FlatItem[] = [
   { to: "/collections/$handle", params: { handle: "best-sellers" }, label: "Best Sellers" },

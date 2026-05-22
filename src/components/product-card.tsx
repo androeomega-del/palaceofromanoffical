@@ -51,6 +51,9 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
 
   // Viewport impression — fire once per mount when ≥50% of the card is
   // visible for 600ms. Implicit signal: "shopper actually saw this card".
+  // When the card carries a scarcity tier, also fire `scarcity_view` so we
+  // can measure urgency-badge conversion in the admin panel.
+  const hasScarcity = scarcity.tier !== "none" && scarcity.tier !== "soldOut";
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined") return;
     const el = cardRef.current;
@@ -65,6 +68,9 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
               if (impressionFired.current) return;
               impressionFired.current = true;
               track({ handle: p.handle, event: "impression", vendor: p.vendor, productType: p.productType });
+              if (hasScarcity) {
+                track({ handle: p.handle, event: "scarcity_view", vendor: p.vendor, productType: p.productType });
+              }
               observer.disconnect();
             }, 600);
           } else if (dwellTimer) {
@@ -80,10 +86,13 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
       if (dwellTimer) clearTimeout(dwellTimer);
       observer.disconnect();
     };
-  }, [p.handle, p.vendor, p.productType, track]);
+  }, [p.handle, p.vendor, p.productType, track, hasScarcity]);
 
   const onCardClick = () => {
     track({ handle: p.handle, event: "click", ...meta });
+    if (hasScarcity) {
+      track({ handle: p.handle, event: "scarcity_click", ...meta });
+    }
   };
 
   const onCardEnter = () => {
@@ -134,6 +143,9 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
       return;
     }
     track({ handle: p.handle, event: "cart", ...meta });
+    if (hasScarcity) {
+      track({ handle: p.handle, event: "scarcity_cart", ...meta });
+    }
     openDrawer();
     toast.success(`${p.title} — added to bag`);
   };

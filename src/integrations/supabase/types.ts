@@ -604,6 +604,57 @@ export type Database = {
         }
         Relationships: []
       }
+      product_reviews: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          author_email: string
+          author_name: string
+          body: string
+          created_at: string
+          id: string
+          order_id: string | null
+          product_handle: string
+          rating: number
+          status: string
+          title: string | null
+          updated_at: string
+          verified_purchase: boolean
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          author_email: string
+          author_name: string
+          body: string
+          created_at?: string
+          id?: string
+          order_id?: string | null
+          product_handle: string
+          rating: number
+          status?: string
+          title?: string | null
+          updated_at?: string
+          verified_purchase?: boolean
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          author_email?: string
+          author_name?: string
+          body?: string
+          created_at?: string
+          id?: string
+          order_id?: string | null
+          product_handle?: string
+          rating?: number
+          status?: string
+          title?: string | null
+          updated_at?: string
+          verified_purchase?: boolean
+        }
+        Relationships: []
+      }
       search_queries: {
         Row: {
           created_at: string
