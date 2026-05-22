@@ -40,9 +40,16 @@ export type RecommendationsResult = {
 export const fetchPersonalizedFeed = createServerFn({ method: "POST" })
   .inputValidator((i: unknown) => Input.parse(i))
   .handler(async ({ data }): Promise<RecommendationsResult> => {
+    // Wishlist + recently-viewed are explicit; interactions are implicit
+    // (clicks, hovers, cart adds). Wishlist weighs heaviest, then recent,
+    // then interaction signals — preserve that order when de-duping.
     const seedHandles = Array.from(
-      new Set([...data.wishlistHandles, ...data.recentHandles]),
-    ).slice(0, 12);
+      new Set([
+        ...data.wishlistHandles,
+        ...data.recentHandles,
+        ...data.interactionHandles,
+      ]),
+    ).slice(0, 14);
 
     if (seedHandles.length === 0) {
       // Cold-start fallback: return best sellers from the curated 100.
