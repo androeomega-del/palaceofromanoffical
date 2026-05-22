@@ -142,8 +142,9 @@ export const Route = createFileRoute("/api/public/hooks/sync-collection-images")
         try {
           collections = await fetchAllCollections();
         } catch (e) {
+          console.error("[sync-collection-images] Shopify fetch failed:", (e as Error).message);
           return Response.json(
-            { ok: false, error: `Shopify fetch failed: ${(e as Error).message}` },
+            { ok: false, error: "Upstream fetch failed" },
             { status: 502 }
           );
         }
@@ -204,7 +205,8 @@ export const Route = createFileRoute("/api/public/hooks/sync-collection-images")
             });
             result.generated++;
           } catch (e) {
-            result.errors.push({ handle: c.handle, error: (e as Error).message });
+            console.error(`[sync-collection-images] failed for ${c.handle}:`, (e as Error).message);
+            result.errors.push({ handle: c.handle, error: "Internal error" });
           }
         }
 

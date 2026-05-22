@@ -194,7 +194,7 @@ export const Route = createFileRoute("/api/public/hooks/dispatch-cart-recovery")
 
         if (error) {
           console.error("[cart-recovery] query failed:", error.message);
-          return new Response(JSON.stringify({ ok: false, error: error.message }), {
+          return new Response(JSON.stringify({ ok: false, error: "Internal error" }), {
             status: 500,
             headers: { "Content-Type": "application/json" },
           });

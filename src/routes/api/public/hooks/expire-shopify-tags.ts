@@ -67,7 +67,8 @@ export const Route = createFileRoute('/api/public/hooks/expire-shopify-tags')({
           .limit(1000);
 
         if (error) {
-          return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+          console.error('[expire-shopify-tags] query failed:', error.message);
+          return new Response(JSON.stringify({ error: 'Internal error' }), { status: 500 });
         }
         if (!expired || expired.length === 0) {
           return new Response(JSON.stringify({ processed: 0 }), {
