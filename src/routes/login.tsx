@@ -9,7 +9,7 @@ import { Card } from "@/components/ui/card";
 
 export const Route = createFileRoute("/login")({
   validateSearch: (search: Record<string, unknown>) => ({
-    redirect: (search.redirect as string) || "/admin",
+    redirect: (search.redirect as string) || "/admin/",
   }),
   component: LoginPage,
   head: () => ({
@@ -38,7 +38,7 @@ function LoginPage() {
         const { error: signUpError } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: window.location.origin + "/admin" },
+          options: { emailRedirectTo: window.location.origin + "/admin/" },
         });
         if (signUpError) throw signUpError;
       } else {
