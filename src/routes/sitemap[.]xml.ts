@@ -5,6 +5,7 @@ import {
   fetchCollections,
 } from "@/lib/shopify";
 import { SITE_URL } from "@/lib/seo";
+import { canonicalCollectionHandle } from "@/lib/collection-canonical";
 
 // Static, public, indexable routes. Auth flows, cart, checkout, account and
 // API routes are intentionally omitted.
