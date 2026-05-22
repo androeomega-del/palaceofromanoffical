@@ -271,6 +271,26 @@ function GrowthOsPage() {
           </p>
         </header>
 
+        {/* Tab strip */}
+        <div className="mb-8 flex flex-wrap gap-1 border-b">
+          {[
+            { k: "studio" as const, label: "Studio", icon: Sparkles },
+            { k: "audit" as const, label: "Active Audit", icon: ShieldCheck },
+            { k: "ugc" as const, label: "UGC Ideas", icon: Lightbulb },
+          ].map(({ k, label, icon: Icon }) => (
+            <button
+              key={k}
+              onClick={() => setTab(k)}
+              className={`flex items-center gap-2 px-4 py-2 text-sm border-b-2 -mb-px transition-colors ${
+                tab === k ? "border-primary text-foreground font-medium" : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Icon className="h-4 w-4" /> {label}
+            </button>
+          ))}
+        </div>
+
+        {tab === "studio" && (<>
         {/* Budget */}
         <Card className="mb-8 p-5">
           <div className="flex items-center justify-between gap-4">
