@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { supabaseAdmin } from '@/integrations/supabase/client.server';
+import { checkWebhookSecret } from '@/lib/webhook-secret';
 
 const SHOP = 'mwuwqi-vy.myshopify.com';
 const API = '2025-07';
@@ -31,28 +32,8 @@ export const Route = createFileRoute('/api/public/hooks/expire-shopify-tags')({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        // Auth: require a server-only shared secret. Without this, anyone on
-        // the internet could trigger bulk Shopify tag removal and service-role
-        // DB reads.
-        const expected = process.env.SYNC_WEBHOOK_SECRET;
-        if (!expected) {
-          console.error('[expire-shopify-tags] SYNC_WEBHOOK_SECRET not configured');
-          return new Response('Server not configured', { status: 500 });
-        }
-        const provided =
-          request.headers.get('x-webhook-secret') ||
-          request.headers.get('authorization')?.replace(/^Bearer\s+/i, '') ||
-          '';
-        // Constant-time comparison
-        const a = new TextEncoder().encode(provided);
-        const b = new TextEncoder().encode(expected);
-        const okLen = a.length === b.length;
-        const len = Math.max(a.length, b.length);
-        let diff = a.length ^ b.length;
-        for (let i = 0; i < len; i++) diff |= (a[i] ?? 0) ^ (b[i] ?? 0);
-        if (!okLen || diff !== 0) {
-          return new Response('Unauthorized', { status: 401 });
-        }
+        const unauthorized = checkWebhookSecret(request);
+        if (unauthorized) return unauthorized;
 
         const token = process.env.SHOPIFY_ACCESS_TOKEN;
         if (!token) {
