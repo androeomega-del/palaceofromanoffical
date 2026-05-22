@@ -17,12 +17,9 @@ export type CallLlmOptions = {
 };
 
 function getKey(): string {
-  // process.env on Cloudflare Workers / node, import.meta.env on Vite dev.
-  const fromProcess =
-    typeof process !== "undefined" ? process.env?.EMERGENT_LLM_KEY : undefined;
-  const fromImportMeta = (import.meta as unknown as { env?: Record<string, string> })
-    ?.env?.EMERGENT_LLM_KEY;
-  const key = fromProcess || fromImportMeta;
+  // Server runtime secrets are exposed through process.env; avoid import.meta.env
+  // here because Vite's server module runner rejects dynamic import.meta access.
+  const key = typeof process !== "undefined" ? process.env?.EMERGENT_LLM_KEY : undefined;
   if (!key) throw new Error("EMERGENT_LLM_KEY missing — cannot call LLM proxy");
   return key;
 }
