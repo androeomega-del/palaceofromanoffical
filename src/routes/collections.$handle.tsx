@@ -1,4 +1,5 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, redirect } from "@tanstack/react-router";
+import { canonicalCollectionHandle } from "@/lib/collection-canonical";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 
