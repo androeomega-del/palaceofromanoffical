@@ -753,6 +753,23 @@ function ProductView({
           </section>
         )}
       </div>
+
+      {/* Sticky mobile Add-to-Bag — appears once inline ATC is scrolled past */}
+      <div
+        className={`md:hidden fixed inset-x-0 bottom-0 z-40 border-t border-[var(--studio-rule)] bg-[var(--studio-bg)]/95 backdrop-blur-md shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.18)] transition-transform duration-500 ${
+          showStickyBuy ? "translate-y-0" : "translate-y-full"
+        }`}
+        style={{ paddingBottom: "max(env(safe-area-inset-bottom), 0.5rem)" }}
+        aria-hidden={!showStickyBuy}
+      >
+        <div className="flex items-center gap-3 px-4 py-3">
+          {images[0]?.url && (
+            <img
+              src={images[0].url}
+              alt=""
+              className="w-12 h-14 object-cover flex-shrink-0"
+            />
+          )}
           <div className="min-w-0 flex-1">
             <p className="text-[10px] uppercase tracking-[0.2em] text-[var(--studio-bronze)] font-semibold truncate">
               {product.vendor}
