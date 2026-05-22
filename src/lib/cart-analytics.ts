@@ -48,9 +48,7 @@ export function trackCartEvent(p: TrackPayload): void {
 
   // Fire and forget — never block UX, never throw
   try {
-    supabase
-      .from("cart_events")
-      .insert(row)
+    Promise.resolve(supabase.from("cart_events").insert(row))
       .then(({ error }) => {
         if (error) console.debug("[cart-analytics] insert failed:", error.message);
       })
