@@ -724,24 +724,35 @@ function ProductView({
             </div>
           </section>
         )}
-      </div>
 
-      {/* Sticky mobile Add-to-Bag — appears once inline ATC is scrolled past */}
-      <div
-        className={`md:hidden fixed inset-x-0 bottom-0 z-40 border-t border-[var(--studio-rule)] bg-[var(--studio-bg)]/95 backdrop-blur-md shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.18)] transition-transform duration-500 ${
-          showStickyBuy ? "translate-y-0" : "translate-y-full"
-        }`}
-        style={{ paddingBottom: "max(env(safe-area-inset-bottom), 0.5rem)" }}
-        aria-hidden={!showStickyBuy}
-      >
-        <div className="flex items-center gap-3 px-4 py-3">
-          {images[0]?.url && (
-            <img
-              src={images[0].url}
-              alt=""
-              className="w-12 h-14 object-cover flex-shrink-0"
-            />
-          )}
+        {/* ===== Style It With — cross-house cross-sell rail ===== */}
+        {styleItWith.length > 0 && (
+          <section className="max-w-7xl mx-auto mt-32 pt-20 border-t border-[var(--studio-rule)]">
+            <div className="flex items-end justify-between mb-10">
+              <div className="space-y-3">
+                <p className="text-[10px] tracking-[0.32em] uppercase text-[var(--studio-bronze)] font-semibold">
+                  Complete the Look
+                </p>
+                <h2 className="font-serif text-3xl md:text-4xl">Style It With</h2>
+              </div>
+            </div>
+            <div
+              className="flex gap-5 md:gap-6 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-4 -mx-6 px-6"
+              role="region"
+              aria-label="Style it with — recommended pieces"
+            >
+              {styleItWith.map((e) => (
+                <div
+                  key={e.node.id}
+                  className="snap-start flex-shrink-0 w-[68%] sm:w-[42%] md:w-[28%] lg:w-[22%]"
+                >
+                  <ProductCard product={e} />
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
           <div className="min-w-0 flex-1">
             <p className="text-[10px] uppercase tracking-[0.2em] text-[var(--studio-bronze)] font-semibold truncate">
               {product.vendor}
