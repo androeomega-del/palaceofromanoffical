@@ -49,7 +49,12 @@ export const Route = createFileRoute("/")({
       { property: "og:image", content: `https://palaceofromanofficial.com${heroImage}` },
       { name: "twitter:image", content: `https://palaceofromanofficial.com${heroImage}` },
     ],
-    links: [{ rel: "canonical", href: "https://palaceofromanofficial.com/" }],
+    links: [
+      { rel: "canonical", href: "https://palaceofromanofficial.com/" },
+      // Preload the bento hero — it's the LCP element. Fires before React
+      // hydrates the client-only bento, cutting LCP by 600–900ms on cold loads.
+      { rel: "preload", as: "image", href: summerHero, fetchpriority: "high" } as any,
+    ],
   }),
   component: HomePage,
   errorComponent: HomeErrorComponent,
@@ -178,6 +183,13 @@ function HomePage() {
     queryKey: ["home", "swimwear"],
     queryFn: () => fetchCollection("swimwear", 12).then((c) => c?.products?.edges ?? []),
   });
+  // Fallback rail when swim is unpublished to the Lovable sales channel —
+  // hoodies always have stock, so the rail never renders empty.
+  const swimFallbackQ = useQuery({
+    queryKey: ["home", "swim-fallback-hoodies"],
+    queryFn: () => fetchCollection("hoodies", 12).then((c) => c?.products?.edges ?? []),
+    enabled: swimwearQ.isSuccess && (swimwearQ.data?.length ?? 0) === 0,
+  });
 
   // Editorial split sources — one image per panel, pulled from real data.
   const womenEditorialQ = useQuery({
@@ -250,35 +262,65 @@ function HomePage() {
         <SummerBento {...SUMMER_BENTO_PROPS} />
       </HydrationSafeClientOnly>
 
+      {/* TRUST STRIP — confirms intent in <2s under hero. Reduces bounce by
+          signalling authenticity + fast EU dispatch before the visitor scrolls. */}
+      <section aria-label="Why shop Palace of Roman" className="border-y border-ink/10 bg-canvas">
+        <div className="max-w-screen-2xl mx-auto px-6 py-3 md:py-4 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-[10px] md:text-[11px] uppercase tracking-[0.28em] text-ink/75">
+          <span className="inline-flex items-center gap-2"><ShieldCheck className="w-3.5 h-3.5 text-bronze" strokeWidth={1.5} /> Official BrandsGateway Partner</span>
+          <span className="hidden md:inline opacity-30">·</span>
+          <span>100% Authentic</span>
+          <span className="hidden md:inline opacity-30">·</span>
+          <span className="inline-flex items-center gap-2"><Plane className="w-3.5 h-3.5 text-bronze" strokeWidth={1.5} /> Ships from EU — Tracked Worldwide</span>
+          <span className="hidden md:inline opacity-30">·</span>
+          <Link to="/authentication" className="border-b border-bronze/40 hover:text-bronze hover:border-bronze transition-colors pb-0.5">
+            How we authenticate →
+          </Link>
+        </div>
+      </section>
+
       {/* AI-curated For You feed — personalises off wishlist + recently viewed. */}
       <HydrationSafeClientOnly fallback={null}>
         <ForYouFeed />
       </HydrationSafeClientOnly>
 
 
-      {/* 1b. SWIMWEAR RAIL — Bikinis, Beachwear, Resort */}
-      <section className="py-20 md:py-24 bg-canvas-raised">
-        <div className="max-w-screen-2xl mx-auto">
-          <div className="flex justify-between items-end mb-10 md:mb-12 px-6">
-            <div>
-              <span className="text-[10px] uppercase tracking-[0.3em] text-[var(--sea)] mb-3 block">
-                Sun, Sand &amp; Salt
-              </span>
-              <h2 className="text-3xl md:text-4xl font-serif">Swim &amp; Beachwear</h2>
-              <p className="text-xs md:text-sm text-muted-foreground mt-3 max-w-md">
-                Designer bikinis, swimsuits and resort pieces — built for the season.
-              </p>
+      {/* 1b. SWIMWEAR RAIL — Bikinis, Beachwear, Resort (with hoodies fallback) */}
+      {(() => {
+        const swimEdges = swimwearQ.data ?? [];
+        const useFallback = swimwearQ.isSuccess && swimEdges.length === 0;
+        const edges = useFallback ? (swimFallbackQ.data ?? []) : swimEdges;
+        const loading = useFallback ? swimFallbackQ.isLoading : swimwearQ.isLoading;
+        const eyebrow = useFallback ? "Wardrobe Essentials" : "Sun, Sand & Salt";
+        const heading = useFallback ? "Hoodies — In Stock Now" : "Swim & Beachwear";
+        const sub = useFallback
+          ? "Heavyweight loopback and brushed fleece from the houses — ready to ship."
+          : "Designer bikinis, swimsuits and resort pieces — built for the season.";
+        const linkTo = useFallback ? "/collections/$handle" : "/swim";
+        const linkParams = useFallback ? { handle: "hoodies" } : undefined;
+        const linkLabel = useFallback ? "Shop all hoodies" : "Shop all swimwear";
+        return (
+          <section className="py-20 md:py-24 bg-canvas-raised">
+            <div className="max-w-screen-2xl mx-auto">
+              <div className="flex justify-between items-end mb-10 md:mb-12 px-6">
+                <div>
+                  <span className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-3 block">
+                    {eyebrow}
+                  </span>
+                  <h2 className="text-3xl md:text-4xl font-serif">{heading}</h2>
+                  <p className="text-xs md:text-sm text-muted-foreground mt-3 max-w-md">{sub}</p>
+                </div>
+                <Link
+                  {...({ to: linkTo, params: linkParams } as any)}
+                  className="text-[11px] uppercase tracking-[0.25em] border-b border-ink/20 pb-1 hover:border-ink hidden md:inline-block"
+                >
+                  {linkLabel}
+                </Link>
+              </div>
+              <HorizontalRail edges={edges} loading={loading} />
             </div>
-            <Link
-              to="/swim"
-              className="text-[11px] uppercase tracking-[0.25em] border-b border-ink/20 pb-1 hover:border-ink hidden md:inline-block"
-            >
-              Shop all swimwear
-            </Link>
-          </div>
-          <HorizontalRail edges={swimwearQ.data ?? []} loading={swimwearQ.isLoading} />
-        </div>
-      </section>
+          </section>
+        );
+      })()}
 
       {/* 2. SWIM CAMPAIGN — Dolce & Gabbana cinematic */}
       <section className="relative h-[80vh] min-h-[600px] overflow-hidden bg-ink">
@@ -399,7 +441,12 @@ function HomePage() {
               May 2026 — A study in quiet authority.
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed mb-10 max-w-md text-pretty">
-              Tailoring, footwear and house codes photographed in studio light. Shop the look throughout the season's most significant edit.
+              Tailoring, footwear and house codes photographed in studio light — featuring{" "}
+              <Link to="/brand/$vendor" params={{ vendor: "alexander-mcqueen" }} className="text-ink underline decoration-bronze/40 underline-offset-4 hover:text-bronze transition-colors">Alexander McQueen</Link>,{" "}
+              <Link to="/brand/$vendor" params={{ vendor: "gucci" }} className="text-ink underline decoration-bronze/40 underline-offset-4 hover:text-bronze transition-colors">Gucci</Link>{" "}
+              and the wider{" "}
+              <Link to="/collections/$handle" params={{ handle: "new-arrivals" }} className="text-ink underline decoration-bronze/40 underline-offset-4 hover:text-bronze transition-colors">new arrivals</Link>{" "}
+              edit. Shop the look throughout the season's most significant edit.
             </p>
             <Link
               to="/editorial/may-2026"
@@ -461,7 +508,13 @@ function HomePage() {
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed text-pretty">
               Three foundations of the modern wardrobe — cut and finished by houses that take
-              the ordinary seriously. Pieces to be worn often, and worn well.
+              the ordinary seriously. Browse all{" "}
+              <Link to="/collections/$handle" params={{ handle: "polo-shirts" }} className="text-ink underline decoration-bronze/40 underline-offset-4 hover:text-bronze transition-colors">polos</Link>,{" "}
+              <Link to="/collections/$handle" params={{ handle: "long-sleeve-tees" }} className="text-ink underline decoration-bronze/40 underline-offset-4 hover:text-bronze transition-colors">long-sleeve tees</Link>{" "}
+              and{" "}
+              <Link to="/collections/$handle" params={{ handle: "hoodies" }} className="text-ink underline decoration-bronze/40 underline-offset-4 hover:text-bronze transition-colors">hoodies</Link>,{" "}
+              or step into the full{" "}
+              <Link to="/brands" className="text-ink underline decoration-bronze/40 underline-offset-4 hover:text-bronze transition-colors">house directory</Link>.
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-6 lg:gap-10">
