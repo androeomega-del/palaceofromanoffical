@@ -46,7 +46,9 @@ async function getRecommendations(): Promise<
 export const Route = createFileRoute("/api/public/cron/win-back-emails")({
   server: {
     handlers: {
-      POST: async () => {
+      POST: async ({ request }) => {
+        const unauthorized = checkWebhookSecret(request);
+        if (unauthorized) return unauthorized;
         const cutoff = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString();
 
         // 1. Get all thank-you emails older than cutoff.
