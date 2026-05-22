@@ -16,7 +16,7 @@ export default defineConfig({
       ),
       "process.env.SUPABASE_PUBLISHABLE_KEY": JSON.stringify(
         process.env.SUPABASE_PUBLISHABLE_KEY ??
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInJlZiI6ImRvZm1zeGloamxvaGlvdXZ4anN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxNjA0MjMsImV4cCI6MjA5NDczNjQyM30.szW2LSreyqCf6p-EdoFkr04nIAJfoV86Kv8tUIg4YlQ",
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRvZm1zeGloamxvaGlvdXZ4anN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxNjA0MjMsImV4cCI6MjA5NDczNjQyM30.szW2LSreyqCf6p-EdoFkr04nIAJfoV86Kv8tUIg4YlQ",
       ),
     },
   },
