@@ -71,6 +71,39 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_usage_ledger: {
+        Row: {
+          cost_cents: number
+          created_at: string
+          id: string
+          input_tokens: number
+          metadata: Json
+          model: string
+          module: string
+          output_tokens: number
+        }
+        Insert: {
+          cost_cents?: number
+          created_at?: string
+          id?: string
+          input_tokens?: number
+          metadata?: Json
+          model: string
+          module: string
+          output_tokens?: number
+        }
+        Update: {
+          cost_cents?: number
+          created_at?: string
+          id?: string
+          input_tokens?: number
+          metadata?: Json
+          model?: string
+          module?: string
+          output_tokens?: number
+        }
+        Relationships: []
+      }
       bg_products: {
         Row: {
           brand: string | null
@@ -304,6 +337,63 @@ export type Database = {
         }
         Relationships: []
       }
+      content_queue: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          channel: string
+          cost_cents: number
+          created_at: string
+          error_message: string | null
+          external_id: string | null
+          id: string
+          kind: string
+          parent_id: string | null
+          payload: Json
+          published_at: string | null
+          scheduled_for: string | null
+          status: string
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          channel: string
+          cost_cents?: number
+          created_at?: string
+          error_message?: string | null
+          external_id?: string | null
+          id?: string
+          kind: string
+          parent_id?: string | null
+          payload?: Json
+          published_at?: string | null
+          scheduled_for?: string | null
+          status?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          channel?: string
+          cost_cents?: number
+          created_at?: string
+          error_message?: string | null
+          external_id?: string | null
+          id?: string
+          kind?: string
+          parent_id?: string | null
+          payload?: Json
+          published_at?: string | null
+          scheduled_for?: string | null
+          status?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       email_dispatch_log: {
         Row: {
           cart_id: string | null
@@ -334,6 +424,48 @@ export type Database = {
           recipient_email?: string
           status?: string
           template_name?: string
+        }
+        Relationships: []
+      }
+      growth_jobs: {
+        Row: {
+          attempts: number
+          created_at: string
+          id: string
+          job_type: string
+          last_error: string | null
+          max_attempts: number
+          payload: Json
+          result: Json | null
+          run_after: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          id?: string
+          job_type: string
+          last_error?: string | null
+          max_attempts?: number
+          payload?: Json
+          result?: Json | null
+          run_after?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          id?: string
+          job_type?: string
+          last_error?: string | null
+          max_attempts?: number
+          payload?: Json
+          result?: Json | null
+          run_after?: string
+          status?: string
+          updated_at?: string
         }
         Relationships: []
       }
