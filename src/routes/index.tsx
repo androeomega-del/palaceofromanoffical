@@ -540,27 +540,78 @@ function HomePage() {
         </div>
       </section>
 
-      {/* 7. TRUST / WHY SHOP WITH US */}
+      {/* 6c. THE HOUSES — tiered directory of Top 100 luxury maisons */}
+      <section className="py-28 border-t border-ink/5">
+        <div className="max-w-screen-2xl mx-auto px-6">
+          <div className="text-center mb-16 max-w-2xl mx-auto">
+            <span className="text-[10px] uppercase tracking-[0.32em] text-bronze mb-4 block">The Houses</span>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif leading-tight mb-5 text-balance">
+              The world's most significant maisons, under one roof.
+            </h2>
+            <p className="text-sm text-muted-foreground leading-relaxed text-pretty">
+              A living index of the houses we represent — from the legacy giants to the
+              modern vanguard. Tap a name to enter the maison.
+            </p>
+          </div>
+          <div className="space-y-12">
+            {LUXURY_TIERS.map((tier) => (
+              <div key={tier.id} className="grid grid-cols-12 gap-6 border-t border-ink/10 pt-8">
+                <div className="col-span-12 md:col-span-3">
+                  <p className="text-[10px] uppercase tracking-[0.32em] text-bronze mb-2">
+                    {tier.id.replace("tier-", "Tier ")}
+                  </p>
+                  <p className="font-serif text-xl md:text-2xl leading-tight">{tier.label}</p>
+                </div>
+                <div className="col-span-12 md:col-span-9 flex flex-wrap gap-x-6 gap-y-3">
+                  {tier.brands.map((b) => (
+                    <Link
+                      key={b.slug}
+                      to="/brand/$vendor"
+                      params={{ vendor: b.slug }}
+                      className="text-xs md:text-sm tracking-[0.18em] uppercase opacity-70 hover:opacity-100 hover:text-bronze transition-all"
+                    >
+                      {b.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="text-center mt-14">
+            <Link
+              to="/brands"
+              className="text-[11px] uppercase tracking-[0.28em] border-b border-ink pb-1 hover:text-bronze hover:border-bronze transition-colors"
+            >
+              Browse the full directory →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* 7. TRUST / WHY SHOP WITH US — four pillars with icons */}
       <section className="py-24 border-t border-ink/5 bg-canvas-raised">
         <div className="max-w-screen-2xl mx-auto px-6">
-          <div className="text-center mb-14">
-            <span className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-4 block">The House</span>
+          <div className="text-center mb-16">
+            <span className="text-[10px] uppercase tracking-[0.32em] text-bronze mb-4 block">The House</span>
             <h2 className="text-3xl md:text-4xl font-serif">Why shop with Palace of Roman</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-10">
             {[
-              { title: "100% Authentic", body: "Official BrandsGateway partner — every piece authorised and sourced from the brands or their authorised distributors." },
-              { title: "Tracked Worldwide", body: "Complimentary DHL or FedEx tracked shipping on orders above $1,200." },
-              { title: "Considered Returns", body: "14-day returns on full-priced merchandise from the day your parcel is delivered." },
-              { title: "Email Concierge", body: "A single line for sourcing requests, sizing and styling — same-day reply by email." },
+              { Icon: ShieldCheck, title: "100% Authentic Guaranteed", body: "Official BrandsGateway partner — every piece authorised and sourced from the brands or their authorised distributors." },
+              { Icon: Plane, title: "Tracked Worldwide Shipping", body: "Complimentary DHL or FedEx tracked dispatch on orders above $1,200, with full traceability door to door." },
+              { Icon: RotateCcw, title: "Considered Returns", body: "14-day returns on full-priced pieces from the day your parcel is delivered — quietly handled, no questions." },
+              { Icon: Sparkles, title: "VIP Email Concierge", body: "A direct line for sourcing requests, sizing and styling — same-day reply from a member of the house." },
             ].map((b) => (
               <div key={b.title} className="text-center md:text-left">
-                <h3 className="font-serif text-lg md:text-xl mb-3">{b.title}</h3>
+                <div className="mb-5 md:mb-6 inline-flex items-center justify-center w-12 h-12 border border-bronze/40 text-bronze">
+                  <b.Icon className="w-5 h-5" strokeWidth={1.25} />
+                </div>
+                <h3 className="font-serif text-lg md:text-xl mb-3 leading-tight">{b.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{b.body}</p>
               </div>
             ))}
           </div>
-          <div className="flex flex-wrap justify-center gap-8 md:gap-10 mt-14 text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+          <div className="flex flex-wrap justify-center gap-8 md:gap-10 mt-16 text-[10px] uppercase tracking-[0.32em] text-muted-foreground">
             <Link to="/authentication" className="hover:text-ink transition-colors">Authentication →</Link>
             <Link to="/shipping-returns" className="hover:text-ink transition-colors">Shipping &amp; Returns →</Link>
             <Link to="/contact" className="hover:text-ink transition-colors">Contact Concierge →</Link>
