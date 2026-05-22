@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { fetchProductsPage } from "@/lib/shopify";
 import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
 import { img } from "@/lib/editorial-library";
+import { isAllowedLuxuryBrand } from "@/lib/nav-config";
 
 const BRANDS_TITLE = "Brands — Palace of Roman";
 const BRANDS_DESC =
