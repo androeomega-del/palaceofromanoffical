@@ -3,6 +3,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Search, X, Loader2 } from "lucide-react";
 import { fetchCollections, fetchProductsPage, formatPrice, type ShopifyProduct, type ShopifyCollection } from "@/lib/shopify";
+import { TRENDING_BRANDS } from "@/lib/luxury-brands";
 
 type Props = { open: boolean; onOpenChange: (v: boolean) => void };
 
@@ -107,9 +108,36 @@ export function SearchOverlay({ open, onOpenChange }: Props) {
 
           <div className="mt-6 max-h-[70vh] overflow-y-auto">
             {!debounced && (
-              <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground py-6">
-                Type at least two characters to search.
-              </p>
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-5">
+                  Trending Brands
+                </p>
+                <div className="flex flex-wrap gap-2.5 mb-10">
+                  {TRENDING_BRANDS.map((b) => (
+                    <Link
+                      key={b.slug}
+                      to="/brand/$vendor"
+                      params={{ vendor: b.slug }}
+                      onClick={() => onOpenChange(false)}
+                      className="px-4 py-2 border border-ink/15 text-[11px] uppercase tracking-[0.2em] hover:border-ink hover:bg-ink hover:text-canvas transition-colors"
+                    >
+                      {b.name}
+                    </Link>
+                  ))}
+                </div>
+                <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-3">
+                  Quick Edits
+                </p>
+                <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+                  <Link onClick={() => onOpenChange(false)} to="/collections/$handle" params={{ handle: "new-arrivals" }} className="hover:text-bronze transition-colors">New Arrivals</Link>
+                  <Link onClick={() => onOpenChange(false)} to="/collections/$handle" params={{ handle: "best-sellers" }} className="hover:text-bronze transition-colors">Best Sellers</Link>
+                  <Link onClick={() => onOpenChange(false)} to="/swim" className="hover:text-bronze transition-colors">Swim & Resort</Link>
+                  <Link onClick={() => onOpenChange(false)} to="/brands" className="hover:text-bronze transition-colors">All Designers</Link>
+                </div>
+                <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mt-10">
+                  Or type at least two characters to search the catalog.
+                </p>
+              </div>
             )}
 
             {debounced && (
