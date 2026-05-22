@@ -315,3 +315,129 @@ function ModuleTile({
     </Card>
   );
 }
+
+function PreviewBody({ item, onClose }: { item: Record<string, unknown>; onClose: () => void }) {
+  const title = (item.title as string) ?? "Untitled";
+  const kind = (item.kind as string) ?? "";
+  const channel = (item.channel as string) ?? "";
+  const payload = (item.payload as Record<string, unknown>) ?? {};
+  const productUrl = payload.productUrl as string | undefined;
+  const image = payload.image as string | null | undefined;
+
+  return (
+    <>
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <h3 className="truncate text-xl font-serif">{title}</h3>
+          <p className="mt-0.5 text-xs uppercase tracking-wider text-muted-foreground">{kind} → {channel}</p>
+        </div>
+        <Button size="sm" variant="ghost" onClick={onClose}>Close</Button>
+      </div>
+
+      {image && (
+        <img src={image} alt="" className="mb-4 max-h-56 w-auto rounded-md border object-contain" />
+      )}
+
+      {kind === "editorial" && (
+        <article
+          className="prose prose-sm max-w-none prose-headings:font-serif prose-a:text-primary"
+          dangerouslySetInnerHTML={{ __html: (payload.bodyHtml as string) ?? "<p>No body</p>" }}
+        />
+      )}
+
+      {kind === "social_post" && <InstagramPreview payload={payload} productUrl={productUrl} />}
+      {kind === "social_pin" && <PinterestPreview payload={payload} productUrl={productUrl} />}
+      {kind === "social_thread" && <XThreadPreview payload={payload} />}
+      {kind === "social_hook" && <TikTokPreview payload={payload} />}
+    </>
+  );
+}
+
+function CopyBtn({ text, label = "Copy" }: { text: string; label?: string }) {
+  return (
+    <Button size="sm" variant="outline" onClick={() => copy(text, `${label} copied`)}>
+      <Copy className="mr-1 h-3 w-3" /> {label}
+    </Button>
+  );
+}
+
+function InstagramPreview({ payload, productUrl }: { payload: Record<string, unknown>; productUrl?: string }) {
+  const caption = (payload.caption as string) ?? "";
+  const slides = (payload.slides as Array<{ headline: string; body: string }>) ?? [];
+  const tags = (payload.hashtags as string[]) ?? [];
+  const fullCaption = `${caption}\n\n${tags.join(" ")}${productUrl ? `\n\n${productUrl}` : ""}`;
+  return (
+    <div className="space-y-5 text-sm">
+      <section>
+        <div className="mb-2 flex items-center justify-between"><h4 className="font-medium">Carousel slides</h4></div>
+        <ol className="space-y-2">
+          {slides.map((s, i) => (
+            <li key={i} className="rounded-md border bg-muted/40 p-3">
+              <p className="text-xs uppercase tracking-wider text-muted-foreground">Slide {i + 1}</p>
+              <p className="mt-1 font-serif text-base">{s.headline}</p>
+              <p className="text-muted-foreground">{s.body}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+      <section>
+        <div className="mb-2 flex items-center justify-between"><h4 className="font-medium">Caption</h4><CopyBtn text={fullCaption} label="Full caption" /></div>
+        <pre className="whitespace-pre-wrap rounded-md border bg-muted/40 p-3 font-sans">{caption}</pre>
+      </section>
+      <section>
+        <div className="mb-2 flex items-center justify-between"><h4 className="font-medium">Hashtags</h4><CopyBtn text={tags.join(" ")} label="Tags" /></div>
+        <p className="text-muted-foreground">{tags.join(" ")}</p>
+      </section>
+    </div>
+  );
+}
+
+function PinterestPreview({ payload, productUrl }: { payload: Record<string, unknown>; productUrl?: string }) {
+  const title = (payload.title as string) ?? "";
+  const description = (payload.description as string) ?? "";
+  const tags = (payload.hashtags as string[]) ?? [];
+  const full = `${description}\n\n${tags.join(" ")}${productUrl ? `\n${productUrl}` : ""}`;
+  return (
+    <div className="space-y-4 text-sm">
+      <section><div className="mb-1 flex items-center justify-between"><h4 className="font-medium">Pin title</h4><CopyBtn text={title} label="Title" /></div><p className="rounded-md border bg-muted/40 p-3">{title}</p></section>
+      <section><div className="mb-1 flex items-center justify-between"><h4 className="font-medium">Description</h4><CopyBtn text={full} label="Description" /></div><pre className="whitespace-pre-wrap rounded-md border bg-muted/40 p-3 font-sans">{description}</pre></section>
+      <section><h4 className="mb-1 font-medium">Hashtags</h4><p className="text-muted-foreground">{tags.join(" ")}</p></section>
+      {productUrl && <p className="text-xs text-muted-foreground">Destination URL: <a className="underline" href={productUrl} target="_blank" rel="noreferrer">{productUrl}</a></p>}
+    </div>
+  );
+}
+
+function XThreadPreview({ payload }: { payload: Record<string, unknown> }) {
+  const tweets = (payload.tweets as string[]) ?? [];
+  return (
+    <div className="space-y-3 text-sm">
+      <div className="flex items-center justify-between"><h4 className="font-medium">Thread ({tweets.length})</h4><CopyBtn text={tweets.join("\n\n---\n\n")} label="Full thread" /></div>
+      <ol className="space-y-2">
+        {tweets.map((t, i) => (
+          <li key={i} className="rounded-md border bg-muted/40 p-3">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-xs uppercase tracking-wider text-muted-foreground">{i + 1}/{tweets.length} · {t.length} chars</p>
+              <CopyBtn text={t} label="Tweet" />
+            </div>
+            <p className="mt-1 whitespace-pre-wrap">{t}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
+function TikTokPreview({ payload }: { payload: Record<string, unknown> }) {
+  const hooks = (payload.hooks as string[]) ?? [];
+  const audio = (payload.audioArchetypes as string[]) ?? [];
+  const outline = (payload.scriptOutline as string) ?? "";
+  return (
+    <div className="space-y-4 text-sm">
+      <section><div className="mb-1 flex items-center justify-between"><h4 className="font-medium">Hook bank</h4><CopyBtn text={hooks.map((h, i) => `${i + 1}. ${h}`).join("\n")} label="All hooks" /></div>
+        <ol className="space-y-1 list-decimal pl-5">{hooks.map((h, i) => <li key={i}>{h}</li>)}</ol>
+      </section>
+      <section><h4 className="mb-1 font-medium">Audio archetypes</h4><ul className="list-disc pl-5 text-muted-foreground">{audio.map((a, i) => <li key={i}>{a}</li>)}</ul></section>
+      <section><div className="mb-1 flex items-center justify-between"><h4 className="font-medium">Script outline</h4><CopyBtn text={outline} label="Outline" /></div><pre className="whitespace-pre-wrap rounded-md border bg-muted/40 p-3 font-sans">{outline}</pre></section>
+    </div>
+  );
+}
