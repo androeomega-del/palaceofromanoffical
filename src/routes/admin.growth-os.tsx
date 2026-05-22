@@ -208,7 +208,17 @@ function GrowthOsPage() {
               </Button>
             }
           />
-          <ModuleTile title="Social Pilot" desc="IG, Pinterest, X, TikTok" comingSoon />
+          <ModuleTile
+            active
+            title="Social Pilot"
+            desc="IG, Pinterest, X, TikTok pack from a random in-stock product"
+            action={
+              <Button size="sm" variant="outline" disabled={social.isPending} onClick={() => social.mutate()}>
+                {social.isPending ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Share2 className="mr-1.5 h-4 w-4" />}
+                Draft pack
+              </Button>
+            }
+          />
           <ModuleTile title="Lifecycle Autopilot" desc="Email + SMS flows" comingSoon />
           <ModuleTile title="UGC Studio" desc="HeyGen + image-to-video" comingSoon />
         </div>
