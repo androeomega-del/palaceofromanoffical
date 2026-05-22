@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Heart, Loader2, ShoppingBag, Zap } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { formatPrice, type ShopifyProduct } from "@/lib/shopify";
 import { useCartStore } from "@/stores/cart-store";
@@ -44,8 +44,43 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
   const [buyingNow, setBuyingNow] = useState(false);
   const track = useInteractionStore((s) => s.track);
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const cardRef = useRef<HTMLAnchorElement | null>(null);
+  const impressionFired = useRef(false);
 
   const meta = { vendor: p.vendor, productType: p.productType };
+
+  // Viewport impression — fire once per mount when ≥50% of the card is
+  // visible for 600ms. Implicit signal: "shopper actually saw this card".
+  useEffect(() => {
+    if (typeof IntersectionObserver === "undefined") return;
+    const el = cardRef.current;
+    if (!el) return;
+    let dwellTimer: ReturnType<typeof setTimeout> | null = null;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+            if (impressionFired.current || dwellTimer) continue;
+            dwellTimer = setTimeout(() => {
+              if (impressionFired.current) return;
+              impressionFired.current = true;
+              track({ handle: p.handle, event: "impression", vendor: p.vendor, productType: p.productType });
+              observer.disconnect();
+            }, 600);
+          } else if (dwellTimer) {
+            clearTimeout(dwellTimer);
+            dwellTimer = null;
+          }
+        }
+      },
+      { threshold: [0, 0.5, 1] },
+    );
+    observer.observe(el);
+    return () => {
+      if (dwellTimer) clearTimeout(dwellTimer);
+      observer.disconnect();
+    };
+  }, [p.handle, p.vendor, p.productType, track]);
 
   const onCardClick = () => {
     track({ handle: p.handle, event: "click", ...meta });
@@ -161,6 +196,7 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
 
   return (
     <Link
+      ref={cardRef}
       to="/product/$handle"
       params={{ handle: p.handle }}
       className="group block"
