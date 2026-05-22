@@ -11,11 +11,12 @@ import {
   getBudgetStatus,
   getQueueItem,
 } from "@/lib/growth-os.functions";
+import { generateSocialPack, approveSocialItem } from "@/lib/social-pilot.functions";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Sparkles, CheckCircle2, XCircle, Eye, Loader2, DollarSign, TrendingUp } from "lucide-react";
+import { Sparkles, CheckCircle2, XCircle, Eye, Loader2, DollarSign, TrendingUp, Share2, Copy } from "lucide-react";
 
 export const Route = createFileRoute("/admin/growth-os")({
   beforeLoad: async () => {
