@@ -219,6 +219,7 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
 
 
   return (
+    <>
     <Link
       ref={cardRef}
       to="/product/$handle"
@@ -347,5 +348,11 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
       <ShippingMeta vendor={p.vendor} handle={p.handle} variant="card" />
 
     </Link>
+    <QuickViewSheet
+      product={product}
+      open={quickViewOpen}
+      onOpenChange={setQuickViewOpen}
+    />
+    </>
   );
 }
