@@ -1,19 +1,26 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
+/**
+ * Default zip used when IP geolocation fails, the shopper is outside the US,
+ * or detection hasn't run yet. NYC (10001) is chosen because it produces a
+ * representative US delivery window (East Coast routing into JFK/EWR).
+ * Flagged as `autoDetected` so the UI shows the "Not you? Change" hint.
+ */
+export const DEFAULT_ZIP = "10001";
+
 interface LocationStore {
   zip: string | null;
-  /** True when the zip was set silently from IP geo, not by the shopper. */
+  /** True when the zip was set silently (IP geo or default), not by the shopper. */
   autoDetected: boolean;
   setZip: (zip: string, opts?: { auto?: boolean }) => void;
   clear: () => void;
 }
 
 /**
- * Shopper's saved US zip code — used to render delivery ETAs in the header
- * and on PDPs. Persisted to localStorage so it follows the shopper across
- * pages and sessions. Country is currently US-only (matches the zip-based
- * UI); other markets continue to use the inferred locale flow.
+ * Shopper's saved US zip code — used to render delivery ETAs in the header,
+ * on product cards, and on PDPs. Persisted to localStorage so it follows
+ * the shopper across pages and sessions.
  */
 export const useLocationStore = create<LocationStore>()(
   persist(
@@ -34,6 +41,18 @@ export const useLocationStore = create<LocationStore>()(
 /** Validate a 5-digit US zip code. */
 export function isValidUsZip(zip: string): boolean {
   return /^\d{5}$/.test(zip.trim());
+}
+
+/**
+ * Effective zip for delivery calculations — always returns a value so the
+ * UI never breaks. Returns the saved zip if present, otherwise the global
+ * {@link DEFAULT_ZIP}. Use this in any component that renders a delivery
+ * date; use the raw `zip` field only when you need to distinguish between
+ * "user set" vs "fallback".
+ */
+export function useEffectiveZip(): string {
+  const zip = useLocationStore((s) => s.zip);
+  return zip ?? DEFAULT_ZIP;
 }
 
 /**
