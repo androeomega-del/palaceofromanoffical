@@ -161,12 +161,13 @@ if (DRY_RUN) { console.log('\nDRY RUN — exiting before any API writes.'); proc
 
 // --- Shopify helpers ---
 async function shopify(path, init = {}) {
+  const token = await getAccessToken();
   const url = `https://${SHOP}/admin/api/${API}${path}`;
   for (let attempt = 0; attempt < 5; attempt++) {
     const res = await fetch(url, {
       ...init,
       headers: {
-        'X-Shopify-Access-Token': TOKEN,
+        'X-Shopify-Access-Token': token,
         'Content-Type': 'application/json',
         ...(init.headers || {}),
       },
