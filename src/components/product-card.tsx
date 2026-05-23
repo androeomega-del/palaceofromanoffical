@@ -3,6 +3,7 @@ import { Heart, Loader2, ShoppingBag, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { formatPrice, type ShopifyProduct } from "@/lib/shopify";
+import { cdnImage } from "@/lib/cdn-image";
 import { computeScarcitySignal } from "@/lib/scarcity-signal";
 import { ShippingMeta } from "@/components/shipping-meta";
 import { useCartStore } from "@/stores/cart-store";
