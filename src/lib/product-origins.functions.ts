@@ -15,7 +15,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { adminGraphql } from "@/lib/shopify-admin.server";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { requireAdmin } from "@/lib/admin-route-guard";
+import { requireAdmin } from "@/lib/admin-middleware";
 
 export type ProductOriginRow = {
   handle: string;
