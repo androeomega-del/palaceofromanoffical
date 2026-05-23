@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate, redirect } from "@tanstack/react-router";
 import { canonicalCollectionHandle } from "@/lib/collection-canonical";
 import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
-import { useMemo, useState, useEffect, useRef } from "react";
+import { useMemo, useState, useEffect, useRef, useCallback } from "react";
 import { useServerFn } from "@tanstack/react-start";
 
 import { fetchCollectionFiltered, fetchCollection, type StorefrontFilterValue } from "@/lib/shopify";
@@ -234,23 +234,38 @@ function CollectionPage() {
   const categoryCounts = categoryCountsQ.data?.counts ?? null;
 
   // IntersectionObserver sentinel — fetches the next cursor page as soon as
-  // the user scrolls within ~600px of the bottom. Continues until
+  // the user scrolls within ~800px of the bottom. Continues until
   // hasNextPage === false (Rule 3: zero artificial limits).
-  const sentinelRef = useRef<HTMLDivElement | null>(null);
-  useEffect(() => {
-    const el = sentinelRef.current;
-    if (!el || !q.hasNextPage) return;
+  //
+  // Implementation note: we use a *callback ref* (not useRef + useEffect) so
+  // the observer is attached the moment the sentinel DOM node mounts, and
+  // reads the latest query state via `qRef` to avoid stale-closure churn
+  // (the `q` object identity changes on every render, which previously made
+  // the effect tear down/rebuild the observer constantly — occasionally
+  // missing the intersection callback and capping the grid at the first 48).
+  const qRef = useRef(q);
+  qRef.current = q;
+  const ioRef = useRef<IntersectionObserver | null>(null);
+  const sentinelRef = useCallback((el: HTMLDivElement | null) => {
+    if (ioRef.current) {
+      ioRef.current.disconnect();
+      ioRef.current = null;
+    }
+    if (!el) return;
     const io = new IntersectionObserver(
       (entries) => {
-        if (entries[0]?.isIntersecting && q.hasNextPage && !q.isFetchingNextPage) {
-          q.fetchNextPage();
+        if (!entries[0]?.isIntersecting) return;
+        const cur = qRef.current;
+        if (cur.hasNextPage && !cur.isFetchingNextPage) {
+          cur.fetchNextPage();
         }
       },
-      { rootMargin: "600px 0px" },
+      { rootMargin: "800px 0px" },
     );
     io.observe(el);
-    return () => io.disconnect();
-  }, [q.hasNextPage, q.isFetchingNextPage, q.fetchNextPage]);
+    ioRef.current = io;
+  }, []);
+  useEffect(() => () => ioRef.current?.disconnect(), []);
 
   // When a category chip is active, auto-exhaust the cursor so client-
   // side bucketing surfaces every matching product across the entire
@@ -621,10 +636,12 @@ function CollectionPage() {
                     <ProductCard key={e.node.id} product={e} />
                   ))}
                 </div>
-                {/* IntersectionObserver sentinel — drives infinite scroll */}
-                <div ref={sentinelRef} aria-hidden className="h-px w-full" />
+                {/* IntersectionObserver sentinel — drives infinite scroll.
+                    Real height + min-h ensures the node is always layout-
+                    measurable so IO reliably reports intersection. */}
+                <div ref={sentinelRef} aria-hidden className="h-10 w-full mt-10" />
                 {(q.hasNextPage || q.isFetchingNextPage) && (
-                  <div className="mt-16 flex justify-center">
+                  <div className="mt-6 flex justify-center">
                     <span className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
                       Loading more…
                     </span>
