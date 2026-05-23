@@ -107,13 +107,11 @@ export function SearchOverlay({ open, onOpenChange }: Props) {
 
   const products = searchQ.data?.products ?? [];
   const collections = searchQ.data?.collections ?? [];
-  const pages = searchQ.data?.pages ?? [];
   const isEmpty =
     searchQ.isFetched &&
     !searchQ.isFetching &&
     products.length === 0 &&
-    collections.length === 0 &&
-    pages.length === 0;
+    collections.length === 0;
 
   // Log every settled search so the UGC recommender can surface high-intent
   // queries that returned nothing. Fire-and-forget; RLS allows anon inserts.
@@ -121,11 +119,11 @@ export function SearchOverlay({ open, onOpenChange }: Props) {
     if (!debounced || debounced.length < 2 || searchQ.isFetching || !searchQ.isFetched) return;
     void supabase.from("search_queries").insert({
       query: debounced.slice(0, 200),
-      result_count: products.length + collections.length + pages.length,
+      result_count: products.length + collections.length,
       page_path: typeof window !== "undefined" ? window.location.pathname.slice(0, 500) : null,
       user_agent: typeof navigator !== "undefined" ? navigator.userAgent.slice(0, 500) : null,
     });
-  }, [debounced, searchQ.isFetched, searchQ.isFetching, products.length, collections.length, pages.length]);
+  }, [debounced, searchQ.isFetched, searchQ.isFetching, products.length, collections.length]);
 
   function submitFullSearch(e: React.FormEvent) {
     e.preventDefault();
