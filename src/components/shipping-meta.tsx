@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MapPin } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocationStore, useLocationPopover, DEFAULT_ZIP } from "@/stores/location-store";
@@ -11,6 +11,7 @@ import {
 } from "@/lib/shipping-origin";
 import { estimateForOriginAndZip } from "@/lib/delivery-estimate";
 import { getProductOriginsMap } from "@/lib/product-origins.functions";
+import { getVariantShippingOrigin } from "@/lib/variant-origin.functions";
 
 type Variant = "card" | "pdp";
 
@@ -20,6 +21,10 @@ type Props = {
    *  wins) cached in `product_origins`. Falls back to the vendor-based map
    *  when no row exists yet. */
   handle?: string | null;
+  /** PDP only — when set, performs a live read-only Admin API lookup against
+   *  the SELECTED variant's inventoryItem.inventoryLevels so the badge
+   *  reflects the actual fulfillment hub holding that variant's stock. */
+  variantId?: string | null;
   variant?: Variant;
 };
 
