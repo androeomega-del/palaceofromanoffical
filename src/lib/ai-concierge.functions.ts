@@ -243,7 +243,7 @@ JSON ONLY: { "greeting": string, "picks": [{ "handle": string, "reason": string 
     const llmOut = await callLlmJson<LlmOut>(
       {
         system: systemPrompt,
-        user: `BROWSING CONTEXT:\n${contextSummary || "(none provided)"}\n\nCANDIDATES (handle :: vendor · type · title):\n${candidateLines}\n\nNow return the JSON.`,
+        user: `BROWSING CONTEXT:\n${contextSummary || "(none provided)"}\n\nMARKET TRENDS (luxury houses ranked by current heat):\n${trendBrief || "(none available)"}\n\nCANDIDATES (handle :: vendor · type · title [trend status · key aesthetic]):\n${candidateLines}\n\nNow return the JSON.`,
         maxTokens: 700,
         temperature: 0.55,
       },
