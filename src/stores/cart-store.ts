@@ -70,12 +70,14 @@ const CART_LINES_REMOVE_MUTATION = `
 function formatCheckoutUrl(checkoutUrl: string): string {
   try {
     const url = new URL(checkoutUrl);
-    // Shopify returns the checkout URL on the storefront's primary domain
-    // (palaceofroman.com), but that domain serves the Lovable SPA — not
-    // Shopify's checkout. Force the host back to the myshopify.com
-    // permanent domain so the buyer actually lands on Shopify checkout.
+    // Shopify returns /cart/c/... on the storefront's primary domain, but that
+    // path 404s on the headless domain. Send buyers to Shopify's checkout
+    // endpoint on the permanent shop domain while preserving the required key.
     url.host = "mwuwqi-vy.myshopify.com";
     url.protocol = "https:";
+    if (url.pathname.startsWith("/cart/c/")) {
+      url.pathname = url.pathname.replace("/cart/c/", "/checkouts/cn/");
+    }
     url.searchParams.set("channel", "online_store");
     return url.toString();
   } catch {
