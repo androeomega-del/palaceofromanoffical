@@ -543,8 +543,11 @@ function CollectionPage() {
 
 
 
-            {/* Product type chips — derived from titles in the current result set */}
-            {availableTypes.length > 1 && (
+            {/* Category chips — Admin-API aggregated counts across the
+                entire collection (curated 10-bucket whitelist).
+                Single-select; "All" clears. Hidden if only one chip
+                would render (nothing to choose between). */}
+            {chips.length > 1 && (
               <div className="mb-6 pt-5 border-t border-ink/5 flex flex-wrap items-center gap-2">
                 <span className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mr-2">
                   Category
@@ -559,22 +562,23 @@ function CollectionPage() {
                 >
                   All
                 </button>
-                {availableTypes.map((label) => (
+                {chips.map((chip) => (
                   <button
-                    key={label}
-                    onClick={() => setTypeFilter(typeFilter === label ? null : label)}
+                    key={chip.label}
+                    onClick={() => setTypeFilter(typeFilter === chip.label ? null : chip.label)}
                     className={`text-[10px] uppercase tracking-[0.2em] px-3 py-1.5 border rounded-full transition-colors ${
-                      typeFilter === label
+                      typeFilter === chip.label
                         ? "bg-ink text-canvas border-ink"
                         : "border-ink/15 text-muted-foreground hover:border-ink hover:text-ink"
                     }`}
                   >
-                    {label}
-                    <span className="ml-2 opacity-60">{typeCounts[label]}</span>
+                    {chip.label}
+                    <span className="ml-2 opacity-60">{chip.count}</span>
                   </button>
                 ))}
               </div>
             )}
+
 
 
 
