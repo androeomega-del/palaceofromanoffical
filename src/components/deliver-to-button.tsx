@@ -6,6 +6,7 @@ import {
   useLocationStore,
   useLocationPopover,
   isValidUsZip,
+  DEFAULT_ZIP,
 } from "@/stores/location-store";
 import { getGeoFromIp } from "@/lib/geo-ip.functions";
 
