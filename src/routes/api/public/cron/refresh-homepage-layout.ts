@@ -69,9 +69,9 @@ async function computeWindowStats(since: Date, until: Date): Promise<ConversionS
 async function buildFallbackLayout(): Promise<HomepageLayout> {
   let products: Array<{ handle: string; title: string }> = [];
   try {
-    const res = await fetchProducts({ first: 12, sortKey: "BEST_SELLING" });
-    products = (res?.products ?? [])
-      .map((p) => ({ handle: p.node.handle, title: p.node.title }))
+    const edges = await fetchProducts({ first: 12, sortKey: "BEST_SELLING" });
+    products = edges
+      .map((e) => ({ handle: e.node.handle, title: e.node.title }))
       .filter((p) => p.handle && p.title);
   } catch (err) {
     console.error("[refresh-homepage-layout] best-seller fetch failed:", err);
