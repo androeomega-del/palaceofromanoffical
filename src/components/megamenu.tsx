@@ -607,14 +607,24 @@ export function MobileMegamenu() {
     queryFn: () => fetchCollections(500),
     staleTime: 5 * 60_000,
   });
+  const { data: menuSource } = useQuery({
+    queryKey: ["shopify-main-menu"],
+    queryFn: () => getShopifyMenu(),
+    staleTime: 10 * 60_000,
+  });
   const liveHandles = liveCollections
     ? new Set(liveCollections.map((c) => c.handle))
     : null;
   const departments = useMemo(() => {
     const built = buildDepartments(liveCollections ?? []);
-    if (!liveHandles) return built;
-    return built.filter((d) => liveHandles.has(d.rootHandle));
-  }, [liveCollections, liveHandles]);
+    const filtered = liveHandles
+      ? built.filter((d) => liveHandles.has(d.rootHandle))
+      : built;
+    const shopify = menuSource?.tree
+      ? buildDepartmentsFromShopifyMenu(menuSource.tree, filtered, liveHandles)
+      : null;
+    return shopify ?? filtered;
+  }, [liveCollections, liveHandles, menuSource]);
   const { data: brands } = useBrandIndex();
   const brandGroups = useMemo(() => groupBrandsForMenu(brands ?? []), [brands]);
 
