@@ -612,15 +612,8 @@ function ProductView({
                   )}
                 </button>
 
-                {/* Trust anchor — sits directly under the primary CTA */}
-                <div className="mt-3 flex items-center justify-center gap-2 text-[10.5px] uppercase tracking-[0.22em] text-[var(--studio-muted)]">
-                  <ShieldCheck className="w-3 h-3 text-[var(--studio-bronze)]" strokeWidth={1.6} />
-                  <span>
-                    <span className="text-[var(--studio-ink)] font-medium">Authenticity &amp; Secure Shipping</span>
-                    <span className="mx-1.5 text-[var(--studio-bronze)]">•</span>
-                    <span className="text-[var(--studio-ink)] font-medium">14-Day Returns</span>
-                  </span>
-                </div>
+                {/* Trust anchor — interactive, opens shipping/returns sheet */}
+                <PdpShippingSheet />
               </div>
             </div>
 
