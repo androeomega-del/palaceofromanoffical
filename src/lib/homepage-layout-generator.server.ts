@@ -73,7 +73,6 @@ async function hydrateCandidates(cands: Candidate[]): Promise<Candidate[]> {
         title: node.title,
         productType: node.productType ?? c.productType,
         priceUsd: price ? String(Math.round(parseFloat(price))) : undefined,
-        tags: node.tags?.slice(0, 6),
       } satisfies Candidate;
     }),
   );
@@ -89,8 +88,7 @@ async function hydrateCandidates(cands: Candidate[]): Promise<Candidate[]> {
 // products so the AI has something to riff on.
 async function fallbackCandidates(): Promise<Candidate[]> {
   const { fetchProducts } = await import("@/lib/shopify");
-  const page = await fetchProducts({ first: 24, sortKey: "BEST_SELLING" });
-  const edges = page?.edges ?? [];
+  const edges = await fetchProducts({ first: 24, sortKey: "BEST_SELLING" });
   const out: Candidate[] = [];
   for (const e of edges) {
     const n = e.node;
@@ -104,7 +102,6 @@ async function fallbackCandidates(): Promise<Candidate[]> {
       priceUsd: n.priceRange?.minVariantPrice?.amount
         ? String(Math.round(parseFloat(n.priceRange.minVariantPrice.amount)))
         : undefined,
-      tags: n.tags?.slice(0, 6),
     });
   }
   return out;
@@ -213,7 +210,7 @@ export async function generateHomepageLayout(): Promise<GenerationResult> {
   const { data: inserted, error: insertErr } = await supabaseAdmin
     .from("homepage_daily_layout")
     .insert({
-      layout_json: filtered as unknown as object,
+      layout_json: JSON.parse(JSON.stringify(filtered)),
       is_active: true,
       generated_at: new Date().toISOString(),
     })
