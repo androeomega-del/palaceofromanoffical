@@ -5,10 +5,39 @@ import { supabase } from './client'
 // Must be registered as a global `functionMiddleware` in `src/start.ts`; otherwise
 // the browser never attaches the bearer token to serverFn RPCs.
 //
-// Hardening: if `getSession()` returns no token (idle tab, refresh race) we
-// fall back to `getUser()` which forces a session restore + refresh from
-// storage / network. That fixes the "Unauthorized: No authorization header
-// provided" toast that fires after a long idle on protected admin pages.
+// Hardening layers (in order):
+//   1. `getSession()` — cheap, in-memory.
+//   2. `getUser()` then re-`getSession()` — revalidates / refreshes from
+//      storage and network. Handles idle-tab expiry.
+//   3. Bounded wait (up to ~1.2s) for `onAuthStateChange` to fire with a
+//      session. Handles the cold-load race where the very first serverFn
+//      RPC ships before the Supabase client has finished restoring the
+//      session from localStorage.
+//   4. Fall through with no Authorization header → server cleanly returns
+//      401 only when the user is genuinely signed out (or signed in on a
+//      different origin, e.g. a custom domain that doesn't share storage).
+async function waitForSession(timeoutMs = 1200): Promise<string | undefined> {
+  return new Promise<string | undefined>((resolve) => {
+    let settled = false
+    const finish = (token: string | undefined) => {
+      if (settled) return
+      settled = true
+      try {
+        sub?.unsubscribe()
+      } catch {
+        // ignore
+      }
+      clearTimeout(timer)
+      resolve(token)
+    }
+    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.access_token) finish(session.access_token)
+    })
+    const sub = data?.subscription
+    const timer = setTimeout(() => finish(undefined), timeoutMs)
+  })
+}
+
 export const attachSupabaseAuth = createMiddleware({ type: 'function' }).client(
   async ({ next }) => {
     let token: string | undefined
@@ -21,6 +50,11 @@ export const attachSupabaseAuth = createMiddleware({ type: 'function' }).client(
         await supabase.auth.getUser()
         const refreshed = await supabase.auth.getSession()
         token = refreshed.data.session?.access_token
+      }
+      if (!token) {
+        // Cold-load race: the auth client hasn't emitted SIGNED_IN /
+        // TOKEN_REFRESHED yet. Wait briefly for it.
+        token = await waitForSession()
       }
     } catch {
       // Swallow — we'll let the server reject and surface a clean error.
