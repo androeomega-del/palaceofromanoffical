@@ -7,6 +7,41 @@ import {
   type ShopifyProduct,
 } from "@/lib/shopify";
 import { isAllowedLuxuryBrand } from "@/lib/nav-config";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
+
+type TrendRow = {
+  brand_name: string;
+  category: string;
+  trend_status: string;
+  key_aesthetic: string;
+};
+
+// Rank weights (higher = hotter). Used to bias the candidate pool toward
+// brands the market is actively chasing right now.
+const TREND_RANK: Record<string, number> = {
+  "trending #1": 5,
+  "high heat": 4,
+  "rising trend": 3,
+  "consistent top seller": 2,
+};
+
+function trendRank(status: string | undefined): number {
+  if (!status) return 0;
+  return TREND_RANK[status.toLowerCase()] ?? 0;
+}
+
+async function loadTrendingBrands(): Promise<Map<string, TrendRow>> {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from("trending_brands")
+      .select("brand_name, category, trend_status, key_aesthetic");
+    if (error || !data) return new Map();
+    return new Map(data.map((r) => [r.brand_name.trim().toLowerCase(), r as TrendRow]));
+  } catch (e) {
+    console.error("[concierge] loadTrendingBrands failed:", e);
+    return new Map();
+  }
+}
 
 // Context the client sends about what the shopper is currently looking at.
 const ContextSchema = z.object({
