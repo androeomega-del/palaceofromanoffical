@@ -42,6 +42,16 @@ export function DesktopMegamenu() {
     staleTime: 5 * 60_000,
   });
 
+  // Hybrid Shopify-menu layer (Phase 1 — Sprint 2, Safe Path). If a curated
+  // `main-menu` exists in Shopify Admin and yields a valid women+men shape,
+  // its column structure replaces the live-built one. Otherwise this resolves
+  // to `null` and the existing `buildDepartments(...)` path is used as-is.
+  const { data: menuSource } = useQuery({
+    queryKey: ["shopify-main-menu"],
+    queryFn: () => getShopifyMenu(),
+    staleTime: 10 * 60_000,
+  });
+
   const liveHandles = liveCollections
     ? new Set(liveCollections.map((c) => c.handle))
     : null;
@@ -51,15 +61,21 @@ export function DesktopMegamenu() {
   // is missing, so the panel never renders a broken hero link.
   const departments = useMemo(() => {
     const built = buildDepartments(liveCollections ?? []);
-    if (!liveHandles) return built;
-    return built
-      .filter((d) => liveHandles.has(d.rootHandle))
-      .map((d) =>
-        liveHandles.has(d.feature.handle)
-          ? d
-          : { ...d, feature: { ...d.feature, handle: d.rootHandle } },
-      );
-  }, [liveCollections, liveHandles]);
+    const filtered = liveHandles
+      ? built
+          .filter((d) => liveHandles.has(d.rootHandle))
+          .map((d) =>
+            liveHandles.has(d.feature.handle)
+              ? d
+              : { ...d, feature: { ...d.feature, handle: d.rootHandle } },
+          )
+      : built;
+    // Prefer the Shopify-curated tree when it produces a valid women+men shape.
+    const shopify = menuSource?.tree
+      ? buildDepartmentsFromShopifyMenu(menuSource.tree, filtered, liveHandles)
+      : null;
+    return shopify ?? filtered;
+  }, [liveCollections, liveHandles, menuSource]);
 
   const triggerKeys = useMemo(
     () => [...departments.map((d) => d.key as string), "brands"],
