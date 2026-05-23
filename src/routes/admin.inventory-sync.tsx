@@ -119,11 +119,38 @@ function Stat({
 }
 
 function AdminInventorySync() {
+  const queryClient = useQueryClient();
   const { data, isLoading, isFetching, error, refetch } = useQuery({
     queryKey: ["admin", "inventory-sync-dashboard"],
     queryFn: () => getInventorySyncDashboard(),
     refetchInterval: 5_000,
     staleTime: 2_000,
+  });
+
+  const [originsResult, setOriginsResult] = useState<{
+    pages: number;
+    products: number;
+    written: number;
+  } | null>(null);
+
+  const refreshOrigins = useMutation({
+    mutationFn: () => refreshProductOrigins({ data: {} }),
+    onSuccess: (res) => {
+      setOriginsResult({
+        pages: res.pages,
+        products: res.products,
+        written: res.written,
+      });
+      toast.success(
+        `Ship-from origins refreshed — ${res.written} products across ${res.pages} pages.`,
+      );
+      queryClient.invalidateQueries({ queryKey: ["product-origins-map"] });
+    },
+    onError: (err: Error) => {
+      toast.error("Failed to refresh ship-from origins.", {
+        description: err.message,
+      });
+    },
   });
 
   const headline = data?.current ?? data?.last ?? null;
