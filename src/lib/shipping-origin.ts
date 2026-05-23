@@ -112,11 +112,34 @@ const VENDOR_ORIGIN: Record<string, ShippingOrigin> = {
  * Resolve a vendor name to its BG shipping origin. Returns `null` for
  * unknown vendors — caller MUST treat null as "do not display / do not
  * mention" rather than substituting a default country.
+ *
+ * Used by the AI concierge where the no-fabrication rule is strictest.
  */
 export function getShippingOrigin(vendor: string | null | undefined): ShippingOrigin | null {
   if (!vendor) return null;
   const key = vendor.trim().toLowerCase();
   return VENDOR_ORIGIN[key] ?? null;
+}
+
+/**
+ * Default origin for UI fallback. BG warehouses the bulk (~95%) of the
+ * catalogue in Italy, so when a vendor isn't explicitly mapped we surface
+ * the BG primary warehouse rather than leaving the badge blank. This keeps
+ * the UI uniform across every card and PDP without inventing a country
+ * (Italy is BG's documented primary distribution centre).
+ */
+export const DEFAULT_ORIGIN: ShippingOrigin = IT;
+
+/**
+ * UI-safe origin resolver. Falls back to {@link DEFAULT_ORIGIN} so every
+ * product card and PDP renders the "Ships from …" badge uniformly.
+ * Do NOT use this in the AI concierge — use {@link getShippingOrigin}
+ * there to preserve the no-fabrication contract.
+ */
+export function getShippingOriginOrDefault(
+  vendor: string | null | undefined,
+): ShippingOrigin {
+  return getShippingOrigin(vendor) ?? DEFAULT_ORIGIN;
 }
 
 /** "Ships from Italy" — the canonical UI string. Editorial, factual, restrained. */
