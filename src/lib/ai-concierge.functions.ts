@@ -23,6 +23,10 @@ const ContextSchema = z.object({
   /** Wishlist + recently-viewed handles (browser signals). */
   wishlistHandles: z.array(z.string().min(1).max(120)).max(40).default([]),
   recentHandles: z.array(z.string().min(1).max(120)).max(40).default([]),
+  /** Top-scored interaction handles (hover/click/cart weighted). */
+  interactionHandles: z.array(z.string().min(1).max(120)).max(40).default([]),
+  /** Optional first name to address the shopper personally. */
+  shopperName: z.string().trim().min(1).max(60).optional(),
 });
 
 export type ConciergePick = { handle: string; reason: string };
