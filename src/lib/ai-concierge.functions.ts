@@ -20,6 +20,46 @@ function isInStock(p: ShopifyProduct): boolean {
   return p.node.variants.edges.some((v) => v.node.availableForSale);
 }
 
+/**
+ * Deterministic keyword detector for customer-service intents that the AI
+ * must NOT try to answer on its own (returns, customs, tracking, etc).
+ * Word-boundary matching to avoid false positives like "returning to the
+ * silhouette" or "lost in translation".
+ */
+const HANDOFF_PATTERNS: Array<{ pattern: RegExp; subject: string }> = [
+  { pattern: /\b(returns?|returning an order|return policy)\b/i, subject: "Return request" },
+  { pattern: /\b(refunds?|refunded|money back)\b/i, subject: "Refund request" },
+  { pattern: /\b(exchange|swap (it|this) for)\b/i, subject: "Exchange request" },
+  { pattern: /\b(damaged|broken|defective|arrived damaged)\b/i, subject: "Damaged item" },
+  { pattern: /\b(lost (package|parcel|order)|never arrived|missing)\b/i, subject: "Lost shipment" },
+  { pattern: /\b(delayed|late delivery|still hasn'?t shipped)\b/i, subject: "Delayed shipment" },
+  { pattern: /\b(customs|duties|import (fees?|tax))\b/i, subject: "Customs inquiry" },
+  { pattern: /\b(tracking|track my (order|package))\b/i, subject: "Tracking inquiry" },
+  { pattern: /\b(wrong size (received|sent)|sent the wrong)\b/i, subject: "Wrong item received" },
+];
+
+function detectServiceHandoff(message: string | undefined): {
+  message: string;
+  mailto: string;
+  buttonLabel: string;
+} | null {
+  if (!message) return null;
+  for (const { pattern, subject } of HANDOFF_PATTERNS) {
+    if (pattern.test(message)) {
+      const params = new URLSearchParams({
+        subject: `Concierge Inquiry: ${subject}`,
+      });
+      return {
+        message:
+          "Our Senior Concierge will personally review your order and respond within one business day.",
+        mailto: `mailto:${SUPPORT_EMAIL}?${params.toString()}`,
+        buttonLabel: "Contact Concierge",
+      };
+    }
+  }
+  return null;
+}
+
 type TrendRow = {
   brand_name: string;
   category: string;
