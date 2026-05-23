@@ -133,9 +133,9 @@ Schema:
 function buildUserPrompt(cands: Candidate[]): string {
   const lines = cands.map(
     (c, i) =>
-      `${i + 1}. ${c.handle} | ${c.vendor ?? "?"} | ${c.title ?? "?"} | ${c.productType ?? "?"} | $${c.priceUsd ?? "?"} | tags: ${(c.tags ?? []).join(", ")}`,
+      `${i + 1}. ${c.handle} | ${c.vendor ?? "?"} | ${c.title ?? "?"} | ${c.productType ?? "?"} | $${c.priceUsd ?? "?"}`,
   );
-  return `Top-performing products over the last 48 hours (handle | brand | title | category | price | tags):\n\n${lines.join("\n")}\n\nDesign the next 48-hour edition. Return the JSON blueprint only.`;
+  return `Top-performing products over the last 48 hours (handle | brand | title | category | price):\n\n${lines.join("\n")}\n\nDesign the next 48-hour edition. Return the JSON blueprint only.`;
 }
 
 function enforceHandleAllowlist(layout: HomepageLayout, allowed: Set<string>): HomepageLayout {
