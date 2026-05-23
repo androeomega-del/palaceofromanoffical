@@ -182,6 +182,62 @@ export const Route = createFileRoute("/api/public/hooks/shopify-order-created")(
           return new Response("Send failed", { status: 500 });
         }
 
+        // ─── Stylist's Note (AI lookbook + 48h STYLEVIBE discount) ──────
+        // Best-effort, non-blocking. Deduped via order_emails_sent so
+        // Shopify retries never trigger a second send.
+        try {
+          const { error: claimErr } = await supabaseAdmin
+            .from("order_emails_sent")
+            .insert({
+              order_id: orderId,
+              email_type: "stylist_note",
+              recipient_email: recipient,
+            });
+          if (!claimErr) {
+            const noteLines: StylistNoteLine[] = (order.line_items ?? [])
+              .filter((li) => !!li.title)
+              .map((li) => ({
+                title: li.title as string,
+                variant: li.variant_title ?? null,
+              }));
+
+            const [{ paragraph }, discount] = await Promise.all([
+              generateStylistNote(noteLines, order.customer?.first_name ?? null),
+              createStyleVibeDiscount(recipient),
+            ]);
+
+            const { subject, html, text } = renderStylistNoteEmail({
+              firstName: order.customer?.first_name ?? null,
+              orderName: order.name || `#${orderId}`,
+              paragraph,
+              discount,
+            });
+            try {
+              await sendGmail(recipient, subject, html, text);
+            } catch (sendErr) {
+              const msg = sendErr instanceof Error ? sendErr.message : String(sendErr);
+              console.error(
+                `[shopify-order-created] stylist-note send failed for ${orderId}:`,
+                msg,
+              );
+              await supabaseAdmin
+                .from("order_emails_sent")
+                .delete()
+                .eq("order_id", orderId)
+                .eq("email_type", "stylist_note");
+            }
+          } else if ((claimErr as { code?: string }).code !== "23505") {
+            console.error(
+              `[shopify-order-created] stylist-note claim failed for ${orderId}:`,
+              claimErr.message,
+            );
+          }
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : String(e);
+          console.error(`[shopify-order-created] stylist-note flow failed for ${orderId}:`, msg);
+        }
+
+
         // Enqueue T+10d review-request email. Best-effort — failures here
         // must not block the 200 response back to Shopify.
         try {
