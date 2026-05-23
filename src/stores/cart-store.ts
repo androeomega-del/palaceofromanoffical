@@ -70,6 +70,12 @@ const CART_LINES_REMOVE_MUTATION = `
 function formatCheckoutUrl(checkoutUrl: string): string {
   try {
     const url = new URL(checkoutUrl);
+    // Shopify returns the checkout URL on the storefront's primary domain
+    // (palaceofroman.com), but that domain serves the Lovable SPA — not
+    // Shopify's checkout. Force the host back to the myshopify.com
+    // permanent domain so the buyer actually lands on Shopify checkout.
+    url.host = "mwuwqi-vy.myshopify.com";
+    url.protocol = "https:";
     url.searchParams.set("channel", "online_store");
     return url.toString();
   } catch {
@@ -256,7 +262,10 @@ export const useCartStore = create<CartStore>()(
       },
 
       clearCart: () => set({ items: [], cartId: null, checkoutUrl: null }),
-      getCheckoutUrl: () => get().checkoutUrl,
+      getCheckoutUrl: () => {
+        const u = get().checkoutUrl;
+        return u ? formatCheckoutUrl(u) : null;
+      },
 
       syncCart: async () => {
         const { cartId, isSyncing, clearCart } = get();
