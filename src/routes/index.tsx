@@ -10,6 +10,7 @@ import { CampaignVideo } from "@/components/campaign-video";
 import { LUXURY_TIERS } from "@/lib/luxury-brands";
 import { ForYouFeed } from "@/components/for-you-feed";
 import { TrendingNowRail } from "@/components/trending-now";
+import { CurationCountdown } from "@/components/curation-countdown";
 
 import heroImage from "@/assets/home-hero.jpg";
 import summerHero from "@/assets/summer-bento-hero.jpg";
@@ -1113,6 +1114,9 @@ function SummerBento({
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-ink/10 to-transparent" />
+          <div className="absolute top-5 md:top-7 left-6 md:left-12 lg:left-16">
+            <CurationCountdown variant="hero" />
+          </div>
           <div className="absolute bottom-8 md:bottom-14 lg:bottom-16 left-6 md:left-12 lg:left-16 right-6 max-w-xl">
             <span className="block text-[10px] md:text-xs uppercase tracking-[0.4em] mb-3 md:mb-5 text-canvas/90">
               Resort 2026 Collection
