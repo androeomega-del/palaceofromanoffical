@@ -173,7 +173,7 @@ export const Route = createFileRoute("/api/public/cron/refresh-homepage-layout")
         const { data: inserted, error: insertErr } = await supabaseAdmin
           .from("homepage_daily_layout")
           .insert({
-            layout_json: nextLayout as unknown as object,
+            layout_json: nextLayout as never,
             is_active: true,
             status: "active",
             generated_at: new Date().toISOString(),
