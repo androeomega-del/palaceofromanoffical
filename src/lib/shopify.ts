@@ -31,6 +31,7 @@ export interface ShopifyVariant {
   title: string;
   price: Money;
   availableForSale: boolean;
+  quantityAvailable: number;
   selectedOptions: Array<{ name: string; value: string }>;
 }
 export interface ShopifyProductNode {
