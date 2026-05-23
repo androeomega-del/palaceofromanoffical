@@ -108,6 +108,23 @@ export type ConciergeResult = {
 export const fetchConciergePicks = createServerFn({ method: "POST" })
   .inputValidator((i: unknown) => ContextSchema.parse(i))
   .handler(async ({ data }): Promise<ConciergeResult> => {
+    // 0. Service-intent short-circuit. If the shopper's last message
+    //    mentions a customer-service concern (returns, refunds, customs,
+    //    tracking, damaged or wrong-size receipts), the AI MUST hand off
+    //    to a human rather than try to style its way out. Keyword match
+    //    is deterministic and cheap; no LLM call needed.
+    const handoff = detectServiceHandoff(data.userMessage);
+    if (handoff) {
+      return {
+        ok: true,
+        greeting:
+          "To ensure your inquiry is handled with the utmost care, I'm passing this directly to our Senior Concierge.",
+        picks: [],
+        products: [],
+        handoff,
+      };
+    }
+
     // 1. Hydrate context anchor + browsing signals + trend intelligence.
     const [trendMap, anchor] = await Promise.all([
       loadTrendingBrands(),
