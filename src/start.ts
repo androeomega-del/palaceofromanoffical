@@ -43,6 +43,6 @@ const htmlCacheMiddleware = createMiddleware().server(async ({ next }) => {
 
 
 export const startInstance = createStart(() => ({
-  requestMiddleware: [errorMiddleware],
+  requestMiddleware: [errorMiddleware, htmlCacheMiddleware],
   functionMiddleware: [attachSupabaseAuth],
 }));
