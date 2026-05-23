@@ -449,8 +449,10 @@ function ProductView({
                   <div key={i} className="min-w-full snap-center aspect-[3/4] bg-white overflow-hidden">
                     {img.url && (
                       <img
-                        src={img.url}
+                        src={cdnImage(img.url, { width: 900 })}
                         alt={img.altText ?? product.title}
+                        loading={i === 0 ? "eager" : "lazy"}
+                        decoding="async"
                         className="w-full h-full object-cover"
                       />
                     )}
@@ -486,8 +488,10 @@ function ProductView({
                   >
                     {img.url && (
                       <img
-                        src={img.url}
+                        src={cdnImage(img.url, { width: 1400 })}
                         alt={img.altText ?? product.title}
+                        loading={i === 0 ? "eager" : "lazy"}
+                        decoding="async"
                         className="w-full h-full object-cover transition-transform duration-[1400ms] hover:scale-[1.02]"
                       />
                     )}
@@ -798,8 +802,10 @@ function ProductView({
         <div className="flex items-center gap-3 px-4 py-3">
           {images[0]?.url && (
             <img
-              src={images[0].url}
+              src={cdnImage(images[0].url, { width: 120 })}
               alt=""
+              loading="lazy"
+              decoding="async"
               className="w-12 h-14 object-cover flex-shrink-0"
             />
           )}
