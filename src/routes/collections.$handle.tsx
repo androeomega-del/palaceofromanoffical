@@ -1,9 +1,11 @@
 import { createFileRoute, Link, useNavigate, redirect } from "@tanstack/react-router";
 import { canonicalCollectionHandle } from "@/lib/collection-canonical";
 import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
+import { useServerFn } from "@tanstack/react-start";
 
 import { fetchCollectionFiltered, fetchCollection, type StorefrontFilterValue } from "@/lib/shopify";
+import { fetchCollectionTotal } from "@/lib/collection-count.functions";
 import { ProductCard } from "@/components/product-card";
 import { absoluteUrl, SITE_URL } from "@/lib/seo";
 import { collectionSeo } from "@/lib/collection-seo";
@@ -216,12 +218,34 @@ function CollectionPage() {
       last?.pageInfo?.hasNextPage ? last.pageInfo.endCursor : undefined,
   });
 
-  // Auto-load every remaining page — no pagination UI, no cap.
+  // True total from Shopify Admin API — used for "Showing X of N" and to
+  // know whether infinite scroll has surfaced every active listing.
+  const fetchTotal = useServerFn(fetchCollectionTotal);
+  const totalQ = useQuery({
+    queryKey: ["collection-total", handle],
+    queryFn: () => fetchTotal({ data: { handle } }),
+    staleTime: 5 * 60_000,
+  });
+  const total = totalQ.data?.total ?? null;
+
+  // IntersectionObserver sentinel — fetches the next cursor page as soon as
+  // the user scrolls within ~600px of the bottom. Continues until
+  // hasNextPage === false (Rule 3: zero artificial limits).
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
-    if (q.hasNextPage && !q.isFetchingNextPage) {
-      q.fetchNextPage();
-    }
-  }, [q.hasNextPage, q.isFetchingNextPage, q.data?.pages.length]);
+    const el = sentinelRef.current;
+    if (!el || !q.hasNextPage) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting && q.hasNextPage && !q.isFetchingNextPage) {
+          q.fetchNextPage();
+        }
+      },
+      { rootMargin: "600px 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [q.hasNextPage, q.isFetchingNextPage, q.fetchNextPage]);
 
   const pages = q.data?.pages ?? [];
   const data = pages[0] ?? null;
@@ -251,6 +275,19 @@ function CollectionPage() {
 
   const title = data?.collection?.title ?? titleizeHandle(handle);
   const description = data?.collection?.description;
+
+  // Header count: when total is known, show "Showing X of N"; while still
+  // loading the first page, show a loading hint; otherwise fall back to the
+  // loaded-count label.
+  const loadedCount = edges.length;
+  const noun = (n: number) => (n === 1 ? "Piece" : "Pieces");
+  const countLabel = q.isLoading
+    ? "Loading…"
+    : total != null
+      ? loadedCount < total && !typeFilter && selections.length === 0 && !priceRange
+        ? `Showing ${loadedCount} of ${total} ${noun(total)}`
+        : `${loadedCount} of ${total} ${noun(total)}`
+      : `${loadedCount} ${noun(loadedCount)}`;
 
 
   const selectedInputs = useMemo(() => new Set(selections.map((s) => s.input)), [selections]);
@@ -358,7 +395,7 @@ function CollectionPage() {
                 {editorialCopy!.tagline}
               </p>
               <p className="mt-8 text-[10px] uppercase tracking-[0.3em] text-canvas/60">
-                {q.isLoading ? "Loading…" : `${edges.length} ${edges.length === 1 ? "Piece" : "Pieces"}`}
+                {countLabel}
               </p>
             </div>
           </div>
@@ -393,7 +430,7 @@ function CollectionPage() {
               <div className="mt-6 flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <h1 className="text-4xl md:text-6xl font-serif text-balance">{title}</h1>
                 <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                  {q.isLoading ? "Loading…" : `${edges.length} ${edges.length === 1 ? "Piece" : "Pieces"}`}
+                  {countLabel}
                 </p>
               </div>
               {description && (
@@ -517,6 +554,8 @@ function CollectionPage() {
                     <ProductCard key={e.node.id} product={e} />
                   ))}
                 </div>
+                {/* IntersectionObserver sentinel — drives infinite scroll */}
+                <div ref={sentinelRef} aria-hidden className="h-px w-full" />
                 {(q.hasNextPage || q.isFetchingNextPage) && (
                   <div className="mt-16 flex justify-center">
                     <span className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
