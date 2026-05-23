@@ -8,6 +8,12 @@ import {
 } from "@/lib/shopify";
 import { isAllowedLuxuryBrand } from "@/lib/nav-config";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { fetchInStockHandles } from "@/lib/shopify-admin.server";
+
+/** True if any variant on the product is currently available for sale. */
+function isInStock(p: ShopifyProduct): boolean {
+  return p.node.variants.edges.some((v) => v.node.availableForSale);
+}
 
 type TrendRow = {
   brand_name: string;
