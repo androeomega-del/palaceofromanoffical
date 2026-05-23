@@ -97,6 +97,8 @@ export function ConciergeWidget() {
     ctx.currentCollection ?? "",
     wishlist.slice(0, 8).join("|"),
     recent.slice(0, 8).map((r) => r.handle).join("|"),
+    interactionHandles.slice(0, 8).join("|"),
+    shopperName ?? "",
   ].join("::");
 
   // Fetch when the drawer opens (lazy — saves tokens until shoppers ask for it).
@@ -112,6 +114,8 @@ export function ConciergeWidget() {
         currentCollection: ctx.currentCollection,
         wishlistHandles: wishlist.slice(0, 20),
         recentHandles: recent.slice(0, 20).map((r) => r.handle),
+        interactionHandles: interactionHandles.slice(0, 20),
+        shopperName,
       },
     })
       .then((data) => {
