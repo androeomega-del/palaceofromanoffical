@@ -554,6 +554,8 @@ function CollectionPage() {
                     <ProductCard key={e.node.id} product={e} />
                   ))}
                 </div>
+                {/* IntersectionObserver sentinel — drives infinite scroll */}
+                <div ref={sentinelRef} aria-hidden className="h-px w-full" />
                 {(q.hasNextPage || q.isFetchingNextPage) && (
                   <div className="mt-16 flex justify-center">
                     <span className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
