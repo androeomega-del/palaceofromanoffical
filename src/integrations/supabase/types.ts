@@ -879,7 +879,39 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_approved_reviews: {
+        Row: {
+          author_name: string | null
+          body: string | null
+          created_at: string | null
+          id: string | null
+          product_handle: string | null
+          rating: number | null
+          title: string | null
+          verified_purchase: boolean | null
+        }
+        Insert: {
+          author_name?: string | null
+          body?: string | null
+          created_at?: string | null
+          id?: string | null
+          product_handle?: string | null
+          rating?: number | null
+          title?: string | null
+          verified_purchase?: boolean | null
+        }
+        Update: {
+          author_name?: string | null
+          body?: string | null
+          created_at?: string | null
+          id?: string | null
+          product_handle?: string | null
+          rating?: number | null
+          title?: string | null
+          verified_purchase?: boolean | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       has_role: {

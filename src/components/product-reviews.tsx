@@ -48,10 +48,9 @@ export function ProductReviews({
     queryKey: ["product-reviews", handle],
     queryFn: async (): Promise<Review[]> => {
       const { data, error } = await supabase
-        .from("product_reviews")
+        .from("public_approved_reviews" as never)
         .select("id,rating,title,body,author_name,verified_purchase,created_at")
         .eq("product_handle", handle)
-        .eq("status", "approved")
         .order("created_at", { ascending: false })
         .limit(50);
       if (error) throw error;
