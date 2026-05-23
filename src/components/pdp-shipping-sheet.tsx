@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ShieldCheck, Truck, RotateCcw, Package, GripHorizontal } from "lucide-react";
+import { ShieldCheck, Truck, RotateCcw, Package } from "lucide-react";
 import {
   Sheet,
   SheetContent,
