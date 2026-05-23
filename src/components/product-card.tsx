@@ -3,6 +3,7 @@ import { Heart, Loader2, ShoppingBag, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { formatPrice, type ShopifyProduct } from "@/lib/shopify";
+import { cdnImage } from "@/lib/cdn-image";
 import { computeScarcitySignal } from "@/lib/scarcity-signal";
 import { ShippingMeta } from "@/components/shipping-meta";
 import { useCartStore } from "@/stores/cart-store";
@@ -228,25 +229,29 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
       <div className="w-full aspect-[4/5] bg-muted relative overflow-hidden mb-5">
         {img && (
           <img
-            src={img.url}
+            src={cdnImage(img.url, { width: 700 })}
             alt={img.altText ?? altBase}
             loading="lazy"
+            decoding="async"
             className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 group-hover:opacity-0"
           />
         )}
         {img2 ? (
           <img
-            src={img2.url}
+            src={cdnImage(img2.url, { width: 700 })}
             alt={img2.altText ?? altBase}
             loading="lazy"
+            decoding="async"
             className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-700"
           />
         ) : (
           img && (
             <img
-              src={img.url}
+              src={cdnImage(img.url, { width: 700 })}
               alt=""
               aria-hidden
+              loading="lazy"
+              decoding="async"
               className="absolute inset-0 w-full h-full object-cover scale-105 opacity-0 group-hover:opacity-100 transition-all duration-700"
             />
           )
