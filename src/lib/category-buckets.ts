@@ -33,7 +33,12 @@ export type CategoryBucket = {
 };
 
 export const CATEGORY_BUCKETS: ReadonlyArray<CategoryBucket> = [
-  { label: "Dresses",     match: /\b(dress|gown|kaftan|caftan)\b/i },
+  // "dress" alone only counts when it's the noun. Excludes adjective uses like
+  // "dress shirt / pants / trousers / shorts / shoes / boots / socks / tie /
+  // belt / coat / jacket / sweater / code / down" — common in menswear titles
+  // and tags, which were otherwise inflating a phantom "Dresses" chip on
+  // /collections/mens-clothing.
+  { label: "Dresses",     match: /\b(dresses|gown|kaftan|caftan|sundress|sun[\s-]?dress|maxi|midi|mini)[\s-]?dress\b|\bdress\b(?!\s*[-]?\s*(shirt|pant|trouser|short|sock|tie|belt|shoe|boot|coat|jacket|sweater|code|down|up))/i },
   { label: "Knitwear",    match: /\b(knit|sweater|jumper|cardigan|cashmere|pullover|turtleneck)\b/i },
   { label: "Outerwear",   match: /\b(coat|jacket|parka|trench|blazer|overcoat|puffer|anorak|gilet)\b/i },
   { label: "Tops",        match: /\b(t[\s-]?shirt|tee|shirt|blouse|top|tank|polo|camisole|bodysuit|hoodie|sweatshirt)\b/i },
