@@ -37,6 +37,8 @@ import { Route as ProductHandleRouteImport } from './routes/product.$handle'
 import { Route as EditorialTheNewEveningRouteImport } from './routes/editorial.the-new-evening'
 import { Route as EditorialResort2026RouteImport } from './routes/editorial.resort-2026'
 import { Route as EditorialMay2026RouteImport } from './routes/editorial.may-2026'
+import { Route as CollectionsNewArrivalsRouteImport } from './routes/collections.new-arrivals'
+import { Route as CollectionsBestSellersRouteImport } from './routes/collections.best-sellers'
 import { Route as CollectionsHandleRouteImport } from './routes/collections.$handle'
 import { Route as CampaignDolceGabbanaSwimRouteImport } from './routes/campaign.dolce-gabbana-swim'
 import { Route as BrandVendorRouteImport } from './routes/brand.$vendor'
@@ -204,6 +206,16 @@ const EditorialResort2026Route = EditorialResort2026RouteImport.update({
 const EditorialMay2026Route = EditorialMay2026RouteImport.update({
   id: '/editorial/may-2026',
   path: '/editorial/may-2026',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollectionsNewArrivalsRoute = CollectionsNewArrivalsRouteImport.update({
+  id: '/collections/new-arrivals',
+  path: '/collections/new-arrivals',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollectionsBestSellersRoute = CollectionsBestSellersRouteImport.update({
+  id: '/collections/best-sellers',
+  path: '/collections/best-sellers',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CollectionsHandleRoute = CollectionsHandleRouteImport.update({
@@ -398,6 +410,8 @@ export interface FileRoutesByFullPath {
   '/brand/$vendor': typeof BrandVendorRoute
   '/campaign/dolce-gabbana-swim': typeof CampaignDolceGabbanaSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
+  '/collections/best-sellers': typeof CollectionsBestSellersRoute
+  '/collections/new-arrivals': typeof CollectionsNewArrivalsRoute
   '/editorial/may-2026': typeof EditorialMay2026Route
   '/editorial/resort-2026': typeof EditorialResort2026Route
   '/editorial/the-new-evening': typeof EditorialTheNewEveningRoute
@@ -455,6 +469,8 @@ export interface FileRoutesByTo {
   '/brand/$vendor': typeof BrandVendorRoute
   '/campaign/dolce-gabbana-swim': typeof CampaignDolceGabbanaSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
+  '/collections/best-sellers': typeof CollectionsBestSellersRoute
+  '/collections/new-arrivals': typeof CollectionsNewArrivalsRoute
   '/editorial/may-2026': typeof EditorialMay2026Route
   '/editorial/resort-2026': typeof EditorialResort2026Route
   '/editorial/the-new-evening': typeof EditorialTheNewEveningRoute
@@ -514,6 +530,8 @@ export interface FileRoutesById {
   '/brand/$vendor': typeof BrandVendorRoute
   '/campaign/dolce-gabbana-swim': typeof CampaignDolceGabbanaSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
+  '/collections/best-sellers': typeof CollectionsBestSellersRoute
+  '/collections/new-arrivals': typeof CollectionsNewArrivalsRoute
   '/editorial/may-2026': typeof EditorialMay2026Route
   '/editorial/resort-2026': typeof EditorialResort2026Route
   '/editorial/the-new-evening': typeof EditorialTheNewEveningRoute
@@ -574,6 +592,8 @@ export interface FileRouteTypes {
     | '/brand/$vendor'
     | '/campaign/dolce-gabbana-swim'
     | '/collections/$handle'
+    | '/collections/best-sellers'
+    | '/collections/new-arrivals'
     | '/editorial/may-2026'
     | '/editorial/resort-2026'
     | '/editorial/the-new-evening'
@@ -631,6 +651,8 @@ export interface FileRouteTypes {
     | '/brand/$vendor'
     | '/campaign/dolce-gabbana-swim'
     | '/collections/$handle'
+    | '/collections/best-sellers'
+    | '/collections/new-arrivals'
     | '/editorial/may-2026'
     | '/editorial/resort-2026'
     | '/editorial/the-new-evening'
@@ -689,6 +711,8 @@ export interface FileRouteTypes {
     | '/brand/$vendor'
     | '/campaign/dolce-gabbana-swim'
     | '/collections/$handle'
+    | '/collections/best-sellers'
+    | '/collections/new-arrivals'
     | '/editorial/may-2026'
     | '/editorial/resort-2026'
     | '/editorial/the-new-evening'
@@ -745,6 +769,8 @@ export interface RootRouteChildren {
   BrandVendorRoute: typeof BrandVendorRoute
   CampaignDolceGabbanaSwimRoute: typeof CampaignDolceGabbanaSwimRoute
   CollectionsHandleRoute: typeof CollectionsHandleRoute
+  CollectionsBestSellersRoute: typeof CollectionsBestSellersRoute
+  CollectionsNewArrivalsRoute: typeof CollectionsNewArrivalsRoute
   EditorialMay2026Route: typeof EditorialMay2026Route
   EditorialResort2026Route: typeof EditorialResort2026Route
   EditorialTheNewEveningRoute: typeof EditorialTheNewEveningRoute
@@ -961,6 +987,20 @@ declare module '@tanstack/react-router' {
       path: '/editorial/may-2026'
       fullPath: '/editorial/may-2026'
       preLoaderRoute: typeof EditorialMay2026RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collections/new-arrivals': {
+      id: '/collections/new-arrivals'
+      path: '/collections/new-arrivals'
+      fullPath: '/collections/new-arrivals'
+      preLoaderRoute: typeof CollectionsNewArrivalsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collections/best-sellers': {
+      id: '/collections/best-sellers'
+      path: '/collections/best-sellers'
+      fullPath: '/collections/best-sellers'
+      preLoaderRoute: typeof CollectionsBestSellersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/collections/$handle': {
@@ -1223,6 +1263,8 @@ const rootRouteChildren: RootRouteChildren = {
   BrandVendorRoute: BrandVendorRoute,
   CampaignDolceGabbanaSwimRoute: CampaignDolceGabbanaSwimRoute,
   CollectionsHandleRoute: CollectionsHandleRoute,
+  CollectionsBestSellersRoute: CollectionsBestSellersRoute,
+  CollectionsNewArrivalsRoute: CollectionsNewArrivalsRoute,
   EditorialMay2026Route: EditorialMay2026Route,
   EditorialResort2026Route: EditorialResort2026Route,
   EditorialTheNewEveningRoute: EditorialTheNewEveningRoute,
