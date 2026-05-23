@@ -80,64 +80,186 @@ export function EditorialHotspots({ src, alt, hotspots, aspect = "4/5", classNam
         const isBottomHalf = h.y > 70;
         const isRevealed = revealedHandle === h.handle;
         return (
-          <button
+          <div
             key={h.handle}
-            type="button"
-            data-hotspot
-            onPointerUp={(e) => handleActivate(h.handle, e.pointerType)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
+            className="absolute -translate-x-1/2 -translate-y-1/2"
+            style={{ left: `${h.x}%`, top: `${h.y}%` }}
+            onMouseEnter={() => setRevealedHandle(h.handle)}
+            onMouseLeave={() => setRevealedHandle((cur) => (cur === h.handle ? null : cur))}
+          >
+            <button
+              type="button"
+              data-hotspot
+              onPointerUp={(e) => handleActivate(h.handle, e.pointerType)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setRevealedHandle(null);
+                  setOpenHandle(h.handle);
+                }
+              }}
+              aria-label={`Quick shop ${h.label ?? h.handle}${h.sublabel ? ` — ${h.sublabel}` : ""}`}
+              aria-describedby={tipId}
+              aria-haspopup="dialog"
+              aria-expanded={isRevealed}
+              className="group relative focus:outline-none"
+            >
+              {!reduced && (
+                <span className="absolute inset-0 m-auto h-8 w-8 rounded-full bg-white/40 animate-ping" aria-hidden />
+              )}
+              <span
+                className={`relative flex h-8 w-8 items-center justify-center rounded-full bg-white text-ink shadow-lg ring-1 ring-ink/10 ${
+                  reduced ? "" : "transition-transform group-hover:scale-110 group-focus-visible:scale-110"
+                } group-focus-visible:ring-2 group-focus-visible:ring-ink group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-canvas ${
+                  isRevealed ? (reduced ? "ring-2 ring-ink" : "scale-110 ring-2 ring-ink") : ""
+                }`}
+              >
+                <Plus className="h-4 w-4" />
+              </span>
+            </button>
+
+            <HotspotCard
+              id={tipId}
+              hotspot={h}
+              visible={isRevealed}
+              reduced={reduced}
+              isBottomHalf={isBottomHalf}
+              isRightHalf={isRightHalf}
+              onOpenDialog={() => {
                 setRevealedHandle(null);
                 setOpenHandle(h.handle);
-              }
-            }}
-            aria-label={`Quick shop ${h.label}${h.sublabel ? ` — ${h.sublabel}` : ""}`}
-            aria-describedby={tipId}
-            aria-haspopup="dialog"
-            aria-expanded={isRevealed}
-            className="group absolute -translate-x-1/2 -translate-y-1/2 focus:outline-none"
-            style={{ left: `${h.x}%`, top: `${h.y}%` }}
-          >
-            {/* pulse ring — suppressed for reduced motion */}
-            {!reduced && (
-              <span className="absolute inset-0 m-auto h-8 w-8 rounded-full bg-white/40 animate-ping" aria-hidden />
-            )}
-            {/* dot */}
-            <span
-              className={`relative flex h-8 w-8 items-center justify-center rounded-full bg-white text-ink shadow-lg ring-1 ring-ink/10 ${
-                reduced ? "" : "transition-transform group-hover:scale-110 group-focus-visible:scale-110"
-              } group-focus-visible:ring-2 group-focus-visible:ring-ink group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-canvas ${
-                isRevealed ? (reduced ? "ring-2 ring-ink" : "scale-110 ring-2 ring-ink") : ""
-              }`}
-            >
-              <Plus className="h-4 w-4" />
-            </span>
-            {/* tooltip — shown on hover, keyboard focus, or first tap on touch */}
-            <span
-              id={tipId}
-              role="tooltip"
-              className={`pointer-events-none absolute z-10 min-w-max max-w-[12rem] bg-ink px-3 py-2 text-left text-white shadow-xl ${
-                reduced ? "" : "transition-all duration-200"
-              } group-hover:opacity-100 group-hover:translate-y-0 group-focus-visible:opacity-100 group-focus-visible:translate-y-0 ${
-                isRevealed ? "opacity-100 translate-y-0" : "opacity-0 translate-y-1"
-              } ${isBottomHalf ? "bottom-full mb-3" : "top-full mt-3"} ${
-                isRightHalf ? "right-1/2 translate-x-2" : "left-1/2 -translate-x-2"
-              }`}
-            >
-              <span className="block text-[9px] uppercase tracking-[0.3em] text-bronze">{h.label}</span>
-              {h.sublabel && (
-                <span className="block text-[11px] font-medium leading-tight mt-1">{h.sublabel}</span>
-              )}
-              <span className="block text-[9px] uppercase tracking-[0.25em] text-white/60 mt-1.5">
-                {isRevealed ? "Tap again to open →" : "Quick shop →"}
-              </span>
-            </span>
-          </button>
+              }}
+              onClose={() => setRevealedHandle(null)}
+            />
+          </div>
         );
       })}
 
       <QuickShopDialog handle={openHandle} onOpenChange={(o) => !o && setOpenHandle(null)} />
+    </div>
+  );
+}
+
+function HotspotCard({
+  id,
+  hotspot,
+  visible,
+  reduced,
+  isBottomHalf,
+  isRightHalf,
+  onOpenDialog,
+  onClose,
+}: {
+  id: string;
+  hotspot: Hotspot;
+  visible: boolean;
+  reduced: boolean;
+  isBottomHalf: boolean;
+  isRightHalf: boolean;
+  onOpenDialog: () => void;
+  onClose: () => void;
+}) {
+  const addItem = useCartStore((s) => s.addItem);
+  const openDrawer = useCartStore((s) => s.openDrawer);
+  const cartLoading = useCartStore((s) => s.isLoading);
+  const [adding, setAdding] = useState(false);
+
+  // Lazy-fetch the product only when the card has been revealed at least once.
+  const [primed, setPrimed] = useState(false);
+  useEffect(() => {
+    if (visible && !primed) setPrimed(true);
+  }, [visible, primed]);
+
+  const { data: product, isLoading } = useQuery({
+    queryKey: ["hotspot-product", hotspot.handle],
+    queryFn: () => fetchProductByHandle(hotspot.handle),
+    enabled: primed,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const variants = product?.variants?.edges?.map((e) => e.node) ?? [];
+  const firstAvailable = variants.find((v) => v.availableForSale);
+  // One-click quick-add is only safe when there's no size/colour choice to make.
+  const isSingleDefault =
+    variants.length === 1 && /default title/i.test(variants[0]?.title ?? "");
+  const canOneClick = !!firstAvailable && (isSingleDefault || variants.length === 1);
+
+  const priceText = product
+    ? formatPrice(
+        (firstAvailable ?? variants[0])?.price ?? product.priceRange.minVariantPrice,
+      )
+    : null;
+
+  const handleQuickAdd = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!product || !firstAvailable || adding || cartLoading) return;
+    if (!canOneClick) {
+      onOpenDialog();
+      return;
+    }
+    setAdding(true);
+    const added = await addItem({
+      product: { node: product },
+      variantId: firstAvailable.id,
+      variantTitle: firstAvailable.title,
+      price: firstAvailable.price,
+      quantity: 1,
+      selectedOptions: firstAvailable.selectedOptions || [],
+    });
+    setAdding(false);
+    if (!added) {
+      toast.error("Could not add this item to bag.");
+      return;
+    }
+    onClose();
+    openDrawer();
+  };
+
+  return (
+    <div
+      id={id}
+      role="tooltip"
+      onClick={(e) => e.stopPropagation()}
+      className={`absolute z-10 w-60 bg-canvas text-ink border border-ink/10 shadow-xl ${
+        reduced ? "" : "transition-all duration-200"
+      } ${visible ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-1 pointer-events-none"} ${
+        isBottomHalf ? "bottom-full mb-3" : "top-full mt-3"
+      } ${isRightHalf ? "right-1/2 translate-x-2" : "left-1/2 -translate-x-2"}`}
+    >
+      <div className="p-3.5">
+        {hotspot.label && (
+          <span className="block text-[9px] uppercase tracking-[0.3em] text-bronze mb-1.5">
+            {hotspot.label}
+          </span>
+        )}
+        <span className="block text-[12px] font-medium leading-snug text-ink line-clamp-2 min-h-[2em]">
+          {product?.title ?? hotspot.sublabel ?? "Loading…"}
+        </span>
+        {product?.vendor && (
+          <span className="block text-[10px] uppercase tracking-[0.2em] text-muted-foreground mt-1">
+            {product.vendor}
+          </span>
+        )}
+        <span className="block text-[12px] text-ink mt-2 tabular-nums">
+          {isLoading ? "—" : (priceText ?? "—")}
+        </span>
+        <button
+          type="button"
+          onClick={handleQuickAdd}
+          disabled={isLoading || !product || (!firstAvailable && !!product)}
+          className="mt-3 w-full bg-ink text-canvas text-[10px] uppercase tracking-[0.25em] py-2.5 hover:bg-bronze transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
+        >
+          {adding || cartLoading ? (
+            <Loader2 className="h-3 w-3 animate-spin" />
+          ) : !product && !isLoading ? (
+            "Unavailable"
+          ) : firstAvailable || !product ? (
+            canOneClick ? "Quick Add" : "Quick Add — choose size"
+          ) : (
+            "Sold Out"
+          )}
+        </button>
+      </div>
     </div>
   );
 }
