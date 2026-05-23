@@ -27,14 +27,14 @@ if (typeof window !== "undefined") {
   // chunks that no longer exist. When a dynamic import fails (e.g. on
   // route navigation or checkout), reload once to fetch the new bundle.
   const handleStaleChunk = (event: Event) => {
-    const evt = event as ErrorEvent | PromiseRejectionEvent;
     const message =
-      evt.message ??
-      (evt.reason && String(evt.reason?.message ?? evt.reason)) ??
+      (event as ErrorEvent).message ??
+      ((event as PromiseRejectionEvent).reason &&
+        String((event as PromiseRejectionEvent).reason?.message ?? (event as PromiseRejectionEvent).reason)) ??
       "";
     const chunkUrl =
-      (evt as ErrorEvent).filename ??
-      (evt as PromiseRejectionEvent).reason?.stack ??
+      (event as ErrorEvent).filename ??
+      (event as PromiseRejectionEvent).reason?.stack ??
       "";
     if (
       /Failed to fetch dynamically imported module|Importing a module script failed|error loading dynamically imported module/i.test(
