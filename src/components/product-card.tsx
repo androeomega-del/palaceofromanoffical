@@ -39,9 +39,9 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
   const navigate = useNavigate();
   const addItem = useCartStore((s) => s.addItem);
   const openDrawer = useCartStore((s) => s.openDrawer);
-  const isLoading = useCartStore((s) => s.isLoading);
   const wishlisted = useWishlistStore((s) => s.handles.includes(p.handle));
   const toggleWishlist = useWishlistStore((s) => s.toggle);
+  const [adding, setAdding] = useState(false);
   const [buyingNow, setBuyingNow] = useState(false);
   const track = useInteractionStore((s) => s.track);
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -127,28 +127,36 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
     e.preventDefault();
     e.stopPropagation();
     if (soldOut) return;
+    // Multi-variant pieces MUST route to the PDP for explicit option selection —
+    // never trigger an immediate add-to-cart from the card.
     if (hasChoices || !firstAvailable) {
       navigate({ to: "/product/$handle", params: { handle: p.handle } });
       return;
     }
-    const added = await addItem({
-      product,
-      variantId: firstAvailable.id,
-      variantTitle: firstAvailable.title,
-      price: firstAvailable.price,
-      quantity: 1,
-      selectedOptions: firstAvailable.selectedOptions ?? [],
-    });
-    if (!added) {
-      toast.error("Could not add this item to bag.", { description: "Please try another size or refresh the page." });
-      return;
+    if (adding) return; // per-card spam guard
+    setAdding(true);
+    try {
+      const added = await addItem({
+        product,
+        variantId: firstAvailable.id,
+        variantTitle: firstAvailable.title,
+        price: firstAvailable.price,
+        quantity: 1,
+        selectedOptions: firstAvailable.selectedOptions ?? [],
+      });
+      if (!added) {
+        toast.error("Could not add this item to bag.", { description: "Please try another size or refresh the page." });
+        return;
+      }
+      track({ handle: p.handle, event: "cart", ...meta });
+      if (hasScarcity) {
+        track({ handle: p.handle, event: "scarcity_cart", ...meta });
+      }
+      openDrawer();
+      toast.success(`${p.title} — added to bag`);
+    } finally {
+      setAdding(false);
     }
-    track({ handle: p.handle, event: "cart", ...meta });
-    if (hasScarcity) {
-      track({ handle: p.handle, event: "scarcity_cart", ...meta });
-    }
-    openDrawer();
-    toast.success(`${p.title} — added to bag`);
   };
 
 
@@ -287,11 +295,12 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
           <button
             type="button"
             onClick={onAdd}
-            disabled={isLoading || soldOut}
+            disabled={soldOut || (!hasChoices && adding)}
             aria-label={addLabel}
+            aria-busy={!hasChoices && adding}
             className="flex-1 h-11 bg-ink text-canvas hover:bg-bronze transition-colors duration-300 text-[10px] uppercase tracking-[0.25em] font-medium inline-flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            {isLoading && !buyingNow ? (
+            {!hasChoices && adding ? (
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
             ) : (
               <>
@@ -304,7 +313,7 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
             <button
               type="button"
               onClick={onBuyNow}
-              disabled={buyingNow || isLoading}
+              disabled={buyingNow || (!hasChoices && adding)}
               aria-label="Buy Now"
               title="Buy Now"
               className="h-11 px-3 bg-bronze text-canvas hover:bg-ink transition-colors duration-300 text-[10px] uppercase tracking-[0.25em] font-medium inline-flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
