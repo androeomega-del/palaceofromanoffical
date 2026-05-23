@@ -24,8 +24,50 @@ if (typeof window !== "undefined") {
   installHydrationMonitor();
 
   // Stale-bundle recovery: after a redeploy, cached HTML may reference JS
-  // chunks that no longer exist. When a dynamic import fails (e.g. on
-  // route navigation or checkout), reload once to fetch the new bundle.
+  // chunks that no longer exist (404). Force exactly ONE hard reload per
+  // navigation target — keyed by current URL — to prevent reload loops if
+  // the new bundle is still broken on the same page.
+  const RELOAD_KEY = "__por_stale_chunk_reloaded_url";
+  const currentNavKey = () => window.location.pathname + window.location.search;
+
+  const alreadyReloadedForThisNav = () =>
+    sessionStorage.getItem(RELOAD_KEY) === currentNavKey();
+
+  const markReloadedForThisNav = () => {
+    sessionStorage.setItem(RELOAD_KEY, currentNavKey());
+  };
+
+  const triggerReload = (source: string, info: Record<string, unknown>) => {
+    if (alreadyReloadedForThisNav()) {
+      // eslint-disable-next-line no-console
+      console.log(
+        `[POR stale-bundle] Skipped reload (already reloaded for ${currentNavKey()}). source=${source}`,
+        info,
+      );
+      return;
+    }
+    // eslint-disable-next-line no-console
+    console.log(
+      `[POR stale-bundle] Reloading once for nav=${currentNavKey()}. source=${source}`,
+      info,
+    );
+    markReloadedForThisNav();
+    window.location.reload();
+  };
+
+  // Clear the per-nav guard whenever the user navigates somewhere new so
+  // the next nav target is allowed exactly one fresh reload attempt.
+  window.addEventListener("popstate", () => {
+    if (sessionStorage.getItem(RELOAD_KEY) !== currentNavKey()) {
+      sessionStorage.removeItem(RELOAD_KEY);
+    }
+  });
+
+  const isStaleChunkMessage = (message: string, chunkUrl: string) =>
+    /Failed to fetch dynamically imported module|Importing a module script failed|error loading dynamically imported module|ChunkLoadError/i.test(
+      message,
+    ) || /\/assets\/.*\.(?:js|mjs|css)/i.test(chunkUrl);
+
   const handleStaleChunk = (event: Event) => {
     const message =
       (event as ErrorEvent).message ??
@@ -36,57 +78,22 @@ if (typeof window !== "undefined") {
       (event as ErrorEvent).filename ??
       (event as PromiseRejectionEvent).reason?.stack ??
       "";
-    if (
-      /Failed to fetch dynamically imported module|Importing a module script failed|error loading dynamically imported module/i.test(
-        message,
-      )
-    ) {
-      const key = "__por_stale_chunk_reloaded";
-      if (!sessionStorage.getItem(key)) {
-        // eslint-disable-next-line no-console
-        console.log(
-          "[POR stale-bundle] Reloading — detected stale chunk. message=",
-          message,
-          "chunkUrl=",
-          chunkUrl,
-        );
-        sessionStorage.setItem(key, "1");
-        window.location.reload();
-      } else {
-        // eslint-disable-next-line no-console
-        console.log(
-          "[POR stale-bundle] Skipped reload (already reloaded this session). message=",
-          message,
-          "chunkUrl=",
-          chunkUrl,
-        );
-      }
+    if (isStaleChunkMessage(message, chunkUrl)) {
+      triggerReload("error/unhandledrejection", { message, chunkUrl });
     }
   };
+
   window.addEventListener("vite:preloadError", (event: Event) => {
-    const key = "__por_stale_chunk_reloaded";
-    const detail = (event as any).detail;
-    const chunkUrl = detail?.url ?? detail?.href ?? "";
-    if (!sessionStorage.getItem(key)) {
-      // eslint-disable-next-line no-console
-      console.log(
-        "[POR stale-bundle] Reloading — vite:preloadError. chunkUrl=",
-        chunkUrl,
-        "detail=",
-        detail,
-      );
-      sessionStorage.setItem(key, "1");
-      window.location.reload();
-    } else {
-      // eslint-disable-next-line no-console
-      console.log(
-        "[POR stale-bundle] Skipped reload (already reloaded this session). vite:preloadError chunkUrl=",
-        chunkUrl,
-      );
-    }
+    const detail = (event as CustomEvent).detail;
+    const chunkUrl =
+      (detail as { url?: string; href?: string } | undefined)?.url ??
+      (detail as { url?: string; href?: string } | undefined)?.href ??
+      "";
+    triggerReload("vite:preloadError", { chunkUrl, detail });
   });
   window.addEventListener("error", handleStaleChunk);
   window.addEventListener("unhandledrejection", handleStaleChunk);
+
 }
 
 
