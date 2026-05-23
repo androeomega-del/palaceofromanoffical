@@ -12,13 +12,45 @@
 
 import fs from 'node:fs';
 
-const SHOP = 'mwuwqi-vy.myshopify.com';
+const SHOP = (process.env.SHOPIFY_STORE_DOMAIN || 'mwuwqi-vy.myshopify.com')
+  .replace(/^https?:\/\//, '').replace(/\/+$/, '');
 const API = '2025-07';
-const TOKEN = process.env.SHOPIFY_ACCESS_TOKEN;
+const CLIENT_ID = process.env.SHOPIFY_CLIENT_ID;
+const CLIENT_SECRET = process.env.SHOPIFY_CLIENT_SECRET;
 const CSV = '/dev-server/public/imports/smart-collections-matrixify-fixed.csv';
 const DRY_RUN = process.argv.includes('--dry');
 
-if (!TOKEN) { console.error('Missing SHOPIFY_ACCESS_TOKEN'); process.exit(1); }
+if (!CLIENT_ID || !CLIENT_SECRET) {
+  console.error('Missing SHOPIFY_CLIENT_ID / SHOPIFY_CLIENT_SECRET');
+  process.exit(1);
+}
+
+// Client Credentials Grant — exchange app credentials for an Admin API token.
+let _tokenCache = null;
+async function getAccessToken() {
+  if (_tokenCache && _tokenCache.expiresAt - 60_000 > Date.now()) return _tokenCache.token;
+  const res = await fetch(`https://${SHOP}/admin/oauth/access_token`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify({
+      client_id: CLIENT_ID,
+      client_secret: CLIENT_SECRET,
+      grant_type: 'client_credentials',
+    }),
+  });
+  if (!res.ok) {
+    const t = await res.text().catch(() => '');
+    throw new Error(`client_credentials grant failed ${res.status}: ${t.slice(0, 240)}`);
+  }
+  const data = await res.json();
+  if (!data.access_token) throw new Error('grant returned no access_token');
+  _tokenCache = {
+    token: data.access_token,
+    expiresAt: Date.now() + (data.expires_in ?? 3600) * 1000,
+  };
+  console.log(`Obtained Admin API token (expires in ${data.expires_in ?? 3600}s)`);
+  return _tokenCache.token;
+}
 
 // --- Minimal RFC4180 CSV parser ---
 function parseCSV(text) {
