@@ -58,6 +58,32 @@ export function ConciergeWidget() {
   const ctx = usePageContext();
   const wishlist = useWishlistStore((s) => s.handles);
   const recent = useRecentlyViewedStore((s) => s.items);
+  const interactionRecords = useInteractionStore((s) => s.records);
+  const interactionHandles = useMemo(
+    () =>
+      Object.values(interactionRecords)
+        .sort((a, b) => b.score - a.score || b.lastTs - a.lastTs)
+        .slice(0, 20)
+        .map((r) => r.handle),
+    [interactionRecords],
+  );
+  const [shopperName, setShopperName] = useState<string | undefined>(undefined);
+  useEffect(() => {
+    let cancelled = false;
+    supabase.auth.getUser().then(({ data }) => {
+      if (cancelled) return;
+      const meta = (data.user?.user_metadata ?? {}) as Record<string, unknown>;
+      const name =
+        (meta.first_name as string | undefined) ||
+        (meta.full_name as string | undefined)?.split(" ")[0] ||
+        (meta.name as string | undefined)?.split(" ")[0] ||
+        data.user?.email?.split("@")[0];
+      if (name) setShopperName(name);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   const [state, setState] = useState<{
     loading: boolean;
     data: ConciergeResult | null;
