@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { MapPin } from "lucide-react";
-import { useLocationStore } from "@/stores/location-store";
+import { useLocationStore, useLocationPopover } from "@/stores/location-store";
 import { estimateDeliveryForZip } from "@/lib/delivery-estimate";
 
 type Props = {
@@ -10,7 +10,10 @@ type Props = {
 
 /**
  * PDP delivery badge shown directly below the Add to Bag button.
- * - No zip set → prompts the shopper to enter one.
+ * - No zip set → prompts the shopper to enter one. Clicking "Add location"
+ *   flips a shared store signal that the header's `DeliverToButton`
+ *   listens to and opens its popover. This avoids having two popovers
+ *   on the page and keeps zip entry in one canonical UI.
  * - Zip set    → renders "Delivering to {zip} · Get it by {date}".
  *
  * Honest copy per mem://constraints/team-identity: all pieces dispatch
@@ -18,6 +21,8 @@ type Props = {
  */
 export function PdpDeliveryBadge({ vendor, onSetLocation }: Props) {
   const zip = useLocationStore((s) => s.zip);
+  const openHeaderPopover = useLocationPopover((s) => s.setOpen);
+  const handleSet = onSetLocation ?? (() => openHeaderPopover(true));
 
   // Defer to a mounted flag — the store hydrates from localStorage and would
   // otherwise mismatch the SSR render.
@@ -36,7 +41,7 @@ export function PdpDeliveryBadge({ vendor, onSetLocation }: Props) {
           Enter zip code to see estimated delivery dates.{" "}
           <button
             type="button"
-            onClick={onSetLocation}
+            onClick={handleSet}
             className="underline underline-offset-4 hover:text-bronze"
           >
             Add location
@@ -70,6 +75,13 @@ export function PdpDeliveryBadge({ vendor, onSetLocation }: Props) {
         <span className="block text-[10px] uppercase tracking-[0.2em] text-muted-foreground mt-1">
           Dispatched from {estimate.origin.country} · {estimate.minDays}–{estimate.maxDays} business days
         </span>
+        <button
+          type="button"
+          onClick={handleSet}
+          className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground hover:text-bronze underline underline-offset-4 mt-1"
+        >
+          Change location
+        </button>
       </div>
     </div>
   );
