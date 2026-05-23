@@ -127,28 +127,36 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
     e.preventDefault();
     e.stopPropagation();
     if (soldOut) return;
+    // Multi-variant pieces MUST route to the PDP for explicit option selection —
+    // never trigger an immediate add-to-cart from the card.
     if (hasChoices || !firstAvailable) {
       navigate({ to: "/product/$handle", params: { handle: p.handle } });
       return;
     }
-    const added = await addItem({
-      product,
-      variantId: firstAvailable.id,
-      variantTitle: firstAvailable.title,
-      price: firstAvailable.price,
-      quantity: 1,
-      selectedOptions: firstAvailable.selectedOptions ?? [],
-    });
-    if (!added) {
-      toast.error("Could not add this item to bag.", { description: "Please try another size or refresh the page." });
-      return;
+    if (adding) return; // per-card spam guard
+    setAdding(true);
+    try {
+      const added = await addItem({
+        product,
+        variantId: firstAvailable.id,
+        variantTitle: firstAvailable.title,
+        price: firstAvailable.price,
+        quantity: 1,
+        selectedOptions: firstAvailable.selectedOptions ?? [],
+      });
+      if (!added) {
+        toast.error("Could not add this item to bag.", { description: "Please try another size or refresh the page." });
+        return;
+      }
+      track({ handle: p.handle, event: "cart", ...meta });
+      if (hasScarcity) {
+        track({ handle: p.handle, event: "scarcity_cart", ...meta });
+      }
+      openDrawer();
+      toast.success(`${p.title} — added to bag`);
+    } finally {
+      setAdding(false);
     }
-    track({ handle: p.handle, event: "cart", ...meta });
-    if (hasScarcity) {
-      track({ handle: p.handle, event: "scarcity_cart", ...meta });
-    }
-    openDrawer();
-    toast.success(`${p.title} — added to bag`);
   };
 
 
