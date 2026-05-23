@@ -573,6 +573,13 @@ function ProductView({
                   />
                 ))}
 
+              {/* Low-stock alert — per-variant inventory, shown only when 1–3 remain */}
+              {selectedVariant && selectedVariant.quantityAvailable > 0 && selectedVariant.quantityAvailable <= 3 && (
+                <p className="text-[11px] tracking-wide text-[oklch(0.52_0.11_25)] font-medium animate-pulse">
+                  Only {selectedVariant.quantityAvailable} {selectedVariant.quantityAvailable === 1 ? "piece" : "pieces"} remaining – Selling fast
+                </p>
+              )}
+
               <div className="flex gap-4">
                 <div className="flex items-center border border-[var(--studio-rule)] bg-white h-16 shadow-sm">
                   <button
