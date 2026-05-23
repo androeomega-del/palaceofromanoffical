@@ -10,6 +10,7 @@ import { CampaignVideo } from "@/components/campaign-video";
 import { LUXURY_TIERS } from "@/lib/luxury-brands";
 import { ForYouFeed } from "@/components/for-you-feed";
 import { TrendingNowRail } from "@/components/trending-now";
+import { DynamicEditionSlot } from "@/components/dynamic-edition-slot";
 
 import heroImage from "@/assets/home-hero.jpg";
 import summerHero from "@/assets/summer-bento-hero.jpg";
@@ -256,12 +257,20 @@ function HomePage() {
 
   return (
     <>
+      {/* AI-GENERATED 48h EDITION — fully dynamic hero + 3 curated rails.
+          Regenerated every 48h by a cron job. Renders nothing if no active
+          blueprint exists, so the handcrafted homepage below remains intact. */}
+      <HydrationSafeClientOnly fallback={null}>
+        <DynamicEditionSlot />
+      </HydrationSafeClientOnly>
+
       {/* 1. SUMMER BENTO STOREFRONT — Architectural Resort.
           Rendered client-only to avoid SSR/CSR hydration mismatches while
           the bento markup is iterated on. */}
       <HydrationSafeClientOnly fallback={<SummerBentoSkeleton />}>
         <SummerBento {...SUMMER_BENTO_PROPS} />
       </HydrationSafeClientOnly>
+
 
       {/* TRUST STRIP — confirms intent in <2s under hero. Reduces bounce by
           signalling authenticity + fast EU dispatch before the visitor scrolls. */}
