@@ -216,6 +216,13 @@ function CollectionPage() {
       last?.pageInfo?.hasNextPage ? last.pageInfo.endCursor : undefined,
   });
 
+  // Auto-load every remaining page — no pagination UI, no cap.
+  useEffect(() => {
+    if (q.hasNextPage && !q.isFetchingNextPage) {
+      q.fetchNextPage();
+    }
+  }, [q.hasNextPage, q.isFetchingNextPage, q.data?.pages.length]);
+
   const pages = q.data?.pages ?? [];
   const data = pages[0] ?? null;
   const filters = data?.filters ?? [];
