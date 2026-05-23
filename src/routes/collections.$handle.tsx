@@ -382,7 +382,7 @@ function CollectionPage() {
                 {editorialCopy!.tagline}
               </p>
               <p className="mt-8 text-[10px] uppercase tracking-[0.3em] text-canvas/60">
-                {q.isLoading ? "Loading…" : `${edges.length} ${edges.length === 1 ? "Piece" : "Pieces"}`}
+                {countLabel}
               </p>
             </div>
           </div>
