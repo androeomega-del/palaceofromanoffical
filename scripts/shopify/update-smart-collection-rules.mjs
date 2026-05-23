@@ -121,6 +121,7 @@ for (const r of rows) {
       body_html: r[idx['Body HTML']],
       sort_order: r[idx['Sort Order']] || 'best-selling',
       published: (r[idx['Published']] || 'TRUE').toUpperCase() === 'TRUE',
+      matchColumn: (r[idx['Match Column']] || 'any').toLowerCase(),
       rules: [],
     });
   }
