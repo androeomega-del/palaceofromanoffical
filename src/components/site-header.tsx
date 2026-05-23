@@ -151,7 +151,12 @@ export function SiteHeader() {
           <span className="opacity-50 mx-2">·</span>
           Weekly Limited-Edition Drops
           <span className="opacity-50 mx-2">·</span>
-          <Link to="/collections/$handle" params={{ handle: "new-arrivals" }} className="underline decoration-bronze/60 underline-offset-4 hover:text-bronze transition-colors">
+          {liveHandles && !liveHandles.has("new-arrivals") ? (
+            <Link to="/shop" search={{ sort: "CREATED_AT-true", inStock: "true" } as any} className="underline decoration-bronze/60 underline-offset-4 hover:text-bronze transition-colors">
+              See This Week's Edit →
+            </Link>
+          ) : (
+            <Link to="/collections/$handle" params={{ handle: "new-arrivals" }} className="underline decoration-bronze/60 underline-offset-4 hover:text-bronze transition-colors">
             See This Week's Edit →
           </Link>
           <button
