@@ -11,6 +11,11 @@ import {
   CheckSquare,
   Mail,
   Sparkles,
+  LayoutDashboard,
+  FileText,
+  TrendingUp,
+  Star,
+  Inbox,
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin/")({
@@ -32,6 +37,36 @@ type Tile = {
 };
 
 const TILES: Tile[] = [
+  {
+    to: "/admin/homepage-curation",
+    label: "Homepage Curation",
+    desc: "Active daily layout, hotspots & force-refresh",
+    icon: LayoutDashboard,
+  },
+  {
+    to: "/admin/landing-pages",
+    label: "Landing Pages",
+    desc: "AI-generated trend pages — stage, activate, expire",
+    icon: FileText,
+  },
+  {
+    to: "/admin/trending-brands",
+    label: "Trending Brands",
+    desc: "Seed the signal table that feeds Claude",
+    icon: TrendingUp,
+  },
+  {
+    to: "/admin/reviews",
+    label: "Reviews",
+    desc: "Approve or reject customer reviews",
+    icon: Star,
+  },
+  {
+    to: "/admin/inbox",
+    label: "Inbox",
+    desc: "Contact, newsletter, stock alerts, abandoned carts",
+    icon: Inbox,
+  },
   {
     to: "/admin/growth-os",
     label: "Growth OS",
