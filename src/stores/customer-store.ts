@@ -46,12 +46,14 @@ export const useCustomerStore = create<CustomerStore>()(
       name: "por-customer-token-v1",
       storage: createJSONStorage(() =>
         typeof window === "undefined"
-          ? // SSR-safe no-op
-            ({
+          ? ({
               getItem: () => null,
               setItem: () => undefined,
               removeItem: () => undefined,
-            } as Storage)
+              clear: () => undefined,
+              key: () => null,
+              length: 0,
+            } as unknown as Storage)
           : localStorage,
       ),
     },
