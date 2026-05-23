@@ -22,7 +22,39 @@ import { installHydrationMonitor } from "@/lib/hydration-monitor";
 // mismatch warnings with timestamps + component names. No-op on the server.
 if (typeof window !== "undefined") {
   installHydrationMonitor();
+
+  // Stale-bundle recovery: after a redeploy, cached HTML may reference JS
+  // chunks that no longer exist. When a dynamic import fails (e.g. on
+  // route navigation or checkout), reload once to fetch the new bundle.
+  const handleStaleChunk = (event: Event) => {
+    const message =
+      (event as ErrorEvent).message ??
+      ((event as PromiseRejectionEvent).reason &&
+        String((event as PromiseRejectionEvent).reason?.message ?? (event as PromiseRejectionEvent).reason)) ??
+      "";
+    if (
+      /Failed to fetch dynamically imported module|Importing a module script failed|error loading dynamically imported module/i.test(
+        message,
+      )
+    ) {
+      const key = "__por_stale_chunk_reloaded";
+      if (!sessionStorage.getItem(key)) {
+        sessionStorage.setItem(key, "1");
+        window.location.reload();
+      }
+    }
+  };
+  window.addEventListener("vite:preloadError", () => {
+    const key = "__por_stale_chunk_reloaded";
+    if (!sessionStorage.getItem(key)) {
+      sessionStorage.setItem(key, "1");
+      window.location.reload();
+    }
+  });
+  window.addEventListener("error", handleStaleChunk);
+  window.addEventListener("unhandledrejection", handleStaleChunk);
 }
+
 
 function NotFoundComponent() {
   const recoveryLinks: { to: string; label: string; eyebrow: string }[] = [
