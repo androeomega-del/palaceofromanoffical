@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import DOMPurify from "dompurify";
 import { adminBeforeLoad } from "@/lib/admin-route-guard";
 import {
   listQueue,
@@ -547,7 +548,15 @@ function PreviewBody({ item, onClose }: { item: Record<string, unknown>; onClose
       {kind === "editorial" && (
         <article
           className="prose prose-sm max-w-none prose-headings:font-serif prose-a:text-primary"
-          dangerouslySetInnerHTML={{ __html: (payload.bodyHtml as string) ?? "<p>No body</p>" }}
+          dangerouslySetInnerHTML={{
+            __html: DOMPurify.sanitize(
+              (payload.bodyHtml as string) ?? "<p>No body</p>",
+              {
+                ALLOWED_TAGS: ["p", "h2", "h3", "h4", "ul", "ol", "li", "strong", "em", "a", "br", "blockquote"],
+                ALLOWED_ATTR: ["href", "target", "rel"],
+              },
+            ),
+          }}
         />
       )}
 
