@@ -10,6 +10,8 @@ import {
   type MegaDepartment,
   type BrandEntry,
 } from "@/lib/nav-config";
+import { getShopifyMenu } from "@/lib/menu-source.functions";
+import { buildDepartmentsFromShopifyMenu } from "@/lib/megamenu-source";
 
 /**
  * Desktop megamenu.
