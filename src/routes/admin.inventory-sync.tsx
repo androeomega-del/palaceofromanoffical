@@ -183,11 +183,46 @@ function AdminInventorySync() {
         </Button>
       </header>
 
+      {/* Ship-from origins — manual refresh (cron deferred). Recomputes
+          per-product shipping origin from Shopify inventory levels using
+          the Most-Stock-Wins rule (ties → IT > DE > SE). */}
+      <Card className="mb-6 p-6">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h2 className="font-serif text-lg">Ship-from origins</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Re-reads each product's inventory locations from Shopify and
+              recomputes the “Ships from …” badge used on every card and PDP.
+              Most-stock-wins; ties default to Napoli (IT).
+            </p>
+            {originsResult ? (
+              <p className="mt-2 text-xs text-muted-foreground">
+                Last run: <strong>{originsResult.written}</strong> products
+                written across <strong>{originsResult.pages}</strong> Shopify
+                pages ({originsResult.products} scanned).
+              </p>
+            ) : null}
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => refreshOrigins.mutate()}
+            disabled={refreshOrigins.isPending}
+          >
+            <MapPin
+              className={`mr-2 h-4 w-4 ${refreshOrigins.isPending ? "animate-pulse" : ""}`}
+            />
+            {refreshOrigins.isPending ? "Refreshing…" : "Refresh ship-from origins"}
+          </Button>
+        </div>
+      </Card>
+
       {error ? (
         <Card className="border-destructive p-6 text-sm text-destructive">
           {(error as Error).message}
         </Card>
       ) : null}
+
 
       {isLoading || !data ? (
         <div className="text-sm text-muted-foreground">Loading…</div>
