@@ -21,6 +21,7 @@ import {
   approveQueueItem,
 } from "@/lib/growth-os-extra.functions";
 import { drainGrowthJobsNow, getGrowthJobsSummary } from "@/lib/growth-jobs.functions";
+import { regenerateHomepageLayout } from "@/lib/homepage-layout.functions";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -179,6 +180,14 @@ function GrowthOsPage() {
       );
       qc.invalidateQueries({ queryKey: ["growth-os", "jobs-summary"] });
     },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const regenLayoutFn = useServerFn(regenerateHomepageLayout);
+  const regenLayout = useMutation({
+    mutationFn: () => regenLayoutFn(),
+    onSuccess: (r) =>
+      toast.success(`New edition live: "${r.editionName}" · ${r.totalHandles} products across ${r.sectionsKept} rails`),
     onError: (e: Error) => toast.error(e.message),
   });
 
@@ -357,6 +366,25 @@ function GrowthOsPage() {
             <Button size="sm" disabled={drain.isPending} onClick={() => drain.mutate()}>
               {drain.isPending ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <PlayCircle className="mr-1.5 h-4 w-4" />}
               Run queue now
+            </Button>
+          </div>
+        </Card>
+
+        {/* Homepage edition regen */}
+        <Card className="mb-8 p-5">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p className="text-xs uppercase tracking-wider text-muted-foreground">Auto-morphing homepage</p>
+              <p className="mt-1 text-sm">
+                AI Creative Director regenerates the homepage hero + 3 curated rails every 48 hours from live velocity signals.
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Use this to seed the very first edition or force a fresh blueprint.
+              </p>
+            </div>
+            <Button size="sm" disabled={regenLayout.isPending} onClick={() => regenLayout.mutate()}>
+              {regenLayout.isPending ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Sparkles className="mr-1.5 h-4 w-4" />}
+              Regenerate homepage edition
             </Button>
           </div>
         </Card>

@@ -469,6 +469,30 @@ export type Database = {
         }
         Relationships: []
       }
+      homepage_daily_layout: {
+        Row: {
+          created_at: string
+          generated_at: string
+          id: string
+          is_active: boolean
+          layout_json: Json
+        }
+        Insert: {
+          created_at?: string
+          generated_at?: string
+          id?: string
+          is_active?: boolean
+          layout_json: Json
+        }
+        Update: {
+          created_at?: string
+          generated_at?: string
+          id?: string
+          is_active?: boolean
+          layout_json?: Json
+        }
+        Relationships: []
+      }
       interaction_events: {
         Row: {
           created_at: string
