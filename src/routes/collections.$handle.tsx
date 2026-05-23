@@ -276,18 +276,30 @@ function CollectionPage() {
   const title = data?.collection?.title ?? titleizeHandle(handle);
   const description = data?.collection?.description;
 
-  // Header count: when total is known, show "Showing X of N"; while still
-  // loading the first page, show a loading hint; otherwise fall back to the
-  // loaded-count label.
+  // Header count — reflects the active filter/sort state, not the raw
+  // collection size. Storefront API doesn't return a filtered totalCount,
+  // so when any filter is active we show the loaded count with a "+"
+  // suffix until the cursor is exhausted (hasNextPage === false), at which
+  // point the loaded count IS the true filtered total.
   const loadedCount = edges.length;
+  const filtersActive =
+    Boolean(typeFilter) || selections.length > 0 || Boolean(priceRange);
   const noun = (n: number) => (n === 1 ? "Piece" : "Pieces");
-  const countLabel = q.isLoading
-    ? "Loading…"
-    : total != null
-      ? loadedCount < total && !typeFilter && selections.length === 0 && !priceRange
-        ? `Showing ${loadedCount} of ${total} ${noun(total)}`
-        : `${loadedCount} of ${total} ${noun(total)}`
+  let countLabel: string;
+  if (q.isLoading) {
+    countLabel = "Loading…";
+  } else if (filtersActive) {
+    countLabel = q.hasNextPage
+      ? `Showing ${loadedCount}+ ${noun(loadedCount)}`
       : `${loadedCount} ${noun(loadedCount)}`;
+  } else if (total != null) {
+    countLabel =
+      loadedCount < total
+        ? `Showing ${loadedCount} of ${total} ${noun(total)}`
+        : `${total} ${noun(total)}`;
+  } else {
+    countLabel = `${loadedCount} ${noun(loadedCount)}`;
+  }
 
 
   const selectedInputs = useMemo(() => new Set(selections.map((s) => s.input)), [selections]);
