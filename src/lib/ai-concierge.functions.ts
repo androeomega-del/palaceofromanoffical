@@ -73,15 +73,29 @@ const ContextSchema = z.object({
   interactionHandles: z.array(z.string().min(1).max(120)).max(40).default([]),
   /** Optional first name to address the shopper personally. */
   shopperName: z.string().trim().min(1).max(60).optional(),
+  /** ISO 3166-1 alpha-2 destination country (e.g. "US", "GB", "DE"). */
+  shopperCountry: z.string().trim().length(2).optional(),
+  /** Shopper's local "now" as ISO string — used for delivery-window math. */
+  shopperLocalTime: z.string().trim().min(10).max(40).optional(),
+  /** Free-form last user message — used for support-handoff keyword detection. */
+  userMessage: z.string().trim().max(500).optional(),
 });
 
 export type ConciergePick = { handle: string; reason: string };
+
+/** Support handoff payload — present when the AI detected a service intent. */
+export type ConciergeHandoff = {
+  message: string;
+  mailto: string;
+  buttonLabel: string;
+};
 
 export type ConciergeResult = {
   ok: true;
   greeting: string;
   picks: ConciergePick[];
   products: ShopifyProduct[];
+  handoff?: ConciergeHandoff;
 } | {
   ok: false;
   error: string;
