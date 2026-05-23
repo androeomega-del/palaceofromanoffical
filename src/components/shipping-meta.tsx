@@ -1,49 +1,82 @@
 import { useEffect, useState } from "react";
 import { MapPin } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { useLocationStore, useLocationPopover, DEFAULT_ZIP } from "@/stores/location-store";
 import {
   getShippingOriginOrDefault,
   formatOriginLabel,
+  type ShippingOrigin,
 } from "@/lib/shipping-origin";
 import { estimateForOriginAndZip } from "@/lib/delivery-estimate";
+import { getProductOriginsMap } from "@/lib/product-origins.functions";
 
 type Variant = "card" | "pdp";
 
 type Props = {
   vendor: string | null | undefined;
+  /** When provided, looks up the real Shopify inventory origin (most-stock
+   *  wins) cached in `product_origins`. Falls back to the vendor-based map
+   *  when no row exists yet. */
+  handle?: string | null;
   variant?: Variant;
 };
+
+/** Normalize a country-code string (e.g. "IT") to our internal ShippingOrigin. */
+function originFromRow(
+  row: { country_code: string | null; country: string | null; city: string | null } | undefined,
+): ShippingOrigin | null {
+  if (!row?.country_code) return null;
+  const code = row.country_code.toUpperCase();
+  if (code !== "IT" && code !== "SE" && code !== "DE") return null;
+  const countryName =
+    code === "IT" ? "Italy" : code === "SE" ? "Sweden" : "Germany";
+  return {
+    country: countryName,
+    countryCode: code,
+    city: row.city ?? undefined,
+  };
+}
+
+/** Shared react-query hook — one network call shared across every card +
+ *  PDP on the page (deduped by query key). */
+function useProductOriginsMap() {
+  return useQuery({
+    queryKey: ["product-origins-map"],
+    queryFn: () => getProductOriginsMap(),
+    staleTime: 5 * 60_000,
+    gcTime: 30 * 60_000,
+  });
+}
 
 /**
  * Unified "Ships from {country} · Get it by {date}" badge. Used on every
  * product card AND on the PDP so the placement, copy, icon, and typography
  * are identical across the site.
  *
- * - `variant="card"` → compact two-line tag for the grid (≈10–11px).
- * - `variant="pdp"`  → fuller block under the Add-to-Bag CTA with a
- *   "Change location" link.
+ * Origin resolution (priority order):
+ *  1. `product_origins.country_code` cached from Shopify inventory
+ *     (most-stock-wins across the product's stocked locations).
+ *  2. Vendor → BG warehouse map (`getShippingOriginOrDefault`).
+ *  3. DEFAULT_ORIGIN (Italy — BG's primary warehouse).
  *
- * Origin resolves via {@link getShippingOriginOrDefault} so the badge is
- * never blank. Zip resolves via the location store, falling back to
- * {@link DEFAULT_ZIP} so the delivery date renders even before the IP
- * auto-detect resolves.
+ * Zip resolves via the location store, falling back to {@link DEFAULT_ZIP}
+ * so the delivery date renders even before IP auto-detect resolves.
  */
-export function ShippingMeta({ vendor, variant = "card" }: Props) {
+export function ShippingMeta({ vendor, handle, variant = "card" }: Props) {
   const zip = useLocationStore((s) => s.zip);
   const openHeaderPopover = useLocationPopover((s) => s.setOpen);
+  const { data: originsMap } = useProductOriginsMap();
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
   const effectiveZip = zip ?? DEFAULT_ZIP;
-  const origin = getShippingOriginOrDefault(vendor);
+  const inventoryOrigin = handle ? originFromRow(originsMap?.[handle]) : null;
+  const origin = inventoryOrigin ?? getShippingOriginOrDefault(vendor);
   const originLabel = formatOriginLabel(origin)!;
   const estimate = estimateForOriginAndZip(origin, effectiveZip);
 
   if (variant === "card") {
-    // SSR-safe: render the origin line immediately; show the date once
-    // mounted so we can use the (possibly user-set) zip without hydration
-    // mismatch.
     return (
       <div className="mt-1.5 space-y-0.5">
         <p className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">

@@ -328,7 +328,7 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
         <p className="text-sm">{formatPrice(price)}</p>
         {onSale && <p className="text-xs text-muted-foreground line-through">{formatPrice(compareAt)}</p>}
       </div>
-      <ShippingMeta vendor={p.vendor} variant="card" />
+      <ShippingMeta vendor={p.vendor} handle={p.handle} variant="card" />
 
     </Link>
   );
