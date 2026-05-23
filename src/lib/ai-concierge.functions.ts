@@ -263,8 +263,20 @@ export const fetchConciergePicks = createServerFn({ method: "POST" })
     }
 
     // 4. Compose the brief for Claude.
+    //    Shopper's local "now" + destination drive the delivery-window math.
+    //    If destination is missing we still surface origin per candidate but
+    //    skip ETAs (the LLM is told to acknowledge the unknown).
+    const shopperNow = (() => {
+      if (!data.shopperLocalTime) return new Date();
+      const parsed = new Date(data.shopperLocalTime);
+      return Number.isFinite(parsed.getTime()) ? parsed : new Date();
+    })();
+    const destCountry = data.shopperCountry?.toUpperCase();
+
     const contextSummary = [
       data.shopperName ? `Shopper's name: ${data.shopperName}.` : null,
+      `Shopper's local date/time: ${shopperNow.toISOString()}.`,
+      destCountry ? `Shipping destination: ${destCountry}.` : `Shipping destination: unknown.`,
       data.pageType === "product" && anchor
         ? `Shopper is viewing the product "${anchor.title}" by ${anchor.vendor} (${anchor.productType || "—"}).`
         : null,
@@ -286,6 +298,7 @@ export const fetchConciergePicks = createServerFn({ method: "POST" })
       data.interactionHandles.length > 0
         ? `Strongest implicit interest (hover/click/cart-weighted): ${data.interactionHandles.slice(0, 5).join(", ")}.`
         : null,
+      data.userMessage ? `Shopper said: "${data.userMessage}".` : null,
     ]
       .filter(Boolean)
       .join("\n");
@@ -294,7 +307,13 @@ export const fetchConciergePicks = createServerFn({ method: "POST" })
       .map((c) => {
         const trend = trendMap.get((c.node.vendor || "").toLowerCase());
         const trendTag = trend ? ` [${trend.trend_status} · ${trend.key_aesthetic}]` : "";
-        return `- ${c.node.handle} :: ${c.node.vendor} · ${c.node.productType || "—"} · "${c.node.title}"${trendTag}`;
+        const origin = getShippingOrigin(c.node.vendor);
+        const eta =
+          origin && destCountry ? estimateDelivery(origin, destCountry, shopperNow) : null;
+        const originTag = origin
+          ? ` · ships from ${origin.country}${eta ? ` · ${eta.minDays}–${eta.maxDays} business days (arrives by ${eta.latestArrivalIso})` : ""}`
+          : "";
+        return `- ${c.node.handle} :: ${c.node.vendor} · ${c.node.productType || "—"} · "${c.node.title}"${trendTag}${originTag}`;
       })
       .join("\n");
 
@@ -328,17 +347,25 @@ PRIMARY TASKS
 3. Weight your edit toward houses the market is actively chasing right now — see MARKET TRENDS. Use the trend status to inform priority and the key aesthetic to inform vocabulary.
 4. If a shopper's name is provided, you may address them by it — once, with restraint.
 
+DELIVERY & DEADLINE AWARENESS (non-negotiable)
+- You are aware of the current date and the estimated shipping windows for every candidate, based on its origin boutique (Italy, Sweden, or Germany) and the shopper's shipping destination. Each candidate carries "ships from {country} · {min}–{max} business days (arrives by {ISO date})".
+- If the shopper mentions an upcoming event, vacation, wedding, holiday, or any specific deadline, you MUST strictly filter your picks to only candidates whose "arrives by" date lands on or before the shopper's deadline. Pieces that cannot arrive in time are off the table for that request — do not list them.
+- If the shopper asks for a piece that cannot arrive in time, politely acknowledge the transit time from its origin country in one short clause, and immediately pivot to a comparable in-stock alternative shipping from a closer origin.
+- When the shopper has NOT mentioned a deadline, you may still weave the origin into the rationale subtly and factually — e.g. "Ships from Italy", "An Italian piece, dispatched within the week" — never invent ateliers, cities, or boutiques we do not have. Always say "Ships from {country}", never "from our boutique in {city}".
+- Origin and ETA copy are estimates, never promises. Use language like "arrives roughly", "within the week", "should reach you by", never "guaranteed".
+
 RULES (non-negotiable)
 - You may ONLY recommend handles that appear verbatim in the CANDIDATES list. Every handle in that list is currently active and in stock at Palace of Roman. Never invent a handle. Never reference a piece outside the list.
-- When a candidate carries a trend tag (in brackets after its title), prefer it — Trending #1 > High Heat > Rising Trend > Consistent Top Seller — unless the shopper's anchor or affinity argues otherwise.
+- When a candidate carries a trend tag (in brackets after its title), prefer it — Trending #1 > High Heat > Rising Trend > Consistent Top Seller — unless the shopper's anchor, affinity, or deadline argues otherwise.
 - When the rationale touches on momentum (e.g. a Miu Miu ballet flat or a Loewe Puzzle silhouette), weave the trend language in subtly — never as marketing copy, always as a stylist's observation.
 - Use fashion-literate terminology: drape, silhouette, line, proportion, tonal balance, structural contrast, grounding the look, weight, hand, fall, register. Avoid generic phrasing like "this looks good with", "great choice", "you'll love this".
 - No exclamation marks. No emojis. No hard-sell. The voice is curatorial, not transactional.
 - Greeting (≤120 chars) is a single editorial line that frames the edit — not a question, not a sales pitch.
-- Each pick's reason (≤70 chars) names the specific styling rationale (e.g. "Grounds the silhouette with a leather counterweight", "Echoes the Miu Miu ballet-flat moment").
+- Each pick's reason (≤70 chars) names the specific styling rationale, optionally referencing origin when relevant to a deadline (e.g. "Italian shipment — arrives in time for Saturday").
 
 OUTPUT
 JSON ONLY: { "greeting": string, "picks": [{ "handle": string, "reason": string }] } — return EXACTLY 4 picks. Each handle MUST be present verbatim in the candidate list.`;
+
 
     const llmOut = await callLlmJson<LlmOut>(
       {
