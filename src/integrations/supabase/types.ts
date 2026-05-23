@@ -775,6 +775,36 @@ export type Database = {
         }
         Relationships: []
       }
+      trending_brands: {
+        Row: {
+          brand_name: string
+          category: string
+          created_at: string
+          id: string
+          key_aesthetic: string
+          trend_status: string
+          updated_at: string
+        }
+        Insert: {
+          brand_name: string
+          category: string
+          created_at?: string
+          id?: string
+          key_aesthetic: string
+          trend_status: string
+          updated_at?: string
+        }
+        Update: {
+          brand_name?: string
+          category?: string
+          created_at?: string
+          id?: string
+          key_aesthetic?: string
+          trend_status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
