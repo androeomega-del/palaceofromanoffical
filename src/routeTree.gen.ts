@@ -42,7 +42,9 @@ import { Route as CampaignDolceGabbanaSwimRouteImport } from './routes/campaign.
 import { Route as BrandVendorRouteImport } from './routes/brand.$vendor'
 import { Route as AdminShopifySyncRouteImport } from './routes/admin.shopify-sync'
 import { Route as AdminSeoHealthRouteImport } from './routes/admin.seo-health'
+import { Route as AdminLandingPagesRouteImport } from './routes/admin.landing-pages'
 import { Route as AdminInventorySyncRouteImport } from './routes/admin.inventory-sync'
+import { Route as AdminHomepageCurationRouteImport } from './routes/admin.homepage-curation'
 import { Route as AdminGrowthOsRouteImport } from './routes/admin.growth-os'
 import { Route as AdminEmailRecoveryRouteImport } from './routes/admin.email-recovery'
 import { Route as AdminCollectionImageQaRouteImport } from './routes/admin.collection-image-qa'
@@ -232,9 +234,19 @@ const AdminSeoHealthRoute = AdminSeoHealthRouteImport.update({
   path: '/admin/seo-health',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminLandingPagesRoute = AdminLandingPagesRouteImport.update({
+  id: '/admin/landing-pages',
+  path: '/admin/landing-pages',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminInventorySyncRoute = AdminInventorySyncRouteImport.update({
   id: '/admin/inventory-sync',
   path: '/admin/inventory-sync',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminHomepageCurationRoute = AdminHomepageCurationRouteImport.update({
+  id: '/admin/homepage-curation',
+  path: '/admin/homepage-curation',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminGrowthOsRoute = AdminGrowthOsRouteImport.update({
@@ -392,7 +404,9 @@ export interface FileRoutesByFullPath {
   '/admin/collection-image-qa': typeof AdminCollectionImageQaRoute
   '/admin/email-recovery': typeof AdminEmailRecoveryRoute
   '/admin/growth-os': typeof AdminGrowthOsRoute
+  '/admin/homepage-curation': typeof AdminHomepageCurationRoute
   '/admin/inventory-sync': typeof AdminInventorySyncRoute
+  '/admin/landing-pages': typeof AdminLandingPagesRoute
   '/admin/seo-health': typeof AdminSeoHealthRoute
   '/admin/shopify-sync': typeof AdminShopifySyncRoute
   '/brand/$vendor': typeof BrandVendorRoute
@@ -449,7 +463,9 @@ export interface FileRoutesByTo {
   '/admin/collection-image-qa': typeof AdminCollectionImageQaRoute
   '/admin/email-recovery': typeof AdminEmailRecoveryRoute
   '/admin/growth-os': typeof AdminGrowthOsRoute
+  '/admin/homepage-curation': typeof AdminHomepageCurationRoute
   '/admin/inventory-sync': typeof AdminInventorySyncRoute
+  '/admin/landing-pages': typeof AdminLandingPagesRoute
   '/admin/seo-health': typeof AdminSeoHealthRoute
   '/admin/shopify-sync': typeof AdminShopifySyncRoute
   '/brand/$vendor': typeof BrandVendorRoute
@@ -508,7 +524,9 @@ export interface FileRoutesById {
   '/admin/collection-image-qa': typeof AdminCollectionImageQaRoute
   '/admin/email-recovery': typeof AdminEmailRecoveryRoute
   '/admin/growth-os': typeof AdminGrowthOsRoute
+  '/admin/homepage-curation': typeof AdminHomepageCurationRoute
   '/admin/inventory-sync': typeof AdminInventorySyncRoute
+  '/admin/landing-pages': typeof AdminLandingPagesRoute
   '/admin/seo-health': typeof AdminSeoHealthRoute
   '/admin/shopify-sync': typeof AdminShopifySyncRoute
   '/brand/$vendor': typeof BrandVendorRoute
@@ -568,7 +586,9 @@ export interface FileRouteTypes {
     | '/admin/collection-image-qa'
     | '/admin/email-recovery'
     | '/admin/growth-os'
+    | '/admin/homepage-curation'
     | '/admin/inventory-sync'
+    | '/admin/landing-pages'
     | '/admin/seo-health'
     | '/admin/shopify-sync'
     | '/brand/$vendor'
@@ -625,7 +645,9 @@ export interface FileRouteTypes {
     | '/admin/collection-image-qa'
     | '/admin/email-recovery'
     | '/admin/growth-os'
+    | '/admin/homepage-curation'
     | '/admin/inventory-sync'
+    | '/admin/landing-pages'
     | '/admin/seo-health'
     | '/admin/shopify-sync'
     | '/brand/$vendor'
@@ -683,7 +705,9 @@ export interface FileRouteTypes {
     | '/admin/collection-image-qa'
     | '/admin/email-recovery'
     | '/admin/growth-os'
+    | '/admin/homepage-curation'
     | '/admin/inventory-sync'
+    | '/admin/landing-pages'
     | '/admin/seo-health'
     | '/admin/shopify-sync'
     | '/brand/$vendor'
@@ -739,7 +763,9 @@ export interface RootRouteChildren {
   AdminCollectionImageQaRoute: typeof AdminCollectionImageQaRoute
   AdminEmailRecoveryRoute: typeof AdminEmailRecoveryRoute
   AdminGrowthOsRoute: typeof AdminGrowthOsRoute
+  AdminHomepageCurationRoute: typeof AdminHomepageCurationRoute
   AdminInventorySyncRoute: typeof AdminInventorySyncRoute
+  AdminLandingPagesRoute: typeof AdminLandingPagesRoute
   AdminSeoHealthRoute: typeof AdminSeoHealthRoute
   AdminShopifySyncRoute: typeof AdminShopifySyncRoute
   BrandVendorRoute: typeof BrandVendorRoute
@@ -998,11 +1024,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSeoHealthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/landing-pages': {
+      id: '/admin/landing-pages'
+      path: '/admin/landing-pages'
+      fullPath: '/admin/landing-pages'
+      preLoaderRoute: typeof AdminLandingPagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/inventory-sync': {
       id: '/admin/inventory-sync'
       path: '/admin/inventory-sync'
       fullPath: '/admin/inventory-sync'
       preLoaderRoute: typeof AdminInventorySyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/homepage-curation': {
+      id: '/admin/homepage-curation'
+      path: '/admin/homepage-curation'
+      fullPath: '/admin/homepage-curation'
+      preLoaderRoute: typeof AdminHomepageCurationRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/growth-os': {
@@ -1217,7 +1257,9 @@ const rootRouteChildren: RootRouteChildren = {
   AdminCollectionImageQaRoute: AdminCollectionImageQaRoute,
   AdminEmailRecoveryRoute: AdminEmailRecoveryRoute,
   AdminGrowthOsRoute: AdminGrowthOsRoute,
+  AdminHomepageCurationRoute: AdminHomepageCurationRoute,
   AdminInventorySyncRoute: AdminInventorySyncRoute,
+  AdminLandingPagesRoute: AdminLandingPagesRoute,
   AdminSeoHealthRoute: AdminSeoHealthRoute,
   AdminShopifySyncRoute: AdminShopifySyncRoute,
   BrandVendorRoute: BrandVendorRoute,
@@ -1250,3 +1292,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
