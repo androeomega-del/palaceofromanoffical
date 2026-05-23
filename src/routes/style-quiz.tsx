@@ -45,7 +45,7 @@ const QUESTIONS: Question[] = [
     prompt: "Who are we curating for?",
     options: [
       { label: "Women", imageIndex: 7, apply: (a) => ({ ...a, gender: "Women" }) },
-      { label: "Men", imageIndex: 22, apply: (a) => ({ ...a, gender: "Men" }) },
+      { label: "Men", imageIndex: 13, apply: (a) => ({ ...a, gender: "Men" }) },
       { label: "Unisex", imageIndex: 41, apply: (a) => ({ ...a, gender: "Unisex" }) },
     ],
   },
@@ -86,7 +86,7 @@ const QUESTIONS: Question[] = [
     prompt: "What are you in the market for?",
     options: [
       { label: "Bags", imageIndex: 19, apply: (a) => ({ ...a, collection: "bags" }) },
-      { label: "Shoes", imageIndex: 46, apply: (a) => ({ ...a, collection: "shoes" }) },
+      { label: "Shoes", imageIndex: 76, apply: (a) => ({ ...a, collection: "shoes" }) },
       { label: "Ready-to-Wear", imageIndex: 9, apply: (a) => ({ ...a, collection: "dresses" }) },
       { label: "Accessories", imageIndex: 63, apply: (a) => ({ ...a, collection: "sunglasses" }) },
     ],
