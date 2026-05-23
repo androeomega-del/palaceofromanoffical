@@ -504,11 +504,24 @@ function CollectionPage() {
                 )}
               </div>
             ) : (
-              <div className={`grid grid-cols-2 lg:grid-cols-3 ${gridGap}`}>
-                {gridEdges.map((e) => (
-                  <ProductCard key={e.node.id} product={e} />
-                ))}
-              </div>
+              <>
+                <div className={`grid grid-cols-2 lg:grid-cols-3 ${gridGap}`}>
+                  {gridEdges.map((e) => (
+                    <ProductCard key={e.node.id} product={e} />
+                  ))}
+                </div>
+                {q.hasNextPage && (
+                  <div className="mt-16 flex justify-center">
+                    <button
+                      onClick={() => q.fetchNextPage()}
+                      disabled={q.isFetchingNextPage}
+                      className="text-[11px] uppercase tracking-[0.25em] border border-ink px-8 py-3 hover:bg-ink hover:text-canvas transition-colors disabled:opacity-50"
+                    >
+                      {q.isFetchingNextPage ? "Loading…" : "Load More"}
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
