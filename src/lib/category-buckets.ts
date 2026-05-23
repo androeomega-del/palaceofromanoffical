@@ -38,7 +38,7 @@ export const CATEGORY_BUCKETS: ReadonlyArray<CategoryBucket> = [
   // belt / coat / jacket / sweater / code / down" — common in menswear titles
   // and tags, which were otherwise inflating a phantom "Dresses" chip on
   // /collections/mens-clothing.
-  { label: "Dresses",     match: /\b(dresses|gown|kaftan|caftan|sundress|sun[\s-]?dress|maxi|midi|mini)[\s-]?dress\b|\bdress\b(?!\s*[-]?\s*(shirt|pant|trouser|short|sock|tie|belt|shoe|boot|coat|jacket|sweater|code|down|up))/i },
+  { label: "Dresses",     match: /\b(gown|kaftan|caftan|sundress)s?\b|\b(maxi|midi|mini|slip|shift|wrap|sheath|tea|cocktail|evening)[\s-]?dress(es)?\b|\bdress(es)?\b(?!\s*[-]?\s*(shirt|pant|trouser|short|sock|tie|belt|shoe|boot|coat|jacket|sweater|code|down|up))/i },
   { label: "Knitwear",    match: /\b(knit|sweater|jumper|cardigan|cashmere|pullover|turtleneck)\b/i },
   { label: "Outerwear",   match: /\b(coat|jacket|parka|trench|blazer|overcoat|puffer|anorak|gilet)\b/i },
   { label: "Tops",        match: /\b(t[\s-]?shirt|tee|shirt|blouse|top|tank|polo|camisole|bodysuit|hoodie|sweatshirt)\b/i },
