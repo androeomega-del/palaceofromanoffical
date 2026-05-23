@@ -15,19 +15,33 @@ type FlatItem = {
   label: string;
   to: string;
   params?: Record<string, string>;
+  search?: Record<string, string>;
   accent?: boolean;
+  // Fallback target used when the collection handle does not exist in
+  // Shopify — guarantees the nav slot always renders a usable link.
+  fallback?: { to: string; search?: Record<string, string> };
 };
 
 // Flat (non-megamenu) links. Department links (Women / Men) are rendered
 // separately by <DesktopMegamenu /> and <MobileMegamenu />.
 const FLAT_LEFT: FlatItem[] = [
   { to: "/shop", label: "Shop" },
-  { to: "/collections/$handle", params: { handle: "new-arrivals" }, label: "New Arrivals" },
+  {
+    to: "/collections/$handle",
+    params: { handle: "new-arrivals" },
+    label: "New Arrivals",
+    fallback: { to: "/shop", search: { sort: "CREATED_AT-true", inStock: "true" } },
+  },
   { to: "/limited-finds", label: "Limited Finds", accent: true },
 ];
 const FLAT_RIGHT: FlatItem[] = [
   { to: "/style-quiz", label: "Style Quiz" },
-  { to: "/collections/$handle", params: { handle: "best-sellers" }, label: "Best Sellers" },
+  {
+    to: "/collections/$handle",
+    params: { handle: "best-sellers" },
+    label: "Best Sellers",
+    fallback: { to: "/shop", search: { sort: "BEST_SELLING-false", inStock: "true" } },
+  },
   { to: "/collections", label: "Collections" },
   { to: "/journal", label: "Journal" },
 ];
@@ -40,6 +54,7 @@ function FlatLinks({ items }: { items: FlatItem[] }) {
           key={n.label}
           to={n.to as any}
           params={n.params as any}
+          search={n.search as any}
           className={`hover:text-bronze transition-colors whitespace-nowrap py-2 ${
             n.accent ? "text-bronze" : ""
           }`}
