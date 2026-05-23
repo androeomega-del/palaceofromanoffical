@@ -8,54 +8,55 @@ const TOKEN = process.env.SHOPIFY_ACCESS_TOKEN;
 const DRY = process.argv.includes('--dry');
 if (!TOKEN) { console.error('Missing SHOPIFY_ACCESS_TOKEN'); process.exit(1); }
 
+// Shopify smart-collection rules no longer accept `tag contains` —
+// only `tag equals` works. Tags follow BrandsGateway hierarchy
+// "<subcategory> - <category>" (e.g. "Sneakers - Shoes", "Jackets - Clothing").
 const tagEq = (c) => ({ column: 'tag', relation: 'equals', condition: c });
-const tagContains = (c) => ({ column: 'tag', relation: 'contains', condition: c });
-const titleAny = () => ({ column: 'title', relation: 'not_equals', condition: '___never___' }); // matches everything
-const priceDiscount = () => ({ column: 'variant_compare_at_price', relation: 'greater_than', condition: '0' });
 
-// gender + keyword combo (AND)
-const gk = (g, kw) => [tagEq(g), tagContains(kw)];
+// Gender + specific tag (AND)
+const gt = (g, tag) => [tagEq(g), tagEq(tag)];
 
 const DEFS = [
-  { handle: 'all-products',              title: 'All Products',                 rules: [titleAny()],                    disjunctive: false },
-  { handle: 'new-arrivals',              title: 'New Arrivals',                 rules: [tagEq('new-arrivals')],         disjunctive: false },
-  { handle: 'best-selling-brands',       title: 'Best-Selling Brands',          rules: [tagEq('best-seller')],          disjunctive: false },
-  { handle: 'high-discounts',            title: 'High Discounts',               rules: [priceDiscount()],               disjunctive: false },
+  // Special — already created in prior pass
+  { handle: 'all-products',              title: 'All Products',                 rules: [{ column: 'title', relation: 'not_equals', condition: '___never___' }] },
+  { handle: 'new-arrivals',              title: 'New Arrivals',                 rules: [tagEq('new-arrivals')] },
+  { handle: 'best-selling-brands',       title: 'Best-Selling Brands',          rules: [tagEq('best-seller')] },
+  { handle: 'high-discounts',            title: 'High Discounts',               rules: [{ column: 'variant_compare_at_price', relation: 'greater_than', condition: '0' }] },
 
-  // Women
-  { handle: 'womens-accessories',        title: "Women's Accessories",          rules: gk('Women', 'Accessories') },
-  { handle: 'womens-accessories-1',      title: "Women's Accessories — Edit",   rules: gk('Women', 'Accessories') },
-  { handle: 'womens-clothing',           title: "Women's Clothing",             rules: gk('Women', 'Clothing') },
-  { handle: 'womens-shoes',              title: "Women's Shoes",                rules: gk('Women', 'Shoes') },
-  { handle: 'womens-bags',               title: "Women's Bags",                 rules: gk('Women', 'Bags') },
-  { handle: 'womens-wallets',            title: "Women's Wallets",              rules: gk('Women', 'Wallets') },
-  { handle: 'womens-belts',              title: "Women's Belts",                rules: gk('Women', 'Belts') },
-  { handle: 'womens-jewelry',            title: "Women's Jewelry",              rules: gk('Women', 'Jewellery') },
-  { handle: 'womens-watches',            title: "Women's Watches",              rules: gk('Women', 'Watches') },
-  { handle: 'womens-scarves',            title: "Women's Scarves",              rules: gk('Women', 'Scarves') },
-  { handle: 'womens-hats',               title: "Women's Hats",                 rules: gk('Women', 'Hats') },
+  // Women — tops use bare top-level tag (e.g. "Accessories")
+  { handle: 'womens-accessories',        title: "Women's Accessories",          rules: gt('Women', 'Accessories') },
+  { handle: 'womens-accessories-1',      title: "Women's Accessories — Edit",   rules: gt('Women', 'Accessories') },
+  { handle: 'womens-clothing',           title: "Women's Clothing",             rules: gt('Women', 'Clothing') },
+  { handle: 'womens-shoes',              title: "Women's Shoes",                rules: gt('Women', 'Shoes') },
+  { handle: 'womens-bags',               title: "Women's Bags",                 rules: gt('Women', 'Bags') },
+  { handle: 'womens-wallets',            title: "Women's Wallets",              rules: gt('Women', 'Wallets - Accessories') },
+  { handle: 'womens-belts',              title: "Women's Belts",                rules: gt('Women', 'Belts - Accessories') },
+  { handle: 'womens-jewelry',            title: "Women's Jewelry",              rules: gt('Women', 'Jewellery - Accessories') },
+  { handle: 'womens-watches',            title: "Women's Watches",              rules: gt('Women', 'Watches - Accessories') },
+  { handle: 'womens-scarves',            title: "Women's Scarves",              rules: gt('Women', 'Scarves - Accessories') },
+  { handle: 'womens-hats',               title: "Women's Hats",                 rules: gt('Women', 'Hats - Accessories') },
 
   // Men
-  { handle: 'mens-accessories',          title: "Men's Accessories",            rules: gk('Men', 'Accessories') },
-  { handle: 'mens-clothing',             title: "Men's Clothing",               rules: gk('Men', 'Clothing') },
-  { handle: 'mens-shoes',                title: "Men's Shoes",                  rules: gk('Men', 'Shoes') },
-  { handle: 'mens-jackets-coats',        title: "Men's Jackets & Coats",        rules: gk('Men', 'Jackets') },
-  { handle: 'mens-suits',                title: "Men's Suits",                  rules: gk('Men', 'Suits') },
-  { handle: 'mens-shirts',               title: "Men's Shirts",                 rules: gk('Men', 'Shirts') },
-  { handle: 'mens-tshirts-polos',        title: "Men's T-Shirts & Polos",       rules: gk('Men', 'T-Shirts') },
-  { handle: 'mens-sweaters-knitwear',    title: "Men's Sweaters & Knitwear",    rules: gk('Men', 'Sweaters') },
-  { handle: 'mens-hoodies-sweatshirts',  title: "Men's Hoodies & Sweatshirts",  rules: gk('Men', 'Sweatshirts') },
-  { handle: 'mens-pants-trousers',       title: "Men's Pants & Trousers",       rules: gk('Men', 'Pants') },
-  { handle: 'mens-shorts',               title: "Men's Shorts",                 rules: gk('Men', 'Shorts') },
-  { handle: 'mens-activewear',           title: "Men's Activewear",             rules: gk('Men', 'Sportswear') },
-  { handle: 'mens-swimwear',             title: "Men's Swimwear",               rules: gk('Men', 'Swimwear') },
-  { handle: 'mens-underwear-loungewear', title: "Men's Underwear & Loungewear", rules: gk('Men', 'Underwear') },
-  { handle: 'mens-sneakers',             title: "Men's Sneakers",               rules: gk('Men', 'Sneakers') },
-  { handle: 'mens-boots',                title: "Men's Boots",                  rules: gk('Men', 'Boots') },
-  { handle: 'mens-sandals-slides',       title: "Men's Sandals & Slides",       rules: gk('Men', 'Sandals') },
-  { handle: 'mens-bags-wallets',         title: "Men's Bags & Wallets",         rules: gk('Men', 'Bags') },
-  { handle: 'mens-belts',                title: "Men's Belts",                  rules: gk('Men', 'Belts') },
-  { handle: 'mens-watches-jewelry',      title: "Men's Watches & Jewelry",      rules: gk('Men', 'Watches') },
+  { handle: 'mens-accessories',          title: "Men's Accessories",            rules: gt('Men', 'Accessories') },
+  { handle: 'mens-clothing',             title: "Men's Clothing",               rules: gt('Men', 'Clothing') },
+  { handle: 'mens-shoes',                title: "Men's Shoes",                  rules: gt('Men', 'Shoes') },
+  { handle: 'mens-jackets-coats',        title: "Men's Jackets & Coats",        rules: gt('Men', 'Jackets - Clothing') },
+  { handle: 'mens-suits',                title: "Men's Suits",                  rules: gt('Men', 'Suits - Clothing') },
+  { handle: 'mens-shirts',               title: "Men's Shirts",                 rules: gt('Men', 'Shirts - Clothing') },
+  { handle: 'mens-tshirts-polos',        title: "Men's T-Shirts & Polos",       rules: gt('Men', 'T-Shirts - Clothing') },
+  { handle: 'mens-sweaters-knitwear',    title: "Men's Sweaters & Knitwear",    rules: gt('Men', 'Sweaters - Clothing') },
+  { handle: 'mens-hoodies-sweatshirts',  title: "Men's Hoodies & Sweatshirts",  rules: gt('Men', 'Sweatshirts - Sweaters - Clothing') },
+  { handle: 'mens-pants-trousers',       title: "Men's Pants & Trousers",       rules: gt('Men', 'Pants - Clothing') },
+  { handle: 'mens-shorts',               title: "Men's Shorts",                 rules: gt('Men', 'Shorts - Clothing') },
+  { handle: 'mens-activewear',           title: "Men's Activewear",             rules: gt('Men', 'Sportswear - Clothing') },
+  { handle: 'mens-swimwear',             title: "Men's Swimwear",               rules: gt('Men', 'Swimwear - Clothing') },
+  { handle: 'mens-underwear-loungewear', title: "Men's Underwear & Loungewear", rules: gt('Men', 'Underwear - Clothing') },
+  { handle: 'mens-sneakers',             title: "Men's Sneakers",               rules: gt('Men', 'Sneakers - Shoes') },
+  { handle: 'mens-boots',                title: "Men's Boots",                  rules: gt('Men', 'Boots - Shoes') },
+  { handle: 'mens-sandals-slides',       title: "Men's Sandals & Slides",       rules: gt('Men', 'Sandals - Shoes') },
+  { handle: 'mens-bags-wallets',         title: "Men's Bags & Wallets",         rules: gt('Men', 'Bags') },
+  { handle: 'mens-belts',                title: "Men's Belts",                  rules: gt('Men', 'Belts - Accessories') },
+  { handle: 'mens-watches-jewelry',      title: "Men's Watches & Jewelry",      rules: gt('Men', 'Watches - Accessories') },
 ];
 
 const collections = DEFS.map(d => ({
