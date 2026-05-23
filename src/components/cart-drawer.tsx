@@ -1,10 +1,11 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, X, Loader2, ShoppingBag } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useCartStore } from "@/stores/cart-store";
 import { formatPrice } from "@/lib/shopify";
 import { trackCartEvent } from "@/lib/cart-analytics";
+import { CartFbt } from "@/components/cart-fbt";
 
 export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
   // 1. Add mount state to prevent hydration errors
