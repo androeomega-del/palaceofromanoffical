@@ -31,7 +31,7 @@ export interface ShopifyVariant {
   title: string;
   price: Money;
   availableForSale: boolean;
-  quantityAvailable: number;
+  quantityAvailable?: number | null;
   selectedOptions: Array<{ name: string; value: string }>;
 }
 export interface ShopifyProductNode {
@@ -130,7 +130,6 @@ const PRODUCT_FRAGMENT = `
           title
           price { amount currencyCode }
           availableForSale
-          quantityAvailable
           selectedOptions { name value }
         }
       }
