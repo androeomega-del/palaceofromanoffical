@@ -234,23 +234,38 @@ function CollectionPage() {
   const categoryCounts = categoryCountsQ.data?.counts ?? null;
 
   // IntersectionObserver sentinel — fetches the next cursor page as soon as
-  // the user scrolls within ~600px of the bottom. Continues until
+  // the user scrolls within ~800px of the bottom. Continues until
   // hasNextPage === false (Rule 3: zero artificial limits).
-  const sentinelRef = useRef<HTMLDivElement | null>(null);
-  useEffect(() => {
-    const el = sentinelRef.current;
-    if (!el || !q.hasNextPage) return;
+  //
+  // Implementation note: we use a *callback ref* (not useRef + useEffect) so
+  // the observer is attached the moment the sentinel DOM node mounts, and
+  // reads the latest query state via `qRef` to avoid stale-closure churn
+  // (the `q` object identity changes on every render, which previously made
+  // the effect tear down/rebuild the observer constantly — occasionally
+  // missing the intersection callback and capping the grid at the first 48).
+  const qRef = useRef(q);
+  qRef.current = q;
+  const ioRef = useRef<IntersectionObserver | null>(null);
+  const sentinelRef = useCallback((el: HTMLDivElement | null) => {
+    if (ioRef.current) {
+      ioRef.current.disconnect();
+      ioRef.current = null;
+    }
+    if (!el) return;
     const io = new IntersectionObserver(
       (entries) => {
-        if (entries[0]?.isIntersecting && q.hasNextPage && !q.isFetchingNextPage) {
-          q.fetchNextPage();
+        if (!entries[0]?.isIntersecting) return;
+        const cur = qRef.current;
+        if (cur.hasNextPage && !cur.isFetchingNextPage) {
+          cur.fetchNextPage();
         }
       },
-      { rootMargin: "600px 0px" },
+      { rootMargin: "800px 0px" },
     );
     io.observe(el);
-    return () => io.disconnect();
-  }, [q.hasNextPage, q.isFetchingNextPage, q.fetchNextPage]);
+    ioRef.current = io;
+  }, []);
+  useEffect(() => () => ioRef.current?.disconnect(), []);
 
   // When a category chip is active, auto-exhaust the cursor so client-
   // side bucketing surfaces every matching product across the entire
