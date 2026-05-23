@@ -147,3 +147,10 @@ export function formatOriginLabel(origin: ShippingOrigin | null): string | null 
   if (!origin) return null;
   return `Ships from ${origin.country}`;
 }
+
+/**
+ * Final-fallback label used only when we have NO inventory data AND no
+ * vendor mapping — keeps the badge graceful instead of blank. Matches the
+ * Palace of Roman tone (premium, restrained, never invents a country).
+ */
+export const HUB_FALLBACK_LABEL = "Ships from Express Tracked Hub";
