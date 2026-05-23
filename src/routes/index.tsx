@@ -10,6 +10,7 @@ import { CampaignVideo } from "@/components/campaign-video";
 import { LUXURY_TIERS } from "@/lib/luxury-brands";
 import { ForYouFeed } from "@/components/for-you-feed";
 import { TrendingNowRail } from "@/components/trending-now";
+import { CurationCountdown } from "@/components/curation-countdown";
 
 import heroImage from "@/assets/home-hero.jpg";
 import summerHero from "@/assets/summer-bento-hero.jpg";
