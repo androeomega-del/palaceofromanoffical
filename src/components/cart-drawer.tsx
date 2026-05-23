@@ -99,6 +99,28 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
             </div>
 
             <div className="border-t border-ink/10 px-6 py-6 space-y-4">
+              {(() => {
+                const THRESHOLD = 250;
+                const remaining = Math.max(0, THRESHOLD - totalAmount);
+                const pct = Math.min(100, (totalAmount / THRESHOLD) * 100);
+                const qualifies = remaining === 0;
+                return (
+                  <div className="space-y-2">
+                    <p className="text-[10px] uppercase tracking-[0.2em] text-ink/80">
+                      {qualifies
+                        ? "You've unlocked Free Express Shipping!"
+                        : `Spend ${formatPrice({ amount: remaining.toFixed(2), currencyCode: currency })} more for Free Express Delivery`}
+                    </p>
+                    <div className="h-[2px] w-full bg-ink/10 overflow-hidden">
+                      <div
+                        className="h-full bg-bronze transition-all duration-500"
+                        style={{ width: `${pct}%` }}
+                        aria-hidden
+                      />
+                    </div>
+                  </div>
+                );
+              })()}
               <div className="flex justify-between items-baseline">
                 <span className="text-xs uppercase tracking-[0.2em]">Subtotal</span>
                 <span className="text-lg font-serif">
