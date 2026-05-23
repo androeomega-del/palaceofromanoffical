@@ -612,14 +612,15 @@ function ProductView({
                     </>
                   )}
                 </button>
-
-                {/* Trust anchor — interactive, opens shipping/returns sheet */}
-                <PdpShippingSheet />
               </div>
+
+              {/* Trust anchor — interactive, opens shipping/returns sheet. Full-width, flush under CTA row. */}
+              <PdpShippingSheet />
             </div>
 
             {/* Delivery badge — uses zip from location store */}
             <PdpDeliveryBadge vendor={product.vendor} handle={product.handle} variantId={selectedVariant?.id} />
+
 
             {/* Authenticity strip — defensible claims only */}
             <PdpAuthenticityStrip />
