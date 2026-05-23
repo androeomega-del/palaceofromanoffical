@@ -16,6 +16,13 @@ import {
   renderPostPurchaseEmail,
   type OrderLineForEmail,
 } from "@/lib/post-purchase-email-template";
+import {
+  generateStylistNote,
+  createStyleVibeDiscount,
+  type StylistNoteLine,
+} from "@/lib/stylist-note.server";
+import { renderStylistNoteEmail } from "@/lib/stylist-note-email-template";
+
 
 interface ShopifyLineItem {
   title?: string | null;
