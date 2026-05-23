@@ -903,22 +903,7 @@ function StyleItWithRail({ items }: { items: Awaited<ReturnType<typeof fetchProd
 }
 
 
-function TrustItem({ title, sub }: { title: string; sub: string }) {
-  return (
-    <li className="flex flex-col items-center text-center gap-3">
-      <span
-        className="block h-2.5 w-2.5 border border-[var(--studio-bronze)] rotate-45"
-        aria-hidden
-      />
-      <span className="text-[10px] uppercase tracking-[0.25em] font-bold leading-none">
-        {title}
-      </span>
-      <span className="text-[9px] uppercase tracking-[0.2em] text-[var(--studio-muted)] leading-none">
-        {sub}
-      </span>
-    </li>
-  );
-}
+
 
 function VariantOption({
   option,
