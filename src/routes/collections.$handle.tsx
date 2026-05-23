@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate, redirect } from "@tanstack/react-router";
 import { canonicalCollectionHandle } from "@/lib/collection-canonical";
 import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
-import { useMemo, useState, useEffect, useRef } from "react";
+import { useMemo, useState, useEffect, useRef, useCallback } from "react";
 import { useServerFn } from "@tanstack/react-start";
 
 import { fetchCollectionFiltered, fetchCollection, type StorefrontFilterValue } from "@/lib/shopify";
