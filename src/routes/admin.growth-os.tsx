@@ -24,9 +24,10 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Sparkles, CheckCircle2, XCircle, Eye, Loader2, DollarSign, TrendingUp, Share2, Copy, Mail, Video, Search, Megaphone, ShieldCheck, Lightbulb, AlertTriangle, CircleDot, PlayCircle } from "lucide-react";
+import { Sparkles, CheckCircle2, XCircle, Eye, Loader2, DollarSign, TrendingUp, Share2, Copy, Mail, Video, Search, Megaphone, ShieldCheck, Lightbulb, AlertTriangle, CircleDot, PlayCircle, Flame } from "lucide-react";
 import { runActiveAudit, type AuditReport, type AuditSeverity } from "@/lib/active-audit.functions";
 import { generateUgcIdeas, queueUgcDraft, type UgcDraft } from "@/lib/ugc-recommender.functions";
+import { UrgencyFunnelPanel } from "@/components/admin/urgency-funnel-panel";
 
 export const Route = createFileRoute("/admin/growth-os")({
   beforeLoad: adminBeforeLoad,
@@ -91,7 +92,7 @@ function GrowthOsPage() {
   const approveGenericFn = useServerFn(approveQueueItem);
 
   const [preview, setPreview] = useState<{ item: Record<string, unknown> } | null>(null);
-  const [tab, setTab] = useState<"studio" | "audit" | "ugc">("studio");
+  const [tab, setTab] = useState<"studio" | "audit" | "ugc" | "urgency">("studio");
   const auditFn = useServerFn(runActiveAudit);
   const ugcGenFn = useServerFn(generateUgcIdeas);
   const ugcQueueFn = useServerFn(queueUgcDraft);
@@ -294,6 +295,7 @@ function GrowthOsPage() {
         <div className="mb-8 flex flex-wrap gap-1 border-b">
           {[
             { k: "studio" as const, label: "Studio", icon: Sparkles },
+            { k: "urgency" as const, label: "Urgency", icon: Flame },
             { k: "audit" as const, label: "Active Audit", icon: ShieldCheck },
             { k: "ugc" as const, label: "UGC Ideas", icon: Lightbulb },
           ].map(({ k, label, icon: Icon }) => (
@@ -478,6 +480,7 @@ function GrowthOsPage() {
         </Card>
         </>)}
 
+        {tab === "urgency" && <UrgencyFunnelPanel />}
         {tab === "audit" && <AuditPanel report={audit} running={auditRunning} onRun={runAudit} />}
         {tab === "ugc" && <UgcPanel data={ugcIdeas} running={ugcRunning} onRun={runUgc} onQueue={queueDraft} />}
 
