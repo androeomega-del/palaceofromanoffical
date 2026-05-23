@@ -1,10 +1,11 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, X, Loader2, ShoppingBag } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useCartStore } from "@/stores/cart-store";
 import { formatPrice } from "@/lib/shopify";
 import { trackCartEvent } from "@/lib/cart-analytics";
+import { CartFbt } from "@/components/cart-fbt";
 
 export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
   // 1. Add mount state to prevent hydration errors
@@ -14,6 +15,11 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
   const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
   const totalAmount = items.reduce((sum, i) => sum + parseFloat(i.price.amount) * i.quantity, 0);
   const currency = items[0]?.price.currencyCode ?? "USD";
+  const fbtProductType = items[0]?.product?.node?.productType ?? null;
+  const fbtExclude = useMemo(
+    () => new Set(items.map((i) => i.product.node.handle)),
+    [items],
+  );
 
   // 2. Set mounted to true once the browser takes over
   useEffect(() => { 
@@ -98,7 +104,10 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
               </ul>
             </div>
 
+            <CartFbt productType={fbtProductType} excludeHandles={fbtExclude} />
+
             <div className="border-t border-ink/10 px-6 py-6 space-y-4">
+
               {(() => {
                 const THRESHOLD = 250;
                 const remaining = Math.max(0, THRESHOLD - totalAmount);
