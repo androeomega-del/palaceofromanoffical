@@ -329,7 +329,7 @@ export const fetchConciergePicks = createServerFn({ method: "POST" })
       greeting:
         anchor && anchor.vendor
           ? `Pieces that pair beautifully with this ${anchor.vendor}.`
-          : "Three pieces from the boutique you may not have seen.",
+          : "Three pieces from the edit you may not have seen.",
       picks: candidates.slice(0, 4).map((c) => {
         const trend = trendMap.get((c.node.vendor || "").toLowerCase());
         const reason = trend
