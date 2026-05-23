@@ -164,7 +164,7 @@ export function SiteHeader() {
               >
                 <Search className="w-4 h-4" strokeWidth={1.25} />
               </button>
-              <DeliverToButton className="hidden md:inline-flex" />
+              <DeliverToButton />
               <ReducedMotionToggle />
               <button
                 aria-label="Account"
