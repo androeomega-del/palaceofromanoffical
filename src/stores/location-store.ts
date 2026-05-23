@@ -3,7 +3,9 @@ import { persist, createJSONStorage } from "zustand/middleware";
 
 interface LocationStore {
   zip: string | null;
-  setZip: (zip: string) => void;
+  /** True when the zip was set silently from IP geo, not by the shopper. */
+  autoDetected: boolean;
+  setZip: (zip: string, opts?: { auto?: boolean }) => void;
   clear: () => void;
 }
 
@@ -17,8 +19,10 @@ export const useLocationStore = create<LocationStore>()(
   persist(
     (set) => ({
       zip: null,
-      setZip: (zip) => set({ zip: zip.trim().slice(0, 5) }),
-      clear: () => set({ zip: null }),
+      autoDetected: false,
+      setZip: (zip, opts) =>
+        set({ zip: zip.trim().slice(0, 5), autoDetected: opts?.auto === true }),
+      clear: () => set({ zip: null, autoDetected: false }),
     }),
     {
       name: "por-location-v1",
@@ -31,3 +35,18 @@ export const useLocationStore = create<LocationStore>()(
 export function isValidUsZip(zip: string): boolean {
   return /^\d{5}$/.test(zip.trim());
 }
+
+/**
+ * Ephemeral popover-open signal — lets any component on the page (e.g. the
+ * PDP delivery badge) ask the header's `DeliverToButton` to open. Not
+ * persisted.
+ */
+interface LocationPopoverStore {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+}
+
+export const useLocationPopover = create<LocationPopoverStore>((set) => ({
+  open: false,
+  setOpen: (open) => set({ open }),
+}));
