@@ -1,65 +1,66 @@
-# Execution Plan — 3 Waves
+# Finalize Ship-From & Delivery Logic (Steps 1–3)
 
-Working mode: per-wave approval. I will pause after each wave and wait for your signal before starting the next. Smallest viable diffs; nothing customer-facing unless it sells product; everything else admin-gated.
+Steps 1–3 are already built (DB table `product_origins`, `refreshProductOrigins` server fn, unified `<ShippingMeta>` on cards + PDP, manual refresh on `/admin/shopify-sync`). This plan applies your final business rules on top.
 
----
+## 1. Tie-breaker rule (Most-Stock-Wins)
 
-## Wave 1 — Security & Infrastructure
+Currently ties break by lexicographic `location_id` (non-deterministic from a business POV). Change to: **Napoli (IT) wins all ties**, since IT routes are fastest to your primary US/UK markets via UPS/FedEx/DHL hubs.
 
-**1.1 `/api/public/*` audit pass**
-- Enumerate every file under `src/routes/api/public/` (cron hooks, AI recs, SEO health, stock alerts, webhooks).
-- For each: confirm (a) signature/secret verification on writes, (b) explicit column projection on any DB read (no `select('*')`), (c) no PII or wholesale/cost data in the response, (d) Zod validation on body/query.
-- Fix any leaks in place; document each route's surface in a short comment block at the top of the file.
-- Re-confirm admin server functions all chain `requireAdmin` (not just `requireSupabaseAuth`). Grep + fix any stragglers.
+- Update `pickWinner()` in `src/lib/product-origins.functions.ts`: on tie, prefer `country_code === 'IT'`, then `'DE'`, then `'SE'`, then lex `location_id`.
 
-**1.2 Queue drain endpoint + cron**
-- New route: `src/routes/api/public/cron/drain-growth-jobs.ts` — POST, verifies `apikey` header against `SUPABASE_PUBLISHABLE_KEY` (anon key pattern per docs; no new `CRON_SECRET` needed).
-- Handler pulls up to N `pending` rows from `growth_jobs` where `run_after <= now()`, dispatches by `job_type`, updates status/attempts/last_error. Idempotent, bounded batch (e.g. 25/run).
-- `pg_cron` every 5 min → POSTs to `project--<id>.lovable.app/api/public/cron/drain-growth-jobs` with `apikey` header. Installed via `supabase--insert` (not migration — contains URLs).
-- New admin server fn `drainGrowthJobsNow` (admin-gated) that calls the same handler logic. Wire a "Run queue now" button on `admin.growth-os.tsx` with loading state + toast.
+## 2. Delivery estimate rewrite (BG official windows)
 
----
+Replace the current ad-hoc estimate with your official BG SLA:
 
-## Wave 2 — Frontend Trust (PDP)
+- **Handling:** +1–2 business days (warehouse dispatch)
+- **EU destinations:** +3 business days average
+- **Non-EU (incl. US/UK):** +5–7 business days
+- **Skip weekends + country-specific public holidays** in the origin country (IT / SE / DE).
+- **Block routing** to RU / BY / UA — show "We do not currently ship to this region" instead of a date.
 
-**2.1 Authenticity strip**
-- New component `src/components/pdp-authenticity-strip.tsx`.
-- Renders below the buy box on `product.$handle.tsx`. 3 pillars only (avoid clutter): "100% Authentic", "Sourced from the brands or their authorised distributors", "Inspected before dispatch". Icons from `lucide-react`, bronze/ink palette, semantic tokens only.
-- Copy aligned to mem://business/reseller-status — no claims beyond the signed certificate.
+Implementation in `src/lib/delivery-estimate.ts`:
+- Take `(origin, destZip|destCountry)` → returns `{ minDays, maxDays, arrivalLabel, blocked? }`
+- Business-day math skips Sat/Sun + a static holiday table per origin country (IT/SE/DE 2026 bank holidays).
+- EU classification: derive from destination country (default US when only ZIP is known).
 
-**2.2 Brand heritage accordion**
-- Already have `src/lib/brand-heritage.ts`. Add a collapsible "The {Vendor} Story" section further down PDP using the existing `accordion` UI primitive, fed by vendor lookup. Auto-hide if no heritage entry exists.
+## 3. Fallback safety-net
 
-**2.3 Reviews empty state UI**
-- New component `src/components/product-reviews.tsx` on PDP.
-- Reads from `product_reviews` (status='approved', handle=...). Renders list if any, else editorial empty state: faded icon, copy "Be the first to share your thoughts on this piece.", "Write a Review" button opens a modal form posting to a new `submitReview` server fn (anon allowed per existing RLS, status='pending').
-- Form: rating (1-5), title, body (10-4000 chars), name, email. Client-side validation matches DB CHECK. Honeypot field for spam.
-- Per Shopify reviews policy + mem://core: never fabricate. Empty state stays honest.
+- **No location detected** → default to **New York, US (10001)** (already in `DEFAULT_ZIP`), calculated as **non-EU 5–7 business days** (under-promise per your direction).
+- **Product has no `product_origins` row** → `<ShippingMeta>` already falls back to vendor map → DEFAULT_ORIGIN (Italy). If vendor is also unknown, display **"Ships from Express Tracked Hub"** instead of leaving blank. Add this string to `formatOriginLabel()` in `src/lib/shipping-origin.ts`.
 
----
+## 4. Admin refresh button placement
 
-## Wave 3 — Post-Purchase Loop + Urgency Funnel
+Currently on `/admin/shopify-sync`. Per your direction, also surface it on the **Inventory tab** of the admin dashboard:
+- Add a "Refresh ship-from origins" card to `src/routes/admin.inventory-sync.tsx` (reuses `refreshProductOrigins` server fn — no duplication).
+- Keep the existing button on `/admin/shopify-sync` for continuity.
+- Both are admin-gated by `requireAdmin` middleware — invisible to shoppers.
 
-**3.1 Post-purchase review request**
-- Existing `post-purchase-email-template.ts` is order-confirmation. New template `review-request-email-template.ts` — single column, "How was {product}?", deep links to `/product/{handle}#reviews?token=...`.
-- Token: HMAC-signed `{order_id, handle, email, exp}` using `SHOPIFY_WEBHOOK_SECRET` (already exists, server-only). PDP review form prefills + marks `verified_purchase=true` when token validates.
-- Trigger: extend the existing Shopify order webhook handler — on `fulfillments/update` with status `delivered` (or fallback: T+10 days after `paid`), enqueue a `send_review_request` job in `growth_jobs`. Queue worker (Wave 1.2) dispatches it, dedupes via `order_emails_sent` (`email_type='review_request'`).
+## 5. UI uniformity audit
 
-**3.2 Urgency-conversion funnel panel**
-- New section on `admin.growth-os.tsx`, server fn `getUrgencyFunnel` (admin-gated) aggregates last 30d from `interaction_events`:
-  - Scarcity views, scarcity clicks, scarcity carts, scarcity→checkout (joined to `cart_events`).
-  - Derived: CTR (click/view), Cart rate (cart/click), Tier breakdown by `vendor`/`product_type`.
-- UI: 4 metric cards + simple funnel bar (no chart lib needed — flex bars sized by ratio). All numbers, no PII.
+`<ShippingMeta>` is already wired into `product-card.tsx` and `pdp-delivery-badge.tsx`. I'll grep every product surface (`for-you-feed`, `trending-now`, `ai-recommendations`, `recently-viewed`, brand pages, search results, cart drawer) to confirm every card uses `<ShippingMeta>` with the same `variant="card"` props — no inline duplicates. Any stragglers get swapped.
 
----
+Typography/spacing already matches the editorial card style (10px uppercase `0.18em` tracking, bronze accent on PDP). No design changes — just enforcement.
 
-## Out of scope (will not do unless asked)
-- Fake countdown timers / fabricated stock numbers.
-- Third-party review scraping (declined on ethical/TOS grounds, per prior turn).
-- Homepage redesign.
-- New `CRON_SECRET` (using anon-key `apikey` header per Lovable docs).
+## 6. Data audit
+
+After deploying, click "Refresh ship-from origins" once and run a SQL check:
+```sql
+SELECT country_code, COUNT(*) FROM product_origins GROUP BY 1;
+SELECT COUNT(*) FROM product_origins WHERE country_code IS NULL;
+```
+If a large share is NULL, the Shopify inventory feeds aren't tagging locations — surfaces as a follow-up task, not a code fix.
 
 ---
 
-## Confirm to proceed
-Reply **"go wave 1"** to start with security audit + queue drain. I will stop and report before touching Wave 2.
+## Files to change
+
+- `src/lib/product-origins.functions.ts` — tie-breaker (IT > DE > SE > lex)
+- `src/lib/delivery-estimate.ts` — BG SLA + holiday calendar + RU/BY/UA block
+- `src/lib/shipping-origin.ts` — "Express Tracked Hub" final fallback label
+- `src/components/shipping-meta.tsx` — handle blocked-destination state
+- `src/routes/admin.inventory-sync.tsx` — add refresh card
+- Spot-fixes to any product card surface not yet using `<ShippingMeta>`
+
+## Open question before I build
+
+**RU/BY/UA block** — do you want it as a visible message on the card/PDP ("Not available for shipment to your region — change location"), or silently hide the delivery line for those shoppers? My recommendation: visible message on PDP only, hidden on cards (cards stay clean).

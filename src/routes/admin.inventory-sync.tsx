@@ -1,14 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { toast } from "sonner";
 import { adminBeforeLoad } from "@/lib/admin-route-guard";
 import {
   getInventorySyncDashboard,
   type InventorySyncRun,
 } from "@/lib/inventory-sync.functions";
+import { refreshProductOrigins } from "@/lib/product-origins.functions";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, CheckCircle2, XCircle, Loader2, Circle } from "lucide-react";
+import { RefreshCw, CheckCircle2, XCircle, Loader2, Circle, MapPin } from "lucide-react";
 
 export const Route = createFileRoute("/admin/inventory-sync")({
   beforeLoad: adminBeforeLoad,
@@ -116,11 +119,38 @@ function Stat({
 }
 
 function AdminInventorySync() {
+  const queryClient = useQueryClient();
   const { data, isLoading, isFetching, error, refetch } = useQuery({
     queryKey: ["admin", "inventory-sync-dashboard"],
     queryFn: () => getInventorySyncDashboard(),
     refetchInterval: 5_000,
     staleTime: 2_000,
+  });
+
+  const [originsResult, setOriginsResult] = useState<{
+    pages: number;
+    products: number;
+    written: number;
+  } | null>(null);
+
+  const refreshOrigins = useMutation({
+    mutationFn: () => refreshProductOrigins({ data: {} }),
+    onSuccess: (res) => {
+      setOriginsResult({
+        pages: res.pages,
+        products: res.products,
+        written: res.written,
+      });
+      toast.success(
+        `Ship-from origins refreshed — ${res.written} products across ${res.pages} pages.`,
+      );
+      queryClient.invalidateQueries({ queryKey: ["product-origins-map"] });
+    },
+    onError: (err: Error) => {
+      toast.error("Failed to refresh ship-from origins.", {
+        description: err.message,
+      });
+    },
   });
 
   const headline = data?.current ?? data?.last ?? null;
@@ -153,11 +183,46 @@ function AdminInventorySync() {
         </Button>
       </header>
 
+      {/* Ship-from origins — manual refresh (cron deferred). Recomputes
+          per-product shipping origin from Shopify inventory levels using
+          the Most-Stock-Wins rule (ties → IT > DE > SE). */}
+      <Card className="mb-6 p-6">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h2 className="font-serif text-lg">Ship-from origins</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Re-reads each product's inventory locations from Shopify and
+              recomputes the “Ships from …” badge used on every card and PDP.
+              Most-stock-wins; ties default to Napoli (IT).
+            </p>
+            {originsResult ? (
+              <p className="mt-2 text-xs text-muted-foreground">
+                Last run: <strong>{originsResult.written}</strong> products
+                written across <strong>{originsResult.pages}</strong> Shopify
+                pages ({originsResult.products} scanned).
+              </p>
+            ) : null}
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => refreshOrigins.mutate()}
+            disabled={refreshOrigins.isPending}
+          >
+            <MapPin
+              className={`mr-2 h-4 w-4 ${refreshOrigins.isPending ? "animate-pulse" : ""}`}
+            />
+            {refreshOrigins.isPending ? "Refreshing…" : "Refresh ship-from origins"}
+          </Button>
+        </div>
+      </Card>
+
       {error ? (
         <Card className="border-destructive p-6 text-sm text-destructive">
           {(error as Error).message}
         </Card>
       ) : null}
+
 
       {isLoading || !data ? (
         <div className="text-sm text-muted-foreground">Loading…</div>

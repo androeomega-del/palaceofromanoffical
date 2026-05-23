@@ -3,8 +3,10 @@ import { MapPin } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocationStore, useLocationPopover, DEFAULT_ZIP } from "@/stores/location-store";
 import {
+  getShippingOrigin,
   getShippingOriginOrDefault,
   formatOriginLabel,
+  HUB_FALLBACK_LABEL,
   type ShippingOrigin,
 } from "@/lib/shipping-origin";
 import { estimateForOriginAndZip } from "@/lib/delivery-estimate";
@@ -72,8 +74,15 @@ export function ShippingMeta({ vendor, handle, variant = "card" }: Props) {
 
   const effectiveZip = zip ?? DEFAULT_ZIP;
   const inventoryOrigin = handle ? originFromRow(originsMap?.[handle]) : null;
+  const vendorOrigin = getShippingOrigin(vendor);
+  // Resolution order: inventory cache → vendor map → DEFAULT_ORIGIN.
+  // If BOTH inventory and vendor map miss, surface the editorial fallback
+  // label instead of inventing a country (per no-fabrication rule).
   const origin = inventoryOrigin ?? getShippingOriginOrDefault(vendor);
-  const originLabel = formatOriginLabel(origin)!;
+  const usedHubFallback = !inventoryOrigin && !vendorOrigin;
+  const originLabel = usedHubFallback
+    ? HUB_FALLBACK_LABEL
+    : formatOriginLabel(origin)!;
   const estimate = estimateForOriginAndZip(origin, effectiveZip);
 
   if (variant === "card") {
