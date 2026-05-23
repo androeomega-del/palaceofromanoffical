@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ShieldCheck, Truck, RotateCcw, Package } from "lucide-react";
 import {
   Sheet,
@@ -28,6 +28,15 @@ const ZONES = [
  */
 export function PdpShippingSheet() {
   const [open, setOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mql = window.matchMedia("(max-width: 639px)");
+    setIsMobile(mql.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mql.addEventListener("change", handler);
+    return () => mql.removeEventListener("change", handler);
+  }, []);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -54,9 +63,14 @@ export function PdpShippingSheet() {
       </SheetTrigger>
 
       <SheetContent
-        side="right"
-        className="w-full sm:max-w-md overflow-y-auto bg-[var(--studio-canvas)]"
+        side={isMobile ? "bottom" : "right"}
+        className={`overflow-y-auto bg-[var(--studio-canvas)] ${isMobile ? "rounded-t-2xl max-h-[85vh] pt-2" : "w-full sm:max-w-md"}`}
       >
+        {isMobile && (
+          <div className="mx-auto mb-2 flex justify-center">
+            <div className="w-10 h-1 rounded-full bg-[var(--studio-rule)]" />
+          </div>
+        )}
         <SheetHeader className="text-left">
           <p className="text-[10px] uppercase tracking-[0.3em] text-[var(--studio-bronze)] font-semibold">
             Client Care
