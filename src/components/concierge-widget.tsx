@@ -84,6 +84,16 @@ export function ConciergeWidget() {
       cancelled = true;
     };
   }, []);
+
+  // Infer shopper destination from browser locale (e.g. "en-US" → "US").
+  // Cheap, zero-friction; ~85% accurate for the AI's delivery-window math.
+  const shopperCountry = useMemo<string | undefined>(() => {
+    if (typeof navigator === "undefined") return undefined;
+    const locale = navigator.language || (navigator.languages?.[0] ?? "");
+    const match = /-([A-Z]{2})\b/.exec(locale);
+    return match?.[1];
+  }, []);
+
   const [state, setState] = useState<{
     loading: boolean;
     data: ConciergeResult | null;
@@ -99,6 +109,7 @@ export function ConciergeWidget() {
     recent.slice(0, 8).map((r) => r.handle).join("|"),
     interactionHandles.slice(0, 8).join("|"),
     shopperName ?? "",
+    shopperCountry ?? "",
   ].join("::");
 
   // Fetch when the drawer opens (lazy — saves tokens until shoppers ask for it).
@@ -116,6 +127,8 @@ export function ConciergeWidget() {
         recentHandles: recent.slice(0, 20).map((r) => r.handle),
         interactionHandles: interactionHandles.slice(0, 20),
         shopperName,
+        shopperCountry,
+        shopperLocalTime: new Date().toISOString(),
       },
     })
       .then((data) => {
