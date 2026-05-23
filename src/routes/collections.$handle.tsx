@@ -317,17 +317,27 @@ function CollectionPage() {
   const description = data?.collection?.description;
 
   // Header count — reflects the active filter/sort state, not the raw
-  // collection size. Storefront API doesn't return a filtered totalCount,
-  // so when any filter is active we show the loaded count with a "+"
-  // suffix until the cursor is exhausted (hasNextPage === false), at which
-  // point the loaded count IS the true filtered total.
+  // collection size. When a category chip is active and we have the
+  // Admin-aggregated count for that bucket, that count is the true
+  // master total. Otherwise we fall back to the loaded-count + "+"
+  // pattern while the cursor is still draining, and to the absolute
+  // Admin productsCount when no filter is active.
   const loadedCount = edges.length;
   const filtersActive =
     Boolean(typeFilter) || selections.length > 0 || Boolean(priceRange);
   const noun = (n: number) => (n === 1 ? "Piece" : "Pieces");
+  const activeBucketTrueCount: number | null =
+    typeFilter && !isLayering && categoryCounts
+      ? categoryCounts[typeFilter as CategoryBucketLabel] ?? null
+      : null;
   let countLabel: string;
   if (q.isLoading) {
     countLabel = "Loading…";
+  } else if (typeFilter && activeBucketTrueCount != null && selections.length === 0 && !priceRange) {
+    // Pure category-chip filter: show the true Admin-aggregated total
+    // for that bucket immediately (e.g. "47 Pieces"), regardless of how
+    // many have surfaced via the cursor so far.
+    countLabel = `${activeBucketTrueCount} ${noun(activeBucketTrueCount)}`;
   } else if (filtersActive) {
     countLabel = q.hasNextPage
       ? `Showing ${loadedCount}+ ${noun(loadedCount)}`
@@ -340,6 +350,7 @@ function CollectionPage() {
   } else {
     countLabel = `${loadedCount} ${noun(loadedCount)}`;
   }
+
 
 
   const selectedInputs = useMemo(() => new Set(selections.map((s) => s.input)), [selections]);
