@@ -145,9 +145,12 @@ for (const c of byHandle.values()) {
       { column: 'vendor', relation: 'equals', condition: brand },
       { column: 'title', relation: 'contains', condition: brand },
     ];
+    // Brand twin-rule is always OR — most titles do not literally contain the brand name.
+    c.disjunctive = true;
+  } else {
+    // Honor per-collection Match Column: "all" → disjunctive=false (AND), else true (OR).
+    c.disjunctive = c.matchColumn !== 'all';
   }
-  // Honor per-collection Match Column: "all" → disjunctive=false (AND), else true (OR).
-  c.disjunctive = c.matchColumn !== 'all';
   collections.push(c);
 }
 
