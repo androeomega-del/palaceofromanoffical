@@ -84,6 +84,16 @@ export function ConciergeWidget() {
       cancelled = true;
     };
   }, []);
+
+  // Infer shopper destination from browser locale (e.g. "en-US" → "US").
+  // Cheap, zero-friction; ~85% accurate for the AI's delivery-window math.
+  const shopperCountry = useMemo<string | undefined>(() => {
+    if (typeof navigator === "undefined") return undefined;
+    const locale = navigator.language || (navigator.languages?.[0] ?? "");
+    const match = /-([A-Z]{2})\b/.exec(locale);
+    return match?.[1];
+  }, []);
+
   const [state, setState] = useState<{
     loading: boolean;
     data: ConciergeResult | null;
@@ -99,6 +109,7 @@ export function ConciergeWidget() {
     recent.slice(0, 8).map((r) => r.handle).join("|"),
     interactionHandles.slice(0, 8).join("|"),
     shopperName ?? "",
+    shopperCountry ?? "",
   ].join("::");
 
   // Fetch when the drawer opens (lazy — saves tokens until shoppers ask for it).
@@ -116,6 +127,8 @@ export function ConciergeWidget() {
         recentHandles: recent.slice(0, 20).map((r) => r.handle),
         interactionHandles: interactionHandles.slice(0, 20),
         shopperName,
+        shopperCountry,
+        shopperLocalTime: new Date().toISOString(),
       },
     })
       .then((data) => {
@@ -235,7 +248,19 @@ export function ConciergeWidget() {
                   >
                     "{state.data.greeting}"
                   </p>
-                  {state.data.products.length === 0 ? (
+                  {state.data.handoff ? (
+                    <div className="border border-ink/15 bg-canvas-raised px-5 py-5" data-testid="concierge-handoff">
+                      <p className="text-sm leading-relaxed text-ink/85 mb-4">
+                        {state.data.handoff.message}
+                      </p>
+                      <a
+                        href={state.data.handoff.mailto}
+                        className="inline-flex items-center justify-center bg-ink text-canvas px-5 py-3 text-[10px] uppercase tracking-[0.25em] font-medium hover:bg-bronze transition-colors"
+                      >
+                        {state.data.handoff.buttonLabel}
+                      </a>
+                    </div>
+                  ) : state.data.products.length === 0 ? (
                     <p className="text-sm text-muted-foreground">
                       No matches yet — explore a few more pieces and I'll refresh.
                     </p>

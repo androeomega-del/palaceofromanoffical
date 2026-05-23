@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { formatPrice, type ShopifyProduct } from "@/lib/shopify";
 import { computeScarcitySignal } from "@/lib/scarcity-signal";
+import { getShippingOrigin, formatOriginLabel } from "@/lib/shipping-origin";
 import { useCartStore } from "@/stores/cart-store";
 import { useWishlistStore } from "@/stores/wishlist-store";
 import { useInteractionStore } from "@/stores/interaction-store";
@@ -327,6 +328,14 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
         <p className="text-sm">{formatPrice(price)}</p>
         {onSale && <p className="text-xs text-muted-foreground line-through">{formatPrice(compareAt)}</p>}
       </div>
+      {(() => {
+        const originLabel = formatOriginLabel(getShippingOrigin(p.vendor));
+        return originLabel ? (
+          <p className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground mt-1.5">
+            {originLabel}
+          </p>
+        ) : null;
+      })()}
     </Link>
   );
 }
