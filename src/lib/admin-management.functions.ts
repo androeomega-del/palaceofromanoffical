@@ -221,20 +221,15 @@ export const setReviewStatus = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
   .inputValidator((d: { id: string; status: "approved" | "rejected" | "pending" }) => d)
   .handler(async ({ data, context }) => {
-    const patch: Record<string, unknown> = {
-      status: data.status,
-      updated_at: new Date().toISOString(),
-    };
-    if (data.status === "approved") {
-      patch.approved_at = new Date().toISOString();
-      patch.approved_by = context.userId;
-    } else {
-      patch.approved_at = null;
-      patch.approved_by = null;
-    }
+    const isApproved = data.status === "approved";
     const { error } = await supabaseAdmin
       .from("product_reviews")
-      .update(patch)
+      .update({
+        status: data.status,
+        updated_at: new Date().toISOString(),
+        approved_at: isApproved ? new Date().toISOString() : null,
+        approved_by: isApproved ? context.userId : null,
+      })
       .eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
