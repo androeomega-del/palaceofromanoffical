@@ -287,7 +287,7 @@ export const fetchConciergePicks = createServerFn({ method: "POST" })
         ? `Shopper is browsing the "${data.currentCollection}" collection.`
         : null,
       data.pageType === "home"
-        ? `Shopper just landed on the boutique homepage.`
+        ? `Shopper just landed on the Palace of Roman homepage.`
         : null,
       data.recentHandles.length > 0
         ? `Recently viewed: ${data.recentHandles.slice(0, 5).join(", ")}.`
