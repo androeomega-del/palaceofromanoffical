@@ -130,6 +130,7 @@ const PRODUCT_FRAGMENT = `
           title
           price { amount currencyCode }
           availableForSale
+          quantityAvailable
           selectedOptions { name value }
         }
       }
