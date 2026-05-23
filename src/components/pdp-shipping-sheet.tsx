@@ -63,9 +63,14 @@ export function PdpShippingSheet() {
       </SheetTrigger>
 
       <SheetContent
-        side="right"
-        className="w-full sm:max-w-md overflow-y-auto bg-[var(--studio-canvas)]"
+        side={isMobile ? "bottom" : "right"}
+        className={`overflow-y-auto bg-[var(--studio-canvas)] ${isMobile ? "rounded-t-2xl max-h-[85vh] pt-2" : "w-full sm:max-w-md"}`}
       >
+        {isMobile && (
+          <div className="mx-auto mb-2 flex justify-center">
+            <div className="w-10 h-1 rounded-full bg-[var(--studio-rule)]" />
+          </div>
+        )}
         <SheetHeader className="text-left">
           <p className="text-[10px] uppercase tracking-[0.3em] text-[var(--studio-bronze)] font-semibold">
             Client Care
