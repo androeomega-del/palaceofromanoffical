@@ -43,8 +43,10 @@ import { Route as BrandVendorRouteImport } from './routes/brand.$vendor'
 import { Route as AdminTrendingBrandsRouteImport } from './routes/admin.trending-brands'
 import { Route as AdminShopifySyncRouteImport } from './routes/admin.shopify-sync'
 import { Route as AdminSeoHealthRouteImport } from './routes/admin.seo-health'
+import { Route as AdminReviewsRouteImport } from './routes/admin.reviews'
 import { Route as AdminLandingPagesRouteImport } from './routes/admin.landing-pages'
 import { Route as AdminInventorySyncRouteImport } from './routes/admin.inventory-sync'
+import { Route as AdminInboxRouteImport } from './routes/admin.inbox'
 import { Route as AdminHomepageCurationRouteImport } from './routes/admin.homepage-curation'
 import { Route as AdminGrowthOsRouteImport } from './routes/admin.growth-os'
 import { Route as AdminEmailRecoveryRouteImport } from './routes/admin.email-recovery'
@@ -240,6 +242,11 @@ const AdminSeoHealthRoute = AdminSeoHealthRouteImport.update({
   path: '/admin/seo-health',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminReviewsRoute = AdminReviewsRouteImport.update({
+  id: '/admin/reviews',
+  path: '/admin/reviews',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminLandingPagesRoute = AdminLandingPagesRouteImport.update({
   id: '/admin/landing-pages',
   path: '/admin/landing-pages',
@@ -248,6 +255,11 @@ const AdminLandingPagesRoute = AdminLandingPagesRouteImport.update({
 const AdminInventorySyncRoute = AdminInventorySyncRouteImport.update({
   id: '/admin/inventory-sync',
   path: '/admin/inventory-sync',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminInboxRoute = AdminInboxRouteImport.update({
+  id: '/admin/inbox',
+  path: '/admin/inbox',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminHomepageCurationRoute = AdminHomepageCurationRouteImport.update({
@@ -411,8 +423,10 @@ export interface FileRoutesByFullPath {
   '/admin/email-recovery': typeof AdminEmailRecoveryRoute
   '/admin/growth-os': typeof AdminGrowthOsRoute
   '/admin/homepage-curation': typeof AdminHomepageCurationRoute
+  '/admin/inbox': typeof AdminInboxRoute
   '/admin/inventory-sync': typeof AdminInventorySyncRoute
   '/admin/landing-pages': typeof AdminLandingPagesRoute
+  '/admin/reviews': typeof AdminReviewsRoute
   '/admin/seo-health': typeof AdminSeoHealthRoute
   '/admin/shopify-sync': typeof AdminShopifySyncRoute
   '/admin/trending-brands': typeof AdminTrendingBrandsRoute
@@ -471,8 +485,10 @@ export interface FileRoutesByTo {
   '/admin/email-recovery': typeof AdminEmailRecoveryRoute
   '/admin/growth-os': typeof AdminGrowthOsRoute
   '/admin/homepage-curation': typeof AdminHomepageCurationRoute
+  '/admin/inbox': typeof AdminInboxRoute
   '/admin/inventory-sync': typeof AdminInventorySyncRoute
   '/admin/landing-pages': typeof AdminLandingPagesRoute
+  '/admin/reviews': typeof AdminReviewsRoute
   '/admin/seo-health': typeof AdminSeoHealthRoute
   '/admin/shopify-sync': typeof AdminShopifySyncRoute
   '/admin/trending-brands': typeof AdminTrendingBrandsRoute
@@ -533,8 +549,10 @@ export interface FileRoutesById {
   '/admin/email-recovery': typeof AdminEmailRecoveryRoute
   '/admin/growth-os': typeof AdminGrowthOsRoute
   '/admin/homepage-curation': typeof AdminHomepageCurationRoute
+  '/admin/inbox': typeof AdminInboxRoute
   '/admin/inventory-sync': typeof AdminInventorySyncRoute
   '/admin/landing-pages': typeof AdminLandingPagesRoute
+  '/admin/reviews': typeof AdminReviewsRoute
   '/admin/seo-health': typeof AdminSeoHealthRoute
   '/admin/shopify-sync': typeof AdminShopifySyncRoute
   '/admin/trending-brands': typeof AdminTrendingBrandsRoute
@@ -596,8 +614,10 @@ export interface FileRouteTypes {
     | '/admin/email-recovery'
     | '/admin/growth-os'
     | '/admin/homepage-curation'
+    | '/admin/inbox'
     | '/admin/inventory-sync'
     | '/admin/landing-pages'
+    | '/admin/reviews'
     | '/admin/seo-health'
     | '/admin/shopify-sync'
     | '/admin/trending-brands'
@@ -656,8 +676,10 @@ export interface FileRouteTypes {
     | '/admin/email-recovery'
     | '/admin/growth-os'
     | '/admin/homepage-curation'
+    | '/admin/inbox'
     | '/admin/inventory-sync'
     | '/admin/landing-pages'
+    | '/admin/reviews'
     | '/admin/seo-health'
     | '/admin/shopify-sync'
     | '/admin/trending-brands'
@@ -717,8 +739,10 @@ export interface FileRouteTypes {
     | '/admin/email-recovery'
     | '/admin/growth-os'
     | '/admin/homepage-curation'
+    | '/admin/inbox'
     | '/admin/inventory-sync'
     | '/admin/landing-pages'
+    | '/admin/reviews'
     | '/admin/seo-health'
     | '/admin/shopify-sync'
     | '/admin/trending-brands'
@@ -776,8 +800,10 @@ export interface RootRouteChildren {
   AdminEmailRecoveryRoute: typeof AdminEmailRecoveryRoute
   AdminGrowthOsRoute: typeof AdminGrowthOsRoute
   AdminHomepageCurationRoute: typeof AdminHomepageCurationRoute
+  AdminInboxRoute: typeof AdminInboxRoute
   AdminInventorySyncRoute: typeof AdminInventorySyncRoute
   AdminLandingPagesRoute: typeof AdminLandingPagesRoute
+  AdminReviewsRoute: typeof AdminReviewsRoute
   AdminSeoHealthRoute: typeof AdminSeoHealthRoute
   AdminShopifySyncRoute: typeof AdminShopifySyncRoute
   AdminTrendingBrandsRoute: typeof AdminTrendingBrandsRoute
@@ -1044,6 +1070,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSeoHealthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/reviews': {
+      id: '/admin/reviews'
+      path: '/admin/reviews'
+      fullPath: '/admin/reviews'
+      preLoaderRoute: typeof AdminReviewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/landing-pages': {
       id: '/admin/landing-pages'
       path: '/admin/landing-pages'
@@ -1056,6 +1089,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/inventory-sync'
       fullPath: '/admin/inventory-sync'
       preLoaderRoute: typeof AdminInventorySyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/inbox': {
+      id: '/admin/inbox'
+      path: '/admin/inbox'
+      fullPath: '/admin/inbox'
+      preLoaderRoute: typeof AdminInboxRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/homepage-curation': {
@@ -1278,8 +1318,10 @@ const rootRouteChildren: RootRouteChildren = {
   AdminEmailRecoveryRoute: AdminEmailRecoveryRoute,
   AdminGrowthOsRoute: AdminGrowthOsRoute,
   AdminHomepageCurationRoute: AdminHomepageCurationRoute,
+  AdminInboxRoute: AdminInboxRoute,
   AdminInventorySyncRoute: AdminInventorySyncRoute,
   AdminLandingPagesRoute: AdminLandingPagesRoute,
+  AdminReviewsRoute: AdminReviewsRoute,
   AdminSeoHealthRoute: AdminSeoHealthRoute,
   AdminShopifySyncRoute: AdminShopifySyncRoute,
   AdminTrendingBrandsRoute: AdminTrendingBrandsRoute,
@@ -1313,3 +1355,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
