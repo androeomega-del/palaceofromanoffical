@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { ProductCard } from "@/components/product-card";
 import AIRecommendations from "@/components/ai-recommendations";
 import { PdpAuthenticityStrip } from "@/components/pdp-authenticity-strip";
+import { PdpShippingSheet } from "@/components/pdp-shipping-sheet";
 import { cdnImage } from "@/lib/cdn-image";
 import { PdpDeliveryBadge } from "@/components/pdp-delivery-badge";
 import { PdpBrandHeritage } from "@/components/pdp-brand-heritage";
@@ -612,15 +613,8 @@ function ProductView({
                   )}
                 </button>
 
-                {/* Trust anchor — sits directly under the primary CTA */}
-                <div className="mt-3 flex items-center justify-center gap-2 text-[10.5px] uppercase tracking-[0.22em] text-[var(--studio-muted)]">
-                  <ShieldCheck className="w-3 h-3 text-[var(--studio-bronze)]" strokeWidth={1.6} />
-                  <span>
-                    <span className="text-[var(--studio-ink)] font-medium">Authenticity &amp; Secure Shipping</span>
-                    <span className="mx-1.5 text-[var(--studio-bronze)]">•</span>
-                    <span className="text-[var(--studio-ink)] font-medium">14-Day Returns</span>
-                  </span>
-                </div>
+                {/* Trust anchor — interactive, opens shipping/returns sheet */}
+                <PdpShippingSheet />
               </div>
             </div>
 
