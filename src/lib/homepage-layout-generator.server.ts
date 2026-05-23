@@ -62,18 +62,30 @@ async function getVelocityCandidates(limit = 30): Promise<Candidate[]> {
 async function hydrateCandidates(cands: Candidate[]): Promise<Candidate[]> {
   const results = await Promise.allSettled(
     cands.map(async (c) => {
-      const node = await fetchProductByHandle(c.handle);
-      if (!node) return null;
-      const vendor = node.vendor ?? c.vendor ?? undefined;
-      if (vendor && !isAllowedLuxuryBrand(vendor)) return null;
-      const price = node.priceRange?.minVariantPrice?.amount;
-      return {
-        ...c,
-        vendor,
-        title: node.title,
-        productType: node.productType ?? c.productType,
-        priceUsd: price ? String(Math.round(parseFloat(price))) : undefined,
-      } satisfies Candidate;
+      // Fast path: candidate already carries the fields we need (e.g. came
+      // from the Shopify fallback). Skip the per-handle round-trip — that
+      // call sometimes fails under load and was starving the generator.
+      if (c.title && c.vendor && c.priceUsd) {
+        if (c.vendor && !isAllowedLuxuryBrand(c.vendor)) return null;
+        return c;
+      }
+      try {
+        const node = await fetchProductByHandle(c.handle);
+        if (!node) return null;
+        const vendor = node.vendor ?? c.vendor ?? undefined;
+        if (vendor && !isAllowedLuxuryBrand(vendor)) return null;
+        const price = node.priceRange?.minVariantPrice?.amount;
+        return {
+          ...c,
+          vendor,
+          title: node.title,
+          productType: node.productType ?? c.productType,
+          priceUsd: price ? String(Math.round(parseFloat(price))) : undefined,
+        } satisfies Candidate;
+      } catch (e) {
+        console.warn(`[homepage-gen] hydrate failed for ${c.handle}:`, (e as Error).message);
+        return null;
+      }
     }),
   );
 
