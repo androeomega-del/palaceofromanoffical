@@ -190,7 +190,7 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
         return;
       }
       track({ handle: p.handle, event: "cart", ...meta });
-      const checkoutUrl = useCartStore.getState().checkoutUrl;
+      const checkoutUrl = useCartStore.getState().getCheckoutUrl();
       if (checkoutUrl) {
         const { trackCartEvent } = await import("@/lib/cart-analytics");
         const base = {
