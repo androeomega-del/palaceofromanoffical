@@ -111,25 +111,39 @@ export const fetchConciergePicks = createServerFn({ method: "POST" })
         ? fetchProductsPage({
             first: 12,
             sortKey: "BEST_SELLING",
-            query: `vendor:"${vendorHint}"`,
+            query: `vendor:"${vendorHint}" AND available_for_sale:true`,
           }).catch(emptyPage)
         : Promise.resolve(emptyPage()),
       typeHint
         ? fetchProductsPage({
             first: 12,
             sortKey: "BEST_SELLING",
-            query: `product_type:"${typeHint}"`,
+            query: `product_type:"${typeHint}" AND available_for_sale:true`,
           }).catch(emptyPage)
         : Promise.resolve(emptyPage()),
       data.currentCollection
         ? fetchProductsPage({
             first: 12,
             sortKey: "BEST_SELLING",
-            query: `tag:'${data.currentCollection}'`,
+            query: `tag:'${data.currentCollection}' AND available_for_sale:true`,
           }).catch(emptyPage)
         : Promise.resolve(emptyPage()),
-      fetchProductsPage({ first: 18, sortKey: "BEST_SELLING" }).catch(emptyPage),
+      fetchProductsPage({
+        first: 18,
+        sortKey: "BEST_SELLING",
+        query: "available_for_sale:true",
+      }).catch(emptyPage),
     ]);
+
+    // Cross-reference with the Admin API (Client Credentials Grant) for the
+    // freshest in-stock truth. Storefront cache can lag behind by minutes;
+    // Admin reflects realtime inventory. Best-effort: if admin auth fails,
+    // we fall back to the Storefront `availableForSale` flag.
+    const adminInStock = await fetchInStockHandles({
+      vendor: vendorHint || undefined,
+      productType: typeHint || undefined,
+      first: 250,
+    }).catch(() => new Set<string>());
 
     // 3. Filter to curated 100, exclude already-seen handles, cap at 24.
     const seen = new Set<string>([
@@ -143,6 +157,10 @@ export const fetchConciergePicks = createServerFn({ method: "POST" })
       for (const edge of page.edges) {
         if (seen.has(edge.node.handle)) continue;
         if (!edge.node.vendor || !isAllowedLuxuryBrand(edge.node.vendor)) continue;
+        // Strict in-stock gate: Storefront flag must be true AND, when the
+        // Admin lookup returned any handles, the candidate must appear there.
+        if (!isInStock(edge)) continue;
+        if (adminInStock.size > 0 && !adminInStock.has(edge.node.handle)) continue;
         seen.add(edge.node.handle);
         candidates.push(edge);
         if (candidates.length >= 36) break;
