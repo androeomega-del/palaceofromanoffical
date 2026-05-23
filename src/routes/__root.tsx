@@ -38,17 +38,23 @@ if (typeof window !== "undefined") {
   };
 
   const triggerReload = (source: string, info: Record<string, unknown>) => {
+    const nav = currentNavKey();
+    const previousReloadUrl = sessionStorage.getItem(RELOAD_KEY);
     if (alreadyReloadedForThisNav()) {
       // eslint-disable-next-line no-console
       console.log(
-        `[POR stale-bundle] Skipped reload (already reloaded for ${currentNavKey()}). source=${source}`,
+        `%c[POR stale-bundle]%c SKIPPED reload — already reloaded once for \`${nav}\`.\n  source: ${source}\n  previousReloadUrl: ${previousReloadUrl}`,
+        "color:#c9a84c; font-weight:bold;",
+        "color:inherit",
         info,
       );
       return;
     }
     // eslint-disable-next-line no-console
     console.log(
-      `[POR stale-bundle] Reloading once for nav=${currentNavKey()}. source=${source}`,
+      `%c[POR stale-bundle]%c TRIGGERING hard reload for \`${nav}\`.\n  source: ${source}\n  chunkUrl: ${info.chunkUrl ?? "(unknown)"}`,
+      "color:#c9a84c; font-weight:bold;",
+      "color:inherit",
       info,
     );
     markReloadedForThisNav();
@@ -58,7 +64,15 @@ if (typeof window !== "undefined") {
   // Clear the per-nav guard whenever the user navigates somewhere new so
   // the next nav target is allowed exactly one fresh reload attempt.
   window.addEventListener("popstate", () => {
-    if (sessionStorage.getItem(RELOAD_KEY) !== currentNavKey()) {
+    const nav = currentNavKey();
+    const stored = sessionStorage.getItem(RELOAD_KEY);
+    if (stored !== nav) {
+      // eslint-disable-next-line no-console
+      console.log(
+        `%c[POR stale-bundle]%c Navigation changed to \`${nav}\`. Cleared reload guard (was \`${stored ?? "null"}\`).`,
+        "color:#c9a84c; font-weight:bold;",
+        "color:inherit",
+      );
       sessionStorage.removeItem(RELOAD_KEY);
     }
   });
@@ -68,18 +82,48 @@ if (typeof window !== "undefined") {
       message,
     ) || /\/assets\/.*\.(?:js|mjs|css)/i.test(chunkUrl);
 
+  const extractChunkUrl = (event: Event): string => {
+    // Try known properties in order of reliability
+    const e = event as ErrorEvent;
+    if (e.filename) return e.filename;
+    const p = event as PromiseRejectionEvent;
+    if (p.reason) {
+      if (typeof p.reason === "string") return p.reason;
+      if (p.reason.stack && /\/assets\//.test(p.reason.stack)) {
+        // Extract first /assets/ URL from stack
+        const m = String(p.reason.stack).match(/https?:\/\/[^\s)"']+\/assets\/[^\s)"']+/);
+        if (m) return m[1] ?? m[0];
+      }
+      if (p.reason.message) return String(p.reason.message);
+      return String(p.reason);
+    }
+    if ((event as CustomEvent).detail?.url) return (event as CustomEvent).detail.url;
+    if ((event as CustomEvent).detail?.href) return (event as CustomEvent).detail.href;
+    return "";
+  };
+
   const handleStaleChunk = (event: Event) => {
     const message =
       (event as ErrorEvent).message ??
       ((event as PromiseRejectionEvent).reason &&
         String((event as PromiseRejectionEvent).reason?.message ?? (event as PromiseRejectionEvent).reason)) ??
       "";
-    const chunkUrl =
-      (event as ErrorEvent).filename ??
-      (event as PromiseRejectionEvent).reason?.stack ??
-      "";
+    const chunkUrl = extractChunkUrl(event);
+    // eslint-disable-next-line no-console
+    console.log(
+      `%c[POR stale-bundle]%c Captured ${event.type}.\n  message: ${message.slice(0, 200)}\n  chunkUrl: ${chunkUrl || "(none extracted)"}`,
+      "color:#c9a84c; font-weight:bold;",
+      "color:inherit",
+    );
     if (isStaleChunkMessage(message, chunkUrl)) {
-      triggerReload("error/unhandledrejection", { message, chunkUrl });
+      triggerReload(event.type, { message: message.slice(0, 500), chunkUrl });
+    } else {
+      // eslint-disable-next-line no-console
+      console.log(
+        `%c[POR stale-bundle]%c Ignored ${event.type} — message/chunkUrl did not match stale-chunk heuristics.`,
+        "color:#c9a84c; font-weight:bold;",
+        "color:inherit",
+      );
     }
   };
 
@@ -89,10 +133,25 @@ if (typeof window !== "undefined") {
       (detail as { url?: string; href?: string } | undefined)?.url ??
       (detail as { url?: string; href?: string } | undefined)?.href ??
       "";
+    // eslint-disable-next-line no-console
+    console.log(
+      `%c[POR stale-bundle]%c Captured vite:preloadError.\n  chunkUrl: ${chunkUrl || "(none in detail)"}\n  detail:`,
+      "color:#c9a84c; font-weight:bold;",
+      "color:inherit",
+      detail,
+    );
     triggerReload("vite:preloadError", { chunkUrl, detail });
   });
   window.addEventListener("error", handleStaleChunk);
   window.addEventListener("unhandledrejection", handleStaleChunk);
+
+  // Init banner so developers know the guard is active and can inspect state
+  // eslint-disable-next-line no-console
+  console.log(
+    `%c[POR stale-bundle]%c Recovery handler active.\n  currentNav: ${currentNavKey()}\n  alreadyReloaded: ${alreadyReloadedForThisNav()}\n  RELOAD_KEY: ${RELOAD_KEY}`,
+    "color:#c9a84c; font-weight:bold;",
+    "color:inherit",
+  );
 
 }
 
