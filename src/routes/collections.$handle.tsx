@@ -636,10 +636,12 @@ function CollectionPage() {
                     <ProductCard key={e.node.id} product={e} />
                   ))}
                 </div>
-                {/* IntersectionObserver sentinel — drives infinite scroll */}
-                <div ref={sentinelRef} aria-hidden className="h-px w-full" />
+                {/* IntersectionObserver sentinel — drives infinite scroll.
+                    Real height + min-h ensures the node is always layout-
+                    measurable so IO reliably reports intersection. */}
+                <div ref={sentinelRef} aria-hidden className="h-10 w-full mt-10" />
                 {(q.hasNextPage || q.isFetchingNextPage) && (
-                  <div className="mt-16 flex justify-center">
+                  <div className="mt-6 flex justify-center">
                     <span className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
                       Loading more…
                     </span>
