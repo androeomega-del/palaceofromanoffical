@@ -5,7 +5,7 @@
 // If the slug isn't an active landing page, redirect to /shop so visitors
 // from a stale link still land somewhere useful (zero-downtime rule).
 
-import { createFileRoute, Link, notFound, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { getLandingPageBySlug, type ActiveLandingPage } from "@/lib/landing-page.functions";

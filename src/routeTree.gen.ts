@@ -34,6 +34,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AccountIndexRouteImport } from './routes/account.index'
 import { Route as SwimSizeGuideRouteImport } from './routes/swim.size-guide'
 import { Route as ProductHandleRouteImport } from './routes/product.$handle'
+import { Route as PagesSlugRouteImport } from './routes/pages.$slug'
 import { Route as EditorialTheNewEveningRouteImport } from './routes/editorial.the-new-evening'
 import { Route as EditorialResort2026RouteImport } from './routes/editorial.resort-2026'
 import { Route as EditorialMay2026RouteImport } from './routes/editorial.may-2026'
@@ -191,6 +192,11 @@ const SwimSizeGuideRoute = SwimSizeGuideRouteImport.update({
 const ProductHandleRoute = ProductHandleRouteImport.update({
   id: '/product/$handle',
   path: '/product/$handle',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PagesSlugRoute = PagesSlugRouteImport.update({
+  id: '/pages/$slug',
+  path: '/pages/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EditorialTheNewEveningRoute = EditorialTheNewEveningRouteImport.update({
@@ -415,6 +421,7 @@ export interface FileRoutesByFullPath {
   '/editorial/may-2026': typeof EditorialMay2026Route
   '/editorial/resort-2026': typeof EditorialResort2026Route
   '/editorial/the-new-evening': typeof EditorialTheNewEveningRoute
+  '/pages/$slug': typeof PagesSlugRoute
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/account/': typeof AccountIndexRoute
@@ -474,6 +481,7 @@ export interface FileRoutesByTo {
   '/editorial/may-2026': typeof EditorialMay2026Route
   '/editorial/resort-2026': typeof EditorialResort2026Route
   '/editorial/the-new-evening': typeof EditorialTheNewEveningRoute
+  '/pages/$slug': typeof PagesSlugRoute
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/account': typeof AccountIndexRoute
@@ -535,6 +543,7 @@ export interface FileRoutesById {
   '/editorial/may-2026': typeof EditorialMay2026Route
   '/editorial/resort-2026': typeof EditorialResort2026Route
   '/editorial/the-new-evening': typeof EditorialTheNewEveningRoute
+  '/pages/$slug': typeof PagesSlugRoute
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/account/': typeof AccountIndexRoute
@@ -597,6 +606,7 @@ export interface FileRouteTypes {
     | '/editorial/may-2026'
     | '/editorial/resort-2026'
     | '/editorial/the-new-evening'
+    | '/pages/$slug'
     | '/product/$handle'
     | '/swim/size-guide'
     | '/account/'
@@ -656,6 +666,7 @@ export interface FileRouteTypes {
     | '/editorial/may-2026'
     | '/editorial/resort-2026'
     | '/editorial/the-new-evening'
+    | '/pages/$slug'
     | '/product/$handle'
     | '/swim/size-guide'
     | '/account'
@@ -716,6 +727,7 @@ export interface FileRouteTypes {
     | '/editorial/may-2026'
     | '/editorial/resort-2026'
     | '/editorial/the-new-evening'
+    | '/pages/$slug'
     | '/product/$handle'
     | '/swim/size-guide'
     | '/account/'
@@ -774,6 +786,7 @@ export interface RootRouteChildren {
   EditorialMay2026Route: typeof EditorialMay2026Route
   EditorialResort2026Route: typeof EditorialResort2026Route
   EditorialTheNewEveningRoute: typeof EditorialTheNewEveningRoute
+  PagesSlugRoute: typeof PagesSlugRoute
   ProductHandleRoute: typeof ProductHandleRoute
   AdminIndexRoute: typeof AdminIndexRoute
   CollectionsIndexRoute: typeof CollectionsIndexRoute
@@ -966,6 +979,13 @@ declare module '@tanstack/react-router' {
       path: '/product/$handle'
       fullPath: '/product/$handle'
       preLoaderRoute: typeof ProductHandleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pages/$slug': {
+      id: '/pages/$slug'
+      path: '/pages/$slug'
+      fullPath: '/pages/$slug'
+      preLoaderRoute: typeof PagesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/editorial/the-new-evening': {
@@ -1268,6 +1288,7 @@ const rootRouteChildren: RootRouteChildren = {
   EditorialMay2026Route: EditorialMay2026Route,
   EditorialResort2026Route: EditorialResort2026Route,
   EditorialTheNewEveningRoute: EditorialTheNewEveningRoute,
+  PagesSlugRoute: PagesSlugRoute,
   ProductHandleRoute: ProductHandleRoute,
   AdminIndexRoute: AdminIndexRoute,
   CollectionsIndexRoute: CollectionsIndexRoute,
