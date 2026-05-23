@@ -9,6 +9,16 @@ import {
 import { isAllowedLuxuryBrand } from "@/lib/nav-config";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { fetchInStockHandles } from "@/lib/shopify-admin.server";
+import { getShippingOrigin, formatOriginLabel } from "@/lib/shipping-origin";
+import { estimateDelivery } from "@/lib/shipping-eta";
+
+/** Support handoff destination — wired into AI responses and the UI button. */
+const SUPPORT_EMAIL = "support@palaceofromanofficial.com";
+
+/** True if any variant on the product is currently available for sale. */
+function isInStock(p: ShopifyProduct): boolean {
+  return p.node.variants.edges.some((v) => v.node.availableForSale);
+}
 
 /** True if any variant on the product is currently available for sale. */
 function isInStock(p: ShopifyProduct): boolean {
