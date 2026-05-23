@@ -294,6 +294,7 @@ function RootComponent() {
       <Toaster position="top-center" />
       <WelcomeDispatchModal />
       <ClientOnlyConcierge />
+      <ExitIntentStylist />
     </QueryClientProvider>
   );
 }
