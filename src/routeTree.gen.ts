@@ -40,6 +40,7 @@ import { Route as EditorialMay2026RouteImport } from './routes/editorial.may-202
 import { Route as CollectionsHandleRouteImport } from './routes/collections.$handle'
 import { Route as CampaignDolceGabbanaSwimRouteImport } from './routes/campaign.dolce-gabbana-swim'
 import { Route as BrandVendorRouteImport } from './routes/brand.$vendor'
+import { Route as AdminTrendingBrandsRouteImport } from './routes/admin.trending-brands'
 import { Route as AdminShopifySyncRouteImport } from './routes/admin.shopify-sync'
 import { Route as AdminSeoHealthRouteImport } from './routes/admin.seo-health'
 import { Route as AdminLandingPagesRouteImport } from './routes/admin.landing-pages'
@@ -222,6 +223,11 @@ const CampaignDolceGabbanaSwimRoute =
 const BrandVendorRoute = BrandVendorRouteImport.update({
   id: '/brand/$vendor',
   path: '/brand/$vendor',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminTrendingBrandsRoute = AdminTrendingBrandsRouteImport.update({
+  id: '/admin/trending-brands',
+  path: '/admin/trending-brands',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminShopifySyncRoute = AdminShopifySyncRouteImport.update({
@@ -409,6 +415,7 @@ export interface FileRoutesByFullPath {
   '/admin/landing-pages': typeof AdminLandingPagesRoute
   '/admin/seo-health': typeof AdminSeoHealthRoute
   '/admin/shopify-sync': typeof AdminShopifySyncRoute
+  '/admin/trending-brands': typeof AdminTrendingBrandsRoute
   '/brand/$vendor': typeof BrandVendorRoute
   '/campaign/dolce-gabbana-swim': typeof CampaignDolceGabbanaSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
@@ -468,6 +475,7 @@ export interface FileRoutesByTo {
   '/admin/landing-pages': typeof AdminLandingPagesRoute
   '/admin/seo-health': typeof AdminSeoHealthRoute
   '/admin/shopify-sync': typeof AdminShopifySyncRoute
+  '/admin/trending-brands': typeof AdminTrendingBrandsRoute
   '/brand/$vendor': typeof BrandVendorRoute
   '/campaign/dolce-gabbana-swim': typeof CampaignDolceGabbanaSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
@@ -529,6 +537,7 @@ export interface FileRoutesById {
   '/admin/landing-pages': typeof AdminLandingPagesRoute
   '/admin/seo-health': typeof AdminSeoHealthRoute
   '/admin/shopify-sync': typeof AdminShopifySyncRoute
+  '/admin/trending-brands': typeof AdminTrendingBrandsRoute
   '/brand/$vendor': typeof BrandVendorRoute
   '/campaign/dolce-gabbana-swim': typeof CampaignDolceGabbanaSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
@@ -591,6 +600,7 @@ export interface FileRouteTypes {
     | '/admin/landing-pages'
     | '/admin/seo-health'
     | '/admin/shopify-sync'
+    | '/admin/trending-brands'
     | '/brand/$vendor'
     | '/campaign/dolce-gabbana-swim'
     | '/collections/$handle'
@@ -650,6 +660,7 @@ export interface FileRouteTypes {
     | '/admin/landing-pages'
     | '/admin/seo-health'
     | '/admin/shopify-sync'
+    | '/admin/trending-brands'
     | '/brand/$vendor'
     | '/campaign/dolce-gabbana-swim'
     | '/collections/$handle'
@@ -710,6 +721,7 @@ export interface FileRouteTypes {
     | '/admin/landing-pages'
     | '/admin/seo-health'
     | '/admin/shopify-sync'
+    | '/admin/trending-brands'
     | '/brand/$vendor'
     | '/campaign/dolce-gabbana-swim'
     | '/collections/$handle'
@@ -768,6 +780,7 @@ export interface RootRouteChildren {
   AdminLandingPagesRoute: typeof AdminLandingPagesRoute
   AdminSeoHealthRoute: typeof AdminSeoHealthRoute
   AdminShopifySyncRoute: typeof AdminShopifySyncRoute
+  AdminTrendingBrandsRoute: typeof AdminTrendingBrandsRoute
   BrandVendorRoute: typeof BrandVendorRoute
   CampaignDolceGabbanaSwimRoute: typeof CampaignDolceGabbanaSwimRoute
   CollectionsHandleRoute: typeof CollectionsHandleRoute
@@ -1008,6 +1021,13 @@ declare module '@tanstack/react-router' {
       path: '/brand/$vendor'
       fullPath: '/brand/$vendor'
       preLoaderRoute: typeof BrandVendorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/trending-brands': {
+      id: '/admin/trending-brands'
+      path: '/admin/trending-brands'
+      fullPath: '/admin/trending-brands'
+      preLoaderRoute: typeof AdminTrendingBrandsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/shopify-sync': {
@@ -1262,6 +1282,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminLandingPagesRoute: AdminLandingPagesRoute,
   AdminSeoHealthRoute: AdminSeoHealthRoute,
   AdminShopifySyncRoute: AdminShopifySyncRoute,
+  AdminTrendingBrandsRoute: AdminTrendingBrandsRoute,
   BrandVendorRoute: BrandVendorRoute,
   CampaignDolceGabbanaSwimRoute: CampaignDolceGabbanaSwimRoute,
   CollectionsHandleRoute: CollectionsHandleRoute,
