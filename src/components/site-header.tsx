@@ -8,6 +8,7 @@ import { ReducedMotionToggle } from "@/components/reduced-motion-toggle";
 import { DesktopMegamenu, MobileMegamenu } from "@/components/megamenu";
 import { SearchOverlay } from "@/components/search-overlay";
 import { fetchCollections } from "@/lib/shopify";
+import { DeliverToButton } from "@/components/deliver-to-button";
 
 type FlatItem = {
   label: string;
@@ -163,6 +164,7 @@ export function SiteHeader() {
               >
                 <Search className="w-4 h-4" strokeWidth={1.25} />
               </button>
+              <DeliverToButton className="hidden md:inline-flex" />
               <ReducedMotionToggle />
               <button
                 aria-label="Account"

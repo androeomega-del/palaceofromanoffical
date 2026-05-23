@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { ProductCard } from "@/components/product-card";
 import AIRecommendations from "@/components/ai-recommendations";
 import { PdpAuthenticityStrip } from "@/components/pdp-authenticity-strip";
+import { PdpDeliveryBadge } from "@/components/pdp-delivery-badge";
 import { PdpBrandHeritage } from "@/components/pdp-brand-heritage";
 import { ProductReviews } from "@/components/product-reviews";
 import {
@@ -607,6 +608,9 @@ function ProductView({
                 </button>
               </div>
             </div>
+
+            {/* Delivery badge — uses zip from location store */}
+            <PdpDeliveryBadge vendor={product.vendor} />
 
             {/* Authenticity strip — defensible claims only */}
             <PdpAuthenticityStrip />
