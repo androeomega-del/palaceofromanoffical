@@ -394,6 +394,45 @@ export type Database = {
         }
         Relationships: []
       }
+      dynamic_landing_pages: {
+        Row: {
+          blueprint_json: Json
+          created_at: string
+          expires_at: string | null
+          generated_at: string
+          id: string
+          priority_score: number
+          signal_type: string
+          slug: string
+          source_term: string
+          status: string
+        }
+        Insert: {
+          blueprint_json: Json
+          created_at?: string
+          expires_at?: string | null
+          generated_at?: string
+          id?: string
+          priority_score?: number
+          signal_type: string
+          slug: string
+          source_term: string
+          status?: string
+        }
+        Update: {
+          blueprint_json?: Json
+          created_at?: string
+          expires_at?: string | null
+          generated_at?: string
+          id?: string
+          priority_score?: number
+          signal_type?: string
+          slug?: string
+          source_term?: string
+          status?: string
+        }
+        Relationships: []
+      }
       email_dispatch_log: {
         Row: {
           cart_id: string | null
@@ -476,6 +515,7 @@ export type Database = {
           id: string
           is_active: boolean
           layout_json: Json
+          status: string
         }
         Insert: {
           created_at?: string
@@ -483,6 +523,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           layout_json: Json
+          status?: string
         }
         Update: {
           created_at?: string
@@ -490,6 +531,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           layout_json?: Json
+          status?: string
         }
         Relationships: []
       }

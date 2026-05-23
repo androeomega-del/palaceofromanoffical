@@ -213,24 +213,45 @@ export async function generateHomepageLayout(): Promise<GenerationResult> {
     throw new Error(`AI produced too few valid handles after allowlist filtering (kept ${kept.length}/3).`);
   }
 
-  // Deactivate prior rows, insert the new active row.
-  await supabaseAdmin
-    .from("homepage_daily_layout")
-    .update({ is_active: false })
-    .eq("is_active", true);
-
+  // ZERO-DOWNTIME ATOMIC SWAP:
+  // 1. Insert the new row as 'staged' + is_active=false (no public read).
+  // 2. Only after the insert succeeds, archive the prior active row and
+  //    flip the new row to active in the same step. If anything before
+  //    step 2 throws, the previous active edition keeps serving.
   const { data: inserted, error: insertErr } = await supabaseAdmin
     .from("homepage_daily_layout")
     .insert({
       layout_json: JSON.parse(JSON.stringify(filtered)),
-      is_active: true,
+      is_active: false,
+      status: "staged",
       generated_at: new Date().toISOString(),
     })
     .select("id")
     .single();
 
   if (insertErr || !inserted) {
-    throw new Error(`Failed to persist layout: ${insertErr?.message ?? "unknown"}`);
+    throw new Error(`Failed to persist staged layout: ${insertErr?.message ?? "unknown"}`);
+  }
+
+  // Archive prior active rows.
+  await supabaseAdmin
+    .from("homepage_daily_layout")
+    .update({ is_active: false, status: "archived" })
+    .eq("is_active", true);
+
+  // Promote the staged row to active.
+  const { error: promoteErr } = await supabaseAdmin
+    .from("homepage_daily_layout")
+    .update({ is_active: true, status: "active" })
+    .eq("id", inserted.id);
+
+  if (promoteErr) {
+    // Roll back the staged row so we don't leave orphans.
+    await supabaseAdmin
+      .from("homepage_daily_layout")
+      .update({ status: "archived" })
+      .eq("id", inserted.id);
+    throw new Error(`Failed to promote staged layout: ${promoteErr.message}`);
   }
 
   return {
