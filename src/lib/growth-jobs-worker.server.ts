@@ -11,16 +11,73 @@
 // `job_type` from elsewhere in the app. The worker stays generic.
 
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { sendGmail } from "@/lib/gmail-send";
+import {
+  renderReviewRequestEmail,
+  type ReviewLineForEmail,
+} from "@/lib/review-request-email-template";
 
 export type JobHandlerResult = { ok: true; result?: unknown } | { ok: false; error: string };
 export type JobHandler = (payload: unknown, jobId: string) => Promise<JobHandlerResult>;
 
-// Registry — Wave 3 will add `send_review_request` here.
+// Registry — handlers register themselves below.
 const JOB_HANDLERS: Record<string, JobHandler> = {};
 
 export function registerJobHandler(jobType: string, handler: JobHandler) {
   JOB_HANDLERS[jobType] = handler;
 }
+
+// --- send_review_request ----------------------------------------------------
+// Sent T+10 days after order creation. Dedupes via order_emails_sent
+// (order_id, email_type='review_request').
+interface ReviewRequestPayload {
+  orderId: string;
+  recipient: string;
+  firstName: string | null;
+  orderName: string;
+  lines: ReviewLineForEmail[];
+}
+
+registerJobHandler("send_review_request", async (payload) => {
+  const p = payload as ReviewRequestPayload;
+  if (!p?.orderId || !p?.recipient || !Array.isArray(p.lines) || p.lines.length === 0) {
+    return { ok: false, error: "Invalid review-request payload" };
+  }
+
+  // Idempotency claim.
+  const { error: insertError } = await supabaseAdmin
+    .from("order_emails_sent")
+    .insert({
+      order_id: p.orderId,
+      email_type: "review_request",
+      recipient_email: p.recipient,
+    });
+  if (insertError) {
+    if ((insertError as { code?: string }).code === "23505") {
+      return { ok: true, result: { deduped: true } };
+    }
+    return { ok: false, error: `dedup insert: ${insertError.message}` };
+  }
+
+  try {
+    const { subject, html, text } = renderReviewRequestEmail({
+      firstName: p.firstName,
+      orderName: p.orderName,
+      lines: p.lines,
+    });
+    await sendGmail(p.recipient, subject, html, text);
+  } catch (e) {
+    // Roll back the claim so a retry can fire.
+    await supabaseAdmin
+      .from("order_emails_sent")
+      .delete()
+      .eq("order_id", p.orderId)
+      .eq("email_type", "review_request");
+    const msg = e instanceof Error ? e.message : String(e);
+    return { ok: false, error: msg };
+  }
+  return { ok: true, result: { sent: true } };
+});
 
 interface DrainOptions {
   batchSize?: number;

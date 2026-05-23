@@ -23,6 +23,8 @@ interface ShopifyLineItem {
   quantity?: number | null;
   price?: string | null;
   price_set?: { shop_money?: { amount?: string; currency_code?: string } };
+  variant_id?: number | string | null;
+  product_id?: number | string | null;
 }
 
 interface ShopifyOrder {
@@ -35,6 +37,25 @@ interface ShopifyOrder {
   total_price?: string;
   currency?: string;
   line_items?: ShopifyLineItem[];
+}
+
+// Resolve numeric Shopify variant ids → product handle via shopify_variant_map.
+async function resolveHandles(
+  items: ShopifyLineItem[],
+): Promise<Map<string, string>> {
+  const gids = items
+    .map((li) => (li.variant_id ? `gid://shopify/ProductVariant/${li.variant_id}` : null))
+    .filter((g): g is string => g !== null);
+  if (gids.length === 0) return new Map();
+  const { data } = await supabaseAdmin
+    .from("shopify_variant_map")
+    .select("variant_gid, product_handle")
+    .in("variant_gid", gids);
+  const map = new Map<string, string>();
+  for (const r of data ?? []) {
+    if (r.product_handle) map.set(r.variant_gid, r.product_handle);
+  }
+  return map;
 }
 
 function formatMoney(amount: string | undefined, currency: string | undefined): string {
@@ -152,6 +173,42 @@ export const Route = createFileRoute("/api/public/hooks/shopify-order-created")(
             .eq("order_id", orderId)
             .eq("email_type", "thank_you");
           return new Response("Send failed", { status: 500 });
+        }
+
+        // Enqueue T+10d review-request email. Best-effort — failures here
+        // must not block the 200 response back to Shopify.
+        try {
+          const handleMap = await resolveHandles(order.line_items ?? []);
+          const reviewLines = (order.line_items ?? [])
+            .map((li) => {
+              const gid = li.variant_id
+                ? `gid://shopify/ProductVariant/${li.variant_id}`
+                : null;
+              const handle = gid ? handleMap.get(gid) : undefined;
+              if (!handle || !li.title) return null;
+              return { handle, title: li.title };
+            })
+            .filter((l): l is { handle: string; title: string } => l !== null);
+
+          if (reviewLines.length > 0) {
+            const runAfter = new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString();
+            await supabaseAdmin.from("growth_jobs").insert({
+              job_type: "send_review_request",
+              status: "pending",
+              run_after: runAfter,
+              max_attempts: 3,
+              payload: {
+                orderId,
+                recipient,
+                firstName: order.customer?.first_name ?? null,
+                orderName: order.name || `#${orderId}`,
+                lines: reviewLines,
+              },
+            });
+          }
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : String(e);
+          console.error(`[shopify-order-created] review enqueue failed for ${orderId}:`, msg);
         }
 
         return new Response(JSON.stringify({ ok: true, order_id: orderId }), {
