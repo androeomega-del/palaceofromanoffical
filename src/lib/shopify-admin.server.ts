@@ -1,0 +1,127 @@
+// Server-only Shopify Admin API client using the new Client Credentials Grant
+// flow (Shopify's updated Dev Dashboard auth, May 2026+). Exchanges
+// SHOPIFY_CLIENT_ID + SHOPIFY_CLIENT_SECRET for a short-lived Admin API token
+// and caches it in memory until ~60s before expiry.
+//
+// Usage:
+//   import { adminGraphql } from "@/lib/shopify-admin.server";
+//   const data = await adminGraphql<{ products: ... }>(QUERY, { first: 12 });
+
+const API_VERSION = "2025-07";
+
+type CachedToken = { token: string; expiresAt: number };
+let cached: CachedToken | null = null;
+
+function shopDomain(): string {
+  const d = process.env.SHOPIFY_STORE_DOMAIN;
+  if (!d) throw new Error("SHOPIFY_STORE_DOMAIN missing");
+  return d.replace(/^https?:\/\//, "").replace(/\/+$/, "");
+}
+
+/**
+ * Fetch (or reuse) an Admin API access token via Client Credentials Grant.
+ * Shopify endpoint: POST https://{shop}/admin/oauth/access_token
+ *   body: { client_id, client_secret, grant_type: "client_credentials" }
+ */
+export async function getAdminAccessToken(): Promise<string> {
+  const now = Date.now();
+  if (cached && cached.expiresAt - 60_000 > now) return cached.token;
+
+  const clientId = process.env.SHOPIFY_CLIENT_ID;
+  const clientSecret = process.env.SHOPIFY_CLIENT_SECRET;
+  if (!clientId || !clientSecret) {
+    throw new Error("SHOPIFY_CLIENT_ID / SHOPIFY_CLIENT_SECRET missing");
+  }
+
+  const url = `https://${shopDomain()}/admin/oauth/access_token`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify({
+      client_id: clientId,
+      client_secret: clientSecret,
+      grant_type: "client_credentials",
+    }),
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Shopify client_credentials grant failed ${res.status}: ${text.slice(0, 240)}`);
+  }
+  const data = (await res.json()) as {
+    access_token: string;
+    expires_in?: number;
+  };
+  if (!data.access_token) throw new Error("Shopify grant returned no access_token");
+  cached = {
+    token: data.access_token,
+    expiresAt: now + (data.expires_in ?? 3600) * 1000,
+  };
+  return cached.token;
+}
+
+/** Run an Admin GraphQL query with the cached client-credentials token. */
+export async function adminGraphql<T = unknown>(
+  query: string,
+  variables: Record<string, unknown> = {},
+): Promise<T> {
+  const token = await getAdminAccessToken();
+  const res = await fetch(
+    `https://${shopDomain()}/admin/api/${API_VERSION}/graphql.json`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Shopify-Access-Token": token,
+      },
+      body: JSON.stringify({ query, variables }),
+    },
+  );
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Shopify Admin GraphQL ${res.status}: ${text.slice(0, 240)}`);
+  }
+  const json = (await res.json()) as { data?: T; errors?: Array<{ message: string }> };
+  if (json.errors?.length) {
+    throw new Error(`Shopify Admin GraphQL errors: ${json.errors.map((e) => e.message).join("; ")}`);
+  }
+  return json.data as T;
+}
+
+/**
+ * Fetch the freshest in-stock product handles directly from the Admin API —
+ * stricter than the Storefront cache. Returns a Set of handles whose tracked
+ * inventory is currently > 0 (or whose variants are explicitly available).
+ */
+export async function fetchInStockHandles(opts: {
+  vendor?: string;
+  productType?: string;
+  first?: number;
+} = {}): Promise<Set<string>> {
+  const parts: string[] = ["status:active"];
+  if (opts.vendor) parts.push(`vendor:"${opts.vendor.replace(/"/g, '\\"')}"`);
+  if (opts.productType) parts.push(`product_type:"${opts.productType.replace(/"/g, '\\"')}"`);
+  // Admin search uses "inventory_total:>0" to mean stocked.
+  parts.push("inventory_total:>0");
+  const query = parts.join(" AND ");
+
+  const GQL = `
+    query InStock($first: Int!, $query: String!) {
+      products(first: $first, query: $query) {
+        edges { node { handle totalInventory } }
+      }
+    }
+  `;
+  try {
+    const data = await adminGraphql<{
+      products: { edges: Array<{ node: { handle: string; totalInventory: number | null } }> };
+    }>(GQL, { first: Math.min(opts.first ?? 100, 250), query });
+    return new Set(
+      data.products.edges
+        .filter((e) => (e.node.totalInventory ?? 0) > 0)
+        .map((e) => e.node.handle),
+    );
+  } catch (err) {
+    console.error("[shopify-admin] fetchInStockHandles failed:", err);
+    return new Set();
+  }
+}
