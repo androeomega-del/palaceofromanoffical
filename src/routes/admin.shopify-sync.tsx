@@ -1,11 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { toast } from "sonner";
 import { adminBeforeLoad } from "@/lib/admin-route-guard";
 import { getShopifySyncStats } from "@/lib/shopify-sync-stats.functions";
+import { refreshProductOrigins } from "@/lib/product-origins.functions";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, MapPin } from "lucide-react";
 
 export const Route = createFileRoute("/admin/shopify-sync")({
   beforeLoad: adminBeforeLoad,
@@ -45,11 +48,39 @@ function Stat({ label, value, hint }: { label: string; value: string; hint?: str
 }
 
 function AdminShopifySync() {
+  const queryClient = useQueryClient();
   const { data, isLoading, isFetching, error, refetch } = useQuery({
     queryKey: ["admin", "shopify-sync-stats"],
     queryFn: () => getShopifySyncStats(),
     refetchInterval: 30_000,
     staleTime: 15_000,
+  });
+
+  const [originsResult, setOriginsResult] = useState<{
+    pages: number;
+    products: number;
+    written: number;
+  } | null>(null);
+
+  const refreshOrigins = useMutation({
+    mutationFn: () => refreshProductOrigins({ data: {} }),
+    onSuccess: (res) => {
+      setOriginsResult({
+        pages: res.pages,
+        products: res.products,
+        written: res.written,
+      });
+      toast.success(
+        `Ship-from origins refreshed — ${res.written} products across ${res.pages} pages.`,
+      );
+      // Bust the shared client-side cache so cards/PDP pick up new origins.
+      queryClient.invalidateQueries({ queryKey: ["product-origins-map"] });
+    },
+    onError: (err: Error) => {
+      toast.error("Failed to refresh ship-from origins.", {
+        description: err.message,
+      });
+    },
   });
 
   return (
@@ -61,16 +92,39 @@ function AdminShopifySync() {
             Status of the BG catalog → Shopify product import & SKU mapping.
           </p>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => refetch()}
-          disabled={isFetching}
-        >
-          <RefreshCw className={`mr-2 h-4 w-4 ${isFetching ? "animate-spin" : ""}`} />
-          Refresh
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => refreshOrigins.mutate()}
+            disabled={refreshOrigins.isPending}
+            title="Re-read each product's inventory locations from Shopify and recompute Ship-from (most-stock-wins)."
+          >
+            <MapPin
+              className={`mr-2 h-4 w-4 ${refreshOrigins.isPending ? "animate-pulse" : ""}`}
+            />
+            {refreshOrigins.isPending ? "Refreshing origins…" : "Refresh ship-from origins"}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => refetch()}
+            disabled={isFetching}
+          >
+            <RefreshCw className={`mr-2 h-4 w-4 ${isFetching ? "animate-spin" : ""}`} />
+            Refresh
+          </Button>
+        </div>
       </header>
+
+      {originsResult ? (
+        <Card className="mb-6 border-bronze/30 bg-bronze/5 p-4 text-sm">
+          Origins updated: <strong>{originsResult.written}</strong> products written
+          across <strong>{originsResult.pages}</strong> Shopify pages
+          ({originsResult.products} scanned).
+        </Card>
+      ) : null}
+
 
       {error ? (
         <Card className="border-destructive p-6 text-sm text-destructive">
