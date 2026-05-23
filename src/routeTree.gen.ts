@@ -40,9 +40,14 @@ import { Route as EditorialMay2026RouteImport } from './routes/editorial.may-202
 import { Route as CollectionsHandleRouteImport } from './routes/collections.$handle'
 import { Route as CampaignDolceGabbanaSwimRouteImport } from './routes/campaign.dolce-gabbana-swim'
 import { Route as BrandVendorRouteImport } from './routes/brand.$vendor'
+import { Route as AdminTrendingBrandsRouteImport } from './routes/admin.trending-brands'
 import { Route as AdminShopifySyncRouteImport } from './routes/admin.shopify-sync'
 import { Route as AdminSeoHealthRouteImport } from './routes/admin.seo-health'
+import { Route as AdminReviewsRouteImport } from './routes/admin.reviews'
+import { Route as AdminLandingPagesRouteImport } from './routes/admin.landing-pages'
 import { Route as AdminInventorySyncRouteImport } from './routes/admin.inventory-sync'
+import { Route as AdminInboxRouteImport } from './routes/admin.inbox'
+import { Route as AdminHomepageCurationRouteImport } from './routes/admin.homepage-curation'
 import { Route as AdminGrowthOsRouteImport } from './routes/admin.growth-os'
 import { Route as AdminEmailRecoveryRouteImport } from './routes/admin.email-recovery'
 import { Route as AdminCollectionImageQaRouteImport } from './routes/admin.collection-image-qa'
@@ -222,6 +227,11 @@ const BrandVendorRoute = BrandVendorRouteImport.update({
   path: '/brand/$vendor',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminTrendingBrandsRoute = AdminTrendingBrandsRouteImport.update({
+  id: '/admin/trending-brands',
+  path: '/admin/trending-brands',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminShopifySyncRoute = AdminShopifySyncRouteImport.update({
   id: '/admin/shopify-sync',
   path: '/admin/shopify-sync',
@@ -232,9 +242,29 @@ const AdminSeoHealthRoute = AdminSeoHealthRouteImport.update({
   path: '/admin/seo-health',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminReviewsRoute = AdminReviewsRouteImport.update({
+  id: '/admin/reviews',
+  path: '/admin/reviews',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLandingPagesRoute = AdminLandingPagesRouteImport.update({
+  id: '/admin/landing-pages',
+  path: '/admin/landing-pages',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminInventorySyncRoute = AdminInventorySyncRouteImport.update({
   id: '/admin/inventory-sync',
   path: '/admin/inventory-sync',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminInboxRoute = AdminInboxRouteImport.update({
+  id: '/admin/inbox',
+  path: '/admin/inbox',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminHomepageCurationRoute = AdminHomepageCurationRouteImport.update({
+  id: '/admin/homepage-curation',
+  path: '/admin/homepage-curation',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminGrowthOsRoute = AdminGrowthOsRouteImport.update({
@@ -392,9 +422,14 @@ export interface FileRoutesByFullPath {
   '/admin/collection-image-qa': typeof AdminCollectionImageQaRoute
   '/admin/email-recovery': typeof AdminEmailRecoveryRoute
   '/admin/growth-os': typeof AdminGrowthOsRoute
+  '/admin/homepage-curation': typeof AdminHomepageCurationRoute
+  '/admin/inbox': typeof AdminInboxRoute
   '/admin/inventory-sync': typeof AdminInventorySyncRoute
+  '/admin/landing-pages': typeof AdminLandingPagesRoute
+  '/admin/reviews': typeof AdminReviewsRoute
   '/admin/seo-health': typeof AdminSeoHealthRoute
   '/admin/shopify-sync': typeof AdminShopifySyncRoute
+  '/admin/trending-brands': typeof AdminTrendingBrandsRoute
   '/brand/$vendor': typeof BrandVendorRoute
   '/campaign/dolce-gabbana-swim': typeof CampaignDolceGabbanaSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
@@ -449,9 +484,14 @@ export interface FileRoutesByTo {
   '/admin/collection-image-qa': typeof AdminCollectionImageQaRoute
   '/admin/email-recovery': typeof AdminEmailRecoveryRoute
   '/admin/growth-os': typeof AdminGrowthOsRoute
+  '/admin/homepage-curation': typeof AdminHomepageCurationRoute
+  '/admin/inbox': typeof AdminInboxRoute
   '/admin/inventory-sync': typeof AdminInventorySyncRoute
+  '/admin/landing-pages': typeof AdminLandingPagesRoute
+  '/admin/reviews': typeof AdminReviewsRoute
   '/admin/seo-health': typeof AdminSeoHealthRoute
   '/admin/shopify-sync': typeof AdminShopifySyncRoute
+  '/admin/trending-brands': typeof AdminTrendingBrandsRoute
   '/brand/$vendor': typeof BrandVendorRoute
   '/campaign/dolce-gabbana-swim': typeof CampaignDolceGabbanaSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
@@ -508,9 +548,14 @@ export interface FileRoutesById {
   '/admin/collection-image-qa': typeof AdminCollectionImageQaRoute
   '/admin/email-recovery': typeof AdminEmailRecoveryRoute
   '/admin/growth-os': typeof AdminGrowthOsRoute
+  '/admin/homepage-curation': typeof AdminHomepageCurationRoute
+  '/admin/inbox': typeof AdminInboxRoute
   '/admin/inventory-sync': typeof AdminInventorySyncRoute
+  '/admin/landing-pages': typeof AdminLandingPagesRoute
+  '/admin/reviews': typeof AdminReviewsRoute
   '/admin/seo-health': typeof AdminSeoHealthRoute
   '/admin/shopify-sync': typeof AdminShopifySyncRoute
+  '/admin/trending-brands': typeof AdminTrendingBrandsRoute
   '/brand/$vendor': typeof BrandVendorRoute
   '/campaign/dolce-gabbana-swim': typeof CampaignDolceGabbanaSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
@@ -568,9 +613,14 @@ export interface FileRouteTypes {
     | '/admin/collection-image-qa'
     | '/admin/email-recovery'
     | '/admin/growth-os'
+    | '/admin/homepage-curation'
+    | '/admin/inbox'
     | '/admin/inventory-sync'
+    | '/admin/landing-pages'
+    | '/admin/reviews'
     | '/admin/seo-health'
     | '/admin/shopify-sync'
+    | '/admin/trending-brands'
     | '/brand/$vendor'
     | '/campaign/dolce-gabbana-swim'
     | '/collections/$handle'
@@ -625,9 +675,14 @@ export interface FileRouteTypes {
     | '/admin/collection-image-qa'
     | '/admin/email-recovery'
     | '/admin/growth-os'
+    | '/admin/homepage-curation'
+    | '/admin/inbox'
     | '/admin/inventory-sync'
+    | '/admin/landing-pages'
+    | '/admin/reviews'
     | '/admin/seo-health'
     | '/admin/shopify-sync'
+    | '/admin/trending-brands'
     | '/brand/$vendor'
     | '/campaign/dolce-gabbana-swim'
     | '/collections/$handle'
@@ -683,9 +738,14 @@ export interface FileRouteTypes {
     | '/admin/collection-image-qa'
     | '/admin/email-recovery'
     | '/admin/growth-os'
+    | '/admin/homepage-curation'
+    | '/admin/inbox'
     | '/admin/inventory-sync'
+    | '/admin/landing-pages'
+    | '/admin/reviews'
     | '/admin/seo-health'
     | '/admin/shopify-sync'
+    | '/admin/trending-brands'
     | '/brand/$vendor'
     | '/campaign/dolce-gabbana-swim'
     | '/collections/$handle'
@@ -739,9 +799,14 @@ export interface RootRouteChildren {
   AdminCollectionImageQaRoute: typeof AdminCollectionImageQaRoute
   AdminEmailRecoveryRoute: typeof AdminEmailRecoveryRoute
   AdminGrowthOsRoute: typeof AdminGrowthOsRoute
+  AdminHomepageCurationRoute: typeof AdminHomepageCurationRoute
+  AdminInboxRoute: typeof AdminInboxRoute
   AdminInventorySyncRoute: typeof AdminInventorySyncRoute
+  AdminLandingPagesRoute: typeof AdminLandingPagesRoute
+  AdminReviewsRoute: typeof AdminReviewsRoute
   AdminSeoHealthRoute: typeof AdminSeoHealthRoute
   AdminShopifySyncRoute: typeof AdminShopifySyncRoute
+  AdminTrendingBrandsRoute: typeof AdminTrendingBrandsRoute
   BrandVendorRoute: typeof BrandVendorRoute
   CampaignDolceGabbanaSwimRoute: typeof CampaignDolceGabbanaSwimRoute
   CollectionsHandleRoute: typeof CollectionsHandleRoute
@@ -984,6 +1049,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BrandVendorRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/trending-brands': {
+      id: '/admin/trending-brands'
+      path: '/admin/trending-brands'
+      fullPath: '/admin/trending-brands'
+      preLoaderRoute: typeof AdminTrendingBrandsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/shopify-sync': {
       id: '/admin/shopify-sync'
       path: '/admin/shopify-sync'
@@ -998,11 +1070,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSeoHealthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/reviews': {
+      id: '/admin/reviews'
+      path: '/admin/reviews'
+      fullPath: '/admin/reviews'
+      preLoaderRoute: typeof AdminReviewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/landing-pages': {
+      id: '/admin/landing-pages'
+      path: '/admin/landing-pages'
+      fullPath: '/admin/landing-pages'
+      preLoaderRoute: typeof AdminLandingPagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/inventory-sync': {
       id: '/admin/inventory-sync'
       path: '/admin/inventory-sync'
       fullPath: '/admin/inventory-sync'
       preLoaderRoute: typeof AdminInventorySyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/inbox': {
+      id: '/admin/inbox'
+      path: '/admin/inbox'
+      fullPath: '/admin/inbox'
+      preLoaderRoute: typeof AdminInboxRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/homepage-curation': {
+      id: '/admin/homepage-curation'
+      path: '/admin/homepage-curation'
+      fullPath: '/admin/homepage-curation'
+      preLoaderRoute: typeof AdminHomepageCurationRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/growth-os': {
@@ -1217,9 +1317,14 @@ const rootRouteChildren: RootRouteChildren = {
   AdminCollectionImageQaRoute: AdminCollectionImageQaRoute,
   AdminEmailRecoveryRoute: AdminEmailRecoveryRoute,
   AdminGrowthOsRoute: AdminGrowthOsRoute,
+  AdminHomepageCurationRoute: AdminHomepageCurationRoute,
+  AdminInboxRoute: AdminInboxRoute,
   AdminInventorySyncRoute: AdminInventorySyncRoute,
+  AdminLandingPagesRoute: AdminLandingPagesRoute,
+  AdminReviewsRoute: AdminReviewsRoute,
   AdminSeoHealthRoute: AdminSeoHealthRoute,
   AdminShopifySyncRoute: AdminShopifySyncRoute,
+  AdminTrendingBrandsRoute: AdminTrendingBrandsRoute,
   BrandVendorRoute: BrandVendorRoute,
   CampaignDolceGabbanaSwimRoute: CampaignDolceGabbanaSwimRoute,
   CollectionsHandleRoute: CollectionsHandleRoute,
