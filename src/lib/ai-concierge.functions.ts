@@ -83,11 +83,16 @@ export type ConciergeResult = {
 export const fetchConciergePicks = createServerFn({ method: "POST" })
   .inputValidator((i: unknown) => ContextSchema.parse(i))
   .handler(async ({ data }): Promise<ConciergeResult> => {
-    // 1. Hydrate context anchor + browsing signals.
-    const anchorHandle = data.currentProductHandle ?? data.recentHandles[0];
-    const anchor = anchorHandle
-      ? await fetchProductByHandle(anchorHandle).catch(() => null)
-      : null;
+    // 1. Hydrate context anchor + browsing signals + trend intelligence.
+    const [trendMap, anchor] = await Promise.all([
+      loadTrendingBrands(),
+      (async () => {
+        const anchorHandle = data.currentProductHandle ?? data.recentHandles[0];
+        return anchorHandle
+          ? await fetchProductByHandle(anchorHandle).catch(() => null)
+          : null;
+      })(),
+    ]);
 
     // 2. Build the candidate pool from the most relevant Shopify slices.
     //    - Same vendor (highest signal)
