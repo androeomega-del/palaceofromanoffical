@@ -9,6 +9,7 @@ import { DesktopMegamenu, MobileMegamenu } from "@/components/megamenu";
 import { SearchOverlay } from "@/components/search-overlay";
 import { fetchCollections } from "@/lib/shopify";
 import { DeliverToButton } from "@/components/deliver-to-button";
+import { useCustomerStore } from "@/stores/customer-store";
 
 type FlatItem = {
   label: string;
