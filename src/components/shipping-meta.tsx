@@ -55,36 +55,67 @@ function useProductOriginsMap() {
   });
 }
 
+/** Live per-variant origin from the Shopify Admin API. Strictly read-only —
+ *  scans `inventoryLevels` for the first positive-stock location and returns
+ *  it. Null while loading or when no inventory data is available. */
+function useVariantOrigin(variantId: string | null | undefined) {
+  return useQuery({
+    queryKey: ["variant-origin", variantId],
+    queryFn: () => getVariantShippingOrigin({ data: { variantId: variantId! } }),
+    enabled: Boolean(variantId),
+    staleTime: 5 * 60_000,
+    gcTime: 30 * 60_000,
+    retry: 1,
+  });
+}
+
 /**
  * Unified "Ships from {country} · Get it by {date}" badge. Used on every
  * product card AND on the PDP so the placement, copy, icon, and typography
  * are identical across the site.
  *
  * Origin resolution (priority order):
- *  1. `product_origins.country_code` cached from Shopify inventory
+ *  1. Live per-variant Admin lookup (PDP only, when `variantId` is set).
+ *  2. `product_origins.country_code` cached from Shopify inventory
  *     (most-stock-wins across the product's stocked locations).
- *  2. Vendor → BG warehouse map (`getShippingOriginOrDefault`).
- *  3. DEFAULT_ORIGIN (Italy — BG's primary warehouse).
+ *  3. Vendor → BG warehouse map (`getShippingOriginOrDefault`).
+ *  4. DEFAULT_ORIGIN (Italy — BG's primary warehouse).
  *
  * Zip resolves via the location store, falling back to {@link DEFAULT_ZIP}
  * so the delivery date renders even before IP auto-detect resolves.
  */
-export function ShippingMeta({ vendor, handle, variant = "card" }: Props) {
+export function ShippingMeta({ vendor, handle, variantId, variant = "card" }: Props) {
   const zip = useLocationStore((s) => s.zip);
   const openHeaderPopover = useLocationPopover((s) => s.setOpen);
   const { data: originsMap } = useProductOriginsMap();
+  const { data: variantOriginData, isFetching: variantFetching } = useVariantOrigin(variantId);
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
   const effectiveZip = zip ?? DEFAULT_ZIP;
-  const inventoryOrigin = handle ? originFromRow(originsMap?.[handle]) : null;
+  const liveVariantOrigin = originFromRow(
+    variantOriginData?.origin
+      ? {
+          country_code: variantOriginData.origin.countryCode,
+          country: variantOriginData.origin.country,
+          city: variantOriginData.origin.city,
+        }
+      : undefined,
+  );
+  const productOrigin = handle ? originFromRow(originsMap?.[handle]) : null;
   const vendorOrigin = getShippingOrigin(vendor);
-  // Resolution order: inventory cache → vendor map → DEFAULT_ORIGIN.
-  // If BOTH inventory and vendor map miss, surface the editorial fallback
-  // label instead of inventing a country (per no-fabrication rule).
-  const origin = inventoryOrigin ?? getShippingOriginOrDefault(vendor);
-  const usedHubFallback = !inventoryOrigin && !vendorOrigin;
+  const resolvedOrigin =
+    liveVariantOrigin ?? productOrigin ?? getShippingOriginOrDefault(vendor);
+
+  // Hold last-known origin across variant switches so the label never flashes
+  // "undefined" while the Admin lookup is in flight. We only swap to the new
+  // origin once the live query has actually resolved (success or fallback).
+  const lastOriginRef = useRef<ShippingOrigin>(resolvedOrigin);
+  if (!variantFetching) lastOriginRef.current = resolvedOrigin;
+  const origin = variantFetching && variantId ? lastOriginRef.current : resolvedOrigin;
+
+  const usedHubFallback = !liveVariantOrigin && !productOrigin && !vendorOrigin;
   const originLabel = usedHubFallback
     ? HUB_FALLBACK_LABEL
     : formatOriginLabel(origin)!;
