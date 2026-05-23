@@ -139,10 +139,19 @@ export const fetchConciergePicks = createServerFn({ method: "POST" })
         if (!edge.node.vendor || !isAllowedLuxuryBrand(edge.node.vendor)) continue;
         seen.add(edge.node.handle);
         candidates.push(edge);
-        if (candidates.length >= 24) break;
+        if (candidates.length >= 36) break;
       }
-      if (candidates.length >= 24) break;
+      if (candidates.length >= 36) break;
     }
+
+    // Sort candidates by market trend rank (hottest brands surface first),
+    // then cap at 24 so the LLM has a curated, market-aware pool to pick from.
+    candidates.sort((a, b) => {
+      const ra = trendRank(trendMap.get((a.node.vendor || "").toLowerCase())?.trend_status);
+      const rb = trendRank(trendMap.get((b.node.vendor || "").toLowerCase())?.trend_status);
+      return rb - ra;
+    });
+    candidates.splice(24);
 
     if (candidates.length === 0) {
       return {
