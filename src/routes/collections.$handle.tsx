@@ -199,22 +199,27 @@ function CollectionPage() {
   const [sortKey, reverseStr] = sort.split("-");
   const reverse = reverseStr === "true";
 
-  const q = useQuery({
+  const q = useInfiniteQuery({
     queryKey: ["collection-filtered", handle, filterInputs, sortKey, reverse],
-    queryFn: async () => {
+    queryFn: async ({ pageParam }) => {
       return fetchCollectionFiltered({
         handle,
-        first: 36,
+        first: 48,
+        after: pageParam as string | null,
         filters: filterInputs,
         sortKey,
         reverse,
       });
     },
+    initialPageParam: null as string | null,
+    getNextPageParam: (last) =>
+      last?.pageInfo?.hasNextPage ? last.pageInfo.endCursor : undefined,
   });
 
-  const data = q.data;
+  const pages = q.data?.pages ?? [];
+  const data = pages[0] ?? null;
   const filters = data?.filters ?? [];
-  const rawEdges = data?.edges ?? [];
+  const rawEdges = useMemo(() => pages.flatMap((p) => p?.edges ?? []), [pages]);
   const discountEdges = rawEdges;
 
   // Derive available product types from the current result set
