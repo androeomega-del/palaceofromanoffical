@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate, redirect } from "@tanstack/react-router";
 import { canonicalCollectionHandle } from "@/lib/collection-canonical";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 
 import { fetchCollectionFiltered, fetchCollection, type StorefrontFilterValue } from "@/lib/shopify";
@@ -199,22 +199,27 @@ function CollectionPage() {
   const [sortKey, reverseStr] = sort.split("-");
   const reverse = reverseStr === "true";
 
-  const q = useQuery({
+  const q = useInfiniteQuery({
     queryKey: ["collection-filtered", handle, filterInputs, sortKey, reverse],
-    queryFn: async () => {
+    queryFn: async ({ pageParam }) => {
       return fetchCollectionFiltered({
         handle,
-        first: 36,
+        first: 48,
+        after: pageParam as string | null,
         filters: filterInputs,
         sortKey,
         reverse,
       });
     },
+    initialPageParam: null as string | null,
+    getNextPageParam: (last) =>
+      last?.pageInfo?.hasNextPage ? last.pageInfo.endCursor : undefined,
   });
 
-  const data = q.data;
+  const pages = q.data?.pages ?? [];
+  const data = pages[0] ?? null;
   const filters = data?.filters ?? [];
-  const rawEdges = data?.edges ?? [];
+  const rawEdges = useMemo(() => pages.flatMap((p) => p?.edges ?? []), [pages]);
   const discountEdges = rawEdges;
 
   // Derive available product types from the current result set
@@ -499,11 +504,24 @@ function CollectionPage() {
                 )}
               </div>
             ) : (
-              <div className={`grid grid-cols-2 lg:grid-cols-3 ${gridGap}`}>
-                {gridEdges.map((e) => (
-                  <ProductCard key={e.node.id} product={e} />
-                ))}
-              </div>
+              <>
+                <div className={`grid grid-cols-2 lg:grid-cols-3 ${gridGap}`}>
+                  {gridEdges.map((e) => (
+                    <ProductCard key={e.node.id} product={e} />
+                  ))}
+                </div>
+                {q.hasNextPage && (
+                  <div className="mt-16 flex justify-center">
+                    <button
+                      onClick={() => q.fetchNextPage()}
+                      disabled={q.isFetchingNextPage}
+                      className="text-[11px] uppercase tracking-[0.25em] border border-ink px-8 py-3 hover:bg-ink hover:text-canvas transition-colors disabled:opacity-50"
+                    >
+                      {q.isFetchingNextPage ? "Loading…" : "Load More"}
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
