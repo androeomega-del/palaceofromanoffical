@@ -23,21 +23,22 @@ type PredictiveProduct = {
   images: { edges: Array<{ node: { url: string; altText: string | null } }> };
 };
 type PredictiveCollection = { id: string; handle: string; title: string };
-type PredictivePage = { id: string; handle: string; title: string };
 
 type PredictiveSearchResult = {
   products: PredictiveProduct[];
   collections: PredictiveCollection[];
-  pages: PredictivePage[];
 };
 
+// Targeted predictiveSearch — products + collections only. Pages are
+// intentionally excluded: this storefront has no /pages/$handle route, so
+// surfacing them would produce dead links.
 const PREDICTIVE_SEARCH_QUERY = /* GraphQL */ `
   query PredictiveSearch($query: String!) {
     predictiveSearch(
       query: $query
       limitScope: EACH
       limit: 8
-      types: [PRODUCT, COLLECTION, PAGE]
+      types: [PRODUCT, COLLECTION]
     ) {
       products {
         id
@@ -48,13 +49,12 @@ const PREDICTIVE_SEARCH_QUERY = /* GraphQL */ `
         images(first: 1) { edges { node { url altText } } }
       }
       collections { id handle title }
-      pages { id handle title }
     }
   }
 `;
 
 async function predictiveSearch(query: string): Promise<PredictiveSearchResult> {
-  const empty = { products: [], collections: [], pages: [] };
+  const empty: PredictiveSearchResult = { products: [], collections: [] };
   if (!query) return empty;
   const res = await storefrontApiRequest<{ predictiveSearch: PredictiveSearchResult }>(
     PREDICTIVE_SEARCH_QUERY,
