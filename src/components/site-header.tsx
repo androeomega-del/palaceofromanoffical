@@ -92,8 +92,10 @@ export function SiteHeader() {
     } catch {}
   };
 
-  // Live Shopify collection handles — used to hide flat links whose target
-  // collection no longer exists, so the header never shows broken links.
+  // Live Shopify collection handles — used to rewrite (NOT hide) flat links
+  // whose target collection no longer exists, so the header NEVER shows a
+  // broken /collections/$handle URL. Items with no fallback are still hidden
+  // to avoid 404s.
   const { data: liveCollections } = useQuery({
     queryKey: ["collections-all"],
     queryFn: () => fetchCollections(500),
@@ -103,12 +105,30 @@ export function SiteHeader() {
     () => (liveCollections ? new Set(liveCollections.map((c) => c.handle)) : null),
     [liveCollections],
   );
-  const isLiveFlat = (n: FlatItem) =>
-    n.to !== "/collections/$handle" ||
-    !liveHandles ||
-    (!!n.params?.handle && liveHandles.has(n.params.handle));
-  const flatLeft = useMemo(() => FLAT_LEFT.filter(isLiveFlat), [liveHandles]);
-  const flatRight = useMemo(() => FLAT_RIGHT.filter(isLiveFlat), [liveHandles]);
+  const resolveFlat = (n: FlatItem): FlatItem | null => {
+    if (n.to !== "/collections/$handle") return n;
+    // Until collections finish loading, render the link optimistically — never
+    // remove nav slots mid-pageload.
+    if (!liveHandles) return n;
+    if (n.params?.handle && liveHandles.has(n.params.handle)) return n;
+    if (n.fallback) {
+      return {
+        label: n.label,
+        accent: n.accent,
+        to: n.fallback.to,
+        search: n.fallback.search,
+      };
+    }
+    return null;
+  };
+  const flatLeft = useMemo(
+    () => FLAT_LEFT.map(resolveFlat).filter((n): n is FlatItem => n !== null),
+    [liveHandles],
+  );
+  const flatRight = useMemo(
+    () => FLAT_RIGHT.map(resolveFlat).filter((n): n is FlatItem => n !== null),
+    [liveHandles],
+  );
 
 
   // Lock body scroll when mobile drawer is open
