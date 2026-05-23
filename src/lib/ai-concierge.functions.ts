@@ -23,6 +23,10 @@ const ContextSchema = z.object({
   /** Wishlist + recently-viewed handles (browser signals). */
   wishlistHandles: z.array(z.string().min(1).max(120)).max(40).default([]),
   recentHandles: z.array(z.string().min(1).max(120)).max(40).default([]),
+  /** Top-scored interaction handles (hover/click/cart weighted). */
+  interactionHandles: z.array(z.string().min(1).max(120)).max(40).default([]),
+  /** Optional first name to address the shopper personally. */
+  shopperName: z.string().trim().min(1).max(60).optional(),
 });
 
 export type ConciergePick = { handle: string; reason: string };
@@ -86,6 +90,7 @@ export const fetchConciergePicks = createServerFn({ method: "POST" })
       ...(anchor ? [anchor.handle] : []),
       ...data.wishlistHandles,
       ...data.recentHandles,
+      ...data.interactionHandles,
     ]);
     const candidates: ShopifyProduct[] = [];
     for (const page of pages) {
@@ -110,6 +115,7 @@ export const fetchConciergePicks = createServerFn({ method: "POST" })
 
     // 4. Compose the brief for Claude.
     const contextSummary = [
+      data.shopperName ? `Shopper's name: ${data.shopperName}.` : null,
       data.pageType === "product" && anchor
         ? `Shopper is viewing the product "${anchor.title}" by ${anchor.vendor} (${anchor.productType || "—"}).`
         : null,
@@ -126,7 +132,10 @@ export const fetchConciergePicks = createServerFn({ method: "POST" })
         ? `Recently viewed: ${data.recentHandles.slice(0, 5).join(", ")}.`
         : null,
       data.wishlistHandles.length > 0
-        ? `Wishlist: ${data.wishlistHandles.slice(0, 5).join(", ")}.`
+        ? `Wishlist (declared affinity): ${data.wishlistHandles.slice(0, 5).join(", ")}.`
+        : null,
+      data.interactionHandles.length > 0
+        ? `Strongest implicit interest (hover/click/cart-weighted): ${data.interactionHandles.slice(0, 5).join(", ")}.`
         : null,
     ]
       .filter(Boolean)
@@ -151,12 +160,29 @@ export const fetchConciergePicks = createServerFn({ method: "POST" })
       })),
     };
 
+    const systemPrompt = `You are the exclusive Digital Concierge and Head Stylist for Palace of Roman, a luxury multi-brand fashion destination. Your tone is editorial, refined, sophisticated, and authoritative — yet warmly accommodating. You speak the way a stylist at Bergdorf Goodman or a senior fashion editor at Vogue would speak to a long-standing client.
+
+PRIMARY TASKS
+1. Read the shopper's current anchor piece and propose pairings that complete the silhouette.
+2. Surface pieces that align with their declared affinity (wishlist) and implicit interest (recently viewed, interaction-weighted handles).
+3. If a shopper's name is provided, you may address them by it — once, with restraint.
+
+RULES (non-negotiable)
+- You may ONLY recommend handles that appear verbatim in the CANDIDATES list. Every handle in that list is currently active and in stock at Palace of Roman. Never invent a handle. Never reference a piece outside the list.
+- Use fashion-literate terminology: drape, silhouette, line, proportion, tonal balance, structural contrast, grounding the look, weight, hand, fall, register. Avoid generic phrasing like "this looks good with", "great choice", "you'll love this".
+- No exclamation marks. No emojis. No hard-sell. The voice is curatorial, not transactional.
+- Greeting (≤120 chars) is a single editorial line that frames the edit — not a question, not a sales pitch.
+- Each pick's reason (≤70 chars) names the specific styling rationale (e.g. "Grounds the silhouette with a leather counterweight", "Tonal echo to the camel cashmere").
+
+OUTPUT
+JSON ONLY: { "greeting": string, "picks": [{ "handle": string, "reason": string }] } — return EXACTLY 4 picks. Each handle MUST be present verbatim in the candidate list.`;
+
     const llmOut = await callLlmJson<LlmOut>(
       {
-        system: `You are a discreet luxury concierge for Palace of Roman. You whisper recommendations while a shopper browses. Output JSON ONLY: { "greeting": string (≤120 chars, warm and editorial, no exclamation marks), "picks": [{ "handle": string, "reason": string (≤70 chars, complimentary and specific) }] } — return EXACTLY 4 picks. Each handle MUST be present verbatim in the candidate list.`,
+        system: systemPrompt,
         user: `BROWSING CONTEXT:\n${contextSummary || "(none provided)"}\n\nCANDIDATES (handle :: vendor · type · title):\n${candidateLines}\n\nNow return the JSON.`,
-        maxTokens: 600,
-        temperature: 0.5,
+        maxTokens: 700,
+        temperature: 0.55,
       },
       fallback,
     );

@@ -7,6 +7,8 @@ import {
 } from "@/lib/ai-concierge.functions";
 import { useWishlistStore } from "@/stores/wishlist-store";
 import { useRecentlyViewedStore } from "@/stores/recently-viewed-store";
+import { useInteractionStore } from "@/stores/interaction-store";
+import { supabase } from "@/integrations/supabase/client";
 import { formatPrice } from "@/lib/shopify";
 import { brandFromSlug } from "@/lib/brand-heritage";
 
@@ -56,6 +58,32 @@ export function ConciergeWidget() {
   const ctx = usePageContext();
   const wishlist = useWishlistStore((s) => s.handles);
   const recent = useRecentlyViewedStore((s) => s.items);
+  const interactionRecords = useInteractionStore((s) => s.records);
+  const interactionHandles = useMemo(
+    () =>
+      Object.values(interactionRecords)
+        .sort((a, b) => b.score - a.score || b.lastTs - a.lastTs)
+        .slice(0, 20)
+        .map((r) => r.handle),
+    [interactionRecords],
+  );
+  const [shopperName, setShopperName] = useState<string | undefined>(undefined);
+  useEffect(() => {
+    let cancelled = false;
+    supabase.auth.getUser().then(({ data }) => {
+      if (cancelled) return;
+      const meta = (data.user?.user_metadata ?? {}) as Record<string, unknown>;
+      const name =
+        (meta.first_name as string | undefined) ||
+        (meta.full_name as string | undefined)?.split(" ")[0] ||
+        (meta.name as string | undefined)?.split(" ")[0] ||
+        data.user?.email?.split("@")[0];
+      if (name) setShopperName(name);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   const [state, setState] = useState<{
     loading: boolean;
     data: ConciergeResult | null;
@@ -69,6 +97,8 @@ export function ConciergeWidget() {
     ctx.currentCollection ?? "",
     wishlist.slice(0, 8).join("|"),
     recent.slice(0, 8).map((r) => r.handle).join("|"),
+    interactionHandles.slice(0, 8).join("|"),
+    shopperName ?? "",
   ].join("::");
 
   // Fetch when the drawer opens (lazy — saves tokens until shoppers ask for it).
@@ -84,6 +114,8 @@ export function ConciergeWidget() {
         currentCollection: ctx.currentCollection,
         wishlistHandles: wishlist.slice(0, 20),
         recentHandles: recent.slice(0, 20).map((r) => r.handle),
+        interactionHandles: interactionHandles.slice(0, 20),
+        shopperName,
       },
     })
       .then((data) => {
