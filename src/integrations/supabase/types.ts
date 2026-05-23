@@ -604,6 +604,36 @@ export type Database = {
         }
         Relationships: []
       }
+      product_origins: {
+        Row: {
+          city: string | null
+          country: string | null
+          country_code: string | null
+          handle: string
+          location_id: string | null
+          total_stock: number
+          updated_at: string
+        }
+        Insert: {
+          city?: string | null
+          country?: string | null
+          country_code?: string | null
+          handle: string
+          location_id?: string | null
+          total_stock?: number
+          updated_at?: string
+        }
+        Update: {
+          city?: string | null
+          country?: string | null
+          country_code?: string | null
+          handle?: string
+          location_id?: string | null
+          total_stock?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       product_reviews: {
         Row: {
           approved_at: string | null
