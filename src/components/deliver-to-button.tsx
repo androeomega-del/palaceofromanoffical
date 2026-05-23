@@ -50,23 +50,29 @@ export function DeliverToButton({ className = "" }: { className?: string }) {
     }
   }, [remoteOpen, setRemoteOpen]);
 
-  // One-shot IP auto-detect when the shopper has no saved zip.
+  // One-shot IP auto-detect when the shopper has no saved zip. If detection
+  // fails or the shopper isn't in the US, fall back to DEFAULT_ZIP so every
+  // downstream surface (cards, PDP) can render a uniform delivery date.
   const triedDetect = useRef(false);
   useEffect(() => {
     if (!mounted || zip || triedDetect.current) return;
     triedDetect.current = true;
+    const applyFallback = () => {
+      if (useLocationStore.getState().zip) return;
+      setZip(DEFAULT_ZIP, { auto: true });
+    };
     void detectFn()
       .then((geo) => {
-        if (!geo?.country || geo.country.toUpperCase() !== "US") return;
-        const code = geo.postalCode?.match(/\d{5}/)?.[0];
-        if (!code) return;
-        // Re-check the store — shopper may have typed something while we waited.
         if (useLocationStore.getState().zip) return;
-        setZip(code, { auto: true });
+        const isUs = geo?.country?.toUpperCase() === "US";
+        const code = isUs ? geo?.postalCode?.match(/\d{5}/)?.[0] : null;
+        if (code) {
+          setZip(code, { auto: true });
+        } else {
+          applyFallback();
+        }
       })
-      .catch(() => {
-        // Silent — manual entry remains available.
-      });
+      .catch(() => applyFallback());
   }, [mounted, zip, setZip, detectFn]);
 
   useEffect(() => {
