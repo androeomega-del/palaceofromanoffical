@@ -20,11 +20,6 @@ function isInStock(p: ShopifyProduct): boolean {
   return p.node.variants.edges.some((v) => v.node.availableForSale);
 }
 
-/** True if any variant on the product is currently available for sale. */
-function isInStock(p: ShopifyProduct): boolean {
-  return p.node.variants.edges.some((v) => v.node.availableForSale);
-}
-
 type TrendRow = {
   brand_name: string;
   category: string;
