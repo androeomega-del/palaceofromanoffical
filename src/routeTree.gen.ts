@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SwimRouteImport } from './routes/swim'
+import { Route as StyleQuizRouteImport } from './routes/style-quiz'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ShippingReturnsRouteImport } from './routes/shipping-returns'
@@ -72,6 +73,11 @@ const TermsRoute = TermsRouteImport.update({
 const SwimRoute = SwimRouteImport.update({
   id: '/swim',
   path: '/swim',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StyleQuizRoute = StyleQuizRouteImport.update({
+  id: '/style-quiz',
+  path: '/style-quiz',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -366,6 +372,7 @@ export interface FileRoutesByFullPath {
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/style-quiz': typeof StyleQuizRoute
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
   '/account/login': typeof AccountLoginRoute
@@ -421,6 +428,7 @@ export interface FileRoutesByTo {
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/style-quiz': typeof StyleQuizRoute
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
   '/account/login': typeof AccountLoginRoute
@@ -478,6 +486,7 @@ export interface FileRoutesById {
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/style-quiz': typeof StyleQuizRoute
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
   '/account/login': typeof AccountLoginRoute
@@ -536,6 +545,7 @@ export interface FileRouteTypes {
     | '/shipping-returns'
     | '/shop'
     | '/sitemap.xml'
+    | '/style-quiz'
     | '/swim'
     | '/terms'
     | '/account/login'
@@ -591,6 +601,7 @@ export interface FileRouteTypes {
     | '/shipping-returns'
     | '/shop'
     | '/sitemap.xml'
+    | '/style-quiz'
     | '/swim'
     | '/terms'
     | '/account/login'
@@ -647,6 +658,7 @@ export interface FileRouteTypes {
     | '/shipping-returns'
     | '/shop'
     | '/sitemap.xml'
+    | '/style-quiz'
     | '/swim'
     | '/terms'
     | '/account/login'
@@ -704,6 +716,7 @@ export interface RootRouteChildren {
   ShippingReturnsRoute: typeof ShippingReturnsRoute
   ShopRoute: typeof ShopRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  StyleQuizRoute: typeof StyleQuizRoute
   SwimRoute: typeof SwimRouteWithChildren
   TermsRoute: typeof TermsRoute
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
@@ -752,6 +765,13 @@ declare module '@tanstack/react-router' {
       path: '/swim'
       fullPath: '/swim'
       preLoaderRoute: typeof SwimRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/style-quiz': {
+      id: '/style-quiz'
+      path: '/style-quiz'
+      fullPath: '/style-quiz'
+      preLoaderRoute: typeof StyleQuizRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -1166,6 +1186,7 @@ const rootRouteChildren: RootRouteChildren = {
   ShippingReturnsRoute: ShippingReturnsRoute,
   ShopRoute: ShopRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  StyleQuizRoute: StyleQuizRoute,
   SwimRoute: SwimRouteWithChildren,
   TermsRoute: TermsRoute,
   AdminAnalyticsRoute: AdminAnalyticsRoute,
