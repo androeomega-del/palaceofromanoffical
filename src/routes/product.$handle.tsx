@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { ProductCard } from "@/components/product-card";
 import AIRecommendations from "@/components/ai-recommendations";
 import { PdpAuthenticityStrip } from "@/components/pdp-authenticity-strip";
+import { PdpShippingSheet } from "@/components/pdp-shipping-sheet";
 import { cdnImage } from "@/lib/cdn-image";
 import { PdpDeliveryBadge } from "@/components/pdp-delivery-badge";
 import { PdpBrandHeritage } from "@/components/pdp-brand-heritage";
