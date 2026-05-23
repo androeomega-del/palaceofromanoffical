@@ -168,7 +168,10 @@ export function SiteHeader() {
               <ReducedMotionToggle />
               <button
                 aria-label="Account"
-                onClick={() => { window.location.href = "/login"; }}
+                onClick={() => {
+                  const token = useCustomerStore.getState().getValidToken();
+                  window.location.href = token ? "/account" : "/account/login";
+                }}
                 className="hover:text-bronze transition-colors hidden sm:inline-flex items-center justify-center w-5 h-5"
               >
                 <User className="w-4 h-4" strokeWidth={1.25} />
