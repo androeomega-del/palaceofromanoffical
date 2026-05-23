@@ -8,6 +8,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { checkWebhookSecret } from "@/lib/webhook-secret";
 import { generateHomepageLayout } from "@/lib/homepage-layout-generator.server";
+import { generateDynamicLandingPage } from "@/lib/landing-page-generator.server";
 
 export const Route = createFileRoute("/api/public/cron/generate-homepage-layout")({
   server: {
@@ -16,16 +17,27 @@ export const Route = createFileRoute("/api/public/cron/generate-homepage-layout"
         const unauthorized = checkWebhookSecret(request);
         if (unauthorized) return unauthorized;
 
-        try {
-          const result = await generateHomepageLayout();
-          return Response.json({ ok: true, ...result });
-        } catch (e) {
-          console.error("[generate-homepage-layout] failed:", (e as Error).message);
-          return new Response(
-            JSON.stringify({ ok: false, error: (e as Error).message }),
-            { status: 500, headers: { "Content-Type": "application/json" } },
-          );
-        }
+        // Run both generators independently. A failure in one never blocks
+        // the other — and the previous active rows keep serving anyway
+        // because both generators use stage-then-promote atomic swaps.
+        const [homepage, landing] = await Promise.allSettled([
+          generateHomepageLayout(),
+          generateDynamicLandingPage(),
+        ]);
+
+        return Response.json({
+          ok: true,
+          homepage:
+            homepage.status === "fulfilled"
+              ? { ok: true, ...homepage.value }
+              : { ok: false, error: (homepage.reason as Error)?.message ?? "unknown" },
+          landing:
+            landing.status === "fulfilled"
+              ? landing.value
+                ? { ok: true, ...landing.value }
+                : { ok: true, skipped: "no qualifying signal" }
+              : { ok: false, error: (landing.reason as Error)?.message ?? "unknown" },
+        });
       },
     },
   },
