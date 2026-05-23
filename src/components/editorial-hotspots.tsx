@@ -10,12 +10,12 @@ import { Loader2, Plus } from "lucide-react";
 import { toast } from "sonner";
 
 export type Hotspot = {
-  /** Position in % of image width/height */
+  /** Position in % of image width/height (0–100) */
   x: number;
   y: number;
-  /** Short product category, e.g. "Eyewear" */
-  label: string;
-  /** Optional secondary line, e.g. "Alexander McQueen" */
+  /** Short product category, e.g. "Eyewear" — optional. */
+  label?: string;
+  /** Optional secondary line, e.g. "Alexander McQueen". */
   sublabel?: string;
   handle: string;
 };
