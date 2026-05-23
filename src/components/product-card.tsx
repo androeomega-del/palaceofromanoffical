@@ -39,9 +39,9 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
   const navigate = useNavigate();
   const addItem = useCartStore((s) => s.addItem);
   const openDrawer = useCartStore((s) => s.openDrawer);
-  const isLoading = useCartStore((s) => s.isLoading);
   const wishlisted = useWishlistStore((s) => s.handles.includes(p.handle));
   const toggleWishlist = useWishlistStore((s) => s.toggle);
+  const [adding, setAdding] = useState(false);
   const [buyingNow, setBuyingNow] = useState(false);
   const track = useInteractionStore((s) => s.track);
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
