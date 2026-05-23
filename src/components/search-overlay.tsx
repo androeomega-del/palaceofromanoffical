@@ -265,25 +265,6 @@ export function SearchOverlay({ open, onOpenChange }: Props) {
                         </div>
                       )}
 
-                      {pages.length > 0 && (
-                        <div>
-                          <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-3">Pages</p>
-                          <ul className="space-y-2">
-                            {pages.map((pg) => (
-                              <li key={pg.id}>
-                                <Link
-                                  to="/pages/$handle"
-                                  params={{ handle: pg.handle }}
-                                  onClick={() => onOpenChange(false)}
-                                  className="block py-1.5 text-sm hover:text-bronze transition-colors"
-                                >
-                                  {pg.title}
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
                     </div>
 
                     <div>
