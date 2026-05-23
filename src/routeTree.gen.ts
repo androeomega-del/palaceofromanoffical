@@ -25,10 +25,12 @@ import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BrandsRouteImport } from './routes/brands'
 import { Route as AuthenticationRouteImport } from './routes/authentication'
+import { Route as AccountRouteImport } from './routes/account'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CollectionsIndexRouteImport } from './routes/collections.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AccountIndexRouteImport } from './routes/account.index'
 import { Route as SwimSizeGuideRouteImport } from './routes/swim.size-guide'
 import { Route as ProductHandleRouteImport } from './routes/product.$handle'
 import { Route as EditorialTheNewEveningRouteImport } from './routes/editorial.the-new-evening'
@@ -47,6 +49,9 @@ import { Route as AdminCollectionImagePreviewRouteImport } from './routes/admin.
 import { Route as AdminCollectionHeroRegressionRouteImport } from './routes/admin.collection-hero-regression'
 import { Route as AdminCollectionFocalRouteImport } from './routes/admin.collection-focal'
 import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
+import { Route as AccountRegisterRouteImport } from './routes/account.register'
+import { Route as AccountRecoverRouteImport } from './routes/account.recover'
+import { Route as AccountLoginRouteImport } from './routes/account.login'
 import { Route as ApiPublicSeoHealthRouteImport } from './routes/api/public/seo-health'
 import { Route as ApiPublicStockAlertsSubscribeRouteImport } from './routes/api/public/stock-alerts/subscribe'
 import { Route as ApiPublicHooksSyncCollectionImagesRouteImport } from './routes/api/public/hooks/sync-collection-images'
@@ -139,6 +144,11 @@ const AuthenticationRoute = AuthenticationRouteImport.update({
   path: '/authentication',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AccountRoute = AccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -158,6 +168,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AccountIndexRoute = AccountIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AccountRoute,
 } as any)
 const SwimSizeGuideRoute = SwimSizeGuideRouteImport.update({
   id: '/size-guide',
@@ -252,6 +267,21 @@ const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
   path: '/admin/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AccountRegisterRoute = AccountRegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => AccountRoute,
+} as any)
+const AccountRecoverRoute = AccountRecoverRouteImport.update({
+  id: '/recover',
+  path: '/recover',
+  getParentRoute: () => AccountRoute,
+} as any)
+const AccountLoginRoute = AccountLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AccountRoute,
+} as any)
 const ApiPublicSeoHealthRoute = ApiPublicSeoHealthRouteImport.update({
   id: '/api/public/seo-health',
   path: '/api/public/seo-health',
@@ -321,6 +351,7 @@ const ApiPublicAiRecommendationsRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/account': typeof AccountRouteWithChildren
   '/authentication': typeof AuthenticationRoute
   '/brands': typeof BrandsRoute
   '/contact': typeof ContactRoute
@@ -337,6 +368,9 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
+  '/account/login': typeof AccountLoginRoute
+  '/account/recover': typeof AccountRecoverRoute
+  '/account/register': typeof AccountRegisterRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/collection-focal': typeof AdminCollectionFocalRoute
   '/admin/collection-hero-regression': typeof AdminCollectionHeroRegressionRoute
@@ -355,6 +389,7 @@ export interface FileRoutesByFullPath {
   '/editorial/the-new-evening': typeof EditorialTheNewEveningRoute
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
+  '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/collections/': typeof CollectionsIndexRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
@@ -388,6 +423,9 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
+  '/account/login': typeof AccountLoginRoute
+  '/account/recover': typeof AccountRecoverRoute
+  '/account/register': typeof AccountRegisterRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/collection-focal': typeof AdminCollectionFocalRoute
   '/admin/collection-hero-regression': typeof AdminCollectionHeroRegressionRoute
@@ -406,6 +444,7 @@ export interface FileRoutesByTo {
   '/editorial/the-new-evening': typeof EditorialTheNewEveningRoute
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
+  '/account': typeof AccountIndexRoute
   '/admin': typeof AdminIndexRoute
   '/collections': typeof CollectionsIndexRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
@@ -424,6 +463,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/account': typeof AccountRouteWithChildren
   '/authentication': typeof AuthenticationRoute
   '/brands': typeof BrandsRoute
   '/contact': typeof ContactRoute
@@ -440,6 +480,9 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
+  '/account/login': typeof AccountLoginRoute
+  '/account/recover': typeof AccountRecoverRoute
+  '/account/register': typeof AccountRegisterRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/collection-focal': typeof AdminCollectionFocalRoute
   '/admin/collection-hero-regression': typeof AdminCollectionHeroRegressionRoute
@@ -458,6 +501,7 @@ export interface FileRoutesById {
   '/editorial/the-new-evening': typeof EditorialTheNewEveningRoute
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
+  '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/collections/': typeof CollectionsIndexRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
@@ -477,6 +521,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/account'
     | '/authentication'
     | '/brands'
     | '/contact'
@@ -493,6 +538,9 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/swim'
     | '/terms'
+    | '/account/login'
+    | '/account/recover'
+    | '/account/register'
     | '/admin/analytics'
     | '/admin/collection-focal'
     | '/admin/collection-hero-regression'
@@ -511,6 +559,7 @@ export interface FileRouteTypes {
     | '/editorial/the-new-evening'
     | '/product/$handle'
     | '/swim/size-guide'
+    | '/account/'
     | '/admin/'
     | '/collections/'
     | '/api/public/seo-health'
@@ -544,6 +593,9 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/swim'
     | '/terms'
+    | '/account/login'
+    | '/account/recover'
+    | '/account/register'
     | '/admin/analytics'
     | '/admin/collection-focal'
     | '/admin/collection-hero-regression'
@@ -562,6 +614,7 @@ export interface FileRouteTypes {
     | '/editorial/the-new-evening'
     | '/product/$handle'
     | '/swim/size-guide'
+    | '/account'
     | '/admin'
     | '/collections'
     | '/api/public/seo-health'
@@ -579,6 +632,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/account'
     | '/authentication'
     | '/brands'
     | '/contact'
@@ -595,6 +649,9 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/swim'
     | '/terms'
+    | '/account/login'
+    | '/account/recover'
+    | '/account/register'
     | '/admin/analytics'
     | '/admin/collection-focal'
     | '/admin/collection-hero-regression'
@@ -613,6 +670,7 @@ export interface FileRouteTypes {
     | '/editorial/the-new-evening'
     | '/product/$handle'
     | '/swim/size-guide'
+    | '/account/'
     | '/admin/'
     | '/collections/'
     | '/api/public/seo-health'
@@ -631,6 +689,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AccountRoute: typeof AccountRouteWithChildren
   AuthenticationRoute: typeof AuthenticationRoute
   BrandsRoute: typeof BrandsRoute
   ContactRoute: typeof ContactRoute
@@ -793,6 +852,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticationRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/account': {
+      id: '/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -820,6 +886,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/account/': {
+      id: '/account/'
+      path: '/'
+      fullPath: '/account/'
+      preLoaderRoute: typeof AccountIndexRouteImport
+      parentRoute: typeof AccountRoute
     }
     '/swim/size-guide': {
       id: '/swim/size-guide'
@@ -947,6 +1020,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/account/register': {
+      id: '/account/register'
+      path: '/register'
+      fullPath: '/account/register'
+      preLoaderRoute: typeof AccountRegisterRouteImport
+      parentRoute: typeof AccountRoute
+    }
+    '/account/recover': {
+      id: '/account/recover'
+      path: '/recover'
+      fullPath: '/account/recover'
+      preLoaderRoute: typeof AccountRecoverRouteImport
+      parentRoute: typeof AccountRoute
+    }
+    '/account/login': {
+      id: '/account/login'
+      path: '/login'
+      fullPath: '/account/login'
+      preLoaderRoute: typeof AccountLoginRouteImport
+      parentRoute: typeof AccountRoute
+    }
     '/api/public/seo-health': {
       id: '/api/public/seo-health'
       path: '/api/public/seo-health'
@@ -1027,6 +1121,23 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AccountRouteChildren {
+  AccountLoginRoute: typeof AccountLoginRoute
+  AccountRecoverRoute: typeof AccountRecoverRoute
+  AccountRegisterRoute: typeof AccountRegisterRoute
+  AccountIndexRoute: typeof AccountIndexRoute
+}
+
+const AccountRouteChildren: AccountRouteChildren = {
+  AccountLoginRoute: AccountLoginRoute,
+  AccountRecoverRoute: AccountRecoverRoute,
+  AccountRegisterRoute: AccountRegisterRoute,
+  AccountIndexRoute: AccountIndexRoute,
+}
+
+const AccountRouteWithChildren =
+  AccountRoute._addFileChildren(AccountRouteChildren)
+
 interface SwimRouteChildren {
   SwimSizeGuideRoute: typeof SwimSizeGuideRoute
 }
@@ -1040,6 +1151,7 @@ const SwimRouteWithChildren = SwimRoute._addFileChildren(SwimRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AccountRoute: AccountRouteWithChildren,
   AuthenticationRoute: AuthenticationRoute,
   BrandsRoute: BrandsRoute,
   ContactRoute: ContactRoute,
@@ -1094,13 +1206,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
