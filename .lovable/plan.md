@@ -1,66 +1,54 @@
-# Finalize Ship-From & Delivery Logic (Steps 1–3)
+# Fix smart-collection filters (Title-contains OR Vendor-equals, ANY logic)
 
-Steps 1–3 are already built (DB table `product_origins`, `refreshProductOrigins` server fn, unified `<ShippingMeta>` on cards + PDP, manual refresh on `/admin/shopify-sync`). This plan applies your final business rules on top.
+## Problem
+Every smart collection currently filters with `Vendor Equals "<brand>"` and `Match Column = all`. When a product's Shopify Vendor field is inconsistent or empty, the collection comes up empty. The multi-rule collections (e.g. `women-bags = Tag:Women AND Type:Bags`) are also being switched to ANY per your direction so nothing is excluded.
 
-## 1. Tie-breaker rule (Most-Stock-Wins)
+## Fix
 
-Currently ties break by lexicographic `location_id` (non-deterministic from a business POV). Change to: **Napoli (IT) wins all ties**, since IT routes are fastest to your primary US/UK markets via UPS/FedEx/DHL hubs.
+### 1. Rewrite the rule definitions
+For every smart collection across `public/imports/smart-collections-mini-*.csv` (and the consolidated `smart-collections-part-*.csv` files):
 
-- Update `pickWinner()` in `src/lib/product-origins.functions.ts`: on tie, prefer `country_code === 'IT'`, then `'DE'`, then `'SE'`, then lex `location_id`.
+- **Brand collections** (currently 1 rule, `Vendor Equals X`) → 2 rules combined with ANY:
+  - `Vendor Equals "<Brand Name>"`
+  - `Title Contains "<Brand Name>"`
+- **Category collections** (`Type Equals Clothing/Bags/Shoes/Accessories`) → keep single rule, set Match Column = `any` (no-op but consistent).
+- **Tag collections** (Handbags, Watches, Shirts, Women, Men, etc.) → keep single Tag rule, Match Column = `any`.
+- **Composite collections** (`women-bags`, `men-shoes`, `women-clothing`, `men-accessories`, etc., currently `Tag:Women AND Type:Bags`) → switch Match Column to `any`. Per your direction these become unions (every Women product + every Bag).
+- **Special collections** (`in-stock` = Variant Inventory > 0, `new-arrivals` = Tag:New) → unchanged.
 
-## 2. Delivery estimate rewrite (BG official windows)
+### 2. Push the updated rules to Shopify
+Following `mem://integrations/shopify-admin-api`:
 
-Replace the current ad-hoc estimate with your official BG SLA:
+- Add `scripts/shopify/update-smart-collection-rules.mjs`
+- Uses `SHOPIFY_ACCESS_TOKEN` against `mwuwqi-vy.myshopify.com` API `2025-07`
+- For each collection handle in the CSVs:
+  1. `GET /admin/api/2025-07/smart_collections.json?handle=<handle>` to look up the existing collection ID
+  2. `PUT /admin/api/2025-07/smart_collections/<id>.json` with:
+     ```json
+     { "smart_collection": {
+         "id": <id>,
+         "disjunctive": true,
+         "rules": [ ...new rules... ]
+     }}
+     ```
+  3. If the handle doesn't exist, POST to create it (using the same payload + title/body_html from the CSV)
+- 500ms throttle, 429 retry honoring `Retry-After`, `--dry` flag, final `Updated / Created / Skipped / Failed` summary
+- Run sequence:
+  ```
+  node scripts/shopify/update-smart-collection-rules.mjs --dry
+  node scripts/shopify/update-smart-collection-rules.mjs
+  ```
 
-- **Handling:** +1–2 business days (warehouse dispatch)
-- **EU destinations:** +3 business days average
-- **Non-EU (incl. US/UK):** +5–7 business days
-- **Skip weekends + country-specific public holidays** in the origin country (IT / SE / DE).
-- **Block routing** to RU / BY / UA — show "We do not currently ship to this region" instead of a date.
+### 3. Verify
+- After the push, spot-check 3 collections in Shopify admin (one brand, one category, one composite) to confirm `Match condition: any` and the new rule set.
+- Hit `/collections/<handle>` on the storefront for the same three to confirm products populate.
 
-Implementation in `src/lib/delivery-estimate.ts`:
-- Take `(origin, destZip|destCountry)` → returns `{ minDays, maxDays, arrivalLabel, blocked? }`
-- Business-day math skips Sat/Sun + a static holiday table per origin country (IT/SE/DE 2026 bank holidays).
-- EU classification: derive from destination country (default US when only ZIP is known).
+## Files
+- **Edit:** all `public/imports/smart-collections-mini-*.csv` and `smart-collections-part-*.csv` (rule rows + Match Column)
+- **New:** `scripts/shopify/update-smart-collection-rules.mjs`
+- No app/frontend code changes — the storefront already reads collections from Shopify, so once the rules update there, the site updates.
 
-## 3. Fallback safety-net
-
-- **No location detected** → default to **New York, US (10001)** (already in `DEFAULT_ZIP`), calculated as **non-EU 5–7 business days** (under-promise per your direction).
-- **Product has no `product_origins` row** → `<ShippingMeta>` already falls back to vendor map → DEFAULT_ORIGIN (Italy). If vendor is also unknown, display **"Ships from Express Tracked Hub"** instead of leaving blank. Add this string to `formatOriginLabel()` in `src/lib/shipping-origin.ts`.
-
-## 4. Admin refresh button placement
-
-Currently on `/admin/shopify-sync`. Per your direction, also surface it on the **Inventory tab** of the admin dashboard:
-- Add a "Refresh ship-from origins" card to `src/routes/admin.inventory-sync.tsx` (reuses `refreshProductOrigins` server fn — no duplication).
-- Keep the existing button on `/admin/shopify-sync` for continuity.
-- Both are admin-gated by `requireAdmin` middleware — invisible to shoppers.
-
-## 5. UI uniformity audit
-
-`<ShippingMeta>` is already wired into `product-card.tsx` and `pdp-delivery-badge.tsx`. I'll grep every product surface (`for-you-feed`, `trending-now`, `ai-recommendations`, `recently-viewed`, brand pages, search results, cart drawer) to confirm every card uses `<ShippingMeta>` with the same `variant="card"` props — no inline duplicates. Any stragglers get swapped.
-
-Typography/spacing already matches the editorial card style (10px uppercase `0.18em` tracking, bronze accent on PDP). No design changes — just enforcement.
-
-## 6. Data audit
-
-After deploying, click "Refresh ship-from origins" once and run a SQL check:
-```sql
-SELECT country_code, COUNT(*) FROM product_origins GROUP BY 1;
-SELECT COUNT(*) FROM product_origins WHERE country_code IS NULL;
-```
-If a large share is NULL, the Shopify inventory feeds aren't tagging locations — surfaces as a follow-up task, not a code fix.
-
----
-
-## Files to change
-
-- `src/lib/product-origins.functions.ts` — tie-breaker (IT > DE > SE > lex)
-- `src/lib/delivery-estimate.ts` — BG SLA + holiday calendar + RU/BY/UA block
-- `src/lib/shipping-origin.ts` — "Express Tracked Hub" final fallback label
-- `src/components/shipping-meta.tsx` — handle blocked-destination state
-- `src/routes/admin.inventory-sync.tsx` — add refresh card
-- Spot-fixes to any product card surface not yet using `<ShippingMeta>`
-
-## Open question before I build
-
-**RU/BY/UA block** — do you want it as a visible message on the card/PDP ("Not available for shipment to your region — change location"), or silently hide the delivery line for those shoppers? My recommendation: visible message on PDP only, hidden on cards (cards stay clean).
+## Out of scope
+- No changes to product Vendor / Tag / Type fields
+- No changes to `in-stock` or `new-arrivals` logic
+- No re-enabling of disabled BG import scripts
