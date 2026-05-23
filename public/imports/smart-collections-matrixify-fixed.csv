@@ -345,10 +345,6 @@ christian-lacroix,MERGE,Christian Lacroix,<p>Discover the Christian Lacroix coll
 casio,MERGE,Casio,<p>Discover the Casio collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Casio
 hamaki-ho,MERGE,Hamaki-Ho,<p>Discover the Hamaki-Ho collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Hamaki-Ho
 ambush,MERGE,Ambush,<p>Discover the Ambush collection at Palace of Roman. Authentic pieces sourced through our authorised distribution partner.</p>,best-selling,TRUE,global,Smart,all,Vendor,Equals,Ambush
-clothing,MERGE,Clothing,<p>Shop clothing from the world's most coveted maisons.</p>,best-selling,TRUE,global,Smart,all,Type,Equals,Clothing
-accessories,MERGE,Accessories,<p>Shop accessories from the world's most coveted maisons.</p>,best-selling,TRUE,global,Smart,all,Type,Equals,Accessories
-shoes,MERGE,Shoes,<p>Shop shoes from the world's most coveted maisons.</p>,best-selling,TRUE,global,Smart,all,Type,Equals,Shoes
-bags,MERGE,Bags,<p>Shop bags from the world's most coveted maisons.</p>,best-selling,TRUE,global,Smart,all,Type,Equals,Bags
 handbags,MERGE,Handbags,<p>Curated handbags from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Handbags
 shirts,MERGE,Shirts,<p>Curated shirts from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Shirts
 watches,MERGE,Watches,<p>Curated watches from designer maisons.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Watches
@@ -370,21 +366,27 @@ sleepwear,MERGE,Sleepwear,<p>Curated sleepwear from designer maisons.</p>,best-s
 women,MERGE,Women,"<p>The women collection — curated luxury, delivered worldwide.</p>",best-selling,TRUE,global,Smart,all,Tag,Equals,Women
 men,MERGE,Men,"<p>The men collection — curated luxury, delivered worldwide.</p>",best-selling,TRUE,global,Smart,all,Tag,Equals,Men
 unisex,MERGE,Unisex,"<p>The unisex collection — curated luxury, delivered worldwide.</p>",best-selling,TRUE,global,Smart,all,Tag,Equals,Unisex
-women-bags,MERGE,Women Bags,<p>Women Bags — handpicked from our designer catalog.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Women
-women-bags,MERGE,,,,,,,,Type,Equals,Bags
-women-shoes,MERGE,Women Shoes,<p>Women Shoes — handpicked from our designer catalog.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Women
-women-shoes,MERGE,,,,,,,,Type,Equals,Shoes
-women-clothing,MERGE,Women Clothing,<p>Women Clothing — handpicked from our designer catalog.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Women
-women-clothing,MERGE,,,,,,,,Type,Equals,Clothing
-women-accessories,MERGE,Women Accessories,<p>Women Accessories — handpicked from our designer catalog.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Women
-women-accessories,MERGE,,,,,,,,Type,Equals,Accessories
-men-bags,MERGE,Men Bags,<p>Men Bags — handpicked from our designer catalog.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Men
-men-bags,MERGE,,,,,,,,Type,Equals,Bags
-men-shoes,MERGE,Men Shoes,<p>Men Shoes — handpicked from our designer catalog.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Men
-men-shoes,MERGE,,,,,,,,Type,Equals,Shoes
-men-clothing,MERGE,Men Clothing,<p>Men Clothing — handpicked from our designer catalog.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Men
-men-clothing,MERGE,,,,,,,,Type,Equals,Clothing
-men-accessories,MERGE,Men Accessories,<p>Men Accessories — handpicked from our designer catalog.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Men
-men-accessories,MERGE,,,,,,,,Type,Equals,Accessories
 in-stock,MERGE,In Stock,<p>Available now — ready to ship.</p>,best-selling,TRUE,global,Smart,all,Variant Inventory,Greater Than,0
 new-arrivals,MERGE,New Arrivals,<p>The latest additions to the Palace of Roman catalog.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,New
+clothing,MERGE,Clothing,<p>Shop clothing from the world's most coveted maisons.</p>,best-selling,TRUE,global,Smart,any,Tag,Equals,Clothing
+accessories,MERGE,Accessories,<p>Shop accessories from the world's most coveted maisons.</p>,best-selling,TRUE,global,Smart,any,Tag,Equals,Accessories
+shoes,MERGE,Shoes,<p>Shop shoes from the world's most coveted maisons.</p>,best-selling,TRUE,global,Smart,any,Tag,Equals,Shoes
+shoes,MERGE,,,,,,,,Title,Contains,Shoes
+bags,MERGE,Bags,<p>Shop bags from the world's most coveted maisons.</p>,best-selling,TRUE,global,Smart,any,Tag,Equals,Bags
+bags,MERGE,,,,,,,,Title,Contains,Bag
+women-bags,MERGE,Women Bags,<p>Women Bags — handpicked from our designer catalog.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Women
+women-bags,MERGE,,,,,,,,Tag,Equals,Bags
+women-shoes,MERGE,Women Shoes,<p>Women Shoes — handpicked from our designer catalog.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Women
+women-shoes,MERGE,,,,,,,,Tag,Equals,Shoes
+women-clothing,MERGE,Women Clothing,<p>Women Clothing — handpicked from our designer catalog.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Women
+women-clothing,MERGE,,,,,,,,Tag,Equals,Clothing
+women-accessories,MERGE,Women Accessories,<p>Women Accessories — handpicked from our designer catalog.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Women
+women-accessories,MERGE,,,,,,,,Tag,Equals,Accessories
+men-bags,MERGE,Men Bags,<p>Men Bags — handpicked from our designer catalog.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Men
+men-bags,MERGE,,,,,,,,Tag,Equals,Bags
+men-shoes,MERGE,Men Shoes,<p>Men Shoes — handpicked from our designer catalog.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Men
+men-shoes,MERGE,,,,,,,,Tag,Equals,Shoes
+men-clothing,MERGE,Men Clothing,<p>Men Clothing — handpicked from our designer catalog.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Men
+men-clothing,MERGE,,,,,,,,Tag,Equals,Clothing
+men-accessories,MERGE,Men Accessories,<p>Men Accessories — handpicked from our designer catalog.</p>,best-selling,TRUE,global,Smart,all,Tag,Equals,Men
+men-accessories,MERGE,,,,,,,,Tag,Equals,Accessories

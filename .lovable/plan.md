@@ -1,54 +1,52 @@
-# Fix smart-collection filters (Title-contains OR Vendor-equals, ANY logic)
+## Revised: add Title as a safe-bet twin where it actually helps
 
-## Problem
-Every smart collection currently filters with `Vendor Equals "<brand>"` and `Match Column = all`. When a product's Shopify Vendor field is inconsistent or empty, the collection comes up empty. The multi-rule collections (e.g. `women-bags = Tag:Women AND Type:Bags`) are also being switched to ANY per your direction so nothing is excluded.
+### Rule shape per collection group
 
-## Fix
+**Single-category** (`clothing`, `shoes`, `bags`, `accessories`) — `disjunctive: true` (ANY), 2 rules:
+- `Tag Equals <Category>`
+- `Title Contains <Category>` (singular form too where useful: shoe/bag — see note)
 
-### 1. Rewrite the rule definitions
-For every smart collection across `public/imports/smart-collections-mini-*.csv` (and the consolidated `smart-collections-part-*.csv` files):
+**Composite gender + category** (`women-clothing`, `men-clothing`, `women-shoes`, `men-shoes`, `women-bags`, `men-bags`, `women-accessories`, `men-accessories`) — `disjunctive: false` (ALL), 2 rules:
+- `Tag Equals Women` (or `Men`)
+- `Tag Equals <Category>`
 
-- **Brand collections** (currently 1 rule, `Vendor Equals X`) → 2 rules combined with ANY:
-  - `Vendor Equals "<Brand Name>"`
-  - `Title Contains "<Brand Name>"`
-- **Category collections** (`Type Equals Clothing/Bags/Shoes/Accessories`) → keep single rule, set Match Column = `any` (no-op but consistent).
-- **Tag collections** (Handbags, Watches, Shirts, Women, Men, etc.) → keep single Tag rule, Match Column = `any`.
-- **Composite collections** (`women-bags`, `men-shoes`, `women-clothing`, `men-accessories`, etc., currently `Tag:Women AND Type:Bags`) → switch Match Column to `any`. Per your direction these become unions (every Women product + every Bag).
-- **Special collections** (`in-stock` = Variant Inventory > 0, `new-arrivals` = Tag:New) → unchanged.
+Title-contains **does not safely combine with AND-matching** on composites: a rule like `Title Contains Clothing` would force every product title to literally include the word "Clothing", which kills membership (almost no titles do). For composites the Tag+Tag intersection is already the correct, safe answer (~1,138 for women-clothing).
 
-### 2. Push the updated rules to Shopify
-Following `mem://integrations/shopify-admin-api`:
+**Brand collections** — untouched; keep the existing `Vendor Equals X` OR `Title Contains X` (disjunctive=true) twin you already approved.
 
-- Add `scripts/shopify/update-smart-collection-rules.mjs`
-- Uses `SHOPIFY_ACCESS_TOKEN` against `mwuwqi-vy.myshopify.com` API `2025-07`
-- For each collection handle in the CSVs:
-  1. `GET /admin/api/2025-07/smart_collections.json?handle=<handle>` to look up the existing collection ID
-  2. `PUT /admin/api/2025-07/smart_collections/<id>.json` with:
-     ```json
-     { "smart_collection": {
-         "id": <id>,
-         "disjunctive": true,
-         "rules": [ ...new rules... ]
-     }}
-     ```
-  3. If the handle doesn't exist, POST to create it (using the same payload + title/body_html from the CSV)
-- 500ms throttle, 429 retry honoring `Retry-After`, `--dry` flag, final `Updated / Created / Skipped / Failed` summary
-- Run sequence:
-  ```
-  node scripts/shopify/update-smart-collection-rules.mjs --dry
-  node scripts/shopify/update-smart-collection-rules.mjs
-  ```
+### Title-contains conditions per category
 
-### 3. Verify
-- After the push, spot-check 3 collections in Shopify admin (one brand, one category, one composite) to confirm `Match condition: any` and the new rule set.
-- Hit `/collections/<handle>` on the storefront for the same three to confirm products populate.
+| Category | Title Contains values (one rule each, OR'd via disjunctive) |
+|---|---|
+| Clothing | (skipped — too generic, no titles contain the word "Clothing") |
+| Shoes | "Shoes" — covers "Pumps Shoes", "Leather Shoes", etc. Also acceptable: leave Tag only. |
+| Bags | "Bag" — singular catches "Shoulder Bag", "Tote Bag", "Crossbody Bag". |
+| Accessories | (skipped — generic; titles say "Scarf"/"Belt"/"Hat" not "Accessories") |
 
-## Files
-- **Edit:** all `public/imports/smart-collections-mini-*.csv` and `smart-collections-part-*.csv` (rule rows + Match Column)
-- **New:** `scripts/shopify/update-smart-collection-rules.mjs`
-- No app/frontend code changes — the storefront already reads collections from Shopify, so once the rules update there, the site updates.
+So Title-contains twin gets added only to `shoes` (→ "Shoes") and `bags` (→ "Bag"). `clothing` and `accessories` stay Tag-only, single rule, no false-safety added.
 
-## Out of scope
-- No changes to product Vendor / Tag / Type fields
-- No changes to `in-stock` or `new-arrivals` logic
-- No re-enabling of disabled BG import scripts
+### Final per-handle outcome
+
+| Handle | Rules | Match |
+|---|---|---|
+| clothing | Tag=Clothing | ANY (1 rule) |
+| shoes | Tag=Shoes OR Title contains "Shoes" | ANY |
+| bags | Tag=Bags OR Title contains "Bag" | ANY |
+| accessories | Tag=Accessories | ANY (1 rule) |
+| women-clothing | Tag=Women AND Tag=Clothing | ALL |
+| men-clothing | Tag=Men AND Tag=Clothing | ALL |
+| women-shoes | Tag=Women AND Tag=Shoes | ALL |
+| men-shoes | Tag=Men AND Tag=Shoes | ALL |
+| women-bags | Tag=Women AND Tag=Bags | ALL |
+| men-bags | Tag=Men AND Tag=Bags | ALL |
+| women-accessories | Tag=Women AND Tag=Accessories | ALL |
+| men-accessories | Tag=Men AND Tag=Accessories | ALL |
+
+### Execution
+
+1. Patch `public/imports/smart-collections-matrixify-fixed.csv`: rewrite the 12 handles above per the table.
+2. Run `scripts/shopify/update-smart-collection-rules.mjs --dry`, inspect payloads for those 12.
+3. Run live push.
+4. Verify by counting products in `women-clothing`, `men-shoes`, `women-bags`, `shoes` via Admin REST.
+
+If you'd rather also add Title-contains to `clothing` / `accessories` despite the low yield, say the word and I'll include them.
