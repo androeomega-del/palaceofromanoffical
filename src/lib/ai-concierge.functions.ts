@@ -90,6 +90,7 @@ export const fetchConciergePicks = createServerFn({ method: "POST" })
       ...(anchor ? [anchor.handle] : []),
       ...data.wishlistHandles,
       ...data.recentHandles,
+      ...data.interactionHandles,
     ]);
     const candidates: ShopifyProduct[] = [];
     for (const page of pages) {
