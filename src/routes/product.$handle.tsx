@@ -18,6 +18,9 @@ import { computeScarcitySignal } from "@/lib/scarcity-signal";
 import { toast } from "sonner";
 import { ProductCard } from "@/components/product-card";
 import AIRecommendations from "@/components/ai-recommendations";
+import { PdpAuthenticityStrip } from "@/components/pdp-authenticity-strip";
+import { PdpBrandHeritage } from "@/components/pdp-brand-heritage";
+import { ProductReviews } from "@/components/product-reviews";
 import {
   Accordion,
   AccordionContent,
@@ -605,12 +608,8 @@ function ProductView({
               </div>
             </div>
 
-            {/* Trust strip — diamonds */}
-            <ul className="grid grid-cols-3 gap-8 py-10 border-y border-[var(--studio-rule)]">
-              <TrustItem title="100% Authentic" sub="BrandsGateway Partner" />
-              <TrustItem title="Express" sub="Tracked Worldwide" />
-              <TrustItem title="14 Day" sub="Returns" />
-            </ul>
+            {/* Authenticity strip — defensible claims only */}
+            <PdpAuthenticityStrip />
 
             {/* Accordions */}
             <Accordion
@@ -756,6 +755,12 @@ function ProductView({
             </div>
           </section>
         )}
+
+        {/* ===== Brand heritage — "The {Vendor} Story" ===== */}
+        <PdpBrandHeritage vendor={product.vendor} vendorHandle={vendorHandle} />
+
+        {/* ===== Reviews (first-party, admin-moderated) ===== */}
+        <ProductReviews handle={product.handle} productTitle={product.title} />
 
         {/* ===== AI Recommendations (server-assisted) ===== */}
         <AIRecommendations product={product} />
