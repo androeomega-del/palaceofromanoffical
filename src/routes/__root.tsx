@@ -14,6 +14,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { WelcomeDispatchModal } from "@/components/welcome-dispatch-modal";
 import { ConciergeWidget } from "@/components/concierge-widget";
+import { ExitIntentStylist } from "@/components/exit-intent-stylist";
 import { useCartSync } from "@/hooks/use-cart-sync";
 import { Toaster } from "@/components/ui/sonner";
 import { installHydrationMonitor } from "@/lib/hydration-monitor";
@@ -293,6 +294,7 @@ function RootComponent() {
       <Toaster position="top-center" />
       <WelcomeDispatchModal />
       <ClientOnlyConcierge />
+      <ExitIntentStylist />
     </QueryClientProvider>
   );
 }
