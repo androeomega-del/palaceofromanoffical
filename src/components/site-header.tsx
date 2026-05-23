@@ -157,8 +157,9 @@ export function SiteHeader() {
             </Link>
           ) : (
             <Link to="/collections/$handle" params={{ handle: "new-arrivals" }} className="underline decoration-bronze/60 underline-offset-4 hover:text-bronze transition-colors">
-            See This Week's Edit →
-          </Link>
+              See This Week's Edit →
+            </Link>
+          )}
           <button
             type="button"
             aria-label="Dismiss announcement"
