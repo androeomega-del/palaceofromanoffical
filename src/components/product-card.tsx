@@ -9,6 +9,7 @@ import { ShippingMeta } from "@/components/shipping-meta";
 import { useCartStore } from "@/stores/cart-store";
 import { useWishlistStore } from "@/stores/wishlist-store";
 import { useInteractionStore } from "@/stores/interaction-store";
+import { QuickViewSheet } from "@/components/quick-view-sheet";
 
 
 export function ProductCard({ product }: { product: ShopifyProduct }) {
@@ -44,6 +45,7 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
   const toggleWishlist = useWishlistStore((s) => s.toggle);
   const [adding, setAdding] = useState(false);
   const [buyingNow, setBuyingNow] = useState(false);
+  const [quickViewOpen, setQuickViewOpen] = useState(false);
   const track = useInteractionStore((s) => s.track);
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const cardRef = useRef<HTMLAnchorElement | null>(null);
@@ -128,10 +130,10 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
     e.preventDefault();
     e.stopPropagation();
     if (soldOut) return;
-    // Multi-variant pieces MUST route to the PDP for explicit option selection —
-    // never trigger an immediate add-to-cart from the card.
+    // Multi-variant pieces open the Quick-View sheet in-grid — no PDP detour.
+    // Single-variant pieces add straight to bag below.
     if (hasChoices || !firstAvailable) {
-      navigate({ to: "/product/$handle", params: { handle: p.handle } });
+      setQuickViewOpen(true);
       return;
     }
     if (adding) return; // per-card spam guard
@@ -213,10 +215,11 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
     }
   };
 
-  const addLabel = soldOut ? "Sold Out" : hasChoices ? "Select Options" : "Add to Bag";
+  const addLabel = soldOut ? "Sold Out" : hasChoices ? "Quick Add" : "Add to Bag";
 
 
   return (
+    <>
     <Link
       ref={cardRef}
       to="/product/$handle"
@@ -345,5 +348,11 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
       <ShippingMeta vendor={p.vendor} handle={p.handle} variant="card" />
 
     </Link>
+    <QuickViewSheet
+      product={product}
+      open={quickViewOpen}
+      onOpenChange={setQuickViewOpen}
+    />
+    </>
   );
 }
