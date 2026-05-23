@@ -218,12 +218,34 @@ function CollectionPage() {
       last?.pageInfo?.hasNextPage ? last.pageInfo.endCursor : undefined,
   });
 
-  // Auto-load every remaining page — no pagination UI, no cap.
+  // True total from Shopify Admin API — used for "Showing X of N" and to
+  // know whether infinite scroll has surfaced every active listing.
+  const fetchTotal = useServerFn(fetchCollectionTotal);
+  const totalQ = useQuery({
+    queryKey: ["collection-total", handle],
+    queryFn: () => fetchTotal({ data: { handle } }),
+    staleTime: 5 * 60_000,
+  });
+  const total = totalQ.data?.total ?? null;
+
+  // IntersectionObserver sentinel — fetches the next cursor page as soon as
+  // the user scrolls within ~600px of the bottom. Continues until
+  // hasNextPage === false (Rule 3: zero artificial limits).
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
-    if (q.hasNextPage && !q.isFetchingNextPage) {
-      q.fetchNextPage();
-    }
-  }, [q.hasNextPage, q.isFetchingNextPage, q.data?.pages.length]);
+    const el = sentinelRef.current;
+    if (!el || !q.hasNextPage) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting && q.hasNextPage && !q.isFetchingNextPage) {
+          q.fetchNextPage();
+        }
+      },
+      { rootMargin: "600px 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [q.hasNextPage, q.isFetchingNextPage, q.fetchNextPage]);
 
   const pages = q.data?.pages ?? [];
   const data = pages[0] ?? null;
