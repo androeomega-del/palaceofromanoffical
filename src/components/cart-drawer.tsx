@@ -104,7 +104,10 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
               </ul>
             </div>
 
+            <CartFbt productType={fbtProductType} excludeHandles={fbtExclude} />
+
             <div className="border-t border-ink/10 px-6 py-6 space-y-4">
+
               {(() => {
                 const THRESHOLD = 250;
                 const remaining = Math.max(0, THRESHOLD - totalAmount);
