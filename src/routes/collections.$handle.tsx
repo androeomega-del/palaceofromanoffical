@@ -6,6 +6,8 @@ import { useServerFn } from "@tanstack/react-start";
 
 import { fetchCollectionFiltered, fetchCollection, type StorefrontFilterValue } from "@/lib/shopify";
 import { fetchCollectionTotal } from "@/lib/collection-count.functions";
+import { fetchCollectionCategoryCounts } from "@/lib/collection-category-counts.functions";
+import { CATEGORY_BUCKETS, bucketProduct, type CategoryBucketLabel } from "@/lib/category-buckets";
 import { ProductCard } from "@/components/product-card";
 import { absoluteUrl, SITE_URL } from "@/lib/seo";
 import { collectionSeo } from "@/lib/collection-seo";
@@ -155,39 +157,30 @@ function CollectionPage() {
 
   const [selections, setSelections] = useState<Selection[]>([]);
   const [priceRange, setPriceRange] = useState<{ min: number; max: number } | null>(null);
-  
+
+  // Active category chip (single-select, mutually exclusive).
+  // For most collections, this is one of CATEGORY_BUCKETS labels (driven
+  // by Admin-API aggregation across the entire collection). For the
+  // virtual "layering-edit" handle, we keep a bespoke title-regex chip
+  // set that better describes the layering taxonomy.
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
 
-  // Keyword-based product type derivation. The Shopify product_type field on
-  // this store is inconsistent, so we infer category from the product title.
-  // Order matters — more specific patterns first (t-shirt before shirt).
-  // For the curated "Layering Edit" virtual collection, swap in a layering-
-  // specific pattern set so the chips read as Polo / Long Sleeve / Turtleneck /
-  // Cardigan / Hoodie / Sweatshirt rather than the generic taxonomy.
-  const TYPE_PATTERNS: { label: string; test: RegExp }[] = handle === "layering-edit"
-    ? [
-        { label: "Polos",        test: /\bpolo\b/i },
-        { label: "Long Sleeves", test: /\b(long[\s-]?sleeve|longsleeve|l\/s)\b/i },
-        { label: "Turtlenecks",  test: /\b(turtleneck|roll[\s-]?neck|mock[\s-]?neck)\b/i },
-        { label: "Cardigans",    test: /\bcardigan\b/i },
-        { label: "Hoodies",      test: /\b(hoodie|hooded)\b/i },
-        { label: "Sweatshirts",  test: /\b(sweatshirt|crewneck|crew[\s-]?neck)\b/i },
-      ]
-    : [
-        { label: "Dresses", test: /\b(dress|gown|kaftan)\b/i },
-        { label: "Knitwear", test: /\b(knit|sweater|jumper|cardigan|cashmere|wool top|pullover)\b/i },
-        { label: "Outerwear", test: /\b(coat|jacket|parka|trench|blazer|overcoat|puffer)\b/i },
-        { label: "Tops", test: /\b(t-shirt|tee|shirt|blouse|top|tank|polo|camisole)\b/i },
-        { label: "Trousers", test: /\b(trouser|pant|chino|legging|joggers)\b/i },
-        { label: "Denim", test: /\b(jean|denim)\b/i },
-        { label: "Skirts", test: /\b(skirt)\b/i },
-        { label: "Shoes", test: /\b(shoe|sneaker|boot|loafer|sandal|heel|pump|mule|trainer|slipper)\b/i },
-        { label: "Bags", test: /\b(bag|tote|clutch|backpack|crossbody|handbag|pouch|satchel)\b/i },
-        { label: "Accessories", test: /\b(belt|scarf|hat|cap|glove|wallet|sunglass|jewel|necklace|ring|earring|bracelet|watch|tie)\b/i },
-      ];
+  // The layering-edit handle uses a bespoke local pattern set; every
+  // other handle uses the curated 10-bucket whitelist via the server-
+  // side aggregation. `isLayering` is the branch switch.
+  const isLayering = handle === "layering-edit";
 
-  function inferType(title: string): string | null {
-    for (const p of TYPE_PATTERNS) if (p.test.test(title)) return p.label;
+  const LAYERING_PATTERNS: { label: string; test: RegExp }[] = [
+    { label: "Polos",        test: /\bpolo\b/i },
+    { label: "Long Sleeves", test: /\b(long[\s-]?sleeve|longsleeve|l\/s)\b/i },
+    { label: "Turtlenecks",  test: /\b(turtleneck|roll[\s-]?neck|mock[\s-]?neck)\b/i },
+    { label: "Cardigans",    test: /\bcardigan\b/i },
+    { label: "Hoodies",      test: /\b(hoodie|hooded)\b/i },
+    { label: "Sweatshirts",  test: /\b(sweatshirt|crewneck|crew[\s-]?neck)\b/i },
+  ];
+
+  function inferLayeringType(title: string): string | null {
+    for (const p of LAYERING_PATTERNS) if (p.test.test(title)) return p.label;
     return null;
   }
 
@@ -228,6 +221,18 @@ function CollectionPage() {
   });
   const total = totalQ.data?.total ?? null;
 
+  // True per-bucket counts via Admin-API walk of the entire collection.
+  // Disabled for the bespoke layering-edit chip set (no aggregation
+  // needed — that branch uses the loaded-batch counts).
+  const fetchCatCounts = useServerFn(fetchCollectionCategoryCounts);
+  const categoryCountsQ = useQuery({
+    queryKey: ["collection-category-counts", handle],
+    queryFn: () => fetchCatCounts({ data: { handle } }),
+    staleTime: 10 * 60_000,
+    enabled: !isLayering,
+  });
+  const categoryCounts = categoryCountsQ.data?.counts ?? null;
+
   // IntersectionObserver sentinel — fetches the next cursor page as soon as
   // the user scrolls within ~600px of the bottom. Continues until
   // hasNextPage === false (Rule 3: zero artificial limits).
@@ -247,47 +252,92 @@ function CollectionPage() {
     return () => io.disconnect();
   }, [q.hasNextPage, q.isFetchingNextPage, q.fetchNextPage]);
 
+  // When a category chip is active, auto-exhaust the cursor so client-
+  // side bucketing surfaces every matching product across the entire
+  // collection — not just whatever was lazy-loaded by scroll. This is
+  // what makes "Dresses 47" actually render 47 items, not just the
+  // dresses present in the first batch.
+  useEffect(() => {
+    if (!typeFilter) return;
+    if (q.hasNextPage && !q.isFetchingNextPage) {
+      q.fetchNextPage();
+    }
+  }, [typeFilter, q.hasNextPage, q.isFetchingNextPage, q.fetchNextPage, q.data?.pages.length]);
+
   const pages = q.data?.pages ?? [];
   const data = pages[0] ?? null;
   const filters = data?.filters ?? [];
   const rawEdges = useMemo(() => pages.flatMap((p) => p?.edges ?? []), [pages]);
   const discountEdges = rawEdges;
 
-  // Derive available product types from the current result set
-  const typeCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
-    for (const e of discountEdges) {
-      const t = inferType(e.node.title ?? "");
-      if (t) counts[t] = (counts[t] ?? 0) + 1;
-    }
-    return counts;
-  }, [discountEdges]);
+  // Match a loaded product to the active chip. For layering-edit we use
+  // title-regex; for everything else we use the shared bucketProduct
+  // helper that the server-side aggregation also uses.
+  function matchesActiveType(
+    node: { title?: string | null; tags?: string[] | null },
+    label: string,
+  ): boolean {
+    if (isLayering) return inferLayeringType(node.title ?? "") === label;
+    return (
+      bucketProduct({
+        title: node.title ?? "",
+        tags: Array.isArray(node.tags) ? node.tags : [],
+      }) === label
+    );
+  }
 
-  const availableTypes = useMemo(
-    () => TYPE_PATTERNS.map((p) => p.label).filter((label) => (typeCounts[label] ?? 0) > 0),
-    [typeCounts]
-  );
+  // Chip definitions for the current collection.
+  type Chip = { label: string; count: number };
+  const chips: Chip[] = useMemo(() => {
+    if (isLayering) {
+      // Local count from loaded batch — layering catalog is small.
+      const c: Record<string, number> = {};
+      for (const e of discountEdges) {
+        const t = inferLayeringType(e.node.title ?? "");
+        if (t) c[t] = (c[t] ?? 0) + 1;
+      }
+      return LAYERING_PATTERNS.map((p) => ({ label: p.label, count: c[p.label] ?? 0 })).filter(
+        (chip) => chip.count > 0,
+      );
+    }
+    if (!categoryCounts) return [];
+    return CATEGORY_BUCKETS.map((b) => ({
+      label: b.label as string,
+      count: categoryCounts[b.label as CategoryBucketLabel] ?? 0,
+    })).filter((chip) => chip.count > 0);
+  }, [isLayering, discountEdges, categoryCounts]);
 
   const edges = useMemo(() => {
     if (!typeFilter) return discountEdges;
-    return discountEdges.filter((e: any) => inferType(e.node.title ?? "") === typeFilter);
-  }, [discountEdges, typeFilter]);
+    return discountEdges.filter((e) => matchesActiveType(e.node as { title?: string | null; tags?: string[] | null }, typeFilter));
+  }, [discountEdges, typeFilter, isLayering]);
+
 
   const title = data?.collection?.title ?? titleizeHandle(handle);
   const description = data?.collection?.description;
 
   // Header count — reflects the active filter/sort state, not the raw
-  // collection size. Storefront API doesn't return a filtered totalCount,
-  // so when any filter is active we show the loaded count with a "+"
-  // suffix until the cursor is exhausted (hasNextPage === false), at which
-  // point the loaded count IS the true filtered total.
+  // collection size. When a category chip is active and we have the
+  // Admin-aggregated count for that bucket, that count is the true
+  // master total. Otherwise we fall back to the loaded-count + "+"
+  // pattern while the cursor is still draining, and to the absolute
+  // Admin productsCount when no filter is active.
   const loadedCount = edges.length;
   const filtersActive =
     Boolean(typeFilter) || selections.length > 0 || Boolean(priceRange);
   const noun = (n: number) => (n === 1 ? "Piece" : "Pieces");
+  const activeBucketTrueCount: number | null =
+    typeFilter && !isLayering && categoryCounts
+      ? categoryCounts[typeFilter as CategoryBucketLabel] ?? null
+      : null;
   let countLabel: string;
   if (q.isLoading) {
     countLabel = "Loading…";
+  } else if (typeFilter && activeBucketTrueCount != null && selections.length === 0 && !priceRange) {
+    // Pure category-chip filter: show the true Admin-aggregated total
+    // for that bucket immediately (e.g. "47 Pieces"), regardless of how
+    // many have surfaced via the cursor so far.
+    countLabel = `${activeBucketTrueCount} ${noun(activeBucketTrueCount)}`;
   } else if (filtersActive) {
     countLabel = q.hasNextPage
       ? `Showing ${loadedCount}+ ${noun(loadedCount)}`
@@ -300,6 +350,7 @@ function CollectionPage() {
   } else {
     countLabel = `${loadedCount} ${noun(loadedCount)}`;
   }
+
 
 
   const selectedInputs = useMemo(() => new Set(selections.map((s) => s.input)), [selections]);
@@ -492,8 +543,11 @@ function CollectionPage() {
 
 
 
-            {/* Product type chips — derived from titles in the current result set */}
-            {availableTypes.length > 1 && (
+            {/* Category chips — Admin-API aggregated counts across the
+                entire collection (curated 10-bucket whitelist).
+                Single-select; "All" clears. Hidden if only one chip
+                would render (nothing to choose between). */}
+            {chips.length > 1 && (
               <div className="mb-6 pt-5 border-t border-ink/5 flex flex-wrap items-center gap-2">
                 <span className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mr-2">
                   Category
@@ -508,22 +562,23 @@ function CollectionPage() {
                 >
                   All
                 </button>
-                {availableTypes.map((label) => (
+                {chips.map((chip) => (
                   <button
-                    key={label}
-                    onClick={() => setTypeFilter(typeFilter === label ? null : label)}
+                    key={chip.label}
+                    onClick={() => setTypeFilter(typeFilter === chip.label ? null : chip.label)}
                     className={`text-[10px] uppercase tracking-[0.2em] px-3 py-1.5 border rounded-full transition-colors ${
-                      typeFilter === label
+                      typeFilter === chip.label
                         ? "bg-ink text-canvas border-ink"
                         : "border-ink/15 text-muted-foreground hover:border-ink hover:text-ink"
                     }`}
                   >
-                    {label}
-                    <span className="ml-2 opacity-60">{typeCounts[label]}</span>
+                    {chip.label}
+                    <span className="ml-2 opacity-60">{chip.count}</span>
                   </button>
                 ))}
               </div>
             )}
+
 
 
 
