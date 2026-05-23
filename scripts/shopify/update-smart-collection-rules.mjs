@@ -146,7 +146,8 @@ for (const c of byHandle.values()) {
       { column: 'title', relation: 'contains', condition: brand },
     ];
   }
-  c.disjunctive = true;
+  // Honor per-collection Match Column: "all" → disjunctive=false (AND), else true (OR).
+  c.disjunctive = c.matchColumn !== 'all';
   collections.push(c);
 }
 
