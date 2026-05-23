@@ -16,21 +16,25 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
 
   const handleCheckout = () => {
     const url = getCheckoutUrl();
-    trackCartEvent({
-      event_type: "checkout_started",
-      quantity: totalItems,
-      price_usd: totalAmount,
-    });
+    
     if (url) {
-      const win = window.open(url, "_blank");
-      if (win) {
-        trackCartEvent({
-          event_type: "reached_checkout",
-          quantity: totalItems,
-          price_usd: totalAmount,
-        });
-      }
-      onOpenChange(false);
+      // 1. Fire the initial started event
+      trackCartEvent({
+        event_type: "checkout_started",
+        quantity: totalItems,
+        price_usd: totalAmount,
+      });
+
+      // 2. Fire the reached event immediately before handoff
+      trackCartEvent({
+        event_type: "reached_checkout",
+        quantity: totalItems,
+        price_usd: totalAmount,
+      });
+
+      // 3. The Fix: Direct window redirect instead of a new tab
+      // This bypasses iOS pop-up blockers and fixes the 404 in Instagram/TikTok browsers
+      window.location.href = url;
     }
   };
 
