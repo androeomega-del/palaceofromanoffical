@@ -126,16 +126,34 @@ type Tally = {
   city: string | null;
 };
 
+// Business-priority tie-breaker. When two locations carry identical stock,
+// prefer the hub with the fastest carrier routes to our primary US/UK
+// markets (Napoli/IT first, then Berlin/DE, then Jönköping/SE). Final
+// fallback is lex-smallest location_id so the choice stays deterministic.
+const COUNTRY_PRIORITY: Record<string, number> = { IT: 0, DE: 1, SE: 2 };
+
+function priorityOf(t: Tally): number {
+  const code = (t.country_code ?? "").toUpperCase();
+  return COUNTRY_PRIORITY[code] ?? 99;
+}
+
 function pickWinner(byLocation: Map<string, Tally>): Tally | null {
   let winner: Tally | null = null;
   for (const t of byLocation.values()) {
-    if (
-      !winner ||
-      t.total > winner.total ||
-      // deterministic tie-break: lexicographically smallest location id
-      (t.total === winner.total && t.location_id < winner.location_id)
-    ) {
+    if (!winner) {
       winner = t;
+      continue;
+    }
+    if (t.total > winner.total) {
+      winner = t;
+      continue;
+    }
+    if (t.total === winner.total) {
+      const pT = priorityOf(t);
+      const pW = priorityOf(winner);
+      if (pT < pW || (pT === pW && t.location_id < winner.location_id)) {
+        winner = t;
+      }
     }
   }
   return winner;
