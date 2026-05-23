@@ -1,42 +1,47 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, X, Loader2, ShoppingBag } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useCartStore } from "@/stores/cart-store";
 import { formatPrice } from "@/lib/shopify";
 import { trackCartEvent } from "@/lib/cart-analytics";
 
 export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
+  // 1. Add mount state to prevent hydration errors
+  const [isMounted, setIsMounted] = useState(false);
+  
   const { items, isLoading, isSyncing, updateQuantity, removeItem, getCheckoutUrl, syncCart } = useCartStore();
   const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
   const totalAmount = items.reduce((sum, i) => sum + parseFloat(i.price.amount) * i.quantity, 0);
   const currency = items[0]?.price.currencyCode ?? "USD";
 
-  useEffect(() => { if (open) syncCart(); }, [open, syncCart]);
+  // 2. Set mounted to true once the browser takes over
+  useEffect(() => { 
+    setIsMounted(true);
+    if (open) syncCart(); 
+  }, [open, syncCart]);
 
   const handleCheckout = () => {
     const url = getCheckoutUrl();
-    
     if (url) {
-      // 1. Fire the initial started event
       trackCartEvent({
         event_type: "checkout_started",
         quantity: totalItems,
         price_usd: totalAmount,
       });
 
-      // 2. Fire the reached event immediately before handoff
       trackCartEvent({
         event_type: "reached_checkout",
         quantity: totalItems,
         price_usd: totalAmount,
       });
 
-      // 3. The Fix: Direct window redirect instead of a new tab
-      // This bypasses iOS pop-up blockers and fixes the 404 in Instagram/TikTok browsers
       window.location.href = url;
     }
   };
+
+  // 3. Hydration Safeguard: Render nothing on the server, render the cart on the browser
+  if (!isMounted) return null;
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
