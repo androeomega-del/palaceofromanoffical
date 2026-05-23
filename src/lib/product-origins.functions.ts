@@ -142,12 +142,11 @@ function pickWinner(byLocation: Map<string, Tally>): Tally | null {
 }
 
 export const refreshProductOrigins = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
   .inputValidator((input: unknown) =>
     z.object({ maxPages: z.number().int().min(1).max(50).optional() }).parse(input ?? {}),
   )
   .handler(async ({ data }) => {
-    await requireAdmin();
-
     const rows: Array<{
       handle: string;
       country: string | null;
