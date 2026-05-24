@@ -206,6 +206,15 @@ function AdminHomepageCuration() {
               Generate preview
             </Button>
             <Button
+              onClick={() => forcePublishMut.mutate()}
+              disabled={forcePublishMut.isPending}
+              variant="secondary"
+              title="Republish the latest edition immediately, bypassing the 48-hour cooldown and the cron generator."
+            >
+              <Zap className={`h-4 w-4 mr-2 ${forcePublishMut.isPending ? "animate-pulse" : ""}`} />
+              Force publish latest
+            </Button>
+            <Button
               onClick={() => refreshMut.mutate()}
               disabled={refreshMut.isPending}
               variant="default"
@@ -213,6 +222,7 @@ function AdminHomepageCuration() {
               <RefreshCw className={`h-4 w-4 mr-2 ${refreshMut.isPending ? "animate-spin" : ""}`} />
               Force refresh now
             </Button>
+
           </div>
         </div>
 
