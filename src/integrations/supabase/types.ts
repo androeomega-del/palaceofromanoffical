@@ -945,6 +945,48 @@ export type Database = {
       }
     }
     Views: {
+      product_reviews_public: {
+        Row: {
+          approved_at: string | null
+          author_name: string | null
+          body: string | null
+          created_at: string | null
+          id: string | null
+          product_handle: string | null
+          rating: number | null
+          status: string | null
+          title: string | null
+          updated_at: string | null
+          verified_purchase: boolean | null
+        }
+        Insert: {
+          approved_at?: string | null
+          author_name?: string | null
+          body?: string | null
+          created_at?: string | null
+          id?: string | null
+          product_handle?: string | null
+          rating?: number | null
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+          verified_purchase?: boolean | null
+        }
+        Update: {
+          approved_at?: string | null
+          author_name?: string | null
+          body?: string | null
+          created_at?: string | null
+          id?: string | null
+          product_handle?: string | null
+          rating?: number | null
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+          verified_purchase?: boolean | null
+        }
+        Relationships: []
+      }
       public_approved_reviews: {
         Row: {
           author_name: string | null
