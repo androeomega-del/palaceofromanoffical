@@ -114,6 +114,62 @@ async function pullTrendingHandles(): Promise<string[]> {
   }
 }
 
+/**
+ * Pull the highest-volume site search queries from the last 14 days so the
+ * AI can theme rails around what shoppers are actively typing — both queries
+ * that returned results (validated demand) and zero-result queries (demand
+ * the catalog isn't satisfying, useful as editorial framing).
+ */
+async function pullSearchSignals(): Promise<{
+  top_queries: { query: string; count: number; avg_results: number }[];
+  zero_result_queries: { query: string; count: number }[];
+}> {
+  try {
+    const since = new Date(Date.now() - 14 * 86_400_000).toISOString();
+    const { data } = await supabaseAdmin
+      .from("search_queries")
+      .select("query, result_count")
+      .gte("created_at", since)
+      .not("query", "is", null)
+      .limit(5000);
+
+    const tally = new Map<string, { count: number; results: number }>();
+    for (const row of data ?? []) {
+      const raw = (row as { query: string | null; result_count: number | null }).query;
+      if (!raw) continue;
+      const q = raw.trim().toLowerCase();
+      if (q.length < 2 || q.length > 60) continue;
+      const prev = tally.get(q) ?? { count: 0, results: 0 };
+      prev.count += 1;
+      prev.results += (row as { result_count: number | null }).result_count ?? 0;
+      tally.set(q, prev);
+    }
+
+    const all = [...tally.entries()].map(([query, v]) => ({
+      query,
+      count: v.count,
+      avg_results: v.count > 0 ? Math.round(v.results / v.count) : 0,
+    }));
+
+    const top_queries = all
+      .filter((q) => q.avg_results > 0)
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 12)
+      .map((q) => ({ query: q.query, count: q.count, avg_results: q.avg_results }));
+
+    const zero_result_queries = all
+      .filter((q) => q.avg_results === 0 && q.count >= 2)
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 8)
+      .map((q) => ({ query: q.query, count: q.count }));
+
+    return { top_queries, zero_result_queries };
+  } catch (err) {
+    console.error("[refresh-homepage-layout] search signals pull failed:", err);
+    return { top_queries: [], zero_result_queries: [] };
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Cold-start fallback (unchanged shape — used only if AI path fails).
 // ---------------------------------------------------------------------------
