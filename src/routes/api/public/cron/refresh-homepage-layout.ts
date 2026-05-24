@@ -95,8 +95,35 @@ async function buildFallbackLayout(): Promise<HomepageLayout> {
 export const Route = createFileRoute("/api/public/cron/refresh-homepage-layout")({
   server: {
     handlers: {
-      POST: async () => {
+      POST: async ({ request }) => {
         const now = new Date();
+        const url = new URL(request.url);
+        const previewMode = url.searchParams.get("preview") === "true";
+
+        // PREVIEW MODE: build a fresh layout and insert as pending/inactive.
+        // Does not touch the currently active edition.
+        if (previewMode) {
+          const previewLayout = await buildFallbackLayout();
+          const { data: inserted, error: insertErr } = await supabaseAdmin
+            .from("homepage_daily_layout")
+            .insert({
+              layout_json: previewLayout as never,
+              is_active: false,
+              status: "pending",
+              generated_at: new Date().toISOString(),
+            })
+            .select("id")
+            .single();
+          if (insertErr) {
+            console.error("[refresh-homepage-layout] preview insert failed:", insertErr);
+            return Response.json({ error: "insert_failed" }, { status: 500 });
+          }
+          return Response.json({
+            action: "preview_created",
+            new_layout_id: inserted.id,
+            block_count: previewLayout.blocks.length,
+          });
+        }
 
         // 1. Load the currently active layout (if any).
         const { data: activeRow } = await supabaseAdmin

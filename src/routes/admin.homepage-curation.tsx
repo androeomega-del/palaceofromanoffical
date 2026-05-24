@@ -7,11 +7,12 @@ import {
   updateHomepageLayoutJson,
   activateHomepageLayout,
   forceRefreshHomepage,
+  generateHomepagePreview,
 } from "@/lib/admin-management.functions";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, RefreshCw, Save, Power } from "lucide-react";
+import { ArrowLeft, RefreshCw, Save, Power, Eye } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/homepage-curation")({
@@ -87,6 +88,20 @@ function AdminHomepageCuration() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const previewMut = useMutation({
+    mutationFn: () => generateHomepagePreview(),
+    onSuccess: (res) => {
+      const body = res?.body as { new_layout_id?: string } | undefined;
+      toast.success(
+        body?.new_layout_id
+          ? `Preview edition created (${body.new_layout_id.slice(0, 8)}). Re-activate it below to view.`
+          : "Preview edition created",
+      );
+      qc.invalidateQueries({ queryKey: ["admin", "homepage-curation"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   const activateMut = useMutation({
     mutationFn: (id: string) => activateHomepageLayout({ data: { id } }),
     onSuccess: () => {
@@ -116,15 +131,27 @@ function AdminHomepageCuration() {
               Daily layout, hotspots, and the 48-hour refresh cycle.
             </p>
           </div>
-          <Button
-            onClick={() => refreshMut.mutate()}
-            disabled={refreshMut.isPending}
-            variant="default"
-          >
-            <RefreshCw className={`h-4 w-4 mr-2 ${refreshMut.isPending ? "animate-spin" : ""}`} />
-            Force refresh now
-          </Button>
+          <div className="flex gap-2 flex-wrap">
+            <Button
+              onClick={() => previewMut.mutate()}
+              disabled={previewMut.isPending}
+              variant="outline"
+            >
+              <Eye className={`h-4 w-4 mr-2 ${previewMut.isPending ? "animate-pulse" : ""}`} />
+              Generate preview
+            </Button>
+            <Button
+              onClick={() => refreshMut.mutate()}
+              disabled={refreshMut.isPending}
+              variant="default"
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${refreshMut.isPending ? "animate-spin" : ""}`} />
+              Force refresh now
+            </Button>
+          </div>
         </div>
+
+
 
         {isLoading ? (
           <p className="text-sm text-muted-foreground">Loading…</p>
