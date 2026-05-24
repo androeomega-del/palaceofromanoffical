@@ -12,7 +12,7 @@ import {
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, RefreshCw, Save, Power, Eye } from "lucide-react";
+import { ArrowLeft, RefreshCw, Save, Power, Eye, CheckCircle2, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/homepage-curation")({
@@ -47,6 +47,12 @@ function AdminHomepageCuration() {
   const [draft, setDraft] = useState<string>("");
   const [draftId, setDraftId] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [liveSync, setLiveSync] = useState<{
+    at: string;
+    action: string;
+    layoutId?: string;
+    blocks?: number;
+  } | null>(null);
 
   useEffect(() => {
     if (data?.active && data.active.id !== draftId) {
@@ -82,8 +88,23 @@ function AdminHomepageCuration() {
   const refreshMut = useMutation({
     mutationFn: () => forceRefreshHomepage(),
     onSuccess: (res) => {
-      toast.success(`Refresh: ${(res?.body as { action?: string })?.action ?? "ok"}`);
+      const body = (res?.body ?? {}) as {
+        action?: string;
+        new_layout_id?: string;
+        layout_id?: string;
+        block_count?: number;
+      };
+      const action = body.action ?? "ok";
+      setLiveSync({
+        at: new Date().toISOString(),
+        action,
+        layoutId: body.new_layout_id ?? body.layout_id,
+        blocks: body.block_count,
+      });
+      toast.success(`Live update completed — ${action}`);
       qc.invalidateQueries({ queryKey: ["admin", "homepage-curation"] });
+      qc.invalidateQueries({ queryKey: ["homepage-daily-layout"] });
+      qc.invalidateQueries({ queryKey: ["home"] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -151,6 +172,36 @@ function AdminHomepageCuration() {
           </div>
         </div>
 
+        {liveSync ? (
+          <div className="mb-6 rounded-md border border-emerald-600/30 bg-emerald-50 text-emerald-900 px-4 py-3 flex items-start justify-between gap-4 flex-wrap">
+            <div className="flex items-start gap-3">
+              <CheckCircle2 className="h-5 w-5 mt-0.5 text-emerald-600 shrink-0" />
+              <div className="text-sm">
+                <div className="font-medium">
+                  Live update completed — {liveSync.action}
+                </div>
+                <div className="text-xs text-emerald-800/80 mt-0.5">
+                  {fmtWhen(liveSync.at)}
+                  {liveSync.layoutId
+                    ? ` · edition ${liveSync.layoutId.slice(0, 8)}`
+                    : ""}
+                  {typeof liveSync.blocks === "number"
+                    ? ` · ${liveSync.blocks} blocks`
+                    : ""}
+                  {" · visitor caches auto-invalidated"}
+                </div>
+              </div>
+            </div>
+            <a
+              href="/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs font-medium inline-flex items-center gap-1 hover:underline"
+            >
+              View live site <ExternalLink className="h-3 w-3" />
+            </a>
+          </div>
+        ) : null}
 
 
         {isLoading ? (

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 
@@ -34,6 +34,7 @@ interface Props {
 export function CurationCountdown({ variant = "hero", className = "" }: Props) {
   const [open, setOpen] = useState(false);
   const [now, setNow] = useState<Date | null>(null);
+  const qc = useQueryClient();
 
   // Fetch latest active homepage layout timestamp (best-effort).
   const { data: layoutGeneratedAt } = useQuery({
@@ -48,8 +49,28 @@ export function CurationCountdown({ variant = "hero", className = "" }: Props) {
         .maybeSingle();
       return data?.generated_at ? new Date(data.generated_at) : null;
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: 60 * 1000,
+    refetchOnWindowFocus: true,
   });
+
+  // Live cache invalidation: when an edition is swapped server-side,
+  // every open visitor tab gets pushed and refetches automatically.
+  useEffect(() => {
+    const channel = supabase
+      .channel("homepage-daily-layout-live")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "homepage_daily_layout" },
+        () => {
+          qc.invalidateQueries({ queryKey: ["homepage-daily-layout"] });
+          qc.invalidateQueries({ queryKey: ["home"] });
+        },
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [qc]);
 
   // Anchor: next 9 AM after the layout was generated (if available),
   // otherwise next 9 AM after now. Always uses local time.
