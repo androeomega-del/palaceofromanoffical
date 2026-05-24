@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
+
+
 import { img } from "@/lib/editorial-library";
 import editorialMayHero from "@/assets/editorial/may-2026/1.webp";
 import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
@@ -87,9 +87,7 @@ export const Route = createFileRoute("/journal")({
 function JournalPage() {
   const [featured, ...rest] = ENTRIES;
   return (
-    <>
-      <SiteHeader />
-      <main className="bg-canvas text-ink">
+    <main className="bg-canvas text-ink">
         {/* Masthead */}
         <section className="max-w-screen-2xl mx-auto px-6 pt-20 md:pt-28 pb-12 md:pb-16">
           <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-4">The Journal</p>
@@ -173,8 +171,6 @@ function JournalPage() {
             ))}
           </div>
         </section>
-      </main>
-      <SiteFooter />
-    </>
+    </main>
   );
 }
