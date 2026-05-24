@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { adminBeforeLoad } from "@/lib/admin-route-guard";
+import { supabase } from "@/integrations/supabase/client";
 import {
   getHomepageCuration,
   updateHomepageLayoutJson,
@@ -55,15 +56,29 @@ function fmtWhen(iso?: string | null) {
 
 function AdminHomepageCuration() {
   const qc = useQueryClient();
+  const [authReady, setAuthReady] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+    supabase.auth.getUser().then(({ data, error }) => {
+      if (alive) setAuthReady(!error && !!data.user);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
   const { data, isLoading } = useQuery({
     queryKey: ["admin", "homepage-curation"],
     queryFn: () => getHomepageCuration(),
     refetchInterval: 30_000,
+    enabled: authReady,
   });
   const { data: diag, refetch: refetchDiag } = useQuery({
     queryKey: ["admin", "homepage-diagnose"],
     queryFn: () => diagnoseHomepage(),
     refetchInterval: 30_000,
+    enabled: authReady,
   });
 
   const [draft, setDraft] = useState<string>("");
