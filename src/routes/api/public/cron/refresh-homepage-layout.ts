@@ -233,11 +233,6 @@ async function buildAiLayout(): Promise<HomepageLayout> {
     throw new Error("no shopify signals — fall back");
   }
 
-  // Bail out to fallback if Shopify is empty — Claude has nothing to anchor to.
-  if (women.length === 0 && men.length === 0) {
-    throw new Error("no shopify signals — fall back");
-  }
-
   const trendingProducts = trending
     .map((h) => [...women, ...men, ...accessories].find((p) => p.handle === h))
     .filter((p): p is SignalProduct => !!p)
@@ -258,6 +253,8 @@ async function buildAiLayout(): Promise<HomepageLayout> {
     accessories: accessories.slice(0, 8),
     trending_now: trendingProducts,
     top_brands: topBrands,
+    top_search_queries: searchSignals.top_queries,
+    unmet_search_demand: searchSignals.zero_result_queries,
     editorial_stories: EDITORIAL_ROUTES,
     hero_image_keys: HERO_IMAGE_POOL,
     banner_image_keys: BANNER_IMAGE_POOL,
