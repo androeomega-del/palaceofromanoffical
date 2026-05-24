@@ -3,14 +3,30 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 
-// Compute the next 9:00 AM (local time) following `from`.
-function nextNineAM(from: Date): Date {
-  const t = new Date(from);
-  t.setHours(9, 0, 0, 0);
+// The unlock slot is fixed: each edition unlocks 48h after its DB
+// `generated_at`, snapped forward to the next 09:00 UTC. The target is
+// derived purely from the persisted timestamp — never from `now()` — so the
+// countdown cannot drift or reset on re-render/refetch, and DB+client agree
+// because both sides reason in UTC.
+const CYCLE_MS = 48 * 60 * 60 * 1000;
+
+function nextNineUTCAfter(from: Date): Date {
+  const t = new Date(Date.UTC(
+    from.getUTCFullYear(),
+    from.getUTCMonth(),
+    from.getUTCDate(),
+    9, 0, 0, 0,
+  ));
   if (t.getTime() <= from.getTime()) {
-    t.setDate(t.getDate() + 1);
+    t.setUTCDate(t.getUTCDate() + 1);
   }
   return t;
+}
+
+function computeUnlockTarget(generatedAt: Date | null): Date {
+  if (!generatedAt) return nextNineUTCAfter(new Date());
+  const earliest = new Date(generatedAt.getTime() + CYCLE_MS);
+  return nextNineUTCAfter(earliest);
 }
 
 function formatRemaining(ms: number) {
