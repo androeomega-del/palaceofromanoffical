@@ -225,6 +225,13 @@ function AdminHomepageCuration() {
           </div>
         ) : null}
 
+        <DiagnosticsPanel
+          diag={diag}
+          onRefetch={() => refetchDiag()}
+        />
+
+
+
 
         {isLoading ? (
           <p className="text-sm text-muted-foreground">Loading…</p>
