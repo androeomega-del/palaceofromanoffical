@@ -16,6 +16,8 @@ import {
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { HomepageLayoutPreview } from "@/components/admin/homepage-layout-preview";
+import type { HomepageLayout } from "@/lib/homepage-layout-schema";
 import {
   ArrowLeft,
   RefreshCw,
