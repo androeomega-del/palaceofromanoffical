@@ -7,8 +7,10 @@ import {
   updateHomepageLayoutJson,
   activateHomepageLayout,
   forceRefreshHomepage,
+  forcePublishLatest,
   generateHomepagePreview,
   diagnoseHomepage,
+
 } from "@/lib/admin-management.functions";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,6 +20,8 @@ import {
   RefreshCw,
   Save,
   Power,
+  Zap,
+
   Eye,
   CheckCircle2,
   ExternalLink,
@@ -154,6 +158,24 @@ function AdminHomepageCuration() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const forcePublishMut = useMutation({
+    mutationFn: () => forcePublishLatest(),
+    onSuccess: (res) => {
+      setLiveSync({
+        at: new Date().toISOString(),
+        action: "force_published",
+        layoutId: res?.layout_id,
+      });
+      toast.success("Latest edition published live");
+      qc.invalidateQueries({ queryKey: ["admin", "homepage-curation"] });
+      qc.invalidateQueries({ queryKey: ["admin", "homepage-diagnose"] });
+      qc.invalidateQueries({ queryKey: ["homepage-daily-layout"] });
+      qc.invalidateQueries({ queryKey: ["home"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+
   const layout = data?.active?.layout_json as
     | { blocks?: Array<{ type: string; heading?: string; hotspots?: unknown[] }>; source?: string }
     | undefined;
@@ -184,6 +206,15 @@ function AdminHomepageCuration() {
               Generate preview
             </Button>
             <Button
+              onClick={() => forcePublishMut.mutate()}
+              disabled={forcePublishMut.isPending}
+              variant="secondary"
+              title="Republish the latest edition immediately, bypassing the 48-hour cooldown and the cron generator."
+            >
+              <Zap className={`h-4 w-4 mr-2 ${forcePublishMut.isPending ? "animate-pulse" : ""}`} />
+              Force publish latest
+            </Button>
+            <Button
               onClick={() => refreshMut.mutate()}
               disabled={refreshMut.isPending}
               variant="default"
@@ -191,6 +222,7 @@ function AdminHomepageCuration() {
               <RefreshCw className={`h-4 w-4 mr-2 ${refreshMut.isPending ? "animate-spin" : ""}`} />
               Force refresh now
             </Button>
+
           </div>
         </div>
 
