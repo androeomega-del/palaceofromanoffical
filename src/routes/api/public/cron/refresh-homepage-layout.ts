@@ -284,6 +284,8 @@ Rules:
 - Hero cta.href should link to /collections/women, /collections/men, /collections/new-arrivals or a real collection handle.
 - Copy: editorial, restrained, curatorial. Headings ≤ 60 chars. Subheadings ≤ 160 chars. No emoji, no exclamation, no clichés, no fabricated reviews.
 - "hotspots": leave as an empty array [].
+- SEARCH SIGNALS: top_search_queries are terms shoppers are actively typing and getting results for — let them influence rail framing and which handles you surface (e.g. if "linen" recurs, lean rails toward linen-tagged pieces present in the signals). Reference at most one query subtly in a subheading; never quote queries verbatim in headings.
+- UNMET DEMAND: unmet_search_demand are queries returning zero results. Do NOT mention these in copy. Use them only as a soft steer — if an unmet term has an aesthetic adjacent piece in the signals, that piece can be elevated.
 - Output ONLY the JSON object — no prose, no markdown.
 
 Signals JSON:
