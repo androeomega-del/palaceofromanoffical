@@ -47,6 +47,12 @@ function AdminHomepageCuration() {
   const [draft, setDraft] = useState<string>("");
   const [draftId, setDraftId] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [liveSync, setLiveSync] = useState<{
+    at: string;
+    action: string;
+    layoutId?: string;
+    blocks?: number;
+  } | null>(null);
 
   useEffect(() => {
     if (data?.active && data.active.id !== draftId) {
