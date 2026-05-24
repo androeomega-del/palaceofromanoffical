@@ -220,12 +220,18 @@ const EDITORIAL_ROUTES = [
 ];
 
 async function buildAiLayout(): Promise<HomepageLayout> {
-  const [women, men, accessories, trending] = await Promise.all([
+  const [women, men, accessories, trending, searchSignals] = await Promise.all([
     safeFetch("tag:women OR product_type:Dress OR product_type:Skirt", 16),
     safeFetch("tag:men OR product_type:Suit OR product_type:Shirt", 16),
     safeFetch("product_type:Bag OR product_type:Shoes OR product_type:Accessories", 12),
     pullTrendingHandles(),
+    pullSearchSignals(),
   ]);
+
+  // Bail out to fallback if Shopify is empty — Claude has nothing to anchor to.
+  if (women.length === 0 && men.length === 0) {
+    throw new Error("no shopify signals — fall back");
+  }
 
   // Bail out to fallback if Shopify is empty — Claude has nothing to anchor to.
   if (women.length === 0 && men.length === 0) {
