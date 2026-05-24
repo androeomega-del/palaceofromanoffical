@@ -343,9 +343,11 @@ function AdminHomepageCuration() {
               })()}
             </Card>
 
-
+            <Card className="p-5 lg:col-span-1">
+              <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
                 Active edition
               </div>
+
               <div className="font-serif text-lg mt-2 break-all">{data.active.id.slice(0, 8)}…</div>
               <dl className="mt-4 text-xs space-y-2">
                 <div className="flex justify-between gap-2">
