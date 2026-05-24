@@ -12,7 +12,7 @@ import { toast } from "sonner";
 export const SHOPIFY_API_VERSION = "2025-07";
 export const SHOPIFY_STORE_PERMANENT_DOMAIN = "mwuwqi-vy.myshopify.com";
 export const SHOPIFY_STOREFRONT_URL = `https://${SHOPIFY_STORE_PERMANENT_DOMAIN}/api/${SHOPIFY_API_VERSION}/graphql.json`;
-export const SHOPIFY_STOREFRONT_TOKEN = "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";
+export const SHOPIFY_STOREFRONT_TOKEN = "79bc8e00121fca48464e24c4443d8538";
 export const EXCLUDE_QUERY = "";
 
 // Legacy query-string export stubs (kept for any leftover imports).
