@@ -91,6 +91,26 @@ export const forceRefreshHomepage = createServerFn({ method: "POST" })
     return { status: res.status, body };
   });
 
+/**
+ * Generate a preview edition WITHOUT touching the currently active layout.
+ * The new edition is inserted as `status='pending', is_active=false` so it
+ * shows up in "Recent editions" and can be re-activated to preview.
+ */
+export const generateHomepagePreview = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .handler(async () => {
+    const base =
+      process.env.SITE_URL ||
+      process.env.VITE_SITE_URL ||
+      "https://palaceofroman.lovable.app";
+    const res = await fetch(
+      `${base}/api/public/cron/refresh-homepage-layout?preview=true`,
+      { method: "POST", headers: { "Content-Type": "application/json" } },
+    );
+    const body = await res.json().catch(() => ({}));
+    return { status: res.status, body };
+  });
+
 /* =========================================================================
  * DYNAMIC LANDING PAGES
  * =======================================================================*/
