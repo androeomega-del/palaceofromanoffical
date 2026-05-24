@@ -58,6 +58,7 @@ import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 import { Route as AccountRegisterRouteImport } from './routes/account.register'
 import { Route as AccountRecoverRouteImport } from './routes/account.recover'
 import { Route as AccountLoginRouteImport } from './routes/account.login'
+import { Route as JournalBlogHandleArticleHandleRouteImport } from './routes/journal.$blogHandle.$articleHandle'
 import { Route as ApiPublicSeoHealthRouteImport } from './routes/api/public/seo-health'
 import { Route as ApiPublicStockAlertsSubscribeRouteImport } from './routes/api/public/stock-alerts/subscribe'
 import { Route as ApiPublicHooksSyncCollectionImagesRouteImport } from './routes/api/public/hooks/sync-collection-images'
@@ -319,6 +320,12 @@ const AccountLoginRoute = AccountLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => AccountRoute,
 } as any)
+const JournalBlogHandleArticleHandleRoute =
+  JournalBlogHandleArticleHandleRouteImport.update({
+    id: '/$blogHandle/$articleHandle',
+    path: '/$blogHandle/$articleHandle',
+    getParentRoute: () => JournalRoute,
+  } as any)
 const ApiPublicSeoHealthRoute = ApiPublicSeoHealthRouteImport.update({
   id: '/api/public/seo-health',
   path: '/api/public/seo-health',
@@ -399,7 +406,7 @@ export interface FileRoutesByFullPath {
   '/brands': typeof BrandsRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
-  '/journal': typeof JournalRoute
+  '/journal': typeof JournalRouteWithChildren
   '/legal-notice': typeof LegalNoticeRoute
   '/limited-finds': typeof LimitedFindsRoute
   '/links': typeof LinksRoute
@@ -442,6 +449,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/collections/': typeof CollectionsIndexRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
+  '/journal/$blogHandle/$articleHandle': typeof JournalBlogHandleArticleHandleRoute
   '/api/public/ai/recommendations': typeof ApiPublicAiRecommendationsRoute
   '/api/public/cron/abandoned-cart-recovery': typeof ApiPublicCronAbandonedCartRecoveryRoute
   '/api/public/cron/back-in-stock-notify': typeof ApiPublicCronBackInStockNotifyRoute
@@ -461,7 +469,7 @@ export interface FileRoutesByTo {
   '/brands': typeof BrandsRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
-  '/journal': typeof JournalRoute
+  '/journal': typeof JournalRouteWithChildren
   '/legal-notice': typeof LegalNoticeRoute
   '/limited-finds': typeof LimitedFindsRoute
   '/links': typeof LinksRoute
@@ -504,6 +512,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/collections': typeof CollectionsIndexRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
+  '/journal/$blogHandle/$articleHandle': typeof JournalBlogHandleArticleHandleRoute
   '/api/public/ai/recommendations': typeof ApiPublicAiRecommendationsRoute
   '/api/public/cron/abandoned-cart-recovery': typeof ApiPublicCronAbandonedCartRecoveryRoute
   '/api/public/cron/back-in-stock-notify': typeof ApiPublicCronBackInStockNotifyRoute
@@ -525,7 +534,7 @@ export interface FileRoutesById {
   '/brands': typeof BrandsRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
-  '/journal': typeof JournalRoute
+  '/journal': typeof JournalRouteWithChildren
   '/legal-notice': typeof LegalNoticeRoute
   '/limited-finds': typeof LimitedFindsRoute
   '/links': typeof LinksRoute
@@ -568,6 +577,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/collections/': typeof CollectionsIndexRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
+  '/journal/$blogHandle/$articleHandle': typeof JournalBlogHandleArticleHandleRoute
   '/api/public/ai/recommendations': typeof ApiPublicAiRecommendationsRoute
   '/api/public/cron/abandoned-cart-recovery': typeof ApiPublicCronAbandonedCartRecoveryRoute
   '/api/public/cron/back-in-stock-notify': typeof ApiPublicCronBackInStockNotifyRoute
@@ -633,6 +643,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/collections/'
     | '/api/public/seo-health'
+    | '/journal/$blogHandle/$articleHandle'
     | '/api/public/ai/recommendations'
     | '/api/public/cron/abandoned-cart-recovery'
     | '/api/public/cron/back-in-stock-notify'
@@ -695,6 +706,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/collections'
     | '/api/public/seo-health'
+    | '/journal/$blogHandle/$articleHandle'
     | '/api/public/ai/recommendations'
     | '/api/public/cron/abandoned-cart-recovery'
     | '/api/public/cron/back-in-stock-notify'
@@ -758,6 +770,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/collections/'
     | '/api/public/seo-health'
+    | '/journal/$blogHandle/$articleHandle'
     | '/api/public/ai/recommendations'
     | '/api/public/cron/abandoned-cart-recovery'
     | '/api/public/cron/back-in-stock-notify'
@@ -779,7 +792,7 @@ export interface RootRouteChildren {
   BrandsRoute: typeof BrandsRoute
   ContactRoute: typeof ContactRoute
   FaqRoute: typeof FaqRoute
-  JournalRoute: typeof JournalRoute
+  JournalRoute: typeof JournalRouteWithChildren
   LegalNoticeRoute: typeof LegalNoticeRoute
   LimitedFindsRoute: typeof LimitedFindsRoute
   LinksRoute: typeof LinksRoute
@@ -1175,6 +1188,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountLoginRouteImport
       parentRoute: typeof AccountRoute
     }
+    '/journal/$blogHandle/$articleHandle': {
+      id: '/journal/$blogHandle/$articleHandle'
+      path: '/$blogHandle/$articleHandle'
+      fullPath: '/journal/$blogHandle/$articleHandle'
+      preLoaderRoute: typeof JournalBlogHandleArticleHandleRouteImport
+      parentRoute: typeof JournalRoute
+    }
     '/api/public/seo-health': {
       id: '/api/public/seo-health'
       path: '/api/public/seo-health'
@@ -1279,6 +1299,17 @@ const AccountRouteChildren: AccountRouteChildren = {
 const AccountRouteWithChildren =
   AccountRoute._addFileChildren(AccountRouteChildren)
 
+interface JournalRouteChildren {
+  JournalBlogHandleArticleHandleRoute: typeof JournalBlogHandleArticleHandleRoute
+}
+
+const JournalRouteChildren: JournalRouteChildren = {
+  JournalBlogHandleArticleHandleRoute: JournalBlogHandleArticleHandleRoute,
+}
+
+const JournalRouteWithChildren =
+  JournalRoute._addFileChildren(JournalRouteChildren)
+
 interface SwimRouteChildren {
   SwimSizeGuideRoute: typeof SwimSizeGuideRoute
 }
@@ -1297,7 +1328,7 @@ const rootRouteChildren: RootRouteChildren = {
   BrandsRoute: BrandsRoute,
   ContactRoute: ContactRoute,
   FaqRoute: FaqRoute,
-  JournalRoute: JournalRoute,
+  JournalRoute: JournalRouteWithChildren,
   LegalNoticeRoute: LegalNoticeRoute,
   LimitedFindsRoute: LimitedFindsRoute,
   LinksRoute: LinksRoute,
