@@ -131,15 +131,24 @@ function AdminHomepageCuration() {
               Daily layout, hotspots, and the 48-hour refresh cycle.
             </p>
           </div>
-          <Button
-            onClick={() => refreshMut.mutate()}
-            disabled={refreshMut.isPending}
-            variant="default"
-          >
-            <RefreshCw className={`h-4 w-4 mr-2 ${refreshMut.isPending ? "animate-spin" : ""}`} />
-            Force refresh now
-          </Button>
-        </div>
+          <div className="flex gap-2 flex-wrap">
+            <Button
+              onClick={() => previewMut.mutate()}
+              disabled={previewMut.isPending}
+              variant="outline"
+            >
+              <Eye className={`h-4 w-4 mr-2 ${previewMut.isPending ? "animate-pulse" : ""}`} />
+              Generate preview
+            </Button>
+            <Button
+              onClick={() => refreshMut.mutate()}
+              disabled={refreshMut.isPending}
+              variant="default"
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${refreshMut.isPending ? "animate-spin" : ""}`} />
+              Force refresh now
+            </Button>
+          </div>
 
         {isLoading ? (
           <p className="text-sm text-muted-foreground">Loading…</p>
