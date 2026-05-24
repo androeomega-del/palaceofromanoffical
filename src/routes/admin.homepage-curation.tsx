@@ -16,6 +16,8 @@ import {
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { HomepageLayoutPreview } from "@/components/admin/homepage-layout-preview";
+import type { HomepageLayout } from "@/lib/homepage-layout-schema";
 import {
   ArrowLeft,
   RefreshCw,
@@ -291,10 +293,61 @@ function AdminHomepageCuration() {
           </Card>
         ) : (
           <div className="grid lg:grid-cols-3 gap-6">
+            <Card className="p-5 lg:col-span-3">
+              <div className="flex items-baseline justify-between gap-3 mb-4 flex-wrap">
+                <div>
+                  <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+                    Visual preview
+                  </div>
+                  <h2 className="font-serif text-lg mt-1">
+                    What the live homepage will look like
+                  </h2>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Renders the layout JSON below in real time. Product rails show handles
+                    (the live site fetches Shopify cards). Edit the JSON to see changes
+                    instantly — nothing is saved or published until you click Save / Re-activate /
+                    Force publish.
+                  </p>
+                </div>
+                {(() => {
+                  let parsed: HomepageLayout | null = null;
+                  try {
+                    parsed = JSON.parse(draft) as HomepageLayout;
+                  } catch {
+                    /* shown below */
+                  }
+                  return (
+                    <span className="text-[11px] text-muted-foreground">
+                      {parsed?.blocks?.length ?? 0} blocks · source{" "}
+                      <span className="font-mono">{parsed?.source ?? "—"}</span>
+                    </span>
+                  );
+                })()}
+              </div>
+              {(() => {
+                let parsed: HomepageLayout | null = null;
+                let parseErr: string | null = null;
+                try {
+                  parsed = JSON.parse(draft) as HomepageLayout;
+                } catch (e) {
+                  parseErr = (e as Error).message;
+                }
+                if (parseErr) {
+                  return (
+                    <div className="rounded border border-red-600/30 bg-red-50 text-red-900 px-3 py-2 text-xs">
+                      Cannot render preview — JSON parse error: {parseErr}
+                    </div>
+                  );
+                }
+                return <HomepageLayoutPreview layout={parsed} />;
+              })()}
+            </Card>
+
             <Card className="p-5 lg:col-span-1">
               <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
                 Active edition
               </div>
+
               <div className="font-serif text-lg mt-2 break-all">{data.active.id.slice(0, 8)}…</div>
               <dl className="mt-4 text-xs space-y-2">
                 <div className="flex justify-between gap-2">
