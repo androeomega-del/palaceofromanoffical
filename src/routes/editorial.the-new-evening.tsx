@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
+
 import { EditorialStory, type StorySlide } from "@/components/editorial-story";
 import { img } from "@/lib/editorial-library";
 import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
@@ -59,7 +59,5 @@ function NewEveningPage() {
         intro="Soft tailoring, fluid surfaces and a quieter relationship with formality — the way the season is actually being worn after dark."
         slides={SLIDES}
       />
-      <SiteFooter />
-    </>
   );
 }

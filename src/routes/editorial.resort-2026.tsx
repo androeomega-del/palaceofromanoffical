@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
+
 import { EditorialStory, type StorySlide } from "@/components/editorial-story";
 import { img } from "@/lib/editorial-library";
 import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
@@ -59,7 +59,5 @@ function ResortPage() {
         intro="A study of cut and shade across the season's most considered resort pieces, photographed in the late Mediterranean light."
         slides={SLIDES}
       />
-      <SiteFooter />
-    </>
   );
 }

@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
+
 import { img } from "@/lib/editorial-library";
 import editorialMayHero from "@/assets/editorial/may-2026/1.webp";
 import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
@@ -174,7 +174,5 @@ function JournalPage() {
           </div>
         </section>
       </main>
-      <SiteFooter />
-    </>
   );
 }
