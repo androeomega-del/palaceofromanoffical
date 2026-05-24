@@ -1,42 +1,50 @@
-## What's going wrong
+# Next curation: fully AI-composed + swap the About founder portrait
 
-Your screenshot is on **palaceofromanofficial.com** (custom domain) and every admin tool toasts `Unauthorized: No authorization header provided`. That message comes from the server middleware `requireSupabaseAuth` — it fired because the browser sent the serverFn RPC with **no `Authorization` header**.
+Two independent changes.
 
-The middleware that attaches the token (`attachSupabaseAuth` in `src/integrations/supabase/auth-attacher.ts`) is correctly registered in `src/start.ts`. So why is the header missing?
+## 1. Swap the founder portrait on `/about`
 
-Two real causes, both plausible from your screenshot:
+Today `src/routes/about.tsx` renders `@/assets/founder-option-palazzo.jpg`. Replace it with the LA pinstripe-suit photo you just uploaded.
 
-1. **Race on hydration.** `adminBeforeLoad` skips during SSR and runs only after client hydration. The admin panels (Active Audit, Studio, Urgency, UGC Ideas, Cart Analytics) immediately fire serverFn queries on mount. If those queries race the Supabase session restore from `localStorage`, `getSession()` returns `null`, the fallback `getUser()` also returns `null` momentarily, and the attacher sends no header → server rejects → toast.
-2. **Per-origin session storage.** Supabase keeps the session in `localStorage`, which is scoped per origin. If you originally signed in on `palaceofroman.lovable.app` or `palaceofromanofficial.com`, the session does **not** carry to `palaceofromanofficial.com` or vice-versa. The guard's `getUser()` succeeded (so something is there), but the token may be expired and refresh is failing silently.
+- Copy `user-uploads://IMG_0848.jpeg` → `src/assets/founder-portrait-la.jpg`
+- In `src/routes/about.tsx`, change the import to the new file and update the `alt` to reflect the new setting (downtown LA at golden hour, three-piece pinstripe). Old file stays in `src/assets/` (archived by unlinking, per the staged-launches rule) — not deleted.
+- No layout, copy, or section changes on the About page.
 
-This is also why "all jobs stuck loading / no progress" earlier — the kick-off RPCs were silently 401'd and the UI just sits waiting.
+That's the whole "founder image" change. No Founder Edit block on the homepage.
 
-## Fix
+## 2. Make the next 48-hour curation feel fully AI-composed
 
-### 1. Harden `src/integrations/supabase/auth-attacher.ts`
-Add a short bounded wait so we don't lose the race on first paint:
-- Try `getSession()`.
-- If no token → `await getUser()` then re-`getSession()` (already there).
-- If still no token → wait up to ~1.2s for `onAuthStateChange` to fire with a session (poll every 150ms), then read once more.
-- If still nothing → send no header (today's behavior), so the server returns the same 401 only when the user really is signed out.
+Right now the cron only emits **one block** (a best-sellers rail) — that's why the homepage doesn't feel pulled together. Rebuild the generator so the next edition is a real multi-block AI composition.
 
-### 2. Make admin query failures legible instead of silent
-In the admin panels that fire queries on mount (Active Audit, Studio, Urgency, UGC Ideas, Cart Analytics, Growth OS dashboard), do two small things:
-- Set `retry: 1` and `staleTime: 0` on the `useQuery` calls so a transient hydration miss self-heals on the second attempt.
-- When the error message starts with `Unauthorized`, show an inline "Your admin session expired — sign in again" CTA that links to `/login?next=/admin/...`, instead of the generic toast that the user can't act on.
+Replace `buildFallbackLayout()` in `src/routes/api/public/cron/refresh-homepage-layout.ts` with `buildAiLayout()`. Cold-start fallback stays as the safety net if anything fails.
 
-### 3. Tighten `adminBeforeLoad` so children don't render before the check passes
-Today the guard early-returns during SSR and the page hydrates immediately. Switch it so the admin route components don't render until the client-side admin check has resolved (resolved promise on success, redirect on failure). This eliminates the race entirely — the queries won't fire until we know the session is real.
+The generator will:
 
-### 4. Custom domain sanity
-After the above ships, if you're still seeing the toast on `palaceofromanofficial.com`, the cause is #2 from the diagnosis: your session lives on a different origin. The fix on your end is to sign out and sign back in on `palaceofromanofficial.com` directly so the session lands in the right `localStorage`. No code change needed for that.
+1. **Pull live signals in parallel:**
+   - Top trending brands (from `trending.functions.ts`)
+   - Best-selling products by gender (men / women) from Shopify
+   - This week's most-viewed products from `interaction_events`
+   - Current editorial routes (`resort-2026`, `the-new-evening`, `may-2026`)
 
-## Files I'll touch
+2. **Hand those signals to Claude** via `callLlmJson` in `src/lib/llm.server.ts` (already wired, uses `EMERGENT_LLM_KEY`) with the `PALACE_BRAND_VOICE` system prompt. Claude returns a `HomepageLayout` JSON with curatorial copy for every block — real handles only, USD, no fabricated reviews.
 
-- `src/integrations/supabase/auth-attacher.ts` — bounded wait for session.
-- `src/lib/admin-route-guard.ts` — block render until client check resolves.
-- Admin panel components that fetch on mount (Active Audit, Urgency, Studio/UGC, Cart Analytics, Growth OS index) — add `retry: 1` and a friendly auth-expired CTA.
+3. **Compose a fixed block order** so the page feels intentional:
+   - `hero` — AI-written eyebrow + headline + sub, image picked by Claude from an editorial-library shortlist we provide
+   - `product_rail` — "This week, women are reaching for…"
+   - `editorial_banner` — links to whichever editorial story is most thematically aligned this cycle, with 3–4 shoppable hotspots
+   - `product_rail` — "This week, men are reaching for…"
+   - `product_rail` — Trending brands strip (one product per top brand)
 
-## Out of scope
+4. **Validate against `homepageLayoutSchema`** before insert. Any LLM failure → fall back to today's cold-start layout so the cron never errors.
 
-- The phantom "Dresses 47" chip on `/collections/mens-clothing` is still visible in your second screenshot. The regex fix from last turn is correct; the count is cached server-side for 5 min. If it's still there after ~10 min, I'll bust the cache key directly. Tell me if you want me to roll that into this same patch.
+## 3. Generate the next edition as a preview
+
+After the generator change, hit the cron with `?preview=true`. That writes a **pending, inactive** row to `homepage_daily_layout` — the live homepage is untouched. You can open `/admin/homepage-curation` and see the fully composed edition before promoting it.
+
+## Technical notes
+
+- All LLM work runs inside the existing cron route — no new endpoints, no new secrets.
+- `EMERGENT_LLM_KEY` is already in env; Claude Sonnet 4.5 is the default model.
+- The cron guardrail (extend viral editions, skip if <48h elapsed) stays as-is.
+- No Shopify writes, no inventory mutations, no admin UI changes.
+- No changes to cart, checkout, or the protected stores (per memory constraints).
