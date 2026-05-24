@@ -21,11 +21,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { ensureAdmin } from "@/lib/admin-guard.functions";
 
 export async function adminBeforeLoad() {
-  // Skip during SSR — the browser Supabase client uses localStorage, which
-  // doesn't exist on the server. Running the check there would always fail
-  // and send a freshly-logged-in user back to /login (the bug the user hit).
-  // The client re-runs beforeLoad after hydration with the real session.
-  if (typeof window === "undefined") return;
+  // During SSR there is no localStorage / Supabase session, so any
+  // protected serverFn called from the loader or component will 401 and
+  // crash the page. Redirect to /login on the server; the client re-runs
+  // beforeLoad after hydration and either lets the admin through or
+  // keeps the redirect.
+  if (typeof window === "undefined") {
+    throw redirect({ to: "/login" });
+  }
 
   const { data, error } = await supabase.auth.getUser();
   if (error || !data.user) {
