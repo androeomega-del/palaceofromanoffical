@@ -65,6 +65,46 @@ export const activateHomepageLayout = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+/**
+ * Manual override: flip the most recent edition to active without invoking
+ * the cron generator. Use when automation has stalled and you just need the
+ * homepage to render the latest curated content immediately. Bypasses the
+ * 48-hour cool-down because it does not generate — it only republishes.
+ */
+export const forcePublishLatest = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .handler(async () => {
+    const { data: latest, error: selErr } = await supabaseAdmin
+      .from("homepage_daily_layout")
+      .select("id")
+      .order("generated_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (selErr) throw new Error(selErr.message);
+    if (!latest) {
+      throw new Error(
+        "No editions exist yet. Use 'Force refresh now' to generate the first one.",
+      );
+    }
+    const { error: deErr } = await supabaseAdmin
+      .from("homepage_daily_layout")
+      .update({ is_active: false, status: "archived" })
+      .eq("is_active", true)
+      .neq("id", latest.id);
+    if (deErr) throw new Error(deErr.message);
+    const { error } = await supabaseAdmin
+      .from("homepage_daily_layout")
+      .update({
+        is_active: true,
+        status: "active",
+        generated_at: new Date().toISOString(),
+      })
+      .eq("id", latest.id);
+    if (error) throw new Error(error.message);
+    return { ok: true, layout_id: latest.id };
+  });
+
+
 export const forceRefreshHomepage = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
   .handler(async () => {
