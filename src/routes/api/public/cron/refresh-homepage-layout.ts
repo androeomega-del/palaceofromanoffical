@@ -220,13 +220,22 @@ const EDITORIAL_ROUTES = [
 ];
 
 async function buildAiLayout(): Promise<HomepageLayout> {
-  const [women, men, accessories, trending, searchSignals] = await Promise.all([
-    safeFetch("tag:women OR product_type:Dress OR product_type:Skirt", 16),
-    safeFetch("tag:men OR product_type:Suit OR product_type:Shirt", 16),
-    safeFetch("product_type:Bag OR product_type:Shoes OR product_type:Accessories", 12),
-    pullTrendingHandles(),
-    pullSearchSignals(),
-  ]);
+  const [women, men, accessories, trending, searchSignals, previousRow] =
+    await Promise.all([
+      safeFetch("tag:women OR product_type:Dress OR product_type:Skirt", 16),
+      safeFetch("tag:men OR product_type:Suit OR product_type:Shirt", 16),
+      safeFetch("product_type:Bag OR product_type:Shoes OR product_type:Accessories", 12),
+      pullTrendingHandles(),
+      pullSearchSignals(),
+      supabaseAdmin
+        .from("homepage_daily_layout")
+        .select("layout_json")
+        .order("generated_at", { ascending: false })
+        .limit(1)
+        .maybeSingle()
+        .then((r) => r.data?.layout_json ?? null)
+        .catch(() => null),
+    ]);
 
   // Bail out to fallback if Shopify is empty — Claude has nothing to anchor to.
   if (women.length === 0 && men.length === 0) {
@@ -247,6 +256,33 @@ async function buildAiLayout(): Promise<HomepageLayout> {
     .slice(0, 6)
     .map(([v]) => v);
 
+  // Variation signal: feed the previous edition's headings + hero image + a
+  // sample of used handles so Claude can deliberately diverge instead of
+  // re-deriving the same answer from the same inputs.
+  type PrevBlock = {
+    type?: string;
+    heading?: string;
+    image?: string;
+    productHandles?: string[];
+  };
+  const prev = (previousRow as { blocks?: PrevBlock[] } | null) ?? null;
+  const previous_edition = prev
+    ? {
+        headings: (prev.blocks ?? [])
+          .map((b) => b.heading)
+          .filter((h): h is string => !!h)
+          .slice(0, 8),
+        hero_image: (prev.blocks ?? []).find((b) => b.type === "hero")?.image,
+        used_handles: Array.from(
+          new Set(
+            (prev.blocks ?? [])
+              .flatMap((b) => (b.type === "product_rail" ? b.productHandles ?? [] : []))
+              .slice(0, 30),
+          ),
+        ),
+      }
+    : null;
+
   const signalPayload = {
     women: women.slice(0, 12),
     men: men.slice(0, 12),
@@ -258,6 +294,8 @@ async function buildAiLayout(): Promise<HomepageLayout> {
     editorial_stories: EDITORIAL_ROUTES,
     hero_image_keys: HERO_IMAGE_POOL,
     banner_image_keys: BANNER_IMAGE_POOL,
+    previous_edition,
+    edition_nonce: `${new Date().toISOString()}-${Math.random().toString(36).slice(2, 8)}`,
   };
 
   const userPrompt = `You are composing the next 48-hour homepage edition for Palace of Roman.
