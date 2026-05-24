@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { SiteHeader } from "@/components/site-header";
+
 
 import { EditorialStory, type StorySlide } from "@/components/editorial-story";
 import { img } from "@/lib/editorial-library";

@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { SiteHeader } from "@/components/site-header";
+
 
 import { EditorialStory, type StorySlide } from "@/components/editorial-story";
 import { img } from "@/lib/editorial-library";
@@ -50,14 +50,12 @@ export const Route = createFileRoute("/editorial/resort-2026")({
 
 function ResortPage() {
   return (
-    <>
-      <SiteHeader />
-      <EditorialStory
-        issueNumber="Issue No. 07"
-        title="Resort 2026"
-        subtitle="Light as Architecture"
-        intro="A study of cut and shade across the season's most considered resort pieces, photographed in the late Mediterranean light."
-        slides={SLIDES}
-      />
+    <EditorialStory
+      issueNumber="Issue No. 07"
+      title="Resort 2026"
+      subtitle="Light as Architecture"
+      intro="A study of cut and shade across the season's most considered resort pieces, photographed in the late Mediterranean light."
+      slides={SLIDES}
+    />
   );
 }
