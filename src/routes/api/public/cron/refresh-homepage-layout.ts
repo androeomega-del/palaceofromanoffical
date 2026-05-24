@@ -227,14 +227,19 @@ async function buildAiLayout(): Promise<HomepageLayout> {
       safeFetch("product_type:Bag OR product_type:Shoes OR product_type:Accessories", 12),
       pullTrendingHandles(),
       pullSearchSignals(),
-      supabaseAdmin
-        .from("homepage_daily_layout")
-        .select("layout_json")
-        .order("generated_at", { ascending: false })
-        .limit(1)
-        .maybeSingle()
-        .then((r) => r.data?.layout_json ?? null)
-        .catch(() => null),
+      (async () => {
+        try {
+          const { data } = await supabaseAdmin
+            .from("homepage_daily_layout")
+            .select("layout_json")
+            .order("generated_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          return (data?.layout_json ?? null) as unknown;
+        } catch {
+          return null;
+        }
+      })(),
     ]);
 
   // Bail out to fallback if Shopify is empty — Claude has nothing to anchor to.
