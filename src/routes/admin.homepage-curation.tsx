@@ -172,6 +172,36 @@ function AdminHomepageCuration() {
           </div>
         </div>
 
+        {liveSync ? (
+          <div className="mb-6 rounded-md border border-emerald-600/30 bg-emerald-50 text-emerald-900 px-4 py-3 flex items-start justify-between gap-4 flex-wrap">
+            <div className="flex items-start gap-3">
+              <CheckCircle2 className="h-5 w-5 mt-0.5 text-emerald-600 shrink-0" />
+              <div className="text-sm">
+                <div className="font-medium">
+                  Live update completed — {liveSync.action}
+                </div>
+                <div className="text-xs text-emerald-800/80 mt-0.5">
+                  {fmtWhen(liveSync.at)}
+                  {liveSync.layoutId
+                    ? ` · edition ${liveSync.layoutId.slice(0, 8)}`
+                    : ""}
+                  {typeof liveSync.blocks === "number"
+                    ? ` · ${liveSync.blocks} blocks`
+                    : ""}
+                  {" · visitor caches auto-invalidated"}
+                </div>
+              </div>
+            </div>
+            <a
+              href="/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs font-medium inline-flex items-center gap-1 hover:underline"
+            >
+              View live site <ExternalLink className="h-3 w-3" />
+            </a>
+          </div>
+        ) : null}
 
 
         {isLoading ? (
