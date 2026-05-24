@@ -56,6 +56,11 @@ function AdminHomepageCuration() {
     queryFn: () => getHomepageCuration(),
     refetchInterval: 30_000,
   });
+  const { data: diag, refetch: refetchDiag } = useQuery({
+    queryKey: ["admin", "homepage-diagnose"],
+    queryFn: () => diagnoseHomepage(),
+    refetchInterval: 30_000,
+  });
 
   const [draft, setDraft] = useState<string>("");
   const [draftId, setDraftId] = useState<string | null>(null);
