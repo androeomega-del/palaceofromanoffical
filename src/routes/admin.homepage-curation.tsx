@@ -88,6 +88,20 @@ function AdminHomepageCuration() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const previewMut = useMutation({
+    mutationFn: () => generateHomepagePreview(),
+    onSuccess: (res) => {
+      const body = res?.body as { new_layout_id?: string } | undefined;
+      toast.success(
+        body?.new_layout_id
+          ? `Preview edition created (${body.new_layout_id.slice(0, 8)}). Re-activate it below to view.`
+          : "Preview edition created",
+      );
+      qc.invalidateQueries({ queryKey: ["admin", "homepage-curation"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   const activateMut = useMutation({
     mutationFn: (id: string) => activateHomepageLayout({ data: { id } }),
     onSuccess: () => {
