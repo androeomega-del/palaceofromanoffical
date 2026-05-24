@@ -158,6 +158,24 @@ function AdminHomepageCuration() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const forcePublishMut = useMutation({
+    mutationFn: () => forcePublishLatest(),
+    onSuccess: (res) => {
+      setLiveSync({
+        at: new Date().toISOString(),
+        action: "force_published",
+        layoutId: res?.layout_id,
+      });
+      toast.success("Latest edition published live");
+      qc.invalidateQueries({ queryKey: ["admin", "homepage-curation"] });
+      qc.invalidateQueries({ queryKey: ["admin", "homepage-diagnose"] });
+      qc.invalidateQueries({ queryKey: ["homepage-daily-layout"] });
+      qc.invalidateQueries({ queryKey: ["home"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+
   const layout = data?.active?.layout_json as
     | { blocks?: Array<{ type: string; heading?: string; hotspots?: unknown[] }>; source?: string }
     | undefined;
