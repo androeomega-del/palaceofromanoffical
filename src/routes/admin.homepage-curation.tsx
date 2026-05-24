@@ -7,11 +7,12 @@ import {
   updateHomepageLayoutJson,
   activateHomepageLayout,
   forceRefreshHomepage,
+  generateHomepagePreview,
 } from "@/lib/admin-management.functions";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, RefreshCw, Save, Power } from "lucide-react";
+import { ArrowLeft, RefreshCw, Save, Power, Eye } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/homepage-curation")({
