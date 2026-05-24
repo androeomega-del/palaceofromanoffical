@@ -96,6 +96,7 @@ function AdminHomepageCuration() {
     onSuccess: () => {
       toast.success("Layout saved");
       qc.invalidateQueries({ queryKey: ["admin", "homepage-curation"] });
+      qc.invalidateQueries({ queryKey: ["admin", "homepage-diagnose"] });
     },
     onError: (e: Error) => {
       setErr(e.message);
@@ -121,6 +122,7 @@ function AdminHomepageCuration() {
       });
       toast.success(`Live update completed — ${action}`);
       qc.invalidateQueries({ queryKey: ["admin", "homepage-curation"] });
+      qc.invalidateQueries({ queryKey: ["admin", "homepage-diagnose"] });
       qc.invalidateQueries({ queryKey: ["homepage-daily-layout"] });
       qc.invalidateQueries({ queryKey: ["home"] });
     },
@@ -137,6 +139,7 @@ function AdminHomepageCuration() {
           : "Preview edition created",
       );
       qc.invalidateQueries({ queryKey: ["admin", "homepage-curation"] });
+      qc.invalidateQueries({ queryKey: ["admin", "homepage-diagnose"] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -146,6 +149,7 @@ function AdminHomepageCuration() {
     onSuccess: () => {
       toast.success("Activated");
       qc.invalidateQueries({ queryKey: ["admin", "homepage-curation"] });
+      qc.invalidateQueries({ queryKey: ["admin", "homepage-diagnose"] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
