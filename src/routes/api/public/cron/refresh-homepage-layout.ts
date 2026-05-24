@@ -277,7 +277,8 @@ ${JSON.stringify(signalPayload, null, 2)}`;
     generated_at: new Date().toISOString(),
     source: "claude",
     blocks: cleanedBlocks,
-  } satisfies HomepageLayout);
+  });
+
 }
 
 async function buildNextLayout(): Promise<HomepageLayout> {
