@@ -8,11 +8,24 @@ import {
   activateHomepageLayout,
   forceRefreshHomepage,
   generateHomepagePreview,
+  diagnoseHomepage,
 } from "@/lib/admin-management.functions";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, RefreshCw, Save, Power, Eye, CheckCircle2, ExternalLink } from "lucide-react";
+import {
+  ArrowLeft,
+  RefreshCw,
+  Save,
+  Power,
+  Eye,
+  CheckCircle2,
+  ExternalLink,
+  AlertTriangle,
+  Info,
+  XCircle,
+  Stethoscope,
+} from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/homepage-curation")({
@@ -41,6 +54,11 @@ function AdminHomepageCuration() {
   const { data, isLoading } = useQuery({
     queryKey: ["admin", "homepage-curation"],
     queryFn: () => getHomepageCuration(),
+    refetchInterval: 30_000,
+  });
+  const { data: diag, refetch: refetchDiag } = useQuery({
+    queryKey: ["admin", "homepage-diagnose"],
+    queryFn: () => diagnoseHomepage(),
     refetchInterval: 30_000,
   });
 
@@ -78,6 +96,7 @@ function AdminHomepageCuration() {
     onSuccess: () => {
       toast.success("Layout saved");
       qc.invalidateQueries({ queryKey: ["admin", "homepage-curation"] });
+      qc.invalidateQueries({ queryKey: ["admin", "homepage-diagnose"] });
     },
     onError: (e: Error) => {
       setErr(e.message);
@@ -103,6 +122,7 @@ function AdminHomepageCuration() {
       });
       toast.success(`Live update completed — ${action}`);
       qc.invalidateQueries({ queryKey: ["admin", "homepage-curation"] });
+      qc.invalidateQueries({ queryKey: ["admin", "homepage-diagnose"] });
       qc.invalidateQueries({ queryKey: ["homepage-daily-layout"] });
       qc.invalidateQueries({ queryKey: ["home"] });
     },
@@ -119,6 +139,7 @@ function AdminHomepageCuration() {
           : "Preview edition created",
       );
       qc.invalidateQueries({ queryKey: ["admin", "homepage-curation"] });
+      qc.invalidateQueries({ queryKey: ["admin", "homepage-diagnose"] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -128,6 +149,7 @@ function AdminHomepageCuration() {
     onSuccess: () => {
       toast.success("Activated");
       qc.invalidateQueries({ queryKey: ["admin", "homepage-curation"] });
+      qc.invalidateQueries({ queryKey: ["admin", "homepage-diagnose"] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -202,6 +224,13 @@ function AdminHomepageCuration() {
             </a>
           </div>
         ) : null}
+
+        <DiagnosticsPanel
+          diag={diag}
+          onRefetch={() => refetchDiag()}
+        />
+
+
 
 
         {isLoading ? (
@@ -325,3 +354,147 @@ function AdminHomepageCuration() {
     </main>
   );
 }
+
+type Issue = {
+  severity: "ok" | "info" | "warning" | "error";
+  code: string;
+  title: string;
+  detail: string;
+  action?: string;
+};
+
+type Diagnosis = {
+  active_id: string | null;
+  active_generated_at: string | null;
+  active_age_hours: number | null;
+  next_cron_eligible_at: string | null;
+  source: string | null;
+  block_count: number;
+  pending_preview_count: number;
+  issues: Issue[];
+};
+
+function severityStyles(s: Issue["severity"]) {
+  switch (s) {
+    case "ok":
+      return {
+        wrap: "border-emerald-600/30 bg-emerald-50 text-emerald-900",
+        icon: <CheckCircle2 className="h-4 w-4 text-emerald-600" />,
+      };
+    case "error":
+      return {
+        wrap: "border-red-600/30 bg-red-50 text-red-900",
+        icon: <XCircle className="h-4 w-4 text-red-600" />,
+      };
+    case "warning":
+      return {
+        wrap: "border-amber-600/30 bg-amber-50 text-amber-900",
+        icon: <AlertTriangle className="h-4 w-4 text-amber-600" />,
+      };
+    case "info":
+    default:
+      return {
+        wrap: "border-border bg-muted/40 text-foreground",
+        icon: <Info className="h-4 w-4 text-muted-foreground" />,
+      };
+  }
+}
+
+function DiagnosticsPanel({
+  diag,
+  onRefetch,
+}: {
+  diag: Diagnosis | undefined;
+  onRefetch: () => void;
+}) {
+  if (!diag) return null;
+  const worst = diag.issues.some((i) => i.severity === "error")
+    ? "error"
+    : diag.issues.some((i) => i.severity === "warning")
+      ? "warning"
+      : "ok";
+  return (
+    <Card className="p-5 mb-6">
+      <div className="flex items-start justify-between gap-4 flex-wrap mb-4">
+        <div className="flex items-start gap-3">
+          <Stethoscope className="h-5 w-5 mt-0.5 text-muted-foreground" />
+          <div>
+            <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+              Troubleshooting
+            </div>
+            <h2 className="font-serif text-lg mt-1">
+              Why hasn't the live homepage changed yet?
+            </h2>
+            <p className="text-xs text-muted-foreground mt-1">
+              Snapshot of the curation pipeline. Updates every 30s.{" "}
+              <span className="font-medium">
+                Overall:{" "}
+                {worst === "ok"
+                  ? "healthy"
+                  : worst === "warning"
+                    ? "needs attention"
+                    : "blocked"}
+                .
+              </span>
+            </p>
+          </div>
+        </div>
+        <Button size="sm" variant="outline" onClick={onRefetch}>
+          <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
+          Re-check
+        </Button>
+      </div>
+
+      <dl className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs mb-4">
+        <div>
+          <dt className="text-muted-foreground">Source</dt>
+          <dd className="font-mono">{diag.source ?? "—"}</dd>
+        </div>
+        <div>
+          <dt className="text-muted-foreground">Age</dt>
+          <dd className="font-mono">
+            {diag.active_age_hours !== null
+              ? `${diag.active_age_hours.toFixed(1)}h`
+              : "—"}
+          </dd>
+        </div>
+        <div>
+          <dt className="text-muted-foreground">Blocks</dt>
+          <dd className="font-mono">{diag.block_count}</dd>
+        </div>
+        <div>
+          <dt className="text-muted-foreground">Pending previews</dt>
+          <dd className="font-mono">{diag.pending_preview_count}</dd>
+        </div>
+      </dl>
+
+      <ul className="space-y-2">
+        {diag.issues.map((i) => {
+          const s = severityStyles(i.severity);
+          return (
+            <li
+              key={i.code}
+              className={`border rounded px-3 py-2.5 text-xs ${s.wrap}`}
+            >
+              <div className="flex items-start gap-2">
+                <span className="mt-0.5">{s.icon}</span>
+                <div className="flex-1">
+                  <div className="font-medium">{i.title}</div>
+                  <div className="opacity-80 mt-0.5 leading-relaxed">
+                    {i.detail}
+                  </div>
+                  {i.action ? (
+                    <div className="mt-1 text-[11px] opacity-90">
+                      <span className="font-medium">Fix:</span> {i.action}
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </Card>
+  );
+}
+
