@@ -88,8 +88,23 @@ function AdminHomepageCuration() {
   const refreshMut = useMutation({
     mutationFn: () => forceRefreshHomepage(),
     onSuccess: (res) => {
-      toast.success(`Refresh: ${(res?.body as { action?: string })?.action ?? "ok"}`);
+      const body = (res?.body ?? {}) as {
+        action?: string;
+        new_layout_id?: string;
+        layout_id?: string;
+        block_count?: number;
+      };
+      const action = body.action ?? "ok";
+      setLiveSync({
+        at: new Date().toISOString(),
+        action,
+        layoutId: body.new_layout_id ?? body.layout_id,
+        blocks: body.block_count,
+      });
+      toast.success(`Live update completed — ${action}`);
       qc.invalidateQueries({ queryKey: ["admin", "homepage-curation"] });
+      qc.invalidateQueries({ queryKey: ["homepage-daily-layout"] });
+      qc.invalidateQueries({ queryKey: ["home"] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
