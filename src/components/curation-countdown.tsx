@@ -88,8 +88,8 @@ export function CurationCountdown({ variant = "hero", className = "" }: Props) {
     };
   }, [qc]);
 
-  // Anchor: next 9 AM after the layout was generated (if available),
-  // otherwise next 9 AM after now. Always uses local time.
+  // Anchor strictly to the persisted `generated_at` timestamp from the DB,
+  // never to `now`. Refetches / re-renders cannot reset the timer.
   useEffect(() => {
     setNow(new Date());
     const id = setInterval(() => setNow(new Date()), 1000);
@@ -98,12 +98,8 @@ export function CurationCountdown({ variant = "hero", className = "" }: Props) {
 
   if (!now) return null;
 
-  const anchor = layoutGeneratedAt ?? now;
-  let target = nextNineAM(anchor);
-  // If anchor was in the past and target has already elapsed, roll forward.
-  while (target.getTime() <= now.getTime()) {
-    target.setDate(target.getDate() + 1);
-  }
+  const target = computeUnlockTarget(layoutGeneratedAt ?? null);
+
 
   const { h, m, s } = formatRemaining(target.getTime() - now.getTime());
 
