@@ -20,6 +20,8 @@ import {
   RefreshCw,
   Save,
   Power,
+  Zap,
+
   Eye,
   CheckCircle2,
   ExternalLink,
