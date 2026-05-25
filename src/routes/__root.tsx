@@ -5,6 +5,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -295,18 +296,22 @@ function RootComponent() {
 }
 
 function ChromeAwareShell() {
-  // The homepage uses <EditionLayout/> which renders its own header/footer
-  // and flips these flags so we don't render duplicate chrome above it.
-  // Every other route reads `false` here and renders the defaults.
+  // The homepage owns its own header/footer inside <EditionLayout/>. Hide the
+  // root chrome synchronously by route so it never flashes a duplicate before
+  // the client-only suppression store hydrates.
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isHomepage = pathname === "/";
   const headerSuppressed = useChromeStore((s) => s.headerSuppressed);
   const footerSuppressed = useChromeStore((s) => s.footerSuppressed);
+  const hideHeader = isHomepage || headerSuppressed;
+  const hideFooter = isHomepage || footerSuppressed;
   return (
     <div className="min-h-screen flex flex-col bg-canvas">
-      {!headerSuppressed && <SiteHeader />}
+      {!hideHeader && <SiteHeader />}
       <main className="flex-1">
         <Outlet />
       </main>
-      {!footerSuppressed && <SiteFooter />}
+      {!hideFooter && <SiteFooter />}
     </div>
   );
 }
