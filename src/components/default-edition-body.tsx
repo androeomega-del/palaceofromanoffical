@@ -27,7 +27,7 @@ import marketingWomen from "@/assets/marketing-women-summer.jpg";
 import marketingMen from "@/assets/marketing-men-summer.jpg";
 import marketingAccessories from "@/assets/marketing-accessories-summer.jpg";
 
-import marketingSwim from "@/assets/marketing-swim-summer.jpg";
+import marketingMensResort from "@/assets/marketing-men-resort-summer.jpg";
 import marketingVersace from "@/assets/marketing-versace.jpg";
 
 import swimCampaignVideo from "@/assets/swim-campaign.mp4.asset.json";
@@ -42,7 +42,7 @@ const SUMMER_BENTO_PROPS = {
   menImage: { url: marketingMen, altText: "Men's Resort 2026 — Amalfi Coast" },
   accessoriesImage: { url: marketingAccessories, altText: "Summer Accessories — Designer Edit" },
 
-  swimImage: { url: marketingSwim, altText: "Men's Resort Wear — Summer Edit" },
+  swimImage: { url: marketingMensResort, altText: "Men's Resort 2026 — Linen Shorts & Shirting" },
   spotlightImage: { url: marketingVersace, altText: "Versace — Baroque Edit, In Stock Now" },
   spotlightVendor: "Versace",
   spotlightSlug: "versace",
