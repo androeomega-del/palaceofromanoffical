@@ -81,7 +81,7 @@ export const forYouFeedBlockSchema = baseBlock.extend({
 
 export const curationCountdownBlockSchema = baseBlock.extend({
   type: z.literal("curation_countdown"),
-  variant: z.enum(["hero", "compact"]).optional(),
+  variant: z.enum(["hero", "bar"]).optional(),
 });
 
 export const layoutBlockSchema = z.discriminatedUnion("type", [
