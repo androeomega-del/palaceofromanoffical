@@ -17,10 +17,9 @@ import { Loader2, ShieldCheck, Plane, Sparkles } from "lucide-react";
 import { EditionProvider, useEdition } from "@/contexts/edition-context";
 import { EditionHero } from "@/components/lookbook/edition-hero";
 import { EditionSwitcher } from "@/components/lookbook/edition-switcher";
-// EditionIntro intentionally removed — it duplicated the active-edition (swim) pitch right under the hero.
+import { EditionIntro } from "@/components/lookbook/edition-intro";
 import { EditionEditorialBand } from "@/components/lookbook/edition-editorial-band";
 import { LookbookMasonry } from "@/components/lookbook/lookbook-masonry";
-import { ShopByCategoryTiles } from "@/components/lookbook/commerce-sections";
 import { TrendingNowRail } from "@/components/trending-now";
 import { ForYouFeed } from "@/components/for-you-feed";
 import { LUXURY_TIERS } from "@/lib/luxury-brands";
@@ -164,29 +163,27 @@ function EditionSpine() {
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         >
           <EditionHero edition={active} />
+          <EditionIntro edition={active} />
 
-          {/* — Shop by category tiles (40% Women · 40% Men · 20% Unisex) — */}
-          <ShopByCategoryTiles />
-
-          {/* The Edition lookbook — single merged masonry of all shoppable looks */}
-          <LookbookMasonry edition={active} productOffset={0} productLimit={8} />
-
-          {/* Trending This Week — data-driven (hidden until signal) */}
+          {/* Trending This Week — kept */}
           <TrendingNowRail />
 
-          {/* Style Quiz CTA */}
+          {/* Lookbook masonry pt.1 — shoppable hotspots */}
+          <LookbookMasonry edition={active} productOffset={0} productLimit={6} />
+
+          {/* Style Quiz CTA — kept, restyled */}
           <StyleQuizCTA />
 
-          {/* Curated For You — personalised */}
+          {/* Curated For You — kept */}
           <ForYouFeed />
 
-          {/* Edition editorial band — quiet pause */}
+          {/* Edition editorial band */}
           <EditionEditorialBand edition={active} />
 
           {/* Lookbook masonry pt.2 */}
-          <LookbookMasonry edition={active} productOffset={8} productLimit={8} />
+          <LookbookMasonry edition={active} productOffset={6} productLimit={8} />
 
-          {/* The Houses — tiered designer directory */}
+          {/* The Houses — kept (tiered designer directory) */}
           <FeaturedHouses />
         </motion.div>
       </AnimatePresence>

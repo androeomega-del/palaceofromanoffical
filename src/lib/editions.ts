@@ -137,7 +137,7 @@ export async function fetchEditions(): Promise<Edition[]> {
     return a.originalIndex - b.originalIndex;
   });
 
-  const top2 = live.slice(0, 1);
+  const top2 = live.slice(0, 2);
 
   const editions: Edition[] = await Promise.all(
     top2.map(async ({ c }, idx) => {
