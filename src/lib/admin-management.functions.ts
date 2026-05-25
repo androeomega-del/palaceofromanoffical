@@ -127,21 +127,37 @@ export const forcePublishLatest = createServerFn({ method: "POST" })
 
 export const forceRefreshHomepage = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
-  .handler(async () => {
-    // Trigger the cron route on the public canonical host. The route now has a
-    // force flag, so we never archive the current active edition until the new
-    // row has been generated and staged successfully.
+  .handler(async ({ context }) => {
     const base =
       process.env.SITE_URL ||
       process.env.VITE_SITE_URL ||
       "https://palaceofromanofficial.com";
-    const res = await fetch(`${base}/api/public/cron/refresh-homepage-layout?force=true`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    let status = 0;
+    let body: Record<string, unknown> = {};
+    try {
+      const res = await fetch(`${base}/api/public/cron/refresh-homepage-layout?force=true`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      status = res.status;
+      body = (await res.json().catch(() => ({}))) as Record<string, unknown>;
+    } catch (e) {
+      await logHomepageAudit({
+        action: "generation_failed",
+        actor: context.userId,
+        details: { trigger: "force_refresh", error: String(e) },
+      });
+      throw e;
+    }
+    await logHomepageAudit({
+      action: status >= 200 && status < 300 ? "force_refresh" : "generation_failed",
+      edition_id: (body.new_layout_id as string) ?? null,
+      actor: context.userId,
+      details: { status, ...body },
     });
-    const body = await res.json().catch(() => ({}));
-    return { status: res.status, body };
+    return { status, body };
   });
+
 
 /**
  * Generate a preview edition WITHOUT touching the currently active layout.
