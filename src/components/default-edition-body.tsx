@@ -113,7 +113,7 @@ const CATEGORY_TILES: CategoryTileDef[] = [
   },
 ];
 
-export function DefaultEditionBody() {
+export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) {
   const newArrivalsQ = useQuery({
     queryKey: ["home", "new-arrivals"],
     queryFn: () => fetchProducts({ first: 12, sortKey: "CREATED_AT", reverse: true }),
