@@ -18,7 +18,6 @@ const make = (names: string[]): BrandEntry[] =>
 
 // TIER 1: Most prominent/frequent in catalog
 export const TIER_1_WORLD_LEADERS = make([
-  "Dolce & Gabbana",
   "Gucci",
   "Prada",
   "Louis Vuitton",
@@ -28,6 +27,7 @@ export const TIER_1_WORLD_LEADERS = make([
   "Hermès",
   "Fendi",
   "Valentino",
+  "Versace",
 ]);
 
 // TIER 2: High demand/frequently stocked
