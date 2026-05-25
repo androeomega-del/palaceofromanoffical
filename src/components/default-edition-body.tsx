@@ -297,45 +297,59 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
 
 
 
-
-
-      {/* 1b. SWIMWEAR RAIL — Bikinis, Beachwear, Resort (with hoodies fallback) */}
-      {(() => {
-        const swimEdges = swimwearQ.data ?? [];
-        const useFallback = swimwearQ.isSuccess && swimEdges.length === 0;
-        const edges = useFallback ? (swimFallbackQ.data ?? []) : swimEdges;
-        const loading = useFallback ? swimFallbackQ.isLoading : swimwearQ.isLoading;
-        const eyebrow = useFallback ? "Wardrobe Essentials" : "Sun, Sand & Salt";
-        const heading = useFallback ? "Hoodies — In Stock Now" : "Swim & Beachwear";
-        const sub = useFallback
-          ? "Heavyweight loopback and brushed fleece from the houses — ready to ship."
-          : "Designer bikinis, swimsuits and resort pieces — built for the season.";
-        const linkTo = useFallback ? "/collections/$handle" : "/swim";
-        const linkParams = useFallback ? { handle: "hoodies" } : undefined;
-        const linkLabel = useFallback ? "Shop all hoodies" : "Shop all swimwear";
-        return (
-          <section className="py-20 md:py-24 bg-canvas-raised">
-            <div className="max-w-screen-2xl mx-auto">
-              <div className="flex justify-between items-end mb-10 md:mb-12 px-6">
-                <div>
-                  <span className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-3 block">
-                    {eyebrow}
-                  </span>
-                  <h2 className="text-3xl md:text-4xl font-serif">{heading}</h2>
-                  <p className="text-xs md:text-sm text-muted-foreground mt-3 max-w-md">{sub}</p>
-                </div>
-                <Link
-                  {...({ to: linkTo, params: linkParams } as any)}
-                  className="text-[11px] uppercase tracking-[0.25em] border-b border-ink/20 pb-1 hover:border-ink hidden md:inline-block"
-                >
-                  {linkLabel}
-                </Link>
-              </div>
-              <HorizontalRail edges={edges} loading={loading} />
+      {/* SUMMER LINEN RAIL — gender-neutral white & natural edit. Replaces
+          the duplicate "Trending This Week" that the AI edition band also
+          renders, so visitors never see Trending twice. */}
+      <section className="py-20 md:py-24 bg-canvas">
+        <div className="max-w-screen-2xl mx-auto">
+          <div className="flex justify-between items-end mb-10 md:mb-12 px-6">
+            <div>
+              <span className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-3 block">
+                Summer Whites
+              </span>
+              <h2 className="text-3xl md:text-4xl font-serif">The Linen Edit</h2>
+              <p className="text-xs md:text-sm text-muted-foreground mt-3 max-w-md">
+                Featherweight linens and breathable cottons — pieces built for the warmer months, for him and for her.
+              </p>
             </div>
-          </section>
-        );
-      })()}
+            <Link
+              to="/shop"
+              search={{ q: "linen", title: "The Linen Edit" }}
+              className="text-[11px] uppercase tracking-[0.25em] border-b border-ink/20 pb-1 hover:border-ink hidden md:inline-block"
+            >
+              Shop the Edit
+            </Link>
+          </div>
+          <HorizontalRail edges={summerLinenQ.data ?? []} loading={summerLinenQ.isLoading} />
+        </div>
+      </section>
+
+      {/* SUNGLASSES RAIL — universal summer essential. Replaces the second
+          swim/beach rail (we already have two swim-led cards in the bento). */}
+      <section className="py-20 md:py-24 bg-canvas-raised">
+        <div className="max-w-screen-2xl mx-auto">
+          <div className="flex justify-between items-end mb-10 md:mb-12 px-6">
+            <div>
+              <span className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-3 block">
+                Summer Essentials
+              </span>
+              <h2 className="text-3xl md:text-4xl font-serif">Sunglasses &amp; Eyewear</h2>
+              <p className="text-xs md:text-sm text-muted-foreground mt-3 max-w-md">
+                Designer frames from the maisons — the finishing piece for every Resort look.
+              </p>
+            </div>
+            <Link
+              to="/shop"
+              search={{ q: "product_type:Sunglasses OR product_type:Eyewear", title: "Sunglasses & Eyewear" }}
+              className="text-[11px] uppercase tracking-[0.25em] border-b border-ink/20 pb-1 hover:border-ink hidden md:inline-block"
+            >
+              Shop all eyewear
+            </Link>
+          </div>
+          <HorizontalRail edges={sunglassesQ.data ?? []} loading={sunglassesQ.isLoading} />
+        </div>
+      </section>
+
 
 
 
