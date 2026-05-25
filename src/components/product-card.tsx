@@ -309,8 +309,76 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
           />
         </button>
 
-        {/* CTAs — visible on hover (desktop), always on touch */}
-        <div className="absolute inset-x-3 bottom-3 flex gap-2 opacity-100 lg:opacity-0 lg:translate-y-2 lg:group-hover:opacity-100 lg:group-hover:translate-y-0 transition-all duration-500">
+        {/* Desktop hover: inline size pills (size-only products) */}
+        {sizeOnlyOption && !soldOut && (
+          <div className="hidden lg:flex absolute inset-x-3 bottom-3 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500">
+            <div className="w-full bg-canvas/92 backdrop-blur-sm px-2 py-2 flex flex-wrap items-center justify-center gap-1.5 shadow-md">
+              <span className="text-[9px] uppercase tracking-[0.25em] text-bronze font-semibold mr-1">
+                Quick Add
+              </span>
+              {sizeOnlyOption.values.map((value) => {
+                const v = variants.find((vv) =>
+                  vv.selectedOptions?.some(
+                    (o) => o.name === sizeOnlyOption.name && o.value === value,
+                  ),
+                );
+                const unavailable = !v || !v.availableForSale;
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    disabled={unavailable || adding}
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      if (!v || unavailable || adding) return;
+                      setAdding(true);
+                      try {
+                        const added = await addItem({
+                          product,
+                          variantId: v.id,
+                          variantTitle: v.title,
+                          price: v.price,
+                          quantity: 1,
+                          selectedOptions: v.selectedOptions ?? [],
+                        });
+                        if (!added) {
+                          toast.error("Could not add. Try another size.");
+                          return;
+                        }
+                        track({ handle: p.handle, event: "cart", ...meta });
+                        if (hasScarcity) {
+                          track({ handle: p.handle, event: "scarcity_cart", ...meta });
+                        }
+                        openDrawer();
+                        toast.success(`${p.title} — ${value} added to bag`);
+                      } finally {
+                        setAdding(false);
+                      }
+                    }}
+                    className={`min-w-[34px] h-8 px-2 text-[10px] uppercase tracking-widest border transition-colors ${
+                      unavailable
+                        ? "border-ink/10 text-ink/30 line-through cursor-not-allowed"
+                        : "border-ink/20 text-ink bg-canvas hover:bg-ink hover:text-canvas hover:border-ink"
+                    }`}
+                  >
+                    {value}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* CTAs — visible on hover (desktop), always on touch.
+            Hidden on desktop when size-pill overlay is shown instead. */}
+        <div
+          className={`absolute inset-x-3 bottom-3 flex gap-2 opacity-100 ${
+            sizeOnlyOption
+              ? "lg:hidden"
+              : "lg:opacity-0 lg:translate-y-2 lg:group-hover:opacity-100 lg:group-hover:translate-y-0"
+          } transition-all duration-500`}
+        >
           <button
             type="button"
             onClick={onAdd}
@@ -348,6 +416,7 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
             </button>
           )}
         </div>
+
 
       </div>
       <p className="text-[10px] uppercase tracking-widest mb-1 text-bronze">{p.vendor}</p>
