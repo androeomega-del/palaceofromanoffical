@@ -1102,14 +1102,14 @@ function SummerBento({
           <div className="absolute inset-0 bg-gradient-to-t from-ink/60 via-ink/20 to-transparent" />
           <div className="relative z-10 p-8 md:p-10">
             <span className="text-[10px] uppercase tracking-[0.3em] text-canvas/90 mb-3 block">
-              The Beach Edit
+              The Resort Edit
             </span>
             <h3 className="font-serif text-3xl md:text-4xl text-canvas mb-3 leading-tight">
-              Bikinis &amp;
-              <span className="block italic">Swimwear</span>
+              Two-Piece
+              <span className="block italic">&amp; Swim</span>
             </h3>
             <p className="text-[11px] tracking-[0.25em] text-canvas/85 uppercase">
-              Resort 2026 — In Stock
+              Women's Swim — In Stock
             </p>
           </div>
         </Link>
