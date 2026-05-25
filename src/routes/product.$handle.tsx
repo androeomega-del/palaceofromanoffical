@@ -677,7 +677,7 @@ function ProductView({
             </div>
 
             {/* Delivery badge — uses zip from location store */}
-            <PdpDeliveryBadge vendor={product.vendor} handle={product.handle} variantId={selectedVariant?.id} />
+            <PdpDeliveryBadge vendor={product.vendor} handle={product.handle} variantId={previewVariant?.id} />
 
 
             {/* Authenticity strip — defensible claims only */}
