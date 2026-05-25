@@ -340,6 +340,32 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
         </div>
       </section>
 
+      {/* ITALIAN LEATHER ATELIER — handbags & small leather goods. Replaces
+          the duplicate "Curated For You" the AI edition used to render. */}
+      <section className="py-20 md:py-24 bg-canvas">
+        <div className="max-w-screen-2xl mx-auto">
+          <div className="flex justify-between items-end mb-10 md:mb-12 px-6">
+            <div>
+              <span className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-3 block">
+                The Atelier
+              </span>
+              <h2 className="text-3xl md:text-4xl font-serif">Italian Leather Goods</h2>
+              <p className="text-xs md:text-sm text-muted-foreground mt-3 max-w-md">
+                Hand-finished handbags, totes and small leather pieces from the maisons — quiet craft, built to outlast the season.
+              </p>
+            </div>
+            <Link
+              to="/shop"
+              search={{ q: "product_type:Handbags OR product_type:Bags OR product_type:Bag", title: "Italian Leather Goods" }}
+              className="text-[11px] uppercase tracking-[0.25em] border-b border-ink/20 pb-1 hover:border-ink hidden md:inline-block"
+            >
+              Shop the Atelier
+            </Link>
+          </div>
+          <HorizontalRail edges={italianLeatherQ.data ?? []} loading={italianLeatherQ.isLoading} />
+        </div>
+      </section>
+
       {/* SUNGLASSES RAIL — universal summer essential. Replaces the second
           swim/beach rail (we already have two swim-led cards in the bento). */}
       <section className="py-20 md:py-24 bg-canvas-raised">
