@@ -32,7 +32,7 @@ const LINKS: LinkItem[] = [
   { label: "Shop the Edit", sub: "All new arrivals", href: "/shop" },
   { label: "Women", sub: "Clothing, shoes & bags", href: "/collections/womens-clothing" },
   { label: "Men", sub: "Clothing & sneakers", href: "/collections/mens-clothing" },
-  { label: "Dolce & Gabbana Swim", sub: "Campaign", href: "/campaign/dolce-gabbana-swim" },
+  { label: "Men's Swim — Resort 2026", sub: "Campaign", href: "/campaign/mens-swim" },
   { label: "Brands Index", sub: "Every maison we carry", href: "/brands" },
   {
     label: "WhatsApp the Concierge",
