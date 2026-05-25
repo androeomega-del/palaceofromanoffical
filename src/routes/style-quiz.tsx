@@ -31,7 +31,7 @@ import suits from "@/assets/marketing-collections/suits.jpg";
 import shirts from "@/assets/marketing-collections/shirts.jpg";
 import skirts from "@/assets/marketing-collections/skirts.jpg";
 import loafers from "@/assets/marketing-collections/loafers.jpg";
-import boots from "@/assets/marketing-collections/boots.jpg";
+
 
 import dgPortrait from "@/assets/dg-campaign-portrait.jpg";
 import dgDetail1 from "@/assets/dg-campaign-detail-1.jpg";
