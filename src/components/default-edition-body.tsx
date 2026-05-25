@@ -27,7 +27,7 @@ import marketingWomen from "@/assets/marketing-women-summer.jpg";
 import marketingMen from "@/assets/marketing-men-summer.jpg";
 import marketingAccessories from "@/assets/marketing-accessories-summer.jpg";
 
-import marketingSwim from "@/assets/marketing-swim-summer.jpg";
+import marketingMensResort from "@/assets/marketing-men-resort-summer.jpg";
 import marketingVersace from "@/assets/marketing-versace.jpg";
 
 import swimCampaignVideo from "@/assets/swim-campaign.mp4.asset.json";
