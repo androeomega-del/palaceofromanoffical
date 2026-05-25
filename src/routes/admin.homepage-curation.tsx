@@ -453,6 +453,7 @@ function AdminHomepageCuration() {
         )}
 
         <AuditLogPanel enabled={authReady} />
+        <PendingCollectionsPanel enabled={authReady} />
       </div>
     </main>
   );
