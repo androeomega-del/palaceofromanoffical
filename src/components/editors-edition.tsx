@@ -100,8 +100,15 @@ export function EditionLayout() {
       <SiteHeader />
       <main className="flex-1">
         <DefaultEditionBody
-          aiBlocks={hasAiLayout ? <EditionBlocks layout={layout!} /> : null}
+          aiBlocks={
+            hasAiLayout ? (
+              <EditionBlocksBoundary>
+                <EditionBlocks layout={layout!} />
+              </EditionBlocksBoundary>
+            ) : null
+          }
         />
+
       </main>
       <SiteFooter />
     </>
