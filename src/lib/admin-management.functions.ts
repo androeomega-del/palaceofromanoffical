@@ -531,3 +531,27 @@ export const getInbox = createServerFn({ method: "GET" })
       abandoned_carts: carts.data ?? [],
     };
   });
+
+/* =========================================================================
+ * HOMEPAGE LAYOUT AUDIT LOG
+ * =======================================================================*/
+
+export const getHomepageLayoutAudit = createServerFn({ method: "GET" })
+  .middleware([requireAdmin])
+  .handler(async () => {
+    const { data, error } = await supabaseAdmin
+      .from("homepage_layout_audit" as never)
+      .select("id, edition_id, action, actor, details, created_at")
+      .order("created_at", { ascending: false })
+      .limit(50);
+    if (error) throw new Error(error.message);
+    return (data ?? []) as Array<{
+      id: string;
+      edition_id: string | null;
+      action: string;
+      actor: string | null;
+      details: Record<string, unknown>;
+      created_at: string;
+    }>;
+  });
+
