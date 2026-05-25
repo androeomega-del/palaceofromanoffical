@@ -24,6 +24,7 @@ import { ProductCard } from "@/components/product-card";
 import { imgForKey } from "@/lib/editorial-library";
 import { NewsletterForm } from "@/components/newsletter-form";
 import { cdnImage } from "@/lib/cdn-image";
+import housesInMotionAsset from "@/assets/houses-in-motion.mp4.asset.json";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // NEW ARRIVALS — horizontal scroll rail
