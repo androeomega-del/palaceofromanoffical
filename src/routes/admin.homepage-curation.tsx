@@ -654,3 +654,111 @@ function DiagnosticsPanel({
   );
 }
 
+function RecentEditionRow({
+  row,
+  onActivate,
+  activating,
+}: {
+  row: {
+    id: string;
+    generated_at: string;
+    status: string;
+    is_active: boolean;
+    source: string | null;
+    block_count: number;
+  };
+  onActivate: () => void;
+  activating: boolean;
+}) {
+  const [peekOpen, setPeekOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const { data: peek, isLoading: peekLoading } = useQuery({
+    queryKey: ["admin", "homepage-edition", row.id],
+    queryFn: () => getHomepageEditionById({ data: { id: row.id } }),
+    enabled: peekOpen,
+  });
+  const sourceLabel =
+    row.source === "cold_start_fallback"
+      ? "fallback"
+      : row.source === "claude"
+        ? "AI"
+        : row.source === "manual"
+          ? "manual"
+          : "—";
+  return (
+    <div className="flex items-center justify-between text-xs border-b border-border/40 py-2 gap-3">
+      <span className="font-mono">{row.id.slice(0, 8)}</span>
+      <span className="text-muted-foreground flex-1">{fmtWhen(row.generated_at)}</span>
+      <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+        {sourceLabel} · {row.block_count}b
+      </span>
+      <Badge variant={row.is_active ? "default" : "secondary"}>
+        {row.is_active ? "active" : row.status}
+      </Badge>
+      <Button size="sm" variant="ghost" onClick={() => setPeekOpen(true)}>
+        <Eye className="h-3 w-3 mr-1" />
+        Peek
+      </Button>
+      {!row.is_active ? (
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => setConfirmOpen(true)}
+          disabled={activating}
+        >
+          <Power className="h-3 w-3 mr-1" />
+          Re-activate
+        </Button>
+      ) : (
+        <span className="w-[100px]" />
+      )}
+
+      <Dialog open={peekOpen} onOpenChange={setPeekOpen}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle className="font-mono text-sm">Edition {row.id.slice(0, 8)}</DialogTitle>
+            <DialogDescription>
+              {fmtWhen(row.generated_at)} · source: {sourceLabel} · {row.block_count} blocks
+            </DialogDescription>
+          </DialogHeader>
+          {peekLoading ? (
+            <p className="text-xs text-muted-foreground">Loading…</p>
+          ) : peek?.layout_json ? (
+            <pre className="text-[11px] font-mono bg-muted/40 border border-border rounded p-3 max-h-[60vh] overflow-auto">
+              {JSON.stringify(peek.layout_json, null, 2)}
+            </pre>
+          ) : (
+            <p className="text-xs text-muted-foreground">No layout data.</p>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Re-activate this edition?</AlertDialogTitle>
+            <AlertDialogDescription>
+              The currently active homepage will be archived and edition{" "}
+              <span className="font-mono">{row.id.slice(0, 8)}</span> ({sourceLabel},{" "}
+              {row.block_count} blocks, {fmtWhen(row.generated_at)}) will go live instantly for
+              all visitors.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setConfirmOpen(false);
+                onActivate();
+              }}
+            >
+              Re-activate
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+}
+
+
