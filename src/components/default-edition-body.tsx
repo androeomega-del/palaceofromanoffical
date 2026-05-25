@@ -42,7 +42,7 @@ const SUMMER_BENTO_PROPS = {
   menImage: { url: marketingMen, altText: "Men's Resort 2026 — Amalfi Coast" },
   accessoriesImage: { url: marketingAccessories, altText: "Summer Accessories — Designer Edit" },
 
-  swimImage: { url: marketingSwim, altText: "Designer Swimwear — Riviera Edit" },
+  swimImage: { url: marketingSwim, altText: "Men's Resort Wear — Summer Edit" },
   spotlightImage: { url: marketingVersace, altText: "Versace — Baroque Edit, In Stock Now" },
   spotlightVendor: "Versace",
   spotlightSlug: "versace",
