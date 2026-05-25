@@ -179,7 +179,7 @@ export const diagnoseHomepage = createServerFn({ method: "GET" })
       .from("homepage_daily_layout")
       .select("id, generated_at, status")
       .eq("is_active", false)
-      .eq("status", "pending")
+      .eq("status", "staged")
       .order("generated_at", { ascending: false })
       .limit(5);
 
