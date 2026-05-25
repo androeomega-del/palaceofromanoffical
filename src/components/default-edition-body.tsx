@@ -428,7 +428,7 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
               Shop all eyewear
             </Link>
           </div>
-          <HorizontalRail edges={sunglassesQ.data ?? []} loading={sunglassesQ.isLoading} />
+          <HorizontalRail edges={dedupedRails.sunglasses} loading={sunglassesQ.isLoading} />
         </div>
       </section>
 
