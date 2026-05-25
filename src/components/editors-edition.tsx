@@ -121,14 +121,33 @@ export function EditionLayout() {
 export const EditorsEdition = EditionLayout;
 
 function EditionBlocks({ layout }: { layout: HomepageLayout }) {
+  // Dedup product handles across product_rail blocks so the same product
+  // never renders twice within the AI edition band (e.g. "For Him" and
+  // "Featured Maisons" used to share most of their lineup).
+  const seen = new Set<string>();
+  const dedupedBlocks = layout.blocks.map((block) => {
+    if (block.type !== "product_rail") return block;
+    const handles = (block.productHandles ?? []).filter((h) => {
+      if (seen.has(h)) return false;
+      seen.add(h);
+      return true;
+    });
+    return { ...block, productHandles: handles };
+  });
+
   return (
     <section aria-label="The Current Edition" className="bg-canvas">
       <div className="max-w-screen-2xl mx-auto px-6 md:px-10 py-12 md:py-16">
         <div className="space-y-12 md:space-y-16">
-          {layout.blocks.map((block) => {
+          {dedupedBlocks.map((block) => {
             try {
               if (block.type === "hero") return <EditionHero key={block.id} block={block} />;
-              if (block.type === "product_rail") return <EditionRail key={block.id} block={block} />;
+              if (block.type === "product_rail") {
+                // Skip rails that lost all their unique handles after dedup —
+                // otherwise we'd render an empty heading with no products.
+                if ((block.productHandles ?? []).length === 0) return null;
+                return <EditionRail key={block.id} block={block} />;
+              }
               if (block.type === "editorial_banner") return <EditionBanner key={block.id} block={block} />;
               // trending_rail blocks from the AI layout are intentionally
               // skipped — DefaultEditionBody already renders <TrendingNowRail />
