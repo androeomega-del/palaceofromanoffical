@@ -22,6 +22,9 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { CampaignVideo } from "@/components/campaign-video";
 import { DefaultEditionBody } from "@/components/default-edition-body";
+import { TrendingNowRail } from "@/components/trending-now";
+import { ForYouFeed } from "@/components/for-you-feed";
+import { CurationCountdown } from "@/components/curation-countdown";
 import { useChromeStore } from "@/stores/chrome-store";
 
 function resolveImage(src: string): string {
@@ -93,6 +96,21 @@ function EditionBlocks({ layout }: { layout: HomepageLayout }) {
               if (block.type === "hero") return <EditionHero key={block.id} block={block} />;
               if (block.type === "product_rail") return <EditionRail key={block.id} block={block} />;
               if (block.type === "editorial_banner") return <EditionBanner key={block.id} block={block} />;
+              if (block.type === "trending_rail") return (
+                <div key={block.id}>
+                  <RailHeader heading={block.heading} subheading={block.subheading} />
+                  <TrendingNowRail />
+                </div>
+              );
+              if (block.type === "for_you_feed") return (
+                <div key={block.id}>
+                  <RailHeader heading={block.heading} subheading={block.subheading} />
+                  <ForYouFeed />
+                </div>
+              );
+              if (block.type === "curation_countdown") return (
+                <CurationCountdown key={block.id} variant={block.variant ?? "hero"} />
+              );
               return null;
             } catch {
               return null;
