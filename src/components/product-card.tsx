@@ -379,10 +379,13 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
             )}
           </div>
 
-          {/* SIZING */}
+          {/* SIZING — anchored to bottom, grows upward over the image so
+              pills wrap onto multiple rows on narrow mobile widths instead
+              of horizontally scrolling. Card height is unchanged because
+              the idle CTA still occupies the h-11 row underneath. */}
           {sizeOnlyOption && (
             <div
-              className={`absolute inset-0 bg-canvas/95 backdrop-blur-sm border border-ink/15 shadow-md px-1.5 flex items-center gap-1 transition-opacity duration-200 ${
+              className={`absolute inset-x-0 bottom-0 min-h-11 bg-canvas/95 backdrop-blur-sm border border-ink/15 shadow-md px-1.5 py-1.5 flex items-start gap-1 transition-opacity duration-200 ${
                 quickAddState === "sizing" ? "opacity-100" : "opacity-0 pointer-events-none"
               }`}
               role="group"
@@ -400,7 +403,7 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
               >
                 <X className="w-3.5 h-3.5" strokeWidth={1.5} />
               </button>
-              <div className="flex-1 flex items-center justify-evenly gap-1 overflow-x-auto">
+              <div className="flex-1 flex flex-wrap items-center gap-1">
                 {sizeOnlyOption.values.map((value) => {
                   const v = variants.find((vv) =>
                     vv.selectedOptions?.some(
@@ -448,7 +451,7 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
                           setAdding(false);
                         }
                       }}
-                      className={`min-w-[36px] h-8 px-2.5 rounded-full text-[10px] uppercase tracking-widest font-medium border transition-colors ${
+                      className={`min-w-[32px] h-8 px-2 rounded-full text-[10px] uppercase tracking-widest font-medium border transition-colors ${
                         unavailable
                           ? "border-ink/10 text-ink/30 line-through cursor-not-allowed bg-transparent"
                           : "border-ink/20 text-ink bg-canvas hover:bg-ink hover:text-canvas hover:border-ink active:scale-95"
