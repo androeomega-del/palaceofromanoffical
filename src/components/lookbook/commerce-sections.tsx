@@ -180,7 +180,7 @@ export function ShopByCategoryTiles() {
                 className="group relative block aspect-[4/5] overflow-hidden bg-canvas-raised"
               >
                 <img
-                  src={cdnImage(imgForKey(tile.imgKey), { w: 800 })}
+                  src={cdnImage(imgForKey(tile.imgKey), { width: 800 })}
                   alt={`${tile.label} — Palace of Roman`}
                   loading="lazy"
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
@@ -245,7 +245,7 @@ export function PriceTierShop() {
                 className="group relative block aspect-[4/5] overflow-hidden bg-ink"
               >
                 <img
-                  src={cdnImage(imgForKey(tier.imgKey), { w: 900 })}
+                  src={cdnImage(imgForKey(tier.imgKey), { width: 900 })}
                   alt={tier.label}
                   loading="lazy"
                   className="absolute inset-0 w-full h-full object-cover opacity-70 transition-all duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:opacity-90 group-hover:scale-[1.04]"
@@ -322,7 +322,7 @@ export function EditorsPicksTriptych() {
                 >
                   {img ? (
                     <img
-                      src={cdnImage(img.url, { w: 900 })}
+                      src={cdnImage(img.url, { width: 900 })}
                       alt={img.altText ?? node.title}
                       loading="lazy"
                       className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.03]"
@@ -372,7 +372,7 @@ export function BrandSpotlight() {
           className="relative block min-h-[60vh] md:min-h-full overflow-hidden group"
         >
           <img
-            src={cdnImage(imgForKey("spotlight-versace"), { w: 1400 })}
+            src={cdnImage(imgForKey("spotlight-versace"), { width: 1400 })}
             alt="Versace at Palace of Roman"
             loading="lazy"
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1600ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
