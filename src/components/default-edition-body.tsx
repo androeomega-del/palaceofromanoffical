@@ -612,9 +612,9 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
       <section className="py-28">
         <div className="max-w-screen-2xl mx-auto px-6">
           {(() => {
-            const bestEdges = bestSellersQ.data ?? [];
+            const bestEdges = dedupedRails.bestSellers;
             const showEmpty = !bestSellersQ.isLoading && bestEdges.length === 0;
-            const fallbackEdges = (newArrivalsQ.data ?? []).slice(0, 8);
+            const fallbackEdges = dedupedRails.newArrivals.slice(0, 8);
             if (showEmpty) {
               return (
                 <>
