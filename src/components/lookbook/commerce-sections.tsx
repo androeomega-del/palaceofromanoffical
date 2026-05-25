@@ -242,10 +242,10 @@ export function ShopByCategoryTiles() {
 // ─────────────────────────────────────────────────────────────────────────────
 // PRICE TIER SHOP — Under $500 / $1,000 / Investment
 // ─────────────────────────────────────────────────────────────────────────────
-const PRICE_TIERS: Array<{ max?: number; min?: number; label: string; sub: string; imgKey: string }> = [
-  { max: 500, label: "Under $500", sub: "Entry-point luxury — accessories, sunglasses, signature pieces.", imgKey: "tier-500" },
-  { max: 1000, label: "Under $1,000", sub: "The weekend wardrobe — ready-to-wear, leather goods, shoes.", imgKey: "tier-1000" },
-  { min: 1000, label: "Investment Pieces", sub: "Made to outlast trends — outerwear, statement bags, fine knits.", imgKey: "tier-investment" },
+const PRICE_TIERS: Array<{ max?: number; min?: number; label: string; sub: string; img: string }> = [
+  { max: 500, label: "Under $500", sub: "Entry-point luxury — accessories, sunglasses, signature pieces.", img: tier500Img },
+  { max: 1000, label: "Under $1,000", sub: "The weekend wardrobe — ready-to-wear, leather goods, shoes.", img: tier1000Img },
+  { min: 1000, label: "Investment Pieces", sub: "Made to outlast trends — outerwear, statement bags, fine knits.", img: tierInvestmentImg },
 ];
 
 export function PriceTierShop() {
