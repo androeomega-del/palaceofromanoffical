@@ -29,6 +29,7 @@ import {
   BrandSpotlight,
   NewsletterVIPBand,
   TrustReassuranceBand,
+  VideoCampaignBand,
 } from "@/components/lookbook/commerce-sections";
 import { TrendingNowRail } from "@/components/trending-now";
 import { ForYouFeed } from "@/components/for-you-feed";
