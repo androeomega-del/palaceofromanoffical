@@ -44,6 +44,7 @@ import { Route as AdminTrendingBrandsRouteImport } from './routes/admin.trending
 import { Route as AdminShopifySyncRouteImport } from './routes/admin.shopify-sync'
 import { Route as AdminSeoHealthRouteImport } from './routes/admin.seo-health'
 import { Route as AdminReviewsRouteImport } from './routes/admin.reviews'
+import { Route as AdminLookbookRouteImport } from './routes/admin.lookbook'
 import { Route as AdminLandingPagesRouteImport } from './routes/admin.landing-pages'
 import { Route as AdminInventorySyncRouteImport } from './routes/admin.inventory-sync'
 import { Route as AdminInboxRouteImport } from './routes/admin.inbox'
@@ -248,6 +249,11 @@ const AdminReviewsRoute = AdminReviewsRouteImport.update({
   path: '/admin/reviews',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminLookbookRoute = AdminLookbookRouteImport.update({
+  id: '/admin/lookbook',
+  path: '/admin/lookbook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminLandingPagesRoute = AdminLandingPagesRouteImport.update({
   id: '/admin/landing-pages',
   path: '/admin/landing-pages',
@@ -433,6 +439,7 @@ export interface FileRoutesByFullPath {
   '/admin/inbox': typeof AdminInboxRoute
   '/admin/inventory-sync': typeof AdminInventorySyncRoute
   '/admin/landing-pages': typeof AdminLandingPagesRoute
+  '/admin/lookbook': typeof AdminLookbookRoute
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/seo-health': typeof AdminSeoHealthRoute
   '/admin/shopify-sync': typeof AdminShopifySyncRoute
@@ -496,6 +503,7 @@ export interface FileRoutesByTo {
   '/admin/inbox': typeof AdminInboxRoute
   '/admin/inventory-sync': typeof AdminInventorySyncRoute
   '/admin/landing-pages': typeof AdminLandingPagesRoute
+  '/admin/lookbook': typeof AdminLookbookRoute
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/seo-health': typeof AdminSeoHealthRoute
   '/admin/shopify-sync': typeof AdminShopifySyncRoute
@@ -561,6 +569,7 @@ export interface FileRoutesById {
   '/admin/inbox': typeof AdminInboxRoute
   '/admin/inventory-sync': typeof AdminInventorySyncRoute
   '/admin/landing-pages': typeof AdminLandingPagesRoute
+  '/admin/lookbook': typeof AdminLookbookRoute
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/seo-health': typeof AdminSeoHealthRoute
   '/admin/shopify-sync': typeof AdminShopifySyncRoute
@@ -627,6 +636,7 @@ export interface FileRouteTypes {
     | '/admin/inbox'
     | '/admin/inventory-sync'
     | '/admin/landing-pages'
+    | '/admin/lookbook'
     | '/admin/reviews'
     | '/admin/seo-health'
     | '/admin/shopify-sync'
@@ -690,6 +700,7 @@ export interface FileRouteTypes {
     | '/admin/inbox'
     | '/admin/inventory-sync'
     | '/admin/landing-pages'
+    | '/admin/lookbook'
     | '/admin/reviews'
     | '/admin/seo-health'
     | '/admin/shopify-sync'
@@ -754,6 +765,7 @@ export interface FileRouteTypes {
     | '/admin/inbox'
     | '/admin/inventory-sync'
     | '/admin/landing-pages'
+    | '/admin/lookbook'
     | '/admin/reviews'
     | '/admin/seo-health'
     | '/admin/shopify-sync'
@@ -816,6 +828,7 @@ export interface RootRouteChildren {
   AdminInboxRoute: typeof AdminInboxRoute
   AdminInventorySyncRoute: typeof AdminInventorySyncRoute
   AdminLandingPagesRoute: typeof AdminLandingPagesRoute
+  AdminLookbookRoute: typeof AdminLookbookRoute
   AdminReviewsRoute: typeof AdminReviewsRoute
   AdminSeoHealthRoute: typeof AdminSeoHealthRoute
   AdminShopifySyncRoute: typeof AdminShopifySyncRoute
@@ -1090,6 +1103,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminReviewsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/lookbook': {
+      id: '/admin/lookbook'
+      path: '/admin/lookbook'
+      fullPath: '/admin/lookbook'
+      preLoaderRoute: typeof AdminLookbookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/landing-pages': {
       id: '/admin/landing-pages'
       path: '/admin/landing-pages'
@@ -1352,6 +1372,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminInboxRoute: AdminInboxRoute,
   AdminInventorySyncRoute: AdminInventorySyncRoute,
   AdminLandingPagesRoute: AdminLandingPagesRoute,
+  AdminLookbookRoute: AdminLookbookRoute,
   AdminReviewsRoute: AdminReviewsRoute,
   AdminSeoHealthRoute: AdminSeoHealthRoute,
   AdminShopifySyncRoute: AdminShopifySyncRoute,
