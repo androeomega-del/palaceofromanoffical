@@ -105,15 +105,26 @@ function EditionBlocks({ layout }: { layout: HomepageLayout }) {
 
 // ── Block: hero ────────────────────────────────────────────────────────────
 function EditionHero({ block }: { block: Extract<HomepageLayout["blocks"][number], { type: "hero" }> }) {
+  const posterSrc = resolveImage(block.poster ?? block.image);
+  const videoSrc = block.video ? resolveImage(block.video) : null;
   return (
-    <div className="relative overflow-hidden border border-ink/10">
-      <img
-        src={resolveImage(block.image)}
-        alt={block.alt}
-        className="w-full h-[60vh] md:h-[70vh] object-cover"
-        loading="lazy"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-ink/60 via-ink/10 to-transparent" />
+    <div className="relative overflow-hidden border border-ink/10 h-[60vh] md:h-[70vh]">
+      {videoSrc ? (
+        <CampaignVideo
+          src={videoSrc}
+          poster={posterSrc}
+          className="absolute inset-0 w-full h-full object-cover"
+          label={block.cta?.label ?? "Play campaign film"}
+        />
+      ) : (
+        <img
+          src={posterSrc}
+          alt={block.alt}
+          className="absolute inset-0 w-full h-full object-cover"
+          loading="lazy"
+        />
+      )}
+      <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/20 to-transparent pointer-events-none" />
       <div className="absolute inset-x-0 bottom-0 p-8 md:p-12 text-canvas">
         {block.heading && (
           <h3 className="font-serif text-3xl md:text-5xl max-w-2xl leading-tight">
