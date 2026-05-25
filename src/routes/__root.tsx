@@ -18,6 +18,7 @@ import { ExitIntentStylist } from "@/components/exit-intent-stylist";
 import { useCartSync } from "@/hooks/use-cart-sync";
 import { Toaster } from "@/components/ui/sonner";
 import { installHydrationMonitor } from "@/lib/hydration-monitor";
+import { useChromeStore } from "@/stores/chrome-store";
 
 // Side-effect: patch console.error on the client to capture hydration
 // mismatch warnings with timestamps + component names. No-op on the server.
