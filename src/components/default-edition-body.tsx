@@ -324,7 +324,7 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
         );
       })()}
 
-      {/* 2. SWIM CAMPAIGN — Dolce & Gabbana cinematic */}
+      {/* 2. SWIM CAMPAIGN — Men's Swim Resort 2026 */}
       <section className="relative h-[80vh] min-h-[600px] overflow-hidden bg-ink">
         <CampaignVideo
           src={swimCampaignVideo.url}
@@ -341,26 +341,25 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
                 The Campaign — Resort 2026
               </span>
               <h2 className="font-serif text-5xl md:text-7xl lg:text-8xl leading-[0.95] mb-6 text-balance">
-                Dolce &amp; Gabbana
-                <span className="block italic font-light mt-2">at the water's edge.</span>
+                Men's Swim
+                <span className="block italic font-light mt-2">a season at sea level.</span>
               </h2>
               <p className="text-sm md:text-base text-canvas/85 leading-relaxed mb-9 max-w-md">
-                A capsule of bikinis, swimsuits and beachwear — corals, seashells,
-                Mediterranean stripes. 100% authentic, in stock for immediate dispatch.
+                Tailored swim shorts, linen cabana shirts and leather slides — a curated
+                men's edit for Resort 2026. 100% authentic, in stock for immediate dispatch.
               </p>
               <div className="flex flex-wrap gap-3 md:gap-4">
                 <Link
-                  to="/swim"
+                  to="/campaign/mens-swim"
                   className="px-8 md:px-10 py-3.5 md:py-4 bg-canvas text-ink text-[10px] uppercase tracking-[0.3em] font-medium hover:bg-[var(--sea)] hover:text-canvas transition-colors"
                 >
-                  Shop the Look
+                  Watch the Campaign
                 </Link>
                 <Link
-                  to="/brand/$vendor"
-                  params={{ vendor: "dolce-gabbana" }}
+                  to="/swim"
                   className="px-8 md:px-10 py-3.5 md:py-4 border border-canvas/60 text-canvas text-[10px] uppercase tracking-[0.3em] font-medium hover:bg-canvas hover:text-ink transition-colors"
                 >
-                  Enter the Maison
+                  Shop the Edit
                 </Link>
               </div>
             </div>
@@ -368,7 +367,7 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
         </div>
 
         <div className="absolute bottom-6 right-6 md:bottom-10 md:right-10 text-canvas/70 text-[9px] uppercase tracking-[0.4em]">
-          Riviera — Golden Hour
+          Tyrrhenian — Golden Hour
         </div>
       </section>
 
