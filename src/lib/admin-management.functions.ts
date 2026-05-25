@@ -151,7 +151,7 @@ export const forceRefreshHomepage = createServerFn({ method: "POST" })
     }
     await logHomepageAudit({
       action: status >= 200 && status < 300 ? "force_refresh" : "generation_failed",
-      edition_id: (body.new_layout_id as string) ?? null,
+      edition_id: body?.new_layout_id ?? null,
       actor: context.userId,
       details: { status, ...body },
     });
