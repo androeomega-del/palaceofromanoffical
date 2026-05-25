@@ -14,6 +14,7 @@ import {
   getHomepageLayoutAudit,
   getHomepageEditionById,
 } from "@/lib/admin-management.functions";
+import { getShopifyCollectionDiff } from "@/lib/shopify-collection-diff.functions";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -452,6 +453,7 @@ function AdminHomepageCuration() {
         )}
 
         <AuditLogPanel enabled={authReady} />
+        <PendingCollectionsPanel enabled={authReady} />
       </div>
     </main>
   );
@@ -760,5 +762,93 @@ function RecentEditionRow({
     </div>
   );
 }
+
+function PendingCollectionsPanel({ enabled }: { enabled: boolean }) {
+  const { data, isLoading, isFetching, refetch } = useQuery({
+    queryKey: ["admin", "shopify-collection-diff"],
+    queryFn: () => getShopifyCollectionDiff(),
+    enabled,
+    staleTime: 5 * 60_000,
+  });
+
+  return (
+    <Card className="p-6">
+      <div className="mb-4 flex items-end justify-between gap-4">
+        <div>
+          <h2 className="font-serif text-xl">Pending Shopify collections</h2>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Collections that exist in Shopify but are not linked from the curated{" "}
+            <code className="rounded bg-muted px-1">main-menu</code>. Add them in
+            Shopify admin → Online Store → Navigation when you want them in the megamenu.
+          </p>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => refetch()}
+          disabled={isFetching}
+        >
+          <RefreshCw className={`mr-2 h-3 w-3 ${isFetching ? "animate-spin" : ""}`} />
+          Refresh
+        </Button>
+      </div>
+
+      {isLoading || !data ? (
+        <p className="text-sm text-muted-foreground">Loading…</p>
+      ) : !data.menu_available ? (
+        <p className="text-sm text-amber-700">
+          Shopify <code className="rounded bg-muted px-1">main-menu</code> not reachable —
+          showing all {data.total_collections} collections as pending would be misleading,
+          so the list is hidden. Verify the Storefront API menu scope.
+        </p>
+      ) : data.pending.length === 0 ? (
+        <p className="text-sm text-muted-foreground">
+          Every Shopify collection ({data.in_menu} of {data.total_collections}) is
+          already linked from the main menu. Nothing pending.
+        </p>
+      ) : (
+        <>
+          <div className="mb-3 text-xs text-muted-foreground tabular-nums">
+            {data.pending.length} pending · {data.in_menu} in menu · {data.total_collections} total
+          </div>
+          <ul className="divide-y">
+            {data.pending.map((c) => (
+              <li
+                key={c.handle}
+                className="flex items-center gap-3 py-2 text-sm"
+              >
+                {c.image_url ? (
+                  <img
+                    src={c.image_url}
+                    alt=""
+                    className="h-10 w-10 rounded object-cover bg-muted"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="h-10 w-10 rounded bg-muted" />
+                )}
+                <div className="min-w-0 flex-1">
+                  <div className="truncate font-medium">{c.title}</div>
+                  <div className="truncate font-mono text-[11px] text-muted-foreground">
+                    {c.handle}
+                  </div>
+                </div>
+                <Link
+                  to="/collections/$handle"
+                  params={{ handle: c.handle }}
+                  target="_blank"
+                  className="shrink-0 text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
+                >
+                  Preview <ExternalLink className="h-3 w-3" />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </Card>
+  );
+}
+
 
 
