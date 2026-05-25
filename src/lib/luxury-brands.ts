@@ -145,7 +145,6 @@ export const ALL_LUXURY_BRANDS: BrandEntry[] = LUXURY_TIERS.flatMap((t) => t.bra
 
 // Curated 12 most-searched houses for the search overlay "Trending Brands" chips.
 export const TRENDING_BRANDS: BrandEntry[] = make([
-  "Dolce & Gabbana",
   "Gucci",
   "Prada",
   "Louis Vuitton",
@@ -157,4 +156,5 @@ export const TRENDING_BRANDS: BrandEntry[] = make([
   "Valentino",
   "Balenciaga",
   "Bottega Veneta",
+  "Versace",
 ]);
