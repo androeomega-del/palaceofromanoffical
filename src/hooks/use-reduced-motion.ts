@@ -23,14 +23,25 @@ function getSnapshot(): { pref: Pref; reduced: boolean } {
   return { pref, reduced };
 }
 
-// Cached snapshot for referential stability across renders
-let cache = getSnapshot();
+// Deterministic initial snapshot — identical on server AND on client's first
+// hydration pass. We refresh from localStorage / matchMedia only AFTER
+// subscribe() runs, which happens post-hydration. This guarantees React's
+// SSR-text matches the client's first render and avoids hydration error #418.
+const SSR_SNAPSHOT: { pref: Pref; reduced: boolean } = { pref: "system", reduced: false };
+let cache: { pref: Pref; reduced: boolean } = SSR_SNAPSHOT;
+
 function subscribe(cb: () => void) {
   const wrapped = () => {
     cache = getSnapshot();
     cb();
   };
   listeners.add(wrapped);
+  // Refresh to real client value now that we're post-hydration.
+  const real = getSnapshot();
+  if (real.pref !== cache.pref || real.reduced !== cache.reduced) {
+    cache = real;
+    cb();
+  }
   const mq = typeof window !== "undefined" && window.matchMedia
     ? window.matchMedia("(prefers-reduced-motion: reduce)")
     : null;
@@ -46,7 +57,7 @@ function subscribe(cb: () => void) {
 }
 
 export function useReducedMotion() {
-  const state = useSyncExternalStore(subscribe, () => cache, () => cache);
+  const state = useSyncExternalStore(subscribe, () => cache, () => SSR_SNAPSHOT);
 
   // Reflect on <html> for global CSS hooks if needed
   useEffect(() => {

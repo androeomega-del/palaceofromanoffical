@@ -1,50 +1,47 @@
-# Next curation: fully AI-composed + swap the About founder portrait
+## Goal
 
-Two independent changes.
+Stop the production homepage from throwing React **#418** by making the first client render match the server-rendered text exactly.
 
-## 1. Swap the founder portrait on `/about`
+## Likely cause
 
-Today `src/routes/about.tsx` renders `@/assets/founder-option-palazzo.jpg`. Replace it with the LA pinstripe-suit photo you just uploaded.
+`DeliverToButton` is already guarded correctly, so the remaining strongest suspect is the **reduced-motion toggle**:
 
-- Copy `user-uploads://IMG_0848.jpeg` → `src/assets/founder-portrait-la.jpg`
-- In `src/routes/about.tsx`, change the import to the new file and update the `alt` to reflect the new setting (downtown LA at golden hour, three-piece pinstripe). Old file stays in `src/assets/` (archived by unlinking, per the staged-launches rule) — not deleted.
-- No layout, copy, or section changes on the About page.
+- `useReducedMotion()` creates a module-level snapshot with `window/localStorage/matchMedia` logic.
+- On the server it resolves to `system / full motion`.
+- On the client’s first render it can resolve to a saved preference or OS reduced-motion value.
+- That changes text attributes like `aria-label="Motion preferences (currently full/reduced)"` and may change the rendered icon state during hydration.
 
-That's the whole "founder image" change. No Founder Edit block on the homepage.
+Secondary low-risk hardening: portal / overlay components should not render during SSR unless open, because their internals can differ between server and client.
 
-## 2. Make the next 48-hour curation feel fully AI-composed
+## Implementation plan
 
-Right now the cron only emits **one block** (a best-sellers rail) — that's why the homepage doesn't feel pulled together. Rebuild the generator so the next edition is a real multi-block AI composition.
+1. **Fix reduced-motion initial snapshot**
+   - Update `src/hooks/use-reduced-motion.ts` so the `useSyncExternalStore` server snapshot and the client’s first hydration snapshot are the same stable value: `{ pref: "system", reduced: false }`.
+   - After mount/subscription, refresh from `localStorage` and `matchMedia` and emit the real client preference.
+   - This keeps first paint deterministic while preserving user motion preferences immediately after hydration.
 
-Replace `buildFallbackLayout()` in `src/routes/api/public/cron/refresh-homepage-layout.ts` with `buildAiLayout()`. Cold-start fallback stays as the safety net if anything fails.
+2. **Make `ReducedMotionToggle` hydration-neutral**
+   - Keep the initial button label and icon deterministic until mounted.
+   - After mount, show the real `full/reduced` state.
+   - No visual design changes.
 
-The generator will:
+3. **Harden root-level client-only utilities**
+   - Wrap `<Toaster />` in the existing client-only pattern in `src/routes/__root.tsx`.
+   - Leave SEO/content-rendered page sections server-rendered.
 
-1. **Pull live signals in parallel:**
-   - Top trending brands (from `trending.functions.ts`)
-   - Best-selling products by gender (men / women) from Shopify
-   - This week's most-viewed products from `interaction_events`
-   - Current editorial routes (`resort-2026`, `the-new-evening`, `may-2026`)
+4. **Improve production hydration diagnostics**
+   - Extend `src/lib/hydration-monitor.ts` to also listen for `window.error` and `window.unhandledrejection` React minified hydration errors, not only `console.error` warnings.
+   - Store them in `window.__hydrationMismatches` and log a `[hydration-mismatch]` breadcrumb with path and stack tail.
 
-2. **Hand those signals to Claude** via `callLlmJson` in `src/lib/llm.server.ts` (already wired, uses `EMERGENT_LLM_KEY`) with the `PALACE_BRAND_VOICE` system prompt. Claude returns a `HomepageLayout` JSON with curatorial copy for every block — real handles only, USD, no fabricated reviews.
+5. **Verify**
+   - Use the preview console signal after reload to confirm the `#418` no longer appears.
+   - If the diagnostic points to a different component, apply a targeted follow-up fix instead of broad client-only wrapping.
 
-3. **Compose a fixed block order** so the page feels intentional:
-   - `hero` — AI-written eyebrow + headline + sub, image picked by Claude from an editorial-library shortlist we provide
-   - `product_rail` — "This week, women are reaching for…"
-   - `editorial_banner` — links to whichever editorial story is most thematically aligned this cycle, with 3–4 shoppable hotspots
-   - `product_rail` — "This week, men are reaching for…"
-   - `product_rail` — Trending brands strip (one product per top brand)
+## Files to edit
 
-4. **Validate against `homepageLayoutSchema`** before insert. Any LLM failure → fall back to today's cold-start layout so the cron never errors.
+- `src/hooks/use-reduced-motion.ts`
+- `src/components/reduced-motion-toggle.tsx`
+- `src/routes/__root.tsx`
+- `src/lib/hydration-monitor.ts`
 
-## 3. Generate the next edition as a preview
-
-After the generator change, hit the cron with `?preview=true`. That writes a **pending, inactive** row to `homepage_daily_layout` — the live homepage is untouched. You can open `/admin/homepage-curation` and see the fully composed edition before promoting it.
-
-## Technical notes
-
-- All LLM work runs inside the existing cron route — no new endpoints, no new secrets.
-- `EMERGENT_LLM_KEY` is already in env; Claude Sonnet 4.5 is the default model.
-- The cron guardrail (extend viral editions, skip if <48h elapsed) stays as-is.
-- No Shopify writes, no inventory mutations, no admin UI changes.
-- No changes to cart, checkout, or the protected stores (per memory constraints).
+No database, Shopify, checkout, route tree, or product data changes.

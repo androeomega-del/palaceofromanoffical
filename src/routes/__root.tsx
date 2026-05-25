@@ -291,12 +291,21 @@ function RootComponent() {
         </main>
         <SiteFooter />
       </div>
-      <Toaster position="top-center" />
+      <ClientOnlyToaster />
       <WelcomeDispatchModal />
       <ClientOnlyConcierge />
       <ExitIntentStylist />
     </QueryClientProvider>
   );
+}
+
+function ClientOnlyToaster() {
+  // Sonner mounts a portal + reads viewport on first render. Defer to
+  // post-hydration so SSR/CSR text trees match exactly.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
+  return <Toaster position="top-center" />;
 }
 
 function ClientOnlyConcierge() {

@@ -85,28 +85,46 @@ export function installHydrationMonitor(): void {
 
   const originalError = console.error.bind(console);
 
-  console.error = (...args: unknown[]) => {
+  const record = (message: string, args: unknown[], stack?: string | null) => {
     try {
-      const joined = args.map(formatArg).join(" ");
-      if (isHydrationWarning(joined)) {
-        const event: HydrationEvent = {
-          timestamp: new Date().toISOString(),
-          component: extractComponent(joined, args),
-          pathname: window.location?.pathname ?? null,
-          message: joined.slice(0, 500),
-          stackTail: new Error().stack?.split("\n").slice(2, 6).join("\n") ?? null,
-        };
-        const buf = window.__hydrationMismatches!;
-        buf.push(event);
-        if (buf.length > MAX_EVENTS) buf.shift();
-        originalError(
-          `[hydration-mismatch] ${event.timestamp} component=${event.component ?? "unknown"} path=${event.pathname}`,
-          event,
-        );
-      }
+      if (!isHydrationWarning(message)) return false;
+      const event: HydrationEvent = {
+        timestamp: new Date().toISOString(),
+        component: extractComponent(message, args),
+        pathname: window.location?.pathname ?? null,
+        message: message.slice(0, 500),
+        stackTail: (stack ?? new Error().stack)?.split("\n").slice(2, 8).join("\n") ?? null,
+      };
+      const buf = window.__hydrationMismatches!;
+      buf.push(event);
+      if (buf.length > MAX_EVENTS) buf.shift();
+      originalError(
+        `[hydration-mismatch] ${event.timestamp} component=${event.component ?? "unknown"} path=${event.pathname}`,
+        event,
+      );
+      return true;
     } catch {
-      // Never let the monitor itself swallow the original warning.
+      return false;
     }
+  };
+
+  console.error = (...args: unknown[]) => {
+    const joined = args.map(formatArg).join(" ");
+    record(joined, args);
     originalError(...args);
   };
+
+  // Catch minified prod throws (React #418/419/421/422/423/425) that never
+  // hit console.error because React rethrows them as plain Errors.
+  window.addEventListener("error", (ev: ErrorEvent) => {
+    const msg = ev.error instanceof Error ? ev.error.message : ev.message ?? "";
+    const stack = ev.error instanceof Error ? ev.error.stack : null;
+    record(msg, [ev.error ?? msg], stack);
+  });
+  window.addEventListener("unhandledrejection", (ev: PromiseRejectionEvent) => {
+    const reason = ev.reason;
+    const msg = reason instanceof Error ? reason.message : String(reason ?? "");
+    const stack = reason instanceof Error ? reason.stack : null;
+    record(msg, [reason], stack);
+  });
 }
