@@ -175,9 +175,16 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
   });
 
   // Editorial split sources — one image per panel, pulled from real data.
+  // Women's panel pulls from `dresses` (unambiguously women's) so the editorial
+  // image never accidentally surfaces a unisex/men's piece from the broader
+  // womens-clothing collection.
   const womenEditorialQ = useQuery({
-    queryKey: ["home", "women-editorial"],
-    queryFn: () => fetchCollection(WOMENS_CLOTHING_HANDLE, 1).then((c) => c?.products?.edges ?? []),
+    queryKey: ["home", "women-editorial-dresses"],
+    queryFn: async () => {
+      const dresses = await fetchCollection("dresses", 1).then((c) => c?.products?.edges ?? []);
+      if (dresses.length > 0) return dresses;
+      return fetchCollection(WOMENS_CLOTHING_HANDLE, 1).then((c) => c?.products?.edges ?? []);
+    },
   });
   const menEditorialQ = useQuery({
     queryKey: ["home", "men-editorial"],
