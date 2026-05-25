@@ -488,7 +488,7 @@ function AuditLogPanel({ enabled }: { enabled: boolean }) {
               </tr>
             </thead>
             <tbody>
-              {data.map((row) => (
+              {data.map((row: any) => (
                 <tr key={row.id} className="border-b border-border/40 align-top">
                   <td className="py-1.5 pr-3 whitespace-nowrap">{fmtWhen(row.created_at)}</td>
                   <td className="py-1.5 pr-3 font-mono">{row.action}</td>
