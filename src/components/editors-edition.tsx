@@ -132,13 +132,11 @@ function EditionBlocks({ layout }: { layout: HomepageLayout }) {
               if (block.type === "editorial_banner") return <EditionBanner key={block.id} block={block} />;
               if (block.type === "trending_rail") return (
                 <div key={block.id}>
-                  <RailHeader heading={block.heading} subheading={block.subheading} />
                   <TrendingNowRail />
                 </div>
               );
               if (block.type === "for_you_feed") return (
                 <div key={block.id}>
-                  <RailHeader heading={block.heading} subheading={block.subheading} />
                   <ForYouFeed />
                 </div>
               );
