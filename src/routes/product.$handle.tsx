@@ -608,13 +608,15 @@ function ProductView({
 
               {product.options
                 .filter((o) => o.values.length > 1 || o.name.toLowerCase() !== "title")
-                .map((option) => (
+                .map((option, idx) => (
                   <VariantOption
                     key={option.name}
                     option={option}
                     variants={variants}
                     selected={selectedVariant}
                     onSelect={(v) => setSelectedVariantId(v.id)}
+                    invalid={Boolean(sizeError) && idx === 0}
+                    errorText={idx === 0 ? sizeError : null}
                   />
                 ))}
 
@@ -650,12 +652,12 @@ function ProductView({
                 </div>
                 <button
                   onClick={handleAdd}
-                  disabled={isLoading || !selectedVariant?.availableForSale}
-                  className="flex-1 h-16 bg-[var(--studio-ink)] text-[var(--studio-bg)] hover:bg-[var(--studio-bronze)] transition-colors duration-700 text-[11px] uppercase tracking-[0.3em] font-semibold disabled:opacity-50 inline-flex items-center justify-center gap-2 shadow-lg"
+                  aria-busy={isLoading}
+                  className="flex-1 h-16 bg-[var(--studio-ink)] text-[var(--studio-bg)] hover:bg-[var(--studio-bronze)] transition-colors duration-700 text-[11px] uppercase tracking-[0.3em] font-semibold inline-flex items-center justify-center gap-2 shadow-lg"
                 >
                   {isLoading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : !selectedVariant?.availableForSale ? (
+                  ) : selectedVariant && !selectedVariant.availableForSale ? (
                     "Sold Out"
                   ) : (
                     <>
@@ -668,6 +670,7 @@ function ProductView({
                   )}
                 </button>
               </div>
+
 
               {/* Trust anchor — interactive, opens shipping/returns sheet. Full-width, flush under CTA row. */}
               <PdpShippingSheet />
