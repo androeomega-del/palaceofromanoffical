@@ -69,10 +69,28 @@ export const editorialBannerBlockSchema = baseBlock.extend({
   hotspots: z.array(hotspotSchema).max(12).default([]),
 });
 
+export const trendingRailBlockSchema = baseBlock.extend({
+  type: z.literal("trending_rail"),
+  limit: z.number().int().min(1).max(24).optional(),
+});
+
+export const forYouFeedBlockSchema = baseBlock.extend({
+  type: z.literal("for_you_feed"),
+  limit: z.number().int().min(1).max(24).optional(),
+});
+
+export const curationCountdownBlockSchema = baseBlock.extend({
+  type: z.literal("curation_countdown"),
+  variant: z.enum(["hero", "compact"]).optional(),
+});
+
 export const layoutBlockSchema = z.discriminatedUnion("type", [
   heroBlockSchema,
   productRailBlockSchema,
   editorialBannerBlockSchema,
+  trendingRailBlockSchema,
+  forYouFeedBlockSchema,
+  curationCountdownBlockSchema,
 ]);
 
 export const homepageLayoutSchema = z.object({
