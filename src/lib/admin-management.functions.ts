@@ -550,7 +550,7 @@ export const getHomepageLayoutAudit = createServerFn({ method: "GET" })
       edition_id: string | null;
       action: string;
       actor: string | null;
-      details: Record<string, unknown>;
+      details: any;
       created_at: string;
     }>;
   });
