@@ -522,15 +522,6 @@ export const Route = createFileRoute("/api/public/cron/refresh-homepage-layout")
         // 3. Proceed with atomic swap.
         const nextLayout = await buildNextLayout();
 
-        const { error: deactivateErr } = await supabaseAdmin
-          .from("homepage_daily_layout")
-          .update({ is_active: false, status: "archived" })
-          .eq("is_active", true);
-        if (deactivateErr) {
-          console.error("[refresh-homepage-layout] deactivate failed:", deactivateErr);
-          return Response.json({ error: "deactivate_failed" }, { status: 500 });
-        }
-
         const { data: inserted, error: insertErr } = await supabaseAdmin
           .from("homepage_daily_layout")
           .insert({
@@ -544,6 +535,16 @@ export const Route = createFileRoute("/api/public/cron/refresh-homepage-layout")
         if (insertErr) {
             console.error("[refresh-homepage-layout] staged insert failed:", insertErr);
           return Response.json({ error: "insert_failed" }, { status: 500 });
+        }
+
+        const { error: deactivateErr } = await supabaseAdmin
+          .from("homepage_daily_layout")
+          .update({ is_active: false, status: "archived" })
+          .eq("is_active", true)
+          .neq("id", inserted.id);
+        if (deactivateErr) {
+          console.error("[refresh-homepage-layout] deactivate failed:", deactivateErr);
+          return Response.json({ error: "deactivate_failed", staged_layout_id: inserted.id }, { status: 500 });
         }
 
         const { error: activateErr } = await supabaseAdmin
