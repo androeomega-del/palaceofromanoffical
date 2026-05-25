@@ -561,7 +561,7 @@ export function VideoCampaignBand() {
           loop
           playsInline
           preload="metadata"
-          poster={cdnImage(imgForKey("video-poster-houses"), { width: 1600 })}
+          poster={cdnImage(videoPosterHousesImg, { width: 1600 })}
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/35 to-ink/10" />
