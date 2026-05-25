@@ -20,6 +20,16 @@ import { EditionSwitcher } from "@/components/lookbook/edition-switcher";
 import { EditionIntro } from "@/components/lookbook/edition-intro";
 import { EditionEditorialBand } from "@/components/lookbook/edition-editorial-band";
 import { LookbookMasonry } from "@/components/lookbook/lookbook-masonry";
+import {
+  NewArrivalsRail,
+  BestSellersGrid,
+  ShopByCategoryTiles,
+  PriceTierShop,
+  EditorsPicksTriptych,
+  BrandSpotlight,
+  NewsletterVIPBand,
+  TrustReassuranceBand,
+} from "@/components/lookbook/commerce-sections";
 import { TrendingNowRail } from "@/components/trending-now";
 import { ForYouFeed } from "@/components/for-you-feed";
 import { LUXURY_TIERS } from "@/lib/luxury-brands";
