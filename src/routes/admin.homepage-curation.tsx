@@ -12,11 +12,28 @@ import {
   generateHomepagePreview,
   diagnoseHomepage,
   getHomepageLayoutAudit,
-
+  getHomepageEditionById,
 } from "@/lib/admin-management.functions";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { HomepageLayoutPreview } from "@/components/admin/homepage-layout-preview";
 import type { HomepageLayout } from "@/lib/homepage-layout-schema";
 import {
@@ -25,7 +42,6 @@ import {
   Save,
   Power,
   Zap,
-
   Eye,
   CheckCircle2,
   ExternalLink,
