@@ -535,15 +535,24 @@ export const Route = createFileRoute("/api/public/cron/refresh-homepage-layout")
           .from("homepage_daily_layout")
           .insert({
             layout_json: nextLayout as never,
-            is_active: true,
-            status: "active",
+            is_active: false,
+            status: "staged",
             generated_at: new Date().toISOString(),
           })
           .select("id")
           .single();
         if (insertErr) {
-          console.error("[refresh-homepage-layout] insert failed:", insertErr);
+            console.error("[refresh-homepage-layout] staged insert failed:", insertErr);
           return Response.json({ error: "insert_failed" }, { status: 500 });
+        }
+
+        const { error: activateErr } = await supabaseAdmin
+          .from("homepage_daily_layout")
+          .update({ is_active: true, status: "active" })
+          .eq("id", inserted.id);
+        if (activateErr) {
+          console.error("[refresh-homepage-layout] activate new layout failed:", activateErr);
+          return Response.json({ error: "activate_failed" }, { status: 500 });
         }
 
         return Response.json({
