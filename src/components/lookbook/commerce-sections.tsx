@@ -461,14 +461,14 @@ const TRUST_PILLARS: Array<{ icon: typeof ShieldCheck; title: string; copy: stri
     icon: Plane,
     title: "Tracked Worldwide",
     copy: "Ships from the European Union with full tracking and duties handled at checkout. Most orders arrive in 5–9 business days.",
-    href: "/shipping",
+    href: "/shipping-returns",
     cta: "Shipping & duties",
   },
   {
     icon: RefreshCw,
     title: "14-Day Returns",
     copy: "Not quite right? Return any unworn piece within fourteen days of delivery — no restocking fee, no questions about taste.",
-    href: "/returns",
+    href: "/shipping-returns",
     cta: "Returns policy",
   },
 ];
