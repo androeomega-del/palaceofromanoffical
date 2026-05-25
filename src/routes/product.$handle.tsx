@@ -348,8 +348,9 @@ function ProductView({
 
 
   const compareAt = product.compareAtPriceRange?.minVariantPrice;
-  const currentPrice = selectedVariant?.price ?? product.priceRange.minVariantPrice;
+  const currentPrice = previewVariant?.price ?? product.priceRange.minVariantPrice;
   const off = discountPct(currentPrice, compareAt);
+
 
   // Buy-Now hand-off from product cards: scroll to the selector + flash it.
   const buyRef = useRef<HTMLDivElement>(null);
