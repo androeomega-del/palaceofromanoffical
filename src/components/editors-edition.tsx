@@ -23,7 +23,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { CampaignVideo } from "@/components/campaign-video";
 import { DefaultEditionBody } from "@/components/default-edition-body";
 import { TrendingNowRail } from "@/components/trending-now";
-import { ForYouFeed } from "@/components/for-you-feed";
+
 import { CurationCountdown } from "@/components/curation-countdown";
 import { useChromeStore } from "@/stores/chrome-store";
 
