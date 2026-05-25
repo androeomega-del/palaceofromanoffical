@@ -3,6 +3,8 @@ import { z } from "zod";
 import { requireAdmin } from "@/lib/admin-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { homepageLayoutSchema } from "@/lib/homepage-layout-schema";
+import { logHomepageAudit } from "@/lib/homepage-audit.server";
+
 
 /* =========================================================================
  * HOMEPAGE CURATION
