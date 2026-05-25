@@ -113,7 +113,7 @@ const CATEGORY_TILES: CategoryTileDef[] = [
   },
 ];
 
-function HomePage() {
+export function DefaultEditionBody() {
   const newArrivalsQ = useQuery({
     queryKey: ["home", "new-arrivals"],
     queryFn: () => fetchProducts({ first: 12, sortKey: "CREATED_AT", reverse: true }),
