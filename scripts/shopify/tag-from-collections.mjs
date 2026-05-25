@@ -97,13 +97,15 @@ function tagsForCollection(c) {
     const cols = new Set(c.rules.map(r => r.column));
     if (cols.size === 1 && cols.has('vendor')) return [];
   }
-  // Each word in the title is its own tag.
+  // Treat the full collection title as a single tag (preserves multi-word
+  // categories like "Leather Goods" and "Shoulder Bags" so smart-collection
+  // `tag equals` rules match cleanly). Slash-separated titles still split.
   const title = (c.title || '').trim();
   if (!title) return [];
   return title
-    .split(/[\s/]+/)
-    .map(w => w.replace(/['’]s\b/i, '').replace(/[^a-zA-Z0-9-]/g, ''))
-    .filter(w => w && !STOPWORDS.has(w.toLowerCase()));
+    .split('/')
+    .map(part => part.trim().replace(/\s+/g, ' '))
+    .filter(part => part && !STOPWORDS.has(part.toLowerCase()));
 }
 
 let toProcess = collections
