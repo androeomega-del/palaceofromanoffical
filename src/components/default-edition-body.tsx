@@ -243,6 +243,39 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
     }));
   }, [womenBrandsClothingQ.data, womenBrandsShoesQ.data, menBrandsClothingQ.data, menBrandsShoesQ.data]);
 
+  // Cross-rail product deduplication. The homepage stacks several Storefront
+  // queries (linen, leather, sunglasses, new arrivals, best sellers) that can
+  // legitimately overlap — e.g. a linen shirt that's also a best seller. We
+  // dedupe in display order so the FIRST rail to claim a product keeps it,
+  // and downstream rails silently drop the duplicate. Keys (product.id) are
+  // already stable; this just prevents the same card from rendering twice.
+  const dedupedRails = useMemo(() => {
+    const seen = new Set<string>();
+    const take = (edges: ShopifyProduct[] | undefined) => {
+      const out: ShopifyProduct[] = [];
+      for (const edge of edges ?? []) {
+        const id = edge?.node?.id;
+        if (!id || seen.has(id)) continue;
+        seen.add(id);
+        out.push(edge);
+      }
+      return out;
+    };
+    return {
+      summerLinen: take(summerLinenQ.data),
+      italianLeather: take(italianLeatherQ.data),
+      sunglasses: take(sunglassesQ.data),
+      newArrivals: take(newArrivalsQ.data),
+      bestSellers: take(bestSellersQ.data),
+    };
+  }, [
+    summerLinenQ.data,
+    italianLeatherQ.data,
+    sunglassesQ.data,
+    newArrivalsQ.data,
+    bestSellersQ.data,
+  ]);
+
   return (
     <>
       {/* 1. SUMMER BENTO STOREFRONT — Architectural Resort.
