@@ -20,6 +20,7 @@ import { ProductCard } from "@/components/product-card";
 import { EditorialHotspots } from "@/components/editorial-hotspots";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { CampaignVideo } from "@/components/campaign-video";
 import { DefaultEditionBody } from "@/components/default-edition-body";
 import { useChromeStore } from "@/stores/chrome-store";
 
