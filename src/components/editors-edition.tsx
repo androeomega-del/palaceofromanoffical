@@ -49,7 +49,8 @@ class EditionBlocksBoundary extends Component<
     return this.props.children;
   }
 }
-import { useChromeStore } from "@/stores/chrome-store";
+
+
 
 function resolveImage(src: string): string {
   if (src.startsWith("library:")) {
