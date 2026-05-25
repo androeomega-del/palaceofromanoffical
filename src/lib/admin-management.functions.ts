@@ -23,14 +23,39 @@ export const getHomepageCuration = createServerFn({ method: "GET" })
         .maybeSingle(),
       supabaseAdmin
         .from("homepage_daily_layout")
-        .select("id, generated_at, created_at, status, is_active")
+        .select("id, generated_at, created_at, status, is_active, layout_json")
         .order("generated_at", { ascending: false })
         .limit(20),
     ]);
+    const recent = (recentRes.data ?? []).map((r: any) => {
+      const lj = r.layout_json as { source?: string; blocks?: unknown[] } | null;
+      return {
+        id: r.id,
+        generated_at: r.generated_at,
+        created_at: r.created_at,
+        status: r.status,
+        is_active: r.is_active,
+        source: lj?.source ?? null,
+        block_count: Array.isArray(lj?.blocks) ? lj!.blocks!.length : 0,
+      };
+    });
     return {
       active: activeRes.data ?? null,
-      recent: recentRes.data ?? [],
+      recent,
     };
+  });
+
+export const getHomepageEditionById = createServerFn({ method: "GET" })
+  .middleware([requireAdmin])
+  .inputValidator((d: { id: string }) => d)
+  .handler(async ({ data }) => {
+    const { data: row, error } = await supabaseAdmin
+      .from("homepage_daily_layout")
+      .select("id, layout_json, generated_at, status, is_active")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return row;
   });
 
 export const updateHomepageLayoutJson = createServerFn({ method: "POST" })
