@@ -67,7 +67,7 @@ const SECTIONS: { title: string; items: QA[] }[] = [
         a: (
           <>
             Palace of Roman is an official BrandsGateway partner, authorised to resell from a catalogue of more than
-            ninety luxury houses — Gucci, Versace, Balenciaga, Dior, Dolce &amp; Gabbana, Saint Laurent, Prada,
+            ninety luxury houses — Gucci, Versace, Balenciaga, Dior, Prada, Saint Laurent,
             Alexander McQueen, Armani and others. Stock is held in brand-authorised partner warehouses across Italy
             (Milan, Florence, Modena, Como, Rome and more), Sweden, Spain, Austria, Northern Ireland and the United
             States, and shipped sealed from the warehouse holding the piece.
