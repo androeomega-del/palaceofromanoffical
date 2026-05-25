@@ -1,8 +1,45 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
-import { img } from "@/lib/editorial-library";
 import { routeHead } from "@/lib/seo";
+
+// Gender-aware imagery — every option uses a real, on-topic marketing asset
+// so the picture always matches the answer.
+import marketingWomen from "@/assets/marketing-women-summer.jpg";
+import marketingMen from "@/assets/marketing-men-summer.jpg";
+import accessoriesHero from "@/assets/marketing-accessories-summer.jpg";
+
+import womenDress from "@/assets/collections/women-dress.jpg";
+import womenBlouse from "@/assets/collections/women-blouse.jpg";
+import womenOuterwear from "@/assets/collections/women-outerwear.jpg";
+import womenShoes from "@/assets/collections/women-shoes.jpg";
+import menSuit from "@/assets/collections/men-suit.jpg";
+import menShirt from "@/assets/collections/men-shirt.jpg";
+import menOuterwear from "@/assets/collections/men-outerwear.jpg";
+import menShoes from "@/assets/collections/men-shoes.jpg";
+import bags from "@/assets/collections/bags.jpg";
+import knitwear from "@/assets/collections/knitwear.jpg";
+import accessoriesCol from "@/assets/collections/accessories.jpg";
+
+import womenBags from "@/assets/marketing-collections/women-bags.jpg";
+import menBags from "@/assets/marketing-collections/men-bags.jpg";
+import womensShoesAlt from "@/assets/marketing-collections/womens-shoes.jpg";
+import mensShoesAlt from "@/assets/marketing-collections/mens-shoes.jpg";
+import womenAccessories from "@/assets/marketing-collections/women-accessories.jpg";
+import menAccessories from "@/assets/marketing-collections/men-accessories.jpg";
+import suits from "@/assets/marketing-collections/suits.jpg";
+import shirts from "@/assets/marketing-collections/shirts.jpg";
+import skirts from "@/assets/marketing-collections/skirts.jpg";
+import loafers from "@/assets/marketing-collections/loafers.jpg";
+import boots from "@/assets/marketing-collections/boots.jpg";
+
+import dgPortrait from "@/assets/dg-campaign-portrait.jpg";
+import dgDetail1 from "@/assets/dg-campaign-detail-1.jpg";
+import dgDetail2 from "@/assets/dg-campaign-detail-2.jpg";
+import versace from "@/assets/marketing-versace.jpg";
+import ck from "@/assets/marketing-calvin-klein.jpg";
+import jewelry from "@/assets/marketing-jewelry-summer.jpg";
+import sale from "@/assets/marketing-summer-sale.jpg";
 
 export const Route = createFileRoute("/style-quiz")({
   head: () => {
@@ -27,7 +64,7 @@ type Answers = {
 type Option = {
   label: string;
   caption?: string;
-  imageIndex: number;
+  image: string;
   apply: (a: Answers) => Answers;
 };
 
@@ -38,71 +75,108 @@ type Question = {
   options: Option[];
 };
 
-const QUESTIONS: Question[] = [
-  {
-    key: "gender",
-    eyebrow: "01 — The wardrobe",
-    prompt: "Who are we curating for?",
-    options: [
-      { label: "Women", imageIndex: 7, apply: (a) => ({ ...a, gender: "Women" }) },
-      { label: "Men", imageIndex: 13, apply: (a) => ({ ...a, gender: "Men" }) },
-      { label: "Unisex", imageIndex: 41, apply: (a) => ({ ...a, gender: "Unisex" }) },
-    ],
-  },
-  {
-    key: "mood",
-    eyebrow: "02 — The mood",
-    prompt: "Which aesthetic speaks to you?",
-    options: [
-      {
-        label: "Quiet Luxury",
-        caption: "Tonal neutrals, refined tailoring",
-        imageIndex: 12,
-        apply: (a) => ({ ...a, q: "tailoring cashmere wool minimal" }),
-      },
-      {
-        label: "Evening & Occasion",
-        caption: "Drama after dark",
-        imageIndex: 34,
-        apply: (a) => ({ ...a, collection: "dresses", q: "evening silk satin" }),
-      },
-      {
-        label: "Off-Duty Icon",
-        caption: "Denim, sneakers, ease",
-        imageIndex: 58,
-        apply: (a) => ({ ...a, q: "denim sneakers casual" }),
-      },
-      {
-        label: "Statement Pieces",
-        caption: "Loud logos, bold colour",
-        imageIndex: 71,
-        apply: (a) => ({ ...a, q: "logo print colour bold" }),
-      },
-    ],
-  },
-  {
-    key: "category",
-    eyebrow: "03 — The piece",
-    prompt: "What are you in the market for?",
-    options: [
-      { label: "Bags", imageIndex: 19, apply: (a) => ({ ...a, collection: "bags" }) },
-      { label: "Shoes", imageIndex: 76, apply: (a) => ({ ...a, collection: "shoes" }) },
-      { label: "Ready-to-Wear", imageIndex: 9, apply: (a) => ({ ...a, collection: "dresses" }) },
-      { label: "Accessories", imageIndex: 63, apply: (a) => ({ ...a, collection: "sunglasses" }) },
-    ],
-  },
-  {
-    key: "budget",
-    eyebrow: "04 — The investment",
-    prompt: "What's your comfortable range?",
-    options: [
-      { label: "Under $250", imageIndex: 28, apply: (a) => ({ ...a, max: 250 }) },
-      { label: "$250 — $750", imageIndex: 51, apply: (a) => ({ ...a, min: 250, max: 750 }) },
-      { label: "$750 — $1,500", imageIndex: 77, apply: (a) => ({ ...a, min: 750, max: 1500 }) },
-      { label: "No ceiling", imageIndex: 88, apply: (a) => ({ ...a }) },
-    ],
-  },
-];
+// Build the question set dynamically so that every image after Q1 reflects
+// the gender the user selected.
+function buildQuestions(answers: Answers): Question[] {
+  const g: Gender = answers.gender ?? "Women";
+  const isMen = g === "Men";
+  const isUnisex = g === "Unisex";
+
+  // ---- Mood imagery, gender-aware ----
+  const moodQuiet = isMen ? menSuit : isUnisex ? knitwear : womenOuterwear;
+  const moodEvening = isMen ? dgPortrait : dgDetail1;
+  const moodOffDuty = isMen ? menShirt : isUnisex ? ck : womenBlouse;
+  const moodStatement = isMen ? versace : isUnisex ? dgDetail2 : jewelry;
+
+  // ---- Category imagery, gender-aware ----
+  const catBags = isMen ? menBags : isUnisex ? bags : womenBags;
+  const catShoes = isMen ? mensShoesAlt : isUnisex ? loafers : womensShoesAlt;
+  const catRTW = isMen ? suits : isUnisex ? knitwear : womenDress;
+  const catAccessories = isMen ? menAccessories : isUnisex ? accessoriesCol : womenAccessories;
+
+  // ---- Budget tier imagery, also gender-aware where it helps ----
+  const budgetLow = isMen ? shirts : sale;
+  const budgetMid = isMen ? loafers : skirts;
+  const budgetHigh = isMen ? menOuterwear : womenShoes;
+  const budgetTop = isMen ? menSuit : dgPortrait;
+
+  return [
+    {
+      key: "gender",
+      eyebrow: "01 — The wardrobe",
+      prompt: "Who are we curating for?",
+      options: [
+        { label: "Women", image: marketingWomen, apply: (a) => ({ ...a, gender: "Women" }) },
+        { label: "Men", image: marketingMen, apply: (a) => ({ ...a, gender: "Men" }) },
+        { label: "Unisex", image: accessoriesHero, apply: (a) => ({ ...a, gender: "Unisex" }) },
+      ],
+    },
+    {
+      key: "mood",
+      eyebrow: "02 — The mood",
+      prompt: "Which aesthetic speaks to you?",
+      options: [
+        {
+          label: "Quiet Luxury",
+          caption: "Tonal neutrals, refined tailoring",
+          image: moodQuiet,
+          apply: (a) => ({ ...a, q: "tailoring cashmere wool minimal" }),
+        },
+        {
+          label: "Evening & Occasion",
+          caption: "Drama after dark",
+          image: moodEvening,
+          apply: (a) =>
+            isMen
+              ? { ...a, q: "evening tuxedo formal" }
+              : { ...a, collection: "dresses", q: "evening silk satin" },
+        },
+        {
+          label: "Off-Duty Icon",
+          caption: "Denim, sneakers, ease",
+          image: moodOffDuty,
+          apply: (a) => ({ ...a, q: "denim sneakers casual" }),
+        },
+        {
+          label: "Statement Pieces",
+          caption: "Loud logos, bold colour",
+          image: moodStatement,
+          apply: (a) => ({ ...a, q: "logo print colour bold" }),
+        },
+      ],
+    },
+    {
+      key: "category",
+      eyebrow: "03 — The piece",
+      prompt: "What are you in the market for?",
+      options: [
+        { label: "Bags", image: catBags, apply: (a) => ({ ...a, collection: "bags" }) },
+        { label: "Shoes", image: catShoes, apply: (a) => ({ ...a, collection: "shoes" }) },
+        {
+          label: "Ready-to-Wear",
+          image: catRTW,
+          apply: (a) => ({ ...a, collection: isMen ? "men-clothing" : "dresses" }),
+        },
+        {
+          label: "Accessories",
+          image: catAccessories,
+          apply: (a) => ({ ...a, collection: "sunglasses" }),
+        },
+      ],
+    },
+    {
+      key: "budget",
+      eyebrow: "04 — The investment",
+      prompt: "What's your comfortable range?",
+      options: [
+        { label: "Under $250", image: budgetLow, apply: (a) => ({ ...a, max: 250 }) },
+        { label: "$250 — $750", image: budgetMid, apply: (a) => ({ ...a, min: 250, max: 750 }) },
+        { label: "$750 — $1,500", image: budgetHigh, apply: (a) => ({ ...a, min: 750, max: 1500 }) },
+        { label: "No ceiling", image: budgetTop, apply: (a) => ({ ...a }) },
+      ],
+    },
+  ];
+}
 
 function StyleQuizPage() {
   const navigate = useNavigate();
@@ -111,9 +185,10 @@ function StyleQuizPage() {
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
   const [finishing, setFinishing] = useState(false);
 
-  const total = QUESTIONS.length;
+  const questions = buildQuestions(answers);
+  const total = questions.length;
   const isLast = step === total - 1;
-  const question = QUESTIONS[step];
+  const question = questions[step];
   const progressPct = ((step + (selectedIdx !== null ? 1 : 0)) / total) * 100;
 
   function pick(idx: number) {
@@ -201,7 +276,7 @@ function StyleQuizPage() {
                 aria-pressed={selected}
               >
                 <img
-                  src={img(opt.imageIndex)}
+                  src={opt.image}
                   alt=""
                   className={`absolute inset-0 w-full h-full object-cover transition-transform duration-700 ${
                     selected ? "scale-105" : "group-hover:scale-105"
