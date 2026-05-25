@@ -175,15 +175,6 @@ const HERITAGE: Record<string, BrandHeritage> = {
     country: "United Kingdom",
     founded: "1856",
   },
-  "Dolce & Gabbana": {
-    meta: "Maison · Milan · Est. 1985",
-    tagline: "Mediterranean opulence — Sicily Bag, Devotion, Majolica.",
-    description:
-      "Domenico Dolce and Stefano Gabbana have spent four decades distilling Italian sensuality into corseted slip dresses, baroque tailoring, and the Sicily handbag. Crystal embroidery, lace, and Majolica prints define the maison's unmistakable Mediterranean voice.",
-    signatures: ["Sicily Bag", "Devotion", "Sicily 62", "Majolica Print", "Lace Slip"],
-    country: "Italy",
-    founded: "1985",
-  },
   "Calvin Klein": {
     meta: "House · New York · Est. 1968",
     tagline: "American minimalism, perfected — Slip Dress, CK Logo, Eternity.",
