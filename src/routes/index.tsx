@@ -20,17 +20,7 @@ import { EditionSwitcher } from "@/components/lookbook/edition-switcher";
 // EditionIntro intentionally removed — it duplicated the active-edition (swim) pitch right under the hero.
 import { EditionEditorialBand } from "@/components/lookbook/edition-editorial-band";
 import { LookbookMasonry } from "@/components/lookbook/lookbook-masonry";
-import {
-  NewArrivalsRail,
-  BestSellersGrid,
-  ShopByCategoryTiles,
-  PriceTierShop,
-  EditorsPicksTriptych,
-  BrandSpotlight,
-  NewsletterVIPBand,
-  TrustReassuranceBand,
-  VideoCampaignBand,
-} from "@/components/lookbook/commerce-sections";
+import { ShopByCategoryTiles } from "@/components/lookbook/commerce-sections";
 import { TrendingNowRail } from "@/components/trending-now";
 import { ForYouFeed } from "@/components/for-you-feed";
 import { LUXURY_TIERS } from "@/lib/luxury-brands";
@@ -175,29 +165,14 @@ function EditionSpine() {
         >
           <EditionHero edition={active} />
 
-          {/* — Commerce push #1: Just In ——————————————————— */}
-          <NewArrivalsRail />
-
           {/* — Shop by category tiles (40% Women · 40% Men · 20% Unisex) — */}
           <ShopByCategoryTiles />
 
           {/* The Edition lookbook — single merged masonry of all shoppable looks */}
-          <LookbookMasonry edition={active} productOffset={0} productLimit={14} />
-
-          {/* Edition editorial band — quiet pause between commerce blocks */}
-          <EditionEditorialBand edition={active} />
-
-          {/* — Editorial film: Houses in Motion ——————————————————— */}
-          <VideoCampaignBand />
+          <LookbookMasonry edition={active} productOffset={0} productLimit={8} />
 
           {/* Trending This Week — data-driven (hidden until signal) */}
           <TrendingNowRail />
-
-          {/* — Editor's picks triptych ——————————————————— */}
-          <EditorsPicksTriptych />
-
-          {/* — Best sellers grid ——————————————————— */}
-          <BestSellersGrid />
 
           {/* Style Quiz CTA */}
           <StyleQuizCTA />
@@ -205,20 +180,14 @@ function EditionSpine() {
           {/* Curated For You — personalised */}
           <ForYouFeed />
 
-          {/* — Price-tier shop ——————————————————— */}
-          <PriceTierShop />
+          {/* Edition editorial band — quiet pause */}
+          <EditionEditorialBand edition={active} />
 
-          {/* — Brand spotlight ——————————————————— */}
-          <BrandSpotlight />
+          {/* Lookbook masonry pt.2 */}
+          <LookbookMasonry edition={active} productOffset={8} productLimit={8} />
 
           {/* The Houses — tiered designer directory */}
           <FeaturedHouses />
-
-          {/* — VIP newsletter capture ——————————————————— */}
-          <NewsletterVIPBand />
-
-          {/* — Trust reassurance ——————————————————— */}
-          <TrustReassuranceBand />
         </motion.div>
       </AnimatePresence>
     </>
