@@ -521,7 +521,6 @@ export function TrustReassuranceBand() {
 // ─────────────────────────────────────────────────────────────────────────────
 // VIDEO CAMPAIGN BAND — full-bleed editorial film for the women + men edit
 // ─────────────────────────────────────────────────────────────────────────────
-import housesInMotionAsset from "@/assets/houses-in-motion.mp4.asset.json";
 
 export function VideoCampaignBand() {
   return (
