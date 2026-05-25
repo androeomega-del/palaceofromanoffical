@@ -21,7 +21,7 @@ import { Sparkles, ShieldCheck, Plane, RefreshCw, ArrowRight } from "lucide-reac
 
 import { fetchProducts, formatPrice, type ShopifyProduct } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
-import { imgForKey } from "@/lib/editorial-library";
+// imgForKey no longer needed — every editorial spot now uses a dedicated generated image.
 import { NewsletterForm } from "@/components/newsletter-form";
 import { cdnImage } from "@/lib/cdn-image";
 import housesInMotionAsset from "@/assets/houses-in-motion.mp4.asset.json";
