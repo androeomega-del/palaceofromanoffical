@@ -438,30 +438,13 @@ function AdminHomepageCuration() {
                 Recent editions
               </div>
               <div className="space-y-2">
-                {data.recent.map((r) => (
-                  <div
+                {data.recent.map((r: any) => (
+                  <RecentEditionRow
                     key={r.id}
-                    className="flex items-center justify-between text-xs border-b border-border/40 py-2 gap-3"
-                  >
-                    <span className="font-mono">{r.id.slice(0, 8)}</span>
-                    <span className="text-muted-foreground">{fmtWhen(r.generated_at)}</span>
-                    <Badge variant={r.is_active ? "default" : "secondary"}>
-                      {r.is_active ? "active" : r.status}
-                    </Badge>
-                    {!r.is_active ? (
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => activateMut.mutate(r.id)}
-                        disabled={activateMut.isPending}
-                      >
-                        <Power className="h-3 w-3 mr-1" />
-                        Re-activate
-                      </Button>
-                    ) : (
-                      <span className="w-[100px]" />
-                    )}
-                  </div>
+                    row={r}
+                    onActivate={() => activateMut.mutate(r.id)}
+                    activating={activateMut.isPending}
+                  />
                 ))}
               </div>
             </Card>
