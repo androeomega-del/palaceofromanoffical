@@ -296,14 +296,31 @@ function ProductView({
   const altBase = product.vendor ? `${product.title} — ${product.vendor}` : product.title;
   const variants = product.variants.edges.map((e) => e.node);
   const firstAvailable = variants.find((v) => v.availableForSale) ?? variants[0];
-  const [selectedVariantId, setSelectedVariantId] = useState<string | undefined>(firstAvailable?.id);
+  // No default size selection — shopper must pick. Single-variant products
+  // (title-only option) auto-select since there's nothing to choose.
+  const requiredOptions = useMemo(
+    () =>
+      (product.options ?? []).filter(
+        (o) => o.values.length > 1 || o.name.toLowerCase() !== "title",
+      ),
+    [product.options],
+  );
+  const isSingleVariant = requiredOptions.length === 0;
+  const [selectedVariantId, setSelectedVariantId] = useState<string | undefined>(
+    isSingleVariant ? firstAvailable?.id : undefined,
+  );
   const [quantity, setQuantity] = useState(1);
   const [activeImg, setActiveImg] = useState(0);
+  const [sizeError, setSizeError] = useState<string | null>(null);
+  const sizeErrorTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const selectedVariant = useMemo(
-    () => variants.find((v) => v.id === selectedVariantId) ?? firstAvailable,
-    [variants, selectedVariantId, firstAvailable],
+    () => variants.find((v) => v.id === selectedVariantId),
+    [variants, selectedVariantId],
   );
+  // Price preview uses selected variant if any, else first available
+  const previewVariant = selectedVariant ?? firstAvailable;
+
 
   const addItem = useCartStore((s) => s.addItem);
   const openDrawer = useCartStore((s) => s.openDrawer);
