@@ -411,7 +411,7 @@ export const Route = createFileRoute("/api/public/cron/refresh-homepage-layout")
             .insert({
               layout_json: previewLayout as never,
               is_active: false,
-              status: "pending",
+              status: "staged",
               generated_at: new Date().toISOString(),
             })
             .select("id")
