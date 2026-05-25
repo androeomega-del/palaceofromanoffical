@@ -36,15 +36,21 @@ export const getHomepageCuration = createServerFn({ method: "GET" })
 export const updateHomepageLayoutJson = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
   .inputValidator((d: { id: string; layout_json: unknown }) => d)
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
     const parsed = homepageLayoutSchema.parse(data.layout_json);
     const { error } = await supabaseAdmin
       .from("homepage_daily_layout")
       .update({ layout_json: parsed as never })
       .eq("id", data.id);
     if (error) throw new Error(error.message);
+    await logHomepageAudit({
+      action: "manual_edit",
+      edition_id: data.id,
+      actor: context.userId,
+    });
     return { ok: true };
   });
+
 
 export const activateHomepageLayout = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
