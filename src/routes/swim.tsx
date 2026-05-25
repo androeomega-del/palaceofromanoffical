@@ -75,7 +75,10 @@ function SwimPage() {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   const filterInputs = useMemo(() => {
-    const arr: object[] = selections.map((s) => JSON.parse(s.input));
+    // Always scope /swim to women — men's swim lives elsewhere in the
+    // catalog (see Men's Swim campaign). This page is the women's edit only.
+    const base: object[] = [{ tag: "Women" }];
+    const arr: object[] = [...base, ...selections.map((s) => JSON.parse(s.input))];
     if (priceRange) arr.push({ price: { min: priceRange.min, max: priceRange.max } });
     return arr;
   }, [selections, priceRange]);

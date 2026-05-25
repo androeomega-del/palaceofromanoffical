@@ -133,16 +133,29 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
       return fetchProducts({ first: 8, sortKey: "BEST_SELLING" });
     },
   });
-  const swimwearQ = useQuery({
-    queryKey: ["home", "swimwear"],
-    queryFn: () => fetchCollection("swimwear", 12).then((c) => c?.products?.edges ?? []),
+  // Summer Linen — gender-neutral white & natural edit (replaces a duplicate
+  // Trending rail). Falls back to a generic "summer" search if linen returns
+  // nothing so the rail never renders empty.
+  const summerLinenQ = useQuery({
+    queryKey: ["home", "summer-linen"],
+    queryFn: async () => {
+      const primary = await fetchSearchFiltered({ first: 12, query: "linen" }).then((r) => r.edges);
+      if (primary.length > 0) return primary;
+      return fetchSearchFiltered({ first: 12, query: "shirt" }).then((r) => r.edges);
+    },
   });
-  // Fallback rail when swim is unpublished to the Lovable sales channel —
-  // hoodies always have stock, so the rail never renders empty.
-  const swimFallbackQ = useQuery({
-    queryKey: ["home", "swim-fallback-hoodies"],
-    queryFn: () => fetchCollection("hoodies", 12).then((c) => c?.products?.edges ?? []),
-    enabled: swimwearQ.isSuccess && (swimwearQ.data?.length ?? 0) === 0,
+  // Sunglasses & Eyewear — universal summer essential, replaces the second
+  // swim/beach rail. Same fallback pattern.
+  const sunglassesQ = useQuery({
+    queryKey: ["home", "summer-sunglasses"],
+    queryFn: async () => {
+      const primary = await fetchSearchFiltered({
+        first: 12,
+        query: "product_type:Sunglasses OR product_type:Eyewear",
+      }).then((r) => r.edges);
+      if (primary.length > 0) return primary;
+      return fetchSearchFiltered({ first: 12, query: "sunglasses" }).then((r) => r.edges);
+    },
   });
 
   // Editorial split sources — one image per panel, pulled from real data.
@@ -284,45 +297,59 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
 
 
 
-
-
-      {/* 1b. SWIMWEAR RAIL — Bikinis, Beachwear, Resort (with hoodies fallback) */}
-      {(() => {
-        const swimEdges = swimwearQ.data ?? [];
-        const useFallback = swimwearQ.isSuccess && swimEdges.length === 0;
-        const edges = useFallback ? (swimFallbackQ.data ?? []) : swimEdges;
-        const loading = useFallback ? swimFallbackQ.isLoading : swimwearQ.isLoading;
-        const eyebrow = useFallback ? "Wardrobe Essentials" : "Sun, Sand & Salt";
-        const heading = useFallback ? "Hoodies — In Stock Now" : "Swim & Beachwear";
-        const sub = useFallback
-          ? "Heavyweight loopback and brushed fleece from the houses — ready to ship."
-          : "Designer bikinis, swimsuits and resort pieces — built for the season.";
-        const linkTo = useFallback ? "/collections/$handle" : "/swim";
-        const linkParams = useFallback ? { handle: "hoodies" } : undefined;
-        const linkLabel = useFallback ? "Shop all hoodies" : "Shop all swimwear";
-        return (
-          <section className="py-20 md:py-24 bg-canvas-raised">
-            <div className="max-w-screen-2xl mx-auto">
-              <div className="flex justify-between items-end mb-10 md:mb-12 px-6">
-                <div>
-                  <span className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-3 block">
-                    {eyebrow}
-                  </span>
-                  <h2 className="text-3xl md:text-4xl font-serif">{heading}</h2>
-                  <p className="text-xs md:text-sm text-muted-foreground mt-3 max-w-md">{sub}</p>
-                </div>
-                <Link
-                  {...({ to: linkTo, params: linkParams } as any)}
-                  className="text-[11px] uppercase tracking-[0.25em] border-b border-ink/20 pb-1 hover:border-ink hidden md:inline-block"
-                >
-                  {linkLabel}
-                </Link>
-              </div>
-              <HorizontalRail edges={edges} loading={loading} />
+      {/* SUMMER LINEN RAIL — gender-neutral white & natural edit. Replaces
+          the duplicate "Trending This Week" that the AI edition band also
+          renders, so visitors never see Trending twice. */}
+      <section className="py-20 md:py-24 bg-canvas">
+        <div className="max-w-screen-2xl mx-auto">
+          <div className="flex justify-between items-end mb-10 md:mb-12 px-6">
+            <div>
+              <span className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-3 block">
+                Summer Whites
+              </span>
+              <h2 className="text-3xl md:text-4xl font-serif">The Linen Edit</h2>
+              <p className="text-xs md:text-sm text-muted-foreground mt-3 max-w-md">
+                Featherweight linens and breathable cottons — pieces built for the warmer months, for him and for her.
+              </p>
             </div>
-          </section>
-        );
-      })()}
+            <Link
+              to="/shop"
+              search={{ q: "linen", title: "The Linen Edit" }}
+              className="text-[11px] uppercase tracking-[0.25em] border-b border-ink/20 pb-1 hover:border-ink hidden md:inline-block"
+            >
+              Shop the Edit
+            </Link>
+          </div>
+          <HorizontalRail edges={summerLinenQ.data ?? []} loading={summerLinenQ.isLoading} />
+        </div>
+      </section>
+
+      {/* SUNGLASSES RAIL — universal summer essential. Replaces the second
+          swim/beach rail (we already have two swim-led cards in the bento). */}
+      <section className="py-20 md:py-24 bg-canvas-raised">
+        <div className="max-w-screen-2xl mx-auto">
+          <div className="flex justify-between items-end mb-10 md:mb-12 px-6">
+            <div>
+              <span className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-3 block">
+                Summer Essentials
+              </span>
+              <h2 className="text-3xl md:text-4xl font-serif">Sunglasses &amp; Eyewear</h2>
+              <p className="text-xs md:text-sm text-muted-foreground mt-3 max-w-md">
+                Designer frames from the maisons — the finishing piece for every Resort look.
+              </p>
+            </div>
+            <Link
+              to="/shop"
+              search={{ q: "product_type:Sunglasses OR product_type:Eyewear", title: "Sunglasses & Eyewear" }}
+              className="text-[11px] uppercase tracking-[0.25em] border-b border-ink/20 pb-1 hover:border-ink hidden md:inline-block"
+            >
+              Shop all eyewear
+            </Link>
+          </div>
+          <HorizontalRail edges={sunglassesQ.data ?? []} loading={sunglassesQ.isLoading} />
+        </div>
+      </section>
+
 
 
 
@@ -1075,14 +1102,14 @@ function SummerBento({
           <div className="absolute inset-0 bg-gradient-to-t from-ink/60 via-ink/20 to-transparent" />
           <div className="relative z-10 p-8 md:p-10">
             <span className="text-[10px] uppercase tracking-[0.3em] text-canvas/90 mb-3 block">
-              The Beach Edit
+              The Resort Edit
             </span>
             <h3 className="font-serif text-3xl md:text-4xl text-canvas mb-3 leading-tight">
-              Bikinis &amp;
-              <span className="block italic">Swimwear</span>
+              Two-Piece
+              <span className="block italic">&amp; Swim</span>
             </h3>
             <p className="text-[11px] tracking-[0.25em] text-canvas/85 uppercase">
-              Resort 2026 — In Stock
+              Women's Swim — In Stock
             </p>
           </div>
         </Link>

@@ -130,11 +130,11 @@ function EditionBlocks({ layout }: { layout: HomepageLayout }) {
               if (block.type === "hero") return <EditionHero key={block.id} block={block} />;
               if (block.type === "product_rail") return <EditionRail key={block.id} block={block} />;
               if (block.type === "editorial_banner") return <EditionBanner key={block.id} block={block} />;
-              if (block.type === "trending_rail") return (
-                <div key={block.id}>
-                  <TrendingNowRail />
-                </div>
-              );
+              // trending_rail blocks from the AI layout are intentionally
+              // skipped — DefaultEditionBody already renders <TrendingNowRail />
+              // once, so honouring an AI trending block would produce a duplicate
+              // "Trending This Week" section on the homepage.
+              if (block.type === "trending_rail") return null;
               if (block.type === "for_you_feed") return (
                 <div key={block.id}>
                   <ForYouFeed />
