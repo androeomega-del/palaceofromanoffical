@@ -1128,7 +1128,7 @@ function SummerBento({
               <span className="block italic">Swimwear</span>
             </h3>
             <p className="text-[11px] tracking-[0.25em] text-canvas/85 uppercase">
-              Dolce &amp; Gabbana — In Stock
+              Resort 2026 — In Stock
             </p>
           </div>
         </Link>
