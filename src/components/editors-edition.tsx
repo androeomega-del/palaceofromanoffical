@@ -107,12 +107,12 @@ function EditionHero({ block }: { block: Extract<HomepageLayout["blocks"][number
           </p>
         )}
         {block.cta && (
-          <Link
-            to={block.cta.href}
+          <a
+            href={block.cta.href}
             className="mt-6 inline-flex items-center gap-2 px-6 py-3 bg-canvas text-ink text-[11px] uppercase tracking-[0.25em] hover:bg-bronze hover:text-canvas transition-colors"
           >
             {block.cta.label} →
-          </Link>
+          </a>
         )}
       </div>
     </div>
@@ -215,12 +215,12 @@ function EditionBanner({ block }: { block: Extract<HomepageLayout["blocks"][numb
             )}
           </div>
           {block.cta && (
-            <Link
-              to={block.cta.href}
+            <a
+              href={block.cta.href}
               className="text-[11px] uppercase tracking-[0.25em] text-ink border-b border-bronze/40 hover:text-bronze hover:border-bronze pb-0.5 transition-colors"
             >
               {block.cta.label} →
-            </Link>
+            </a>
           )}
         </div>
       )}
