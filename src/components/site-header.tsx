@@ -132,7 +132,7 @@ export function SiteHeader() {
       <header className="sticky top-0 z-50 bg-canvas/95 backdrop-blur-md border-b border-ink/10">
         <div className="max-w-screen-2xl mx-auto px-6 md:px-10 h-20 grid grid-cols-[1fr_auto_1fr] items-center gap-6">
           {/* Left nav (desktop) */}
-          <nav className="hidden lg:flex items-center gap-7 text-[11px] uppercase tracking-[0.25em] font-medium justify-self-end">
+          <nav className="hidden md:flex items-center gap-7 text-[11px] uppercase tracking-[0.25em] font-medium justify-self-end">
             <FlatLinks items={flatLeft} />
             <DesktopMegamenu />
           </nav>
@@ -142,7 +142,7 @@ export function SiteHeader() {
             type="button"
             aria-label="Open menu"
             onClick={() => setMobileOpen(true)}
-            className="lg:hidden justify-self-start hover:text-bronze transition-colors inline-flex items-center justify-center w-9 h-9 -ml-2"
+            className="md:hidden justify-self-start hover:text-bronze transition-colors inline-flex items-center justify-center w-9 h-9 -ml-2"
           >
             <Menu className="w-5 h-5" strokeWidth={1.25} />
           </button>
