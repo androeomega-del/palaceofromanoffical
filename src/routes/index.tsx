@@ -29,6 +29,7 @@ import {
   BrandSpotlight,
   NewsletterVIPBand,
   TrustReassuranceBand,
+  VideoCampaignBand,
 } from "@/components/lookbook/commerce-sections";
 import { TrendingNowRail } from "@/components/trending-now";
 import { ForYouFeed } from "@/components/for-you-feed";
@@ -178,11 +179,17 @@ function EditionSpine() {
           {/* — Commerce push #1: Just In ——————————————————— */}
           <NewArrivalsRail />
 
-          {/* Lookbook masonry pt.1 — shoppable hotspots */}
-          <LookbookMasonry edition={active} productOffset={0} productLimit={6} />
-
-          {/* — Shop by category tiles ——————————————————— */}
+          {/* — Shop by category tiles (40% Women · 40% Men · 20% Unisex) — */}
           <ShopByCategoryTiles />
+
+          {/* The Edition lookbook — single merged masonry of all shoppable looks */}
+          <LookbookMasonry edition={active} productOffset={0} productLimit={14} />
+
+          {/* Edition editorial band — quiet pause between commerce blocks */}
+          <EditionEditorialBand edition={active} />
+
+          {/* — Editorial film: Houses in Motion ——————————————————— */}
+          <VideoCampaignBand />
 
           {/* Trending This Week — data-driven (hidden until signal) */}
           <TrendingNowRail />
@@ -201,12 +208,6 @@ function EditionSpine() {
 
           {/* — Price-tier shop ——————————————————— */}
           <PriceTierShop />
-
-          {/* Edition editorial band */}
-          <EditionEditorialBand edition={active} />
-
-          {/* Lookbook masonry pt.2 */}
-          <LookbookMasonry edition={active} productOffset={6} productLimit={8} />
 
           {/* — Brand spotlight ——————————————————— */}
           <BrandSpotlight />

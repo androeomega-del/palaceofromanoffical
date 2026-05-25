@@ -24,6 +24,7 @@ import { ProductCard } from "@/components/product-card";
 import { imgForKey } from "@/lib/editorial-library";
 import { NewsletterForm } from "@/components/newsletter-form";
 import { cdnImage } from "@/lib/cdn-image";
+import housesInMotionAsset from "@/assets/houses-in-motion.mp4.asset.json";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // NEW ARRIVALS — horizontal scroll rail
@@ -136,13 +137,19 @@ export function BestSellersGrid() {
 // ─────────────────────────────────────────────────────────────────────────────
 // SHOP BY CATEGORY — six editorial tiles
 // ─────────────────────────────────────────────────────────────────────────────
+// 40% Women · 40% Men · 20% Unisex — 10 tiles (4 / 4 / 2). Order alternates
+// gender to keep visual rhythm across the grid.
 const CATEGORY_TILES: Array<{ handle: string; label: string; eyebrow: string; imgKey: string }> = [
-  { handle: "women-bags", label: "Bags", eyebrow: "Women", imgKey: "tile-bags-women" },
+  { handle: "women-bags", label: "Handbags", eyebrow: "Women", imgKey: "tile-bags-women" },
+  { handle: "men-bags", label: "Bags", eyebrow: "Men", imgKey: "tile-bags-men" },
   { handle: "womens-shoes", label: "Shoes", eyebrow: "Women", imgKey: "tile-shoes-women" },
+  { handle: "men-shoes", label: "Shoes", eyebrow: "Men", imgKey: "tile-shoes-men" },
   { handle: "dresses", label: "Dresses", eyebrow: "Women", imgKey: "tile-dresses" },
-  { handle: "mens-clothing", label: "Menswear", eyebrow: "Men", imgKey: "tile-menswear" },
+  { handle: "mens-clothing", label: "Tailoring", eyebrow: "Men", imgKey: "tile-menswear" },
+  { handle: "coats-women", label: "Outerwear", eyebrow: "Women", imgKey: "tile-outerwear-women" },
+  { handle: "men-accessories", label: "Accessories", eyebrow: "Men", imgKey: "tile-accessories-men" },
   { handle: "sunglasses", label: "Sunglasses", eyebrow: "Unisex", imgKey: "tile-sunglasses" },
-  { handle: "coats-women", label: "Outerwear", eyebrow: "Women", imgKey: "tile-outerwear" },
+  { handle: "accessories", label: "Small Leather", eyebrow: "Unisex", imgKey: "tile-leather-unisex" },
 ];
 
 export function ShopByCategoryTiles() {
@@ -165,7 +172,8 @@ export function ShopByCategoryTiles() {
             All categories →
           </Link>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-5">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-5">
+          <p className="sr-only">A balanced edit: 40% women, 40% men, 20% unisex — bags, shoes, ready-to-wear, accessories and sunglasses.</p>
           {CATEGORY_TILES.map((tile, i) => (
             <motion.div
               key={tile.handle}
@@ -509,6 +517,62 @@ export function TrustReassuranceBand() {
     </section>
   );
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// VIDEO CAMPAIGN BAND — full-bleed editorial film for the women + men edit
+// ─────────────────────────────────────────────────────────────────────────────
+
+export function VideoCampaignBand() {
+  return (
+    <section
+      aria-label="Palace of Roman — Houses in Motion"
+      className="relative bg-ink text-canvas border-t border-ink/10 overflow-hidden"
+    >
+      <div className="relative h-[78vh] min-h-[520px] md:min-h-[640px] w-full">
+        <video
+          src={housesInMotionAsset.url}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster={cdnImage(imgForKey("video-poster-houses"), { width: 1600 })}
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/35 to-ink/10" />
+        <div className="relative z-10 h-full max-w-screen-2xl mx-auto px-6 md:px-10 flex flex-col justify-end pb-12 md:pb-20">
+          <p className="text-[10px] uppercase tracking-[0.32em] text-bronze mb-4">
+            The Film · Houses in Motion
+          </p>
+          <h2 className="font-serif text-4xl md:text-6xl lg:text-7xl leading-[1.02] max-w-[18ch] text-balance">
+            Italian glamour, in motion.
+          </h2>
+          <p className="mt-5 max-w-xl text-[13px] md:text-sm text-canvas/80 leading-relaxed">
+            A short film for the season — the women's edit and the men's edit, shot
+            in a single palazzo. Shop the looks.
+          </p>
+          <div className="mt-7 flex flex-wrap items-center gap-4">
+            <Link
+              to="/collections/$handle"
+              params={{ handle: "women" }}
+              className="inline-flex items-center gap-3 px-7 py-3.5 bg-canvas text-ink text-[11px] uppercase tracking-[0.28em] hover:bg-bronze hover:text-canvas transition-colors"
+            >
+              Shop Women <ArrowRight className="w-3.5 h-3.5" strokeWidth={1.5} />
+            </Link>
+            <Link
+              to="/collections/$handle"
+              params={{ handle: "men" }}
+              className="inline-flex items-center gap-3 px-7 py-3.5 border border-canvas/60 text-canvas text-[11px] uppercase tracking-[0.28em] hover:bg-canvas hover:text-ink transition-colors"
+            >
+              Shop Men <ArrowRight className="w-3.5 h-3.5" strokeWidth={1.5} />
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared rail skeleton — editorial-neutral, no spinner
