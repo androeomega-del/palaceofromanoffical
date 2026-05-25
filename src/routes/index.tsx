@@ -15,7 +15,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Palace of Roman — Curated Luxury Fashion" },
-      { name: "description", content: "Shop curated luxury fashion from Gucci, Prada, Saint Laurent, Dolce & Gabbana and 500+ designer houses. 100% authentic. Worldwide shipping." },
+      { name: "description", content: "Shop curated luxury fashion from Gucci, Prada, Saint Laurent, Versace and 500+ designer houses. 100% authentic. Worldwide shipping." },
       { property: "og:title", content: "Palace of Roman — Curated Luxury Fashion" },
       { property: "og:description", content: "Shop curated luxury fashion from 500+ designer houses. 100% authentic. Worldwide shipping." },
       { property: "og:url", content: "https://palaceofromanofficial.com/" },
