@@ -402,7 +402,7 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
               Shop the Atelier
             </Link>
           </div>
-          <HorizontalRail edges={italianLeatherQ.data ?? []} loading={italianLeatherQ.isLoading} />
+          <HorizontalRail edges={dedupedRails.italianLeather} loading={italianLeatherQ.isLoading} />
         </div>
       </section>
 
