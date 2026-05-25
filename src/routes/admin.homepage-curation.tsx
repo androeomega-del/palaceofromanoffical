@@ -450,10 +450,66 @@ function AdminHomepageCuration() {
             </Card>
           </div>
         )}
+
+        <AuditLogPanel enabled={authReady} />
       </div>
     </main>
   );
 }
+
+function AuditLogPanel({ enabled }: { enabled: boolean }) {
+  const { data, isLoading } = useQuery({
+    queryKey: ["admin", "homepage-audit"],
+    queryFn: () => getHomepageLayoutAudit(),
+    enabled,
+    refetchInterval: 30_000,
+  });
+  return (
+    <Card className="p-5">
+      <h2 className="font-serif text-lg mb-3">Audit log</h2>
+      <p className="text-xs text-muted-foreground mb-4">
+        Last 50 homepage edition events (generate, activate, archive, force refresh, failures).
+      </p>
+      {isLoading ? (
+        <p className="text-xs text-muted-foreground">Loading…</p>
+      ) : !data || data.length === 0 ? (
+        <p className="text-xs text-muted-foreground">No events yet.</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead className="text-left text-muted-foreground border-b border-border">
+              <tr>
+                <th className="py-1.5 pr-3 font-medium">When</th>
+                <th className="py-1.5 pr-3 font-medium">Action</th>
+                <th className="py-1.5 pr-3 font-medium">Actor</th>
+                <th className="py-1.5 pr-3 font-medium">Edition</th>
+                <th className="py-1.5 font-medium">Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((row) => (
+                <tr key={row.id} className="border-b border-border/40 align-top">
+                  <td className="py-1.5 pr-3 whitespace-nowrap">{fmtWhen(row.created_at)}</td>
+                  <td className="py-1.5 pr-3 font-mono">{row.action}</td>
+                  <td className="py-1.5 pr-3">{row.actor ?? "—"}</td>
+                  <td className="py-1.5 pr-3 font-mono">
+                    {row.edition_id ? row.edition_id.slice(0, 8) : "—"}
+                  </td>
+                  <td className="py-1.5 font-mono text-[10px] text-muted-foreground break-all">
+                    {row.details && Object.keys(row.details).length > 0
+                      ? JSON.stringify(row.details)
+                      : "—"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </Card>
+  );
+}
+
 
 type Issue = {
   severity: "ok" | "info" | "warning" | "error";
