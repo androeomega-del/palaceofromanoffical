@@ -873,12 +873,12 @@ function ProductView({
           </div>
           <button
             onClick={handleAdd}
-            disabled={isLoading || !selectedVariant?.availableForSale}
-            className="h-12 px-5 bg-[var(--studio-ink)] text-[var(--studio-bg)] hover:bg-[var(--studio-bronze)] transition-colors text-[10px] uppercase tracking-[0.25em] font-semibold disabled:opacity-50 inline-flex items-center justify-center gap-2 shadow-md"
+            aria-busy={isLoading}
+            className="h-12 px-5 bg-[var(--studio-ink)] text-[var(--studio-bg)] hover:bg-[var(--studio-bronze)] transition-colors text-[10px] uppercase tracking-[0.25em] font-semibold inline-flex items-center justify-center gap-2 shadow-md"
           >
             {isLoading ? (
               <Loader2 className="w-4 h-4 animate-spin" />
-            ) : !selectedVariant?.availableForSale ? (
+            ) : selectedVariant && !selectedVariant.availableForSale ? (
               "Sold Out"
             ) : (
               <>
@@ -887,6 +887,7 @@ function ProductView({
               </>
             )}
           </button>
+
         </div>
       </div>
     </div>
