@@ -133,14 +133,14 @@ export const forceRefreshHomepage = createServerFn({ method: "POST" })
       process.env.VITE_SITE_URL ||
       "https://palaceofromanofficial.com";
     let status = 0;
-    let body: Record<string, unknown> = {};
+    let body: any = {};
     try {
       const res = await fetch(`${base}/api/public/cron/refresh-homepage-layout?force=true`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });
       status = res.status;
-      body = (await res.json().catch(() => ({}))) as Record<string, unknown>;
+      body = await res.json().catch(() => ({}));
     } catch (e) {
       await logHomepageAudit({
         action: "generation_failed",
