@@ -61,6 +61,10 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const cardRef = useRef<HTMLAnchorElement | null>(null);
   const impressionFired = useRef(false);
+  const [quickAddState, setQuickAddState] = useState<"idle" | "sizing" | "success">("idle");
+  const [successLabel, setSuccessLabel] = useState<string | null>(null);
+  const successTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (successTimer.current) clearTimeout(successTimer.current); }, []);
 
   const meta = { vendor: p.vendor, productType: p.productType };
 
