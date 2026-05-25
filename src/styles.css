@@ -135,3 +135,22 @@
   .noir ::selection { background: var(--bronze); color: var(--canvas); }
 }
 
+/* Palace of Roman — interaction keyframes */
+@keyframes por-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-5px); }
+  40% { transform: translateX(5px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+}
+@keyframes por-badge-pop {
+  0% { transform: scale(0.6); opacity: 0; }
+  60% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .por-shake { animation: por-shake 380ms ease-in-out; }
+  .por-badge-pop { animation: por-badge-pop 360ms cubic-bezier(0.34, 1.56, 0.64, 1); }
+}
+
+

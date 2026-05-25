@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Search, User, ShoppingBag, Menu, X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useCartStore } from "@/stores/cart-store";
 import { CartDrawer } from "@/components/cart-drawer";
@@ -63,6 +63,14 @@ export function SiteHeader() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   const totalItems = mounted ? totalItemsRaw : 0;
+  // Pop animation when items are added
+  const prevCount = useRef(totalItems);
+  const [popKey, setPopKey] = useState(0);
+  useEffect(() => {
+    if (totalItems > prevCount.current) setPopKey((k) => k + 1);
+    prevCount.current = totalItems;
+  }, [totalItems]);
+
   const ANNOUNCE_KEY = "por-announce-dismissed-v1";
   const [announceOpen, setAnnounceOpen] = useState(true);
   useEffect(() => {
@@ -179,15 +187,21 @@ export function SiteHeader() {
                 <User className="w-4 h-4" strokeWidth={1.25} />
               </button>
               <button
-                aria-label="Cart"
+                aria-label={`Cart (${totalItems})`}
                 onClick={() => setCartOpen(true)}
-                className="relative hover:text-bronze transition-colors inline-flex items-center gap-1.5"
+                className="relative hover:text-bronze transition-colors inline-flex items-center justify-center w-5 h-5"
               >
                 <ShoppingBag className="w-4 h-4" strokeWidth={1.25} />
-                <span className="text-[11px] uppercase tracking-[0.2em] font-medium tabular-nums leading-none">
-                  ({totalItems})
-                </span>
+                {totalItems > 0 && (
+                  <span
+                    key={popKey}
+                    className="por-badge-pop absolute -top-1.5 -right-2 min-w-[16px] h-[16px] px-1 grid place-items-center bg-bronze text-canvas text-[9px] font-semibold tabular-nums leading-none rounded-full"
+                  >
+                    {totalItems > 99 ? "99+" : totalItems}
+                  </span>
+                )}
               </button>
+
             </div>
           </div>
         </div>

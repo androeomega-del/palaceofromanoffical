@@ -1,114 +1,69 @@
+# Full pass: PDP validation UX, PLP quick-add polish, cart badge refresh
 
-## Goal
+Goal: apply the prompt's UX rules to the existing Palace of Roman store without rewriting from scratch. Smallest diff that delivers the behavior. Keep the editorial aesthetic (ink / canvas / bronze, serif headings, restrained motion) — no generic e-comm look. Respect the checkout protocol lockdown: no edits to `cart-store`, `cart-drawer`, `use-cart-sync`, `formatCheckoutUrl`, or any cart mutations.
 
-`/` is rendered entirely by the AI edition system — **including the header and footer**. The cron decides every block, its order, its copy, its imagery, and even the header/footer variant on each 48h cycle. Nothing on the homepage is hardcoded.
+## 1. PDP — never-disabled Add to Bag + size-required validation
+File: `src/routes/product.$handle.tsx` (+ `VariantOption` in the same file)
 
-```text
-<EditionLayout>                ← 100% AI-managed
-  ├─ header block              ← AI-chosen header variant + copy
-  ├─ N body blocks             ← hero, rails, trending, for-you, countdown, banners, etc.
-  └─ footer block              ← AI-chosen footer variant + copy
-</EditionLayout>
-```
+Current behavior: `firstAvailable` variant is pre-selected, so the size error never fires. The ATC button greys out when the variant is unavailable. Both contradict the spec.
 
-Other routes (PDPs, collections, account, etc.) keep the existing root-level `<SiteHeader/>` + `<SiteFooter/>` unchanged. The change is scoped to the homepage.
+Changes:
+- **No default size selection.** Initialize `selectedVariantId` to `undefined`. Keep `firstAvailable` only as a fallback for price preview when no size is picked (so price stays visible) — but treat `selectedVariant` as `undefined` for cart purposes until the shopper actually picks one.
+- **Track which option groups are required** (any option with >1 value, e.g. Size, Colour). Compute `missingOptions: string[]`.
+- **Never disable the ATC button.** Remove the `disabled={isLoading || !selectedVariant?.availableForSale}` flag from both the inline ATC (line 608) and the mobile sticky ATC (line 828). The button stays fully opaque ink/bronze. The only states that should change the label are loading (spinner) and a chosen-but-sold-out variant ("Sold Out").
+- **Validation on click:** in `handleAdd`, if `missingOptions.length > 0`:
+  1. Set `sizeError = true` and `errorMessage = "Please select a ${name} to continue."` (uses the actual missing option name, e.g. Size).
+  2. Smooth-scroll the `buyRef` into view (`block: "center"`) if not already visible.
+  3. Auto-clear `sizeError` after 2.4s or when the shopper picks any value (whichever first).
+  4. Do NOT toast — the inline error is the signal.
+- **Error visual** on `VariantOption` (passed via new optional `invalid?: boolean` prop): when invalid, render a bronze→red treatment that fits the brand:
+  - Red bottom border + red label text on the option header (currently `border-[var(--studio-rule)]`).
+  - Red ring around the pill row container.
+  - Above the pills, a small italic serif line in red: "Please select a {option.name} to continue." with a `shake` animation (3 quick translateX cycles, 350ms total, respects `prefers-reduced-motion`).
+  - Red = an editorial muted red token, not pure `#ef4444`. Reuse the existing `oklch(0.52 0.11 25)` already used for low-stock or define `--studio-alert: oklch(0.52 0.13 25)` in `src/styles.css`.
+- **Add the `shake` keyframe** to `src/styles.css` (gated by `@media (prefers-reduced-motion: no-preference)`).
 
-## Header / footer architecture
+## 2. PLP — desktop hover size pills + mobile quick-add bottom sheet
+File: `src/components/product-card.tsx` (already imports `QuickViewSheet`)
 
-We can't have Claude rewrite component code every 48h, but the cron *can* drive variants + copy + visibility through new block types:
+Current behavior: hover reveals a "Quick Add" button that opens the bottom sheet for multi-variant items. The spec asks for size pills inline on hover (desktop) and the sheet on mobile. Mobile flow already matches.
 
-- `site_header` block (homepage only):
-  - `variant`: `"default" | "minimal" | "editorial" | "transparent-over-hero"`
-  - `announcementBar`: optional `{ message, href?, tone? }` rendered above the nav
-  - `ctaOverride`: optional override for the primary header CTA label/link (e.g. "Shop the Edition")
-  - `searchPlaceholder`: optional override
-  - `hideOnScroll`: boolean
+Changes:
+- For products with a single Size option (the common case), on desktop hover (`lg:` breakpoint, `@media (hover: hover)`), replace the "Quick Add" button with a horizontal row of size pills overlaid at the bottom of the image. Clicking a pill calls the existing `addItem` path with that variant (no detour, no sheet) and fires the existing analytics (`cart`, optional `scarcity_cart`).
+- Sold-out variants render as line-through pills, not clickable.
+- For products without a Size option (colour-only, etc.), keep the current "Quick Add" → `QuickViewSheet` flow.
+- Mobile: keep current behavior — small bag icon in the corner opens the sheet. (Already present; verify it stays visible at <440px since user is on mobile viewport.)
+- Pills must be styled in brand: `bg-canvas/90 backdrop-blur` background strip, ink text, bronze on hover/active. Not the generic black/white from the prompt.
 
-- `site_footer` block (homepage only):
-  - `variant`: `"default" | "editorial" | "minimal"`
-  - `eyebrow`: optional eyebrow line above the columns ("Resort 2026 — closing soon")
-  - `featuredLinks`: optional `[{ label, href }]` slot the cron can fill with edition-themed shortcuts
-  - `newsletterCopy`: optional override `{ heading, body, cta }`
+## 3. Header — cart badge refinement
+File: `src/components/site-header.tsx`
 
-Implementation:
-- Extract today's `SiteHeader`/`SiteFooter` into the existing components but add prop-driven `variant` + slot props (announcement bar, CTA override, footer eyebrow, etc.) with current values as defaults — so nothing changes for non-homepage routes.
-- Root layout (`__root.tsx`) gets a small mechanism (route-context flag or a `useChromeOverride` hook backed by Zustand) that lets the homepage **suppress the default header/footer** and render its own AI-driven variants instead. Concretely: on `/` only, set `chrome.headerSuppressed = true` and `chrome.footerSuppressed = true` until `EditionLayout` mounts its own header/footer blocks. Suppression is per-page and resets on navigation away.
-- This keeps a single React tree (no double headers, no flash of default chrome) and leaves every other route untouched.
+Current behavior: shows `({totalItems})` inline next to the bag icon. The spec wants a notification badge.
 
-## Block schema additions (`src/lib/homepage-layout-schema.ts`)
+Changes:
+- Replace the inline `(N)` with a small circular badge pinned to the top-right of the `ShoppingBag` icon — bronze background, canvas text, `min-w-[16px] h-[16px]`, `text-[9px]`, tabular-nums.
+- Hide badge when `totalItems === 0` (currently always shown).
+- Add a one-shot `scale-in` animation on the badge whenever `totalItems` increases (track previous via `useRef`). Respects reduced motion.
+- No icon/library/structural change to `<CartDrawer />` — out of scope per checkout lockdown.
 
-New blocks (in addition to those agreed in the previous plan):
+## 4. Toast position sanity check
+The shopify-cart-checkout guide requires toasts NOT in the bottom-right. Sonner toaster placement lives in `src/routes/__root.tsx`. Verify; if it defaults to bottom-right, set `position="top-center"` to match the editorial feel and not collide with the new mobile sticky ATC. (No-op if already correct.)
 
-- `site_header` — fields above
-- `site_footer` — fields above
-
-Smart-widget blocks (cron-included, no longer hardcoded):
-- `trending_rail` — eyebrow/heading/subheading + optional `windowDays`/`limit`
-- `for_you_feed` — eyebrow/heading/subheading + optional `limit`
-- `curation_countdown` — eyebrow/heading/subheading
-
-Composed blocks (cover today's hardcoded sections):
-- `trust_strip`, `cta_banner`, `campaign_hero`, `editorial_split`, `triptych`, `brand_grid`, `pillars`, `editorial_feature` — see prior plan for shape.
-
-Existing `hero`, `product_rail`, `editorial_banner` stay.
-
-`layout_meta`: optional `{ theme?: "warm" | "cool" | "default", spacing?: "tight" | "default" | "open" }`.
-
-Validation rule (zod refine): an edition MUST contain exactly one `site_header` (first block) and exactly one `site_footer` (last block) and exactly one `curation_countdown` somewhere in between. `trending_rail` and `for_you_feed` are recommended but not required (cron prompt enforces inclusion via instructions).
-
-## Renderer (`src/components/editors-edition.tsx` → `EditionLayout`)
-
-- Sole body renderer for `/`. Renders the AI layout end-to-end, including header and footer blocks.
-- On mount, sets the chrome-suppression flag so root-level `SiteHeader`/`SiteFooter` don't render on `/`. Cleared on unmount.
-- One renderer per block type, using existing tokens (`bronze`, `ink`, `canvas`, `canvas-raised`).
-- Smart-widget blocks wrap `TrendingNowRail`, `ForYouFeed`, `CurationCountdown` and pass AI copy/limits as props.
-- Image resolver: `library:N` → editorial library, `collection:<handle>` → first product image of the collection, absolute URL → as-is.
-- Brand sources: `featured-shared` (extracted to `src/lib/featured-brands.ts`), `houses-tier` (uses `LUXURY_TIERS`), explicit slug list.
-- Block-level failures bail to `null`. If header/footer blocks fail to render, fall back to the default `SiteHeader`/`SiteFooter` for that pass (no naked page).
-
-## Component prop extensions
-
-- `SiteHeader` — add optional `variant`, `announcementBar`, `ctaOverride`, `searchPlaceholder`, `hideOnScroll` props with current values as defaults.
-- `SiteFooter` — add optional `variant`, `eyebrow`, `featuredLinks`, `newsletterCopy` props with current values as defaults.
-- `TrendingNowRail`, `ForYouFeed`, `CurationCountdown` — add optional `eyebrow`/`heading`/`subheading` (plus `limit`/`windowDays` where relevant) with current values as defaults.
-
-No behaviour change on existing routes — all new props are optional and default to today's output.
-
-## Chrome-suppression mechanism
-
-- Add `src/stores/chrome-store.ts` (Zustand) with `{ headerSuppressed, footerSuppressed, setSuppressed }`.
-- `__root.tsx` reads the store and conditionally renders the default `SiteHeader`/`SiteFooter`.
-- `EditionLayout` calls `setSuppressed({ header: true, footer: true })` on mount, `false` on unmount. Cleanup ensures no leak across SPA navigations.
-- Cart/checkout protocol stays untouched (no edits to cart-store, cart-drawer, use-cart-sync, formatCheckoutUrl).
-
-## Cron (`src/routes/api/public/cron/refresh-homepage-layout.ts`)
-
-- Rewrite Claude prompt to compose a complete homepage edition (14–20 blocks total) starting with a `site_header` block and ending with a `site_footer` block, including at least one each of `curation_countdown`, `trending_rail`, `for_you_feed`.
-- Provide same signals as today plus editorial library keys, brand directory, tier data, previous edition headings/hero for divergence.
-- Update `buildFallbackLayout()` to emit a full edition including header/footer blocks so cold-start matches what we ship.
-- Atomic swap, validation, audit logging unchanged.
-
-## Index route (`src/routes/index.tsx`)
-
-- Body collapses to: head/meta + error boundary + `<EditionLayout/>`.
-- Remove all hardcoded sections + section queries — that data now lives in block renderers or the seeded fallback.
-- Keep `SummerBento` markup only as the *default hero block* of the seeded fallback edition for the LCP preload on cold first load.
-
-## Seeding (one-time)
-
-Insert a "full-homepage" edition (`source: "manual"`, `is_active: true`) including `site_header`, all body blocks, `trending_rail`, `for_you_feed`, `curation_countdown`, and `site_footer`. Bypasses the cold-start filter. Next cron run replaces it.
-
-## Out of scope
-
-- Header / footer on routes other than `/` — unchanged.
-- Nav menu items, megamenu structure, cart drawer behaviour — unchanged.
-- Checkout / cart code (locked per memory).
-- No new database tables — reuses `homepage_daily_layout`.
+## Out of scope (intentionally)
+- No changes to `src/stores/cart-store.ts`, `src/components/cart-drawer.tsx`, `src/hooks/use-cart-sync.ts`, `formatCheckoutUrl`, or any Storefront cart mutation — per the checkout-protocol memory.
+- No new pages, no nav changes, no copy launches — staged-launches rule.
+- No analytics schema changes — last fix already restored `cart_events` grants.
 
 ## Verification
+1. PDP for a multi-size product: button is fully opaque on load with no size chosen; clicking it shakes the size row + shows red inline error + scrolls into view; choosing a size clears the error; second click adds to bag and opens the drawer.
+2. PDP for a single-variant product: button works on first click (no size required, no error).
+3. PLP desktop: hover a multi-size card → size pills appear in the image footer; click S → toast + drawer + analytics row in `cart_events`.
+4. PLP mobile (440px viewport): bag icon visible top-right of image; tap → bottom sheet; pick size; toast + drawer.
+5. Header: badge hidden at 0; pop animation on add; correct count after add/remove.
+6. `cart_events` table receives `add_to_cart` rows from both PLP pills and PDP after the size flow (confirms analytics still wired).
 
-- `/` renders fully via `EditionLayout`: AI-driven header → AI body blocks (incl. Trending, For You, Countdown) → AI-driven footer. No duplicate chrome. No hardcoded sections.
-- Other routes still render the default `SiteHeader` / `SiteFooter` unchanged.
-- Trigger cron with `?force=true` → swap succeeds, header variant + body order + footer variant restructure, no duplicates.
-- AI failure path → seeded fallback renders complete homepage including header + footer blocks.
-- Spot-check at 440px (current viewport) and desktop.
+## Technical notes (for me)
+- `VariantOption` is defined at the bottom of `product.$handle.tsx`; thread `invalid` + `errorText` via props. Lift `sizeError` state to `ProductView` and pass `invalid` only to the size option (match by `/size/i`).
+- Use `requestAnimationFrame` before `scrollIntoView` so the ring/red border have painted before the scroll lands.
+- Shake keyframe (CSS): `@keyframes por-shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }` with `animation: por-shake 350ms ease-in-out`.
+- Cart badge previous-count tracking: `const prev = useRef(totalItems); useEffect(() => { if (totalItems > prev.current) trigger(); prev.current = totalItems; }, [totalItems])`.

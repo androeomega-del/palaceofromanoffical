@@ -296,14 +296,31 @@ function ProductView({
   const altBase = product.vendor ? `${product.title} — ${product.vendor}` : product.title;
   const variants = product.variants.edges.map((e) => e.node);
   const firstAvailable = variants.find((v) => v.availableForSale) ?? variants[0];
-  const [selectedVariantId, setSelectedVariantId] = useState<string | undefined>(firstAvailable?.id);
+  // No default size selection — shopper must pick. Single-variant products
+  // (title-only option) auto-select since there's nothing to choose.
+  const requiredOptions = useMemo(
+    () =>
+      (product.options ?? []).filter(
+        (o) => o.values.length > 1 || o.name.toLowerCase() !== "title",
+      ),
+    [product.options],
+  );
+  const isSingleVariant = requiredOptions.length === 0;
+  const [selectedVariantId, setSelectedVariantId] = useState<string | undefined>(
+    isSingleVariant ? firstAvailable?.id : undefined,
+  );
   const [quantity, setQuantity] = useState(1);
   const [activeImg, setActiveImg] = useState(0);
+  const [sizeError, setSizeError] = useState<string | null>(null);
+  const sizeErrorTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const selectedVariant = useMemo(
-    () => variants.find((v) => v.id === selectedVariantId) ?? firstAvailable,
-    [variants, selectedVariantId, firstAvailable],
+    () => variants.find((v) => v.id === selectedVariantId),
+    [variants, selectedVariantId],
   );
+  // Price preview uses selected variant if any, else first available
+  const previewVariant = selectedVariant ?? firstAvailable;
+
 
   const addItem = useCartStore((s) => s.addItem);
   const openDrawer = useCartStore((s) => s.openDrawer);
@@ -331,8 +348,9 @@ function ProductView({
 
 
   const compareAt = product.compareAtPriceRange?.minVariantPrice;
-  const currentPrice = selectedVariant?.price ?? product.priceRange.minVariantPrice;
+  const currentPrice = previewVariant?.price ?? product.priceRange.minVariantPrice;
   const off = discountPct(currentPrice, compareAt);
+
 
   // Buy-Now hand-off from product cards: scroll to the selector + flash it.
   const buyRef = useRef<HTMLDivElement>(null);
@@ -365,8 +383,35 @@ function ProductView({
 
 
 
+  // Clear validation error when shopper picks a variant
+  useEffect(() => {
+    if (selectedVariant && sizeError) {
+      setSizeError(null);
+      if (sizeErrorTimer.current) clearTimeout(sizeErrorTimer.current);
+    }
+  }, [selectedVariant, sizeError]);
+
+  const triggerSizeError = () => {
+    const missing = requiredOptions[0]?.name ?? "size";
+    setSizeError(`Please select a ${missing.toLowerCase()} to continue.`);
+    if (sizeErrorTimer.current) clearTimeout(sizeErrorTimer.current);
+    sizeErrorTimer.current = setTimeout(() => setSizeError(null), 2800);
+    // Scroll the selector into view if not visible
+    requestAnimationFrame(() => {
+      const el = buyRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const inView = rect.top >= 0 && rect.bottom <= window.innerHeight;
+      if (!inView) el.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  };
+
   const handleAdd = async () => {
-    if (!selectedVariant) return;
+    // Never disable the button — validate on click instead.
+    if (!selectedVariant) {
+      triggerSizeError();
+      return;
+    }
     if (!selectedVariant.availableForSale) {
       toast.error("This variant is currently unavailable.");
       return;
@@ -385,8 +430,8 @@ function ProductView({
     }
     openDrawer();
     toast.success(quantity === 1 ? "Added to bag" : `${quantity} added to bag`);
-
   };
+
 
   const relatedQ = useQuery({
     queryKey: ["related", product.vendor, product.handle],
@@ -563,13 +608,15 @@ function ProductView({
 
               {product.options
                 .filter((o) => o.values.length > 1 || o.name.toLowerCase() !== "title")
-                .map((option) => (
+                .map((option, idx) => (
                   <VariantOption
                     key={option.name}
                     option={option}
                     variants={variants}
                     selected={selectedVariant}
                     onSelect={(v) => setSelectedVariantId(v.id)}
+                    invalid={Boolean(sizeError) && idx === 0}
+                    errorText={idx === 0 ? sizeError : null}
                   />
                 ))}
 
@@ -605,12 +652,12 @@ function ProductView({
                 </div>
                 <button
                   onClick={handleAdd}
-                  disabled={isLoading || !selectedVariant?.availableForSale}
-                  className="flex-1 h-16 bg-[var(--studio-ink)] text-[var(--studio-bg)] hover:bg-[var(--studio-bronze)] transition-colors duration-700 text-[11px] uppercase tracking-[0.3em] font-semibold disabled:opacity-50 inline-flex items-center justify-center gap-2 shadow-lg"
+                  aria-busy={isLoading}
+                  className="flex-1 h-16 bg-[var(--studio-ink)] text-[var(--studio-bg)] hover:bg-[var(--studio-bronze)] transition-colors duration-700 text-[11px] uppercase tracking-[0.3em] font-semibold inline-flex items-center justify-center gap-2 shadow-lg"
                 >
                   {isLoading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : !selectedVariant?.availableForSale ? (
+                  ) : selectedVariant && !selectedVariant.availableForSale ? (
                     "Sold Out"
                   ) : (
                     <>
@@ -624,12 +671,13 @@ function ProductView({
                 </button>
               </div>
 
+
               {/* Trust anchor — interactive, opens shipping/returns sheet. Full-width, flush under CTA row. */}
               <PdpShippingSheet />
             </div>
 
             {/* Delivery badge — uses zip from location store */}
-            <PdpDeliveryBadge vendor={product.vendor} handle={product.handle} variantId={selectedVariant?.id} />
+            <PdpDeliveryBadge vendor={product.vendor} handle={product.handle} variantId={previewVariant?.id} />
 
 
             {/* Authenticity strip — defensible claims only */}
@@ -825,12 +873,12 @@ function ProductView({
           </div>
           <button
             onClick={handleAdd}
-            disabled={isLoading || !selectedVariant?.availableForSale}
-            className="h-12 px-5 bg-[var(--studio-ink)] text-[var(--studio-bg)] hover:bg-[var(--studio-bronze)] transition-colors text-[10px] uppercase tracking-[0.25em] font-semibold disabled:opacity-50 inline-flex items-center justify-center gap-2 shadow-md"
+            aria-busy={isLoading}
+            className="h-12 px-5 bg-[var(--studio-ink)] text-[var(--studio-bg)] hover:bg-[var(--studio-bronze)] transition-colors text-[10px] uppercase tracking-[0.25em] font-semibold inline-flex items-center justify-center gap-2 shadow-md"
           >
             {isLoading ? (
               <Loader2 className="w-4 h-4 animate-spin" />
-            ) : !selectedVariant?.availableForSale ? (
+            ) : selectedVariant && !selectedVariant.availableForSale ? (
               "Sold Out"
             ) : (
               <>
@@ -839,6 +887,7 @@ function ProductView({
               </>
             )}
           </button>
+
         </div>
       </div>
     </div>
@@ -936,20 +985,32 @@ function VariantOption({
   variants,
   selected,
   onSelect,
+  invalid = false,
+  errorText = null,
 }: {
   option: { name: string; values: string[] };
   variants: ShopifyVariant[];
   selected?: ShopifyVariant;
   onSelect: (v: ShopifyVariant) => void;
+  invalid?: boolean;
+  errorText?: string | null;
 }) {
   const selectedValue = selected?.selectedOptions.find((o) => o.name === option.name)?.value;
   const isColor = /colou?r/i.test(option.name);
   const isSize = /size/i.test(option.name);
+  const alertColor = "oklch(0.52 0.13 25)";
 
   return (
     <div>
-      <div className="flex justify-between items-end mb-5 pb-2 border-b border-[var(--studio-rule)]">
-        <p className="text-[11px] uppercase tracking-[0.25em] font-semibold">
+      <div
+        className="flex justify-between items-end mb-5 pb-2 border-b transition-colors"
+        style={{ borderColor: invalid ? alertColor : "var(--studio-rule)" }}
+      >
+        <p
+          className="text-[11px] uppercase tracking-[0.25em] font-semibold transition-colors"
+          style={invalid ? { color: alertColor } : undefined}
+        >
+
           {option.name}
           {selectedValue && (
             <span className="ml-2 text-[var(--studio-muted)] font-normal normal-case tracking-normal">
@@ -967,7 +1028,23 @@ function VariantOption({
           </button>
         )}
       </div>
-      <div className={`flex flex-wrap gap-3 ${isColor ? "items-center" : ""}`}>
+      {invalid && errorText && (
+        <p
+          key={errorText}
+          role="alert"
+          className="por-shake text-[12px] font-serif italic mb-3 -mt-1"
+          style={{ color: alertColor }}
+        >
+          {errorText}
+        </p>
+      )}
+      <div
+        className={`flex flex-wrap gap-3 ${isColor ? "items-center" : ""} ${
+          invalid ? "p-2 -m-2 rounded-sm ring-1" : ""
+        }`}
+        style={invalid ? { boxShadow: `0 0 0 1px ${alertColor}` } : undefined}
+      >
+
 
         {option.values.map((value) => {
           const candidate =
