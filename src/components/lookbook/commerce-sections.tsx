@@ -25,6 +25,7 @@ import { imgForKey } from "@/lib/editorial-library";
 import { NewsletterForm } from "@/components/newsletter-form";
 import { cdnImage } from "@/lib/cdn-image";
 import housesInMotionAsset from "@/assets/houses-in-motion.mp4.asset.json";
+import manAndWomanAsset from "@/assets/man-and-woman.mp4.asset.json";
 
 // Freshly generated editorial tile photography (one per category).
 import tileBagsWomen from "@/assets/category-tiles/bags-women.jpg";
