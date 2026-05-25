@@ -21,14 +21,18 @@ import { supabase } from "@/integrations/supabase/client";
 import { ensureAdmin } from "@/lib/admin-guard.functions";
 
 export async function adminBeforeLoad() {
-  // During SSR there is no localStorage / Supabase session, so any
-  // protected serverFn called from the loader or component will 401 and
-  // crash the page. Redirect to /login on the server; the client re-runs
-  // beforeLoad after hydration and either lets the admin through or
-  // keeps the redirect.
+  // During SSR there is no Supabase session in storage, so we can't
+  // verify the user. DO NOT redirect — that would log a signed-in admin
+  // out on every navigation to an admin page. Skip the check on the
+  // server; the client re-runs beforeLoad after hydration and enforces
+  // the real gate then. Admin page components fetch their data via
+  // serverFns called client-side, so SSR rendering an empty shell is
+  // safe.
   if (typeof window === "undefined") {
-    throw redirect({ to: "/login" });
+    return;
   }
+
+
 
   const { data, error } = await supabase.auth.getUser();
   if (error || !data.user) {
