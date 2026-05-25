@@ -319,113 +319,167 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
           />
         </button>
 
-        {/* Desktop hover: inline size pills (size-only products) */}
-        {sizeOnlyOption && !soldOut && (
-          <div className="hidden lg:flex absolute inset-x-3 bottom-3 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500">
-            <div className="w-full bg-canvas/92 backdrop-blur-sm px-2 py-2 flex flex-wrap items-center justify-center gap-1.5 shadow-md">
-              <span className="text-[9px] uppercase tracking-[0.25em] text-bronze font-semibold mr-1">
-                Quick Add
-              </span>
-              {sizeOnlyOption.values.map((value) => {
-                const v = variants.find((vv) =>
-                  vv.selectedOptions?.some(
-                    (o) => o.name === sizeOnlyOption.name && o.value === value,
-                  ),
-                );
-                const unavailable = !v || !v.availableForSale;
-                return (
-                  <button
-                    key={value}
-                    type="button"
-                    disabled={unavailable || adding}
-                    onClick={async (e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      if (!v || unavailable || adding) return;
-                      setAdding(true);
-                      try {
-                        const added = await addItem({
-                          product,
-                          variantId: v.id,
-                          variantTitle: v.title,
-                          price: v.price,
-                          quantity: 1,
-                          selectedOptions: v.selectedOptions ?? [],
-                        });
-                        if (!added) {
-                          toast.error("Could not add. Try another size.");
-                          return;
-                        }
-                        track({ handle: p.handle, event: "cart", ...meta });
-                        if (hasScarcity) {
-                          track({ handle: p.handle, event: "scarcity_cart", ...meta });
-                        }
-                        openDrawer();
-                        toast.success(`${p.title} — ${value} added to bag`);
-                      } finally {
-                        setAdding(false);
-                      }
-                    }}
-                    className={`min-w-[34px] h-8 px-2 text-[10px] uppercase tracking-widest border transition-colors ${
-                      unavailable
-                        ? "border-ink/10 text-ink/30 line-through cursor-not-allowed"
-                        : "border-ink/20 text-ink bg-canvas hover:bg-ink hover:text-canvas hover:border-ink"
-                    }`}
-                  >
-                    {value}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* CTAs — visible on hover (desktop), always on touch.
-            Hidden on desktop when size-pill overlay is shown instead. */}
+        {/* Bottom CTA — fixed-height container so size-pill swap never
+            reflows the card. Three states: idle | sizing | success. */}
         <div
-          className={`absolute inset-x-3 bottom-3 flex gap-2 opacity-100 ${
-            sizeOnlyOption
-              ? "lg:hidden"
-              : "lg:opacity-0 lg:translate-y-2 lg:group-hover:opacity-100 lg:group-hover:translate-y-0"
+          className={`absolute inset-x-3 bottom-3 h-11 ${
+            sizeOnlyOption || quickAddState !== "idle"
+              ? "opacity-100"
+              : "opacity-100 lg:opacity-0 lg:translate-y-2 lg:group-hover:opacity-100 lg:group-hover:translate-y-0"
           } transition-all duration-500`}
+          onClick={(e) => {
+            // Stop clicks inside the CTA row from triggering the card link.
+            if (quickAddState !== "idle") {
+              e.preventDefault();
+              e.stopPropagation();
+            }
+          }}
         >
-          <button
-            type="button"
-            onClick={onAdd}
-            disabled={soldOut || (!hasChoices && adding)}
-            aria-label={addLabel}
-            aria-busy={!hasChoices && adding}
-            className="flex-1 h-11 bg-ink text-canvas hover:bg-bronze transition-colors duration-300 text-[10px] uppercase tracking-[0.25em] font-medium inline-flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
+          {/* IDLE */}
+          <div
+            className={`absolute inset-0 flex gap-2 transition-opacity duration-200 ${
+              quickAddState === "idle" ? "opacity-100" : "opacity-0 pointer-events-none"
+            }`}
           >
-            {!hasChoices && adding ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            ) : (
-              <>
-                <ShoppingBag className="w-3 h-3" strokeWidth={1.5} />
-                {addLabel}
-              </>
-            )}
-          </button>
-          {!soldOut && (
             <button
               type="button"
-              onClick={onBuyNow}
-              disabled={buyingNow || (!hasChoices && adding)}
-              aria-label="Buy Now"
-              title="Buy Now"
-              className="h-11 px-3 bg-bronze text-canvas hover:bg-ink transition-colors duration-300 text-[10px] uppercase tracking-[0.25em] font-medium inline-flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
+              onClick={onAdd}
+              disabled={soldOut || (!hasChoices && adding)}
+              aria-label={addLabel}
+              aria-busy={!hasChoices && adding}
+              className="flex-1 h-11 bg-ink text-canvas hover:bg-bronze transition-colors duration-300 text-[10px] uppercase tracking-[0.25em] font-medium inline-flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              {buyingNow ? (
+              {!hasChoices && adding ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
               ) : (
                 <>
-                  <Zap className="w-3 h-3" strokeWidth={1.5} />
-                  Buy Now
+                  <ShoppingBag className="w-3 h-3" strokeWidth={1.5} />
+                  {addLabel}
                 </>
               )}
             </button>
+            {!soldOut && (
+              <button
+                type="button"
+                onClick={onBuyNow}
+                disabled={buyingNow || (!hasChoices && adding)}
+                aria-label="Buy Now"
+                title="Buy Now"
+                className="h-11 px-3 bg-bronze text-canvas hover:bg-ink transition-colors duration-300 text-[10px] uppercase tracking-[0.25em] font-medium inline-flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {buyingNow ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <>
+                    <Zap className="w-3 h-3" strokeWidth={1.5} />
+                    Buy Now
+                  </>
+                )}
+              </button>
+            )}
+          </div>
+
+          {/* SIZING */}
+          {sizeOnlyOption && (
+            <div
+              className={`absolute inset-0 bg-canvas/95 backdrop-blur-sm border border-ink/15 shadow-md px-1.5 flex items-center gap-1 transition-opacity duration-200 ${
+                quickAddState === "sizing" ? "opacity-100" : "opacity-0 pointer-events-none"
+              }`}
+              role="group"
+              aria-label="Select a size"
+            >
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setQuickAddState("idle");
+                }}
+                aria-label="Cancel quick add"
+                className="shrink-0 w-8 h-8 grid place-items-center text-ink/70 hover:text-ink hover:bg-ink/5 rounded-full transition-colors"
+              >
+                <X className="w-3.5 h-3.5" strokeWidth={1.5} />
+              </button>
+              <div className="flex-1 flex items-center justify-evenly gap-1 overflow-x-auto">
+                {sizeOnlyOption.values.map((value) => {
+                  const v = variants.find((vv) =>
+                    vv.selectedOptions?.some(
+                      (o) => o.name === sizeOnlyOption.name && o.value === value,
+                    ),
+                  );
+                  const unavailable = !v || !v.availableForSale;
+                  return (
+                    <button
+                      key={value}
+                      type="button"
+                      disabled={unavailable || adding}
+                      aria-label={unavailable ? `Size ${value} — out of stock` : `Add size ${value}`}
+                      onClick={async (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (!v || unavailable || adding) return;
+                        setAdding(true);
+                        try {
+                          const added = await addItem({
+                            product,
+                            variantId: v.id,
+                            variantTitle: v.title,
+                            price: v.price,
+                            quantity: 1,
+                            selectedOptions: v.selectedOptions ?? [],
+                          });
+                          if (!added) {
+                            toast.error("Could not add. Try another size.");
+                            return;
+                          }
+                          track({ handle: p.handle, event: "cart", ...meta });
+                          if (hasScarcity) {
+                            track({ handle: p.handle, event: "scarcity_cart", ...meta });
+                          }
+                          toast.success(`${p.title} — ${value} added to bag`);
+                          setSuccessLabel(value);
+                          setQuickAddState("success");
+                          if (successTimer.current) clearTimeout(successTimer.current);
+                          successTimer.current = setTimeout(() => {
+                            setQuickAddState("idle");
+                            setSuccessLabel(null);
+                          }, 2000);
+                        } finally {
+                          setAdding(false);
+                        }
+                      }}
+                      className={`min-w-[36px] h-8 px-2.5 rounded-full text-[10px] uppercase tracking-widest font-medium border transition-colors ${
+                        unavailable
+                          ? "border-ink/10 text-ink/30 line-through cursor-not-allowed bg-transparent"
+                          : "border-ink/20 text-ink bg-canvas hover:bg-ink hover:text-canvas hover:border-ink active:scale-95"
+                      }`}
+                    >
+                      {value}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           )}
+
+          {/* SUCCESS */}
+          <div
+            className={`absolute inset-0 transition-opacity duration-200 ${
+              quickAddState === "success" ? "opacity-100" : "opacity-0 pointer-events-none"
+            }`}
+            aria-live="polite"
+          >
+            <div
+              className="w-full h-11 inline-flex items-center justify-center gap-2 text-canvas text-[10px] uppercase tracking-[0.25em] font-medium"
+              style={{ background: "var(--color-success)" }}
+            >
+              <Check className="w-3.5 h-3.5" strokeWidth={2} />
+              Added to Bag{successLabel ? ` — ${successLabel}` : ""}
+            </div>
+          </div>
         </div>
+
+
 
 
       </div>
