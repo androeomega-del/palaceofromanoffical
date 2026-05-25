@@ -20,17 +20,7 @@ import { EditionSwitcher } from "@/components/lookbook/edition-switcher";
 // EditionIntro intentionally removed — it duplicated the active-edition (swim) pitch right under the hero.
 import { EditionEditorialBand } from "@/components/lookbook/edition-editorial-band";
 import { LookbookMasonry } from "@/components/lookbook/lookbook-masonry";
-import {
-  NewArrivalsRail,
-  BestSellersGrid,
-  ShopByCategoryTiles,
-  PriceTierShop,
-  EditorsPicksTriptych,
-  BrandSpotlight,
-  NewsletterVIPBand,
-  TrustReassuranceBand,
-  VideoCampaignBand,
-} from "@/components/lookbook/commerce-sections";
+import { ShopByCategoryTiles } from "@/components/lookbook/commerce-sections";
 import { TrendingNowRail } from "@/components/trending-now";
 import { ForYouFeed } from "@/components/for-you-feed";
 import { LUXURY_TIERS } from "@/lib/luxury-brands";
