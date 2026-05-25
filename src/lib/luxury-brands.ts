@@ -18,7 +18,6 @@ const make = (names: string[]): BrandEntry[] =>
 
 // TIER 1: Most prominent/frequent in catalog
 export const TIER_1_WORLD_LEADERS = make([
-  "Dolce & Gabbana",
   "Gucci",
   "Prada",
   "Louis Vuitton",
@@ -28,6 +27,7 @@ export const TIER_1_WORLD_LEADERS = make([
   "Hermès",
   "Fendi",
   "Valentino",
+  "Versace",
 ]);
 
 // TIER 2: High demand/frequently stocked
@@ -39,7 +39,6 @@ export const TIER_2_HIGH_DEMAND = make([
   "Coach",
   "Loewe",
   "Miu Miu",
-  "Versace",
   "Alexander McQueen",
   "Givenchy",
   "Tom Ford",
@@ -146,7 +145,6 @@ export const ALL_LUXURY_BRANDS: BrandEntry[] = LUXURY_TIERS.flatMap((t) => t.bra
 
 // Curated 12 most-searched houses for the search overlay "Trending Brands" chips.
 export const TRENDING_BRANDS: BrandEntry[] = make([
-  "Dolce & Gabbana",
   "Gucci",
   "Prada",
   "Louis Vuitton",
@@ -158,4 +156,5 @@ export const TRENDING_BRANDS: BrandEntry[] = make([
   "Valentino",
   "Balenciaga",
   "Bottega Veneta",
+  "Versace",
 ]);

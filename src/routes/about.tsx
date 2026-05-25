@@ -43,7 +43,7 @@ function AboutPage() {
           <p className="text-[15px] leading-[1.8] text-ink/80">
             We carry tailoring, footwear, fine leather and house codes from the maisons we believe in. Palace of Roman
             is an official partner of BrandsGateway and is authorised to resell pieces from Gucci, Versace, Balenciaga,
-            Dior, Dolce &amp; Gabbana, Saint Laurent and the wider catalogue. Every piece is 100% authentic, sourced from
+            Dior, Prada, Saint Laurent and the wider catalogue. Every piece is 100% authentic, sourced from
             the brands or their authorised distributors, and shipped sealed from a brand-authorised warehouse in its
             original packaging.
           </p>

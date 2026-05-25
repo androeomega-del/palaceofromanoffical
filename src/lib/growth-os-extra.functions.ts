@@ -267,8 +267,8 @@ export const generateSeoPage = createServerFn({ method: "POST" })
       const cats = Array.from(new Set(seeded.map((p) => p.category).filter(Boolean))) as string[];
       const tpl = SEO_QUERY_TEMPLATES[Math.floor(Math.random() * SEO_QUERY_TEMPLATES.length)];
       return tpl
-        .replace("{brand}", brands[0] ?? "Dolce & Gabbana")
-        .replace("{brand2}", brands[1] ?? "Versace")
+        .replace("{brand}", brands[0] ?? "Gucci")
+        .replace("{brand2}", brands[1] ?? "Saint Laurent")
         .replace("{category}", cats[0] ?? "leather goods");
     })();
 
