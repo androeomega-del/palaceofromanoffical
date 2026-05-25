@@ -127,8 +127,24 @@ export function HomepageLayoutPreview({ layout }: { layout: HomepageLayout | nul
           );
         }
 
+        if (block.type === "trending_rail" || block.type === "for_you_feed" || block.type === "curation_countdown") {
+          return (
+            <div key={block.id ?? i} className="rounded border border-border bg-card p-4">
+              <span className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+                Smart widget · {block.type}
+              </span>
+              {block.heading ? (
+                <h3 className="font-serif text-lg mt-0.5">{block.heading}</h3>
+              ) : null}
+              {block.subheading ? (
+                <p className="text-xs text-muted-foreground mt-0.5">{block.subheading}</p>
+              ) : null}
+            </div>
+          );
+        }
+
         // product_rail
-        const handles = block.productHandles ?? [];
+        const handles: string[] = block.productHandles ?? [];
         return (
           <div
             key={block.id ?? i}
