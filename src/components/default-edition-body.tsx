@@ -243,6 +243,39 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
     }));
   }, [womenBrandsClothingQ.data, womenBrandsShoesQ.data, menBrandsClothingQ.data, menBrandsShoesQ.data]);
 
+  // Cross-rail product deduplication. The homepage stacks several Storefront
+  // queries (linen, leather, sunglasses, new arrivals, best sellers) that can
+  // legitimately overlap — e.g. a linen shirt that's also a best seller. We
+  // dedupe in display order so the FIRST rail to claim a product keeps it,
+  // and downstream rails silently drop the duplicate. Keys (product.id) are
+  // already stable; this just prevents the same card from rendering twice.
+  const dedupedRails = useMemo(() => {
+    const seen = new Set<string>();
+    const take = (edges: ShopifyProduct[] | undefined) => {
+      const out: ShopifyProduct[] = [];
+      for (const edge of edges ?? []) {
+        const id = edge?.node?.id;
+        if (!id || seen.has(id)) continue;
+        seen.add(id);
+        out.push(edge);
+      }
+      return out;
+    };
+    return {
+      summerLinen: take(summerLinenQ.data),
+      italianLeather: take(italianLeatherQ.data),
+      sunglasses: take(sunglassesQ.data),
+      newArrivals: take(newArrivalsQ.data),
+      bestSellers: take(bestSellersQ.data),
+    };
+  }, [
+    summerLinenQ.data,
+    italianLeatherQ.data,
+    sunglassesQ.data,
+    newArrivalsQ.data,
+    bestSellersQ.data,
+  ]);
+
   return (
     <>
       {/* 1. SUMMER BENTO STOREFRONT — Architectural Resort.
@@ -343,7 +376,7 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
               Shop the Edit
             </Link>
           </div>
-          <HorizontalRail edges={summerLinenQ.data ?? []} loading={summerLinenQ.isLoading} />
+          <HorizontalRail edges={dedupedRails.summerLinen} loading={summerLinenQ.isLoading} />
         </div>
       </section>
 
@@ -369,7 +402,7 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
               Shop the Atelier
             </Link>
           </div>
-          <HorizontalRail edges={italianLeatherQ.data ?? []} loading={italianLeatherQ.isLoading} />
+          <HorizontalRail edges={dedupedRails.italianLeather} loading={italianLeatherQ.isLoading} />
         </div>
       </section>
 
@@ -395,7 +428,7 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
               Shop all eyewear
             </Link>
           </div>
-          <HorizontalRail edges={sunglassesQ.data ?? []} loading={sunglassesQ.isLoading} />
+          <HorizontalRail edges={dedupedRails.sunglasses} loading={sunglassesQ.isLoading} />
         </div>
       </section>
 
@@ -420,7 +453,7 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
               View all
             </Link>
           </div>
-          <HorizontalRail edges={newArrivalsQ.data ?? []} loading={newArrivalsQ.isLoading} />
+          <HorizontalRail edges={dedupedRails.newArrivals} loading={newArrivalsQ.isLoading} />
         </div>
       </section>
 
@@ -579,9 +612,9 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
       <section className="py-28">
         <div className="max-w-screen-2xl mx-auto px-6">
           {(() => {
-            const bestEdges = bestSellersQ.data ?? [];
+            const bestEdges = dedupedRails.bestSellers;
             const showEmpty = !bestSellersQ.isLoading && bestEdges.length === 0;
-            const fallbackEdges = (newArrivalsQ.data ?? []).slice(0, 8);
+            const fallbackEdges = dedupedRails.newArrivals.slice(0, 8);
             if (showEmpty) {
               return (
                 <>
