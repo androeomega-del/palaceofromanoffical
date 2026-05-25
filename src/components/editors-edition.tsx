@@ -1,11 +1,16 @@
 /**
- * EditorsEdition — renders the active AI-curated homepage edition stored in
- * `homepage_daily_layout`. Additive band only; never replaces hardcoded
- * homepage content. Bails silently (returns null) on any failure so it can
- * never break the storefront.
+ * EditionLayout — the sole renderer for the homepage.
+ *
+ * Renders <SiteHeader/> → AI body (or <DefaultEditionBody/> when no
+ * AI-curated edition is active) → <SiteFooter/>. Suppresses the default
+ * root-level chrome on mount so there are never duplicate headers/footers.
+ *
+ * AI edition blocks come from `homepage_daily_layout` (active row, not the
+ * cold-start fallback). When the AI layout is present, it REPLACES the
+ * default body so editorial sections never duplicate.
  */
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 
 import { homepageLayoutSchema, type HomepageLayout } from "@/lib/homepage-layout-schema";
@@ -13,6 +18,10 @@ import { img } from "@/lib/editorial-library";
 import { fetchProductByHandle, type ShopifyProductNode } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
 import { EditorialHotspots } from "@/components/editorial-hotspots";
+import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
+import { DefaultEditionBody } from "@/components/default-edition-body";
+import { useChromeStore } from "@/stores/chrome-store";
 
 function resolveImage(src: string): string {
   if (src.startsWith("library:")) {
@@ -33,12 +42,22 @@ async function loadActiveEdition(): Promise<HomepageLayout | null> {
   if (error || !data) return null;
   const parsed = homepageLayoutSchema.safeParse(data.layout_json);
   if (!parsed.success) return null;
-  // Never expose the AI cold-start fallback publicly — that's an admin signal.
+  // Cold-start fallback isn't a real edition — fall through to default body.
   if (parsed.data.source === "cold_start_fallback") return null;
   return parsed.data;
 }
 
-export function EditorsEdition() {
+/**
+ * Top-level homepage shell. The route file renders just <EditionLayout/>.
+ * This component owns the header + body + footer end-to-end.
+ */
+export function EditionLayout() {
+  const setSuppressed = useChromeStore((s) => s.setSuppressed);
+  useEffect(() => {
+    setSuppressed({ header: true, footer: true });
+    return () => setSuppressed({ header: false, footer: false });
+  }, [setSuppressed]);
+
   const editionQ = useQuery({
     queryKey: ["editors-edition-active"],
     queryFn: loadActiveEdition,
@@ -47,33 +66,32 @@ export function EditorsEdition() {
   });
 
   const layout = editionQ.data;
-  if (!layout || layout.blocks.length === 0) return null;
+  const hasAiLayout = !!layout && layout.blocks.length > 0;
 
   return (
-    <section aria-label="Editor's Edition" className="bg-canvas">
+    <>
+      <SiteHeader />
+      <main className="flex-1">
+        {hasAiLayout ? <EditionBlocks layout={layout!} /> : <DefaultEditionBody />}
+      </main>
+      <SiteFooter />
+    </>
+  );
+}
+
+/** Back-compat alias: legacy import sites may still reference EditorsEdition. */
+export const EditorsEdition = EditionLayout;
+
+function EditionBlocks({ layout }: { layout: HomepageLayout }) {
+  return (
+    <section aria-label="The Current Edition" className="bg-canvas">
       <div className="max-w-screen-2xl mx-auto px-6 md:px-10 py-12 md:py-16">
-        <header className="mb-8 md:mb-10 flex items-end justify-between gap-6">
-          <div>
-            <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">
-              The Current Edition
-            </p>
-            <h2 className="font-serif text-3xl md:text-4xl text-ink leading-tight">
-              Editor's Selection
-            </h2>
-          </div>
-        </header>
         <div className="space-y-12 md:space-y-16">
           {layout.blocks.map((block) => {
             try {
-              if (block.type === "hero") {
-                return <EditionHero key={block.id} block={block} />;
-              }
-              if (block.type === "product_rail") {
-                return <EditionRail key={block.id} block={block} />;
-              }
-              if (block.type === "editorial_banner") {
-                return <EditionBanner key={block.id} block={block} />;
-              }
+              if (block.type === "hero") return <EditionHero key={block.id} block={block} />;
+              if (block.type === "product_rail") return <EditionRail key={block.id} block={block} />;
+              if (block.type === "editorial_banner") return <EditionBanner key={block.id} block={block} />;
               return null;
             } catch {
               return null;
