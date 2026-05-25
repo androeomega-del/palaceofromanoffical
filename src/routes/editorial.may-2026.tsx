@@ -49,7 +49,7 @@ const SLIDES: Slide[] = [
   { n: 22, caption: "Form, distilled.", shop: { kind: "collection", handle: "womens-clothing", label: "Shop Women's" } },
   { n: 23, caption: "Slow color.", shop: { kind: "collection", handle: "womens-hats", label: "Shop Women's Hats" } },
   { n: 24, caption: "Held shape.", shop: { kind: "collection", handle: "womens-wallets", label: "Shop Women's Wallets" } },
-  { n: 25, caption: "Off-duty grammar.", shop: { kind: "collection", handle: "mens-clothing", label: "Shop Men's" } },
+  
   { n: 26, caption: "Atelier light.", shop: { kind: "collection", handle: "womens-clothing", label: "Shop Women's" } },
   { n: 27, caption: "Considered finish.", shop: { kind: "collection", handle: "womens-shoes", label: "Shop Women's Shoes" } },
   { n: 28, caption: "Codes, rewritten.", shop: { kind: "collection", handle: "womens-bags", label: "Shop Women's Bags" } },
