@@ -324,52 +324,6 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
         );
       })()}
 
-      {/* 2. SWIM CAMPAIGN — Men's Swim Resort 2026 */}
-      <section className="relative h-[80vh] min-h-[600px] overflow-hidden bg-ink">
-        <CampaignVideo
-          src={swimCampaignVideo.url}
-          poster={marketingSwim}
-          className="absolute inset-0 w-full h-full object-cover opacity-90"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-ink/70 via-ink/30 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/60 via-transparent to-transparent" />
-
-        <div className="relative h-full flex items-center">
-          <div className="max-w-screen-2xl mx-auto px-6 md:px-12 w-full">
-            <div className="max-w-xl text-canvas">
-              <span className="block text-[10px] md:text-xs uppercase tracking-[0.5em] text-[var(--sea)] mb-5">
-                The Campaign — Resort 2026
-              </span>
-              <h2 className="font-serif text-5xl md:text-7xl lg:text-8xl leading-[0.95] mb-6 text-balance">
-                Men's Swim
-                <span className="block italic font-light mt-2">a season at sea level.</span>
-              </h2>
-              <p className="text-sm md:text-base text-canvas/85 leading-relaxed mb-9 max-w-md">
-                Tailored swim shorts, linen cabana shirts and leather slides — a curated
-                men's edit for Resort 2026. 100% authentic, in stock for immediate dispatch.
-              </p>
-              <div className="flex flex-wrap gap-3 md:gap-4">
-                <Link
-                  to="/campaign/mens-swim"
-                  className="px-8 md:px-10 py-3.5 md:py-4 bg-canvas text-ink text-[10px] uppercase tracking-[0.3em] font-medium hover:bg-[var(--sea)] hover:text-canvas transition-colors"
-                >
-                  Watch the Campaign
-                </Link>
-                <Link
-                  to="/swim"
-                  className="px-8 md:px-10 py-3.5 md:py-4 border border-canvas/60 text-canvas text-[10px] uppercase tracking-[0.3em] font-medium hover:bg-canvas hover:text-ink transition-colors"
-                >
-                  Shop the Edit
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="absolute bottom-6 right-6 md:bottom-10 md:right-10 text-canvas/70 text-[9px] uppercase tracking-[0.4em]">
-          Tyrrhenian — Golden Hour
-        </div>
-      </section>
 
 
 
