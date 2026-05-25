@@ -17,7 +17,7 @@ import { Loader2, ShieldCheck, Plane, Sparkles } from "lucide-react";
 import { EditionProvider, useEdition } from "@/contexts/edition-context";
 import { EditionHero } from "@/components/lookbook/edition-hero";
 import { EditionSwitcher } from "@/components/lookbook/edition-switcher";
-import { EditionIntro } from "@/components/lookbook/edition-intro";
+// EditionIntro intentionally removed — it duplicated the active-edition (swim) pitch right under the hero.
 import { EditionEditorialBand } from "@/components/lookbook/edition-editorial-band";
 import { LookbookMasonry } from "@/components/lookbook/lookbook-masonry";
 import {
@@ -174,7 +174,6 @@ function EditionSpine() {
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         >
           <EditionHero edition={active} />
-          <EditionIntro edition={active} />
 
           {/* — Commerce push #1: Just In ——————————————————— */}
           <NewArrivalsRail />

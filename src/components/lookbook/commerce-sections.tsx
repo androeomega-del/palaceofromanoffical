@@ -26,6 +26,19 @@ import { NewsletterForm } from "@/components/newsletter-form";
 import { cdnImage } from "@/lib/cdn-image";
 import housesInMotionAsset from "@/assets/houses-in-motion.mp4.asset.json";
 
+// Freshly generated editorial tile photography (one per category).
+import tileBagsWomen from "@/assets/category-tiles/bags-women.jpg";
+import tileBagsMen from "@/assets/category-tiles/bags-men.jpg";
+import tileShoesWomen from "@/assets/category-tiles/shoes-women.jpg";
+import tileShoesMen from "@/assets/category-tiles/shoes-men.jpg";
+import tileDresses from "@/assets/category-tiles/dresses.jpg";
+import tileMenswear from "@/assets/category-tiles/menswear.jpg";
+import tileOuterwearWomen from "@/assets/category-tiles/outerwear-women.jpg";
+import tileAccessoriesMen from "@/assets/category-tiles/accessories-men.jpg";
+import tileSunglasses from "@/assets/category-tiles/sunglasses.jpg";
+import tileLeatherUnisex from "@/assets/category-tiles/leather-unisex.jpg";
+import tileSwimMen from "@/assets/category-tiles/swim-men.jpg";
+
 // ─────────────────────────────────────────────────────────────────────────────
 // NEW ARRIVALS — horizontal scroll rail
 // ─────────────────────────────────────────────────────────────────────────────
@@ -137,19 +150,21 @@ export function BestSellersGrid() {
 // ─────────────────────────────────────────────────────────────────────────────
 // SHOP BY CATEGORY — six editorial tiles
 // ─────────────────────────────────────────────────────────────────────────────
-// 40% Women · 40% Men · 20% Unisex — 10 tiles (4 / 4 / 2). Order alternates
-// gender to keep visual rhythm across the grid.
-const CATEGORY_TILES: Array<{ handle: string; label: string; eyebrow: string; imgKey: string }> = [
-  { handle: "women-bags", label: "Handbags", eyebrow: "Women", imgKey: "tile-bags-women" },
-  { handle: "men-bags", label: "Bags", eyebrow: "Men", imgKey: "tile-bags-men" },
-  { handle: "womens-shoes", label: "Shoes", eyebrow: "Women", imgKey: "tile-shoes-women" },
-  { handle: "men-shoes", label: "Shoes", eyebrow: "Men", imgKey: "tile-shoes-men" },
-  { handle: "dresses", label: "Dresses", eyebrow: "Women", imgKey: "tile-dresses" },
-  { handle: "mens-clothing", label: "Tailoring", eyebrow: "Men", imgKey: "tile-menswear" },
-  { handle: "coats-women", label: "Outerwear", eyebrow: "Women", imgKey: "tile-outerwear-women" },
-  { handle: "men-accessories", label: "Accessories", eyebrow: "Men", imgKey: "tile-accessories-men" },
-  { handle: "sunglasses", label: "Sunglasses", eyebrow: "Unisex", imgKey: "tile-sunglasses" },
-  { handle: "accessories", label: "Small Leather", eyebrow: "Unisex", imgKey: "tile-leather-unisex" },
+// Women · Men · Unisex — 11 tiles. Order alternates gender for visual rhythm.
+// Each tile now uses a freshly generated editorial photograph (not the shared
+// library), so categories read clearly on the homepage.
+const CATEGORY_TILES: Array<{ handle: string; label: string; eyebrow: string; img: string }> = [
+  { handle: "women-bags", label: "Handbags", eyebrow: "Women", img: tileBagsWomen },
+  { handle: "men-bags", label: "Bags", eyebrow: "Men", img: tileBagsMen },
+  { handle: "womens-shoes", label: "Shoes", eyebrow: "Women", img: tileShoesWomen },
+  { handle: "men-shoes", label: "Shoes", eyebrow: "Men", img: tileShoesMen },
+  { handle: "dresses", label: "Dresses", eyebrow: "Women", img: tileDresses },
+  { handle: "mens-clothing", label: "Tailoring", eyebrow: "Men", img: tileMenswear },
+  { handle: "coats-women", label: "Outerwear", eyebrow: "Women", img: tileOuterwearWomen },
+  { handle: "mens-swimwear", label: "Swimwear", eyebrow: "Men", img: tileSwimMen },
+  { handle: "men-accessories", label: "Accessories", eyebrow: "Men", img: tileAccessoriesMen },
+  { handle: "sunglasses", label: "Sunglasses", eyebrow: "Unisex", img: tileSunglasses },
+  { handle: "accessories", label: "Small Leather", eyebrow: "Unisex", img: tileLeatherUnisex },
 ];
 
 export function ShopByCategoryTiles() {
@@ -188,8 +203,10 @@ export function ShopByCategoryTiles() {
                 className="group relative block aspect-[4/5] overflow-hidden bg-canvas-raised"
               >
                 <img
-                  src={cdnImage(imgForKey(tile.imgKey), { width: 800 })}
+                  src={tile.img}
                   alt={`${tile.label} — Palace of Roman`}
+                  width={800}
+                  height={1000}
                   loading="lazy"
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
                 />
