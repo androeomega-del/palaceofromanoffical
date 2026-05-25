@@ -383,8 +383,35 @@ function ProductView({
 
 
 
+  // Clear validation error when shopper picks a variant
+  useEffect(() => {
+    if (selectedVariant && sizeError) {
+      setSizeError(null);
+      if (sizeErrorTimer.current) clearTimeout(sizeErrorTimer.current);
+    }
+  }, [selectedVariant, sizeError]);
+
+  const triggerSizeError = () => {
+    const missing = requiredOptions[0]?.name ?? "size";
+    setSizeError(`Please select a ${missing.toLowerCase()} to continue.`);
+    if (sizeErrorTimer.current) clearTimeout(sizeErrorTimer.current);
+    sizeErrorTimer.current = setTimeout(() => setSizeError(null), 2800);
+    // Scroll the selector into view if not visible
+    requestAnimationFrame(() => {
+      const el = buyRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const inView = rect.top >= 0 && rect.bottom <= window.innerHeight;
+      if (!inView) el.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  };
+
   const handleAdd = async () => {
-    if (!selectedVariant) return;
+    // Never disable the button — validate on click instead.
+    if (!selectedVariant) {
+      triggerSizeError();
+      return;
+    }
     if (!selectedVariant.availableForSale) {
       toast.error("This variant is currently unavailable.");
       return;
@@ -403,8 +430,8 @@ function ProductView({
     }
     openDrawer();
     toast.success(quantity === 1 ? "Added to bag" : `${quantity} added to bag`);
-
   };
+
 
   const relatedQ = useQuery({
     queryKey: ["related", product.vendor, product.handle],
