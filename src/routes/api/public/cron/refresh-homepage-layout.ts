@@ -7,6 +7,7 @@ import {
 } from "@/lib/homepage-layout-schema";
 import { callLlmJson } from "@/lib/llm.server";
 import { PALACE_BRAND_VOICE } from "@/lib/brand-voice";
+import { logHomepageAudit } from "@/lib/homepage-audit.server";
 
 /**
  * /api/public/cron/refresh-homepage-layout
