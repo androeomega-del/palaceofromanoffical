@@ -63,6 +63,14 @@ export function SiteHeader() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   const totalItems = mounted ? totalItemsRaw : 0;
+  // Pop animation when items are added
+  const prevCount = useRef(totalItems);
+  const [popKey, setPopKey] = useState(0);
+  useEffect(() => {
+    if (totalItems > prevCount.current) setPopKey((k) => k + 1);
+    prevCount.current = totalItems;
+  }, [totalItems]);
+
   const ANNOUNCE_KEY = "por-announce-dismissed-v1";
   const [announceOpen, setAnnounceOpen] = useState(true);
   useEffect(() => {
