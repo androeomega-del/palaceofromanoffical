@@ -157,6 +157,22 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
       return fetchSearchFiltered({ first: 12, query: "sunglasses" }).then((r) => r.edges);
     },
   });
+  // Italian Leather Atelier — handbags, totes & small leather goods. Replaces
+  // the duplicate "Curated For You" the AI band used to render. Gender-neutral,
+  // marketing-led, with a graceful fallback so the rail is never empty.
+  const italianLeatherQ = useQuery({
+    queryKey: ["home", "italian-leather"],
+    queryFn: async () => {
+      const primary = await fetchSearchFiltered({
+        first: 12,
+        query: "product_type:Handbags OR product_type:Bags OR product_type:Bag",
+      }).then((r) => r.edges);
+      if (primary.length > 0) return primary;
+      const secondary = await fetchSearchFiltered({ first: 12, query: "leather bag" }).then((r) => r.edges);
+      if (secondary.length > 0) return secondary;
+      return fetchSearchFiltered({ first: 12, query: "leather" }).then((r) => r.edges);
+    },
+  });
 
   // Editorial split sources — one image per panel, pulled from real data.
   const womenEditorialQ = useQuery({
