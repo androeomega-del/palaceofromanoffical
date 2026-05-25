@@ -7,6 +7,7 @@ import {
 } from "@/lib/homepage-layout-schema";
 import { callLlmJson } from "@/lib/llm.server";
 import { PALACE_BRAND_VOICE } from "@/lib/brand-voice";
+import { logHomepageAudit } from "@/lib/homepage-audit.server";
 
 /**
  * /api/public/cron/refresh-homepage-layout
@@ -456,8 +457,19 @@ export const Route = createFileRoute("/api/public/cron/refresh-homepage-layout")
             .single();
           if (insertErr) {
             console.error("[refresh-homepage-layout] preview insert failed:", insertErr);
+            await logHomepageAudit({
+              action: "generation_failed",
+              actor: "cron",
+              details: { stage: "preview_insert", error: insertErr.message },
+            });
             return Response.json({ error: "insert_failed" }, { status: 500 });
           }
+          await logHomepageAudit({
+            action: "preview_generated",
+            edition_id: inserted.id,
+            actor: "cron",
+            details: { source: previewLayout.source, block_count: previewLayout.blocks.length },
+          });
           return Response.json({
             action: "preview_created",
             new_layout_id: inserted.id,
@@ -535,6 +547,11 @@ export const Route = createFileRoute("/api/public/cron/refresh-homepage-layout")
           .single();
         if (insertErr) {
             console.error("[refresh-homepage-layout] staged insert failed:", insertErr);
+          await logHomepageAudit({
+            action: "generation_failed",
+            actor: "cron",
+            details: { stage: "staged_insert", error: insertErr.message },
+          });
           return Response.json({ error: "insert_failed" }, { status: 500 });
         }
 
@@ -545,6 +562,12 @@ export const Route = createFileRoute("/api/public/cron/refresh-homepage-layout")
           .neq("id", inserted.id);
         if (deactivateErr) {
           console.error("[refresh-homepage-layout] deactivate failed:", deactivateErr);
+          await logHomepageAudit({
+            action: "generation_failed",
+            edition_id: inserted.id,
+            actor: "cron",
+            details: { stage: "deactivate", error: deactivateErr.message },
+          });
           return Response.json({ error: "deactivate_failed", staged_layout_id: inserted.id }, { status: 500 });
         }
 
@@ -554,7 +577,33 @@ export const Route = createFileRoute("/api/public/cron/refresh-homepage-layout")
           .eq("id", inserted.id);
         if (activateErr) {
           console.error("[refresh-homepage-layout] activate new layout failed:", activateErr);
+          await logHomepageAudit({
+            action: "generation_failed",
+            edition_id: inserted.id,
+            actor: "cron",
+            details: { stage: "activate", error: activateErr.message },
+          });
           return Response.json({ error: "activate_failed" }, { status: 500 });
+        }
+
+        await logHomepageAudit({
+          action: "generated",
+          edition_id: inserted.id,
+          actor: "cron",
+          details: {
+            previous_layout_id: activeRow?.id ?? null,
+            source: nextLayout.source,
+            block_count: nextLayout.blocks.length,
+            forced: forceMode,
+          },
+        });
+        if (activeRow?.id) {
+          await logHomepageAudit({
+            action: "archived",
+            edition_id: activeRow.id,
+            actor: "cron",
+            details: { replaced_by: inserted.id },
+          });
         }
 
         return Response.json({

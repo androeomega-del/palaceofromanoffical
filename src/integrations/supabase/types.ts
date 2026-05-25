@@ -535,6 +535,33 @@ export type Database = {
         }
         Relationships: []
       }
+      homepage_layout_audit: {
+        Row: {
+          action: string
+          actor: string | null
+          created_at: string
+          details: Json
+          edition_id: string | null
+          id: string
+        }
+        Insert: {
+          action: string
+          actor?: string | null
+          created_at?: string
+          details?: Json
+          edition_id?: string | null
+          id?: string
+        }
+        Update: {
+          action?: string
+          actor?: string | null
+          created_at?: string
+          details?: Json
+          edition_id?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
       interaction_events: {
         Row: {
           created_at: string

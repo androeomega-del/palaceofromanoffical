@@ -3,6 +3,8 @@ import { z } from "zod";
 import { requireAdmin } from "@/lib/admin-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { homepageLayoutSchema } from "@/lib/homepage-layout-schema";
+import { logHomepageAudit } from "@/lib/homepage-audit.server";
+
 
 /* =========================================================================
  * HOMEPAGE CURATION
@@ -34,20 +36,26 @@ export const getHomepageCuration = createServerFn({ method: "GET" })
 export const updateHomepageLayoutJson = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
   .inputValidator((d: { id: string; layout_json: unknown }) => d)
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
     const parsed = homepageLayoutSchema.parse(data.layout_json);
     const { error } = await supabaseAdmin
       .from("homepage_daily_layout")
       .update({ layout_json: parsed as never })
       .eq("id", data.id);
     if (error) throw new Error(error.message);
+    await logHomepageAudit({
+      action: "manual_edit",
+      edition_id: data.id,
+      actor: context.userId,
+    });
     return { ok: true };
   });
+
 
 export const activateHomepageLayout = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
   .inputValidator((d: { id: string }) => d)
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
     const { error: deErr } = await supabaseAdmin
       .from("homepage_daily_layout")
       .update({ is_active: false, status: "archived" })
@@ -62,8 +70,14 @@ export const activateHomepageLayout = createServerFn({ method: "POST" })
       })
       .eq("id", data.id);
     if (error) throw new Error(error.message);
+    await logHomepageAudit({
+      action: "activated",
+      edition_id: data.id,
+      actor: context.userId,
+    });
     return { ok: true };
   });
+
 
 /**
  * Manual override: flip the most recent edition to active without invoking
@@ -73,7 +87,7 @@ export const activateHomepageLayout = createServerFn({ method: "POST" })
  */
 export const forcePublishLatest = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
-  .handler(async () => {
+  .handler(async ({ context }) => {
     const { data: latest, error: selErr } = await supabaseAdmin
       .from("homepage_daily_layout")
       .select("id")
@@ -101,27 +115,49 @@ export const forcePublishLatest = createServerFn({ method: "POST" })
       })
       .eq("id", latest.id);
     if (error) throw new Error(error.message);
+    await logHomepageAudit({
+      action: "force_publish",
+      edition_id: latest.id,
+      actor: context.userId,
+    });
     return { ok: true, layout_id: latest.id };
   });
 
 
+
 export const forceRefreshHomepage = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
-  .handler(async () => {
-    // Trigger the cron route on the public canonical host. The route now has a
-    // force flag, so we never archive the current active edition until the new
-    // row has been generated and staged successfully.
+  .handler(async ({ context }) => {
     const base =
       process.env.SITE_URL ||
       process.env.VITE_SITE_URL ||
       "https://palaceofromanofficial.com";
-    const res = await fetch(`${base}/api/public/cron/refresh-homepage-layout?force=true`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    let status = 0;
+    let body: any = {};
+    try {
+      const res = await fetch(`${base}/api/public/cron/refresh-homepage-layout?force=true`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      status = res.status;
+      body = await res.json().catch(() => ({}));
+    } catch (e) {
+      await logHomepageAudit({
+        action: "generation_failed",
+        actor: context.userId,
+        details: { trigger: "force_refresh", error: String(e) },
+      });
+      throw e;
+    }
+    await logHomepageAudit({
+      action: status >= 200 && status < 300 ? "force_refresh" : "generation_failed",
+      edition_id: body?.new_layout_id ?? null,
+      actor: context.userId,
+      details: { status, ...body },
     });
-    const body = await res.json().catch(() => ({}));
-    return { status: res.status, body };
+    return { status, body };
   });
+
 
 /**
  * Generate a preview edition WITHOUT touching the currently active layout.
@@ -495,3 +531,27 @@ export const getInbox = createServerFn({ method: "GET" })
       abandoned_carts: carts.data ?? [],
     };
   });
+
+/* =========================================================================
+ * HOMEPAGE LAYOUT AUDIT LOG
+ * =======================================================================*/
+
+export const getHomepageLayoutAudit = createServerFn({ method: "GET" })
+  .middleware([requireAdmin])
+  .handler(async () => {
+    const { data, error } = await supabaseAdmin
+      .from("homepage_layout_audit" as never)
+      .select("id, edition_id, action, actor, details, created_at")
+      .order("created_at", { ascending: false })
+      .limit(50);
+    if (error) throw new Error(error.message);
+    return (data ?? []) as Array<{
+      id: string;
+      edition_id: string | null;
+      action: string;
+      actor: string | null;
+      details: any;
+      created_at: string;
+    }>;
+  });
+
