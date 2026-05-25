@@ -195,10 +195,47 @@ async function buildFallbackLayout(): Promise<HomepageLayout> {
     source: "cold_start_fallback",
     blocks: [
       {
+        id: "hero",
+        type: "hero",
+        image: "library:22",
+        alt: "Palace of Roman editorial curation",
+        heading: "The Current Edit",
+        subheading:
+          "A restrained selection of designer pieces, refreshed as live boutique signals return.",
+        cta: { label: "Shop new arrivals", href: "/collections/new-arrivals" },
+      },
+      {
         id: "best-sellers",
         type: "product_rail",
         heading: "Best sellers — restocked",
-        productHandles: products.map((p) => p.handle).slice(0, 12),
+        subheading: "The pieces with the clearest demand signal in the boutique right now.",
+        collectionHandle: products.length === 0 ? "best-sellers" : undefined,
+        productHandles: products.length > 0 ? products.map((p) => p.handle).slice(0, 12) : undefined,
+      },
+      {
+        id: "editorial-feature",
+        type: "editorial_banner",
+        image: "library:36",
+        alt: "Palace of Roman seasonal editorial still",
+        heading: "A quieter kind of arrival",
+        subheading:
+          "Evening, tailoring, resort pieces and accessories held together by proportion and restraint.",
+        cta: { label: "Read the story", href: "/editorial/the-new-evening" },
+        hotspots: [],
+      },
+      {
+        id: "women-now",
+        type: "product_rail",
+        heading: "Women’s selection",
+        subheading: "Dresses, tailoring and accessories selected for the current rotation.",
+        collectionHandle: "women",
+      },
+      {
+        id: "men-now",
+        type: "product_rail",
+        heading: "Men’s selection",
+        subheading: "Tailoring, shirting and off-duty pieces with a precise finish.",
+        collectionHandle: "men",
       },
     ],
   } satisfies HomepageLayout);
