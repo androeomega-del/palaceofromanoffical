@@ -543,12 +543,12 @@ export function TrustReassuranceBand() {
 export function VideoCampaignBand() {
   return (
     <section
-      aria-label="Palace of Roman — Houses in Motion"
+      aria-label="Palace of Roman — Man & Woman"
       className="relative bg-ink text-canvas border-t border-ink/10 overflow-hidden"
     >
       <div className="relative h-[78vh] min-h-[520px] md:min-h-[640px] w-full">
         <video
-          src={housesInMotionAsset.url}
+          src={manAndWomanAsset.url}
           autoPlay
           muted
           loop
@@ -560,14 +560,14 @@ export function VideoCampaignBand() {
         <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/35 to-ink/10" />
         <div className="relative z-10 h-full max-w-screen-2xl mx-auto px-6 md:px-10 flex flex-col justify-end pb-12 md:pb-20">
           <p className="text-[10px] uppercase tracking-[0.32em] text-bronze mb-4">
-            The Film · Houses in Motion
+            The Film · Man & Woman
           </p>
           <h2 className="font-serif text-4xl md:text-6xl lg:text-7xl leading-[1.02] max-w-[18ch] text-balance">
-            Italian glamour, in motion.
+            His & Hers. Under one roof.
           </h2>
           <p className="mt-5 max-w-xl text-[13px] md:text-sm text-canvas/80 leading-relaxed">
-            A short film for the season — the women's edit and the men's edit, shot
-            in a single palazzo. Shop the looks.
+            A short film for the season — the men's edit and the women's edit, shot
+            together in a single palazzo. Shop the looks.
           </p>
           <div className="mt-7 flex flex-wrap items-center gap-4">
             <Link
