@@ -1027,7 +1027,23 @@ function VariantOption({
           </button>
         )}
       </div>
-      <div className={`flex flex-wrap gap-3 ${isColor ? "items-center" : ""}`}>
+      {invalid && errorText && (
+        <p
+          key={errorText}
+          role="alert"
+          className="por-shake text-[12px] font-serif italic mb-3 -mt-1"
+          style={{ color: alertColor }}
+        >
+          {errorText}
+        </p>
+      )}
+      <div
+        className={`flex flex-wrap gap-3 ${isColor ? "items-center" : ""} ${
+          invalid ? "p-2 -m-2 rounded-sm ring-1" : ""
+        }`}
+        style={invalid ? { boxShadow: `0 0 0 1px ${alertColor}` } : undefined}
+      >
+
 
         {option.values.map((value) => {
           const candidate =
