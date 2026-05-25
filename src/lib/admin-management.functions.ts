@@ -125,7 +125,7 @@ export const forceRefreshHomepage = createServerFn({ method: "POST" })
 
 /**
  * Generate a preview edition WITHOUT touching the currently active layout.
- * The new edition is inserted as `status='pending', is_active=false` so it
+ * The new edition is inserted as `status='staged', is_active=false` so it
  * shows up in "Recent editions" and can be re-activated to preview.
  */
 export const generateHomepagePreview = createServerFn({ method: "POST" })
