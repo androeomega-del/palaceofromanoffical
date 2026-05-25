@@ -135,11 +135,11 @@ function EditionBlocks({ layout }: { layout: HomepageLayout }) {
               // once, so honouring an AI trending block would produce a duplicate
               // "Trending This Week" section on the homepage.
               if (block.type === "trending_rail") return null;
-              if (block.type === "for_you_feed") return (
-                <div key={block.id}>
-                  <ForYouFeed />
-                </div>
-              );
+              // for_you_feed blocks from the AI layout are intentionally
+              // skipped — DefaultEditionBody already renders <ForYouFeed />
+              // once, so honouring an AI for-you block would duplicate the
+              // "Curated For You / An edit, shaped by your eye." section.
+              if (block.type === "for_you_feed") return null;
               if (block.type === "curation_countdown") return (
                 <CurationCountdown key={block.id} variant={block.variant ?? "hero"} />
               );
