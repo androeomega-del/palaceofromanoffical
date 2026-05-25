@@ -133,16 +133,29 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
       return fetchProducts({ first: 8, sortKey: "BEST_SELLING" });
     },
   });
-  const swimwearQ = useQuery({
-    queryKey: ["home", "swimwear"],
-    queryFn: () => fetchCollection("swimwear", 12).then((c) => c?.products?.edges ?? []),
+  // Summer Linen — gender-neutral white & natural edit (replaces a duplicate
+  // Trending rail). Falls back to a generic "summer" search if linen returns
+  // nothing so the rail never renders empty.
+  const summerLinenQ = useQuery({
+    queryKey: ["home", "summer-linen"],
+    queryFn: async () => {
+      const primary = await fetchSearchFiltered({ first: 12, query: "linen" }).then((r) => r.edges);
+      if (primary.length > 0) return primary;
+      return fetchSearchFiltered({ first: 12, query: "shirt" }).then((r) => r.edges);
+    },
   });
-  // Fallback rail when swim is unpublished to the Lovable sales channel —
-  // hoodies always have stock, so the rail never renders empty.
-  const swimFallbackQ = useQuery({
-    queryKey: ["home", "swim-fallback-hoodies"],
-    queryFn: () => fetchCollection("hoodies", 12).then((c) => c?.products?.edges ?? []),
-    enabled: swimwearQ.isSuccess && (swimwearQ.data?.length ?? 0) === 0,
+  // Sunglasses & Eyewear — universal summer essential, replaces the second
+  // swim/beach rail. Same fallback pattern.
+  const sunglassesQ = useQuery({
+    queryKey: ["home", "summer-sunglasses"],
+    queryFn: async () => {
+      const primary = await fetchSearchFiltered({
+        first: 12,
+        query: "product_type:Sunglasses OR product_type:Eyewear",
+      }).then((r) => r.edges);
+      if (primary.length > 0) return primary;
+      return fetchSearchFiltered({ first: 12, query: "sunglasses" }).then((r) => r.edges);
+    },
   });
 
   // Editorial split sources — one image per panel, pulled from real data.
