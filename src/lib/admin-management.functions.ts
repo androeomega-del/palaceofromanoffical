@@ -108,22 +108,14 @@ export const forcePublishLatest = createServerFn({ method: "POST" })
 export const forceRefreshHomepage = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
   .handler(async () => {
-    // Archive current active so the cycle-elapsed guard does not skip.
-    await supabaseAdmin
-      .from("homepage_daily_layout")
-      .update({
-        is_active: false,
-        status: "archived",
-        generated_at: new Date(Date.now() - 49 * 3600 * 1000).toISOString(),
-      })
-      .eq("is_active", true);
-
-    // Trigger the cron route on the same host.
+    // Trigger the cron route on the public canonical host. The route now has a
+    // force flag, so we never archive the current active edition until the new
+    // row has been generated and staged successfully.
     const base =
       process.env.SITE_URL ||
       process.env.VITE_SITE_URL ||
-      "https://palaceofroman.lovable.app";
-    const res = await fetch(`${base}/api/public/cron/refresh-homepage-layout`, {
+      "https://palaceofromanofficial.com";
+    const res = await fetch(`${base}/api/public/cron/refresh-homepage-layout?force=true`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
     });
@@ -133,7 +125,7 @@ export const forceRefreshHomepage = createServerFn({ method: "POST" })
 
 /**
  * Generate a preview edition WITHOUT touching the currently active layout.
- * The new edition is inserted as `status='pending', is_active=false` so it
+ * The new edition is inserted as `status='staged', is_active=false` so it
  * shows up in "Recent editions" and can be re-activated to preview.
  */
 export const generateHomepagePreview = createServerFn({ method: "POST" })
@@ -142,7 +134,7 @@ export const generateHomepagePreview = createServerFn({ method: "POST" })
     const base =
       process.env.SITE_URL ||
       process.env.VITE_SITE_URL ||
-      "https://palaceofroman.lovable.app";
+      "https://palaceofromanofficial.com";
     const res = await fetch(
       `${base}/api/public/cron/refresh-homepage-layout?preview=true`,
       { method: "POST", headers: { "Content-Type": "application/json" } },
@@ -273,7 +265,7 @@ export const diagnoseHomepage = createServerFn({ method: "GET" })
         code: "pending_preview_unactivated",
         title: `${pendingPreviews!.length} preview edition${pendingPreviews!.length === 1 ? "" : "s"} not yet activated`,
         detail:
-          "Generate preview creates editions with status='pending'. They do NOT appear on the live site until you Re-activate them from the Recent editions list.",
+          "Generate preview creates editions with status='staged'. They do NOT appear on the live site until you Re-activate them from the Recent editions list.",
       });
     }
 

@@ -195,10 +195,47 @@ async function buildFallbackLayout(): Promise<HomepageLayout> {
     source: "cold_start_fallback",
     blocks: [
       {
+        id: "hero",
+        type: "hero",
+        image: "library:22",
+        alt: "Palace of Roman editorial curation",
+        heading: "The Current Edit",
+        subheading:
+          "A restrained selection of designer pieces, refreshed as live boutique signals return.",
+        cta: { label: "Shop new arrivals", href: "/collections/new-arrivals" },
+      },
+      {
         id: "best-sellers",
         type: "product_rail",
         heading: "Best sellers — restocked",
-        productHandles: products.map((p) => p.handle).slice(0, 12),
+        subheading: "The pieces with the clearest demand signal in the boutique right now.",
+        collectionHandle: products.length === 0 ? "best-sellers" : undefined,
+        productHandles: products.length > 0 ? products.map((p) => p.handle).slice(0, 12) : undefined,
+      },
+      {
+        id: "editorial-feature",
+        type: "editorial_banner",
+        image: "library:36",
+        alt: "Palace of Roman seasonal editorial still",
+        heading: "A quieter kind of arrival",
+        subheading:
+          "Evening, tailoring, resort pieces and accessories held together by proportion and restraint.",
+        cta: { label: "Read the story", href: "/editorial/the-new-evening" },
+        hotspots: [],
+      },
+      {
+        id: "women-now",
+        type: "product_rail",
+        heading: "Women’s selection",
+        subheading: "Dresses, tailoring and accessories selected for the current rotation.",
+        collectionHandle: "women",
+      },
+      {
+        id: "men-now",
+        type: "product_rail",
+        heading: "Men’s selection",
+        subheading: "Tailoring, shirting and off-duty pieces with a precise finish.",
+        collectionHandle: "men",
       },
     ],
   } satisfies HomepageLayout);
@@ -401,6 +438,7 @@ export const Route = createFileRoute("/api/public/cron/refresh-homepage-layout")
         const now = new Date();
         const url = new URL(request.url);
         const previewMode = url.searchParams.get("preview") === "true";
+        const forceMode = url.searchParams.get("force") === "true";
 
         // PREVIEW MODE: build a fresh layout and insert as pending/inactive.
         // Does not touch the currently active edition.
@@ -442,7 +480,7 @@ export const Route = createFileRoute("/api/public/cron/refresh-homepage-layout")
           const activeSince = new Date(activeRow.generated_at);
           const ageMs = now.getTime() - activeSince.getTime();
 
-          if (ageMs < CYCLE_MS) {
+          if (!forceMode && ageMs < CYCLE_MS) {
             return Response.json({
               action: "skipped",
               reason: "cycle_not_elapsed",
@@ -485,28 +523,38 @@ export const Route = createFileRoute("/api/public/cron/refresh-homepage-layout")
         // 3. Proceed with atomic swap.
         const nextLayout = await buildNextLayout();
 
-        const { error: deactivateErr } = await supabaseAdmin
-          .from("homepage_daily_layout")
-          .update({ is_active: false, status: "archived" })
-          .eq("is_active", true);
-        if (deactivateErr) {
-          console.error("[refresh-homepage-layout] deactivate failed:", deactivateErr);
-          return Response.json({ error: "deactivate_failed" }, { status: 500 });
-        }
-
         const { data: inserted, error: insertErr } = await supabaseAdmin
           .from("homepage_daily_layout")
           .insert({
             layout_json: nextLayout as never,
-            is_active: true,
-            status: "active",
+            is_active: false,
+            status: "staged",
             generated_at: new Date().toISOString(),
           })
           .select("id")
           .single();
         if (insertErr) {
-          console.error("[refresh-homepage-layout] insert failed:", insertErr);
+            console.error("[refresh-homepage-layout] staged insert failed:", insertErr);
           return Response.json({ error: "insert_failed" }, { status: 500 });
+        }
+
+        const { error: deactivateErr } = await supabaseAdmin
+          .from("homepage_daily_layout")
+          .update({ is_active: false, status: "archived" })
+          .eq("is_active", true)
+          .neq("id", inserted.id);
+        if (deactivateErr) {
+          console.error("[refresh-homepage-layout] deactivate failed:", deactivateErr);
+          return Response.json({ error: "deactivate_failed", staged_layout_id: inserted.id }, { status: 500 });
+        }
+
+        const { error: activateErr } = await supabaseAdmin
+          .from("homepage_daily_layout")
+          .update({ is_active: true, status: "active" })
+          .eq("id", inserted.id);
+        if (activateErr) {
+          console.error("[refresh-homepage-layout] activate new layout failed:", activateErr);
+          return Response.json({ error: "activate_failed" }, { status: 500 });
         }
 
         return Response.json({
