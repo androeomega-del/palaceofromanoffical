@@ -277,8 +277,8 @@ export function PriceTierShop() {
                 search={(tier.min ? { min: tier.min } : { max: tier.max }) as never}
                 className="group relative block aspect-[4/5] overflow-hidden bg-ink"
               >
-                <img
-                  src={cdnImage(imgForKey(tier.imgKey), { width: 900 })}
+              <img
+                  src={cdnImage(tier.img, { width: 900 })}
                   alt={tier.label}
                   loading="lazy"
                   className="absolute inset-0 w-full h-full object-cover opacity-70 transition-all duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:opacity-90 group-hover:scale-[1.04]"
