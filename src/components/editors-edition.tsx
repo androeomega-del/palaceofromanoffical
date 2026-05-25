@@ -96,6 +96,21 @@ function EditionBlocks({ layout }: { layout: HomepageLayout }) {
               if (block.type === "hero") return <EditionHero key={block.id} block={block} />;
               if (block.type === "product_rail") return <EditionRail key={block.id} block={block} />;
               if (block.type === "editorial_banner") return <EditionBanner key={block.id} block={block} />;
+              if (block.type === "trending_rail") return (
+                <div key={block.id}>
+                  <RailHeader heading={block.heading} subheading={block.subheading} />
+                  <TrendingNowRail />
+                </div>
+              );
+              if (block.type === "for_you_feed") return (
+                <div key={block.id}>
+                  <RailHeader heading={block.heading} subheading={block.subheading} />
+                  <ForYouFeed />
+                </div>
+              );
+              if (block.type === "curation_countdown") return (
+                <CurationCountdown key={block.id} variant={block.variant ?? "hero"} />
+              );
               return null;
             } catch {
               return null;
