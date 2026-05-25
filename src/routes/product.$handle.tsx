@@ -984,20 +984,32 @@ function VariantOption({
   variants,
   selected,
   onSelect,
+  invalid = false,
+  errorText = null,
 }: {
   option: { name: string; values: string[] };
   variants: ShopifyVariant[];
   selected?: ShopifyVariant;
   onSelect: (v: ShopifyVariant) => void;
+  invalid?: boolean;
+  errorText?: string | null;
 }) {
   const selectedValue = selected?.selectedOptions.find((o) => o.name === option.name)?.value;
   const isColor = /colou?r/i.test(option.name);
   const isSize = /size/i.test(option.name);
+  const alertColor = "oklch(0.52 0.13 25)";
 
   return (
     <div>
-      <div className="flex justify-between items-end mb-5 pb-2 border-b border-[var(--studio-rule)]">
-        <p className="text-[11px] uppercase tracking-[0.25em] font-semibold">
+      <div
+        className="flex justify-between items-end mb-5 pb-2 border-b transition-colors"
+        style={{ borderColor: invalid ? alertColor : "var(--studio-rule)" }}
+      >
+        <p
+          className="text-[11px] uppercase tracking-[0.25em] font-semibold transition-colors"
+          style={invalid ? { color: alertColor } : undefined}
+        >
+
           {option.name}
           {selectedValue && (
             <span className="ml-2 text-[var(--studio-muted)] font-normal normal-case tracking-normal">
