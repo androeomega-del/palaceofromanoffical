@@ -457,8 +457,19 @@ export const Route = createFileRoute("/api/public/cron/refresh-homepage-layout")
             .single();
           if (insertErr) {
             console.error("[refresh-homepage-layout] preview insert failed:", insertErr);
+            await logHomepageAudit({
+              action: "generation_failed",
+              actor: "cron",
+              details: { stage: "preview_insert", error: insertErr.message },
+            });
             return Response.json({ error: "insert_failed" }, { status: 500 });
           }
+          await logHomepageAudit({
+            action: "preview_generated",
+            edition_id: inserted.id,
+            actor: "cron",
+            details: { source: previewLayout.source, block_count: previewLayout.blocks.length },
+          });
           return Response.json({
             action: "preview_created",
             new_layout_id: inserted.id,
