@@ -262,6 +262,10 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
         </div>
       </section>
 
+      {/* AI-MANAGED EDITION BAND — sits between the Style Quiz and Trending.
+          Refreshed on the 48-hour curation cycle; renders nothing when the
+          AI layout is empty so the page falls back to the default flow. */}
+      {aiBlocks}
 
       <HydrationSafeClientOnly fallback={null}>
         <TrendingNowRail />
