@@ -279,11 +279,11 @@ function SwimPage() {
         <div className="max-w-screen-2xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex items-baseline gap-3">
             <span className="text-[10px] uppercase tracking-[0.3em] text-[var(--sea)]">Featured</span>
-            <p className="font-serif italic text-lg md:text-xl">Dolce &amp; Gabbana at the water's edge.</p>
+            <p className="font-serif italic text-lg md:text-xl">Men's Swim — a season at sea level.</p>
           </div>
           <div className="flex gap-3">
             <Link
-              to="/campaign/dolce-gabbana-swim"
+              to="/campaign/mens-swim"
               className="px-6 py-2.5 bg-canvas text-ink text-[10px] uppercase tracking-[0.3em] hover:bg-[var(--sea)] hover:text-canvas transition-colors"
             >
               View the Campaign

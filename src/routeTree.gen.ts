@@ -38,7 +38,7 @@ import { Route as EditorialTheNewEveningRouteImport } from './routes/editorial.t
 import { Route as EditorialResort2026RouteImport } from './routes/editorial.resort-2026'
 import { Route as EditorialMay2026RouteImport } from './routes/editorial.may-2026'
 import { Route as CollectionsHandleRouteImport } from './routes/collections.$handle'
-import { Route as CampaignDolceGabbanaSwimRouteImport } from './routes/campaign.dolce-gabbana-swim'
+import { Route as CampaignMensSwimRouteImport } from './routes/campaign.mens-swim'
 import { Route as BrandVendorRouteImport } from './routes/brand.$vendor'
 import { Route as AdminTrendingBrandsRouteImport } from './routes/admin.trending-brands'
 import { Route as AdminShopifySyncRouteImport } from './routes/admin.shopify-sync'
@@ -217,12 +217,11 @@ const CollectionsHandleRoute = CollectionsHandleRouteImport.update({
   path: '/collections/$handle',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CampaignDolceGabbanaSwimRoute =
-  CampaignDolceGabbanaSwimRouteImport.update({
-    id: '/campaign/dolce-gabbana-swim',
-    path: '/campaign/dolce-gabbana-swim',
-    getParentRoute: () => rootRouteImport,
-  } as any)
+const CampaignMensSwimRoute = CampaignMensSwimRouteImport.update({
+  id: '/campaign/mens-swim',
+  path: '/campaign/mens-swim',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BrandVendorRoute = BrandVendorRouteImport.update({
   id: '/brand/$vendor',
   path: '/brand/$vendor',
@@ -438,7 +437,7 @@ export interface FileRoutesByFullPath {
   '/admin/shopify-sync': typeof AdminShopifySyncRoute
   '/admin/trending-brands': typeof AdminTrendingBrandsRoute
   '/brand/$vendor': typeof BrandVendorRoute
-  '/campaign/dolce-gabbana-swim': typeof CampaignDolceGabbanaSwimRoute
+  '/campaign/mens-swim': typeof CampaignMensSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
   '/editorial/may-2026': typeof EditorialMay2026Route
   '/editorial/resort-2026': typeof EditorialResort2026Route
@@ -501,7 +500,7 @@ export interface FileRoutesByTo {
   '/admin/shopify-sync': typeof AdminShopifySyncRoute
   '/admin/trending-brands': typeof AdminTrendingBrandsRoute
   '/brand/$vendor': typeof BrandVendorRoute
-  '/campaign/dolce-gabbana-swim': typeof CampaignDolceGabbanaSwimRoute
+  '/campaign/mens-swim': typeof CampaignMensSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
   '/editorial/may-2026': typeof EditorialMay2026Route
   '/editorial/resort-2026': typeof EditorialResort2026Route
@@ -566,7 +565,7 @@ export interface FileRoutesById {
   '/admin/shopify-sync': typeof AdminShopifySyncRoute
   '/admin/trending-brands': typeof AdminTrendingBrandsRoute
   '/brand/$vendor': typeof BrandVendorRoute
-  '/campaign/dolce-gabbana-swim': typeof CampaignDolceGabbanaSwimRoute
+  '/campaign/mens-swim': typeof CampaignMensSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
   '/editorial/may-2026': typeof EditorialMay2026Route
   '/editorial/resort-2026': typeof EditorialResort2026Route
@@ -632,7 +631,7 @@ export interface FileRouteTypes {
     | '/admin/shopify-sync'
     | '/admin/trending-brands'
     | '/brand/$vendor'
-    | '/campaign/dolce-gabbana-swim'
+    | '/campaign/mens-swim'
     | '/collections/$handle'
     | '/editorial/may-2026'
     | '/editorial/resort-2026'
@@ -695,7 +694,7 @@ export interface FileRouteTypes {
     | '/admin/shopify-sync'
     | '/admin/trending-brands'
     | '/brand/$vendor'
-    | '/campaign/dolce-gabbana-swim'
+    | '/campaign/mens-swim'
     | '/collections/$handle'
     | '/editorial/may-2026'
     | '/editorial/resort-2026'
@@ -759,7 +758,7 @@ export interface FileRouteTypes {
     | '/admin/shopify-sync'
     | '/admin/trending-brands'
     | '/brand/$vendor'
-    | '/campaign/dolce-gabbana-swim'
+    | '/campaign/mens-swim'
     | '/collections/$handle'
     | '/editorial/may-2026'
     | '/editorial/resort-2026'
@@ -821,7 +820,7 @@ export interface RootRouteChildren {
   AdminShopifySyncRoute: typeof AdminShopifySyncRoute
   AdminTrendingBrandsRoute: typeof AdminTrendingBrandsRoute
   BrandVendorRoute: typeof BrandVendorRoute
-  CampaignDolceGabbanaSwimRoute: typeof CampaignDolceGabbanaSwimRoute
+  CampaignMensSwimRoute: typeof CampaignMensSwimRoute
   CollectionsHandleRoute: typeof CollectionsHandleRoute
   EditorialMay2026Route: typeof EditorialMay2026Route
   EditorialResort2026Route: typeof EditorialResort2026Route
@@ -1048,11 +1047,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CollectionsHandleRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/campaign/dolce-gabbana-swim': {
-      id: '/campaign/dolce-gabbana-swim'
-      path: '/campaign/dolce-gabbana-swim'
-      fullPath: '/campaign/dolce-gabbana-swim'
-      preLoaderRoute: typeof CampaignDolceGabbanaSwimRouteImport
+    '/campaign/mens-swim': {
+      id: '/campaign/mens-swim'
+      path: '/campaign/mens-swim'
+      fullPath: '/campaign/mens-swim'
+      preLoaderRoute: typeof CampaignMensSwimRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/brand/$vendor': {
@@ -1357,7 +1356,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminShopifySyncRoute: AdminShopifySyncRoute,
   AdminTrendingBrandsRoute: AdminTrendingBrandsRoute,
   BrandVendorRoute: BrandVendorRoute,
-  CampaignDolceGabbanaSwimRoute: CampaignDolceGabbanaSwimRoute,
+  CampaignMensSwimRoute: CampaignMensSwimRoute,
   CollectionsHandleRoute: CollectionsHandleRoute,
   EditorialMay2026Route: EditorialMay2026Route,
   EditorialResort2026Route: EditorialResort2026Route,
