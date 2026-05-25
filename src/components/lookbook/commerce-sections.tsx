@@ -405,7 +405,7 @@ export function BrandSpotlight() {
           className="relative block min-h-[60vh] md:min-h-full overflow-hidden group"
         >
           <img
-            src={cdnImage(imgForKey("spotlight-versace"), { width: 1400 })}
+            src={cdnImage(spotlightVersaceImg, { width: 1400 })}
             alt="Versace at Palace of Roman"
             loading="lazy"
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1600ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
