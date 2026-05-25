@@ -272,11 +272,9 @@ export function DefaultEditionBody() {
         <ForYouFeed />
       </HydrationSafeClientOnly>
 
-      {/* Editor's Edition — AI-curated 48h homepage layout from homepage_daily_layout.
-          Additive band; renders nothing on failure or cold-start fallback. */}
-      <HydrationSafeClientOnly fallback={null}>
-        <EditorsEdition />
-      </HydrationSafeClientOnly>
+      {/* The AI-curated edition now wraps the entire homepage via
+          <EditionLayout/>; the inline EditorsEdition band has been
+          removed so AI blocks no longer duplicate sections below. */}
 
 
 
