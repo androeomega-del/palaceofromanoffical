@@ -39,7 +39,6 @@ export const TIER_2_HIGH_DEMAND = make([
   "Coach",
   "Loewe",
   "Miu Miu",
-  "Versace",
   "Alexander McQueen",
   "Givenchy",
   "Tom Ford",
