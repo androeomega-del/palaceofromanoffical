@@ -87,7 +87,7 @@ export const activateHomepageLayout = createServerFn({ method: "POST" })
  */
 export const forcePublishLatest = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
-  .handler(async () => {
+  .handler(async ({ context }) => {
     const { data: latest, error: selErr } = await supabaseAdmin
       .from("homepage_daily_layout")
       .select("id")
@@ -115,8 +115,14 @@ export const forcePublishLatest = createServerFn({ method: "POST" })
       })
       .eq("id", latest.id);
     if (error) throw new Error(error.message);
+    await logHomepageAudit({
+      action: "force_publish",
+      edition_id: latest.id,
+      actor: context.userId,
+    });
     return { ok: true, layout_id: latest.id };
   });
+
 
 
 export const forceRefreshHomepage = createServerFn({ method: "POST" })
