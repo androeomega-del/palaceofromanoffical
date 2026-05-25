@@ -41,6 +41,10 @@ export const heroBlockSchema = baseBlock.extend({
   type: z.literal("hero"),
   image: z.string().url().or(z.string().min(1)),
   alt: z.string().max(255),
+  /** Optional autoplaying background video. Falls back to image when omitted. */
+  video: z.string().min(1).max(500).optional(),
+  /** Optional poster frame for the video. Defaults to `image`. */
+  poster: z.string().min(1).max(500).optional(),
 });
 
 export const productRailBlockSchema = baseBlock.extend({
