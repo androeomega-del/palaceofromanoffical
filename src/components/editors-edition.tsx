@@ -10,6 +10,22 @@
  * default body so editorial sections never duplicate.
  */
 import { Component, useEffect, type ReactNode } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+
+import { homepageLayoutSchema, type HomepageLayout } from "@/lib/homepage-layout-schema";
+import { img } from "@/lib/editorial-library";
+import { fetchProductByHandle, type ShopifyProductNode } from "@/lib/shopify";
+import { ProductCard } from "@/components/product-card";
+import { EditorialHotspots } from "@/components/editorial-hotspots";
+import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
+import { CampaignVideo } from "@/components/campaign-video";
+import { DefaultEditionBody } from "@/components/default-edition-body";
+import { TrendingNowRail } from "@/components/trending-now";
+import { ForYouFeed } from "@/components/for-you-feed";
+import { CurationCountdown } from "@/components/curation-countdown";
+import { useChromeStore } from "@/stores/chrome-store";
 
 /**
  * Isolates the AI-managed edition band from the rest of the homepage:
@@ -33,21 +49,6 @@ class EditionBlocksBoundary extends Component<
     return this.props.children;
   }
 }
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-
-import { homepageLayoutSchema, type HomepageLayout } from "@/lib/homepage-layout-schema";
-import { img } from "@/lib/editorial-library";
-import { fetchProductByHandle, type ShopifyProductNode } from "@/lib/shopify";
-import { ProductCard } from "@/components/product-card";
-import { EditorialHotspots } from "@/components/editorial-hotspots";
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
-import { CampaignVideo } from "@/components/campaign-video";
-import { DefaultEditionBody } from "@/components/default-edition-body";
-import { TrendingNowRail } from "@/components/trending-now";
-import { ForYouFeed } from "@/components/for-you-feed";
-import { CurationCountdown } from "@/components/curation-countdown";
 import { useChromeStore } from "@/stores/chrome-store";
 
 function resolveImage(src: string): string {
