@@ -55,7 +55,7 @@ export const updateHomepageLayoutJson = createServerFn({ method: "POST" })
 export const activateHomepageLayout = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
   .inputValidator((d: { id: string }) => d)
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
     const { error: deErr } = await supabaseAdmin
       .from("homepage_daily_layout")
       .update({ is_active: false, status: "archived" })
@@ -70,8 +70,14 @@ export const activateHomepageLayout = createServerFn({ method: "POST" })
       })
       .eq("id", data.id);
     if (error) throw new Error(error.message);
+    await logHomepageAudit({
+      action: "activated",
+      edition_id: data.id,
+      actor: context.userId,
+    });
     return { ok: true };
   });
+
 
 /**
  * Manual override: flip the most recent edition to active without invoking
