@@ -147,6 +147,12 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
     if (soldOut) return;
     // Multi-variant pieces open the Quick-View sheet in-grid — no PDP detour.
     // Single-variant pieces add straight to bag below.
+    // Size-only multi-variant pieces: open inline two-step quick-add row.
+    if (sizeOnlyOption) {
+      setQuickAddState("sizing");
+      return;
+    }
+    // Other multi-option pieces (e.g. size + color) → quick-view sheet.
     if (hasChoices || !firstAvailable) {
       setQuickViewOpen(true);
       return;
