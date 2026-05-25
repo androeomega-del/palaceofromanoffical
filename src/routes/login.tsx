@@ -34,21 +34,28 @@ function LoginPage() {
     setError(null);
     setLoading(true);
     try {
+      let accessToken: string | undefined;
       if (mode === "signup") {
-        const { error: signUpError } = await supabase.auth.signUp({
+        const { data, error: signUpError } = await supabase.auth.signUp({
           email,
           password,
           options: { emailRedirectTo: window.location.origin + "/admin/" },
         });
         if (signUpError) throw signUpError;
+        accessToken = data.session?.access_token;
       } else {
-        const { error: signInError } = await supabase.auth.signInWithPassword({
+        const { data, error: signInError } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
         if (signInError) throw signInError;
+        accessToken = data.session?.access_token;
       }
-      await bootstrapAdminIfFirst();
+      if (accessToken) {
+        await bootstrapAdminIfFirst({
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
+      }
       navigate({ to: redirectTo });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Authentication failed");

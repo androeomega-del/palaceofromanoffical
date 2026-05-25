@@ -38,8 +38,15 @@ export async function adminBeforeLoad() {
   if (error || !data.user) {
     throw redirect({ to: "/login" });
   }
+  const { data: sessionData } = await supabase.auth.getSession();
+  const accessToken = sessionData.session?.access_token;
+  if (!accessToken) {
+    throw redirect({ to: "/login" });
+  }
   try {
-    await ensureAdmin();
+    await ensureAdmin({
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
   } catch {
     // Signed in but not an admin (or transient server error) — DO NOT loop
     // back to /login. Send them home so they aren't trapped.
