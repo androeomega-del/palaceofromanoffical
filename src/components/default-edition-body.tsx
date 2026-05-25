@@ -453,7 +453,7 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
               View all
             </Link>
           </div>
-          <HorizontalRail edges={newArrivalsQ.data ?? []} loading={newArrivalsQ.isLoading} />
+          <HorizontalRail edges={dedupedRails.newArrivals} loading={newArrivalsQ.isLoading} />
         </div>
       </section>
 
