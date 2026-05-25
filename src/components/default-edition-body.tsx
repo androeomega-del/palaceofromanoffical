@@ -376,7 +376,7 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
               Shop the Edit
             </Link>
           </div>
-          <HorizontalRail edges={summerLinenQ.data ?? []} loading={summerLinenQ.isLoading} />
+          <HorizontalRail edges={dedupedRails.summerLinen} loading={summerLinenQ.isLoading} />
         </div>
       </section>
 
