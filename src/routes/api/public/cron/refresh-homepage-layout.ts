@@ -438,6 +438,7 @@ export const Route = createFileRoute("/api/public/cron/refresh-homepage-layout")
         const now = new Date();
         const url = new URL(request.url);
         const previewMode = url.searchParams.get("preview") === "true";
+        const forceMode = url.searchParams.get("force") === "true";
 
         // PREVIEW MODE: build a fresh layout and insert as pending/inactive.
         // Does not touch the currently active edition.
@@ -479,7 +480,7 @@ export const Route = createFileRoute("/api/public/cron/refresh-homepage-layout")
           const activeSince = new Date(activeRow.generated_at);
           const ageMs = now.getTime() - activeSince.getTime();
 
-          if (ageMs < CYCLE_MS) {
+          if (!forceMode && ageMs < CYCLE_MS) {
             return Response.json({
               action: "skipped",
               reason: "cycle_not_elapsed",
