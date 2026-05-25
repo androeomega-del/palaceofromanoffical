@@ -11,6 +11,7 @@ import { LUXURY_TIERS } from "@/lib/luxury-brands";
 import { ForYouFeed } from "@/components/for-you-feed";
 import { TrendingNowRail } from "@/components/trending-now";
 import { CurationCountdown } from "@/components/curation-countdown";
+import { EditorsEdition } from "@/components/editors-edition";
 
 import heroImage from "@/assets/home-hero.jpg";
 import summerHero from "@/assets/summer-bento-hero.jpg";
@@ -319,6 +320,15 @@ function HomePage() {
       <HydrationSafeClientOnly fallback={null}>
         <ForYouFeed />
       </HydrationSafeClientOnly>
+
+      {/* Editor's Edition — AI-curated 48h homepage layout from homepage_daily_layout.
+          Additive band; renders nothing on failure or cold-start fallback. */}
+      <HydrationSafeClientOnly fallback={null}>
+        <EditorsEdition />
+      </HydrationSafeClientOnly>
+
+
+
 
 
 
