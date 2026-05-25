@@ -21,7 +21,7 @@ import { Sparkles, ShieldCheck, Plane, RefreshCw, ArrowRight } from "lucide-reac
 
 import { fetchProducts, formatPrice, type ShopifyProduct } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
-import { imgForKey } from "@/lib/editorial-library";
+// imgForKey no longer needed — every editorial spot now uses a dedicated generated image.
 import { NewsletterForm } from "@/components/newsletter-form";
 import { cdnImage } from "@/lib/cdn-image";
 import housesInMotionAsset from "@/assets/houses-in-motion.mp4.asset.json";
@@ -39,6 +39,13 @@ import tileAccessoriesMen from "@/assets/category-tiles/accessories-men.jpg";
 import tileSunglasses from "@/assets/category-tiles/sunglasses.jpg";
 import tileLeatherUnisex from "@/assets/category-tiles/leather-unisex.jpg";
 import tileSwimMen from "@/assets/category-tiles/swim-men.jpg";
+
+// Editorial spot imagery — generated for each merchandising block.
+import tier500Img from "@/assets/editorial/tier-500.jpg";
+import tier1000Img from "@/assets/editorial/tier-1000.jpg";
+import tierInvestmentImg from "@/assets/editorial/tier-investment.jpg";
+import spotlightVersaceImg from "@/assets/editorial/spotlight-versace.jpg";
+import videoPosterHousesImg from "@/assets/editorial/video-poster-houses.jpg";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // NEW ARRIVALS — horizontal scroll rail
@@ -235,10 +242,10 @@ export function ShopByCategoryTiles() {
 // ─────────────────────────────────────────────────────────────────────────────
 // PRICE TIER SHOP — Under $500 / $1,000 / Investment
 // ─────────────────────────────────────────────────────────────────────────────
-const PRICE_TIERS: Array<{ max?: number; min?: number; label: string; sub: string; imgKey: string }> = [
-  { max: 500, label: "Under $500", sub: "Entry-point luxury — accessories, sunglasses, signature pieces.", imgKey: "tier-500" },
-  { max: 1000, label: "Under $1,000", sub: "The weekend wardrobe — ready-to-wear, leather goods, shoes.", imgKey: "tier-1000" },
-  { min: 1000, label: "Investment Pieces", sub: "Made to outlast trends — outerwear, statement bags, fine knits.", imgKey: "tier-investment" },
+const PRICE_TIERS: Array<{ max?: number; min?: number; label: string; sub: string; img: string }> = [
+  { max: 500, label: "Under $500", sub: "Entry-point luxury — accessories, sunglasses, signature pieces.", img: tier500Img },
+  { max: 1000, label: "Under $1,000", sub: "The weekend wardrobe — ready-to-wear, leather goods, shoes.", img: tier1000Img },
+  { min: 1000, label: "Investment Pieces", sub: "Made to outlast trends — outerwear, statement bags, fine knits.", img: tierInvestmentImg },
 ];
 
 export function PriceTierShop() {
@@ -270,8 +277,8 @@ export function PriceTierShop() {
                 search={(tier.min ? { min: tier.min } : { max: tier.max }) as never}
                 className="group relative block aspect-[4/5] overflow-hidden bg-ink"
               >
-                <img
-                  src={cdnImage(imgForKey(tier.imgKey), { width: 900 })}
+              <img
+                  src={cdnImage(tier.img, { width: 900 })}
                   alt={tier.label}
                   loading="lazy"
                   className="absolute inset-0 w-full h-full object-cover opacity-70 transition-all duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:opacity-90 group-hover:scale-[1.04]"
@@ -398,7 +405,7 @@ export function BrandSpotlight() {
           className="relative block min-h-[60vh] md:min-h-full overflow-hidden group"
         >
           <img
-            src={cdnImage(imgForKey("spotlight-versace"), { width: 1400 })}
+            src={cdnImage(spotlightVersaceImg, { width: 1400 })}
             alt="Versace at Palace of Roman"
             loading="lazy"
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1600ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
@@ -554,7 +561,7 @@ export function VideoCampaignBand() {
           loop
           playsInline
           preload="metadata"
-          poster={cdnImage(imgForKey("video-poster-houses"), { width: 1600 })}
+          poster={cdnImage(videoPosterHousesImg, { width: 1600 })}
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/35 to-ink/10" />
