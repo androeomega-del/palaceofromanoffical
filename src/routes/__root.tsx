@@ -284,18 +284,29 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <CartSyncBoundary />
-      <div className="min-h-screen flex flex-col bg-canvas">
-        <SiteHeader />
-        <main className="flex-1">
-          <Outlet />
-        </main>
-        <SiteFooter />
-      </div>
+      <ChromeAwareShell />
       <ClientOnlyToaster />
       <WelcomeDispatchModal />
       <ClientOnlyConcierge />
       <ExitIntentStylist />
     </QueryClientProvider>
+  );
+}
+
+function ChromeAwareShell() {
+  // The homepage uses <EditionLayout/> which renders its own header/footer
+  // and flips these flags so we don't render duplicate chrome above it.
+  // Every other route reads `false` here and renders the defaults.
+  const headerSuppressed = useChromeStore((s) => s.headerSuppressed);
+  const footerSuppressed = useChromeStore((s) => s.footerSuppressed);
+  return (
+    <div className="min-h-screen flex flex-col bg-canvas">
+      {!headerSuppressed && <SiteHeader />}
+      <main className="flex-1">
+        <Outlet />
+      </main>
+      {!footerSuppressed && <SiteFooter />}
+    </div>
   );
 }
 
