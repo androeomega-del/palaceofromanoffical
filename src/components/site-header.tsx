@@ -155,7 +155,7 @@ export function SiteHeader() {
           </Link>
 
           <div className="flex items-center gap-7 justify-self-end">
-            <nav className="hidden lg:flex items-center gap-7 text-[11px] uppercase tracking-[0.25em] font-medium">
+            <nav className="hidden md:flex items-center gap-7 text-[11px] uppercase tracking-[0.25em] font-medium">
               <FlatLinks items={flatRight} />
             </nav>
             <div className="flex items-center gap-6">
