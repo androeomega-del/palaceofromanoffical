@@ -40,6 +40,13 @@ import tileSunglasses from "@/assets/category-tiles/sunglasses.jpg";
 import tileLeatherUnisex from "@/assets/category-tiles/leather-unisex.jpg";
 import tileSwimMen from "@/assets/category-tiles/swim-men.jpg";
 
+// Editorial spot imagery — generated for each merchandising block.
+import tier500Img from "@/assets/editorial/tier-500.jpg";
+import tier1000Img from "@/assets/editorial/tier-1000.jpg";
+import tierInvestmentImg from "@/assets/editorial/tier-investment.jpg";
+import spotlightVersaceImg from "@/assets/editorial/spotlight-versace.jpg";
+import videoPosterHousesImg from "@/assets/editorial/video-poster-houses.jpg";
+
 // ─────────────────────────────────────────────────────────────────────────────
 // NEW ARRIVALS — horizontal scroll rail
 // ─────────────────────────────────────────────────────────────────────────────
