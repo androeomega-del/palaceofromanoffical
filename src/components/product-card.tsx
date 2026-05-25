@@ -28,6 +28,17 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
     ) || variants.length > 1;
   const soldOut = variants.length > 0 && !firstAvailable;
   const availableCount = variants.filter((v) => v.availableForSale).length;
+  // Desktop hover quick-add: when a product has exactly one option group and
+  // it's size, render size pills inline on hover instead of opening the sheet.
+  const sizeOnlyOption = (() => {
+    const opts = (p.options ?? []).filter(
+      (o) => o.values.length > 1 || o.name.toLowerCase() !== "title",
+    );
+    if (opts.length !== 1) return null;
+    if (!/size/i.test(opts[0].name)) return null;
+    return opts[0];
+  })();
+
   // Availability Urgency for designer retail — tiered, evidence-based copy.
   // See src/lib/scarcity-signal.ts for the tactic stack & tier definitions.
   const scarcity = computeScarcitySignal({
