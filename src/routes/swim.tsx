@@ -25,7 +25,7 @@ export const Route = createFileRoute("/swim")({
   head: () => {
     const title = "Swim & Beachwear — The Resort Edit | Palace of Roman";
     const desc =
-      "Designer swimwear, bikinis and beachwear from Dolce & Gabbana and the world's leading maisons. 100% authentic, sourced from authorised distributors. Worldwide shipping.";
+      "Designer swimwear, bikinis and beachwear from the world's leading maisons. 100% authentic, sourced from authorised distributors. Worldwide shipping.";
     const rh = routeHead({ path: "/swim", title, description: desc });
     return {
       meta: [
