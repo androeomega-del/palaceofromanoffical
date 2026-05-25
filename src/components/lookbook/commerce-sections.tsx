@@ -136,13 +136,19 @@ export function BestSellersGrid() {
 // ─────────────────────────────────────────────────────────────────────────────
 // SHOP BY CATEGORY — six editorial tiles
 // ─────────────────────────────────────────────────────────────────────────────
+// 40% Women · 40% Men · 20% Unisex — 10 tiles (4 / 4 / 2). Order alternates
+// gender to keep visual rhythm across the grid.
 const CATEGORY_TILES: Array<{ handle: string; label: string; eyebrow: string; imgKey: string }> = [
-  { handle: "women-bags", label: "Bags", eyebrow: "Women", imgKey: "tile-bags-women" },
+  { handle: "women-bags", label: "Handbags", eyebrow: "Women", imgKey: "tile-bags-women" },
+  { handle: "men-bags", label: "Bags", eyebrow: "Men", imgKey: "tile-bags-men" },
   { handle: "womens-shoes", label: "Shoes", eyebrow: "Women", imgKey: "tile-shoes-women" },
+  { handle: "men-shoes", label: "Shoes", eyebrow: "Men", imgKey: "tile-shoes-men" },
   { handle: "dresses", label: "Dresses", eyebrow: "Women", imgKey: "tile-dresses" },
-  { handle: "mens-clothing", label: "Menswear", eyebrow: "Men", imgKey: "tile-menswear" },
+  { handle: "mens-clothing", label: "Tailoring", eyebrow: "Men", imgKey: "tile-menswear" },
+  { handle: "coats-women", label: "Outerwear", eyebrow: "Women", imgKey: "tile-outerwear-women" },
+  { handle: "men-accessories", label: "Accessories", eyebrow: "Men", imgKey: "tile-accessories-men" },
   { handle: "sunglasses", label: "Sunglasses", eyebrow: "Unisex", imgKey: "tile-sunglasses" },
-  { handle: "coats-women", label: "Outerwear", eyebrow: "Women", imgKey: "tile-outerwear" },
+  { handle: "accessories", label: "Small Leather", eyebrow: "Unisex", imgKey: "tile-leather-unisex" },
 ];
 
 export function ShopByCategoryTiles() {
