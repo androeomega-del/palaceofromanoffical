@@ -71,7 +71,29 @@
   --border: oklch(0.31 0.078 250 / 12%);
   --input: oklch(0.31 0.078 250 / 16%);
   --ring: var(--sea);
+
+  /* Edition tokens — overridden per active edition palette */
+  --edition-bg: oklch(0.16 0.002 50);     /* default noir */
+  --edition-fg: oklch(0.94 0.012 80);
+  --edition-accent: oklch(0.76 0.105 82);
 }
+
+/* Edition palette: linen (light, Burberry calm) */
+html[data-edition-palette="linen"] {
+  --edition-bg: oklch(0.97 0.005 85);
+  --edition-fg: oklch(0.31 0.078 250);
+  --edition-accent: oklch(0.74 0.082 70);
+}
+
+/* Edition palette: noir (Gucci-dark) */
+html[data-edition-palette="noir"] {
+  --edition-bg: oklch(0.13 0.005 50);
+  --edition-fg: oklch(0.96 0.012 80);
+  --edition-accent: oklch(0.76 0.105 82);
+}
+
+/* Smooth crossfade when switching editions */
+html { transition: background-color 400ms ease, color 400ms ease; }
 
 @layer base {
   * { border-color: var(--color-border); }
