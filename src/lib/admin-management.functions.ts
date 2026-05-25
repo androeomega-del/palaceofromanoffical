@@ -134,7 +134,7 @@ export const generateHomepagePreview = createServerFn({ method: "POST" })
     const base =
       process.env.SITE_URL ||
       process.env.VITE_SITE_URL ||
-      "https://palaceofroman.lovable.app";
+      "https://palaceofromanofficial.com";
     const res = await fetch(
       `${base}/api/public/cron/refresh-homepage-layout?preview=true`,
       { method: "POST", headers: { "Content-Type": "application/json" } },
@@ -265,7 +265,7 @@ export const diagnoseHomepage = createServerFn({ method: "GET" })
         code: "pending_preview_unactivated",
         title: `${pendingPreviews!.length} preview edition${pendingPreviews!.length === 1 ? "" : "s"} not yet activated`,
         detail:
-          "Generate preview creates editions with status='pending'. They do NOT appear on the live site until you Re-activate them from the Recent editions list.",
+          "Generate preview creates editions with status='staged'. They do NOT appear on the live site until you Re-activate them from the Recent editions list.",
       });
     }
 
