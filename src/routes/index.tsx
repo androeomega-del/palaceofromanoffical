@@ -20,6 +20,16 @@ import { EditionSwitcher } from "@/components/lookbook/edition-switcher";
 import { EditionIntro } from "@/components/lookbook/edition-intro";
 import { EditionEditorialBand } from "@/components/lookbook/edition-editorial-band";
 import { LookbookMasonry } from "@/components/lookbook/lookbook-masonry";
+import {
+  NewArrivalsRail,
+  BestSellersGrid,
+  ShopByCategoryTiles,
+  PriceTierShop,
+  EditorsPicksTriptych,
+  BrandSpotlight,
+  NewsletterVIPBand,
+  TrustReassuranceBand,
+} from "@/components/lookbook/commerce-sections";
 import { TrendingNowRail } from "@/components/trending-now";
 import { ForYouFeed } from "@/components/for-you-feed";
 import { LUXURY_TIERS } from "@/lib/luxury-brands";
@@ -165,17 +175,32 @@ function EditionSpine() {
           <EditionHero edition={active} />
           <EditionIntro edition={active} />
 
-          {/* Trending This Week — kept */}
-          <TrendingNowRail />
+          {/* — Commerce push #1: Just In ——————————————————— */}
+          <NewArrivalsRail />
 
           {/* Lookbook masonry pt.1 — shoppable hotspots */}
           <LookbookMasonry edition={active} productOffset={0} productLimit={6} />
 
-          {/* Style Quiz CTA — kept, restyled */}
+          {/* — Shop by category tiles ——————————————————— */}
+          <ShopByCategoryTiles />
+
+          {/* Trending This Week — data-driven (hidden until signal) */}
+          <TrendingNowRail />
+
+          {/* — Editor's picks triptych ——————————————————— */}
+          <EditorsPicksTriptych />
+
+          {/* — Best sellers grid ——————————————————— */}
+          <BestSellersGrid />
+
+          {/* Style Quiz CTA */}
           <StyleQuizCTA />
 
-          {/* Curated For You — kept */}
+          {/* Curated For You — personalised */}
           <ForYouFeed />
+
+          {/* — Price-tier shop ——————————————————— */}
+          <PriceTierShop />
 
           {/* Edition editorial band */}
           <EditionEditorialBand edition={active} />
@@ -183,8 +208,17 @@ function EditionSpine() {
           {/* Lookbook masonry pt.2 */}
           <LookbookMasonry edition={active} productOffset={6} productLimit={8} />
 
-          {/* The Houses — kept (tiered designer directory) */}
+          {/* — Brand spotlight ——————————————————— */}
+          <BrandSpotlight />
+
+          {/* The Houses — tiered designer directory */}
           <FeaturedHouses />
+
+          {/* — VIP newsletter capture ——————————————————— */}
+          <NewsletterVIPBand />
+
+          {/* — Trust reassurance ——————————————————— */}
+          <TrustReassuranceBand />
         </motion.div>
       </AnimatePresence>
     </>
