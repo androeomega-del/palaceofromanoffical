@@ -26,6 +26,7 @@ import editorialHero from "@/assets/editorial/may-2026/1.webp";
 import marketingWomen from "@/assets/marketing-women-summer.jpg";
 import marketingMen from "@/assets/marketing-men-summer.jpg";
 import marketingAccessories from "@/assets/marketing-accessories-summer.jpg";
+import marketingPoloShirts from "@/assets/marketing-polo-shirts.jpg";
 
 import marketingMensResort from "@/assets/marketing-men-resort-summer.jpg";
 import marketingVersace from "@/assets/marketing-versace.jpg";
@@ -583,7 +584,7 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
           </div>
           <div className="grid md:grid-cols-3 gap-6 lg:gap-10">
             <EssentialTile
-              image={polosQ.data?.[0]?.node?.images?.edges?.[0]?.node}
+              image={{ url: marketingPoloShirts, altText: "Polo Shirts — A quieter form of tailoring" }}
               eyebrow="Polo Shirts"
               heading="A quieter form of tailoring."
               copy="Piqué cotton, considered collars and weights that hold their line — polos chosen for the way they sit under a jacket and on their own."
