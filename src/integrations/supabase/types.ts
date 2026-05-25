@@ -646,6 +646,89 @@ export type Database = {
         }
         Relationships: []
       }
+      lookbook_hotspots: {
+        Row: {
+          created_at: string
+          id: string
+          label: string | null
+          lookbook_image_id: string
+          product_handle: string
+          sort_order: number
+          variant_gid: string | null
+          x: number
+          y: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          label?: string | null
+          lookbook_image_id: string
+          product_handle: string
+          sort_order?: number
+          variant_gid?: string | null
+          x: number
+          y: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          label?: string | null
+          lookbook_image_id?: string
+          product_handle?: string
+          sort_order?: number
+          variant_gid?: string | null
+          x?: number
+          y?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lookbook_hotspots_lookbook_image_id_fkey"
+            columns: ["lookbook_image_id"]
+            isOneToOne: false
+            referencedRelation: "lookbook_images"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lookbook_images: {
+        Row: {
+          alt_text: string | null
+          blur_data_url: string | null
+          created_at: string
+          edition_handle: string
+          height: number | null
+          id: string
+          image_url: string
+          sort_order: number
+          updated_at: string
+          width: number | null
+        }
+        Insert: {
+          alt_text?: string | null
+          blur_data_url?: string | null
+          created_at?: string
+          edition_handle: string
+          height?: number | null
+          id?: string
+          image_url: string
+          sort_order?: number
+          updated_at?: string
+          width?: number | null
+        }
+        Update: {
+          alt_text?: string | null
+          blur_data_url?: string | null
+          created_at?: string
+          edition_handle?: string
+          height?: number | null
+          id?: string
+          image_url?: string
+          sort_order?: number
+          updated_at?: string
+          width?: number | null
+        }
+        Relationships: []
+      }
       newsletter_subscribers: {
         Row: {
           created_at: string
