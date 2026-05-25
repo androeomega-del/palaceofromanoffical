@@ -171,7 +171,8 @@ export function ShopByCategoryTiles() {
             All categories →
           </Link>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-5">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-5">
+          <p className="sr-only">A balanced edit: 40% women, 40% men, 20% unisex — bags, shoes, ready-to-wear, accessories and sunglasses.</p>
           {CATEGORY_TILES.map((tile, i) => (
             <motion.div
               key={tile.handle}
