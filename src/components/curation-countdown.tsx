@@ -71,9 +71,16 @@ export function CurationCountdown({ variant = "hero", className = "" }: Props) {
 
   // Live cache invalidation: when an edition is swapped server-side,
   // every open visitor tab gets pushed and refetches automatically.
+  // Channel name is unique per mount so multiple instances of this
+  // component on the same page don't collide on Supabase's channel
+  // registry (which throws if `.on()` is called after `.subscribe()`
+  // on a reused channel name).
   useEffect(() => {
+    const channelName = `homepage-daily-layout-live-${Math.random()
+      .toString(36)
+      .slice(2)}`;
     const channel = supabase
-      .channel("homepage-daily-layout-live")
+      .channel(channelName)
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "homepage_daily_layout" },
