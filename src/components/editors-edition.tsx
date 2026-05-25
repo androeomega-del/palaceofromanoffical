@@ -9,7 +9,30 @@
  * cold-start fallback). When the AI layout is present, it REPLACES the
  * default body so editorial sections never duplicate.
  */
-import { useEffect } from "react";
+import { Component, useEffect, type ReactNode } from "react";
+
+/**
+ * Isolates the AI-managed edition band from the rest of the homepage:
+ * if any block throws while rendering, swallow the error and render
+ * nothing here so the editorial flow above and below still loads.
+ */
+class EditionBlocksBoundary extends Component<
+  { children: ReactNode },
+  { hasError: boolean }
+> {
+  state = { hasError: false };
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch(error: unknown) {
+    // eslint-disable-next-line no-console
+    console.error("[edition-blocks] render error:", error);
+  }
+  render() {
+    if (this.state.hasError) return null;
+    return this.props.children;
+  }
+}
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
