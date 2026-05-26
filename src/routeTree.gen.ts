@@ -47,6 +47,7 @@ import { Route as EditorialAccessoriesRouteImport } from './routes/editorial.acc
 import { Route as CollectionsItalianLeatherWalletsRouteImport } from './routes/collections.italian-leather-wallets'
 import { Route as CollectionsItalianLeatherLoafersRouteImport } from './routes/collections.italian-leather-loafers'
 import { Route as CollectionsItalianLeatherHandbagsRouteImport } from './routes/collections.italian-leather-handbags'
+import { Route as CollectionsDesignerSunglassesRouteImport } from './routes/collections.designer-sunglasses'
 import { Route as CollectionsDesignerMensShirtsRouteImport } from './routes/collections.designer-mens-shirts'
 import { Route as CollectionsHandleRouteImport } from './routes/collections.$handle'
 import { Route as CampaignMensSwimRouteImport } from './routes/campaign.mens-swim'
@@ -278,6 +279,12 @@ const CollectionsItalianLeatherHandbagsRoute =
   CollectionsItalianLeatherHandbagsRouteImport.update({
     id: '/collections/italian-leather-handbags',
     path: '/collections/italian-leather-handbags',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const CollectionsDesignerSunglassesRoute =
+  CollectionsDesignerSunglassesRouteImport.update({
+    id: '/collections/designer-sunglasses',
+    path: '/collections/designer-sunglasses',
     getParentRoute: () => rootRouteImport,
   } as any)
 const CollectionsDesignerMensShirtsRoute =
@@ -532,6 +539,7 @@ export interface FileRoutesByFullPath {
   '/campaign/mens-swim': typeof CampaignMensSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
   '/collections/designer-mens-shirts': typeof CollectionsDesignerMensShirtsRoute
+  '/collections/designer-sunglasses': typeof CollectionsDesignerSunglassesRoute
   '/collections/italian-leather-handbags': typeof CollectionsItalianLeatherHandbagsRoute
   '/collections/italian-leather-loafers': typeof CollectionsItalianLeatherLoafersRoute
   '/collections/italian-leather-wallets': typeof CollectionsItalianLeatherWalletsRoute
@@ -609,6 +617,7 @@ export interface FileRoutesByTo {
   '/campaign/mens-swim': typeof CampaignMensSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
   '/collections/designer-mens-shirts': typeof CollectionsDesignerMensShirtsRoute
+  '/collections/designer-sunglasses': typeof CollectionsDesignerSunglassesRoute
   '/collections/italian-leather-handbags': typeof CollectionsItalianLeatherHandbagsRoute
   '/collections/italian-leather-loafers': typeof CollectionsItalianLeatherLoafersRoute
   '/collections/italian-leather-wallets': typeof CollectionsItalianLeatherWalletsRoute
@@ -688,6 +697,7 @@ export interface FileRoutesById {
   '/campaign/mens-swim': typeof CampaignMensSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
   '/collections/designer-mens-shirts': typeof CollectionsDesignerMensShirtsRoute
+  '/collections/designer-sunglasses': typeof CollectionsDesignerSunglassesRoute
   '/collections/italian-leather-handbags': typeof CollectionsItalianLeatherHandbagsRoute
   '/collections/italian-leather-loafers': typeof CollectionsItalianLeatherLoafersRoute
   '/collections/italian-leather-wallets': typeof CollectionsItalianLeatherWalletsRoute
@@ -768,6 +778,7 @@ export interface FileRouteTypes {
     | '/campaign/mens-swim'
     | '/collections/$handle'
     | '/collections/designer-mens-shirts'
+    | '/collections/designer-sunglasses'
     | '/collections/italian-leather-handbags'
     | '/collections/italian-leather-loafers'
     | '/collections/italian-leather-wallets'
@@ -845,6 +856,7 @@ export interface FileRouteTypes {
     | '/campaign/mens-swim'
     | '/collections/$handle'
     | '/collections/designer-mens-shirts'
+    | '/collections/designer-sunglasses'
     | '/collections/italian-leather-handbags'
     | '/collections/italian-leather-loafers'
     | '/collections/italian-leather-wallets'
@@ -923,6 +935,7 @@ export interface FileRouteTypes {
     | '/campaign/mens-swim'
     | '/collections/$handle'
     | '/collections/designer-mens-shirts'
+    | '/collections/designer-sunglasses'
     | '/collections/italian-leather-handbags'
     | '/collections/italian-leather-loafers'
     | '/collections/italian-leather-wallets'
@@ -999,6 +1012,7 @@ export interface RootRouteChildren {
   CampaignMensSwimRoute: typeof CampaignMensSwimRoute
   CollectionsHandleRoute: typeof CollectionsHandleRoute
   CollectionsDesignerMensShirtsRoute: typeof CollectionsDesignerMensShirtsRoute
+  CollectionsDesignerSunglassesRoute: typeof CollectionsDesignerSunglassesRoute
   CollectionsItalianLeatherHandbagsRoute: typeof CollectionsItalianLeatherHandbagsRoute
   CollectionsItalianLeatherLoafersRoute: typeof CollectionsItalianLeatherLoafersRoute
   CollectionsItalianLeatherWalletsRoute: typeof CollectionsItalianLeatherWalletsRoute
@@ -1295,6 +1309,13 @@ declare module '@tanstack/react-router' {
       path: '/collections/italian-leather-handbags'
       fullPath: '/collections/italian-leather-handbags'
       preLoaderRoute: typeof CollectionsItalianLeatherHandbagsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collections/designer-sunglasses': {
+      id: '/collections/designer-sunglasses'
+      path: '/collections/designer-sunglasses'
+      fullPath: '/collections/designer-sunglasses'
+      preLoaderRoute: typeof CollectionsDesignerSunglassesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/collections/designer-mens-shirts': {
@@ -1653,6 +1674,7 @@ const rootRouteChildren: RootRouteChildren = {
   CampaignMensSwimRoute: CampaignMensSwimRoute,
   CollectionsHandleRoute: CollectionsHandleRoute,
   CollectionsDesignerMensShirtsRoute: CollectionsDesignerMensShirtsRoute,
+  CollectionsDesignerSunglassesRoute: CollectionsDesignerSunglassesRoute,
   CollectionsItalianLeatherHandbagsRoute:
     CollectionsItalianLeatherHandbagsRoute,
   CollectionsItalianLeatherLoafersRoute: CollectionsItalianLeatherLoafersRoute,
