@@ -213,6 +213,9 @@ function AdminEmailRecovery() {
                           >
                             {d.status}
                           </span>
+                          <span className="inline-block min-w-[100px] text-[10px] uppercase tracking-wider text-muted-foreground">
+                            {d.template_name}
+                          </span>
                           <span className="flex-1 truncate font-mono">
                             {d.recipient_email}
                           </span>
