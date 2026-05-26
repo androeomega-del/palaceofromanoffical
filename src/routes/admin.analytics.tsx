@@ -104,9 +104,10 @@ function FunnelBar({
 function AdminAnalytics() {
   const { data, isLoading, isFetching, error, refetch } = useQuery({
     queryKey: ["admin", "cart-analytics"],
-    queryFn: () => getCartAnalytics(),
+    queryFn: fetchCartAnalytics,
     refetchInterval: 30_000,
     staleTime: 15_000,
+    retry: 2,
   });
 
   const maxActivity = Math.max(
