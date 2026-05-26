@@ -152,6 +152,12 @@ function CollectionPage() {
   const { handle } = Route.useParams();
   const { sort } = Route.useSearch();
   const navigate = useNavigate({ from: "/collections/$handle" });
+  // Surfaces whose own theme makes a card-level badge redundant. Sale-themed
+  // pages: every card is on sale, so "House Markdown / Final Reductions"
+  // labels would visually clutter the grid without adding information.
+  const suppressedBadges = /^(sale|final-reductions|markdown|clearance|last-call)$/i.test(handle)
+    ? (["markdown"] as const)
+    : ([] as const);
   const setSort = (v: SortValue) =>
     navigate({ search: (prev: { sort: SortValue }) => ({ ...prev, sort: v }), replace: true });
 
@@ -535,7 +541,8 @@ function CollectionPage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-x-10 gap-y-12">
               {featuredQ.data!.map((e) => (
-                <ProductCard key={e.node.id} product={e} />
+                <ProductCard key={e.node.id} product={e} suppressBadges={[...suppressedBadges]} />
+
               ))}
             </div>
             <div className="mt-16 border-t border-ink/10" />
@@ -633,7 +640,7 @@ function CollectionPage() {
               <>
                 <div className={`grid grid-cols-2 lg:grid-cols-3 ${gridGap}`}>
                   {gridEdges.map((e) => (
-                    <ProductCard key={e.node.id} product={e} />
+                    <ProductCard key={e.node.id} product={e} suppressBadges={[...suppressedBadges]} />
                   ))}
                 </div>
                 {/* IntersectionObserver sentinel — drives infinite scroll.

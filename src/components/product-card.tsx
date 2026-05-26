@@ -12,7 +12,22 @@ import { useInteractionStore } from "@/stores/interaction-store";
 import { QuickViewSheet } from "@/components/quick-view-sheet";
 
 
-export function ProductCard({ product }: { product: ShopifyProduct }) {
+export type SuppressedBadge = "markdown" | "scarcity";
+
+export function ProductCard({
+  product,
+  suppressBadges = [],
+}: {
+  product: ShopifyProduct;
+  /**
+   * Hide badge categories that would be redundant given the surface the card
+   * lives on. Example: on /collections/sale, pass ["markdown"] because every
+   * card on that page is on sale — the badge is implied by the page itself.
+   * Scarcity badges (Final Piece / Rare — N Left / Archive Edition) are
+   * never automatically suppressed; opt-out is per-surface.
+   */
+   suppressBadges?: SuppressedBadge[];
+}) {
   const p = product.node;
   const img = p.images?.edges?.[0]?.node;
   const img2 = p.images?.edges?.[1]?.node;
@@ -274,7 +289,7 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
       onMouseEnter={onCardEnter}
       onMouseLeave={onCardLeave}
     >
-      <div className="w-full aspect-[4/5] bg-muted relative overflow-hidden mb-5">
+      <div className="w-full aspect-[4/5] bg-muted relative overflow-hidden mb-5 isolate">
         {img && (
           <img
             src={cdnImage(img.url, { width: 700 })}
@@ -305,23 +320,63 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
           )
         )}
 
+        {/* GLORIFY LIGHTING — layered system:
+            (1) Lacquer rim: always-on hairline of specular light along the top
+                & left edge, like light catching the edge of a glass vitrine
+                or lacquered surface. Universal, very restrained.
+            (2) Bronze halo: warm radial bloom from behind the product, only
+                on the rarest tiers (Final Piece / Rare / Archive). Subtle at
+                rest, glows on hover. The vitrine spotlight earns its place. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 z-[1]"
+          style={{
+            background:
+              "linear-gradient(135deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 22%), linear-gradient(315deg, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0) 30%)",
+            mixBlendMode: "soft-light",
+          }}
+        />
+        {(scarcity.tier === "finalPiece" ||
+          scarcity.tier === "rareFind" ||
+          scarcity.tier === "archive") &&
+          !soldOut && (
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -inset-2 z-[2] opacity-50 group-hover:opacity-100 transition-opacity duration-700"
+              style={{
+                background:
+                  "radial-gradient(60% 55% at 50% 55%, color-mix(in oklch, var(--bronze) 32%, transparent) 0%, transparent 70%)",
+                mixBlendMode: "screen",
+              }}
+            />
+          )}
+
         {/* Badge priority: Sold Out → Scarcity (incl. lastMarkdown which already
-            blends sale + low-stock) → Luxury markdown label. Generic "Sale" is
-            retired in favour of curatorial copy tiered by discount depth. */}
-        {soldOut ? (
-          <span className="absolute top-3 left-3 text-[10px] uppercase tracking-[0.25em] bg-ink/80 text-canvas px-2 py-1">
-            Sold Out
-          </span>
-        ) : showScarcityBadge ? (
-          <span
-            className="absolute top-3 left-3 text-[10px] uppercase tracking-[0.25em] bg-ink text-canvas px-2 py-1 font-medium"
-            title={scarcity.rationale}
-          >
-            <span className="text-bronze mr-1 animate-pulse">●</span>
-            {scarcity.label}
-          </span>
-        ) : onSale ? (
-          (() => {
+            blends sale + low-stock) → Luxury markdown label. Suppressible per
+            surface so a "Sale" rail doesn't badge every card with "Markdown",
+            and a "Final Reductions" rail doesn't repeat itself. */}
+        {(() => {
+          const hideMarkdown = suppressBadges.includes("markdown");
+          const hideScarcity = suppressBadges.includes("scarcity");
+          if (soldOut) {
+            return (
+              <span className="absolute top-3 left-3 z-10 text-[10px] uppercase tracking-[0.25em] bg-ink/80 text-canvas px-2 py-1">
+                Sold Out
+              </span>
+            );
+          }
+          if (showScarcityBadge && !hideScarcity) {
+            return (
+              <span
+                className="absolute top-3 left-3 z-10 text-[10px] uppercase tracking-[0.25em] bg-ink text-canvas px-2 py-1 font-medium"
+                title={scarcity.rationale}
+              >
+                <span className="text-bronze mr-1 animate-pulse">●</span>
+                {scarcity.label}
+              </span>
+            );
+          }
+          if (onSale && !hideMarkdown) {
             const pct = Math.round(
               (1 - parseFloat(price.amount) / parseFloat(compareAt!.amount)) * 100,
             );
@@ -334,14 +389,16 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
               : "bg-bronze text-canvas";
             return (
               <span
-                className={`absolute top-3 left-3 text-[10px] uppercase tracking-[0.25em] ${tone} px-2 py-1 font-medium`}
+                className={`absolute top-3 left-3 z-10 text-[10px] uppercase tracking-[0.25em] ${tone} px-2 py-1 font-medium`}
                 title={`Reduced from ${formatPrice(compareAt!)} — ${pct}% off retail`}
               >
                 {label}
               </span>
             );
-          })()
-        ) : null}
+          }
+          return null;
+        })()}
+
 
         {/* Wishlist heart — top right, always visible */}
         <button

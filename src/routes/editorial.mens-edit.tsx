@@ -23,14 +23,14 @@ const CHAPTERS: ThemedChapter[] = [
   {
     n: 0,
     src: mensEditJacket,
-    eyebrow: "Chapter II — The Jacket",
-    title: "Outerwear with intent.",
+    eyebrow: "Chapter II — The Blazer",
+    title: "Tailoring, unstructured.",
     body:
-      "The Dior blue polyamide shell jacket — shirt collar, single front zip, twin flap pockets and a CD patch at the chest, drawcord hem you cinch when the tramontana turns. One piece of outerwear that does the work of three.",
-    alt: "Man in a Dior navy polyamide shell jacket with CD chest patch against a Roman travertine wall",
+      "The Brunello Cucinelli white linen blazer — single-breasted, notch lapel, a soft deconstructed shoulder and the house's contrast caramel cuff buttons. Linen that has been pressed but not subdued. Worn here over chambray, the way the Italians do it in late summer in Rome.",
+    alt: "Man in a Brunello Cucinelli off-white linen blazer with caramel cuff buttons against a sunlit Roman palazzo wall",
     flip: true,
     spots: [
-      { x: 50, y: 42, label: "The Shell Jacket", match: /shell jacket|polyamide shell/i },
+      { x: 50, y: 42, label: "The Linen Blazer", match: /linen blazer|white linen|linen jacket/i },
     ],
   },
   {
