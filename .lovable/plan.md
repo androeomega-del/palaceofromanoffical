@@ -1,69 +1,108 @@
-# Full pass: PDP validation UX, PLP quick-add polish, cart badge refresh
+# SEO + CRO Implementation Plan
 
-Goal: apply the prompt's UX rules to the existing Palace of Roman store without rewriting from scratch. Smallest diff that delivers the behavior. Keep the editorial aesthetic (ink / canvas / bronze, serif headings, restrained motion) — no generic e-comm look. Respect the checkout protocol lockdown: no edits to `cart-store`, `cart-drawer`, `use-cart-sync`, `formatCheckoutUrl`, or any cart mutations.
+Ordered highest → lowest ROI. Each batch is self-contained and staged per the staged-launch rule (assets, copy, SEO, links ready together; nav exposed only after the full batch lands).
 
-## 1. PDP — never-disabled Add to Bag + size-required validation
-File: `src/routes/product.$handle.tsx` (+ `VariantOption` in the same file)
+Backlink outreach and email-sequence content are deliverables you execute outside the codebase — flagged below but not coded.
 
-Current behavior: `firstAvailable` variant is pre-selected, so the size error never fires. The ATC button greys out when the variant is unavailable. Both contradict the spec.
+---
 
-Changes:
-- **No default size selection.** Initialize `selectedVariantId` to `undefined`. Keep `firstAvailable` only as a fallback for price preview when no size is picked (so price stays visible) — but treat `selectedVariant` as `undefined` for cart purposes until the shopper actually picks one.
-- **Track which option groups are required** (any option with >1 value, e.g. Size, Colour). Compute `missingOptions: string[]`.
-- **Never disable the ATC button.** Remove the `disabled={isLoading || !selectedVariant?.availableForSale}` flag from both the inline ATC (line 608) and the mobile sticky ATC (line 828). The button stays fully opaque ink/bronze. The only states that should change the label are loading (spinner) and a chosen-but-sold-out variant ("Sold Out").
-- **Validation on click:** in `handleAdd`, if `missingOptions.length > 0`:
-  1. Set `sizeError = true` and `errorMessage = "Please select a ${name} to continue."` (uses the actual missing option name, e.g. Size).
-  2. Smooth-scroll the `buyRef` into view (`block: "center"`) if not already visible.
-  3. Auto-clear `sizeError` after 2.4s or when the shopper picks any value (whichever first).
-  4. Do NOT toast — the inline error is the signal.
-- **Error visual** on `VariantOption` (passed via new optional `invalid?: boolean` prop): when invalid, render a bronze→red treatment that fits the brand:
-  - Red bottom border + red label text on the option header (currently `border-[var(--studio-rule)]`).
-  - Red ring around the pill row container.
-  - Above the pills, a small italic serif line in red: "Please select a {option.name} to continue." with a `shake` animation (3 quick translateX cycles, 350ms total, respects `prefers-reduced-motion`).
-  - Red = an editorial muted red token, not pure `#ef4444`. Reuse the existing `oklch(0.52 0.11 25)` already used for low-stock or define `--studio-alert: oklch(0.52 0.13 25)` in `src/styles.css`.
-- **Add the `shake` keyframe** to `src/styles.css` (gated by `@media (prefers-reduced-motion: no-preference)`).
+## Batch 1 — On-PDP trust + CRO (highest ROI, ships first)
+Touches every product page immediately; lifts conversion on existing traffic.
 
-## 2. PLP — desktop hover size pills + mobile quick-add bottom sheet
-File: `src/components/product-card.tsx` (already imports `QuickViewSheet`)
+1. **Trust strip on every PDP** above the fold:
+   "100% Authentic · Official BrandsGateway Partner · Ships from Europe · 14-Day Returns"
+   - New component `src/components/product/TrustStrip.tsx`, inserted into the PDP route.
+2. **Sticky Add-to-Cart bar** (mobile + desktop) appearing after the main ATC scrolls out of view.
+   - New component `src/components/product/StickyAtcBar.tsx` using IntersectionObserver.
+3. **Inline size/fit guidance** — collapsible accordion under variant picker, content sourced from product type (shoes / RTW / accessories).
+   - New component `src/components/product/SizeFitGuide.tsx` with a small `size-guides.ts` map.
+4. **Editorial PDP copy block** — "The Piece" short paragraph + Maison heritage line above specs.
+   - New component `src/components/product/EditorialPiece.tsx`; sources existing maison data.
 
-Current behavior: hover reveals a "Quick Add" button that opens the bottom sheet for multi-variant items. The spec asks for size pills inline on hover (desktop) and the sheet on mobile. Mobile flow already matches.
+Checkout protocol is locked per memory — none of cart-store, cart-drawer, use-cart-sync, formatCheckoutUrl, or Zustand shape will be touched.
 
-Changes:
-- For products with a single Size option (the common case), on desktop hover (`lg:` breakpoint, `@media (hover: hover)`), replace the "Quick Add" button with a horizontal row of size pills overlaid at the bottom of the image. Clicking a pill calls the existing `addItem` path with that variant (no detour, no sheet) and fires the existing analytics (`cart`, optional `scarcity_cart`).
-- Sold-out variants render as line-through pills, not clickable.
-- For products without a Size option (colour-only, etc.), keep the current "Quick Add" → `QuickViewSheet` flow.
-- Mobile: keep current behavior — small bag icon in the corner opens the sheet. (Already present; verify it stays visible at <440px since user is on mobile viewport.)
-- Pills must be styled in brand: `bg-canvas/90 backdrop-blur` background strip, ink text, bronze on hover/active. Not the generic black/white from the prompt.
+## Batch 2 — Category landing pages (high SEO ROI)
+Real, indexable landing pages targeting the achievable long-tail keywords identified in the Semrush pass.
 
-## 3. Header — cart badge refinement
-File: `src/components/site-header.tsx`
+Routes to create (each with H1 = exact-match, 300+ words curatorial copy, FAQ schema, filtered product grid):
+- `/collections/italian-leather-wallets` → "Italian Leather Wallets"
+- `/collections/italian-leather-loafers` → "Italian Leather Loafers"
+- `/collections/designer-mens-shirts` → "Designer Men's Shirts"
+- `/collections/italian-leather-handbags` → "Italian Leather Handbags"
 
-Current behavior: shows `({totalItems})` inline next to the bag icon. The spec wants a notification badge.
+Each route file:
+- `head()` with title, description, og:*, canonical, FAQPage + BreadcrumbList JSON-LD.
+- Filters existing Shopify products by tag/type/vendor (no fake products per memory).
+- Internal links to 2–3 related journal articles (Batch 3).
 
-Changes:
-- Replace the inline `(N)` with a small circular badge pinned to the top-right of the `ShoppingBag` icon — bronze background, canvas text, `min-w-[16px] h-[16px]`, `text-[9px]`, tabular-nums.
-- Hide badge when `totalItems === 0` (currently always shown).
-- Add a one-shot `scale-in` animation on the badge whenever `totalItems` increases (track previous via `useRef`). Respects reduced motion.
-- No icon/library/structural change to `<CartDrawer />` — out of scope per checkout lockdown.
+Sitemap entries appended to `src/routes/sitemap[.]xml.ts`.
 
-## 4. Toast position sanity check
-The shopify-cart-checkout guide requires toasts NOT in the bottom-right. Sonner toaster placement lives in `src/routes/__root.tsx`. Verify; if it defaults to bottom-right, set `position="top-center"` to match the editorial feel and not collide with the new mobile sticky ATC. (No-op if already correct.)
+## Batch 3 — Journal craftsmanship cluster (compounding SEO ROI)
+Long-tail authority content, internally linked to Batch 2 landing pages.
 
-## Out of scope (intentionally)
-- No changes to `src/stores/cart-store.ts`, `src/components/cart-drawer.tsx`, `src/hooks/use-cart-sync.ts`, `formatCheckoutUrl`, or any Storefront cart mutation — per the checkout-protocol memory.
-- No new pages, no nav changes, no copy launches — staged-launches rule.
-- No analytics schema changes — last fix already restored `cart_events` grants.
+Three new articles in the Journal blog (real copy, Palace of Roman voice, no Lorem):
+1. "How to Spot Real Italian Leather — A Buyer's Guide"
+2. "Made in Italy vs Designed in Italy — What the Label Really Means"
+3. "Caring for Fine Leather — A Maison-Level Guide"
 
-## Verification
-1. PDP for a multi-size product: button is fully opaque on load with no size chosen; clicking it shakes the size row + shows red inline error + scrolls into view; choosing a size clears the error; second click adds to bag and opens the drawer.
-2. PDP for a single-variant product: button works on first click (no size required, no error).
-3. PLP desktop: hover a multi-size card → size pills appear in the image footer; click S → toast + drawer + analytics row in `cart_events`.
-4. PLP mobile (440px viewport): bag icon visible top-right of image; tap → bottom sheet; pick size; toast + drawer.
-5. Header: badge hidden at 0; pop animation on add; correct count after add/remove.
-6. `cart_events` table receives `add_to_cart` rows from both PLP pills and PDP after the size flow (confirms analytics still wired).
+Each article links to relevant Batch 2 landing pages with descriptive anchor text. Articles published via the Shopify blog admin API (same path used for the Versace News article).
 
-## Technical notes (for me)
-- `VariantOption` is defined at the bottom of `product.$handle.tsx`; thread `invalid` + `errorText` via props. Lift `sizeError` state to `ProductView` and pass `invalid` only to the size option (match by `/size/i`).
-- Use `requestAnimationFrame` before `scrollIntoView` so the ring/red border have painted before the scroll lands.
-- Shake keyframe (CSS): `@keyframes por-shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }` with `animation: por-shake 350ms ease-in-out`.
-- Cart badge previous-count tracking: `const prev = useRef(totalItems); useEffect(() => { if (totalItems > prev.current) trigger(); prev.current = totalItems; }, [totalItems])`.
+## Batch 4 — Schema + internal-linking polish (technical SEO)
+- Verify/extend Product, Brand, Offer JSON-LD on every PDP route file.
+- Add BreadcrumbList JSON-LD to PDP + collection routes.
+- Add "Related Reading" rail on PDP routes linking 2 journal articles per maison.
+- Tighten internal anchor text across journal → collection → PDP.
+
+## Batch 5 — Abandoned cart recovery (CRO, requires infra)
+Email infrastructure setup, then 3-email sequence.
+
+1. Set up Lovable Emails infrastructure (`setup_email_infra`, scaffold transactional templates).
+2. Build cart-abandonment trigger:
+   - Capture email on cart drawer if not yet captured (lightweight, no friction).
+   - Persist abandoned cart snapshot in a new `abandoned_carts` Supabase table with RLS.
+   - pg_cron job enqueues recovery emails at +1h, +24h, +72h.
+3. Three React Email templates per the playbook:
+   - +1h: "Your selection is reserved" — image, item, secure-checkout link, no discount.
+   - +24h: Concierge — "Questions about sizing or the piece?", soft, human.
+   - +72h: Craftsmanship paragraph + complimentary shipping (never a % discount, per luxury positioning).
+4. One-click cart restore link → existing cart drawer rehydration.
+
+## Batch 6 — Exit-intent + retention micro-CRO (lowest-ROI, optional)
+- Exit-intent overlay on `/cart`: "Save your bag" → email capture (NOT a coupon).
+- Web Push opt-in after first PDP view, surfacing "Reserved item" + "Back in stock" nudges (browser-native Push API + service worker).
+
+---
+
+## Out of scope (you action, not codeable)
+- Backlink outreach to Tatler / Lyst / menswear blogs.
+- Pitching the BrandsGateway authorised-reseller story to press.
+- Getting Palace of Roman into the Reddit r/handbags style threads organically.
+
+---
+
+## Technical notes (for the build batches)
+- All new routes use TanStack `createFileRoute` with full `head()`, canonical only on leaves.
+- All JSON-LD inline via the `scripts` array.
+- Sitemap auto-extends per new route.
+- No changes to `cart-store.ts`, `cart-drawer.tsx`, `use-cart-sync.ts`, `formatCheckoutUrl`, or the Zustand shape (checkout protocol lockdown).
+- USD-only display preserved via existing `priceMoney()` boundary.
+- No BG import scripts touched.
+- New journal articles published via the existing Shopify Admin API path (`SHOPIFY_ACCESS_TOKEN`).
+- Batches 2 and 3 ship behind-the-scenes first; nav links added only after content + schema + sitemap are live (staged-launch rule).
+
+---
+
+## Proposed shipping order
+
+| Order | Batch | Why this position |
+|---|---|---|
+| 1 | Batch 1 (PDP trust + CRO) | Lifts conversion on today's traffic; no infra |
+| 2 | Batch 2 (Landing pages) | New indexable surface area; immediate SEO compounding |
+| 3 | Batch 3 (Journal cluster) | Authority + internal links to Batch 2 |
+| 4 | Batch 4 (Schema polish) | Compounds Batches 2+3 |
+| 5 | Batch 5 (Abandoned cart) | Highest infra cost; recovers lost revenue from prior batches |
+| 6 | Batch 6 (Exit-intent + push) | Smallest delta; ship last |
+
+---
+
+**Approve to start with Batch 1**, or tell me to reorder / drop batches before I begin.
