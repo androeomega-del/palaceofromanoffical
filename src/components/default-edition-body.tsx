@@ -916,36 +916,6 @@ function ProductGrid({ edges, loading }: { edges: ShopifyProduct[]; loading?: bo
 
 function ProductCarousel({ edges, loading }: { edges: ShopifyProduct[]; loading?: boolean }) {
   const trackRef = useRef<HTMLDivElement>(null);
-  const [canPrev, setCanPrev] = useState(false);
-  const [canNext, setCanNext] = useState(false);
-
-  const updateEdges = () => {
-    const el = trackRef.current;
-    if (!el) return;
-    setCanPrev(el.scrollLeft > 4);
-    setCanNext(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
-  };
-
-  useEffect(() => {
-    updateEdges();
-    const el = trackRef.current;
-    if (!el) return;
-    el.addEventListener("scroll", updateEdges, { passive: true });
-    window.addEventListener("resize", updateEdges);
-    return () => {
-      el.removeEventListener("scroll", updateEdges);
-      window.removeEventListener("resize", updateEdges);
-    };
-  }, [edges.length]);
-
-  const scrollByPage = (dir: 1 | -1) => {
-    const el = trackRef.current;
-    if (!el) return;
-    // Scroll roughly one card's width at a time (track item width + gap).
-    const first = el.querySelector<HTMLElement>("[data-carousel-item]");
-    const step = first ? first.offsetWidth + 24 : el.clientWidth * 0.8;
-    el.scrollBy({ left: dir * step, behavior: "smooth" });
-  };
 
   if (loading && edges.length === 0) {
     return (
@@ -982,24 +952,6 @@ function ProductCarousel({ edges, loading }: { edges: ShopifyProduct[]; loading?
           </div>
         ))}
       </div>
-      <button
-        type="button"
-        aria-label="Previous products"
-        onClick={() => scrollByPage(-1)}
-        disabled={!canPrev}
-        className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-10 h-12 w-12 items-center justify-center rounded-full bg-canvas border border-ink/15 shadow-md text-ink hover:bg-ink hover:text-canvas hover:border-ink transition-colors disabled:opacity-0 disabled:pointer-events-none"
-      >
-        <span aria-hidden>←</span>
-      </button>
-      <button
-        type="button"
-        aria-label="Next products"
-        onClick={() => scrollByPage(1)}
-        disabled={!canNext}
-        className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10 h-12 w-12 items-center justify-center rounded-full bg-canvas border border-ink/15 shadow-md text-ink hover:bg-ink hover:text-canvas hover:border-ink transition-colors disabled:opacity-0 disabled:pointer-events-none"
-      >
-        <span aria-hidden>→</span>
-      </button>
     </div>
   );
 }
