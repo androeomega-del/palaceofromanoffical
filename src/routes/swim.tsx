@@ -313,8 +313,11 @@ function SwimPage() {
               <h2 className="font-serif text-3xl md:text-5xl">Swim &amp; Beachwear</h2>
             </div>
             <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-              {q.isLoading ? "Loading…" : `${edges.length}${q.hasNextPage ? "+" : ""} Pieces`}
-            </p>
+              {q.isLoading
+                ? "Loading…"
+                : q.isError
+                  ? "Edit unavailable"
+                  : `${edges.length}${q.hasNextPage ? "+" : ""} Pieces`}
           </div>
 
           <div className="flex flex-wrap gap-2 md:gap-3">
