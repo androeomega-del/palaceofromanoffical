@@ -1204,16 +1204,15 @@ function SummerBento({
           </span>
         </Link>
 
-        {/* Men Category Tile */}
+        {/* Edit 5 — The Men's Edit */}
         <Link
-          to="/collections/$handle"
-          params={{ handle: MENS_CLOTHING_HANDLE }}
+          to="/editorial/mens-edit"
           className="col-span-12 md:col-span-8 lg:col-span-5 row-span-2 relative group overflow-hidden bg-canvas-raised"
         >
           {menImage && (
             <img
               src={menImage.url}
-              alt={menImage.altText ?? "The Men's Edit"}
+              alt={menImage.altText ?? "The Men's Edit — Effortless Sophistication"}
               loading="lazy"
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
@@ -1225,15 +1224,14 @@ function SummerBento({
               Effortless Sophistication
             </p>
             <span className="mt-4 inline-block text-[10px] uppercase tracking-[0.3em] text-canvas border-b border-canvas/40 pb-1 group-hover:border-canvas">
-              Shop the Look
+              Shop the Edit
             </span>
           </div>
         </Link>
 
-        {/* Accessories Tile — full-bleed */}
+        {/* Edit 6 — Accessories */}
         <Link
-          to="/shop"
-          search={{ q: "tag:Accessories", title: "Accessories" }}
+          to="/editorial/accessories"
           className="col-span-12 md:col-span-4 lg:col-span-4 row-span-2 relative group overflow-hidden bg-canvas-raised"
         >
           {accessoriesImage && (
@@ -1246,12 +1244,10 @@ function SummerBento({
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/25 to-transparent" />
           <div className="relative z-10 h-full flex flex-col justify-end p-5 md:p-6 text-center items-center">
-            <span className="text-[9px] uppercase tracking-[0.3em] text-canvas/85 mb-1">
-              Shop
+            <h4 className="font-serif text-2xl md:text-3xl text-canvas mb-2">Accessories</h4>
+            <span className="text-[10px] uppercase tracking-[0.3em] text-canvas/90 border-b border-canvas/40 pb-1 group-hover:border-canvas">
+              Shop Accessories
             </span>
-            <h4 className="text-base md:text-lg text-canvas uppercase tracking-[0.15em] font-medium">
-              Accessories
-            </h4>
           </div>
         </Link>
 
