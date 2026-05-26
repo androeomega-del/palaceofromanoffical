@@ -31,8 +31,32 @@ export function LandingCollectionPage({
     staleTime: 5 * 60 * 1000,
   });
 
+  const products = data ?? [];
+
   return (
     <main className="bg-canvas text-ink">
+      {/* ItemList JSON-LD — emitted once products load so search engines can
+          map the collection page to the products it lists. */}
+      {products.length > 0 ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "ItemList",
+              name: h1,
+              numberOfItems: products.length,
+              itemListElement: products.map((p, i) => ({
+                "@type": "ListItem",
+                position: i + 1,
+                url: `${SITE_URL}/product/${p.node.handle}`,
+                name: p.node.title,
+              })),
+            }),
+          }}
+        />
+      ) : null}
+
       {/* Hero / H1 */}
       <section className="px-6 pt-16 md:pt-24 pb-12 text-center max-w-3xl mx-auto">
         <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-5">{eyebrow}</p>
