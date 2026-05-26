@@ -12,6 +12,10 @@ const CHAPTERS: ThemedChapter[] = [
     body:
       "The men's summer edit starts at the waist. A clean five-inch rise, a quick-dry weave, gold-tipped drawcords — Bottega Veneta, Canali, Givenchy. Shorts that move from the pool to the bar without a second thought.",
     alt: "Men's tailored swim short on a teak deck",
+    spots: [
+      { x: 50, y: 62, label: "The Short", match: /short|swim/i },
+      { x: 40, y: 30, label: "Up Top", match: /polo|shirt|tee/i },
+    ],
   },
   {
     n: 37,
@@ -21,6 +25,10 @@ const CHAPTERS: ThemedChapter[] = [
       "Pair the short with a cotton polo or a featherweight linen shirt — collar soft, hem untucked. The summer edit is restrained on purpose: one short, one shirt, the right footwear, and the rest is sun.",
     alt: "Linen shirt and polo styling for resort dressing",
     flip: true,
+    spots: [
+      { x: 48, y: 35, label: "The Polo", match: /polo/i },
+      { x: 55, y: 70, label: "The Linen", match: /linen|shirt/i },
+    ],
   },
   {
     n: 40,
@@ -29,6 +37,10 @@ const CHAPTERS: ThemedChapter[] = [
     body:
       "A leather slide carries the look from sand to stone. Worn with tortoiseshell aviators and a chain at the throat, the men's summer edit becomes a uniform — in stock, designed for the heat, and shipped from Europe within the week.",
     alt: "Designer leather slides and aviator sunglasses on a resort terrace",
+    spots: [
+      { x: 50, y: 70, label: "The Slide", match: /slide|sandal/i },
+      { x: 40, y: 30, label: "The Polo", match: /polo|tee|shirt/i },
+    ],
   },
 ];
 
