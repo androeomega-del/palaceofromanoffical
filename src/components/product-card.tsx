@@ -270,6 +270,7 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
       params={{ handle: p.handle }}
       className="group block"
       onClick={onCardClick}
+      onPointerDown={onCardPointerDown}
       onMouseEnter={onCardEnter}
       onMouseLeave={onCardLeave}
     >
