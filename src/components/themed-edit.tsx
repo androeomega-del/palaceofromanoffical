@@ -101,11 +101,12 @@ export function ThemedEdit({
       if (!c.spots?.length) return [];
       const out: Hotspot[] = [];
       for (const s of c.spots) {
-        let pick = s.match
+        const pick = s.match
           ? pool.find((p) => !used.has(p.handle) && s.match!.test(p.title))
-          : undefined;
-        if (!pick) pick = pool.find((p) => !used.has(p.handle));
-        if (!pick) break;
+          : pool.find((p) => !used.has(p.handle));
+        // Strict: never tag a hotspot with an unrelated product. If no
+        // catalog product matches the spot's regex, skip the spot entirely.
+        if (!pick) continue;
         used.add(pick.handle);
         out.push({
           x: s.x,
