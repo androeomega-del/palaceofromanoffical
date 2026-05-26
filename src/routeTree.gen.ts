@@ -41,6 +41,7 @@ import { Route as EditorialSummerEditRouteImport } from './routes/editorial.summ
 import { Route as EditorialResort2026RouteImport } from './routes/editorial.resort-2026'
 import { Route as EditorialMensEditRouteImport } from './routes/editorial.mens-edit'
 import { Route as EditorialMay2026RouteImport } from './routes/editorial.may-2026'
+import { Route as EditorialAccessoriesRouteImport } from './routes/editorial.accessories'
 import { Route as CollectionsItalianLeatherWalletsRouteImport } from './routes/collections.italian-leather-wallets'
 import { Route as CollectionsItalianLeatherLoafersRouteImport } from './routes/collections.italian-leather-loafers'
 import { Route as CollectionsItalianLeatherHandbagsRouteImport } from './routes/collections.italian-leather-handbags'
@@ -241,6 +242,11 @@ const EditorialMensEditRoute = EditorialMensEditRouteImport.update({
 const EditorialMay2026Route = EditorialMay2026RouteImport.update({
   id: '/editorial/may-2026',
   path: '/editorial/may-2026',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EditorialAccessoriesRoute = EditorialAccessoriesRouteImport.update({
+  id: '/editorial/accessories',
+  path: '/editorial/accessories',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CollectionsItalianLeatherWalletsRoute =
@@ -516,6 +522,7 @@ export interface FileRoutesByFullPath {
   '/collections/italian-leather-handbags': typeof CollectionsItalianLeatherHandbagsRoute
   '/collections/italian-leather-loafers': typeof CollectionsItalianLeatherLoafersRoute
   '/collections/italian-leather-wallets': typeof CollectionsItalianLeatherWalletsRoute
+  '/editorial/accessories': typeof EditorialAccessoriesRoute
   '/editorial/may-2026': typeof EditorialMay2026Route
   '/editorial/mens-edit': typeof EditorialMensEditRoute
   '/editorial/resort-2026': typeof EditorialResort2026Route
@@ -590,6 +597,7 @@ export interface FileRoutesByTo {
   '/collections/italian-leather-handbags': typeof CollectionsItalianLeatherHandbagsRoute
   '/collections/italian-leather-loafers': typeof CollectionsItalianLeatherLoafersRoute
   '/collections/italian-leather-wallets': typeof CollectionsItalianLeatherWalletsRoute
+  '/editorial/accessories': typeof EditorialAccessoriesRoute
   '/editorial/may-2026': typeof EditorialMay2026Route
   '/editorial/mens-edit': typeof EditorialMensEditRoute
   '/editorial/resort-2026': typeof EditorialResort2026Route
@@ -666,6 +674,7 @@ export interface FileRoutesById {
   '/collections/italian-leather-handbags': typeof CollectionsItalianLeatherHandbagsRoute
   '/collections/italian-leather-loafers': typeof CollectionsItalianLeatherLoafersRoute
   '/collections/italian-leather-wallets': typeof CollectionsItalianLeatherWalletsRoute
+  '/editorial/accessories': typeof EditorialAccessoriesRoute
   '/editorial/may-2026': typeof EditorialMay2026Route
   '/editorial/mens-edit': typeof EditorialMensEditRoute
   '/editorial/resort-2026': typeof EditorialResort2026Route
@@ -743,6 +752,7 @@ export interface FileRouteTypes {
     | '/collections/italian-leather-handbags'
     | '/collections/italian-leather-loafers'
     | '/collections/italian-leather-wallets'
+    | '/editorial/accessories'
     | '/editorial/may-2026'
     | '/editorial/mens-edit'
     | '/editorial/resort-2026'
@@ -817,6 +827,7 @@ export interface FileRouteTypes {
     | '/collections/italian-leather-handbags'
     | '/collections/italian-leather-loafers'
     | '/collections/italian-leather-wallets'
+    | '/editorial/accessories'
     | '/editorial/may-2026'
     | '/editorial/mens-edit'
     | '/editorial/resort-2026'
@@ -892,6 +903,7 @@ export interface FileRouteTypes {
     | '/collections/italian-leather-handbags'
     | '/collections/italian-leather-loafers'
     | '/collections/italian-leather-wallets'
+    | '/editorial/accessories'
     | '/editorial/may-2026'
     | '/editorial/mens-edit'
     | '/editorial/resort-2026'
@@ -965,6 +977,7 @@ export interface RootRouteChildren {
   CollectionsItalianLeatherHandbagsRoute: typeof CollectionsItalianLeatherHandbagsRoute
   CollectionsItalianLeatherLoafersRoute: typeof CollectionsItalianLeatherLoafersRoute
   CollectionsItalianLeatherWalletsRoute: typeof CollectionsItalianLeatherWalletsRoute
+  EditorialAccessoriesRoute: typeof EditorialAccessoriesRoute
   EditorialMay2026Route: typeof EditorialMay2026Route
   EditorialMensEditRoute: typeof EditorialMensEditRoute
   EditorialResort2026Route: typeof EditorialResort2026Route
@@ -1213,6 +1226,13 @@ declare module '@tanstack/react-router' {
       path: '/editorial/may-2026'
       fullPath: '/editorial/may-2026'
       preLoaderRoute: typeof EditorialMay2026RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/editorial/accessories': {
+      id: '/editorial/accessories'
+      path: '/editorial/accessories'
+      fullPath: '/editorial/accessories'
+      preLoaderRoute: typeof EditorialAccessoriesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/collections/italian-leather-wallets': {
@@ -1596,6 +1616,7 @@ const rootRouteChildren: RootRouteChildren = {
     CollectionsItalianLeatherHandbagsRoute,
   CollectionsItalianLeatherLoafersRoute: CollectionsItalianLeatherLoafersRoute,
   CollectionsItalianLeatherWalletsRoute: CollectionsItalianLeatherWalletsRoute,
+  EditorialAccessoriesRoute: EditorialAccessoriesRoute,
   EditorialMay2026Route: EditorialMay2026Route,
   EditorialMensEditRoute: EditorialMensEditRoute,
   EditorialResort2026Route: EditorialResort2026Route,
