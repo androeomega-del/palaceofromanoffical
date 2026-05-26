@@ -398,7 +398,7 @@ function AdminAnalytics() {
                       </div>
                       <div className="text-[11px] text-muted-foreground tabular-nums whitespace-nowrap">
                         {r.price_usd != null ? usd2(r.price_usd) : ""} ·{" "}
-                        {new Date(r.created_at).toLocaleTimeString()}
+                        <LocalTime iso={r.created_at} />
                       </div>
                     </li>
                   ))}
