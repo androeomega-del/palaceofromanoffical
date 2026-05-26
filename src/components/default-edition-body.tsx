@@ -1176,38 +1176,33 @@ function SummerBento({
 
 
 
-        {spotlightSlug && (
-          <>
-            {/* Brand Spotlight */}
-            <Link
-              to="/brand/$vendor"
-              params={{ vendor: spotlightSlug }}
-              className="col-span-12 md:col-span-4 lg:col-span-3 row-span-2 bg-ink flex flex-col justify-between group overflow-hidden relative"
-            >
-              {spotlightImage && (
-                <img
-                  src={spotlightImage.url}
-                  alt={spotlightImage.altText ?? `${spotlightVendor ?? "Maison"} — In Stock`}
-                  loading="lazy"
-                  className="absolute inset-0 w-full h-full object-cover opacity-70 transition-transform duration-[1400ms] ease-out group-hover:scale-110"
-                />
-              )}
-              <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/40 to-ink/20" />
-              <div className="relative z-10 p-6 md:p-8">
-                <span className="text-[9px] uppercase tracking-[0.4em] text-[var(--sea)] mb-3 block">
-                  Brand Spotlight
-                </span>
-                <h4 className="font-serif text-2xl md:text-3xl text-canvas leading-tight">
-                  {spotlightVendor ?? "The Maisons"}
-                  <span className="block italic font-light mt-1">In Stock Now</span>
-                </h4>
-              </div>
-              <span className="relative z-10 m-6 md:m-8 text-[10px] uppercase tracking-[0.25em] text-canvas border-b border-canvas/40 pb-1 w-fit group-hover:border-canvas">
-                Shop the Edit
-              </span>
-            </Link>
-          </>
-        )}
+        {/* Edit 4 — Versace */}
+        <Link
+          to="/editorial/versace"
+          className="col-span-12 md:col-span-4 lg:col-span-3 row-span-2 bg-ink flex flex-col justify-between group overflow-hidden relative"
+        >
+          {spotlightImage && (
+            <img
+              src={spotlightImage.url}
+              alt={spotlightImage.altText ?? "Versace — In Stock Now"}
+              loading="lazy"
+              className="absolute inset-0 w-full h-full object-cover opacity-70 transition-transform duration-[1400ms] ease-out group-hover:scale-110"
+            />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/40 to-ink/20" />
+          <div className="relative z-10 p-6 md:p-8">
+            <span className="text-[9px] uppercase tracking-[0.4em] text-[var(--sea)] mb-3 block">
+              Maison Spotlight
+            </span>
+            <h4 className="font-serif text-2xl md:text-3xl text-canvas leading-tight">
+              Versace
+              <span className="block italic font-light mt-1">In Stock Now</span>
+            </h4>
+          </div>
+          <span className="relative z-10 m-6 md:m-8 text-[10px] uppercase tracking-[0.25em] text-canvas border-b border-canvas/40 pb-1 w-fit group-hover:border-canvas">
+            Shop the Edit
+          </span>
+        </Link>
 
         {/* Men Category Tile */}
         <Link
