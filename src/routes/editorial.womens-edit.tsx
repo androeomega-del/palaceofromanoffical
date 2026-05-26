@@ -12,6 +12,10 @@ const CHAPTERS: ThemedChapter[] = [
     body:
       "The women's edit favours line over ornament. A Versace Jeans shift dress, a Jil Sander knit, a Roberto Cavalli silk — pieces that hold the body without insisting on it. The cut does the talking; the woman wearing it speaks last.",
     alt: "Considered tailoring and silk dressing on a quiet interior set",
+    spots: [
+      { x: 48, y: 40, label: "The Dress", match: /dress/i },
+      { x: 40, y: 75, label: "Tailoring", match: /pants|trouser|skirt|jeans/i },
+    ],
   },
   {
     n: 52,
@@ -21,6 +25,10 @@ const CHAPTERS: ThemedChapter[] = [
       "Jimmy Choo Amika pumps, Versace satin sandals — footwear that reads from across the room without raising its voice. The edit pairs them with cropped tailoring, a slim trouser, or nothing at all but the dress.",
     alt: "Designer pumps and satin sandals in editorial styling",
     flip: true,
+    spots: [
+      { x: 50, y: 78, label: "The Heel", match: /pump|sandal|heel/i },
+      { x: 45, y: 30, label: "The Top", match: /top|blouse|sweater|tank/i },
+    ],
   },
   {
     n: 56,
@@ -29,6 +37,10 @@ const CHAPTERS: ThemedChapter[] = [
     body:
       "A crossbody in canvas-leather jacquard, a single gold chain, a wool scarf for the cooler hour. The women's edit closes on the small things — the ones that turn an outfit into a presence.",
     alt: "Women's designer crossbody bag and gold jewellery flatlay",
+    spots: [
+      { x: 50, y: 55, label: "The Bag", match: /bag|crossbody|tote/i },
+      { x: 35, y: 30, label: "The Top", match: /silk|top|dress/i },
+    ],
   },
 ];
 
