@@ -1121,16 +1121,15 @@ function SummerBento({
           </div>
         </div>
 
-        {/* Men's Resort Promo Tile (honey) */}
+        {/* Edit 2 — The Summer Edit */}
         <Link
-          to="/collections/$handle"
-          params={{ handle: MENS_CLOTHING_HANDLE }}
+          to="/editorial/summer-edit"
           className="col-span-12 md:col-span-6 lg:col-span-4 row-span-2 bg-bronze relative overflow-hidden flex flex-col justify-center items-center text-center group"
         >
           {swimImage && (
             <img
               src={swimImage.url}
-              alt={swimImage.altText ?? "Men's Resort Wear"}
+              alt={swimImage.altText ?? "The Summer Edit — Men's Shorts & Resort"}
               loading="lazy"
               className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             />
@@ -1145,7 +1144,7 @@ function SummerBento({
               <span className="block italic">&amp; Resort</span>
             </h3>
             <p className="text-[11px] tracking-[0.25em] text-canvas/85 uppercase">
-              Men's Collection — In Stock
+              Men's — In Stock
             </p>
           </div>
         </Link>
