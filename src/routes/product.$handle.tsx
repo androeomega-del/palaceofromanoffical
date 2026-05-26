@@ -30,6 +30,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { SizeFitGuide } from "@/components/product/size-fit-guide";
 
 export const Route = createFileRoute("/product/$handle")({
   loader: async ({ params }) => {
