@@ -845,28 +845,29 @@ function ProductView({
         style={{ paddingBottom: "max(env(safe-area-inset-bottom), 0.5rem)" }}
         aria-hidden={!showStickyBuy}
       >
-        <div className="flex items-center gap-3 px-4 py-3">
+        <div className="max-w-7xl mx-auto flex items-center gap-3 md:gap-6 px-4 md:px-12 py-3 md:py-4">
           {images[0]?.url && (
             <img
               src={cdnImage(images[0].url, { width: 120 })}
               alt=""
               loading="lazy"
               decoding="async"
-              className="w-12 h-14 object-cover flex-shrink-0"
+              className="w-12 h-14 md:w-14 md:h-16 object-cover flex-shrink-0"
             />
           )}
           <div className="min-w-0 flex-1">
             <p className="text-[10px] uppercase tracking-[0.2em] text-[var(--studio-bronze)] font-semibold truncate">
               {product.vendor}
             </p>
-            <p className="font-serif text-[15px] leading-tight truncate">
-              {formatPrice(currentPrice)}
+            <p className="font-serif text-[15px] md:text-[17px] leading-tight truncate">
+              <span className="hidden md:inline text-[var(--studio-ink)] mr-3">{product.title}</span>
+              <span className="text-[var(--studio-ink)]">{formatPrice(currentPrice)}</span>
             </p>
           </div>
           <button
             onClick={handleAdd}
             aria-busy={isLoading}
-            className="h-12 px-5 bg-[var(--studio-ink)] text-[var(--studio-bg)] hover:bg-[var(--studio-bronze)] transition-colors text-[10px] uppercase tracking-[0.25em] font-semibold inline-flex items-center justify-center gap-2 shadow-md"
+            className="h-12 md:h-14 px-5 md:px-8 bg-[var(--studio-ink)] text-[var(--studio-bg)] hover:bg-[var(--studio-bronze)] transition-colors text-[10px] md:text-[11px] uppercase tracking-[0.25em] md:tracking-[0.3em] font-semibold inline-flex items-center justify-center gap-2 shadow-md"
           >
             {isLoading ? (
               <Loader2 className="w-4 h-4 animate-spin" />
