@@ -12,6 +12,10 @@ const CHAPTERS: ThemedChapter[] = [
     body:
       "Resort 2026 begins at the shoreline. Bleached linens, sun-dried cottons, a swim short cut clean at the thigh — pieces that wear easily between the dunes and the dinner table. The Mediterranean dictates the palette: chalk, sand, sea-glass, salt.",
     alt: "Sun-bleached resort tailoring on a coastal walkway",
+    spots: [
+      { x: 42, y: 38, label: "Resort Silk", match: /silk/i },
+      { x: 62, y: 64, label: "The Linen", match: /linen|swim/i },
+    ],
   },
   {
     n: 11,
@@ -21,6 +25,10 @@ const CHAPTERS: ThemedChapter[] = [
       "Open-collar shirts, drawstring trousers, a single linen jacket carried over the arm. The shoreline edit favours weight and drape over structure — clothing that breathes, then folds away by evening. Worn with the slowness the season demands.",
     alt: "Linen open-collar shirt and tailored trouser in late afternoon light",
     flip: true,
+    spots: [
+      { x: 48, y: 35, label: "The Top", match: /silk|tank|blouse|shirt/i },
+      { x: 40, y: 70, label: "The Trouser", match: /pants|trouser|skirt/i },
+    ],
   },
   {
     n: 23,
@@ -29,6 +37,10 @@ const CHAPTERS: ThemedChapter[] = [
     body:
       "As the light drops, the edit shifts. A washed silk over the shoulder, a leather sandal kept simple, the day's salt still on the skin. Resort 2026 is not dressed up — it is dressed down on purpose. The horizon does the rest.",
     alt: "Silk evening piece against a calm sea at dusk",
+    spots: [
+      { x: 50, y: 45, label: "Evening Silk", match: /silk|dress/i },
+      { x: 30, y: 78, label: "The Finish", match: /bow|tie|sweater/i },
+    ],
   },
 ];
 
