@@ -120,11 +120,21 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
     };
   }, [p.handle, p.vendor, p.productType, track, hasScarcity]);
 
-  const onCardClick = () => {
+  const onCardClick = (e: React.MouseEvent) => {
+    // Mobile/touch: first tap reveals the CTA overlay; second tap navigates.
+    if (isTouchRef.current && !revealed && quickAddState === "idle") {
+      e.preventDefault();
+      setRevealed(true);
+      return;
+    }
     track({ handle: p.handle, event: "click", ...meta });
     if (hasScarcity) {
       track({ handle: p.handle, event: "scarcity_click", ...meta });
     }
+  };
+
+  const onCardPointerDown = (e: React.PointerEvent) => {
+    isTouchRef.current = e.pointerType === "touch" || e.pointerType === "pen";
   };
 
   const onCardEnter = () => {
