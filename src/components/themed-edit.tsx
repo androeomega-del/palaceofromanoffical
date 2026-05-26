@@ -5,6 +5,11 @@ import { fetchProducts } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
 import { EditorialHotspots, type Hotspot } from "@/components/editorial-hotspots";
 import { img } from "@/lib/editorial-library";
+import {
+  ShopTheEditEmpty,
+  ShopTheEditError,
+  ShopTheEditSkeleton,
+} from "@/components/shop-the-edit-state";
 import type { ReactNode } from "react";
 
 export type ThemedChapterSpot = {
@@ -248,24 +253,21 @@ export function ThemedEdit({
             <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
               {productsQ.isLoading
                 ? "Loading the edit…"
-                : `${products.length} Pieces in the Edit`}
+                : productsQ.isError
+                  ? "Edit unavailable"
+                  : `${products.length} Pieces in the Edit`}
             </p>
           </div>
 
           {productsQ.isLoading ? (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-14">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="w-full aspect-[4/5] bg-muted mb-5" />
-                  <div className="h-3 bg-muted w-2/3 mb-2" />
-                  <div className="h-3 bg-muted w-1/3" />
-                </div>
-              ))}
-            </div>
+            <ShopTheEditSkeleton />
+          ) : productsQ.isError ? (
+            <ShopTheEditError
+              onRetry={() => productsQ.refetch()}
+              isRetrying={productsQ.isFetching}
+            />
           ) : products.length === 0 ? (
-            <p className="text-sm text-muted-foreground py-12">
-              No pieces currently in stock for this edit.
-            </p>
+            <ShopTheEditEmpty />
           ) : (
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-14">
               {products.map((p) => (

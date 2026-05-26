@@ -11,6 +11,7 @@ import {
   type Selection,
   type SortValue,
 } from "@/components/catalog-filters";
+import { ShopTheEditError, ShopTheEditSkeleton } from "@/components/shop-the-edit-state";
 import { routeHead } from "@/lib/seo";
 import swimHero from "@/assets/marketing-swim-summer.jpg";
 import lookbook1 from "@/assets/marketing-swim-summer.jpg";
@@ -312,7 +313,11 @@ function SwimPage() {
               <h2 className="font-serif text-3xl md:text-5xl">Swim &amp; Beachwear</h2>
             </div>
             <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-              {q.isLoading ? "Loading…" : `${edges.length}${q.hasNextPage ? "+" : ""} Pieces`}
+              {q.isLoading
+                ? "Loading…"
+                : q.isError
+                  ? "Edit unavailable"
+                  : `${edges.length}${q.hasNextPage ? "+" : ""} Pieces`}
             </p>
           </div>
 
@@ -364,15 +369,9 @@ function SwimPage() {
             />
 
             {q.isLoading ? (
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12">
-                {Array.from({ length: 9 }).map((_, i) => (
-                  <div key={i} className="animate-pulse">
-                    <div className="w-full aspect-[4/5] bg-muted mb-5" />
-                    <div className="h-2 w-16 bg-muted mb-2" />
-                    <div className="h-3 w-3/4 bg-muted" />
-                  </div>
-                ))}
-              </div>
+              <ShopTheEditSkeleton count={9} columns="grid-cols-2 lg:grid-cols-3" />
+            ) : q.isError ? (
+              <ShopTheEditError onRetry={() => q.refetch()} isRetrying={q.isFetching} />
             ) : edges.length === 0 ? (
               <div className="py-32 text-center">
                 <p className="text-sm text-muted-foreground mb-6">
