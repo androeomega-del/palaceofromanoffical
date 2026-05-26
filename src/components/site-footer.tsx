@@ -20,7 +20,7 @@ export function SiteFooter() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-12 md:gap-16">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-12 md:gap-16">
             <div className="flex flex-col gap-4">
               <h5 className="text-[10px] uppercase tracking-[0.2em] font-semibold">Boutique</h5>
               <Link to="/collections/$handle" params={{ handle: "new-arrivals" }} className="text-sm text-muted-foreground hover:text-ink transition-colors">New Arrivals</Link>
@@ -30,6 +30,16 @@ export function SiteFooter() {
               <Link to="/collections/$handle" params={{ handle: "mens-shoes" }} className="text-sm text-muted-foreground hover:text-ink transition-colors">Men's Shoes</Link>
               <Link to="/collections" className="text-sm text-muted-foreground hover:text-ink transition-colors">All Collections</Link>
               <Link to="/brands" className="text-sm text-muted-foreground hover:text-ink transition-colors">Brands Index</Link>
+            </div>
+            <div className="flex flex-col gap-4">
+              <h5 className="text-[10px] uppercase tracking-[0.2em] font-semibold">Editorial Edits</h5>
+              <Link to="/collections/italian-leather-wallets" className="text-sm text-muted-foreground hover:text-ink transition-colors">Italian Leather Wallets</Link>
+              <Link to="/collections/italian-leather-loafers" className="text-sm text-muted-foreground hover:text-ink transition-colors">Italian Leather Loafers</Link>
+              <Link to="/collections/italian-leather-handbags" className="text-sm text-muted-foreground hover:text-ink transition-colors">Italian Leather Handbags</Link>
+              <Link to="/collections/designer-mens-shirts" className="text-sm text-muted-foreground hover:text-ink transition-colors">Designer Men's Shirts</Link>
+              <Link to="/journal/craftsmanship/spot-real-italian-leather" className="text-sm text-muted-foreground hover:text-ink transition-colors">Spot Real Italian Leather</Link>
+              <Link to="/journal/craftsmanship/made-in-italy-vs-designed-in-italy" className="text-sm text-muted-foreground hover:text-ink transition-colors">Made in Italy vs Designed in Italy</Link>
+              <Link to="/journal/craftsmanship/caring-for-fine-leather" className="text-sm text-muted-foreground hover:text-ink transition-colors">Caring for Fine Leather</Link>
             </div>
             <div className="flex flex-col gap-4">
               <h5 className="text-[10px] uppercase tracking-[0.2em] font-semibold">Client Care</h5>
