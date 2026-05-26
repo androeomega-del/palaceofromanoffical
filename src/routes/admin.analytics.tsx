@@ -1,10 +1,23 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { adminBeforeLoad } from "@/lib/admin-route-guard";
 import { getCartAnalytics } from "@/lib/cart-analytics.functions";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, ArrowLeft } from "lucide-react";
+
+/**
+ * Render local-timezone time only after hydration to avoid React #418
+ * (server worker is UTC, client is the user's TZ → text mismatch).
+ */
+function LocalTime({ iso }: { iso: string }) {
+  const [text, setText] = useState<string>("");
+  useEffect(() => {
+    setText(new Date(iso).toLocaleTimeString());
+  }, [iso]);
+  return <span suppressHydrationWarning>{text}</span>;
+}
 
 export const Route = createFileRoute("/admin/analytics")({
   beforeLoad: adminBeforeLoad,
@@ -385,7 +398,7 @@ function AdminAnalytics() {
                       </div>
                       <div className="text-[11px] text-muted-foreground tabular-nums whitespace-nowrap">
                         {r.price_usd != null ? usd2(r.price_usd) : ""} ·{" "}
-                        {new Date(r.created_at).toLocaleTimeString()}
+                        <LocalTime iso={r.created_at} />
                       </div>
                     </li>
                   ))}
