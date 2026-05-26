@@ -12,6 +12,10 @@ const CHAPTERS: ThemedChapter[] = [
     body:
       "Black acetate from Zegna, gold metal aviators, wraparound silhouettes — eyewear that sets the tone before a single word is spoken. The accessories edit opens at the temple, where the day begins and ends in the same gesture.",
     alt: "Designer eyewear flatlay on a stone surface",
+    spots: [
+      { x: 48, y: 45, label: "Eyewear", match: /glass|sunglass|frame|eyewear/i },
+      { x: 60, y: 70, label: "The Scarf", match: /scarf|shawl/i },
+    ],
   },
   {
     n: 91,
@@ -21,6 +25,10 @@ const CHAPTERS: ThemedChapter[] = [
       "A Givenchy wool scarf, a striped Missoni wrap, a square of monogrammed silk — soft accessories that finish a coat or a low neckline. Carried over the arm in summer; folded at the throat in winter. The piece that does the most quiet work.",
     alt: "Designer wool and silk scarves in considered editorial styling",
     flip: true,
+    spots: [
+      { x: 50, y: 50, label: "The Scarf", match: /scarf|shawl|wrap/i },
+      { x: 35, y: 25, label: "The Tie", match: /bow|tie/i },
+    ],
   },
   {
     n: 95,
@@ -29,6 +37,10 @@ const CHAPTERS: ThemedChapter[] = [
     body:
       "A gold-buckle belt, a single chain at the throat, a slim card-holder, a watch kept simple. The accessories edit is the punctuation — the marks that turn a sentence into a statement. All authentic, all in stock, all shipped from Europe.",
     alt: "Designer belts, chains and small leather goods flatlay",
+    spots: [
+      { x: 45, y: 55, label: "The Finish", match: /belt|wallet|card|chain/i },
+      { x: 60, y: 30, label: "Eyewear", match: /glass|sunglass|frame/i },
+    ],
   },
 ];
 
