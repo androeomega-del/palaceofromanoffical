@@ -55,7 +55,7 @@ const WOMEN_RULES: ClassifierRule[] = [
   { column: "Bags & Leather",   order: 1,  match: (s) => s === "wallets",         label: "Wallets" },
   { column: "Bags & Leather",   order: 2,  match: (s) => s === "belts",           label: "Belts" },
   { column: "Fine Accessories", order: 0,  match: (s) => s === "jewelry",         label: "Jewellery" },
-  { column: "Fine Accessories", order: 1,  match: (s) => s === "watches",         label: "Watches" },
+  // Watches hidden from nav until inventory exists (0 products as of May 2026).
   { column: "Fine Accessories", order: 2,  match: (s) => s === "scarves",         label: "Scarves & Shawls" },
   { column: "Fine Accessories", order: 3,  match: (s) => s === "hats",            label: "Hats" },
   { column: "Fine Accessories", order: 9,  match: (s) => s === "accessories" || s.startsWith("accessories"), label: "All Accessories" },
