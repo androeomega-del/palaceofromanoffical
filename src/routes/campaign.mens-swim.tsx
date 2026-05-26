@@ -111,15 +111,53 @@ function MensSwimCampaign() {
   const accessories = accessoriesQ.data ?? [];
 
   /* ---- hotspot maps per editorial image ---- */
-  const portraitSpots = useMemo<Hotspot[]>(
-    () =>
-      buildHotspots(products, [
-        { x: 50, y: 36, match: /chain|necklace/i }, // gold chain
-        { x: 50, y: 70, match: /swim short|trunk|board/i }, // swim shorts
-        { x: 30, y: 50, match: /bracelet|ring|cuff/i }, // wrist
-      ]),
-    [products],
-  );
+  // Hard-pin the swim short hotspot to the exact Bottega Veneta feather-print
+  // boxer the model is wearing in the editorial. Other hotspots fall back to
+  // strict regex matching against the catalog.
+  const FEATHER_BOXER_HANDLE = "white-polyamide-swim-shorts";
+  const portraitSpots = useMemo<Hotspot[]>(() => {
+    const spots: Hotspot[] = [];
+    const featherBoxer = products.find((p) => p.node.handle === FEATHER_BOXER_HANDLE);
+    const used = new Set<string>();
+
+    const chain = products.find((p) => /chain|necklace/i.test(p.node.title));
+    if (chain) {
+      used.add(chain.node.handle);
+      spots.push({
+        x: 50,
+        y: 36,
+        handle: chain.node.handle,
+        label: categoryFor(chain.node.title),
+        sublabel: chain.node.vendor,
+      });
+    }
+
+    if (featherBoxer) {
+      used.add(featherBoxer.node.handle);
+      spots.push({
+        x: 50,
+        y: 70,
+        handle: featherBoxer.node.handle,
+        label: "Feather-Print Swim Boxer",
+        sublabel: featherBoxer.node.vendor,
+      });
+    }
+
+    const wrist = products.find(
+      (p) => !used.has(p.node.handle) && /bracelet|cuff|signet/i.test(p.node.title),
+    );
+    if (wrist) {
+      spots.push({
+        x: 30,
+        y: 50,
+        handle: wrist.node.handle,
+        label: categoryFor(wrist.node.title),
+        sublabel: wrist.node.vendor,
+      });
+    }
+
+    return spots;
+  }, [products]);
 
   const detail1Spots = useMemo<Hotspot[]>(
     () =>
