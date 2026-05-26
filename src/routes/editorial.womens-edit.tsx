@@ -1,27 +1,44 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { EditorialStory, type StorySlide } from "@/components/editorial-story";
+import { ThemedEdit, type ThemedChapter } from "@/components/themed-edit";
 import { img } from "@/lib/editorial-library";
 import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
 
-const SLIDES: StorySlide[] = [
-  { n: 45, caption: "A line, drawn cleanly.", shopHandle: "womens-clothing", shopLabel: "Shop Women's" },
-  { n: 46, caption: "Silk, in motion.", shopHandle: "womens-clothing" },
-  { n: 47, caption: "Sandal, sun, stone.", shopHandle: "womens-shoes", shopLabel: "Shop Shoes" },
-  { n: 48, caption: "The dress that travels.", shopHandle: "womens-clothing" },
-  { n: 49, caption: "Bag in hand, nothing rushed.", shopHandle: "womens-bags", shopLabel: "Shop Bags" },
-  { n: 50, caption: "Tailoring, softened." },
-  { n: 51, caption: "Heel and hem, considered.", shopHandle: "womens-shoes" },
-  { n: 52, caption: "Cotton, linen, breath.", shopHandle: "womens-clothing" },
-  { n: 53, caption: "Gold, but quietly.", shopHandle: "womens-accessories-1", shopLabel: "Shop Accessories" },
-  { n: 54, caption: "An evening that begins slowly." },
+const HERO_N = 45;
+const CHAPTERS: ThemedChapter[] = [
+  {
+    n: 48,
+    eyebrow: "Chapter I — Silhouette",
+    title: "Dressing, considered.",
+    body:
+      "The women's edit favours line over ornament. A Versace Jeans shift dress, a Jil Sander knit, a Roberto Cavalli silk — pieces that hold the body without insisting on it. The cut does the talking; the woman wearing it speaks last.",
+    alt: "Considered tailoring and silk dressing on a quiet interior set",
+  },
+  {
+    n: 52,
+    eyebrow: "Chapter II — The Shoe",
+    title: "A heel, low and confident.",
+    body:
+      "Jimmy Choo Amika pumps, Versace satin sandals — footwear that reads from across the room without raising its voice. The edit pairs them with cropped tailoring, a slim trouser, or nothing at all but the dress.",
+    alt: "Designer pumps and satin sandals in editorial styling",
+    flip: true,
+  },
+  {
+    n: 56,
+    eyebrow: "Chapter III — The Finish",
+    title: "A bag, a chain, the rest is posture.",
+    body:
+      "A crossbody in canvas-leather jacquard, a single gold chain, a wool scarf for the cooler hour. The women's edit closes on the small things — the ones that turn an outfit into a presence.",
+    alt: "Women's designer crossbody bag and gold jewellery flatlay",
+  },
 ];
 
 export const Route = createFileRoute("/editorial/womens-edit")({
   head: () => {
-    const title = "The Women's Edit — Shop the Edit | Palace of Roman";
-    const desc = "Curated women's clothing, shoes, bags, and accessories from the season's most considered houses.";
+    const title = "Women's Edit — Shop the Edit | Palace of Roman";
+    const desc =
+      "The women's edit at Palace of Roman — dresses, knitwear, pumps, sandals and the small things. Versace Jeans, Jimmy Choo, Jil Sander and the maisons we carry, in stock and ready to ship.";
     const path = "/editorial/womens-edit";
-    const image = img(45);
+    const image = img(HERO_N);
     const rh = routeHead({ path, title, description: desc, image, type: "article" });
     return {
       meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
@@ -43,17 +60,19 @@ export const Route = createFileRoute("/editorial/womens-edit")({
       ],
     };
   },
-  component: WomensEditPage,
-});
-
-function WomensEditPage() {
-  return (
-    <EditorialStory
-      issueNumber="The Women's Edit"
-      title="Women"
-      subtitle="Shop the Edit"
-      intro="A season of considered cuts — clothing, shoes, bags and the small things that finish the look."
-      slides={SLIDES}
+  component: () => (
+    <ThemedEdit
+      issueLabel="The Women's Edit"
+      title={`Women.\nShop the Edit.`}
+      subtitle="Considered Dressing, In Stock"
+      intro="The women's edit favours line over ornament — silk, knit, leather, gold. Pieces chosen for the woman who already knows."
+      heroN={HERO_N}
+      heroAlt="Women's editorial — silk dress and considered tailoring"
+      manifesto="The cut does the talking. The woman wearing it speaks last."
+      chapters={CHAPTERS}
+      productQuery="tag:Women"
+      shopTitle="Shop the Women's Edit"
+      shopEyebrow="Women — In Stock"
       outroCtas={[
         { label: "Women's Clothing", handle: "womens-clothing" },
         { label: "Women's Shoes", handle: "womens-shoes" },
@@ -61,5 +80,5 @@ function WomensEditPage() {
         { label: "Women's Accessories", handle: "womens-accessories-1" },
       ]}
     />
-  );
-}
+  ),
+});

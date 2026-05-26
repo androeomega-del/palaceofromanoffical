@@ -1,27 +1,44 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { EditorialStory, type StorySlide } from "@/components/editorial-story";
+import { ThemedEdit, type ThemedChapter } from "@/components/themed-edit";
 import { img } from "@/lib/editorial-library";
 import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
 
-const SLIDES: StorySlide[] = [
-  { n: 73, caption: "A jacket that earns its weight.", shopHandle: "mens-clothing", shopLabel: "Shop Men's" },
-  { n: 74, caption: "Trouser, broken at the shoe." },
-  { n: 75, caption: "The shirt, unbuttoned by one.", shopHandle: "mens-clothing" },
-  { n: 76, caption: "Leather, lived in.", shopHandle: "mens-shoes", shopLabel: "Shop Shoes" },
-  { n: 77, caption: "Knitwear, weighted." },
-  { n: 78, caption: "A bag for the long day.", shopHandle: "mens-bags-wallets", shopLabel: "Shop Bags" },
-  { n: 79, caption: "Coat over the arm." },
-  { n: 80, caption: "The watch, simple.", shopHandle: "mens-accessories", shopLabel: "Shop Accessories" },
-  { n: 81, caption: "Sneaker, white, kept clean.", shopHandle: "mens-sneakers", shopLabel: "Shop Sneakers" },
-  { n: 82, caption: "Sophistication, without performance." },
+const HERO_N = 73;
+const CHAPTERS: ThemedChapter[] = [
+  {
+    n: 75,
+    eyebrow: "Chapter I — The Shirt",
+    title: "Cotton, ironed once, worn forever.",
+    body:
+      "The men's edit begins with a proper shirt — a Roberto Cavalli navy dress shirt, a Jil Sander tee, a Thom Browne crewneck. Cut from cotton heavy enough to drape, light enough for the day. The kind of piece that earns its place in the closet.",
+    alt: "Men's cotton dress shirt and tailoring in considered styling",
+  },
+  {
+    n: 78,
+    eyebrow: "Chapter II — The Jacket",
+    title: "Outerwear with intent.",
+    body:
+      "A Cavalli Class technical jacket, a Brunello Cucinelli linen blazer, a leather piece kept simple. Effortless sophistication is not about layering for show — it is about choosing one outerwear piece that does the work of three.",
+    alt: "Men's tailored jacket and leather outerwear in editorial light",
+    flip: true,
+  },
+  {
+    n: 82,
+    eyebrow: "Chapter III — The Finish",
+    title: "Loafer, watch, nothing else.",
+    body:
+      "The men's edit closes restrained — a polished loafer, a single watch, a leather card-holder. The point is not to be noticed. The point is to be remembered correctly. Every piece arrives with maison tags and an authenticity card.",
+    alt: "Men's loafer, watch and leather goods flatlay",
+  },
 ];
 
 export const Route = createFileRoute("/editorial/mens-edit")({
   head: () => {
     const title = "The Men's Edit — Effortless Sophistication | Palace of Roman";
-    const desc = "Tailoring, knitwear, leather and the small things — a men's edit built on restraint.";
+    const desc =
+      "Shirts, jackets, loafers and the small things — the men's edit, in stock and ready to ship. Roberto Cavalli, Jil Sander, Thom Browne, Brunello Cucinelli and the maisons we carry.";
     const path = "/editorial/mens-edit";
-    const image = img(73);
+    const image = img(HERO_N);
     const rh = routeHead({ path, title, description: desc, image, type: "article" });
     return {
       meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
@@ -43,17 +60,19 @@ export const Route = createFileRoute("/editorial/mens-edit")({
       ],
     };
   },
-  component: MensEditPage,
-});
-
-function MensEditPage() {
-  return (
-    <EditorialStory
-      issueNumber="The Men's Edit"
-      title="Men"
-      subtitle="Effortless Sophistication"
-      intro="Tailoring, knitwear, leather and the small things — clothing built on restraint, made to be lived in."
-      slides={SLIDES}
+  component: () => (
+    <ThemedEdit
+      issueLabel="The Men's Edit"
+      title={`Men.\nEffortless.`}
+      subtitle="Sophistication, Without Performance"
+      intro="Tailoring, knitwear, leather and the small things — the men's edit, built on restraint, in stock and ready to ship."
+      heroN={HERO_N}
+      heroAlt="Men's editorial — tailoring and leather in considered light"
+      manifesto="The point is not to be noticed. The point is to be remembered correctly."
+      chapters={CHAPTERS}
+      productQuery="tag:Men AND (title:shirt OR title:trouser OR title:loafer OR title:jacket OR title:knit)"
+      shopTitle="Shop the Men's Edit"
+      shopEyebrow="Men — In Stock"
       outroCtas={[
         { label: "Men's Clothing", handle: "mens-clothing" },
         { label: "Men's Shoes", handle: "mens-shoes" },
@@ -61,5 +80,5 @@ function MensEditPage() {
         { label: "Men's Accessories", handle: "mens-accessories" },
       ]}
     />
-  );
-}
+  ),
+});

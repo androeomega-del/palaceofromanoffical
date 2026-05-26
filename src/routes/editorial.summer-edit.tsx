@@ -1,27 +1,44 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { EditorialStory, type StorySlide } from "@/components/editorial-story";
+import { ThemedEdit, type ThemedChapter } from "@/components/themed-edit";
 import { img } from "@/lib/editorial-library";
 import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
 
-const SLIDES: StorySlide[] = [
-  { n: 31, caption: "Sun, salt, and a clean cut.", shopHandle: "swimwear", shopLabel: "Shop Swim" },
-  { n: 32, caption: "Shorts cut for long afternoons.", shopHandle: "mens-clothing", shopLabel: "Shop Men's" },
-  { n: 33, caption: "Linen, loose at the shoulder.", shopHandle: "mens-clothing" },
-  { n: 34, caption: "The pool deck, unhurried." },
-  { n: 35, caption: "A printed brief, a quiet swagger.", shopHandle: "swimwear", shopLabel: "Shop Swim" },
-  { n: 36, caption: "Slides, sun, nothing else.", shopHandle: "mens-shoes", shopLabel: "Shop Sandals" },
-  { n: 37, caption: "Polo, pressed by hand." },
-  { n: 38, caption: "Light cotton, late light.", shopHandle: "mens-clothing" },
-  { n: 39, caption: "Eyes shaded, signature gold.", shopHandle: "mens-accessories", shopLabel: "Shop Accessories" },
-  { n: 40, caption: "End of season, beginning of the next." },
+const HERO_N = 31;
+const CHAPTERS: ThemedChapter[] = [
+  {
+    n: 33,
+    eyebrow: "Chapter I — The Short",
+    title: "A swim short, cut for the afternoon.",
+    body:
+      "The men's summer edit starts at the waist. A clean five-inch rise, a quick-dry weave, gold-tipped drawcords — Bottega Veneta, Canali, Givenchy. Shorts that move from the pool to the bar without a second thought.",
+    alt: "Men's tailored swim short on a teak deck",
+  },
+  {
+    n: 37,
+    eyebrow: "Chapter II — The Shirt",
+    title: "Linen, open at the throat.",
+    body:
+      "Pair the short with a cotton polo or a featherweight linen shirt — collar soft, hem untucked. The summer edit is restrained on purpose: one short, one shirt, the right footwear, and the rest is sun.",
+    alt: "Linen shirt and polo styling for resort dressing",
+    flip: true,
+  },
+  {
+    n: 40,
+    eyebrow: "Chapter III — The Slide",
+    title: "Footwear, kept to the essential.",
+    body:
+      "A leather slide carries the look from sand to stone. Worn with tortoiseshell aviators and a chain at the throat, the men's summer edit becomes a uniform — in stock, designed for the heat, and shipped from Europe within the week.",
+    alt: "Designer leather slides and aviator sunglasses on a resort terrace",
+  },
 ];
 
 export const Route = createFileRoute("/editorial/summer-edit")({
   head: () => {
-    const title = "The Summer Edit — Men's Shorts & Resort | Palace of Roman";
-    const desc = "Men's swim, shorts, and resort tailoring — in stock and ready for the season.";
+    const title = "The Summer Edit — Men's Shorts & Resort, In Stock | Palace of Roman";
+    const desc =
+      "Men's swim shorts, linen shirts and leather slides — the summer edit, in stock and ready to ship. Bottega Veneta, Canali, Givenchy and the maisons we carry.";
     const path = "/editorial/summer-edit";
-    const image = img(31);
+    const image = img(HERO_N);
     const rh = routeHead({ path, title, description: desc, image, type: "article" });
     return {
       meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
@@ -43,17 +60,19 @@ export const Route = createFileRoute("/editorial/summer-edit")({
       ],
     };
   },
-  component: SummerEditPage,
-});
-
-function SummerEditPage() {
-  return (
-    <EditorialStory
-      issueNumber="The Summer Edit"
-      title="Shorts & Resort"
-      subtitle="Men's — In Stock"
-      intro="Swim, shorts, and resort tailoring. Cut for heat and long afternoons, in stock and ready to ship."
-      slides={SLIDES}
+  component: () => (
+    <ThemedEdit
+      issueLabel="The Summer Edit"
+      title={`Shorts &\nResort.`}
+      subtitle="Men's — In Stock, Ready to Ship"
+      intro="One short, one shirt, one pair of slides, and the sea. The men's summer edit, edited down to what matters."
+      heroN={HERO_N}
+      heroAlt="Men's resort summer edit on the Tyrrhenian coast"
+      manifesto="A man's summer wardrobe, cut down to its essentials."
+      chapters={CHAPTERS}
+      productQuery="tag:Men AND (title:short OR title:swim OR title:linen OR title:slide OR title:polo)"
+      shopTitle="Shop the Summer Edit"
+      shopEyebrow="Men's — In Stock"
       outroCtas={[
         { label: "Swimwear", handle: "swimwear" },
         { label: "Men's Clothing", handle: "mens-clothing" },
@@ -61,5 +80,5 @@ function SummerEditPage() {
         { label: "Men's Accessories", handle: "mens-accessories" },
       ]}
     />
-  );
-}
+  ),
+});
