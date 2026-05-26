@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { fetchProducts, type ShopifyProduct } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
+import { SITE_URL } from "@/lib/seo";
 
 export type LandingFAQ = { q: string; a: string };
 export type LandingRelatedGuide = { to: string; label: string };
