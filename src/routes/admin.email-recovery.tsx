@@ -178,6 +178,9 @@ function AdminEmailRecovery() {
                               {e.recipient_email}
                             </span>
                             <span className="text-[10px] uppercase tracking-wider text-muted-foreground whitespace-nowrap">
+                              {e.template_name}
+                            </span>
+                            <span className="text-[10px] uppercase tracking-wider text-muted-foreground whitespace-nowrap">
                               {formatWhen(e.created_at)}
                             </span>
                           </div>
@@ -212,6 +215,9 @@ function AdminEmailRecovery() {
                             }`}
                           >
                             {d.status}
+                          </span>
+                          <span className="inline-block min-w-[100px] text-[10px] uppercase tracking-wider text-muted-foreground">
+                            {d.template_name}
                           </span>
                           <span className="flex-1 truncate font-mono">
                             {d.recipient_email}
