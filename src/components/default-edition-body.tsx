@@ -1098,7 +1098,7 @@ function SummerBento({
           </div>
           <div className="absolute bottom-8 md:bottom-14 lg:bottom-16 left-6 md:left-12 lg:left-16 right-6 max-w-xl">
             <span className="block text-[10px] md:text-xs uppercase tracking-[0.4em] mb-3 md:mb-5 text-canvas/90">
-              Resort 2026 Collection
+              2026 Collection
             </span>
             <h1 className="font-serif text-canvas text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl leading-[0.95] mb-6 md:mb-8 text-balance">
               The Shoreline
@@ -1106,8 +1106,7 @@ function SummerBento({
             </h1>
             <div className="flex flex-wrap gap-3 md:gap-4">
               <Link
-                to="/collections/$handle"
-                params={{ handle: WOMENS_CLOTHING_HANDLE }}
+                to="/editorial/resort-2026"
                 className="px-7 md:px-10 py-3 md:py-4 bg-canvas text-ink text-[10px] uppercase tracking-[0.25em] font-medium hover:bg-[var(--sea)] hover:text-canvas transition-all"
               >
                 Shop the Edit
@@ -1122,16 +1121,15 @@ function SummerBento({
           </div>
         </div>
 
-        {/* Men's Resort Promo Tile (honey) */}
+        {/* Edit 2 — The Summer Edit */}
         <Link
-          to="/collections/$handle"
-          params={{ handle: MENS_CLOTHING_HANDLE }}
+          to="/editorial/summer-edit"
           className="col-span-12 md:col-span-6 lg:col-span-4 row-span-2 bg-bronze relative overflow-hidden flex flex-col justify-center items-center text-center group"
         >
           {swimImage && (
             <img
               src={swimImage.url}
-              alt={swimImage.altText ?? "Men's Resort Wear"}
+              alt={swimImage.altText ?? "The Summer Edit — Men's Shorts & Resort"}
               loading="lazy"
               className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             />
@@ -1146,16 +1144,15 @@ function SummerBento({
               <span className="block italic">&amp; Resort</span>
             </h3>
             <p className="text-[11px] tracking-[0.25em] text-canvas/85 uppercase">
-              Men's Collection — In Stock
+              Men's — In Stock
             </p>
           </div>
         </Link>
 
 
-        {/* Women Category Tile */}
+        {/* Edit 3 — Women's Edit */}
         <Link
-          to="/collections/$handle"
-          params={{ handle: WOMENS_CLOTHING_HANDLE }}
+          to="/editorial/womens-edit"
           className="col-span-12 md:col-span-6 lg:col-span-4 row-span-2 relative group overflow-hidden bg-canvas-raised"
         >
           {womenImage && (
@@ -1169,7 +1166,7 @@ function SummerBento({
           <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-ink/10 to-transparent" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
-              <h3 className="font-serif italic text-4xl md:text-5xl text-canvas">Women</h3>
+              <h3 className="font-serif italic text-4xl md:text-5xl text-canvas">Women's Edit</h3>
               <span className="mt-4 inline-block text-[10px] uppercase tracking-[0.3em] text-canvas border-b border-canvas/40 pb-1 group-hover:border-canvas">
                 Shop the Edit
               </span>
@@ -1179,49 +1176,43 @@ function SummerBento({
 
 
 
-        {spotlightSlug && (
-          <>
-            {/* Brand Spotlight */}
-            <Link
-              to="/brand/$vendor"
-              params={{ vendor: spotlightSlug }}
-              className="col-span-12 md:col-span-4 lg:col-span-3 row-span-2 bg-ink flex flex-col justify-between group overflow-hidden relative"
-            >
-              {spotlightImage && (
-                <img
-                  src={spotlightImage.url}
-                  alt={spotlightImage.altText ?? `${spotlightVendor ?? "Maison"} — In Stock`}
-                  loading="lazy"
-                  className="absolute inset-0 w-full h-full object-cover opacity-70 transition-transform duration-[1400ms] ease-out group-hover:scale-110"
-                />
-              )}
-              <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/40 to-ink/20" />
-              <div className="relative z-10 p-6 md:p-8">
-                <span className="text-[9px] uppercase tracking-[0.4em] text-[var(--sea)] mb-3 block">
-                  Brand Spotlight
-                </span>
-                <h4 className="font-serif text-2xl md:text-3xl text-canvas leading-tight">
-                  {spotlightVendor ?? "The Maisons"}
-                  <span className="block italic font-light mt-1">In Stock Now</span>
-                </h4>
-              </div>
-              <span className="relative z-10 m-6 md:m-8 text-[10px] uppercase tracking-[0.25em] text-canvas border-b border-canvas/40 pb-1 w-fit group-hover:border-canvas">
-                Shop the Edit
-              </span>
-            </Link>
-          </>
-        )}
-
-        {/* Men Category Tile */}
+        {/* Edit 4 — Versace */}
         <Link
-          to="/collections/$handle"
-          params={{ handle: MENS_CLOTHING_HANDLE }}
+          to="/editorial/versace"
+          className="col-span-12 md:col-span-4 lg:col-span-3 row-span-2 bg-ink flex flex-col justify-between group overflow-hidden relative"
+        >
+          {spotlightImage && (
+            <img
+              src={spotlightImage.url}
+              alt={spotlightImage.altText ?? "Versace — In Stock Now"}
+              loading="lazy"
+              className="absolute inset-0 w-full h-full object-cover opacity-70 transition-transform duration-[1400ms] ease-out group-hover:scale-110"
+            />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/40 to-ink/20" />
+          <div className="relative z-10 p-6 md:p-8">
+            <span className="text-[9px] uppercase tracking-[0.4em] text-[var(--sea)] mb-3 block">
+              Maison Spotlight
+            </span>
+            <h4 className="font-serif text-2xl md:text-3xl text-canvas leading-tight">
+              Versace
+              <span className="block italic font-light mt-1">In Stock Now</span>
+            </h4>
+          </div>
+          <span className="relative z-10 m-6 md:m-8 text-[10px] uppercase tracking-[0.25em] text-canvas border-b border-canvas/40 pb-1 w-fit group-hover:border-canvas">
+            Shop the Edit
+          </span>
+        </Link>
+
+        {/* Edit 5 — The Men's Edit */}
+        <Link
+          to="/editorial/mens-edit"
           className="col-span-12 md:col-span-8 lg:col-span-5 row-span-2 relative group overflow-hidden bg-canvas-raised"
         >
           {menImage && (
             <img
               src={menImage.url}
-              alt={menImage.altText ?? "The Men's Edit"}
+              alt={menImage.altText ?? "The Men's Edit — Effortless Sophistication"}
               loading="lazy"
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
@@ -1233,15 +1224,14 @@ function SummerBento({
               Effortless Sophistication
             </p>
             <span className="mt-4 inline-block text-[10px] uppercase tracking-[0.3em] text-canvas border-b border-canvas/40 pb-1 group-hover:border-canvas">
-              Shop the Look
+              Shop the Edit
             </span>
           </div>
         </Link>
 
-        {/* Accessories Tile — full-bleed */}
+        {/* Edit 6 — Accessories */}
         <Link
-          to="/shop"
-          search={{ q: "tag:Accessories", title: "Accessories" }}
+          to="/editorial/accessories"
           className="col-span-12 md:col-span-4 lg:col-span-4 row-span-2 relative group overflow-hidden bg-canvas-raised"
         >
           {accessoriesImage && (
@@ -1254,12 +1244,10 @@ function SummerBento({
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/25 to-transparent" />
           <div className="relative z-10 h-full flex flex-col justify-end p-5 md:p-6 text-center items-center">
-            <span className="text-[9px] uppercase tracking-[0.3em] text-canvas/85 mb-1">
-              Shop
+            <h4 className="font-serif text-2xl md:text-3xl text-canvas mb-2">Accessories</h4>
+            <span className="text-[10px] uppercase tracking-[0.3em] text-canvas/90 border-b border-canvas/40 pb-1 group-hover:border-canvas">
+              Shop Accessories
             </span>
-            <h4 className="text-base md:text-lg text-canvas uppercase tracking-[0.15em] font-medium">
-              Accessories
-            </h4>
           </div>
         </Link>
 

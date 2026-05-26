@@ -34,9 +34,14 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AccountIndexRouteImport } from './routes/account.index'
 import { Route as SwimSizeGuideRouteImport } from './routes/swim.size-guide'
 import { Route as ProductHandleRouteImport } from './routes/product.$handle'
+import { Route as EditorialWomensEditRouteImport } from './routes/editorial.womens-edit'
+import { Route as EditorialVersaceRouteImport } from './routes/editorial.versace'
 import { Route as EditorialTheNewEveningRouteImport } from './routes/editorial.the-new-evening'
+import { Route as EditorialSummerEditRouteImport } from './routes/editorial.summer-edit'
 import { Route as EditorialResort2026RouteImport } from './routes/editorial.resort-2026'
+import { Route as EditorialMensEditRouteImport } from './routes/editorial.mens-edit'
 import { Route as EditorialMay2026RouteImport } from './routes/editorial.may-2026'
+import { Route as EditorialAccessoriesRouteImport } from './routes/editorial.accessories'
 import { Route as CollectionsItalianLeatherWalletsRouteImport } from './routes/collections.italian-leather-wallets'
 import { Route as CollectionsItalianLeatherLoafersRouteImport } from './routes/collections.italian-leather-loafers'
 import { Route as CollectionsItalianLeatherHandbagsRouteImport } from './routes/collections.italian-leather-handbags'
@@ -204,9 +209,24 @@ const ProductHandleRoute = ProductHandleRouteImport.update({
   path: '/product/$handle',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EditorialWomensEditRoute = EditorialWomensEditRouteImport.update({
+  id: '/editorial/womens-edit',
+  path: '/editorial/womens-edit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EditorialVersaceRoute = EditorialVersaceRouteImport.update({
+  id: '/editorial/versace',
+  path: '/editorial/versace',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EditorialTheNewEveningRoute = EditorialTheNewEveningRouteImport.update({
   id: '/editorial/the-new-evening',
   path: '/editorial/the-new-evening',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EditorialSummerEditRoute = EditorialSummerEditRouteImport.update({
+  id: '/editorial/summer-edit',
+  path: '/editorial/summer-edit',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EditorialResort2026Route = EditorialResort2026RouteImport.update({
@@ -214,9 +234,19 @@ const EditorialResort2026Route = EditorialResort2026RouteImport.update({
   path: '/editorial/resort-2026',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EditorialMensEditRoute = EditorialMensEditRouteImport.update({
+  id: '/editorial/mens-edit',
+  path: '/editorial/mens-edit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EditorialMay2026Route = EditorialMay2026RouteImport.update({
   id: '/editorial/may-2026',
   path: '/editorial/may-2026',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EditorialAccessoriesRoute = EditorialAccessoriesRouteImport.update({
+  id: '/editorial/accessories',
+  path: '/editorial/accessories',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CollectionsItalianLeatherWalletsRoute =
@@ -492,9 +522,14 @@ export interface FileRoutesByFullPath {
   '/collections/italian-leather-handbags': typeof CollectionsItalianLeatherHandbagsRoute
   '/collections/italian-leather-loafers': typeof CollectionsItalianLeatherLoafersRoute
   '/collections/italian-leather-wallets': typeof CollectionsItalianLeatherWalletsRoute
+  '/editorial/accessories': typeof EditorialAccessoriesRoute
   '/editorial/may-2026': typeof EditorialMay2026Route
+  '/editorial/mens-edit': typeof EditorialMensEditRoute
   '/editorial/resort-2026': typeof EditorialResort2026Route
+  '/editorial/summer-edit': typeof EditorialSummerEditRoute
   '/editorial/the-new-evening': typeof EditorialTheNewEveningRoute
+  '/editorial/versace': typeof EditorialVersaceRoute
+  '/editorial/womens-edit': typeof EditorialWomensEditRoute
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/account/': typeof AccountIndexRoute
@@ -562,9 +597,14 @@ export interface FileRoutesByTo {
   '/collections/italian-leather-handbags': typeof CollectionsItalianLeatherHandbagsRoute
   '/collections/italian-leather-loafers': typeof CollectionsItalianLeatherLoafersRoute
   '/collections/italian-leather-wallets': typeof CollectionsItalianLeatherWalletsRoute
+  '/editorial/accessories': typeof EditorialAccessoriesRoute
   '/editorial/may-2026': typeof EditorialMay2026Route
+  '/editorial/mens-edit': typeof EditorialMensEditRoute
   '/editorial/resort-2026': typeof EditorialResort2026Route
+  '/editorial/summer-edit': typeof EditorialSummerEditRoute
   '/editorial/the-new-evening': typeof EditorialTheNewEveningRoute
+  '/editorial/versace': typeof EditorialVersaceRoute
+  '/editorial/womens-edit': typeof EditorialWomensEditRoute
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/account': typeof AccountIndexRoute
@@ -634,9 +674,14 @@ export interface FileRoutesById {
   '/collections/italian-leather-handbags': typeof CollectionsItalianLeatherHandbagsRoute
   '/collections/italian-leather-loafers': typeof CollectionsItalianLeatherLoafersRoute
   '/collections/italian-leather-wallets': typeof CollectionsItalianLeatherWalletsRoute
+  '/editorial/accessories': typeof EditorialAccessoriesRoute
   '/editorial/may-2026': typeof EditorialMay2026Route
+  '/editorial/mens-edit': typeof EditorialMensEditRoute
   '/editorial/resort-2026': typeof EditorialResort2026Route
+  '/editorial/summer-edit': typeof EditorialSummerEditRoute
   '/editorial/the-new-evening': typeof EditorialTheNewEveningRoute
+  '/editorial/versace': typeof EditorialVersaceRoute
+  '/editorial/womens-edit': typeof EditorialWomensEditRoute
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/account/': typeof AccountIndexRoute
@@ -707,9 +752,14 @@ export interface FileRouteTypes {
     | '/collections/italian-leather-handbags'
     | '/collections/italian-leather-loafers'
     | '/collections/italian-leather-wallets'
+    | '/editorial/accessories'
     | '/editorial/may-2026'
+    | '/editorial/mens-edit'
     | '/editorial/resort-2026'
+    | '/editorial/summer-edit'
     | '/editorial/the-new-evening'
+    | '/editorial/versace'
+    | '/editorial/womens-edit'
     | '/product/$handle'
     | '/swim/size-guide'
     | '/account/'
@@ -777,9 +827,14 @@ export interface FileRouteTypes {
     | '/collections/italian-leather-handbags'
     | '/collections/italian-leather-loafers'
     | '/collections/italian-leather-wallets'
+    | '/editorial/accessories'
     | '/editorial/may-2026'
+    | '/editorial/mens-edit'
     | '/editorial/resort-2026'
+    | '/editorial/summer-edit'
     | '/editorial/the-new-evening'
+    | '/editorial/versace'
+    | '/editorial/womens-edit'
     | '/product/$handle'
     | '/swim/size-guide'
     | '/account'
@@ -848,9 +903,14 @@ export interface FileRouteTypes {
     | '/collections/italian-leather-handbags'
     | '/collections/italian-leather-loafers'
     | '/collections/italian-leather-wallets'
+    | '/editorial/accessories'
     | '/editorial/may-2026'
+    | '/editorial/mens-edit'
     | '/editorial/resort-2026'
+    | '/editorial/summer-edit'
     | '/editorial/the-new-evening'
+    | '/editorial/versace'
+    | '/editorial/womens-edit'
     | '/product/$handle'
     | '/swim/size-guide'
     | '/account/'
@@ -917,9 +977,14 @@ export interface RootRouteChildren {
   CollectionsItalianLeatherHandbagsRoute: typeof CollectionsItalianLeatherHandbagsRoute
   CollectionsItalianLeatherLoafersRoute: typeof CollectionsItalianLeatherLoafersRoute
   CollectionsItalianLeatherWalletsRoute: typeof CollectionsItalianLeatherWalletsRoute
+  EditorialAccessoriesRoute: typeof EditorialAccessoriesRoute
   EditorialMay2026Route: typeof EditorialMay2026Route
+  EditorialMensEditRoute: typeof EditorialMensEditRoute
   EditorialResort2026Route: typeof EditorialResort2026Route
+  EditorialSummerEditRoute: typeof EditorialSummerEditRoute
   EditorialTheNewEveningRoute: typeof EditorialTheNewEveningRoute
+  EditorialVersaceRoute: typeof EditorialVersaceRoute
+  EditorialWomensEditRoute: typeof EditorialWomensEditRoute
   ProductHandleRoute: typeof ProductHandleRoute
   AdminIndexRoute: typeof AdminIndexRoute
   CollectionsIndexRoute: typeof CollectionsIndexRoute
@@ -1114,11 +1179,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductHandleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/editorial/womens-edit': {
+      id: '/editorial/womens-edit'
+      path: '/editorial/womens-edit'
+      fullPath: '/editorial/womens-edit'
+      preLoaderRoute: typeof EditorialWomensEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/editorial/versace': {
+      id: '/editorial/versace'
+      path: '/editorial/versace'
+      fullPath: '/editorial/versace'
+      preLoaderRoute: typeof EditorialVersaceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/editorial/the-new-evening': {
       id: '/editorial/the-new-evening'
       path: '/editorial/the-new-evening'
       fullPath: '/editorial/the-new-evening'
       preLoaderRoute: typeof EditorialTheNewEveningRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/editorial/summer-edit': {
+      id: '/editorial/summer-edit'
+      path: '/editorial/summer-edit'
+      fullPath: '/editorial/summer-edit'
+      preLoaderRoute: typeof EditorialSummerEditRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/editorial/resort-2026': {
@@ -1128,11 +1214,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EditorialResort2026RouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/editorial/mens-edit': {
+      id: '/editorial/mens-edit'
+      path: '/editorial/mens-edit'
+      fullPath: '/editorial/mens-edit'
+      preLoaderRoute: typeof EditorialMensEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/editorial/may-2026': {
       id: '/editorial/may-2026'
       path: '/editorial/may-2026'
       fullPath: '/editorial/may-2026'
       preLoaderRoute: typeof EditorialMay2026RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/editorial/accessories': {
+      id: '/editorial/accessories'
+      path: '/editorial/accessories'
+      fullPath: '/editorial/accessories'
+      preLoaderRoute: typeof EditorialAccessoriesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/collections/italian-leather-wallets': {
@@ -1516,9 +1616,14 @@ const rootRouteChildren: RootRouteChildren = {
     CollectionsItalianLeatherHandbagsRoute,
   CollectionsItalianLeatherLoafersRoute: CollectionsItalianLeatherLoafersRoute,
   CollectionsItalianLeatherWalletsRoute: CollectionsItalianLeatherWalletsRoute,
+  EditorialAccessoriesRoute: EditorialAccessoriesRoute,
   EditorialMay2026Route: EditorialMay2026Route,
+  EditorialMensEditRoute: EditorialMensEditRoute,
   EditorialResort2026Route: EditorialResort2026Route,
+  EditorialSummerEditRoute: EditorialSummerEditRoute,
   EditorialTheNewEveningRoute: EditorialTheNewEveningRoute,
+  EditorialVersaceRoute: EditorialVersaceRoute,
+  EditorialWomensEditRoute: EditorialWomensEditRoute,
   ProductHandleRoute: ProductHandleRoute,
   AdminIndexRoute: AdminIndexRoute,
   CollectionsIndexRoute: CollectionsIndexRoute,
