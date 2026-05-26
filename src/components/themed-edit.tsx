@@ -5,6 +5,11 @@ import { fetchProducts } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
 import { EditorialHotspots, type Hotspot } from "@/components/editorial-hotspots";
 import { img } from "@/lib/editorial-library";
+import {
+  ShopTheEditEmpty,
+  ShopTheEditError,
+  ShopTheEditSkeleton,
+} from "@/components/shop-the-edit-state";
 import type { ReactNode } from "react";
 
 export type ThemedChapterSpot = {
