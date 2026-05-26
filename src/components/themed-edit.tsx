@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { fetchProductsPage, formatPrice } from "@/lib/shopify";
+import { fetchProductsPage } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
 import { EditorialHotspots, type Hotspot } from "@/components/editorial-hotspots";
 import { img } from "@/lib/editorial-library";
