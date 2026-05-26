@@ -286,7 +286,7 @@ function MensSwimCampaign() {
             <div className="relative">
               <EditorialHotspots
                 src={mensDetail1}
-                alt="Close-up of luxury navy men's swim shorts with gold drawstring tips, drying on limestone"
+                alt="Close-up of the Bottega Veneta azure blue polyamide swim boxer with gold drawcord tips, drying on limestone"
                 hotspots={detail1Spots}
                 aspect="4/5"
               />
