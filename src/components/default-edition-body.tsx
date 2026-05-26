@@ -27,6 +27,8 @@ import marketingWomen from "@/assets/marketing-women-summer.jpg";
 import marketingMen from "@/assets/marketing-men-summer.jpg";
 import marketingAccessories from "@/assets/marketing-accessories-summer.jpg";
 import marketingPoloShirts from "@/assets/marketing-polo-shirts.jpg";
+import marketingLongSleeveTees from "@/assets/marketing-long-sleeve-tees.jpg";
+import marketingHoodies from "@/assets/marketing-hoodies.jpg";
 
 import marketingMensResort from "@/assets/marketing-men-resort-summer.jpg";
 import marketingVersace from "@/assets/marketing-versace.jpg";
