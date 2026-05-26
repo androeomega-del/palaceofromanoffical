@@ -3,9 +3,22 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { adminBeforeLoad } from "@/lib/admin-route-guard";
 import { getCartAnalytics } from "@/lib/cart-analytics.functions";
+import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, ArrowLeft } from "lucide-react";
+
+// Explicitly attach the bearer token to bypass any cold-load race in the
+// global attachSupabaseAuth middleware (seen on mobile Safari where the
+// Supabase client hasn't restored the session from storage before useQuery
+// fires its first RPC, causing "Unauthorized: No authorization header").
+async function fetchCartAnalytics() {
+  const { data } = await supabase.auth.getSession();
+  const token = data.session?.access_token;
+  return getCartAnalytics({
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+}
 
 /**
  * Render local-timezone time only after hydration to avoid React #418
@@ -91,9 +104,10 @@ function FunnelBar({
 function AdminAnalytics() {
   const { data, isLoading, isFetching, error, refetch } = useQuery({
     queryKey: ["admin", "cart-analytics"],
-    queryFn: () => getCartAnalytics(),
+    queryFn: fetchCartAnalytics,
     refetchInterval: 30_000,
     staleTime: 15_000,
+    retry: 2,
   });
 
   const maxActivity = Math.max(
