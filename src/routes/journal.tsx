@@ -125,10 +125,24 @@ function JournalPage() {
 
   const shopifyEntries = (data?.articles ?? []).map(articleToEntry);
 
-  // Live Shopify articles take precedence; fall back to the curated
+  // Always surface the craftsmanship guides — they're internal routes, not
+  // Shopify articles, so they need to be merged in explicitly.
+  const craftsmanshipEntries: JournalEntry[] = CRAFTSMANSHIP_GUIDES.map((g, i) => ({
+    key: `craftsmanship-${g.slug}`,
+    to: g.to,
+    issue: "Craftsmanship",
+    date: formatDate(g.publishedAt),
+    title: g.title,
+    excerpt: g.excerpt,
+    cover: img(((i * 11) + 18) % 90 + 4),
+    tag: "Craftsmanship",
+  }));
+
+  // Live Shopify articles + craftsmanship guides; fall back to the curated
   // editorials if Shopify returns nothing so the page never looks empty.
-  const allEntries: JournalEntry[] =
+  const baseEntries: JournalEntry[] =
     shopifyEntries.length > 0 ? shopifyEntries : STATIC_ENTRIES;
+  const allEntries: JournalEntry[] = [...craftsmanshipEntries, ...baseEntries];
 
   const [showAll, setShowAll] = useState(false);
   const [featured, ...rest] = allEntries;
