@@ -50,6 +50,8 @@ import { Route as CollectionsItalianLeatherLoafersRouteImport } from './routes/c
 import { Route as CollectionsItalianLeatherHandbagsRouteImport } from './routes/collections.italian-leather-handbags'
 import { Route as CollectionsDesignerSunglassesRouteImport } from './routes/collections.designer-sunglasses'
 import { Route as CollectionsDesignerMensShirtsRouteImport } from './routes/collections.designer-mens-shirts'
+import { Route as CollectionsDesignerBeltsRouteImport } from './routes/collections.designer-belts'
+import { Route as CollectionsCashmereSweatersRouteImport } from './routes/collections.cashmere-sweaters'
 import { Route as CollectionsHandleRouteImport } from './routes/collections.$handle'
 import { Route as CampaignMensSwimRouteImport } from './routes/campaign.mens-swim'
 import { Route as BrandVendorRouteImport } from './routes/brand.$vendor'
@@ -300,6 +302,18 @@ const CollectionsDesignerMensShirtsRoute =
     path: '/collections/designer-mens-shirts',
     getParentRoute: () => rootRouteImport,
   } as any)
+const CollectionsDesignerBeltsRoute =
+  CollectionsDesignerBeltsRouteImport.update({
+    id: '/collections/designer-belts',
+    path: '/collections/designer-belts',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const CollectionsCashmereSweatersRoute =
+  CollectionsCashmereSweatersRouteImport.update({
+    id: '/collections/cashmere-sweaters',
+    path: '/collections/cashmere-sweaters',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const CollectionsHandleRoute = CollectionsHandleRouteImport.update({
   id: '/collections/$handle',
   path: '/collections/$handle',
@@ -545,6 +559,8 @@ export interface FileRoutesByFullPath {
   '/brand/$vendor': typeof BrandVendorRoute
   '/campaign/mens-swim': typeof CampaignMensSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
+  '/collections/cashmere-sweaters': typeof CollectionsCashmereSweatersRoute
+  '/collections/designer-belts': typeof CollectionsDesignerBeltsRoute
   '/collections/designer-mens-shirts': typeof CollectionsDesignerMensShirtsRoute
   '/collections/designer-sunglasses': typeof CollectionsDesignerSunglassesRoute
   '/collections/italian-leather-handbags': typeof CollectionsItalianLeatherHandbagsRoute
@@ -624,6 +640,8 @@ export interface FileRoutesByTo {
   '/brand/$vendor': typeof BrandVendorRoute
   '/campaign/mens-swim': typeof CampaignMensSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
+  '/collections/cashmere-sweaters': typeof CollectionsCashmereSweatersRoute
+  '/collections/designer-belts': typeof CollectionsDesignerBeltsRoute
   '/collections/designer-mens-shirts': typeof CollectionsDesignerMensShirtsRoute
   '/collections/designer-sunglasses': typeof CollectionsDesignerSunglassesRoute
   '/collections/italian-leather-handbags': typeof CollectionsItalianLeatherHandbagsRoute
@@ -705,6 +723,8 @@ export interface FileRoutesById {
   '/brand/$vendor': typeof BrandVendorRoute
   '/campaign/mens-swim': typeof CampaignMensSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
+  '/collections/cashmere-sweaters': typeof CollectionsCashmereSweatersRoute
+  '/collections/designer-belts': typeof CollectionsDesignerBeltsRoute
   '/collections/designer-mens-shirts': typeof CollectionsDesignerMensShirtsRoute
   '/collections/designer-sunglasses': typeof CollectionsDesignerSunglassesRoute
   '/collections/italian-leather-handbags': typeof CollectionsItalianLeatherHandbagsRoute
@@ -787,6 +807,8 @@ export interface FileRouteTypes {
     | '/brand/$vendor'
     | '/campaign/mens-swim'
     | '/collections/$handle'
+    | '/collections/cashmere-sweaters'
+    | '/collections/designer-belts'
     | '/collections/designer-mens-shirts'
     | '/collections/designer-sunglasses'
     | '/collections/italian-leather-handbags'
@@ -866,6 +888,8 @@ export interface FileRouteTypes {
     | '/brand/$vendor'
     | '/campaign/mens-swim'
     | '/collections/$handle'
+    | '/collections/cashmere-sweaters'
+    | '/collections/designer-belts'
     | '/collections/designer-mens-shirts'
     | '/collections/designer-sunglasses'
     | '/collections/italian-leather-handbags'
@@ -946,6 +970,8 @@ export interface FileRouteTypes {
     | '/brand/$vendor'
     | '/campaign/mens-swim'
     | '/collections/$handle'
+    | '/collections/cashmere-sweaters'
+    | '/collections/designer-belts'
     | '/collections/designer-mens-shirts'
     | '/collections/designer-sunglasses'
     | '/collections/italian-leather-handbags'
@@ -1024,6 +1050,8 @@ export interface RootRouteChildren {
   BrandVendorRoute: typeof BrandVendorRoute
   CampaignMensSwimRoute: typeof CampaignMensSwimRoute
   CollectionsHandleRoute: typeof CollectionsHandleRoute
+  CollectionsCashmereSweatersRoute: typeof CollectionsCashmereSweatersRoute
+  CollectionsDesignerBeltsRoute: typeof CollectionsDesignerBeltsRoute
   CollectionsDesignerMensShirtsRoute: typeof CollectionsDesignerMensShirtsRoute
   CollectionsDesignerSunglassesRoute: typeof CollectionsDesignerSunglassesRoute
   CollectionsItalianLeatherHandbagsRoute: typeof CollectionsItalianLeatherHandbagsRoute
@@ -1344,6 +1372,20 @@ declare module '@tanstack/react-router' {
       path: '/collections/designer-mens-shirts'
       fullPath: '/collections/designer-mens-shirts'
       preLoaderRoute: typeof CollectionsDesignerMensShirtsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collections/designer-belts': {
+      id: '/collections/designer-belts'
+      path: '/collections/designer-belts'
+      fullPath: '/collections/designer-belts'
+      preLoaderRoute: typeof CollectionsDesignerBeltsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collections/cashmere-sweaters': {
+      id: '/collections/cashmere-sweaters'
+      path: '/collections/cashmere-sweaters'
+      fullPath: '/collections/cashmere-sweaters'
+      preLoaderRoute: typeof CollectionsCashmereSweatersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/collections/$handle': {
@@ -1694,6 +1736,8 @@ const rootRouteChildren: RootRouteChildren = {
   BrandVendorRoute: BrandVendorRoute,
   CampaignMensSwimRoute: CampaignMensSwimRoute,
   CollectionsHandleRoute: CollectionsHandleRoute,
+  CollectionsCashmereSweatersRoute: CollectionsCashmereSweatersRoute,
+  CollectionsDesignerBeltsRoute: CollectionsDesignerBeltsRoute,
   CollectionsDesignerMensShirtsRoute: CollectionsDesignerMensShirtsRoute,
   CollectionsDesignerSunglassesRoute: CollectionsDesignerSunglassesRoute,
   CollectionsItalianLeatherHandbagsRoute:
@@ -1735,3 +1779,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
