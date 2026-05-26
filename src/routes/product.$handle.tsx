@@ -830,6 +830,15 @@ function ProductView({
         {/* ===== AI Recommendations (server-assisted) ===== */}
         <AIRecommendations product={product} />
 
+        {/* ===== From the Journal — internal-link bridge to editorial ===== */}
+        <PdpJournalLinks
+          productType={product.productType}
+          title={product.title}
+          vendor={product.vendor}
+          tags={(product as { tags?: string[] }).tags ?? null}
+        />
+
+
         {/* ===== Style It With — cross-house cross-sell rail ===== */}
         {styleItWith.length > 0 && (
           <section className="max-w-7xl mx-auto mt-32 pt-20 border-t border-[var(--studio-rule)]">
