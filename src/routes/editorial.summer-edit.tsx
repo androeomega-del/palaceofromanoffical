@@ -82,14 +82,14 @@ export const Route = createFileRoute("/editorial/summer-edit")({
       heroAlt="Men's resort summer edit on the Tyrrhenian coast"
       manifesto="A man's summer wardrobe, cut down to its essentials."
       chapters={CHAPTERS}
-      productQuery="tag:Men AND (title:short OR title:swim OR title:linen OR title:slide OR title:polo)"
+      productQuery={'tag:Men AND (tag:"category:shorts" OR tag:"category:swimwear" OR tag:"category:sandals" OR tag:"category:belts" OR title:linen OR title:polo)'}
       shopTitle="Shop the Summer Edit"
-      shopEyebrow="Men's — In Stock"
+      shopEyebrow="Men's — Shorts, Shirts, Slides & Belts"
       outroCtas={[
         { label: "Swimwear", handle: "swimwear" },
-        { label: "Men's Clothing", handle: "mens-clothing" },
-        { label: "Men's Shoes", handle: "mens-shoes" },
-        { label: "Men's Accessories", handle: "mens-accessories" },
+        { label: "Shorts", handle: "shorts" },
+        { label: "Sandals", handle: "sandals" },
+        { label: "Belts", handle: "belts" },
       ]}
     />
   ),
