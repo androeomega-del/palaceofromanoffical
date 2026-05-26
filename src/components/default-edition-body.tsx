@@ -1106,13 +1106,13 @@ function SummerBento({
             </h1>
             <div className="flex flex-wrap gap-3 md:gap-4">
               <Link
-                to="/editorial/resort-2026"
+                to="/editorial/shoreline-perspective"
                 className="px-7 md:px-10 py-3 md:py-4 bg-canvas text-ink text-[10px] uppercase tracking-[0.25em] font-medium hover:bg-[var(--sea)] hover:text-canvas transition-all"
               >
                 Shop the Edit
               </Link>
               <Link
-                to="/editorial/resort-2026"
+                to="/editorial/shoreline-perspective"
                 className="px-7 md:px-10 py-3 md:py-4 border border-canvas text-canvas text-[10px] uppercase tracking-[0.25em] font-medium hover:bg-canvas hover:text-ink transition-all"
               >
                 View Lookbook
@@ -1178,7 +1178,7 @@ function SummerBento({
 
         {/* Edit 4 — Versace */}
         <Link
-          to="/editorial/versace"
+          to="/editorial/versace-now"
           className="col-span-12 md:col-span-4 lg:col-span-3 row-span-2 bg-ink flex flex-col justify-between group overflow-hidden relative"
         >
           {spotlightImage && (
