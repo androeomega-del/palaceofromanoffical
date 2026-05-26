@@ -109,13 +109,13 @@ function ArticlePage() {
 
       {a.image && (
         <section className="px-0 md:px-6 pb-12 md:pb-16">
-          <div className="relative w-full overflow-hidden aspect-[16/9] bg-canvas-raised">
+          <div className="relative w-full overflow-hidden aspect-[16/9] bg-canvas-raised flex items-center justify-center">
             <img
               src={a.image.url}
               alt={a.image.altText || a.title}
               loading="eager"
               fetchPriority="high"
-              className="w-full h-full object-cover"
+              className="max-w-full max-h-full w-auto h-auto object-contain"
             />
           </div>
         </section>
