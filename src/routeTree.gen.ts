@@ -35,9 +35,11 @@ import { Route as AccountIndexRouteImport } from './routes/account.index'
 import { Route as SwimSizeGuideRouteImport } from './routes/swim.size-guide'
 import { Route as ProductHandleRouteImport } from './routes/product.$handle'
 import { Route as EditorialWomensEditRouteImport } from './routes/editorial.womens-edit'
+import { Route as EditorialVersaceNowRouteImport } from './routes/editorial.versace-now'
 import { Route as EditorialVersaceRouteImport } from './routes/editorial.versace'
 import { Route as EditorialTheNewEveningRouteImport } from './routes/editorial.the-new-evening'
 import { Route as EditorialSummerEditRouteImport } from './routes/editorial.summer-edit'
+import { Route as EditorialShorelinePerspectiveRouteImport } from './routes/editorial.shoreline-perspective'
 import { Route as EditorialResort2026RouteImport } from './routes/editorial.resort-2026'
 import { Route as EditorialMensEditRouteImport } from './routes/editorial.mens-edit'
 import { Route as EditorialMay2026RouteImport } from './routes/editorial.may-2026'
@@ -214,6 +216,11 @@ const EditorialWomensEditRoute = EditorialWomensEditRouteImport.update({
   path: '/editorial/womens-edit',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EditorialVersaceNowRoute = EditorialVersaceNowRouteImport.update({
+  id: '/editorial/versace-now',
+  path: '/editorial/versace-now',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EditorialVersaceRoute = EditorialVersaceRouteImport.update({
   id: '/editorial/versace',
   path: '/editorial/versace',
@@ -229,6 +236,12 @@ const EditorialSummerEditRoute = EditorialSummerEditRouteImport.update({
   path: '/editorial/summer-edit',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EditorialShorelinePerspectiveRoute =
+  EditorialShorelinePerspectiveRouteImport.update({
+    id: '/editorial/shoreline-perspective',
+    path: '/editorial/shoreline-perspective',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const EditorialResort2026Route = EditorialResort2026RouteImport.update({
   id: '/editorial/resort-2026',
   path: '/editorial/resort-2026',
@@ -526,9 +539,11 @@ export interface FileRoutesByFullPath {
   '/editorial/may-2026': typeof EditorialMay2026Route
   '/editorial/mens-edit': typeof EditorialMensEditRoute
   '/editorial/resort-2026': typeof EditorialResort2026Route
+  '/editorial/shoreline-perspective': typeof EditorialShorelinePerspectiveRoute
   '/editorial/summer-edit': typeof EditorialSummerEditRoute
   '/editorial/the-new-evening': typeof EditorialTheNewEveningRoute
   '/editorial/versace': typeof EditorialVersaceRoute
+  '/editorial/versace-now': typeof EditorialVersaceNowRoute
   '/editorial/womens-edit': typeof EditorialWomensEditRoute
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
@@ -601,9 +616,11 @@ export interface FileRoutesByTo {
   '/editorial/may-2026': typeof EditorialMay2026Route
   '/editorial/mens-edit': typeof EditorialMensEditRoute
   '/editorial/resort-2026': typeof EditorialResort2026Route
+  '/editorial/shoreline-perspective': typeof EditorialShorelinePerspectiveRoute
   '/editorial/summer-edit': typeof EditorialSummerEditRoute
   '/editorial/the-new-evening': typeof EditorialTheNewEveningRoute
   '/editorial/versace': typeof EditorialVersaceRoute
+  '/editorial/versace-now': typeof EditorialVersaceNowRoute
   '/editorial/womens-edit': typeof EditorialWomensEditRoute
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
@@ -678,9 +695,11 @@ export interface FileRoutesById {
   '/editorial/may-2026': typeof EditorialMay2026Route
   '/editorial/mens-edit': typeof EditorialMensEditRoute
   '/editorial/resort-2026': typeof EditorialResort2026Route
+  '/editorial/shoreline-perspective': typeof EditorialShorelinePerspectiveRoute
   '/editorial/summer-edit': typeof EditorialSummerEditRoute
   '/editorial/the-new-evening': typeof EditorialTheNewEveningRoute
   '/editorial/versace': typeof EditorialVersaceRoute
+  '/editorial/versace-now': typeof EditorialVersaceNowRoute
   '/editorial/womens-edit': typeof EditorialWomensEditRoute
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
@@ -756,9 +775,11 @@ export interface FileRouteTypes {
     | '/editorial/may-2026'
     | '/editorial/mens-edit'
     | '/editorial/resort-2026'
+    | '/editorial/shoreline-perspective'
     | '/editorial/summer-edit'
     | '/editorial/the-new-evening'
     | '/editorial/versace'
+    | '/editorial/versace-now'
     | '/editorial/womens-edit'
     | '/product/$handle'
     | '/swim/size-guide'
@@ -831,9 +852,11 @@ export interface FileRouteTypes {
     | '/editorial/may-2026'
     | '/editorial/mens-edit'
     | '/editorial/resort-2026'
+    | '/editorial/shoreline-perspective'
     | '/editorial/summer-edit'
     | '/editorial/the-new-evening'
     | '/editorial/versace'
+    | '/editorial/versace-now'
     | '/editorial/womens-edit'
     | '/product/$handle'
     | '/swim/size-guide'
@@ -907,9 +930,11 @@ export interface FileRouteTypes {
     | '/editorial/may-2026'
     | '/editorial/mens-edit'
     | '/editorial/resort-2026'
+    | '/editorial/shoreline-perspective'
     | '/editorial/summer-edit'
     | '/editorial/the-new-evening'
     | '/editorial/versace'
+    | '/editorial/versace-now'
     | '/editorial/womens-edit'
     | '/product/$handle'
     | '/swim/size-guide'
@@ -981,9 +1006,11 @@ export interface RootRouteChildren {
   EditorialMay2026Route: typeof EditorialMay2026Route
   EditorialMensEditRoute: typeof EditorialMensEditRoute
   EditorialResort2026Route: typeof EditorialResort2026Route
+  EditorialShorelinePerspectiveRoute: typeof EditorialShorelinePerspectiveRoute
   EditorialSummerEditRoute: typeof EditorialSummerEditRoute
   EditorialTheNewEveningRoute: typeof EditorialTheNewEveningRoute
   EditorialVersaceRoute: typeof EditorialVersaceRoute
+  EditorialVersaceNowRoute: typeof EditorialVersaceNowRoute
   EditorialWomensEditRoute: typeof EditorialWomensEditRoute
   ProductHandleRoute: typeof ProductHandleRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -1186,6 +1213,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EditorialWomensEditRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/editorial/versace-now': {
+      id: '/editorial/versace-now'
+      path: '/editorial/versace-now'
+      fullPath: '/editorial/versace-now'
+      preLoaderRoute: typeof EditorialVersaceNowRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/editorial/versace': {
       id: '/editorial/versace'
       path: '/editorial/versace'
@@ -1205,6 +1239,13 @@ declare module '@tanstack/react-router' {
       path: '/editorial/summer-edit'
       fullPath: '/editorial/summer-edit'
       preLoaderRoute: typeof EditorialSummerEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/editorial/shoreline-perspective': {
+      id: '/editorial/shoreline-perspective'
+      path: '/editorial/shoreline-perspective'
+      fullPath: '/editorial/shoreline-perspective'
+      preLoaderRoute: typeof EditorialShorelinePerspectiveRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/editorial/resort-2026': {
@@ -1620,9 +1661,11 @@ const rootRouteChildren: RootRouteChildren = {
   EditorialMay2026Route: EditorialMay2026Route,
   EditorialMensEditRoute: EditorialMensEditRoute,
   EditorialResort2026Route: EditorialResort2026Route,
+  EditorialShorelinePerspectiveRoute: EditorialShorelinePerspectiveRoute,
   EditorialSummerEditRoute: EditorialSummerEditRoute,
   EditorialTheNewEveningRoute: EditorialTheNewEveningRoute,
   EditorialVersaceRoute: EditorialVersaceRoute,
+  EditorialVersaceNowRoute: EditorialVersaceNowRoute,
   EditorialWomensEditRoute: EditorialWomensEditRoute,
   ProductHandleRoute: ProductHandleRoute,
   AdminIndexRoute: AdminIndexRoute,
