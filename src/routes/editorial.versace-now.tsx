@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ThemedEdit, type ThemedChapter } from "@/components/themed-edit";
 import { img } from "@/lib/editorial-library";
 import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
+import versaceNowHero from "@/assets/editorial/library/versace-now-hero.jpg";
 
 const HERO_N = 60;
 const CHAPTERS: ThemedChapter[] = [
