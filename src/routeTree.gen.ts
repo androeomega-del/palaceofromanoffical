@@ -44,10 +44,16 @@ import { Route as EditorialResort2026RouteImport } from './routes/editorial.reso
 import { Route as EditorialMensEditRouteImport } from './routes/editorial.mens-edit'
 import { Route as EditorialMay2026RouteImport } from './routes/editorial.may-2026'
 import { Route as EditorialAccessoriesRouteImport } from './routes/editorial.accessories'
+import { Route as CollectionsSilkScarvesRouteImport } from './routes/collections.silk-scarves'
+import { Route as CollectionsLuxurySneakersRouteImport } from './routes/collections.luxury-sneakers'
 import { Route as CollectionsItalianLeatherWalletsRouteImport } from './routes/collections.italian-leather-wallets'
 import { Route as CollectionsItalianLeatherLoafersRouteImport } from './routes/collections.italian-leather-loafers'
 import { Route as CollectionsItalianLeatherHandbagsRouteImport } from './routes/collections.italian-leather-handbags'
+import { Route as CollectionsDesignerSunglassesRouteImport } from './routes/collections.designer-sunglasses'
 import { Route as CollectionsDesignerMensShirtsRouteImport } from './routes/collections.designer-mens-shirts'
+import { Route as CollectionsDesignerCrossbodyBagsRouteImport } from './routes/collections.designer-crossbody-bags'
+import { Route as CollectionsDesignerBeltsRouteImport } from './routes/collections.designer-belts'
+import { Route as CollectionsCashmereSweatersRouteImport } from './routes/collections.cashmere-sweaters'
 import { Route as CollectionsHandleRouteImport } from './routes/collections.$handle'
 import { Route as CampaignMensSwimRouteImport } from './routes/campaign.mens-swim'
 import { Route as BrandVendorRouteImport } from './routes/brand.$vendor'
@@ -262,6 +268,17 @@ const EditorialAccessoriesRoute = EditorialAccessoriesRouteImport.update({
   path: '/editorial/accessories',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CollectionsSilkScarvesRoute = CollectionsSilkScarvesRouteImport.update({
+  id: '/collections/silk-scarves',
+  path: '/collections/silk-scarves',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollectionsLuxurySneakersRoute =
+  CollectionsLuxurySneakersRouteImport.update({
+    id: '/collections/luxury-sneakers',
+    path: '/collections/luxury-sneakers',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const CollectionsItalianLeatherWalletsRoute =
   CollectionsItalianLeatherWalletsRouteImport.update({
     id: '/collections/italian-leather-wallets',
@@ -280,10 +297,34 @@ const CollectionsItalianLeatherHandbagsRoute =
     path: '/collections/italian-leather-handbags',
     getParentRoute: () => rootRouteImport,
   } as any)
+const CollectionsDesignerSunglassesRoute =
+  CollectionsDesignerSunglassesRouteImport.update({
+    id: '/collections/designer-sunglasses',
+    path: '/collections/designer-sunglasses',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const CollectionsDesignerMensShirtsRoute =
   CollectionsDesignerMensShirtsRouteImport.update({
     id: '/collections/designer-mens-shirts',
     path: '/collections/designer-mens-shirts',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const CollectionsDesignerCrossbodyBagsRoute =
+  CollectionsDesignerCrossbodyBagsRouteImport.update({
+    id: '/collections/designer-crossbody-bags',
+    path: '/collections/designer-crossbody-bags',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const CollectionsDesignerBeltsRoute =
+  CollectionsDesignerBeltsRouteImport.update({
+    id: '/collections/designer-belts',
+    path: '/collections/designer-belts',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const CollectionsCashmereSweatersRoute =
+  CollectionsCashmereSweatersRouteImport.update({
+    id: '/collections/cashmere-sweaters',
+    path: '/collections/cashmere-sweaters',
     getParentRoute: () => rootRouteImport,
   } as any)
 const CollectionsHandleRoute = CollectionsHandleRouteImport.update({
@@ -531,10 +572,16 @@ export interface FileRoutesByFullPath {
   '/brand/$vendor': typeof BrandVendorRoute
   '/campaign/mens-swim': typeof CampaignMensSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
+  '/collections/cashmere-sweaters': typeof CollectionsCashmereSweatersRoute
+  '/collections/designer-belts': typeof CollectionsDesignerBeltsRoute
+  '/collections/designer-crossbody-bags': typeof CollectionsDesignerCrossbodyBagsRoute
   '/collections/designer-mens-shirts': typeof CollectionsDesignerMensShirtsRoute
+  '/collections/designer-sunglasses': typeof CollectionsDesignerSunglassesRoute
   '/collections/italian-leather-handbags': typeof CollectionsItalianLeatherHandbagsRoute
   '/collections/italian-leather-loafers': typeof CollectionsItalianLeatherLoafersRoute
   '/collections/italian-leather-wallets': typeof CollectionsItalianLeatherWalletsRoute
+  '/collections/luxury-sneakers': typeof CollectionsLuxurySneakersRoute
+  '/collections/silk-scarves': typeof CollectionsSilkScarvesRoute
   '/editorial/accessories': typeof EditorialAccessoriesRoute
   '/editorial/may-2026': typeof EditorialMay2026Route
   '/editorial/mens-edit': typeof EditorialMensEditRoute
@@ -608,10 +655,16 @@ export interface FileRoutesByTo {
   '/brand/$vendor': typeof BrandVendorRoute
   '/campaign/mens-swim': typeof CampaignMensSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
+  '/collections/cashmere-sweaters': typeof CollectionsCashmereSweatersRoute
+  '/collections/designer-belts': typeof CollectionsDesignerBeltsRoute
+  '/collections/designer-crossbody-bags': typeof CollectionsDesignerCrossbodyBagsRoute
   '/collections/designer-mens-shirts': typeof CollectionsDesignerMensShirtsRoute
+  '/collections/designer-sunglasses': typeof CollectionsDesignerSunglassesRoute
   '/collections/italian-leather-handbags': typeof CollectionsItalianLeatherHandbagsRoute
   '/collections/italian-leather-loafers': typeof CollectionsItalianLeatherLoafersRoute
   '/collections/italian-leather-wallets': typeof CollectionsItalianLeatherWalletsRoute
+  '/collections/luxury-sneakers': typeof CollectionsLuxurySneakersRoute
+  '/collections/silk-scarves': typeof CollectionsSilkScarvesRoute
   '/editorial/accessories': typeof EditorialAccessoriesRoute
   '/editorial/may-2026': typeof EditorialMay2026Route
   '/editorial/mens-edit': typeof EditorialMensEditRoute
@@ -687,10 +740,16 @@ export interface FileRoutesById {
   '/brand/$vendor': typeof BrandVendorRoute
   '/campaign/mens-swim': typeof CampaignMensSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
+  '/collections/cashmere-sweaters': typeof CollectionsCashmereSweatersRoute
+  '/collections/designer-belts': typeof CollectionsDesignerBeltsRoute
+  '/collections/designer-crossbody-bags': typeof CollectionsDesignerCrossbodyBagsRoute
   '/collections/designer-mens-shirts': typeof CollectionsDesignerMensShirtsRoute
+  '/collections/designer-sunglasses': typeof CollectionsDesignerSunglassesRoute
   '/collections/italian-leather-handbags': typeof CollectionsItalianLeatherHandbagsRoute
   '/collections/italian-leather-loafers': typeof CollectionsItalianLeatherLoafersRoute
   '/collections/italian-leather-wallets': typeof CollectionsItalianLeatherWalletsRoute
+  '/collections/luxury-sneakers': typeof CollectionsLuxurySneakersRoute
+  '/collections/silk-scarves': typeof CollectionsSilkScarvesRoute
   '/editorial/accessories': typeof EditorialAccessoriesRoute
   '/editorial/may-2026': typeof EditorialMay2026Route
   '/editorial/mens-edit': typeof EditorialMensEditRoute
@@ -767,10 +826,16 @@ export interface FileRouteTypes {
     | '/brand/$vendor'
     | '/campaign/mens-swim'
     | '/collections/$handle'
+    | '/collections/cashmere-sweaters'
+    | '/collections/designer-belts'
+    | '/collections/designer-crossbody-bags'
     | '/collections/designer-mens-shirts'
+    | '/collections/designer-sunglasses'
     | '/collections/italian-leather-handbags'
     | '/collections/italian-leather-loafers'
     | '/collections/italian-leather-wallets'
+    | '/collections/luxury-sneakers'
+    | '/collections/silk-scarves'
     | '/editorial/accessories'
     | '/editorial/may-2026'
     | '/editorial/mens-edit'
@@ -844,10 +909,16 @@ export interface FileRouteTypes {
     | '/brand/$vendor'
     | '/campaign/mens-swim'
     | '/collections/$handle'
+    | '/collections/cashmere-sweaters'
+    | '/collections/designer-belts'
+    | '/collections/designer-crossbody-bags'
     | '/collections/designer-mens-shirts'
+    | '/collections/designer-sunglasses'
     | '/collections/italian-leather-handbags'
     | '/collections/italian-leather-loafers'
     | '/collections/italian-leather-wallets'
+    | '/collections/luxury-sneakers'
+    | '/collections/silk-scarves'
     | '/editorial/accessories'
     | '/editorial/may-2026'
     | '/editorial/mens-edit'
@@ -922,10 +993,16 @@ export interface FileRouteTypes {
     | '/brand/$vendor'
     | '/campaign/mens-swim'
     | '/collections/$handle'
+    | '/collections/cashmere-sweaters'
+    | '/collections/designer-belts'
+    | '/collections/designer-crossbody-bags'
     | '/collections/designer-mens-shirts'
+    | '/collections/designer-sunglasses'
     | '/collections/italian-leather-handbags'
     | '/collections/italian-leather-loafers'
     | '/collections/italian-leather-wallets'
+    | '/collections/luxury-sneakers'
+    | '/collections/silk-scarves'
     | '/editorial/accessories'
     | '/editorial/may-2026'
     | '/editorial/mens-edit'
@@ -998,10 +1075,16 @@ export interface RootRouteChildren {
   BrandVendorRoute: typeof BrandVendorRoute
   CampaignMensSwimRoute: typeof CampaignMensSwimRoute
   CollectionsHandleRoute: typeof CollectionsHandleRoute
+  CollectionsCashmereSweatersRoute: typeof CollectionsCashmereSweatersRoute
+  CollectionsDesignerBeltsRoute: typeof CollectionsDesignerBeltsRoute
+  CollectionsDesignerCrossbodyBagsRoute: typeof CollectionsDesignerCrossbodyBagsRoute
   CollectionsDesignerMensShirtsRoute: typeof CollectionsDesignerMensShirtsRoute
+  CollectionsDesignerSunglassesRoute: typeof CollectionsDesignerSunglassesRoute
   CollectionsItalianLeatherHandbagsRoute: typeof CollectionsItalianLeatherHandbagsRoute
   CollectionsItalianLeatherLoafersRoute: typeof CollectionsItalianLeatherLoafersRoute
   CollectionsItalianLeatherWalletsRoute: typeof CollectionsItalianLeatherWalletsRoute
+  CollectionsLuxurySneakersRoute: typeof CollectionsLuxurySneakersRoute
+  CollectionsSilkScarvesRoute: typeof CollectionsSilkScarvesRoute
   EditorialAccessoriesRoute: typeof EditorialAccessoriesRoute
   EditorialMay2026Route: typeof EditorialMay2026Route
   EditorialMensEditRoute: typeof EditorialMensEditRoute
@@ -1276,6 +1359,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EditorialAccessoriesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/collections/silk-scarves': {
+      id: '/collections/silk-scarves'
+      path: '/collections/silk-scarves'
+      fullPath: '/collections/silk-scarves'
+      preLoaderRoute: typeof CollectionsSilkScarvesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collections/luxury-sneakers': {
+      id: '/collections/luxury-sneakers'
+      path: '/collections/luxury-sneakers'
+      fullPath: '/collections/luxury-sneakers'
+      preLoaderRoute: typeof CollectionsLuxurySneakersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/collections/italian-leather-wallets': {
       id: '/collections/italian-leather-wallets'
       path: '/collections/italian-leather-wallets'
@@ -1297,11 +1394,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CollectionsItalianLeatherHandbagsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/collections/designer-sunglasses': {
+      id: '/collections/designer-sunglasses'
+      path: '/collections/designer-sunglasses'
+      fullPath: '/collections/designer-sunglasses'
+      preLoaderRoute: typeof CollectionsDesignerSunglassesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/collections/designer-mens-shirts': {
       id: '/collections/designer-mens-shirts'
       path: '/collections/designer-mens-shirts'
       fullPath: '/collections/designer-mens-shirts'
       preLoaderRoute: typeof CollectionsDesignerMensShirtsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collections/designer-crossbody-bags': {
+      id: '/collections/designer-crossbody-bags'
+      path: '/collections/designer-crossbody-bags'
+      fullPath: '/collections/designer-crossbody-bags'
+      preLoaderRoute: typeof CollectionsDesignerCrossbodyBagsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collections/designer-belts': {
+      id: '/collections/designer-belts'
+      path: '/collections/designer-belts'
+      fullPath: '/collections/designer-belts'
+      preLoaderRoute: typeof CollectionsDesignerBeltsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collections/cashmere-sweaters': {
+      id: '/collections/cashmere-sweaters'
+      path: '/collections/cashmere-sweaters'
+      fullPath: '/collections/cashmere-sweaters'
+      preLoaderRoute: typeof CollectionsCashmereSweatersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/collections/$handle': {
@@ -1652,11 +1777,17 @@ const rootRouteChildren: RootRouteChildren = {
   BrandVendorRoute: BrandVendorRoute,
   CampaignMensSwimRoute: CampaignMensSwimRoute,
   CollectionsHandleRoute: CollectionsHandleRoute,
+  CollectionsCashmereSweatersRoute: CollectionsCashmereSweatersRoute,
+  CollectionsDesignerBeltsRoute: CollectionsDesignerBeltsRoute,
+  CollectionsDesignerCrossbodyBagsRoute: CollectionsDesignerCrossbodyBagsRoute,
   CollectionsDesignerMensShirtsRoute: CollectionsDesignerMensShirtsRoute,
+  CollectionsDesignerSunglassesRoute: CollectionsDesignerSunglassesRoute,
   CollectionsItalianLeatherHandbagsRoute:
     CollectionsItalianLeatherHandbagsRoute,
   CollectionsItalianLeatherLoafersRoute: CollectionsItalianLeatherLoafersRoute,
   CollectionsItalianLeatherWalletsRoute: CollectionsItalianLeatherWalletsRoute,
+  CollectionsLuxurySneakersRoute: CollectionsLuxurySneakersRoute,
+  CollectionsSilkScarvesRoute: CollectionsSilkScarvesRoute,
   EditorialAccessoriesRoute: EditorialAccessoriesRoute,
   EditorialMay2026Route: EditorialMay2026Route,
   EditorialMensEditRoute: EditorialMensEditRoute,
