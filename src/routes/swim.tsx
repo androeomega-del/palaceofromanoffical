@@ -318,6 +318,7 @@ function SwimPage() {
                 : q.isError
                   ? "Edit unavailable"
                   : `${edges.length}${q.hasNextPage ? "+" : ""} Pieces`}
+            </p>
           </div>
 
           <div className="flex flex-wrap gap-2 md:gap-3">
