@@ -11,13 +11,13 @@ const CHAPTERS: ThemedChapter[] = [
   {
     n: 0,
     src: mensEditShirt,
-    eyebrow: "Chapter I — The Shirt",
+    eyebrow: "Chapter I — The Polo",
     title: "Cotton, ironed once, worn forever.",
     body:
-      "The men's edit begins with a proper shirt — a Roberto Cavalli navy dress shirt, a Jil Sander cotton tee, a Thom Browne crewneck. Cut from cotton heavy enough to drape, light enough for the day. The kind of piece that earns its place in the closet.",
-    alt: "Man in a navy cotton dress shirt and charcoal wool trousers in a travertine palazzo",
+      "The men's edit begins with a proper shirt — the Burberry blue cotton polo with the house's Archivio Check at the collar, half-tucked into wool trousers. Cut from cotton heavy enough to drape, light enough for the day. The kind of piece that earns its place in the closet.",
+    alt: "Man in a Burberry navy cotton polo with Archivio Check collar, in a travertine palazzo colonnade",
     spots: [
-      { x: 50, y: 38, label: "The Shirt", match: /shirt|tee|t-shirt|crewneck/i },
+      { x: 50, y: 35, label: "The Polo", match: /polo/i },
     ],
   },
   {
@@ -26,25 +26,25 @@ const CHAPTERS: ThemedChapter[] = [
     eyebrow: "Chapter II — The Jacket",
     title: "Outerwear with intent.",
     body:
-      "A Cavalli Class technical jacket, a Brioni wool check blazer, a Bottega Veneta leather piece kept simple. Effortless sophistication is not about layering for show — it is about choosing one outerwear piece that does the work of three.",
-    alt: "Man in a blue wool check blazer against a weathered Roman wall",
+      "A Brunello Cucinelli blue polyamide shell jacket — hooded, double-slider zip, quilted lightly enough to layer, weatherproof enough to mean it. Effortless sophistication is not about layering for show; it is about choosing one outerwear piece that does the work of three.",
+    alt: "Man in a Brunello Cucinelli blue polyamide hooded shell jacket against a Roman stucco wall",
     flip: true,
     spots: [
-      { x: 50, y: 42, label: "The Jacket", match: /jacket|blazer|coat/i },
+      { x: 50, y: 42, label: "The Shell Jacket", match: /shell jacket|polyamide shell/i },
     ],
   },
   {
     n: 0,
     src: mensEditFinish,
     eyebrow: "Chapter III — The Finish",
-    title: "Boot, wallet, nothing else.",
+    title: "Boot, wallet, pocket square.",
     body:
-      "The men's edit closes restrained — a calf-suede lace-up boot, a leather card-holder, a wool scarf folded in the hand. The point is not to be noticed. The point is to be remembered correctly. Every piece arrives with maison tags and an authenticity card.",
-    alt: "Brown calf-suede lace-up boots, a black leather bifold wallet and a charcoal wool scarf on walnut",
+      "The men's edit closes restrained — a calf-suede lace-up boot, the MCM brown fabric wallet, the Brunello Cucinelli gray silk pochette folded once. The point is not to be noticed. The point is to be remembered correctly. Every piece arrives with maison tags and an authenticity card.",
+    alt: "Brown calf-suede lace-up boots, an MCM brown fabric bifold wallet and a Brunello Cucinelli gray silk pochette on walnut",
     spots: [
-      { x: 32, y: 40, label: "The Boot", match: /boot|lace-up/i },
-      { x: 40, y: 78, label: "The Wallet", match: /wallet|card[- ]?holder/i },
-      { x: 78, y: 60, label: "The Scarf", match: /scarf/i },
+      { x: 28, y: 32, label: "The Boot", match: /boot|lace-up/i },
+      { x: 38, y: 80, label: "The Wallet", match: /brown fabric wallet/i },
+      { x: 78, y: 60, label: "The Pocket Square", match: /gray silk scarf|silk pochette|pochette/i },
     ],
   },
 ];
@@ -53,7 +53,7 @@ export const Route = createFileRoute("/editorial/mens-edit")({
   head: () => {
     const title = "The Men's Edit — Effortless Sophistication | Palace of Roman";
     const desc =
-      "Shirts, jackets, boots and the small things — the men's edit, in stock and ready to ship. Roberto Cavalli, Jil Sander, Thom Browne, Brioni, Bottega Veneta and the maisons we carry.";
+      "Polo, shell jacket, boots and the small things — the men's edit, in stock and ready to ship. Burberry, Brunello Cucinelli, MCM and the maisons we carry.";
     const path = "/editorial/mens-edit";
     const image = img(HERO_N);
     const rh = routeHead({ path, title, description: desc, image, type: "article" });
@@ -87,7 +87,7 @@ export const Route = createFileRoute("/editorial/mens-edit")({
       heroAlt="Men's editorial — tailoring and leather in considered light"
       manifesto="The point is not to be noticed. The point is to be remembered correctly."
       chapters={CHAPTERS}
-      productQuery={'tag:Men AND (title:shirt OR title:tee OR title:t-shirt OR title:crewneck OR title:jacket OR title:blazer OR title:coat OR title:boot OR title:lace-up OR title:wallet OR title:scarf)'}
+      productQuery={'tag:Men AND (title:polo OR title:"shell jacket" OR title:jacket OR title:blazer OR title:coat OR title:boot OR title:lace-up OR title:wallet OR title:scarf OR title:pochette)'}
       shopTitle="Shop the Men's Edit"
       shopEyebrow="Men — In Stock"
       outroCtas={[
