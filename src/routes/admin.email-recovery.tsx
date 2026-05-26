@@ -178,6 +178,9 @@ function AdminEmailRecovery() {
                               {e.recipient_email}
                             </span>
                             <span className="text-[10px] uppercase tracking-wider text-muted-foreground whitespace-nowrap">
+                              {e.template_name}
+                            </span>
+                            <span className="text-[10px] uppercase tracking-wider text-muted-foreground whitespace-nowrap">
                               {formatWhen(e.created_at)}
                             </span>
                           </div>
