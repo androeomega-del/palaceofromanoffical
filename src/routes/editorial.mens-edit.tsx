@@ -12,6 +12,10 @@ const CHAPTERS: ThemedChapter[] = [
     body:
       "The men's edit begins with a proper shirt — a Roberto Cavalli navy dress shirt, a Jil Sander tee, a Thom Browne crewneck. Cut from cotton heavy enough to drape, light enough for the day. The kind of piece that earns its place in the closet.",
     alt: "Men's cotton dress shirt and tailoring in considered styling",
+    spots: [
+      { x: 48, y: 38, label: "The Shirt", match: /shirt|tee|knit/i },
+      { x: 55, y: 72, label: "The Trouser", match: /trouser|pants/i },
+    ],
   },
   {
     n: 78,
@@ -21,6 +25,10 @@ const CHAPTERS: ThemedChapter[] = [
       "A Cavalli Class technical jacket, a Brunello Cucinelli linen blazer, a leather piece kept simple. Effortless sophistication is not about layering for show — it is about choosing one outerwear piece that does the work of three.",
     alt: "Men's tailored jacket and leather outerwear in editorial light",
     flip: true,
+    spots: [
+      { x: 50, y: 40, label: "The Jacket", match: /jacket|blazer|coat/i },
+      { x: 40, y: 70, label: "Underneath", match: /shirt|knit|tee/i },
+    ],
   },
   {
     n: 82,
@@ -29,6 +37,10 @@ const CHAPTERS: ThemedChapter[] = [
     body:
       "The men's edit closes restrained — a polished loafer, a single watch, a leather card-holder. The point is not to be noticed. The point is to be remembered correctly. Every piece arrives with maison tags and an authenticity card.",
     alt: "Men's loafer, watch and leather goods flatlay",
+    spots: [
+      { x: 50, y: 70, label: "The Loafer", match: /loafer|shoe/i },
+      { x: 35, y: 35, label: "The Scarf", match: /scarf|knit/i },
+    ],
   },
 ];
 
