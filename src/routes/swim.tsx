@@ -11,6 +11,7 @@ import {
   type Selection,
   type SortValue,
 } from "@/components/catalog-filters";
+import { ShopTheEditError, ShopTheEditSkeleton } from "@/components/shop-the-edit-state";
 import { routeHead } from "@/lib/seo";
 import swimHero from "@/assets/marketing-swim-summer.jpg";
 import lookbook1 from "@/assets/marketing-swim-summer.jpg";
