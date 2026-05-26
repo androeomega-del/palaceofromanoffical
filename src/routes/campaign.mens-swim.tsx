@@ -5,6 +5,11 @@ import { fetchProducts, type ShopifyProduct } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
 import { CampaignVideo } from "@/components/campaign-video";
 import { EditorialHotspots, type Hotspot } from "@/components/editorial-hotspots";
+import {
+  ShopTheEditEmpty,
+  ShopTheEditError,
+  ShopTheEditSkeleton,
+} from "@/components/shop-the-edit-state";
 import { routeHead } from "@/lib/seo";
 import mensHero from "@/assets/mens-swim-hero.jpg";
 import mensDetail1 from "@/assets/mens-swim-detail-1.jpg";
