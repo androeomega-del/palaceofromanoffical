@@ -9,40 +9,42 @@ import summerSlide from "@/assets/editorial/library/summer-edit-slide.jpg";
 const HERO_N = 31;
 const CHAPTERS: ThemedChapter[] = [
   {
-    n: 33,
+    n: 0,
+    src: summerShort,
     eyebrow: "Chapter I — The Short",
     title: "A swim short, cut for the afternoon.",
     body:
       "The men's summer edit starts at the waist. A clean five-inch rise, a quick-dry weave, gold-tipped drawcords — Bottega Veneta, Canali, Givenchy. Shorts that move from the pool to the bar without a second thought.",
-    alt: "Men's tailored swim short on a teak deck",
+    alt: "Navy designer swim short with gold-tipped drawcord on a teak deck against a sunlit travertine balustrade",
     spots: [
-      { x: 50, y: 62, label: "The Short", match: /short|swim/i },
-      { x: 40, y: 30, label: "Up Top", match: /polo|shirt|tee/i },
+      { x: 50, y: 55, label: "The Short", match: /short|swim/i },
     ],
   },
   {
-    n: 37,
+    n: 0,
+    src: summerShirt,
     eyebrow: "Chapter II — The Shirt",
     title: "Linen, open at the throat.",
     body:
       "Pair the short with a cotton polo or a featherweight linen shirt — collar soft, hem untucked. The summer edit is restrained on purpose: one short, one shirt, the right footwear, and the rest is sun.",
-    alt: "Linen shirt and polo styling for resort dressing",
+    alt: "Man in an open off-white linen shirt over a cream cotton polo against a weathered Roman palazzo wall in golden light",
     flip: true,
     spots: [
-      { x: 48, y: 35, label: "The Polo", match: /polo/i },
-      { x: 55, y: 70, label: "The Linen", match: /linen|shirt/i },
+      { x: 50, y: 55, label: "The Polo", match: /polo/i },
+      { x: 50, y: 38, label: "The Linen", match: /linen|shirt/i },
     ],
   },
   {
-    n: 40,
+    n: 0,
+    src: summerSlide,
     eyebrow: "Chapter III — The Slide",
     title: "Footwear, kept to the essential.",
     body:
       "A leather slide carries the look from sand to stone. Worn with tortoiseshell aviators and a chain at the throat, the men's summer edit becomes a uniform — in stock, designed for the heat, and shipped from Europe within the week.",
-    alt: "Designer leather slides and aviator sunglasses on a resort terrace",
+    alt: "Brown woven leather slides with tortoiseshell aviators and a fine gold chain on a sunlit travertine terrace",
     spots: [
-      { x: 50, y: 70, label: "The Slide", match: /slide|sandal/i },
-      { x: 40, y: 30, label: "The Polo", match: /polo|tee|shirt/i },
+      { x: 36, y: 60, label: "The Slide", match: /slide|sandal/i },
+      { x: 70, y: 55, label: "Aviators", match: /sunglasses|aviator/i },
     ],
   },
 ];
