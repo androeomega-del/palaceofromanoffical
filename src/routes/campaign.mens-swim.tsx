@@ -364,7 +364,7 @@ function MensSwimCampaign() {
           <div className="relative">
             <EditorialHotspots
               src={mensDetail2}
-              alt="Men's Resort 2026 flatlay on warm teak deck: Givenchy black swim shorts, Brunello Cucinelli blue cotton shirt, Bottega Veneta green Cassette-print swim shorts"
+              alt="Men's Resort 2026 flatlay in golden hour palm shadow on teak deck: Givenchy black swim shorts, Brunello Cucinelli blue cotton shirt, Bottega Veneta green Cassette-print swim shorts, Fendi brown FF monogram leather slides and Bottega Veneta gold wraparound sunglasses"
               hotspots={detail2Spots}
               aspect="4/5"
             />
