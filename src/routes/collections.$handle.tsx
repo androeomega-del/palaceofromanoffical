@@ -541,7 +541,8 @@ function CollectionPage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-x-10 gap-y-12">
               {featuredQ.data!.map((e) => (
-                <ProductCard key={e.node.id} product={e} />
+                <ProductCard key={e.node.id} product={e} suppressBadges={[...suppressedBadges]} />
+
               ))}
             </div>
             <div className="mt-16 border-t border-ink/10" />
