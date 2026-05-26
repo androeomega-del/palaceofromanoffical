@@ -1,18 +1,21 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ThemedEdit, type ThemedChapter } from "@/components/themed-edit";
-import { img } from "@/lib/editorial-library";
 import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
 import versaceNowHero from "@/assets/editorial/library/versace-now-hero.jpg";
+import versaceCh1 from "@/assets/editorial/library/versace-chapter-1.jpg";
+import versaceCh2 from "@/assets/editorial/library/versace-chapter-2.jpg";
+import versaceCh3 from "@/assets/editorial/library/versace-chapter-3.jpg";
 
 const HERO_N = 60;
 const CHAPTERS: ThemedChapter[] = [
   {
     n: 59,
+    src: versaceCh1,
     eyebrow: "Chapter I — Medusa, In Close-Up",
     title: "The house mark, kept close.",
     body:
       "Versace begins at the hardware. A gold Medusa on the buckle, a small print at the cuff, the monogram in silk lining. The Palace of Roman selection chooses the pieces that wear the house quietly — and the ones that do not, on purpose.",
-    alt: "Versace Medusa hardware in close-up",
+    alt: "Model in baroque-print silk shirt with gold Medusa medallion belt and chain",
     spots: [
       { x: 48, y: 38, label: "The Top", match: /top|shirt|polo|bustier/i },
       { x: 55, y: 70, label: "The Trouser", match: /pants|trouser|jeans/i },
@@ -20,11 +23,12 @@ const CHAPTERS: ThemedChapter[] = [
   },
   {
     n: 64,
+    src: versaceCh2,
     eyebrow: "Chapter II — Engineered Theatre",
     title: "Footwear that announces itself.",
     body:
       "Versace shoes are designed to enter a room first. Greca low-tops, satin flat sandals, leather pumps with the gold heel-cap. We hold them in stock across the most-asked sizes, ready to ship from the European warehouse within forty-eight hours.",
-    alt: "Versace sneakers and satin sandals styled on marble",
+    alt: "Black patent leather sneakers with gold Greca trim and gold satin sandals on marble",
     flip: true,
     spots: [
       { x: 45, y: 70, label: "The Shoe", match: /sneaker|sandal|pump/i },
@@ -33,11 +37,12 @@ const CHAPTERS: ThemedChapter[] = [
   },
   {
     n: 67,
+    src: versaceCh3,
     eyebrow: "Chapter III — The Bag, Sculpted",
     title: "Carried, not displayed.",
     body:
       "A canvas-leather crossbody in Versace black, a jacquard tote in caramel — bags shaped with intent. The Versace presentation closes on the everyday pieces, the ones a Palace of Roman customer reaches for on a Tuesday, not only at the gala.",
-    alt: "Versace crossbody and jacquard tote bag flatlay",
+    alt: "Black quilted leather crossbody with gold Medusa clasp beside a baroque jacquard tote",
     spots: [
       { x: 50, y: 55, label: "The Bag", match: /bag|tote|crossbody/i },
       { x: 35, y: 30, label: "Up Top", match: /top|polo|shirt/i },
