@@ -19,8 +19,10 @@ export type ThemedChapterSpot = {
 };
 
 export type ThemedChapter = {
-  /** Editorial library image number (1–99). */
+  /** Editorial library image number (1–99). Used when `src` is not provided. */
   n: number;
+  /** Optional explicit image URL — overrides `n`. */
+  src?: string;
   /** Chapter eyebrow, e.g. "Chapter I". */
   eyebrow: string;
   /** Chapter headline (serif). */
