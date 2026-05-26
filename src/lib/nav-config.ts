@@ -129,7 +129,7 @@ const CROSS_CATEGORIES: CrossEntry[] = [
   // `accessories` is the global (unisex) collection — gender dropdowns use
   // the prefixed `women-accessories` / `mens-accessories` as "All Accessories"
   // (handled by WOMEN_RULES / MEN_RULES). Do not duplicate here.
-  { handle: "watches",        label: "Watches",        women: { column: "Fine Accessories", order: 1 },  men: { column: "Accessories", order: 2 } },
+  // Watches hidden from nav until inventory exists (0 products as of May 2026).
   { handle: "hats",           label: "Hats",           women: { column: "Fine Accessories", order: 3 },  men: { column: "Accessories", order: 3 } },
   { handle: "gloves",         label: "Gloves",         women: { column: "Fine Accessories", order: 4 },  men: { column: "Accessories", order: 4 } },
   { handle: "other-accessories", label: "Other Accessories", women: { column: "Fine Accessories", order: 8 }, men: { column: "Accessories", order: 8 } },
