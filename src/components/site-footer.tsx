@@ -77,6 +77,8 @@ export function SiteFooter() {
             <span>Shop Pay</span>
           </div>
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+            <span>Free Express Shipping over $250</span>
+            <span className="opacity-30">·</span>
             <span>14-Day Returns</span>
             <span className="opacity-30">·</span>
             <span>Ships Worldwide</span>

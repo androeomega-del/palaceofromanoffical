@@ -109,7 +109,7 @@ export const Route = createFileRoute("/product/$handle")({
                 "@type": "OfferShippingDetails",
                 shippingRate: {
                   "@type": "MonetaryAmount",
-                  value: Number(price?.amount ?? 0) >= 1200 ? "0" : "45",
+                  value: Number(price?.amount ?? 0) >= 250 ? "0" : "45",
                   currency: price?.currencyCode ?? "USD",
                 },
                 shippingDestination: {
