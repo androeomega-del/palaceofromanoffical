@@ -64,7 +64,20 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
   const [quickAddState, setQuickAddState] = useState<"idle" | "sizing" | "success">("idle");
   const [successLabel, setSuccessLabel] = useState<string | null>(null);
   const successTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [revealed, setRevealed] = useState(false);
+  const isTouchRef = useRef(false);
   useEffect(() => () => { if (successTimer.current) clearTimeout(successTimer.current); }, []);
+
+  // Mobile: dismiss the revealed CTA overlay when tapping outside the card.
+  useEffect(() => {
+    if (!revealed) return;
+    const onDown = (e: PointerEvent) => {
+      const el = cardRef.current;
+      if (el && !el.contains(e.target as Node)) setRevealed(false);
+    };
+    document.addEventListener("pointerdown", onDown);
+    return () => document.removeEventListener("pointerdown", onDown);
+  }, [revealed]);
 
   const meta = { vendor: p.vendor, productType: p.productType };
 
