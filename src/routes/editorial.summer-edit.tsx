@@ -55,7 +55,7 @@ export const Route = createFileRoute("/editorial/summer-edit")({
     const desc =
       "Men's swim shorts, linen shirts and leather slides — the summer edit, in stock and ready to ship. Bottega Veneta, Canali, Givenchy and the maisons we carry.";
     const path = "/editorial/summer-edit";
-    const image = img(HERO_N);
+    const image = summerHero;
     const rh = routeHead({ path, title, description: desc, image, type: "article" });
     return {
       meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
@@ -84,6 +84,7 @@ export const Route = createFileRoute("/editorial/summer-edit")({
       subtitle="Men's — In Stock, Ready to Ship"
       intro="One short, one shirt, one pair of slides, and the sea. The men's summer edit, edited down to what matters."
       heroN={HERO_N}
+      heroSrc={summerHero}
       heroAlt="Men's resort summer edit on the Tyrrhenian coast"
       manifesto="A man's summer wardrobe, cut down to its essentials."
       chapters={CHAPTERS}
