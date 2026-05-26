@@ -19,8 +19,10 @@ export type ThemedChapterSpot = {
 };
 
 export type ThemedChapter = {
-  /** Editorial library image number (1–99). */
+  /** Editorial library image number (1–99). Used when `src` is not provided. */
   n: number;
+  /** Optional explicit image URL — overrides `n`. */
+  src?: string;
   /** Chapter eyebrow, e.g. "Chapter I". */
   eyebrow: string;
   /** Chapter headline (serif). */
@@ -177,6 +179,7 @@ export function ThemedEdit({
       <div className="space-y-20 md:space-y-32 pb-20 md:pb-28">
         {chapters.map((c, i) => {
           const spots = chapterHotspots[i] ?? [];
+          const chapterSrc = c.src ?? img(c.n);
           return (
             <section
               key={`${c.n}-${i}`}
@@ -186,7 +189,7 @@ export function ThemedEdit({
                 <div className={`relative ${c.flip ? "md:order-2" : ""}`}>
                   {spots.length > 0 ? (
                     <EditorialHotspots
-                      src={img(c.n)}
+                      src={chapterSrc}
                       alt={c.alt}
                       aspect="4/5"
                       hotspots={spots}
@@ -194,7 +197,7 @@ export function ThemedEdit({
                   ) : (
                     <div className="aspect-[4/5] overflow-hidden bg-canvas-raised">
                       <img
-                        src={img(c.n)}
+                        src={chapterSrc}
                         alt={c.alt}
                         loading="lazy"
                         decoding="async"
