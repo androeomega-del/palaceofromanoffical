@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ThemedEdit, type ThemedChapter } from "@/components/themed-edit";
 import { img } from "@/lib/editorial-library";
 import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
+import versaceNowHero from "@/assets/editorial/library/versace-now-hero.jpg";
 
 const HERO_N = 60;
 const CHAPTERS: ThemedChapter[] = [
@@ -50,7 +51,7 @@ export const Route = createFileRoute("/editorial/versace-now")({
     const desc =
       "The full Versace presentation at Palace of Roman — Baroque print, gold Medusa hardware, engineered footwear and sculpted bags. In stock, authentic, shipped worldwide.";
     const path = "/editorial/versace-now";
-    const image = img(HERO_N);
+    const image = versaceNowHero;
     const rh = routeHead({ path, title, description: desc, image, type: "article" });
     return {
       meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
@@ -79,7 +80,9 @@ export const Route = createFileRoute("/editorial/versace-now")({
       subtitle="In Stock — Ready to Ship"
       intro="The full Versace presentation at Palace of Roman — Baroque print, gold hardware, engineered theatre. In stock, authentic, shipped from Europe."
       heroN={HERO_N}
-      heroAlt="Versace — gold hardware and Baroque print editorial"
+      heroSrc={versaceNowHero}
+      heroPosition="center 35%"
+      heroAlt="Palazzo interior — baroque silk shirt and tailored black trousers under a golden spotlight"
       manifesto="Versace does not whisper. It does not need to."
       chapters={CHAPTERS}
       productQuery="vendor:Versace"

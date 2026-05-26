@@ -44,8 +44,12 @@ export type ThemedEditProps = {
   subtitle: string;
   /** Intro paragraph (italic). */
   intro: string;
-  /** Hero editorial image number. */
+  /** Hero editorial image number (used when heroSrc is not provided). */
   heroN: number;
+  /** Optional explicit hero image URL — overrides heroN. */
+  heroSrc?: string;
+  /** CSS object-position for the hero image (default "center"). */
+  heroPosition?: string;
   heroAlt: string;
   /** A pull-quote / manifesto line. */
   manifesto: string;
@@ -68,6 +72,8 @@ export function ThemedEdit({
   subtitle,
   intro,
   heroN,
+  heroSrc,
+  heroPosition = "center",
   heroAlt,
   manifesto,
   chapters,
@@ -116,11 +122,12 @@ export function ThemedEdit({
       {/* HERO */}
       <section className="relative h-[88vh] min-h-[600px] overflow-hidden bg-ink">
         <img
-          src={img(heroN)}
+          src={heroSrc ?? img(heroN)}
           alt={heroAlt}
           loading="eager"
           fetchPriority="high"
           decoding="async"
+          style={{ objectPosition: heroPosition }}
           className="absolute inset-0 w-full h-full object-cover opacity-95"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/15 to-ink/30 pointer-events-none" />
