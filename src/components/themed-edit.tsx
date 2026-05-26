@@ -72,6 +72,8 @@ export function ThemedEdit({
   subtitle,
   intro,
   heroN,
+  heroSrc,
+  heroPosition = "center",
   heroAlt,
   manifesto,
   chapters,
