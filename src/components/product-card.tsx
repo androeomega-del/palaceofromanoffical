@@ -347,7 +347,7 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
             reflows the card. Three states: idle | sizing | success. */}
         <div
           className={`absolute inset-x-3 bottom-3 h-11 ${
-            sizeOnlyOption || quickAddState !== "idle" || revealed
+            quickAddState !== "idle" || revealed
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto group-focus-within:opacity-100 group-focus-within:translate-y-0 group-focus-within:pointer-events-auto"
           } transition-all duration-300`}
