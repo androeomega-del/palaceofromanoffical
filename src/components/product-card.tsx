@@ -305,17 +305,14 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
           )
         )}
 
-        {onSale && !soldOut && (
-          <span className="absolute top-3 left-3 text-[10px] uppercase tracking-[0.25em] bg-bronze text-canvas px-2 py-1">
-            Sale
-          </span>
-        )}
-        {soldOut && (
+        {/* Badge priority: Sold Out → Scarcity (incl. lastMarkdown which already
+            blends sale + low-stock) → Luxury markdown label. Generic "Sale" is
+            retired in favour of curatorial copy tiered by discount depth. */}
+        {soldOut ? (
           <span className="absolute top-3 left-3 text-[10px] uppercase tracking-[0.25em] bg-ink/80 text-canvas px-2 py-1">
             Sold Out
           </span>
-        )}
-        {showScarcityBadge && !onSale && (
+        ) : showScarcityBadge ? (
           <span
             className="absolute top-3 left-3 text-[10px] uppercase tracking-[0.25em] bg-ink text-canvas px-2 py-1 font-medium"
             title={scarcity.rationale}
@@ -323,7 +320,28 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
             <span className="text-bronze mr-1 animate-pulse">●</span>
             {scarcity.label}
           </span>
-        )}
+        ) : onSale ? (
+          (() => {
+            const pct = Math.round(
+              (1 - parseFloat(price.amount) / parseFloat(compareAt!.amount)) * 100,
+            );
+            const label =
+              pct >= 40 ? "Final Reductions"
+              : pct >= 20 ? `House Markdown · −${pct}%`
+              : "Revised Price";
+            const tone =
+              pct >= 40 ? "bg-ink text-canvas"
+              : "bg-bronze text-canvas";
+            return (
+              <span
+                className={`absolute top-3 left-3 text-[10px] uppercase tracking-[0.25em] ${tone} px-2 py-1 font-medium`}
+                title={`Reduced from ${formatPrice(compareAt!)} — ${pct}% off retail`}
+              >
+                {label}
+              </span>
+            );
+          })()
+        ) : null}
 
         {/* Wishlist heart — top right, always visible */}
         <button
