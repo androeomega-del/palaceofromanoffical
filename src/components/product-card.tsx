@@ -64,7 +64,20 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
   const [quickAddState, setQuickAddState] = useState<"idle" | "sizing" | "success">("idle");
   const [successLabel, setSuccessLabel] = useState<string | null>(null);
   const successTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [revealed, setRevealed] = useState(false);
+  const isTouchRef = useRef(false);
   useEffect(() => () => { if (successTimer.current) clearTimeout(successTimer.current); }, []);
+
+  // Mobile: dismiss the revealed CTA overlay when tapping outside the card.
+  useEffect(() => {
+    if (!revealed) return;
+    const onDown = (e: PointerEvent) => {
+      const el = cardRef.current;
+      if (el && !el.contains(e.target as Node)) setRevealed(false);
+    };
+    document.addEventListener("pointerdown", onDown);
+    return () => document.removeEventListener("pointerdown", onDown);
+  }, [revealed]);
 
   const meta = { vendor: p.vendor, productType: p.productType };
 
@@ -107,11 +120,21 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
     };
   }, [p.handle, p.vendor, p.productType, track, hasScarcity]);
 
-  const onCardClick = () => {
+  const onCardClick = (e: React.MouseEvent) => {
+    // Mobile/touch: first tap reveals the CTA overlay; second tap navigates.
+    if (isTouchRef.current && !revealed && quickAddState === "idle") {
+      e.preventDefault();
+      setRevealed(true);
+      return;
+    }
     track({ handle: p.handle, event: "click", ...meta });
     if (hasScarcity) {
       track({ handle: p.handle, event: "scarcity_click", ...meta });
     }
+  };
+
+  const onCardPointerDown = (e: React.PointerEvent) => {
+    isTouchRef.current = e.pointerType === "touch" || e.pointerType === "pen";
   };
 
   const onCardEnter = () => {
@@ -247,6 +270,7 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
       params={{ handle: p.handle }}
       className="group block"
       onClick={onCardClick}
+      onPointerDown={onCardPointerDown}
       onMouseEnter={onCardEnter}
       onMouseLeave={onCardLeave}
     >
@@ -323,10 +347,10 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
             reflows the card. Three states: idle | sizing | success. */}
         <div
           className={`absolute inset-x-3 bottom-3 h-11 ${
-            sizeOnlyOption || quickAddState !== "idle"
-              ? "opacity-100"
-              : "opacity-100 lg:opacity-0 lg:translate-y-2 lg:group-hover:opacity-100 lg:group-hover:translate-y-0"
-          } transition-all duration-500`}
+            sizeOnlyOption || quickAddState !== "idle" || revealed
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto group-focus-within:opacity-100 group-focus-within:translate-y-0 group-focus-within:pointer-events-auto"
+          } transition-all duration-300`}
           onClick={(e) => {
             // Stop clicks inside the CTA row from triggering the card link.
             if (quickAddState !== "idle") {
