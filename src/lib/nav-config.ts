@@ -117,7 +117,7 @@ const CROSS_CATEGORIES: CrossEntry[] = [
   { handle: "sleepwear",      label: "Sleepwear",      women: { column: "Apparel", order: 8 },           men: { column: "Bottoms & Beach", order: 5 } },
   { handle: "boots",          label: "Boots",          women: { column: "Shoes", order: 2 },             men: { column: "Shoes", order: 2 } },
   { handle: "loafers",        label: "Loafers",        women: { column: "Shoes", order: 3 },             men: { column: "Shoes", order: 4 } },
-  { handle: "oxfords-and-derbies", label: "Oxfords & Derbies", women: { column: "Shoes", order: 4 },     men: { column: "Shoes", order: 5 } },
+  // Oxfords & Derbies hidden from nav: only 3 products (below ≥5 threshold).
   // Bag sub-types — surface in the Bags column for both genders so every
   // category collection we built is reachable from the menu.
   { handle: "handbags",       label: "Handbags",       women: { column: "Bags & Leather", order: 3 },    men: { column: "Accessories", order: 0 } },
