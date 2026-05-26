@@ -86,9 +86,9 @@ export const Route = createFileRoute("/editorial/summer-edit")({
       shopTitle="Shop the Summer Edit"
       shopEyebrow="Men's — Shorts, Shirts, Slides & Belts"
       outroCtas={[
-        { label: "Swimwear", handle: "swimwear" },
-        { label: "Shorts", handle: "shorts" },
-        { label: "Sandals", handle: "sandals" },
+        { label: "Swimwear", handle: "swimwear-men" },
+        { label: "Bermuda Shorts", handle: "bermuda-shorts" },
+        { label: "Sandals & Slides", handle: "sandals-slides" },
         { label: "Belts", handle: "belts" },
       ]}
     />
