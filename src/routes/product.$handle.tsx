@@ -580,11 +580,13 @@ function ProductView({
                 Import duties included · Express global delivery
               </p>
               <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] uppercase tracking-[0.2em] text-[var(--studio-bronze)] font-semibold pt-1">
-                <span>14-Day Returns</span>
-                <span className="opacity-30">·</span>
-                <span>Express Worldwide</span>
-                <span className="opacity-30">·</span>
                 <span>100% Authentic</span>
+                <span className="opacity-30">·</span>
+                <span>Official BrandsGateway Partner</span>
+                <span className="opacity-30">·</span>
+                <span>Ships from Europe</span>
+                <span className="opacity-30">·</span>
+                <span>14-Day Returns</span>
               </p>
             </header>
 
