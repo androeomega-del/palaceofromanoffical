@@ -92,11 +92,18 @@ export function ThemedEdit({
   outroCtas,
   extra,
 }: ThemedEditProps) {
-  const productsQ = useQuery({
-    queryKey: ["themed-edit", productQuery],
-    queryFn: () => fetchProducts({ first: 24, query: productQuery }),
+  const PAGE_SIZE = 12;
+  const productsQ = useInfiniteQuery({
+    queryKey: ["themed-edit-infinite", productQuery],
+    queryFn: ({ pageParam }) =>
+      fetchProductsPage({ first: PAGE_SIZE, after: pageParam, query: productQuery }),
+    initialPageParam: null as string | null,
+    getNextPageParam: (last) => (last.pageInfo.hasNextPage ? last.pageInfo.endCursor : undefined),
   });
-  const products = productsQ.data ?? [];
+  const products = useMemo(
+    () => (productsQ.data?.pages ?? []).flatMap((p) => p.edges),
+    [productsQ.data],
+  );
 
   // Resolve per-chapter hotspots against the fetched product pool.
   // Each spot picks the best-matching unused product (by regex on title),
