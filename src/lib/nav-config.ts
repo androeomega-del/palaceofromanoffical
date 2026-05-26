@@ -55,7 +55,7 @@ const WOMEN_RULES: ClassifierRule[] = [
   { column: "Bags & Leather",   order: 1,  match: (s) => s === "wallets",         label: "Wallets" },
   { column: "Bags & Leather",   order: 2,  match: (s) => s === "belts",           label: "Belts" },
   { column: "Fine Accessories", order: 0,  match: (s) => s === "jewelry",         label: "Jewellery" },
-  { column: "Fine Accessories", order: 1,  match: (s) => s === "watches",         label: "Watches" },
+  // Watches hidden from nav until inventory exists (0 products as of May 2026).
   { column: "Fine Accessories", order: 2,  match: (s) => s === "scarves",         label: "Scarves & Shawls" },
   { column: "Fine Accessories", order: 3,  match: (s) => s === "hats",            label: "Hats" },
   { column: "Fine Accessories", order: 9,  match: (s) => s === "accessories" || s.startsWith("accessories"), label: "All Accessories" },
@@ -117,7 +117,7 @@ const CROSS_CATEGORIES: CrossEntry[] = [
   { handle: "sleepwear",      label: "Sleepwear",      women: { column: "Apparel", order: 8 },           men: { column: "Bottoms & Beach", order: 5 } },
   { handle: "boots",          label: "Boots",          women: { column: "Shoes", order: 2 },             men: { column: "Shoes", order: 2 } },
   { handle: "loafers",        label: "Loafers",        women: { column: "Shoes", order: 3 },             men: { column: "Shoes", order: 4 } },
-  { handle: "oxfords-and-derbies", label: "Oxfords & Derbies", women: { column: "Shoes", order: 4 },     men: { column: "Shoes", order: 5 } },
+  // Oxfords & Derbies hidden from nav: only 3 products (below ≥5 threshold).
   // Bag sub-types — surface in the Bags column for both genders so every
   // category collection we built is reachable from the menu.
   { handle: "handbags",       label: "Handbags",       women: { column: "Bags & Leather", order: 3 },    men: { column: "Accessories", order: 0 } },
@@ -129,7 +129,7 @@ const CROSS_CATEGORIES: CrossEntry[] = [
   // `accessories` is the global (unisex) collection — gender dropdowns use
   // the prefixed `women-accessories` / `mens-accessories` as "All Accessories"
   // (handled by WOMEN_RULES / MEN_RULES). Do not duplicate here.
-  { handle: "watches",        label: "Watches",        women: { column: "Fine Accessories", order: 1 },  men: { column: "Accessories", order: 2 } },
+  // Watches hidden from nav until inventory exists (0 products as of May 2026).
   { handle: "hats",           label: "Hats",           women: { column: "Fine Accessories", order: 3 },  men: { column: "Accessories", order: 3 } },
   { handle: "gloves",         label: "Gloves",         women: { column: "Fine Accessories", order: 4 },  men: { column: "Accessories", order: 4 } },
   { handle: "other-accessories", label: "Other Accessories", women: { column: "Fine Accessories", order: 8 }, men: { column: "Accessories", order: 8 } },
