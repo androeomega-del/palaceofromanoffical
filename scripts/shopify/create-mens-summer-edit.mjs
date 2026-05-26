@@ -75,7 +75,7 @@ async function fetchPool() {
   for (let page = 0; page < 8; page++) {
     const data = await gql(
       `query($q:String!,$c:String){
-         products(first:100, query:$q, after:$c, sortKey:BEST_SELLING){
+         products(first:100, query:$q, after:$c, sortKey:UPDATED_AT, reverse:true){
            pageInfo{ hasNextPage endCursor }
            edges{ node{
              id legacyResourceId title vendor productType totalInventory tags
