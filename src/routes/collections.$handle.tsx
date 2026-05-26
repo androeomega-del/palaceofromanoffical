@@ -152,6 +152,12 @@ function CollectionPage() {
   const { handle } = Route.useParams();
   const { sort } = Route.useSearch();
   const navigate = useNavigate({ from: "/collections/$handle" });
+  // Surfaces whose own theme makes a card-level badge redundant. Sale-themed
+  // pages: every card is on sale, so "House Markdown / Final Reductions"
+  // labels would visually clutter the grid without adding information.
+  const suppressedBadges = /^(sale|final-reductions|markdown|clearance|last-call)$/i.test(handle)
+    ? (["markdown"] as const)
+    : ([] as const);
   const setSort = (v: SortValue) =>
     navigate({ search: (prev: { sort: SortValue }) => ({ ...prev, sort: v }), replace: true });
 
