@@ -83,6 +83,34 @@ export function ThemedEdit({
   });
   const products = productsQ.data ?? [];
 
+  // Resolve per-chapter hotspots against the fetched product pool.
+  // Each spot picks the best-matching unused product (by regex on title),
+  // falling back to any unused product so chapters always get tagged.
+  const chapterHotspots = useMemo<Array<Hotspot[]>>(() => {
+    const pool = products.map((p) => p.node);
+    const used = new Set<string>();
+    return chapters.map((c) => {
+      if (!c.spots?.length) return [];
+      const out: Hotspot[] = [];
+      for (const s of c.spots) {
+        let pick = s.match
+          ? pool.find((p) => !used.has(p.handle) && s.match!.test(p.title))
+          : undefined;
+        if (!pick) pick = pool.find((p) => !used.has(p.handle));
+        if (!pick) break;
+        used.add(pick.handle);
+        out.push({
+          x: s.x,
+          y: s.y,
+          handle: pick.handle,
+          label: s.label,
+          sublabel: pick.vendor,
+        });
+      }
+      return out;
+    });
+  }, [chapters, products]);
+
   return (
     <main className="bg-canvas text-ink">
       {/* HERO */}
@@ -140,38 +168,56 @@ export function ThemedEdit({
 
       {/* CHAPTERS */}
       <div className="space-y-20 md:space-y-32 pb-20 md:pb-28">
-        {chapters.map((c, i) => (
-          <section
-            key={`${c.n}-${i}`}
-            className="px-6 md:px-10 bg-canvas"
-          >
-            <div className="max-w-screen-2xl mx-auto grid md:grid-cols-2 gap-10 md:gap-20 items-center">
-              <div className={`relative ${c.flip ? "md:order-2" : ""}`}>
-                <div className="aspect-[4/5] overflow-hidden bg-canvas-raised">
-                  <img
-                    src={img(c.n)}
-                    alt={c.alt}
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full h-full object-cover"
-                  />
+        {chapters.map((c, i) => {
+          const spots = chapterHotspots[i] ?? [];
+          return (
+            <section
+              key={`${c.n}-${i}`}
+              className="px-6 md:px-10 bg-canvas"
+            >
+              <div className="max-w-screen-2xl mx-auto grid md:grid-cols-2 gap-10 md:gap-20 items-center">
+                <div className={`relative ${c.flip ? "md:order-2" : ""}`}>
+                  {spots.length > 0 ? (
+                    <EditorialHotspots
+                      src={img(c.n)}
+                      alt={c.alt}
+                      aspect="4/5"
+                      hotspots={spots}
+                    />
+                  ) : (
+                    <div className="aspect-[4/5] overflow-hidden bg-canvas-raised">
+                      <img
+                        src={img(c.n)}
+                        alt={c.alt}
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                </div>
+                <div className={c.flip ? "md:order-1" : ""}>
+                  <span className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-4 block">
+                    {c.eyebrow}
+                  </span>
+                  <h2 className="font-serif text-3xl md:text-5xl leading-[1.05] mb-6 text-balance">
+                    {c.title}
+                  </h2>
+                  <p className="text-sm md:text-base text-ink/80 leading-relaxed">
+                    {c.body}
+                  </p>
+                  {spots.length > 0 && (
+                    <p className="mt-6 text-[10px] uppercase tracking-[0.3em] text-bronze">
+                      Tap the marks to shop the look
+                    </p>
+                  )}
                 </div>
               </div>
-              <div className={c.flip ? "md:order-1" : ""}>
-                <span className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-4 block">
-                  {c.eyebrow}
-                </span>
-                <h2 className="font-serif text-3xl md:text-5xl leading-[1.05] mb-6 text-balance">
-                  {c.title}
-                </h2>
-                <p className="text-sm md:text-base text-ink/80 leading-relaxed">
-                  {c.body}
-                </p>
-              </div>
-            </div>
-          </section>
-        ))}
+            </section>
+          );
+        })}
       </div>
+
 
       {/* SHOP THE EDIT */}
       <section
