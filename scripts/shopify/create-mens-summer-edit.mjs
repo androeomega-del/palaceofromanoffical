@@ -10,10 +10,7 @@ const API = '2025-07';
 const TOKEN = process.env.SHOPIFY_ACCESS_TOKEN;
 const DRY = process.argv.includes('--dry');
 
-if (!TOKEN) {
-  console.error('Missing SHOPIFY_ACCESS_TOKEN');
-  process.exit(1);
-}
+if (!TOKEN) { console.error('Missing SHOPIFY_ACCESS_TOKEN'); process.exit(1); }
 
 const HANDLE = 'mens-summer-shorts-resort';
 const TITLE = "Men's Summer Edit — Shorts & Resort";
@@ -23,21 +20,20 @@ const BODY =
   'get cut, weight and colour right when the temperature climbs. Every piece ' +
   'is in stock, ready to ship from our European partner network.</p>';
 
-// Tag combos we treat as "resort-ready" for men.
-const MEN_TAGS_OR = [
-  'Swim Shorts - Swimwear - Clothing',
-  'Swimwear - Clothing',
-  'Shorts - Clothing',
-  'Bermuda - Shorts - Clothing',
-  'Bermuda Shorts - Shorts - Clothing',
-  'Linen Shirts - Shirts - Clothing',
-  'Short Sleeve - Shirts - Clothing',
-  'Sandals - Shoes',
-  'Slides - Shoes',
-];
-
 const TARGET_TOTAL = 36;
 const PER_VENDOR_CAP = 3;
+
+// Tag substrings (lowercased) that mark a product as resort-ready.
+const RESORT_TAG_MATCHERS = [
+  'swim shorts',
+  'swimwear - clothing',
+  'shorts - clothing',
+  'bermuda',
+  'linen shirts',
+  'short sleeve - shirts',
+  'sandals - shoes',
+  'slides - shoes',
+];
 
 async function rest(path, init = {}) {
   const r = await fetch(`https://${SHOP}/admin/api/${API}${path}`, {
@@ -52,7 +48,7 @@ async function rest(path, init = {}) {
   let data;
   try { data = text ? JSON.parse(text) : null; } catch { data = text; }
   if (!r.ok) throw new Error(`${r.status} ${r.statusText} :: ${text.slice(0, 400)}`);
-  return data;
+  return { data, link: r.headers.get('link') };
 }
 
 async function gql(query, variables) {
@@ -66,48 +62,56 @@ async function gql(query, variables) {
   return j.data;
 }
 
-// Pull men's resort-ready products via Admin GraphQL search.
-async function fetchPool() {
-  const tagQuery = MEN_TAGS_OR.map((t) => `tag:"${t}"`).join(' OR ');
-  const query = `tag:Men AND (${tagQuery}) AND status:active AND inventory_total:>0`;
+async function findCollectionIdByHandle(handle) {
+  const r = await rest(`/custom_collections.json?handle=${handle}`);
+  if (r.data.custom_collections?.length) return r.data.custom_collections[0].id;
+  const s = await rest(`/smart_collections.json?handle=${handle}`);
+  if (s.data.smart_collections?.length) return s.data.smart_collections[0].id;
+  return null;
+}
+
+async function fetchCollectionProducts(collectionId) {
+  let path = `/collections/${collectionId}/products.json?limit=250`;
   const out = [];
-  let cursor = null;
-  for (let page = 0; page < 8; page++) {
-    const data = await gql(
-      `query($q:String!,$c:String){
-         products(first:100, query:$q, after:$c, sortKey:UPDATED_AT, reverse:true){
-           pageInfo{ hasNextPage endCursor }
-           edges{ node{
-             id legacyResourceId title vendor productType totalInventory tags
-             featuredImage{ url }
-           } }
-         }
-       }`,
-      { q: query, c: cursor },
-    );
-    for (const e of data.products.edges) out.push(e.node);
-    if (!data.products.pageInfo.hasNextPage) break;
-    cursor = data.products.pageInfo.endCursor;
+  while (path) {
+    const { data, link } = await rest(path);
+    out.push(...(data.products || []));
+    const next = link?.split(',').find((s) => s.includes('rel="next"'));
+    if (next) {
+      const u = new URL(next.match(/<([^>]+)>/)[1]);
+      path = u.pathname.replace(`/admin/api/${API}`, '') + u.search;
+    } else {
+      path = null;
+    }
   }
   return out;
 }
 
 function scoreProduct(p) {
-  const t = (p.tags || []).map((x) => x.toLowerCase());
+  const t = (p.tags || '').toLowerCase().split(',').map((x) => x.trim());
   let s = 0;
-  if (t.some((x) => x.includes('swim shorts'))) s += 5;
+  if (t.some((x) => x.includes('swim shorts'))) s += 6;
   if (t.some((x) => x.includes('bermuda'))) s += 4;
-  if (t.some((x) => x.includes('linen'))) s += 4;
+  if (t.some((x) => x.includes('linen shirts'))) s += 4;
   if (t.some((x) => x === 'shorts - clothing')) s += 3;
+  if (t.some((x) => x.includes('short sleeve - shirts'))) s += 2;
   if (t.some((x) => x.includes('sandals') || x.includes('slides'))) s += 2;
-  if (p.featuredImage?.url) s += 2;
-  if ((p.totalInventory ?? 0) >= 3) s += 1;
+  if (p.image?.src || p.images?.[0]?.src) s += 2;
   return s;
 }
 
+function inStock(p) {
+  return (p.variants || []).some((v) => (v.inventory_quantity ?? 0) > 0);
+}
+
+function isResort(p) {
+  const tags = (p.tags || '').toLowerCase();
+  return RESORT_TAG_MATCHERS.some((m) => tags.includes(m));
+}
+
 function curate(pool) {
-  // Sort by score desc, then keep vendor diversity.
-  const sorted = [...pool].sort((a, b) => scoreProduct(b) - scoreProduct(a));
+  const eligible = pool.filter((p) => p.status === 'active' && inStock(p) && isResort(p) && (p.image?.src || p.images?.[0]?.src));
+  const sorted = eligible.sort((a, b) => scoreProduct(b) - scoreProduct(a));
   const byVendor = new Map();
   const chosen = [];
   for (const p of sorted) {
@@ -115,7 +119,6 @@ function curate(pool) {
     const v = p.vendor || 'Unknown';
     const used = byVendor.get(v) || 0;
     if (used >= PER_VENDOR_CAP) continue;
-    if (!p.featuredImage?.url) continue; // ATC needs a hero image
     chosen.push(p);
     byVendor.set(v, used + 1);
   }
@@ -123,63 +126,61 @@ function curate(pool) {
 }
 
 async function ensureCollection() {
-  const existing = await rest(`/custom_collections.json?handle=${HANDLE}`);
-  if (existing.custom_collections?.length) {
-    const id = existing.custom_collections[0].id;
-    await rest(`/custom_collections/${id}.json`, {
+  const existingId = await findCollectionIdByHandle(HANDLE);
+  if (existingId) {
+    await rest(`/custom_collections/${existingId}.json`, {
       method: 'PUT',
       body: JSON.stringify({
         custom_collection: {
-          id,
+          id: existingId,
           title: TITLE,
           body_html: BODY,
-          sort_order: 'best-selling',
+          sort_order: 'manual',
           published: true,
         },
       }),
     });
-    return { id, created: false };
+    return { id: existingId, created: false };
   }
-  const created = await rest('/custom_collections.json', {
+  const { data } = await rest('/custom_collections.json', {
     method: 'POST',
     body: JSON.stringify({
       custom_collection: {
         handle: HANDLE,
         title: TITLE,
         body_html: BODY,
-        sort_order: 'best-selling',
+        sort_order: 'manual',
         published: true,
       },
     }),
   });
-  return { id: created.custom_collection.id, created: true };
+  return { id: data.custom_collection.id, created: true };
 }
 
 async function syncCollects(collectionId, productIds) {
-  // Fetch current collects
-  const existing = [];
-  let pageInfo = `/collects.json?collection_id=${collectionId}&limit=250`;
-  while (pageInfo) {
-    const r = await rest(pageInfo);
-    existing.push(...(r.collects || []));
-    pageInfo = null; // single page is enough at this scale
-  }
+  const { data } = await rest(`/collects.json?collection_id=${collectionId}&limit=250`);
+  const existing = data.collects || [];
   const existingMap = new Map(existing.map((c) => [String(c.product_id), c.id]));
   const targetSet = new Set(productIds.map(String));
-
-  // Remove ones not in target
   for (const [pid, cid] of existingMap) {
     if (!targetSet.has(pid)) {
       await rest(`/collects/${cid}.json`, { method: 'DELETE' });
     }
   }
-  // Add new ones in target order (Shopify keeps insertion order for manual sort)
+  let position = 1;
   for (const pid of productIds) {
-    if (existingMap.has(String(pid))) continue;
-    await rest('/collects.json', {
-      method: 'POST',
-      body: JSON.stringify({ collect: { collection_id: collectionId, product_id: Number(pid) } }),
-    });
+    if (!existingMap.has(String(pid))) {
+      await rest('/collects.json', {
+        method: 'POST',
+        body: JSON.stringify({ collect: { collection_id: collectionId, product_id: Number(pid), position } }),
+      });
+    } else {
+      await rest(`/collects/${existingMap.get(String(pid))}.json`, {
+        method: 'PUT',
+        body: JSON.stringify({ collect: { id: existingMap.get(String(pid)), position } }),
+      });
+    }
+    position += 1;
   }
 }
 
@@ -197,28 +198,35 @@ async function publishEverywhere(legacyId) {
 }
 
 (async () => {
-  console.log('Fetching candidate pool…');
-  const pool = await fetchPool();
-  console.log(`Pool size: ${pool.length}`);
-  const picks = curate(pool);
-  console.log(`Curated picks: ${picks.length}`);
-  console.log(picks.map((p) => ` - ${p.vendor} :: ${p.title}`).join('\n'));
+  const mensClothingId = await findCollectionIdByHandle('mens-clothing');
+  const mensShoesId = await findCollectionIdByHandle('mens-shoes');
+  if (!mensClothingId) throw new Error('mens-clothing collection not found');
+  console.log(`Reading from mens-clothing #${mensClothingId}${mensShoesId ? ` + mens-shoes #${mensShoesId}` : ''}`);
 
-  if (DRY) {
-    process.exit(0);
+  const pool = await fetchCollectionProducts(mensClothingId);
+  if (mensShoesId) {
+    const shoes = await fetchCollectionProducts(mensShoesId);
+    pool.push(...shoes);
   }
+  console.log(`Pool size: ${pool.length}`);
+
+  const picks = curate(pool);
+  console.log(`Curated picks (${picks.length}):`);
+  for (const p of picks) console.log(` - ${p.vendor} :: ${p.title} (score ${scoreProduct(p)})`);
+
+  if (DRY) process.exit(0);
 
   const { id, created } = await ensureCollection();
   console.log(`${created ? 'Created' : 'Updated'} collection #${id}`);
 
-  await syncCollects(id, picks.map((p) => p.legacyResourceId));
+  await syncCollects(id, picks.map((p) => p.id));
   console.log('Collects synced.');
 
   const pub = await publishEverywhere(id);
   if (pub.errors.length) console.warn('publish errors:', pub.errors);
   else console.log(`Published to ${pub.count} publication(s).`);
 
-  const cnt = await rest(`/collections/${id}/products/count.json`);
+  const { data: cnt } = await rest(`/collections/${id}/products/count.json`);
   console.log(`Final product count: ${cnt.count}`);
   console.log(`Handle: ${HANDLE}`);
 })().catch((e) => { console.error(e); process.exit(1); });
