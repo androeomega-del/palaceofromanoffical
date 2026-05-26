@@ -964,7 +964,7 @@ function NewsletterStrip() {
       <div className="max-w-2xl mx-auto px-6 text-center">
         <span className="text-[10px] uppercase tracking-[0.35em] text-bronze mb-6 block">The Dispatch</span>
         <h2 className="text-3xl md:text-4xl font-serif mb-5">Receive our quarterly edit.</h2>
-        <p className="text-sm text-canvas/60 mb-10 leading-relaxed">
+        <p className="text-sm text-canvas/85 mb-10 leading-relaxed">
           Editorial, new arrivals, and private previews — sent four times a year.
         </p>
         {submitted ? (
