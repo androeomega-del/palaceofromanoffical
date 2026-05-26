@@ -1,15 +1,17 @@
 import { Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { fetchProducts } from "@/lib/shopify";
+import { fetchProductsPage, formatPrice } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
 import { EditorialHotspots, type Hotspot } from "@/components/editorial-hotspots";
 import { img } from "@/lib/editorial-library";
+import { absoluteUrl, SITE_NAME } from "@/lib/seo";
 import {
   ShopTheEditEmpty,
   ShopTheEditError,
   ShopTheEditSkeleton,
 } from "@/components/shop-the-edit-state";
+import { Loader2 } from "lucide-react";
 import type { ReactNode } from "react";
 
 export type ThemedChapterSpot = {
