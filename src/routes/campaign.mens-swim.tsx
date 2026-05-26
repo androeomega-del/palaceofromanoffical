@@ -181,9 +181,11 @@ function MensSwimCampaign() {
   // shirt (upper-right), Bottega Veneta green cassette-print swim shorts
   // (lower-center). The magazine is a styling prop and is not tagged.
   const DECK_PIECES: Array<{ x: number; y: number; handle: string; label: string }> = [
-    { x: 28, y: 30, handle: "black-polyamide-swim-shorts", label: "Black Swim Shorts" },
-    { x: 72, y: 32, handle: "blue-cotton-shirt", label: "Blue Cotton Shirt" },
-    { x: 33, y: 74, handle: "green-polyamide-swim-shorts", label: "Cassette-Print Swim Shorts" },
+    { x: 28, y: 22, handle: "black-polyamide-swim-shorts", label: "Black Swim Shorts" },
+    { x: 72, y: 22, handle: "blue-cotton-shirt", label: "Blue Cotton Shirt" },
+    { x: 45, y: 46, handle: "gold-metal-sunglasses-9", label: "Wraparound Sunglasses" },
+    { x: 22, y: 70, handle: "green-polyamide-swim-shorts", label: "Cassette-Print Swim Shorts" },
+    { x: 68, y: 62, handle: "brown-calf-leather-bos-taurus-flat-sandals", label: "FF Monogram Slides" },
   ];
   const detail2Spots = useMemo<Hotspot[]>(() => {
     const pool = [...products, ...accessories];
