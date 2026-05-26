@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CraftsmanshipArticle } from "@/components/craftsmanship-article";
-import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
+import { routeHead, articleJsonLd, SITE_NAME } from "@/lib/seo";
 
 const PATH = "/journal/craftsmanship/caring-for-fine-leather";
 const TITLE = "Caring for Fine Leather — A Maison-Level Guide";
@@ -16,16 +16,21 @@ export const Route = createFileRoute("/journal/craftsmanship/caring-for-fine-lea
       scripts: [
         {
           type: "application/ld+json",
-          children: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Article",
-            headline: TITLE,
-            description: DESC,
-            datePublished: "2026-05-19T09:00:00Z",
-            author: { "@type": "Organization", name: SITE_NAME },
-            publisher: { "@type": "Organization", name: SITE_NAME, url: absoluteUrl("/") },
-            mainEntityOfPage: absoluteUrl(PATH),
-          }),
+          children: JSON.stringify(
+            articleJsonLd({
+              headline: TITLE,
+              description: DESC,
+              path: PATH,
+              datePublished: "2026-05-19T09:00:00Z",
+              dateModified: "2026-05-26T09:00:00Z",
+              articleSection: "Craftsmanship",
+              about: [
+                { path: "/collections/italian-leather-wallets", name: "Italian Leather Wallets" },
+                { path: "/collections/italian-leather-loafers", name: "Italian Leather Loafers" },
+                { path: "/collections/italian-leather-handbags", name: "Italian Leather Handbags" },
+              ],
+            }),
+          ),
         },
       ],
     };

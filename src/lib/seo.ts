@@ -80,3 +80,58 @@ export function routeHead(opts: {
     links: [{ rel: "canonical", href: url }],
   };
 }
+
+/**
+ * Build a polished schema.org Article JSON-LD object.
+ * Pass collection paths via `about` to signal the internal post → collection
+ * relationship to search engines (in addition to the in-body anchor links).
+ */
+export function articleJsonLd(opts: {
+  headline: string;
+  description: string;
+  path: string;
+  datePublished: string;
+  dateModified?: string;
+  articleSection?: string;
+  image?: string;
+  about?: { path: string; name: string }[];
+  mentions?: { path: string; name: string }[];
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: opts.headline,
+    description: opts.description,
+    datePublished: opts.datePublished,
+    dateModified: opts.dateModified ?? opts.datePublished,
+    ...(opts.articleSection ? { articleSection: opts.articleSection } : {}),
+    ...(opts.image ? { image: [absoluteUrl(opts.image)] } : {}),
+    inLanguage: "en",
+    author: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
+    publisher: {
+      "@type": "Organization",
+      name: SITE_NAME,
+      url: SITE_URL,
+      logo: { "@type": "ImageObject", url: absoluteUrl("/favicon.ico") },
+    },
+    mainEntityOfPage: { "@type": "WebPage", "@id": absoluteUrl(opts.path) },
+    ...(opts.about && opts.about.length
+      ? {
+          about: opts.about.map((a) => ({
+            "@type": "CollectionPage",
+            name: a.name,
+            url: absoluteUrl(a.path),
+          })),
+        }
+      : {}),
+    ...(opts.mentions && opts.mentions.length
+      ? {
+          mentions: opts.mentions.map((m) => ({
+            "@type": "Thing",
+            name: m.name,
+            url: absoluteUrl(m.path),
+          })),
+        }
+      : {}),
+  };
+}

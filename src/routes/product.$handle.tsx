@@ -31,6 +31,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { SizeFitGuide } from "@/components/product/size-fit-guide";
+import { PdpJournalLinks } from "@/components/pdp-journal-links";
 
 export const Route = createFileRoute("/product/$handle")({
   loader: async ({ params }) => {
@@ -828,6 +829,15 @@ function ProductView({
 
         {/* ===== AI Recommendations (server-assisted) ===== */}
         <AIRecommendations product={product} />
+
+        {/* ===== From the Journal — internal-link bridge to editorial ===== */}
+        <PdpJournalLinks
+          productType={product.productType}
+          title={product.title}
+          vendor={product.vendor}
+          tags={(product as { tags?: string[] }).tags ?? null}
+        />
+
 
         {/* ===== Style It With — cross-house cross-sell rail ===== */}
         {styleItWith.length > 0 && (
