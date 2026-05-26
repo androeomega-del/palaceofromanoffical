@@ -1150,10 +1150,9 @@ function SummerBento({
         </Link>
 
 
-        {/* Women Category Tile */}
+        {/* Edit 3 — Women's Edit */}
         <Link
-          to="/collections/$handle"
-          params={{ handle: WOMENS_CLOTHING_HANDLE }}
+          to="/editorial/womens-edit"
           className="col-span-12 md:col-span-6 lg:col-span-4 row-span-2 relative group overflow-hidden bg-canvas-raised"
         >
           {womenImage && (
@@ -1167,7 +1166,7 @@ function SummerBento({
           <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-ink/10 to-transparent" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
-              <h3 className="font-serif italic text-4xl md:text-5xl text-canvas">Women</h3>
+              <h3 className="font-serif italic text-4xl md:text-5xl text-canvas">Women's Edit</h3>
               <span className="mt-4 inline-block text-[10px] uppercase tracking-[0.3em] text-canvas border-b border-canvas/40 pb-1 group-hover:border-canvas">
                 Shop the Edit
               </span>
