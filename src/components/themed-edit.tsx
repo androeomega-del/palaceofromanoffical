@@ -278,11 +278,76 @@ export function ThemedEdit({
           ) : products.length === 0 ? (
             <ShopTheEditEmpty />
           ) : (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-14">
-              {products.map((p) => (
-                <ProductCard key={p.node.id} product={p} />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-14">
+                {products.map((p) => (
+                  <ProductCard key={p.node.id} product={p} />
+                ))}
+              </div>
+              {productsQ.hasNextPage && (
+                <div className="mt-14 flex justify-center">
+                  <button
+                    type="button"
+                    onClick={() => productsQ.fetchNextPage()}
+                    disabled={productsQ.isFetchingNextPage}
+                    className="inline-flex items-center gap-2 px-9 py-4 border border-ink text-[10px] uppercase tracking-[0.35em] font-medium hover:bg-ink hover:text-canvas transition-colors disabled:opacity-50"
+                  >
+                    {productsQ.isFetchingNextPage ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" /> Loading
+                      </>
+                    ) : (
+                      "Load More"
+                    )}
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Product ItemList JSON-LD — improves rich results for the edit grid. */}
+          {products.length > 0 && (
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{
+                __html: JSON.stringify({
+                  "@context": "https://schema.org",
+                  "@type": "ItemList",
+                  name: shopTitle,
+                  numberOfItems: products.length,
+                  itemListElement: products.map((p, i) => {
+                    const node = p.node;
+                    const image = node.images?.edges?.[0]?.node?.url;
+                    const price = node.priceRange?.minVariantPrice;
+                    const url = absoluteUrl(`/product/${node.handle}`);
+                    return {
+                      "@type": "ListItem",
+                      position: i + 1,
+                      url,
+                      item: {
+                        "@type": "Product",
+                        name: node.title,
+                        url,
+                        ...(image ? { image } : {}),
+                        ...(node.vendor ? { brand: { "@type": "Brand", name: node.vendor } } : {}),
+                        ...(price
+                          ? {
+                              offers: {
+                                "@type": "Offer",
+                                price: price.amount,
+                                priceCurrency: price.currencyCode,
+                                availability: "https://schema.org/InStock",
+                                url,
+                                seller: { "@type": "Organization", name: SITE_NAME },
+                              },
+                            }
+                          : {}),
+                      },
+                    };
+                  }),
+                }),
+              }}
+            />
           )}
         </div>
       </section>
