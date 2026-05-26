@@ -1098,7 +1098,7 @@ function SummerBento({
           </div>
           <div className="absolute bottom-8 md:bottom-14 lg:bottom-16 left-6 md:left-12 lg:left-16 right-6 max-w-xl">
             <span className="block text-[10px] md:text-xs uppercase tracking-[0.4em] mb-3 md:mb-5 text-canvas/90">
-              Resort 2026 Collection
+              2026 Collection
             </span>
             <h1 className="font-serif text-canvas text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl leading-[0.95] mb-6 md:mb-8 text-balance">
               The Shoreline
@@ -1106,8 +1106,7 @@ function SummerBento({
             </h1>
             <div className="flex flex-wrap gap-3 md:gap-4">
               <Link
-                to="/collections/$handle"
-                params={{ handle: WOMENS_CLOTHING_HANDLE }}
+                to="/editorial/resort-2026"
                 className="px-7 md:px-10 py-3 md:py-4 bg-canvas text-ink text-[10px] uppercase tracking-[0.25em] font-medium hover:bg-[var(--sea)] hover:text-canvas transition-all"
               >
                 Shop the Edit
