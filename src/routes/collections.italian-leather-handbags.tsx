@@ -88,7 +88,7 @@ function Page() {
           </p>
         </>
       }
-      shopifyQuery="handbag OR (tag:Handbags-Bags) OR (tag:Shoulder-Bags-Bags)"
+      shopifyQuery="handbag"
       faqs={FAQS}
       relatedGuides={[
         { to: "/journal/craftsmanship/spot-real-italian-leather", label: "Spot real Italian leather — 6 tests" },

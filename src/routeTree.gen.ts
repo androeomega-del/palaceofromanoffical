@@ -37,6 +37,10 @@ import { Route as ProductHandleRouteImport } from './routes/product.$handle'
 import { Route as EditorialTheNewEveningRouteImport } from './routes/editorial.the-new-evening'
 import { Route as EditorialResort2026RouteImport } from './routes/editorial.resort-2026'
 import { Route as EditorialMay2026RouteImport } from './routes/editorial.may-2026'
+import { Route as CollectionsItalianLeatherWalletsRouteImport } from './routes/collections.italian-leather-wallets'
+import { Route as CollectionsItalianLeatherLoafersRouteImport } from './routes/collections.italian-leather-loafers'
+import { Route as CollectionsItalianLeatherHandbagsRouteImport } from './routes/collections.italian-leather-handbags'
+import { Route as CollectionsDesignerMensShirtsRouteImport } from './routes/collections.designer-mens-shirts'
 import { Route as CollectionsHandleRouteImport } from './routes/collections.$handle'
 import { Route as CampaignMensSwimRouteImport } from './routes/campaign.mens-swim'
 import { Route as BrandVendorRouteImport } from './routes/brand.$vendor'
@@ -215,6 +219,30 @@ const EditorialMay2026Route = EditorialMay2026RouteImport.update({
   path: '/editorial/may-2026',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CollectionsItalianLeatherWalletsRoute =
+  CollectionsItalianLeatherWalletsRouteImport.update({
+    id: '/collections/italian-leather-wallets',
+    path: '/collections/italian-leather-wallets',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const CollectionsItalianLeatherLoafersRoute =
+  CollectionsItalianLeatherLoafersRouteImport.update({
+    id: '/collections/italian-leather-loafers',
+    path: '/collections/italian-leather-loafers',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const CollectionsItalianLeatherHandbagsRoute =
+  CollectionsItalianLeatherHandbagsRouteImport.update({
+    id: '/collections/italian-leather-handbags',
+    path: '/collections/italian-leather-handbags',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const CollectionsDesignerMensShirtsRoute =
+  CollectionsDesignerMensShirtsRouteImport.update({
+    id: '/collections/designer-mens-shirts',
+    path: '/collections/designer-mens-shirts',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const CollectionsHandleRoute = CollectionsHandleRouteImport.update({
   id: '/collections/$handle',
   path: '/collections/$handle',
@@ -460,6 +488,10 @@ export interface FileRoutesByFullPath {
   '/brand/$vendor': typeof BrandVendorRoute
   '/campaign/mens-swim': typeof CampaignMensSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
+  '/collections/designer-mens-shirts': typeof CollectionsDesignerMensShirtsRoute
+  '/collections/italian-leather-handbags': typeof CollectionsItalianLeatherHandbagsRoute
+  '/collections/italian-leather-loafers': typeof CollectionsItalianLeatherLoafersRoute
+  '/collections/italian-leather-wallets': typeof CollectionsItalianLeatherWalletsRoute
   '/editorial/may-2026': typeof EditorialMay2026Route
   '/editorial/resort-2026': typeof EditorialResort2026Route
   '/editorial/the-new-evening': typeof EditorialTheNewEveningRoute
@@ -526,6 +558,10 @@ export interface FileRoutesByTo {
   '/brand/$vendor': typeof BrandVendorRoute
   '/campaign/mens-swim': typeof CampaignMensSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
+  '/collections/designer-mens-shirts': typeof CollectionsDesignerMensShirtsRoute
+  '/collections/italian-leather-handbags': typeof CollectionsItalianLeatherHandbagsRoute
+  '/collections/italian-leather-loafers': typeof CollectionsItalianLeatherLoafersRoute
+  '/collections/italian-leather-wallets': typeof CollectionsItalianLeatherWalletsRoute
   '/editorial/may-2026': typeof EditorialMay2026Route
   '/editorial/resort-2026': typeof EditorialResort2026Route
   '/editorial/the-new-evening': typeof EditorialTheNewEveningRoute
@@ -594,6 +630,10 @@ export interface FileRoutesById {
   '/brand/$vendor': typeof BrandVendorRoute
   '/campaign/mens-swim': typeof CampaignMensSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
+  '/collections/designer-mens-shirts': typeof CollectionsDesignerMensShirtsRoute
+  '/collections/italian-leather-handbags': typeof CollectionsItalianLeatherHandbagsRoute
+  '/collections/italian-leather-loafers': typeof CollectionsItalianLeatherLoafersRoute
+  '/collections/italian-leather-wallets': typeof CollectionsItalianLeatherWalletsRoute
   '/editorial/may-2026': typeof EditorialMay2026Route
   '/editorial/resort-2026': typeof EditorialResort2026Route
   '/editorial/the-new-evening': typeof EditorialTheNewEveningRoute
@@ -663,6 +703,10 @@ export interface FileRouteTypes {
     | '/brand/$vendor'
     | '/campaign/mens-swim'
     | '/collections/$handle'
+    | '/collections/designer-mens-shirts'
+    | '/collections/italian-leather-handbags'
+    | '/collections/italian-leather-loafers'
+    | '/collections/italian-leather-wallets'
     | '/editorial/may-2026'
     | '/editorial/resort-2026'
     | '/editorial/the-new-evening'
@@ -729,6 +773,10 @@ export interface FileRouteTypes {
     | '/brand/$vendor'
     | '/campaign/mens-swim'
     | '/collections/$handle'
+    | '/collections/designer-mens-shirts'
+    | '/collections/italian-leather-handbags'
+    | '/collections/italian-leather-loafers'
+    | '/collections/italian-leather-wallets'
     | '/editorial/may-2026'
     | '/editorial/resort-2026'
     | '/editorial/the-new-evening'
@@ -796,6 +844,10 @@ export interface FileRouteTypes {
     | '/brand/$vendor'
     | '/campaign/mens-swim'
     | '/collections/$handle'
+    | '/collections/designer-mens-shirts'
+    | '/collections/italian-leather-handbags'
+    | '/collections/italian-leather-loafers'
+    | '/collections/italian-leather-wallets'
     | '/editorial/may-2026'
     | '/editorial/resort-2026'
     | '/editorial/the-new-evening'
@@ -861,6 +913,10 @@ export interface RootRouteChildren {
   BrandVendorRoute: typeof BrandVendorRoute
   CampaignMensSwimRoute: typeof CampaignMensSwimRoute
   CollectionsHandleRoute: typeof CollectionsHandleRoute
+  CollectionsDesignerMensShirtsRoute: typeof CollectionsDesignerMensShirtsRoute
+  CollectionsItalianLeatherHandbagsRoute: typeof CollectionsItalianLeatherHandbagsRoute
+  CollectionsItalianLeatherLoafersRoute: typeof CollectionsItalianLeatherLoafersRoute
+  CollectionsItalianLeatherWalletsRoute: typeof CollectionsItalianLeatherWalletsRoute
   EditorialMay2026Route: typeof EditorialMay2026Route
   EditorialResort2026Route: typeof EditorialResort2026Route
   EditorialTheNewEveningRoute: typeof EditorialTheNewEveningRoute
@@ -1077,6 +1133,34 @@ declare module '@tanstack/react-router' {
       path: '/editorial/may-2026'
       fullPath: '/editorial/may-2026'
       preLoaderRoute: typeof EditorialMay2026RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collections/italian-leather-wallets': {
+      id: '/collections/italian-leather-wallets'
+      path: '/collections/italian-leather-wallets'
+      fullPath: '/collections/italian-leather-wallets'
+      preLoaderRoute: typeof CollectionsItalianLeatherWalletsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collections/italian-leather-loafers': {
+      id: '/collections/italian-leather-loafers'
+      path: '/collections/italian-leather-loafers'
+      fullPath: '/collections/italian-leather-loafers'
+      preLoaderRoute: typeof CollectionsItalianLeatherLoafersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collections/italian-leather-handbags': {
+      id: '/collections/italian-leather-handbags'
+      path: '/collections/italian-leather-handbags'
+      fullPath: '/collections/italian-leather-handbags'
+      preLoaderRoute: typeof CollectionsItalianLeatherHandbagsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collections/designer-mens-shirts': {
+      id: '/collections/designer-mens-shirts'
+      path: '/collections/designer-mens-shirts'
+      fullPath: '/collections/designer-mens-shirts'
+      preLoaderRoute: typeof CollectionsDesignerMensShirtsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/collections/$handle': {
@@ -1427,6 +1511,11 @@ const rootRouteChildren: RootRouteChildren = {
   BrandVendorRoute: BrandVendorRoute,
   CampaignMensSwimRoute: CampaignMensSwimRoute,
   CollectionsHandleRoute: CollectionsHandleRoute,
+  CollectionsDesignerMensShirtsRoute: CollectionsDesignerMensShirtsRoute,
+  CollectionsItalianLeatherHandbagsRoute:
+    CollectionsItalianLeatherHandbagsRoute,
+  CollectionsItalianLeatherLoafersRoute: CollectionsItalianLeatherLoafersRoute,
+  CollectionsItalianLeatherWalletsRoute: CollectionsItalianLeatherWalletsRoute,
   EditorialMay2026Route: EditorialMay2026Route,
   EditorialResort2026Route: EditorialResort2026Route,
   EditorialTheNewEveningRoute: EditorialTheNewEveningRoute,

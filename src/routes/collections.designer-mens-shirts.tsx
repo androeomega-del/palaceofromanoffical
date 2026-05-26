@@ -86,7 +86,7 @@ function Page() {
           </p>
         </>
       }
-      shopifyQuery="(shirt OR t-shirt) AND tag:gender:men"
+      shopifyQuery="shirt AND tag:Men"
       faqs={FAQS}
       relatedGuides={[
         { to: "/journal/craftsmanship/made-in-italy-vs-designed-in-italy", label: "Made in Italy vs Designed in Italy" },
