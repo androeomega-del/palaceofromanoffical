@@ -12,7 +12,22 @@ import { useInteractionStore } from "@/stores/interaction-store";
 import { QuickViewSheet } from "@/components/quick-view-sheet";
 
 
-export function ProductCard({ product }: { product: ShopifyProduct }) {
+export type SuppressedBadge = "markdown" | "scarcity";
+
+export function ProductCard({
+  product,
+  suppressBadges = [],
+}: {
+  product: ShopifyProduct;
+  /**
+   * Hide badge categories that would be redundant given the surface the card
+   * lives on. Example: on /collections/sale, pass ["markdown"] because every
+   * card on that page is on sale — the badge is implied by the page itself.
+   * Scarcity badges (Final Piece / Rare — N Left / Archive Edition) are
+   * never automatically suppressed; opt-out is per-surface.
+   */
+   suppressBadges?: SuppressedBadge[];
+}) {
   const p = product.node;
   const img = p.images?.edges?.[0]?.node;
   const img2 = p.images?.edges?.[1]?.node;
