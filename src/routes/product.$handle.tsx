@@ -31,6 +31,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { SizeFitGuide } from "@/components/product/size-fit-guide";
+import { PdpJournalLinks } from "@/components/pdp-journal-links";
 
 export const Route = createFileRoute("/product/$handle")({
   loader: async ({ params }) => {
