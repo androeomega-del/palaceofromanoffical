@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CraftsmanshipArticle } from "@/components/craftsmanship-article";
-import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
+import { routeHead, articleJsonLd, SITE_NAME } from "@/lib/seo";
 
 const PATH = "/journal/style/the-cashmere-field-guide";
 const TITLE = "The Cashmere Field Guide — Grade, Ply, and the Sweaters Worth Keeping";
@@ -16,16 +16,21 @@ export const Route = createFileRoute("/journal/style/the-cashmere-field-guide")(
       scripts: [
         {
           type: "application/ld+json",
-          children: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Article",
-            headline: TITLE,
-            description: DESC,
-            datePublished: "2026-05-24T09:00:00Z",
-            author: { "@type": "Organization", name: SITE_NAME },
-            publisher: { "@type": "Organization", name: SITE_NAME, url: absoluteUrl("/") },
-            mainEntityOfPage: absoluteUrl(PATH),
-          }),
+          children: JSON.stringify(
+            articleJsonLd({
+              headline: TITLE,
+              description: DESC,
+              path: PATH,
+              datePublished: "2026-05-24T09:00:00Z",
+              dateModified: "2026-05-26T09:00:00Z",
+              articleSection: "Style",
+              about: [
+                { path: "/collections/cashmere-sweaters", name: "Cashmere Sweaters" },
+                { path: "/collections/silk-scarves", name: "Silk Scarves" },
+                { path: "/collections/designer-crossbody-bags", name: "Designer Crossbody Bags" },
+              ],
+            }),
+          ),
         },
       ],
     };
