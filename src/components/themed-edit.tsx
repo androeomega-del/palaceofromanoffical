@@ -44,8 +44,12 @@ export type ThemedEditProps = {
   subtitle: string;
   /** Intro paragraph (italic). */
   intro: string;
-  /** Hero editorial image number. */
+  /** Hero editorial image number (used when heroSrc is not provided). */
   heroN: number;
+  /** Optional explicit hero image URL — overrides heroN. */
+  heroSrc?: string;
+  /** CSS object-position for the hero image (default "center"). */
+  heroPosition?: string;
   heroAlt: string;
   /** A pull-quote / manifesto line. */
   manifesto: string;
