@@ -7,6 +7,7 @@ import { img } from "@/lib/editorial-library";
 import editorialMayHero from "@/assets/editorial/may-2026/1.webp";
 import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
 import { getJournalArticles, type ShopifyArticle } from "@/lib/shopify-blog.functions";
+import { CRAFTSMANSHIP_GUIDES } from "@/lib/craftsmanship-guides";
 
 type JournalEntry = {
   key: string;
