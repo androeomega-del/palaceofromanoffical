@@ -398,32 +398,25 @@ function MensSwimCampaign() {
             <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
               {productsQ.isLoading
                 ? "Loading the edit…"
-                : `${products.length} Pieces in the Edit`}
+                : productsQ.isError
+                  ? "Edit unavailable"
+                  : `${products.length} Pieces in the Edit`}
             </p>
           </div>
 
           {productsQ.isLoading ? (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-14">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="w-full aspect-[4/5] bg-muted mb-5" />
-                  <div className="h-2 w-16 bg-muted mb-2" />
-                  <div className="h-3 w-3/4 bg-muted" />
-                </div>
-              ))}
-            </div>
+            <ShopTheEditSkeleton />
+          ) : productsQ.isError ? (
+            <ShopTheEditError
+              onRetry={() => productsQ.refetch()}
+              isRetrying={productsQ.isFetching}
+            />
           ) : products.length === 0 ? (
-            <div className="py-24 text-center border border-ink/10">
-              <p className="text-sm text-muted-foreground mb-6">
-                The edit is currently being restocked from our authorised distributors.
-              </p>
-              <Link
-                to="/swim"
-                className="text-[11px] uppercase tracking-[0.3em] border-b border-ink pb-1 hover:text-bronze hover:border-bronze"
-              >
-                Browse all Swim →
-              </Link>
-            </div>
+            <ShopTheEditEmpty
+              message="The swim edit is currently being restocked from our authorised distributors."
+              ctaLabel="Browse all Swim"
+              ctaHandle="swimwear"
+            />
           ) : (
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-14">
               {products.map((e) => (
