@@ -1124,8 +1124,7 @@ function SummerBento({
 
         {/* Men's Resort Promo Tile (honey) */}
         <Link
-          to="/collections/$handle"
-          params={{ handle: MENS_CLOTHING_HANDLE }}
+          to="/campaign/mens-swim"
           className="col-span-12 md:col-span-6 lg:col-span-4 row-span-2 bg-bronze relative overflow-hidden flex flex-col justify-center items-center text-center group"
         >
           {swimImage && (
