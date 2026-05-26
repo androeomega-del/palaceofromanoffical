@@ -76,6 +76,7 @@ import { Route as AccountRegisterRouteImport } from './routes/account.register'
 import { Route as AccountRecoverRouteImport } from './routes/account.recover'
 import { Route as AccountLoginRouteImport } from './routes/account.login'
 import { Route as JournalStyleTheInvestmentSunglassesEditRouteImport } from './routes/journal.style.the-investment-sunglasses-edit'
+import { Route as JournalStyleTheCashmereFieldGuideRouteImport } from './routes/journal.style.the-cashmere-field-guide'
 import { Route as JournalStyleLuxurySneakersAsModernTailoringRouteImport } from './routes/journal.style.luxury-sneakers-as-modern-tailoring'
 import { Route as JournalCraftsmanshipSpotRealItalianLeatherRouteImport } from './routes/journal.craftsmanship.spot-real-italian-leather'
 import { Route as JournalCraftsmanshipMadeInItalyVsDesignedInItalyRouteImport } from './routes/journal.craftsmanship.made-in-italy-vs-designed-in-italy'
@@ -442,6 +443,12 @@ const JournalStyleTheInvestmentSunglassesEditRoute =
     path: '/style/the-investment-sunglasses-edit',
     getParentRoute: () => JournalRoute,
   } as any)
+const JournalStyleTheCashmereFieldGuideRoute =
+  JournalStyleTheCashmereFieldGuideRouteImport.update({
+    id: '/style/the-cashmere-field-guide',
+    path: '/style/the-cashmere-field-guide',
+    getParentRoute: () => JournalRoute,
+  } as any)
 const JournalStyleLuxurySneakersAsModernTailoringRoute =
   JournalStyleLuxurySneakersAsModernTailoringRouteImport.update({
     id: '/style/luxury-sneakers-as-modern-tailoring',
@@ -617,6 +624,7 @@ export interface FileRoutesByFullPath {
   '/journal/craftsmanship/made-in-italy-vs-designed-in-italy': typeof JournalCraftsmanshipMadeInItalyVsDesignedInItalyRoute
   '/journal/craftsmanship/spot-real-italian-leather': typeof JournalCraftsmanshipSpotRealItalianLeatherRoute
   '/journal/style/luxury-sneakers-as-modern-tailoring': typeof JournalStyleLuxurySneakersAsModernTailoringRoute
+  '/journal/style/the-cashmere-field-guide': typeof JournalStyleTheCashmereFieldGuideRoute
   '/journal/style/the-investment-sunglasses-edit': typeof JournalStyleTheInvestmentSunglassesEditRoute
   '/api/public/ai/recommendations': typeof ApiPublicAiRecommendationsRoute
   '/api/public/cron/abandoned-cart-recovery': typeof ApiPublicCronAbandonedCartRecoveryRoute
@@ -702,6 +710,7 @@ export interface FileRoutesByTo {
   '/journal/craftsmanship/made-in-italy-vs-designed-in-italy': typeof JournalCraftsmanshipMadeInItalyVsDesignedInItalyRoute
   '/journal/craftsmanship/spot-real-italian-leather': typeof JournalCraftsmanshipSpotRealItalianLeatherRoute
   '/journal/style/luxury-sneakers-as-modern-tailoring': typeof JournalStyleLuxurySneakersAsModernTailoringRoute
+  '/journal/style/the-cashmere-field-guide': typeof JournalStyleTheCashmereFieldGuideRoute
   '/journal/style/the-investment-sunglasses-edit': typeof JournalStyleTheInvestmentSunglassesEditRoute
   '/api/public/ai/recommendations': typeof ApiPublicAiRecommendationsRoute
   '/api/public/cron/abandoned-cart-recovery': typeof ApiPublicCronAbandonedCartRecoveryRoute
@@ -789,6 +798,7 @@ export interface FileRoutesById {
   '/journal/craftsmanship/made-in-italy-vs-designed-in-italy': typeof JournalCraftsmanshipMadeInItalyVsDesignedInItalyRoute
   '/journal/craftsmanship/spot-real-italian-leather': typeof JournalCraftsmanshipSpotRealItalianLeatherRoute
   '/journal/style/luxury-sneakers-as-modern-tailoring': typeof JournalStyleLuxurySneakersAsModernTailoringRoute
+  '/journal/style/the-cashmere-field-guide': typeof JournalStyleTheCashmereFieldGuideRoute
   '/journal/style/the-investment-sunglasses-edit': typeof JournalStyleTheInvestmentSunglassesEditRoute
   '/api/public/ai/recommendations': typeof ApiPublicAiRecommendationsRoute
   '/api/public/cron/abandoned-cart-recovery': typeof ApiPublicCronAbandonedCartRecoveryRoute
@@ -877,6 +887,7 @@ export interface FileRouteTypes {
     | '/journal/craftsmanship/made-in-italy-vs-designed-in-italy'
     | '/journal/craftsmanship/spot-real-italian-leather'
     | '/journal/style/luxury-sneakers-as-modern-tailoring'
+    | '/journal/style/the-cashmere-field-guide'
     | '/journal/style/the-investment-sunglasses-edit'
     | '/api/public/ai/recommendations'
     | '/api/public/cron/abandoned-cart-recovery'
@@ -962,6 +973,7 @@ export interface FileRouteTypes {
     | '/journal/craftsmanship/made-in-italy-vs-designed-in-italy'
     | '/journal/craftsmanship/spot-real-italian-leather'
     | '/journal/style/luxury-sneakers-as-modern-tailoring'
+    | '/journal/style/the-cashmere-field-guide'
     | '/journal/style/the-investment-sunglasses-edit'
     | '/api/public/ai/recommendations'
     | '/api/public/cron/abandoned-cart-recovery'
@@ -1048,6 +1060,7 @@ export interface FileRouteTypes {
     | '/journal/craftsmanship/made-in-italy-vs-designed-in-italy'
     | '/journal/craftsmanship/spot-real-italian-leather'
     | '/journal/style/luxury-sneakers-as-modern-tailoring'
+    | '/journal/style/the-cashmere-field-guide'
     | '/journal/style/the-investment-sunglasses-edit'
     | '/api/public/ai/recommendations'
     | '/api/public/cron/abandoned-cart-recovery'
@@ -1609,6 +1622,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof JournalStyleTheInvestmentSunglassesEditRouteImport
       parentRoute: typeof JournalRoute
     }
+    '/journal/style/the-cashmere-field-guide': {
+      id: '/journal/style/the-cashmere-field-guide'
+      path: '/style/the-cashmere-field-guide'
+      fullPath: '/journal/style/the-cashmere-field-guide'
+      preLoaderRoute: typeof JournalStyleTheCashmereFieldGuideRouteImport
+      parentRoute: typeof JournalRoute
+    }
     '/journal/style/luxury-sneakers-as-modern-tailoring': {
       id: '/journal/style/luxury-sneakers-as-modern-tailoring'
       path: '/style/luxury-sneakers-as-modern-tailoring'
@@ -1754,6 +1774,7 @@ interface JournalRouteChildren {
   JournalCraftsmanshipMadeInItalyVsDesignedInItalyRoute: typeof JournalCraftsmanshipMadeInItalyVsDesignedInItalyRoute
   JournalCraftsmanshipSpotRealItalianLeatherRoute: typeof JournalCraftsmanshipSpotRealItalianLeatherRoute
   JournalStyleLuxurySneakersAsModernTailoringRoute: typeof JournalStyleLuxurySneakersAsModernTailoringRoute
+  JournalStyleTheCashmereFieldGuideRoute: typeof JournalStyleTheCashmereFieldGuideRoute
   JournalStyleTheInvestmentSunglassesEditRoute: typeof JournalStyleTheInvestmentSunglassesEditRoute
 }
 
@@ -1767,6 +1788,8 @@ const JournalRouteChildren: JournalRouteChildren = {
     JournalCraftsmanshipSpotRealItalianLeatherRoute,
   JournalStyleLuxurySneakersAsModernTailoringRoute:
     JournalStyleLuxurySneakersAsModernTailoringRoute,
+  JournalStyleTheCashmereFieldGuideRoute:
+    JournalStyleTheCashmereFieldGuideRoute,
   JournalStyleTheInvestmentSunglassesEditRoute:
     JournalStyleTheInvestmentSunglassesEditRoute,
 }
