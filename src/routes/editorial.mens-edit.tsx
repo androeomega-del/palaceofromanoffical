@@ -26,8 +26,8 @@ const CHAPTERS: ThemedChapter[] = [
     eyebrow: "Chapter II — The Jacket",
     title: "Outerwear with intent.",
     body:
-      "A Brunello Cucinelli blue polyamide shell jacket — hooded, double-slider zip, quilted lightly enough to layer, weatherproof enough to mean it. Effortless sophistication is not about layering for show; it is about choosing one outerwear piece that does the work of three.",
-    alt: "Man in a Brunello Cucinelli blue polyamide hooded shell jacket against a Roman stucco wall",
+      "The Dior blue polyamide shell jacket — shirt collar, single front zip, twin flap pockets and a CD patch at the chest, drawcord hem you cinch when the tramontana turns. One piece of outerwear that does the work of three.",
+    alt: "Man in a Dior navy polyamide shell jacket with CD chest patch against a Roman travertine wall",
     flip: true,
     spots: [
       { x: 50, y: 42, label: "The Shell Jacket", match: /shell jacket|polyamide shell/i },
