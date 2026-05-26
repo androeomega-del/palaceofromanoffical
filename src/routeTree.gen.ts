@@ -34,6 +34,8 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AccountIndexRouteImport } from './routes/account.index'
 import { Route as SwimSizeGuideRouteImport } from './routes/swim.size-guide'
 import { Route as ProductHandleRouteImport } from './routes/product.$handle'
+import { Route as EditorialWomensEditRouteImport } from './routes/editorial.womens-edit'
+import { Route as EditorialVersaceRouteImport } from './routes/editorial.versace'
 import { Route as EditorialTheNewEveningRouteImport } from './routes/editorial.the-new-evening'
 import { Route as EditorialSummerEditRouteImport } from './routes/editorial.summer-edit'
 import { Route as EditorialResort2026RouteImport } from './routes/editorial.resort-2026'
@@ -203,6 +205,16 @@ const SwimSizeGuideRoute = SwimSizeGuideRouteImport.update({
 const ProductHandleRoute = ProductHandleRouteImport.update({
   id: '/product/$handle',
   path: '/product/$handle',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EditorialWomensEditRoute = EditorialWomensEditRouteImport.update({
+  id: '/editorial/womens-edit',
+  path: '/editorial/womens-edit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EditorialVersaceRoute = EditorialVersaceRouteImport.update({
+  id: '/editorial/versace',
+  path: '/editorial/versace',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EditorialTheNewEveningRoute = EditorialTheNewEveningRouteImport.update({
@@ -502,6 +514,8 @@ export interface FileRoutesByFullPath {
   '/editorial/resort-2026': typeof EditorialResort2026Route
   '/editorial/summer-edit': typeof EditorialSummerEditRoute
   '/editorial/the-new-evening': typeof EditorialTheNewEveningRoute
+  '/editorial/versace': typeof EditorialVersaceRoute
+  '/editorial/womens-edit': typeof EditorialWomensEditRoute
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/account/': typeof AccountIndexRoute
@@ -573,6 +587,8 @@ export interface FileRoutesByTo {
   '/editorial/resort-2026': typeof EditorialResort2026Route
   '/editorial/summer-edit': typeof EditorialSummerEditRoute
   '/editorial/the-new-evening': typeof EditorialTheNewEveningRoute
+  '/editorial/versace': typeof EditorialVersaceRoute
+  '/editorial/womens-edit': typeof EditorialWomensEditRoute
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/account': typeof AccountIndexRoute
@@ -646,6 +662,8 @@ export interface FileRoutesById {
   '/editorial/resort-2026': typeof EditorialResort2026Route
   '/editorial/summer-edit': typeof EditorialSummerEditRoute
   '/editorial/the-new-evening': typeof EditorialTheNewEveningRoute
+  '/editorial/versace': typeof EditorialVersaceRoute
+  '/editorial/womens-edit': typeof EditorialWomensEditRoute
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/account/': typeof AccountIndexRoute
@@ -720,6 +738,8 @@ export interface FileRouteTypes {
     | '/editorial/resort-2026'
     | '/editorial/summer-edit'
     | '/editorial/the-new-evening'
+    | '/editorial/versace'
+    | '/editorial/womens-edit'
     | '/product/$handle'
     | '/swim/size-guide'
     | '/account/'
@@ -791,6 +811,8 @@ export interface FileRouteTypes {
     | '/editorial/resort-2026'
     | '/editorial/summer-edit'
     | '/editorial/the-new-evening'
+    | '/editorial/versace'
+    | '/editorial/womens-edit'
     | '/product/$handle'
     | '/swim/size-guide'
     | '/account'
@@ -863,6 +885,8 @@ export interface FileRouteTypes {
     | '/editorial/resort-2026'
     | '/editorial/summer-edit'
     | '/editorial/the-new-evening'
+    | '/editorial/versace'
+    | '/editorial/womens-edit'
     | '/product/$handle'
     | '/swim/size-guide'
     | '/account/'
@@ -933,6 +957,8 @@ export interface RootRouteChildren {
   EditorialResort2026Route: typeof EditorialResort2026Route
   EditorialSummerEditRoute: typeof EditorialSummerEditRoute
   EditorialTheNewEveningRoute: typeof EditorialTheNewEveningRoute
+  EditorialVersaceRoute: typeof EditorialVersaceRoute
+  EditorialWomensEditRoute: typeof EditorialWomensEditRoute
   ProductHandleRoute: typeof ProductHandleRoute
   AdminIndexRoute: typeof AdminIndexRoute
   CollectionsIndexRoute: typeof CollectionsIndexRoute
@@ -1125,6 +1151,20 @@ declare module '@tanstack/react-router' {
       path: '/product/$handle'
       fullPath: '/product/$handle'
       preLoaderRoute: typeof ProductHandleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/editorial/womens-edit': {
+      id: '/editorial/womens-edit'
+      path: '/editorial/womens-edit'
+      fullPath: '/editorial/womens-edit'
+      preLoaderRoute: typeof EditorialWomensEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/editorial/versace': {
+      id: '/editorial/versace'
+      path: '/editorial/versace'
+      fullPath: '/editorial/versace'
+      preLoaderRoute: typeof EditorialVersaceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/editorial/the-new-evening': {
@@ -1540,6 +1580,8 @@ const rootRouteChildren: RootRouteChildren = {
   EditorialResort2026Route: EditorialResort2026Route,
   EditorialSummerEditRoute: EditorialSummerEditRoute,
   EditorialTheNewEveningRoute: EditorialTheNewEveningRoute,
+  EditorialVersaceRoute: EditorialVersaceRoute,
+  EditorialWomensEditRoute: EditorialWomensEditRoute,
   ProductHandleRoute: ProductHandleRoute,
   AdminIndexRoute: AdminIndexRoute,
   CollectionsIndexRoute: CollectionsIndexRoute,
@@ -1564,3 +1606,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
