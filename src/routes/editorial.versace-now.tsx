@@ -51,7 +51,7 @@ export const Route = createFileRoute("/editorial/versace-now")({
     const desc =
       "The full Versace presentation at Palace of Roman — Baroque print, gold Medusa hardware, engineered footwear and sculpted bags. In stock, authentic, shipped worldwide.";
     const path = "/editorial/versace-now";
-    const image = img(HERO_N);
+    const image = versaceNowHero;
     const rh = routeHead({ path, title, description: desc, image, type: "article" });
     return {
       meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
