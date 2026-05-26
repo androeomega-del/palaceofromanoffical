@@ -39,4 +39,31 @@ export const CRAFTSMANSHIP_GUIDES: CraftsmanshipGuide[] = [
     publishedAt: "2026-05-19T09:00:00Z",
     readingMinutes: 8,
   },
+  {
+    slug: "the-investment-sunglasses-edit",
+    to: "/journal/style/the-investment-sunglasses-edit",
+    title: "The Investment Sunglasses Edit — Frames That Outlast a Trend",
+    excerpt:
+      "A considered guide to designer sunglasses worth keeping: acetate vs metal, face geometry, lens quality, and the maisons that still cut frames properly.",
+    publishedAt: "2026-05-22T09:00:00Z",
+    readingMinutes: 9,
+  },
+  {
+    slug: "luxury-sneakers-as-modern-tailoring",
+    to: "/journal/style/luxury-sneakers-as-modern-tailoring",
+    title: "Luxury Sneakers as Modern Tailoring",
+    excerpt:
+      "How the designer sneaker became the cornerstone of an off-duty wardrobe — and how to wear it without losing the room.",
+    publishedAt: "2026-05-23T09:00:00Z",
+    readingMinutes: 10,
+  },
+  {
+    slug: "the-cashmere-field-guide",
+    to: "/journal/style/the-cashmere-field-guide",
+    title: "The Cashmere Field Guide — Grade, Ply, and the Sweaters Worth Keeping",
+    excerpt:
+      "A maison-level guide to buying cashmere: where the fibre comes from, what grade and ply actually mean, and the houses still spinning it the way it should be spun.",
+    publishedAt: "2026-05-24T09:00:00Z",
+    readingMinutes: 9,
+  },
 ];
