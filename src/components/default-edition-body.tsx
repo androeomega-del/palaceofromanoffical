@@ -27,6 +27,8 @@ import marketingWomen from "@/assets/marketing-women-summer.jpg";
 import marketingMen from "@/assets/marketing-men-summer.jpg";
 import marketingAccessories from "@/assets/marketing-accessories-summer.jpg";
 import marketingPoloShirts from "@/assets/marketing-polo-shirts.jpg";
+import marketingLongSleeveTees from "@/assets/marketing-long-sleeve-tees.jpg";
+import marketingHoodies from "@/assets/marketing-hoodies.jpg";
 
 import marketingMensResort from "@/assets/marketing-men-resort-summer.jpg";
 import marketingVersace from "@/assets/marketing-versace.jpg";
@@ -591,14 +593,14 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
               handle="polo-shirts"
             />
             <EssentialTile
-              image={longSleeveQ.data?.[0]?.node?.images?.edges?.[0]?.node}
+              image={{ url: marketingLongSleeveTees, altText: "Long Sleeve Tees — The off-duty foundation" }}
               eyebrow="Long Sleeve Tees"
               heading="The off-duty foundation."
               copy="Fine cotton and merino long sleeves — the layer worn on its own at the weekend and under everything else for the rest of the week."
               handle="long-sleeve-tees"
             />
             <EssentialTile
-              image={hoodiesQ.data?.[0]?.node?.images?.edges?.[0]?.node}
+              image={{ url: marketingHoodies, altText: "Hoodies — Soft architecture" }}
               eyebrow="Hoodies"
               heading="Soft architecture."
               copy="Heavyweight loopback, brushed fleece and houses that finish a hood as carefully as a lapel — the piece worn most, dressed quietly."
