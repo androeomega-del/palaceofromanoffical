@@ -51,6 +51,7 @@ import { Route as CollectionsItalianLeatherLoafersRouteImport } from './routes/c
 import { Route as CollectionsItalianLeatherHandbagsRouteImport } from './routes/collections.italian-leather-handbags'
 import { Route as CollectionsDesignerSunglassesRouteImport } from './routes/collections.designer-sunglasses'
 import { Route as CollectionsDesignerMensShirtsRouteImport } from './routes/collections.designer-mens-shirts'
+import { Route as CollectionsDesignerCrossbodyBagsRouteImport } from './routes/collections.designer-crossbody-bags'
 import { Route as CollectionsDesignerBeltsRouteImport } from './routes/collections.designer-belts'
 import { Route as CollectionsCashmereSweatersRouteImport } from './routes/collections.cashmere-sweaters'
 import { Route as CollectionsHandleRouteImport } from './routes/collections.$handle'
@@ -306,6 +307,12 @@ const CollectionsDesignerMensShirtsRoute =
   CollectionsDesignerMensShirtsRouteImport.update({
     id: '/collections/designer-mens-shirts',
     path: '/collections/designer-mens-shirts',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const CollectionsDesignerCrossbodyBagsRoute =
+  CollectionsDesignerCrossbodyBagsRouteImport.update({
+    id: '/collections/designer-crossbody-bags',
+    path: '/collections/designer-crossbody-bags',
     getParentRoute: () => rootRouteImport,
   } as any)
 const CollectionsDesignerBeltsRoute =
@@ -567,6 +574,7 @@ export interface FileRoutesByFullPath {
   '/collections/$handle': typeof CollectionsHandleRoute
   '/collections/cashmere-sweaters': typeof CollectionsCashmereSweatersRoute
   '/collections/designer-belts': typeof CollectionsDesignerBeltsRoute
+  '/collections/designer-crossbody-bags': typeof CollectionsDesignerCrossbodyBagsRoute
   '/collections/designer-mens-shirts': typeof CollectionsDesignerMensShirtsRoute
   '/collections/designer-sunglasses': typeof CollectionsDesignerSunglassesRoute
   '/collections/italian-leather-handbags': typeof CollectionsItalianLeatherHandbagsRoute
@@ -649,6 +657,7 @@ export interface FileRoutesByTo {
   '/collections/$handle': typeof CollectionsHandleRoute
   '/collections/cashmere-sweaters': typeof CollectionsCashmereSweatersRoute
   '/collections/designer-belts': typeof CollectionsDesignerBeltsRoute
+  '/collections/designer-crossbody-bags': typeof CollectionsDesignerCrossbodyBagsRoute
   '/collections/designer-mens-shirts': typeof CollectionsDesignerMensShirtsRoute
   '/collections/designer-sunglasses': typeof CollectionsDesignerSunglassesRoute
   '/collections/italian-leather-handbags': typeof CollectionsItalianLeatherHandbagsRoute
@@ -733,6 +742,7 @@ export interface FileRoutesById {
   '/collections/$handle': typeof CollectionsHandleRoute
   '/collections/cashmere-sweaters': typeof CollectionsCashmereSweatersRoute
   '/collections/designer-belts': typeof CollectionsDesignerBeltsRoute
+  '/collections/designer-crossbody-bags': typeof CollectionsDesignerCrossbodyBagsRoute
   '/collections/designer-mens-shirts': typeof CollectionsDesignerMensShirtsRoute
   '/collections/designer-sunglasses': typeof CollectionsDesignerSunglassesRoute
   '/collections/italian-leather-handbags': typeof CollectionsItalianLeatherHandbagsRoute
@@ -818,6 +828,7 @@ export interface FileRouteTypes {
     | '/collections/$handle'
     | '/collections/cashmere-sweaters'
     | '/collections/designer-belts'
+    | '/collections/designer-crossbody-bags'
     | '/collections/designer-mens-shirts'
     | '/collections/designer-sunglasses'
     | '/collections/italian-leather-handbags'
@@ -900,6 +911,7 @@ export interface FileRouteTypes {
     | '/collections/$handle'
     | '/collections/cashmere-sweaters'
     | '/collections/designer-belts'
+    | '/collections/designer-crossbody-bags'
     | '/collections/designer-mens-shirts'
     | '/collections/designer-sunglasses'
     | '/collections/italian-leather-handbags'
@@ -983,6 +995,7 @@ export interface FileRouteTypes {
     | '/collections/$handle'
     | '/collections/cashmere-sweaters'
     | '/collections/designer-belts'
+    | '/collections/designer-crossbody-bags'
     | '/collections/designer-mens-shirts'
     | '/collections/designer-sunglasses'
     | '/collections/italian-leather-handbags'
@@ -1064,6 +1077,7 @@ export interface RootRouteChildren {
   CollectionsHandleRoute: typeof CollectionsHandleRoute
   CollectionsCashmereSweatersRoute: typeof CollectionsCashmereSweatersRoute
   CollectionsDesignerBeltsRoute: typeof CollectionsDesignerBeltsRoute
+  CollectionsDesignerCrossbodyBagsRoute: typeof CollectionsDesignerCrossbodyBagsRoute
   CollectionsDesignerMensShirtsRoute: typeof CollectionsDesignerMensShirtsRoute
   CollectionsDesignerSunglassesRoute: typeof CollectionsDesignerSunglassesRoute
   CollectionsItalianLeatherHandbagsRoute: typeof CollectionsItalianLeatherHandbagsRoute
@@ -1392,6 +1406,13 @@ declare module '@tanstack/react-router' {
       path: '/collections/designer-mens-shirts'
       fullPath: '/collections/designer-mens-shirts'
       preLoaderRoute: typeof CollectionsDesignerMensShirtsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collections/designer-crossbody-bags': {
+      id: '/collections/designer-crossbody-bags'
+      path: '/collections/designer-crossbody-bags'
+      fullPath: '/collections/designer-crossbody-bags'
+      preLoaderRoute: typeof CollectionsDesignerCrossbodyBagsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/collections/designer-belts': {
@@ -1758,6 +1779,7 @@ const rootRouteChildren: RootRouteChildren = {
   CollectionsHandleRoute: CollectionsHandleRoute,
   CollectionsCashmereSweatersRoute: CollectionsCashmereSweatersRoute,
   CollectionsDesignerBeltsRoute: CollectionsDesignerBeltsRoute,
+  CollectionsDesignerCrossbodyBagsRoute: CollectionsDesignerCrossbodyBagsRoute,
   CollectionsDesignerMensShirtsRoute: CollectionsDesignerMensShirtsRoute,
   CollectionsDesignerSunglassesRoute: CollectionsDesignerSunglassesRoute,
   CollectionsItalianLeatherHandbagsRoute:
