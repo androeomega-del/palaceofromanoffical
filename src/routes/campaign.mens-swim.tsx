@@ -176,18 +176,31 @@ function MensSwimCampaign() {
     ];
   }, [products]);
 
-  const detail2Spots = useMemo<Hotspot[]>(
-    () =>
-      buildHotspots(accessories, [
-        { x: 26, y: 32, match: /swim short|trunk/i }, // black shorts top-left
-        { x: 22, y: 62, match: /sunglass|eyewear/i }, // aviators
-        { x: 58, y: 50, match: /cabana|linen shirt|shirt/i }, // cream shirt
-        { x: 68, y: 38, match: /ring|signet/i }, // signet ring
-        { x: 28, y: 80, match: /slide|sandal|espadrille/i }, // tan slides
-        { x: 78, y: 22, match: /tote|bag|raffia|straw/i }, // straw tote
-      ]),
-    [accessories],
-  );
+  // Hard-pin the deck flatlay to the three actual catalog pieces in the photo.
+  // Givenchy black swim shorts (upper-left), Brunello Cucinelli blue cotton
+  // shirt (upper-right), Bottega Veneta green cassette-print swim shorts
+  // (lower-center). The magazine is a styling prop and is not tagged.
+  const DECK_PIECES: Array<{ x: number; y: number; handle: string; label: string }> = [
+    { x: 28, y: 30, handle: "black-polyamide-swim-shorts", label: "Black Swim Shorts" },
+    { x: 72, y: 32, handle: "blue-cotton-shirt", label: "Blue Cotton Shirt" },
+    { x: 33, y: 74, handle: "green-polyamide-swim-shorts", label: "Cassette-Print Swim Shorts" },
+  ];
+  const detail2Spots = useMemo<Hotspot[]>(() => {
+    const pool = [...products, ...accessories];
+    const out: Hotspot[] = [];
+    for (const s of DECK_PIECES) {
+      const pick = pool.find((p) => p.node.handle === s.handle);
+      if (!pick) continue;
+      out.push({
+        x: s.x,
+        y: s.y,
+        handle: pick.node.handle,
+        label: s.label,
+        sublabel: pick.node.vendor,
+      });
+    }
+    return out;
+  }, [products, accessories]);
 
   return (
     <div className="bg-canvas">
@@ -349,7 +362,7 @@ function MensSwimCampaign() {
           <div className="relative">
             <EditorialHotspots
               src={mensDetail2}
-              alt="Men's resort flatlay on teak deck: black swim shorts, linen shirt, leather slides, aviators, straw tote"
+              alt="Men's Resort 2026 flatlay on warm teak deck: Givenchy black swim shorts, Brunello Cucinelli blue cotton shirt, Bottega Veneta green Cassette-print swim shorts"
               hotspots={detail2Spots}
               aspect="4/5"
             />
