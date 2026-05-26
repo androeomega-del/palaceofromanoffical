@@ -57,27 +57,30 @@ function categoryFor(title: string): string {
 
 function buildHotspots(
   products: ShopifyProduct[],
-  spots: Array<{ x: number; y: number; match?: RegExp }>,
+  spots: Array<{ x: number; y: number; match: RegExp; label?: string }>,
 ): Hotspot[] {
+  // STRICT: only tag a hotspot when a catalog product actually matches.
+  // Never fall back to a random product — a wrong tag is worse than no tag,
+  // because it sends the customer to a piece that isn't in the photo.
   const used = new Set<string>();
   const out: Hotspot[] = [];
   for (const s of spots) {
-    const pick =
-      products.find(
-        (p) => !used.has(p.node.handle) && (s.match ? s.match.test(p.node.title) : true),
-      ) ?? products.find((p) => !used.has(p.node.handle));
-    if (!pick) continue;
+    const pick = products.find(
+      (p) => !used.has(p.node.handle) && s.match.test(p.node.title),
+    );
+    if (!pick) continue; // no match in catalog → skip the hotspot entirely
     used.add(pick.node.handle);
     out.push({
       x: s.x,
       y: s.y,
       handle: pick.node.handle,
-      label: categoryFor(pick.node.title),
+      label: s.label ?? categoryFor(pick.node.title),
       sublabel: pick.node.vendor,
     });
   }
   return out;
 }
+
 
 /* ---------- page ---------- */
 
