@@ -1,9 +1,22 @@
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 import { fetchProducts } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
+import { EditorialHotspots, type Hotspot } from "@/components/editorial-hotspots";
 import { img } from "@/lib/editorial-library";
 import type { ReactNode } from "react";
+
+export type ThemedChapterSpot = {
+  /** X position in % (0–100) over the chapter image. */
+  x: number;
+  /** Y position in % (0–100) over the chapter image. */
+  y: number;
+  /** Short eyebrow label, e.g. "The Shirt". */
+  label?: string;
+  /** Regex matched against product title (case-insensitive) to pick the piece. */
+  match?: RegExp;
+};
 
 export type ThemedChapter = {
   /** Editorial library image number (1–99). */
@@ -18,6 +31,8 @@ export type ThemedChapter = {
   alt: string;
   /** Flip the row so image is on the right. */
   flip?: boolean;
+  /** Optional shoppable hotspots, resolved against the edit's product pool. */
+  spots?: ThemedChapterSpot[];
 };
 
 export type ThemedEditProps = {
