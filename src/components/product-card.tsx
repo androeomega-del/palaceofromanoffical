@@ -347,10 +347,10 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
             reflows the card. Three states: idle | sizing | success. */}
         <div
           className={`absolute inset-x-3 bottom-3 h-11 ${
-            sizeOnlyOption || quickAddState !== "idle"
-              ? "opacity-100"
-              : "opacity-100 lg:opacity-0 lg:translate-y-2 lg:group-hover:opacity-100 lg:group-hover:translate-y-0"
-          } transition-all duration-500`}
+            sizeOnlyOption || quickAddState !== "idle" || revealed
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto group-focus-within:opacity-100 group-focus-within:translate-y-0 group-focus-within:pointer-events-auto"
+          } transition-all duration-300`}
           onClick={(e) => {
             // Stop clicks inside the CTA row from triggering the card link.
             if (quickAddState !== "idle") {
