@@ -30,6 +30,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { SizeFitGuide } from "@/components/product/size-fit-guide";
 
 export const Route = createFileRoute("/product/$handle")({
   loader: async ({ params }) => {
@@ -579,11 +580,13 @@ function ProductView({
                 Import duties included · Express global delivery
               </p>
               <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] uppercase tracking-[0.2em] text-[var(--studio-bronze)] font-semibold pt-1">
-                <span>14-Day Returns</span>
-                <span className="opacity-30">·</span>
-                <span>Express Worldwide</span>
-                <span className="opacity-30">·</span>
                 <span>100% Authentic</span>
+                <span className="opacity-30">·</span>
+                <span>Official BrandsGateway Partner</span>
+                <span className="opacity-30">·</span>
+                <span>Ships from Europe</span>
+                <span className="opacity-30">·</span>
+                <span>14-Day Returns</span>
               </p>
             </header>
 
@@ -706,18 +709,7 @@ function ProductView({
                   Sizing & Fit
                 </AccordionTrigger>
                 <AccordionContent>
-                  <p className="text-sm leading-[1.85] text-[var(--studio-muted)]">
-                    Pieces are sized to the maison's standard. If you sit between two sizes, we
-                    recommend sizing up for relaxed silhouettes and down for tailored cuts. Reach
-                    out via{" "}
-                    <Link
-                      to="/contact"
-                      className="underline underline-offset-4 hover:text-[var(--studio-ink)]"
-                    >
-                      concierge
-                    </Link>{" "}
-                    for a personal fit check before ordering.
-                  </p>
+                  <SizeFitGuide productType={product.productType} title={product.title} />
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="shipping" className="border-0">
@@ -847,34 +839,35 @@ function ProductView({
 
       {/* Sticky mobile Add-to-Bag — appears once inline ATC is scrolled past */}
       <div
-        className={`md:hidden fixed inset-x-0 bottom-0 z-40 border-t border-[var(--studio-rule)] bg-[var(--studio-bg)]/95 backdrop-blur-md shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.18)] transition-transform duration-500 ${
+        className={`fixed inset-x-0 bottom-0 z-40 border-t border-[var(--studio-rule)] bg-[var(--studio-bg)]/95 backdrop-blur-md shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.18)] transition-transform duration-500 ${
           showStickyBuy ? "translate-y-0" : "translate-y-full"
         }`}
         style={{ paddingBottom: "max(env(safe-area-inset-bottom), 0.5rem)" }}
         aria-hidden={!showStickyBuy}
       >
-        <div className="flex items-center gap-3 px-4 py-3">
+        <div className="max-w-7xl mx-auto flex items-center gap-3 md:gap-6 px-4 md:px-12 py-3 md:py-4">
           {images[0]?.url && (
             <img
               src={cdnImage(images[0].url, { width: 120 })}
               alt=""
               loading="lazy"
               decoding="async"
-              className="w-12 h-14 object-cover flex-shrink-0"
+              className="w-12 h-14 md:w-14 md:h-16 object-cover flex-shrink-0"
             />
           )}
           <div className="min-w-0 flex-1">
             <p className="text-[10px] uppercase tracking-[0.2em] text-[var(--studio-bronze)] font-semibold truncate">
               {product.vendor}
             </p>
-            <p className="font-serif text-[15px] leading-tight truncate">
-              {formatPrice(currentPrice)}
+            <p className="font-serif text-[15px] md:text-[17px] leading-tight truncate">
+              <span className="hidden md:inline text-[var(--studio-ink)] mr-3">{product.title}</span>
+              <span className="text-[var(--studio-ink)]">{formatPrice(currentPrice)}</span>
             </p>
           </div>
           <button
             onClick={handleAdd}
             aria-busy={isLoading}
-            className="h-12 px-5 bg-[var(--studio-ink)] text-[var(--studio-bg)] hover:bg-[var(--studio-bronze)] transition-colors text-[10px] uppercase tracking-[0.25em] font-semibold inline-flex items-center justify-center gap-2 shadow-md"
+            className="h-12 md:h-14 px-5 md:px-8 bg-[var(--studio-ink)] text-[var(--studio-bg)] hover:bg-[var(--studio-bronze)] transition-colors text-[10px] md:text-[11px] uppercase tracking-[0.25em] md:tracking-[0.3em] font-semibold inline-flex items-center justify-center gap-2 shadow-md"
           >
             {isLoading ? (
               <Loader2 className="w-4 h-4 animate-spin" />
