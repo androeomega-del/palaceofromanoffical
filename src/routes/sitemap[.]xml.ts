@@ -27,6 +27,7 @@ const STATIC_ROUTES: Array<{ path: string; changefreq?: string; priority?: strin
   { path: "/faq", changefreq: "monthly", priority: "0.4" },
   { path: "/privacy", changefreq: "yearly", priority: "0.2" },
   { path: "/terms", changefreq: "yearly", priority: "0.2" },
+  { path: "/legal-notice", changefreq: "yearly", priority: "0.2" },
 ];
 
 // Cap on dynamic product entries we emit in a single sitemap response so the
