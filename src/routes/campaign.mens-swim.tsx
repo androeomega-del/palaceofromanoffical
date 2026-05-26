@@ -159,13 +159,22 @@ function MensSwimCampaign() {
     return spots;
   }, [products]);
 
-  const detail1Spots = useMemo<Hotspot[]>(
-    () =>
-      buildHotspots(products, [
-        { x: 48, y: 55, match: /swim short|trunk|navy/i },
-      ]),
-    [products],
-  );
+  // Hard-pin the detail-1 hotspot to the Bottega Veneta Blue Polyamide Swim
+  // Shorts — the exact azure boxer with gold-tipped drawcords in the photo.
+  const BLUE_BOXER_HANDLE = "blue-polyamide-swim-shorts";
+  const detail1Spots = useMemo<Hotspot[]>(() => {
+    const pick = products.find((p) => p.node.handle === BLUE_BOXER_HANDLE);
+    if (!pick) return [];
+    return [
+      {
+        x: 48,
+        y: 55,
+        handle: pick.node.handle,
+        label: "Azure Swim Boxer",
+        sublabel: pick.node.vendor,
+      },
+    ];
+  }, [products]);
 
   const detail2Spots = useMemo<Hotspot[]>(
     () =>
@@ -277,7 +286,7 @@ function MensSwimCampaign() {
             <div className="relative">
               <EditorialHotspots
                 src={mensDetail1}
-                alt="Close-up of luxury navy men's swim shorts with gold drawstring tips, drying on limestone"
+                alt="Close-up of the Bottega Veneta azure blue polyamide swim boxer with gold drawcord tips, drying on limestone"
                 hotspots={detail1Spots}
                 aspect="4/5"
               />
