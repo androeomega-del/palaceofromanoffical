@@ -640,7 +640,7 @@ function CollectionPage() {
               <>
                 <div className={`grid grid-cols-2 lg:grid-cols-3 ${gridGap}`}>
                   {gridEdges.map((e) => (
-                    <ProductCard key={e.node.id} product={e} />
+                    <ProductCard key={e.node.id} product={e} suppressBadges={[...suppressedBadges]} />
                   ))}
                 </div>
                 {/* IntersectionObserver sentinel — drives infinite scroll.
