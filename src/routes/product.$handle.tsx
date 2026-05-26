@@ -709,18 +709,7 @@ function ProductView({
                   Sizing & Fit
                 </AccordionTrigger>
                 <AccordionContent>
-                  <p className="text-sm leading-[1.85] text-[var(--studio-muted)]">
-                    Pieces are sized to the maison's standard. If you sit between two sizes, we
-                    recommend sizing up for relaxed silhouettes and down for tailored cuts. Reach
-                    out via{" "}
-                    <Link
-                      to="/contact"
-                      className="underline underline-offset-4 hover:text-[var(--studio-ink)]"
-                    >
-                      concierge
-                    </Link>{" "}
-                    for a personal fit check before ordering.
-                  </p>
+                  <SizeFitGuide productType={product.productType} title={product.title} />
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="shipping" className="border-0">
