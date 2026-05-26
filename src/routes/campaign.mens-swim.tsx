@@ -260,7 +260,7 @@ function MensSwimCampaign() {
           <div className="md:col-span-7 relative">
             <EditorialHotspots
               src={mensPortrait}
-              alt="Male model in striped swim shorts standing in turquoise Mediterranean water with a gold chain"
+              alt="Male model in Bottega Veneta red and light blue feather-print swim boxer standing in turquoise Mediterranean water with a gold chain"
               hotspots={portraitSpots}
               aspect="4/5"
             />
