@@ -39,6 +39,12 @@ export function ForYouFeed() {
   useEffect(() => {
     let cancelled = false;
     setState((s) => ({ ...s, loading: true }));
+    // Safety net: if the AI route stalls (Lovable AI gateway slow / cold),
+    // bail out of the spinner after 8s and render the CTA fallback so the
+    // homepage never shows an infinite "Curating your edit…" state.
+    const timeoutId = setTimeout(() => {
+      if (!cancelled) setState((s) => (s.loading ? { loading: false, data: null } : s));
+    }, 8000);
     fetchPersonalizedFeed({
       data: {
         wishlistHandles: wishlist.slice(0, 20),
@@ -55,6 +61,7 @@ export function ForYouFeed() {
       });
     return () => {
       cancelled = true;
+      clearTimeout(timeoutId);
     };
     // Stable identity — only re-run when handles meaningfully change.
     // eslint-disable-next-line react-hooks/exhaustive-deps
