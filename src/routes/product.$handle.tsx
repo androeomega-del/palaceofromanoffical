@@ -482,7 +482,7 @@ function ProductView({
             {product.vendor}
           </Link>
           <span className="opacity-40">/</span>
-          <span className="text-[var(--studio-ink)] truncate max-w-[40ch]">{product.title}</span>
+          <span className="text-[var(--studio-ink)] truncate max-w-[28ch] sm:max-w-[40ch] xl:max-w-none xl:truncate-none xl:whitespace-normal">{product.title}</span>
         </div>
       </div>
 
