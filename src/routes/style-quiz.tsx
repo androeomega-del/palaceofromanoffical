@@ -443,10 +443,7 @@ function StyleQuizPage() {
         typeof window !== "undefined" ? getOrCreateSessionId() : undefined;
       const pagePath =
         typeof window !== "undefined" ? window.location.pathname : undefined;
-      const storedEmail =
-        typeof window !== "undefined"
-          ? window.localStorage.getItem(EMAIL_KEY)
-          : null;
+      const storedEmail = getStoredQuizEmail();
       // Record server-side with unlock verification so the event is tied
       // to the subscriber record, not just a client-side fire-and-forget.
       void recordView({
