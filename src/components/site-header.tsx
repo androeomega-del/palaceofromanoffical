@@ -173,7 +173,7 @@ export function SiteHeader() {
             type="button"
             aria-label="Open menu"
             onClick={() => setMobileOpen(true)}
-            className="lg:hidden justify-self-start hover:text-bronze transition-colors inline-flex items-center justify-center w-9 h-9 -ml-2"
+            className="lg:hidden justify-self-start hover:text-bronze transition-colors inline-flex items-center justify-center w-9 h-9 -ml-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze focus-visible:ring-offset-2 focus-visible:ring-offset-canvas rounded-sm"
           >
             <Menu className="w-5 h-5" strokeWidth={1.25} />
           </button>
