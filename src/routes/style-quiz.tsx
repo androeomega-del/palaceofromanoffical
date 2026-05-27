@@ -387,15 +387,9 @@ function StyleQuizPage() {
 
     fireTrack("quiz_started", { step: 0 });
 
-    let storedEmail: string | null = null;
-    let storedAnswers: Answers | null = null;
-    try {
-      storedEmail = window.localStorage.getItem(EMAIL_KEY);
-      const a = window.localStorage.getItem(ANSWERS_KEY);
-      if (a) storedAnswers = JSON.parse(a) as Answers;
-    } catch {
-      // ignore corrupted storage
-    }
+    const storedEmail = getStoredQuizEmail();
+    const storedAnswers = getStoredQuizAnswers();
+    if (storedEmail) setEmail(storedEmail);
 
     if (!storedEmail) return;
 
@@ -403,9 +397,7 @@ function StyleQuizPage() {
       .then((res) => {
         if (!res.unlocked) {
           // localStorage flag was stale — clear it.
-          try {
-            window.localStorage.removeItem(UNLOCK_KEY);
-          } catch {}
+          clearStoredQuizUnlock();
           return;
         }
         setAlreadyUnlocked(true);
@@ -413,8 +405,13 @@ function StyleQuizPage() {
         const merged = (res.answers && Object.keys(res.answers).length
           ? res.answers
           : storedAnswers) as Answers | null;
-        if (merged) setAnswers(merged);
-        fireTrack("quiz_unlock_resumed", { email: storedEmail ?? undefined });
+        if (merged) {
+          setAnswers(merged);
+          // Re-persist with the canonical email so any older record that
+          // used a non-normalised value is replaced in place.
+          setStoredQuizUnlock(storedEmail, merged);
+        }
+        fireTrack("quiz_unlock_resumed", { email: storedEmail });
       })
       .catch(() => undefined);
     // eslint-disable-next-line react-hooks/exhaustive-deps
