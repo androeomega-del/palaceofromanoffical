@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SwimRouteImport } from './routes/swim'
 import { Route as StyleQuizRouteImport } from './routes/style-quiz'
@@ -97,6 +98,11 @@ import { Route as ApiPublicCronBackInStockNotifyRouteImport } from './routes/api
 import { Route as ApiPublicCronAbandonedCartRecoveryRouteImport } from './routes/api/public/cron/abandoned-cart-recovery'
 import { Route as ApiPublicAiRecommendationsRouteImport } from './routes/api/public/ai.recommendations'
 
+const WishlistRoute = WishlistRouteImport.update({
+  id: '/wishlist',
+  path: '/wishlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
@@ -585,6 +591,7 @@ export interface FileRoutesByFullPath {
   '/style-quiz': typeof StyleQuizRoute
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
+  '/wishlist': typeof WishlistRoute
   '/account/login': typeof AccountLoginRoute
   '/account/recover': typeof AccountRecoverRoute
   '/account/register': typeof AccountRegisterRoute
@@ -673,6 +680,7 @@ export interface FileRoutesByTo {
   '/style-quiz': typeof StyleQuizRoute
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
+  '/wishlist': typeof WishlistRoute
   '/account/login': typeof AccountLoginRoute
   '/account/recover': typeof AccountRecoverRoute
   '/account/register': typeof AccountRegisterRoute
@@ -763,6 +771,7 @@ export interface FileRoutesById {
   '/style-quiz': typeof StyleQuizRoute
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
+  '/wishlist': typeof WishlistRoute
   '/account/login': typeof AccountLoginRoute
   '/account/recover': typeof AccountRecoverRoute
   '/account/register': typeof AccountRegisterRoute
@@ -854,6 +863,7 @@ export interface FileRouteTypes {
     | '/style-quiz'
     | '/swim'
     | '/terms'
+    | '/wishlist'
     | '/account/login'
     | '/account/recover'
     | '/account/register'
@@ -942,6 +952,7 @@ export interface FileRouteTypes {
     | '/style-quiz'
     | '/swim'
     | '/terms'
+    | '/wishlist'
     | '/account/login'
     | '/account/recover'
     | '/account/register'
@@ -1031,6 +1042,7 @@ export interface FileRouteTypes {
     | '/style-quiz'
     | '/swim'
     | '/terms'
+    | '/wishlist'
     | '/account/login'
     | '/account/recover'
     | '/account/register'
@@ -1121,6 +1133,7 @@ export interface RootRouteChildren {
   StyleQuizRoute: typeof StyleQuizRoute
   SwimRoute: typeof SwimRouteWithChildren
   TermsRoute: typeof TermsRoute
+  WishlistRoute: typeof WishlistRoute
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminCollectionFocalRoute: typeof AdminCollectionFocalRoute
   AdminCollectionHeroRegressionRoute: typeof AdminCollectionHeroRegressionRoute
@@ -1179,6 +1192,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/wishlist': {
+      id: '/wishlist'
+      path: '/wishlist'
+      fullPath: '/wishlist'
+      preLoaderRoute: typeof WishlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/terms': {
       id: '/terms'
       path: '/terms'
@@ -1869,6 +1889,7 @@ const rootRouteChildren: RootRouteChildren = {
   StyleQuizRoute: StyleQuizRoute,
   SwimRoute: SwimRouteWithChildren,
   TermsRoute: TermsRoute,
+  WishlistRoute: WishlistRoute,
   AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminCollectionFocalRoute: AdminCollectionFocalRoute,
   AdminCollectionHeroRegressionRoute: AdminCollectionHeroRegressionRoute,

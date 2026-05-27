@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Check, Eye, Heart, Loader2, ShoppingBag, X, Zap } from "lucide-react";
+import { Check, Eye, Heart, Loader2, ShoppingBag, Sparkles, X, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { formatPrice, type ShopifyProduct } from "@/lib/shopify";
@@ -10,6 +10,7 @@ import { useCartStore } from "@/stores/cart-store";
 import { useWishlistStore } from "@/stores/wishlist-store";
 import { useInteractionStore } from "@/stores/interaction-store";
 import { QuickViewSheet } from "@/components/quick-view-sheet";
+import { PriceTag } from "@/components/price-tag";
 
 
 export type SuppressedBadge = "markdown" | "scarcity";
@@ -396,6 +397,22 @@ export function ProductCard({
               </span>
             );
           }
+          // "New In" — quietly badge pieces added in the last 14 days when
+          // nothing more urgent (sale / scarcity / sold out) applies.
+          if (p.createdAt) {
+            const ageDays = (Date.now() - new Date(p.createdAt).getTime()) / 86_400_000;
+            if (ageDays >= 0 && ageDays <= 14) {
+              return (
+                <span
+                  className="absolute top-3 left-3 z-10 text-[10px] uppercase tracking-[0.25em] bg-canvas/95 backdrop-blur-sm text-ink border border-ink/15 px-2 py-1 font-medium inline-flex items-center gap-1"
+                  title="Added to the edit in the last 14 days"
+                >
+                  <Sparkles className="w-2.5 h-2.5 text-bronze" strokeWidth={2} />
+                  New In
+                </span>
+              );
+            }
+          }
           return null;
         })()}
 
@@ -606,8 +623,8 @@ export function ProductCard({
       <p className="text-[10px] uppercase tracking-widest mb-1 text-bronze">{p.vendor}</p>
       <h3 className="text-sm font-medium leading-snug line-clamp-2 text-balance">{p.title}</h3>
       <div className="flex items-baseline gap-3 mt-1.5">
-        <p className="text-sm">{formatPrice(price)}</p>
-        {onSale && <p className="text-xs text-muted-foreground line-through">{formatPrice(compareAt)}</p>}
+        <PriceTag money={price} className="text-sm" />
+        {onSale && <PriceTag money={compareAt} strike className="text-xs text-muted-foreground" />}
       </div>
       <ShippingMeta vendor={p.vendor} handle={p.handle} variant="card" />
 

@@ -7,6 +7,7 @@ import { formatPrice } from "@/lib/shopify";
 import { trackCartEvent } from "@/lib/cart-analytics";
 import { CartFbt } from "@/components/cart-fbt";
 import { CartEmailCapture } from "@/components/atelier/cart-email-capture";
+import { GiftWrapOption } from "@/components/gift-wrap-option";
 
 export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
   // 1. Add mount state to prevent hydration errors
@@ -106,6 +107,7 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
             </div>
 
             <CartFbt productType={fbtProductType} excludeHandles={fbtExclude} />
+            <GiftWrapOption />
 
             <div className="border-t border-ink/10 px-6 py-6 space-y-4">
               <CartEmailCapture />

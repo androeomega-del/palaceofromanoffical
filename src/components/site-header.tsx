@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Search, User, ShoppingBag, Menu, X } from "lucide-react";
+import { Heart, Search, User, ShoppingBag, Menu, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useCartStore } from "@/stores/cart-store";
@@ -10,6 +10,8 @@ import { SearchOverlay } from "@/components/search-overlay";
 import { fetchCollections } from "@/lib/shopify";
 import { DeliverToButton } from "@/components/deliver-to-button";
 import { useCustomerStore } from "@/stores/customer-store";
+import { useWishlistStore } from "@/stores/wishlist-store";
+import { CurrencySwitcher } from "@/components/currency-switcher";
 
 type FlatItem = {
   label: string;
@@ -175,7 +177,9 @@ export function SiteHeader() {
                 <Search className="w-4 h-4" strokeWidth={1.25} />
               </button>
               <DeliverToButton />
+              <CurrencySwitcher />
               <ReducedMotionToggle />
+              <WishlistHeaderLink />
               <button
                 aria-label="Account"
                 onClick={() => {
