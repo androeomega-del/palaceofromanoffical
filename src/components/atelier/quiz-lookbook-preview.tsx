@@ -18,6 +18,7 @@ import {
   trackQuizFunnel,
   type QuizAnswers,
 } from "@/lib/quiz-unlock.functions";
+import { getStoredQuizEmail } from "@/lib/quiz-identity";
 
 // Reuse the same gender-aware imagery the quiz uses, so the homepage
 // teaser feels like a continuation of the same edit.
@@ -32,8 +33,6 @@ import mensShoesAlt from "@/assets/marketing-collections/mens-shoes.jpg";
 import loafers from "@/assets/marketing-collections/loafers.jpg";
 import suits from "@/assets/marketing-collections/suits.jpg";
 import womenDress from "@/assets/collections/women-dress.jpg";
-
-const EMAIL_KEY = "por_quiz_email_v1";
 
 const MOOD_TITLES: Record<string, string> = {
   "tailoring cashmere wool minimal": "The Quiet Luxury Edit",
@@ -85,12 +84,7 @@ export function QuizLookbookPreview({ fallback }: { fallback: ReactNode }) {
   useEffect(() => {
     if (typeof window === "undefined") return;
     let cancelled = false;
-    let storedEmail: string | null = null;
-    try {
-      storedEmail = window.localStorage.getItem(EMAIL_KEY);
-    } catch {
-      // ignore
-    }
+    const storedEmail = getStoredQuizEmail();
     if (!storedEmail) {
       setChecked(true);
       return;

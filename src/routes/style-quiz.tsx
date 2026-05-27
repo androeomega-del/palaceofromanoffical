@@ -185,20 +185,24 @@ function buildQuestions(answers: Answers): Question[] {
   ];
 }
 
-const UNLOCK_KEY = "por_quiz_unlocked_v1";
-const EMAIL_KEY = "por_quiz_email_v1";
-const ANSWERS_KEY = "por_quiz_answers_v1";
-const SESSION_KEY = "por_quiz_session_v1";
+import {
+  QUIZ_SESSION_KEY,
+  getStoredQuizEmail,
+  getStoredQuizAnswers,
+  setStoredQuizUnlock,
+  clearStoredQuizUnlock,
+  normalizeEmail,
+} from "@/lib/quiz-identity";
 
 function getOrCreateSessionId(): string {
   if (typeof window === "undefined") return "";
   try {
-    let s = window.localStorage.getItem(SESSION_KEY);
+    let s = window.localStorage.getItem(QUIZ_SESSION_KEY);
     if (!s) {
       s =
         (globalThis.crypto?.randomUUID?.() ??
           `q_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`);
-      window.localStorage.setItem(SESSION_KEY, s);
+      window.localStorage.setItem(QUIZ_SESSION_KEY, s);
     }
     return s;
   } catch {
@@ -383,15 +387,9 @@ function StyleQuizPage() {
 
     fireTrack("quiz_started", { step: 0 });
 
-    let storedEmail: string | null = null;
-    let storedAnswers: Answers | null = null;
-    try {
-      storedEmail = window.localStorage.getItem(EMAIL_KEY);
-      const a = window.localStorage.getItem(ANSWERS_KEY);
-      if (a) storedAnswers = JSON.parse(a) as Answers;
-    } catch {
-      // ignore corrupted storage
-    }
+    const storedEmail = getStoredQuizEmail();
+    const storedAnswers = getStoredQuizAnswers();
+    if (storedEmail) setEmail(storedEmail);
 
     if (!storedEmail) return;
 
@@ -399,9 +397,7 @@ function StyleQuizPage() {
       .then((res) => {
         if (!res.unlocked) {
           // localStorage flag was stale — clear it.
-          try {
-            window.localStorage.removeItem(UNLOCK_KEY);
-          } catch {}
+          clearStoredQuizUnlock();
           return;
         }
         setAlreadyUnlocked(true);
@@ -409,8 +405,13 @@ function StyleQuizPage() {
         const merged = (res.answers && Object.keys(res.answers).length
           ? res.answers
           : storedAnswers) as Answers | null;
-        if (merged) setAnswers(merged);
-        fireTrack("quiz_unlock_resumed", { email: storedEmail ?? undefined });
+        if (merged) {
+          setAnswers(merged);
+          // Re-persist with the canonical email so any older record that
+          // used a non-normalised value is replaced in place.
+          setStoredQuizUnlock(storedEmail, merged);
+        }
+        fireTrack("quiz_unlock_resumed", { email: storedEmail });
       })
       .catch(() => undefined);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -442,10 +443,7 @@ function StyleQuizPage() {
         typeof window !== "undefined" ? getOrCreateSessionId() : undefined;
       const pagePath =
         typeof window !== "undefined" ? window.location.pathname : undefined;
-      const storedEmail =
-        typeof window !== "undefined"
-          ? window.localStorage.getItem(EMAIL_KEY)
-          : null;
+      const storedEmail = getStoredQuizEmail();
       // Record server-side with unlock verification so the event is tied
       // to the subscriber record, not just a client-side fire-and-forget.
       void recordView({
@@ -499,8 +497,8 @@ function StyleQuizPage() {
   async function submitEmail(e: React.FormEvent) {
     e.preventDefault();
     setEmailErr(null);
-    const clean = email.trim().toLowerCase();
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(clean) || clean.length > 320) {
+    const clean = normalizeEmail(email);
+    if (!clean) {
       setEmailErr("Please enter a valid email.");
       return;
     }
@@ -520,13 +518,11 @@ function StyleQuizPage() {
         setEmailErr(res.error ?? "Could not unlock. Please try again.");
         return;
       }
-      if (typeof window !== "undefined") {
-        try {
-          window.localStorage.setItem(UNLOCK_KEY, "1");
-          window.localStorage.setItem(EMAIL_KEY, clean);
-          window.localStorage.setItem(ANSWERS_KEY, JSON.stringify(answers));
-        } catch {}
-      }
+      // Persist canonical email + answers; resume flows on this device
+      // (and the homepage preview) will read the exact same value the
+      // server keyed the unlock by.
+      setStoredQuizUnlock(clean, answers);
+      setEmail(clean);
       setAlreadyUnlocked(true);
       fireTrack("quiz_gate_submitted", { step: total, email: clean, answers });
       setPhase("lookbook");
@@ -759,14 +755,12 @@ function StyleQuizPage() {
                   onClick={() =>
                     fireTrack("quiz_shop_clicked", {
                       answers,
-                      email:
-                        (typeof window !== "undefined" &&
-                          window.localStorage.getItem(EMAIL_KEY)) ||
-                        undefined,
+                      email: getStoredQuizEmail() ?? undefined,
                     })
                   }
                   className="group block"
                 >
+
                   <div className="relative aspect-[3/4] overflow-hidden bg-ink/5">
                     <img
                       src={c.src}
@@ -788,10 +782,7 @@ function StyleQuizPage() {
                 onClick={() => {
                   fireTrack("quiz_shop_clicked", {
                     answers,
-                    email:
-                      (typeof window !== "undefined" &&
-                        window.localStorage.getItem(EMAIL_KEY)) ||
-                      undefined,
+                    email: getStoredQuizEmail() ?? undefined,
                   });
                   navigate({ to: "/shop", search: shopSearch as never });
                 }}
