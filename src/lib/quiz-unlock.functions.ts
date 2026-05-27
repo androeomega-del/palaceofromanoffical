@@ -20,7 +20,111 @@ const UnlockInput = z.object({
   answers: AnswersSchema,
   source: z.string().max(64).optional(),
   userAgent: z.string().max(500).optional(),
+  marketingConsent: z.boolean().optional(),
 });
+
+// Frequency caps (in hours) per email template. Welcome is one-shot per
+// subscriber so we use a large window as a defensive backstop in case the
+// newsletter insert path is bypassed.
+const EMAIL_FREQUENCY_HOURS: Record<string, number> = {
+  quiz_welcome_email: 24 * 365, // effectively one-time
+  quiz_lookbook_unlock: 24 * 7, // at most once per 7 days per email
+};
+
+const TEMPLATE_WELCOME = "quiz_welcome_email";
+const TEMPLATE_LOOKBOOK = "quiz_lookbook_unlock";
+
+/**
+ * Returns true if the recipient has opted out of marketing. Subscribers who
+ * have never signed up are treated as opted-in (they're actively unlocking
+ * the lookbook, which is itself an opt-in action).
+ */
+async function hasMarketingOptOut(email: string): Promise<boolean> {
+  const { data } = await supabaseAdmin
+    .from("newsletter_subscribers")
+    .select("marketing_consent")
+    .eq("email", email)
+    .maybeSingle();
+  return data ? data.marketing_consent === false : false;
+}
+
+/**
+ * Returns true if we sent the given template to this email within the
+ * frequency window. Reads append-only email_dispatch_log; service-role
+ * bypasses RLS.
+ */
+async function wasRecentlySent(
+  email: string,
+  templateName: string,
+): Promise<boolean> {
+  const hours = EMAIL_FREQUENCY_HOURS[templateName];
+  if (!hours) return false;
+  const sinceIso = new Date(Date.now() - hours * 3600_000).toISOString();
+  const { data, error } = await supabaseAdmin
+    .from("email_dispatch_log")
+    .select("id")
+    .eq("recipient_email", email)
+    .eq("template_name", templateName)
+    .eq("status", "sent")
+    .gte("created_at", sinceIso)
+    .limit(1)
+    .maybeSingle();
+  if (error) {
+    console.error("[quiz-unlock] dispatch log lookup failed:", error.message);
+    return false; // fail-open: don't silently skip transactional sends
+  }
+  return !!data;
+}
+
+async function logDispatch(
+  email: string,
+  templateName: string,
+  status: "sent" | "failed" | "skipped",
+  errorMessage?: string,
+  metadata?: Record<string, unknown>,
+) {
+  const { error } = await supabaseAdmin.from("email_dispatch_log").insert({
+    recipient_email: email,
+    template_name: templateName,
+    status,
+    error_message: errorMessage ?? null,
+    metadata: metadata ?? {},
+  });
+  if (error) {
+    console.error("[quiz-unlock] dispatch log insert failed:", error.message);
+  }
+}
+
+/**
+ * Send wrapper that enforces consent + per-template frequency caps.
+ * Records the attempt to email_dispatch_log regardless of outcome.
+ */
+async function sendGatedEmail(
+  email: string,
+  templateName: string,
+  subject: string,
+  html: string,
+  text: string,
+): Promise<"sent" | "skipped_consent" | "skipped_frequency" | "failed"> {
+  if (await hasMarketingOptOut(email)) {
+    await logDispatch(email, templateName, "skipped", "marketing_opt_out");
+    return "skipped_consent";
+  }
+  if (await wasRecentlySent(email, templateName)) {
+    await logDispatch(email, templateName, "skipped", "frequency_cap");
+    return "skipped_frequency";
+  }
+  try {
+    await sendGmail(email, subject, html, text);
+    await logDispatch(email, templateName, "sent");
+    return "sent";
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error(`[quiz-unlock] ${templateName} send failed:`, msg);
+    await logDispatch(email, templateName, "failed", msg.slice(0, 500));
+    return "failed";
+  }
+}
 
 const LookupInput = z.object({
   email: z.string().min(5).max(320).email(),
