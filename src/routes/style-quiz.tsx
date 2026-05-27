@@ -1,9 +1,13 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { ArrowLeft, ArrowRight, Check, Lock, Sparkles } from "lucide-react";
 import { routeHead } from "@/lib/seo";
-import { subscribeNewsletter } from "@/lib/newsletter.functions";
+import {
+  unlockQuizLookbook,
+  getQuizUnlock,
+  trackQuizFunnel,
+} from "@/lib/quiz-unlock.functions";
 
 // Gender-aware imagery — every option uses a real, on-topic marketing asset
 // so the picture always matches the answer.
