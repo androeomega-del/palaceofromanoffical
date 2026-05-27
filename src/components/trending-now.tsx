@@ -24,9 +24,13 @@ export function TrendingNowRail() {
   // Hide the rail entirely if we don't have enough signal yet, or on
   // server error. The homepage continues to render the curated rails
   // already in place; this one only joins the lineup once data justifies it.
+  // Hide the rail entirely if we don't have enough signal yet, or on
+  // server error. The homepage continues to render the curated rails
+  // already in place; this one only joins the lineup once data justifies it.
+  // Minimum of 3 — a sparse 1-card row in a 4-col grid reads as broken.
   if (isLoading) return null;
   if (!data || !data.ok) return null;
-  if (data.products.length === 0) return null;
+  if (data.products.length < 3) return null;
 
   return (
     <section
