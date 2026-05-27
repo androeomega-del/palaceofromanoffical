@@ -107,7 +107,14 @@ function AdminAnalytics() {
     queryFn: fetchCartAnalytics,
     refetchInterval: 30_000,
     staleTime: 15_000,
-    retry: 2,
+    // Retry transient network/5xx errors with exponential backoff, but
+    // never retry auth/permission failures (those won't fix themselves).
+    retry: (failureCount, err) => {
+      const msg = (err as Error)?.message ?? "";
+      if (/unauthor|forbidden|401|403/i.test(msg)) return false;
+      return failureCount < 4;
+    },
+    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 15_000),
   });
 
   const maxActivity = Math.max(
