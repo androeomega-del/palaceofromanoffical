@@ -62,7 +62,7 @@ function WishlistHeaderLink() {
     <Link
       to="/wishlist"
       aria-label={`Wishlist (${shown})`}
-      className="relative hover:text-bronze transition-colors hidden sm:inline-flex items-center justify-center w-5 h-5"
+      className="relative hover:text-bronze transition-colors hidden sm:inline-flex items-center justify-center w-5 h-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze focus-visible:ring-offset-2 focus-visible:ring-offset-canvas rounded-sm"
     >
       <Heart className="w-4 h-4" strokeWidth={1.25} />
       {shown > 0 && (
