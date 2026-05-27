@@ -68,7 +68,7 @@ export function ProductCard({
   const navigate = useNavigate();
   const addItem = useCartStore((s) => s.addItem);
   const openDrawer = useCartStore((s) => s.openDrawer);
-  const wishlisted = useWishlistStore((s) => s.handles.includes(p.handle));
+  const wishlistedRaw = useWishlistStore((s) => s.handles.includes(p.handle));
   const toggleWishlist = useWishlistStore((s) => s.toggle);
   const [adding, setAdding] = useState(false);
   const [buyingNow, setBuyingNow] = useState(false);
@@ -94,6 +94,9 @@ export function ProductCard({
   // products at the exact 14-day boundary and triggers React #418.
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
+  // SSR sees an empty wishlist (no localStorage); returning visitors see
+  // their persisted list. Render the inert state until mount to avoid #418.
+  const wishlisted = mounted ? wishlistedRaw : false;
   useEffect(() => () => { if (successTimer.current) clearTimeout(successTimer.current); }, []);
 
   // Mobile: dismiss the revealed CTA overlay when tapping outside the card.
