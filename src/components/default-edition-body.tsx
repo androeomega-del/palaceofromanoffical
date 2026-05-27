@@ -356,6 +356,29 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
         <ForYouFeed />
       </HydrationSafeClientOnly>
 
+      {/* Shop-the-Story rails wired to live Shopify collections. Each strip
+          self-hides if the collection is empty or unpublished. */}
+      <HydrationSafeClientOnly fallback={null}>
+        <ShopTheStoryStrip
+          eyebrow="This Week's Arrivals"
+          title="Just Landed"
+          caption="The newest pieces in the house — fresh from the maisons, ready to ship."
+          collection="new-arrivals"
+          limit={8}
+          ctaLabel="Shop All New In"
+          ctaHref="/collections/new-arrivals"
+        />
+        <ShopTheStoryStrip
+          eyebrow="House Favourites"
+          title="The Best Sellers"
+          caption="The pieces our clientele return to — quietly defining the season."
+          collection="best-sellers"
+          limit={8}
+          ctaLabel="Shop Best Sellers"
+          ctaHref="/collections/best-sellers"
+        />
+      </HydrationSafeClientOnly>
+
       {/* The AI-curated edition now wraps the entire homepage via
           <EditionLayout/>; the inline EditorsEdition band has been
           removed so AI blocks no longer duplicate sections below. */}
