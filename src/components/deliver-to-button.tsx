@@ -105,7 +105,7 @@ export function DeliverToButton({ className = "" }: { className?: string }) {
           className={`inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.22em] text-ink/70 hover:text-bronze transition-colors ${className}`}
         >
           <MapPin className="w-3.5 h-3.5" strokeWidth={1.5} />
-          <span className="hidden sm:inline whitespace-nowrap">{label}</span>
+          <span className="hidden xl:inline whitespace-nowrap">{label}</span>
         </button>
       </PopoverTrigger>
       <PopoverContent
