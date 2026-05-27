@@ -20,6 +20,7 @@ import { CampaignVideo } from "@/components/campaign-video";
 import { ForYouFeed } from "@/components/for-you-feed";
 import { TrendingNowRail } from "@/components/trending-now";
 import { CurationCountdown } from "@/components/curation-countdown";
+import { QuizLookbookPreview } from "@/components/atelier/quiz-lookbook-preview";
 
 import summerHero from "@/assets/summer-bento-hero.jpg";
 import editorialHero from "@/assets/editorial/may-2026/1.webp";
