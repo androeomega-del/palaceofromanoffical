@@ -318,6 +318,11 @@ function ShopPage() {
               onClearCategory={() => update({ collection: "" })}
               onClearAll={clearAll}
             />
+            {clientFacetCount(clientState) > 0 && (
+              <div className="-mt-4 mb-6">
+                <ClientFacetPills state={clientState} onChange={setClientState} />
+              </div>
+            )}
 
             {q.isLoading ? (
               <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12">
