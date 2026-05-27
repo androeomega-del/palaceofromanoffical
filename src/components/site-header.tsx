@@ -193,7 +193,7 @@ export function SiteHeader() {
               <button
                 aria-label="Search"
                 onClick={() => setSearchOpen(true)}
-                className="hover:text-bronze transition-colors inline-flex items-center justify-center w-5 h-5"
+                className="hover:text-bronze transition-colors inline-flex items-center justify-center w-5 h-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze focus-visible:ring-offset-2 focus-visible:ring-offset-canvas rounded-sm"
               >
                 <Search className="w-4 h-4" strokeWidth={1.25} />
               </button>
@@ -207,14 +207,14 @@ export function SiteHeader() {
                   const token = useCustomerStore.getState().getValidToken();
                   window.location.href = token ? "/account" : "/account/login";
                 }}
-                className="hover:text-bronze transition-colors hidden sm:inline-flex items-center justify-center w-5 h-5"
+                className="hover:text-bronze transition-colors hidden sm:inline-flex items-center justify-center w-5 h-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze focus-visible:ring-offset-2 focus-visible:ring-offset-canvas rounded-sm"
               >
                 <User className="w-4 h-4" strokeWidth={1.25} />
               </button>
               <button
                 aria-label={`Cart (${totalItems})`}
                 onClick={() => setCartOpen(true)}
-                className="relative hover:text-bronze transition-colors inline-flex items-center justify-center w-5 h-5"
+                className="relative hover:text-bronze transition-colors inline-flex items-center justify-center w-5 h-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze focus-visible:ring-offset-2 focus-visible:ring-offset-canvas rounded-sm"
               >
                 <ShoppingBag className="w-4 h-4" strokeWidth={1.25} />
                 {totalItems > 0 && (
