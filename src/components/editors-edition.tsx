@@ -61,19 +61,12 @@ function resolveImage(src: string): string {
 }
 
 async function loadActiveEdition(): Promise<HomepageLayout | null> {
-  const { data, error } = await supabase
-    .from("homepage_daily_layout")
-    .select("layout_json")
-    .eq("is_active", true)
-    .order("generated_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  if (error || !data) return null;
-  const parsed = homepageLayoutSchema.safeParse(data.layout_json);
-  if (!parsed.success) return null;
-  // Cold-start fallback isn't a real edition — fall through to default body.
-  if (parsed.data.source === "cold_start_fallback") return null;
-  return parsed.data;
+  // Reverted to the pre-AI-composer layout per founder request. The AI
+  // edition rows in `homepage_daily_layout` are intentionally ignored so the
+  // homepage always renders <DefaultEditionBody/> — the Farfetch-level
+  // editorial layout we shipped before tonight's experiment. Restore by
+  // reverting this function to its previous Supabase query.
+  return null;
 }
 
 /**
