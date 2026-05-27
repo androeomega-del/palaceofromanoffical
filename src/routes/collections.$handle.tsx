@@ -508,9 +508,13 @@ function CollectionPage() {
 
           <section className="px-6 pt-12 pb-8 border-b border-ink/5">
             <div className="max-w-screen-2xl mx-auto">
-              <Link to="/" className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground hover:text-ink">
-                ← Boutique
-              </Link>
+              <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+                <Link to="/" className="hover:text-ink transition-colors">Home</Link>
+                <span className="opacity-40">/</span>
+                <Link to="/collections" className="hover:text-ink transition-colors">Collections</Link>
+                <span className="opacity-40">/</span>
+                <span className="text-ink">{title}</span>
+              </nav>
               <div className="mt-6 flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <h1 className="text-4xl md:text-6xl font-serif text-balance">{title}</h1>
                 <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
