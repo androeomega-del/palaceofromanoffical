@@ -115,10 +115,12 @@ export function ShippingMeta({ vendor, handle, variantId, variant = "card" }: Pr
   if (!variantFetching) lastOriginRef.current = resolvedOrigin;
   const origin = variantFetching && variantId ? lastOriginRef.current : resolvedOrigin;
 
-  const usedHubFallback = !liveVariantOrigin && !productOrigin && !vendorOrigin;
-  const originLabel = usedHubFallback
-    ? HUB_FALLBACK_LABEL
-    : formatOriginLabel(origin)!;
+  // Always surface a real country. `resolvedOrigin` falls back to
+  // DEFAULT_ORIGIN (Italy — BG's documented primary warehouse), so the
+  // editorial "Ships from {country}" copy never collapses to warehouse
+  // jargon. Voided _ = vendorOrigin retained above only for future per-vendor logic.
+  void vendorOrigin;
+  const originLabel = formatOriginLabel(origin)!;
   const estimate = estimateForOriginAndZip(origin, effectiveZip);
 
   if (variant === "card") {
