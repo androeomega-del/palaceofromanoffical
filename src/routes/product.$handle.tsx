@@ -676,6 +676,16 @@ function ProductView({
                 </button>
               </div>
 
+              {selectedVariant && !selectedVariant.availableForSale && (
+                <NotifyMeForm
+                  variantGid={selectedVariant.id}
+                  productHandle={product.handle}
+                  productTitle={product.title}
+                  variantTitle={selectedVariant.title}
+                  imageUrl={product.images?.edges?.[0]?.node?.url ?? null}
+                  priceUsd={selectedVariant.price?.amount ?? null}
+                />
+              )}
 
               {/* Trust anchor — interactive, opens shipping/returns sheet. Full-width, flush under CTA row. */}
               <PdpShippingSheet />
