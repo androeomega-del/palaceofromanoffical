@@ -15,12 +15,13 @@ import { subscribeNewsletter } from "@/lib/newsletter.functions";
  * a short delay so it doesn't interrupt the initial impression.
  */
 const STORAGE_KEY = "por_welcome_dispatch_v1";
-// Engagement-gated trigger: fires once the visitor has BOTH spent 20s on the
-// site AND scrolled past 40% of the viewport-adjusted page. Replaces the
-// earlier 7s blanket timer — Shopify benchmarks show engagement-gated email
-// gates drop bounce 6–9 pts vs pure time triggers.
-const MIN_DWELL_MS = 20000;
-const MIN_SCROLL_RATIO = 0.4;
+// Luxury-tier trigger calibration: NAP / MR PORTER / MyTheresa only surface
+// newsletter capture after sustained engagement (45s+) or near the page foot.
+// Mid-scroll interruptions read as discount-site behaviour. We gate on BOTH
+// 45s dwell AND 75% scroll, with the localStorage flag enforcing once-ever
+// (so practically also once-per-session).
+const MIN_DWELL_MS = 45000;
+const MIN_SCROLL_RATIO = 0.75;
 
 export function WelcomeDispatchModal() {
   const subscribe = useServerFn(subscribeNewsletter);
