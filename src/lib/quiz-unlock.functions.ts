@@ -169,6 +169,10 @@ export const unlockQuizLookbook = createServerFn({ method: "POST" })
     const email = data.email.trim().toLowerCase();
     const source = data.source ?? "style-quiz";
 
+    // Consent: default true (visitor is actively unlocking, which is an
+    // opt-in action), but honour an explicit false from the client.
+    const consent = data.marketingConsent !== false;
+
     // 1) Newsletter signup — dedupe via unique index on lower(email).
     const { data: subInserted, error: subErr } = await supabaseAdmin
       .from("newsletter_subscribers")
@@ -176,7 +180,7 @@ export const unlockQuizLookbook = createServerFn({ method: "POST" })
         email,
         source,
         user_agent: data.userAgent ?? null,
-        marketing_consent: true,
+        marketing_consent: consent,
       })
       .select("id")
       .maybeSingle();
@@ -208,26 +212,30 @@ export const unlockQuizLookbook = createServerFn({ method: "POST" })
       };
     }
 
-    // 3) Welcome email for genuinely new subscribers only.
+    // 3) Welcome email — only for genuinely new subscribers, and only if
+    //    consent + frequency cap allow it. The cap is a defensive backstop;
+    //    the newsletter unique-index check above is the primary gate.
     if (isNewSubscriber) {
-      try {
-        const { subject, html, text } = renderWelcomeEmail();
-        await sendGmail(email, subject, html, text);
-      } catch (e) {
-        const msg = e instanceof Error ? e.message : String(e);
-        console.error("[quiz-unlock] welcome email failed:", msg);
-      }
+      const welcome = renderWelcomeEmail();
+      await sendGatedEmail(
+        email,
+        TEMPLATE_WELCOME,
+        welcome.subject,
+        welcome.html,
+        welcome.text,
+      );
     }
 
-    // 4) Lookbook unlock confirmation — sent on every unlock so returning
-    //    subscribers also get the curated shop links for their latest answers.
-    try {
-      const { subject, html, text } = renderLookbookUnlockEmail(data.answers);
-      await sendGmail(email, subject, html, text);
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : String(e);
-      console.error("[quiz-unlock] lookbook confirmation email failed:", msg);
-    }
+    // 4) Lookbook unlock confirmation — capped to once per 7 days per email,
+    //    so repeat quiz takers don't get spammed with the same edit recap.
+    const lookbook = renderLookbookUnlockEmail(data.answers);
+    await sendGatedEmail(
+      email,
+      TEMPLATE_LOOKBOOK,
+      lookbook.subject,
+      lookbook.html,
+      lookbook.text,
+    );
 
     return {
       ok: true as const,
