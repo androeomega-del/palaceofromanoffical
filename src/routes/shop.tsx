@@ -164,8 +164,15 @@ function ShopPage() {
   });
 
   const filters = q.data?.pages?.[0]?.filters ?? [];
-  const edges = useMemo(() => q.data?.pages.flatMap((p) => p.edges) ?? [], [q.data]);
+  const rawEdges = useMemo(() => q.data?.pages.flatMap((p) => p.edges) ?? [], [q.data]);
   const selectedInputs = useMemo(() => new Set(selections.map((s) => s.input)), [selections]);
+
+  // Apply client-derived facet filters (Brand / Price / Size / Colour / Material)
+  // in-memory. Used as a fallback when Shopify Storefront returns no native facets.
+  const edges = useMemo(
+    () => applyClientFacets(rawEdges, clientState),
+    [rawEdges, clientState],
+  );
 
   // URL helpers
   const update = (patch: Partial<typeof search>) =>
