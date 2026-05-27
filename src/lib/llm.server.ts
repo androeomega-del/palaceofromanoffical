@@ -62,11 +62,21 @@ export async function callLlm(opts: CallLlmOptions): Promise<string> {
     body.response_format = { type: "json_object" };
   }
 
+  // Lovable AI Gateway authenticates with `Lovable-API-Key`, not Bearer.
+  // Emergent's proxy uses the standard `Authorization: Bearer` header.
+  const authHeaders: Record<string, string> =
+    provider.name === "lovable-ai"
+      ? {
+          "Lovable-API-Key": provider.key,
+          "X-Lovable-AIG-SDK": "palace-of-roman-llm-helper",
+        }
+      : { Authorization: `Bearer ${provider.key}` };
+
   const res = await fetch(provider.url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${provider.key}`,
+      ...authHeaders,
     },
     body: JSON.stringify(body),
   });
