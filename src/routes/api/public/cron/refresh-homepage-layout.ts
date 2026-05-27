@@ -258,45 +258,95 @@ const EDITORIAL_ROUTES = [
 ];
 
 async function buildAiLayout(): Promise<HomepageLayout> {
-  const [women, men, accessories, trending, searchSignals, previousRow] =
-    await Promise.all([
-      safeFetch("tag:women OR product_type:Dress OR product_type:Skirt", 16),
-      safeFetch("tag:men OR product_type:Suit OR product_type:Shirt", 16),
-      safeFetch("product_type:Bag OR product_type:Shoes OR product_type:Accessories", 12),
-      pullTrendingHandles(),
-      pullSearchSignals(),
-      (async () => {
-        try {
-          const { data } = await supabaseAdmin
-            .from("homepage_daily_layout")
-            .select("layout_json")
-            .order("generated_at", { ascending: false })
-            .limit(1)
-            .maybeSingle();
-          return (data?.layout_json ?? null) as unknown;
-        } catch {
-          return null;
-        }
-      })(),
-    ]);
+  // Pull a much wider signal pool so each rail can draw from a distinct
+  // bucket of handles. Variety only happens if the inputs themselves
+  // are varied — feeding three overlapping queries guarantees collisions
+  // no matter what the model does.
+  const [
+    womenDresses,
+    womenSkirtsKnits,
+    womenShoes,
+    menTailoring,
+    menShirtsKnits,
+    menShoes,
+    bags,
+    accessories,
+    newArrivals,
+    trending,
+    searchSignals,
+    previousRow,
+  ] = await Promise.all([
+    safeFetch("tag:women AND (product_type:Dress OR product_type:Jumpsuit)", 16),
+    safeFetch("tag:women AND (product_type:Skirt OR product_type:Knitwear OR product_type:Top)", 16),
+    safeFetch("tag:women AND (product_type:Shoes OR product_type:Boots)", 12),
+    safeFetch("tag:men AND (product_type:Suit OR product_type:Jacket OR product_type:Trousers)", 16),
+    safeFetch("tag:men AND (product_type:Shirt OR product_type:Knitwear OR product_type:T-Shirt)", 16),
+    safeFetch("tag:men AND (product_type:Shoes OR product_type:Sneakers OR product_type:Boots)", 12),
+    safeFetch("product_type:Bag OR product_type:Handbag OR tag:bags", 14),
+    safeFetch("product_type:Accessories OR tag:accessories", 14),
+    safeFetch("tag:new OR tag:new-arrivals", 16),
+    pullTrendingHandles(),
+    pullSearchSignals(),
+    (async () => {
+      try {
+        const { data } = await supabaseAdmin
+          .from("homepage_daily_layout")
+          .select("layout_json")
+          .order("generated_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        return (data?.layout_json ?? null) as unknown;
+      } catch {
+        return null;
+      }
+    })(),
+  ]);
+
+  const women = [...womenDresses, ...womenSkirtsKnits, ...womenShoes];
+  const men = [...menTailoring, ...menShirtsKnits, ...menShoes];
+  const allProducts = [
+    ...women,
+    ...men,
+    ...bags,
+    ...accessories,
+    ...newArrivals,
+  ];
 
   // Bail out to fallback if Shopify is empty — Claude has nothing to anchor to.
   if (women.length === 0 && men.length === 0) {
     throw new Error("no shopify signals — fall back");
   }
 
+  // Dedup by handle while preserving the bucket each handle came from so we
+  // can backfill rails from the correct pool later.
+  const dedupByHandle = (items: SignalProduct[]): SignalProduct[] => {
+    const seen = new Set<string>();
+    const out: SignalProduct[] = [];
+    for (const p of items) {
+      if (!p.handle || seen.has(p.handle)) continue;
+      seen.add(p.handle);
+      out.push(p);
+    }
+    return out;
+  };
+  const womenPool = dedupByHandle(women);
+  const menPool = dedupByHandle(men);
+  const bagsPool = dedupByHandle(bags);
+  const accessoriesPool = dedupByHandle(accessories);
+  const newArrivalsPool = dedupByHandle(newArrivals);
+
   const trendingProducts = trending
-    .map((h) => [...women, ...men, ...accessories].find((p) => p.handle === h))
+    .map((h) => allProducts.find((p) => p.handle === h))
     .filter((p): p is SignalProduct => !!p)
-    .slice(0, 8);
+    .slice(0, 10);
 
   const brandTally = new Map<string, number>();
-  for (const p of [...women, ...men, ...accessories]) {
+  for (const p of allProducts) {
     if (p.vendor) brandTally.set(p.vendor, (brandTally.get(p.vendor) ?? 0) + 1);
   }
   const topBrands = [...brandTally.entries()]
     .sort((a, b) => b[1] - a[1])
-    .slice(0, 6)
+    .slice(0, 8)
     .map(([v]) => v);
 
   // Variation signal: feed the previous edition's headings + hero image + a
@@ -320,16 +370,22 @@ async function buildAiLayout(): Promise<HomepageLayout> {
           new Set(
             (prev.blocks ?? [])
               .flatMap((b) => (b.type === "product_rail" ? b.productHandles ?? [] : []))
-              .slice(0, 30),
+              .slice(0, 40),
           ),
         ),
       }
     : null;
 
   const signalPayload = {
-    women: women.slice(0, 12),
-    men: men.slice(0, 12),
-    accessories: accessories.slice(0, 8),
+    women_dresses_jumpsuits: womenDresses.slice(0, 12),
+    women_skirts_knits_tops: womenSkirtsKnits.slice(0, 12),
+    women_shoes: womenShoes.slice(0, 10),
+    men_tailoring: menTailoring.slice(0, 12),
+    men_shirts_knits: menShirtsKnits.slice(0, 12),
+    men_shoes: menShoes.slice(0, 10),
+    bags: bagsPool.slice(0, 12),
+    accessories: accessoriesPool.slice(0, 12),
+    new_arrivals: newArrivalsPool.slice(0, 12),
     trending_now: trendingProducts,
     top_brands: topBrands,
     top_search_queries: searchSignals.top_queries,
@@ -353,20 +409,30 @@ Compose a JSON object that matches this exact shape and nothing else:
     { "id": "women-now", "type": "product_rail", "heading": "...", "subheading": "...", "productHandles": ["...","..."] },
     { "id": "editorial-feature", "type": "editorial_banner", "image": "<image_key>", "alt": "...", "heading": "...", "subheading": "...", "cta": { "label": "Read the story", "href": "<editorial href>" }, "hotspots": [] },
     { "id": "men-now", "type": "product_rail", "heading": "...", "subheading": "...", "productHandles": ["...","..."] },
+    { "id": "accessories-edit", "type": "product_rail", "heading": "...", "subheading": "...", "productHandles": ["...","..."] },
     { "id": "trending-brands", "type": "product_rail", "heading": "...", "subheading": "...", "productHandles": ["...","..."] }
   ]
 }
 
-Rules:
+VARIETY RULES — these are non-negotiable, the renderer will drop rails that violate them:
+- CROSS-RAIL UNIQUENESS: every productHandles entry across ALL rails combined MUST be unique. A handle that appears in "women-now" MUST NOT appear in "men-now", "accessories-edit", or "trending-brands". No exceptions.
+- MIN 8 / MAX 10 unique handles per rail.
+- women-now: pull primarily from women_dresses_jumpsuits, women_skirts_knits_tops, women_shoes. Mix at least 2 of those 3 buckets so the rail isn't just one product type.
+- men-now: pull primarily from men_tailoring, men_shirts_knits, men_shoes. Mix at least 2 of those 3 buckets.
+- accessories-edit: pull from bags + accessories. Do NOT reuse handles already in women-now or men-now.
+- trending-brands: pull from trending_now first, then top up from new_arrivals — but skip any handle already used above.
+- Each rail should represent at least 4 distinct vendors when the pool allows it (avoid stacking 6 Gucci pieces in one rail).
+- Avoid repeating headings, hero image, or used_handles from previous_edition.headings/hero_image/used_handles — pick a different image_key and a different angle.
+
+OTHER RULES:
 - Every productHandles entry MUST be a handle from the signals JSON below — never invent.
-- Each rail: 6–10 handles, no duplicates within a rail.
 - "image" on hero/banner MUST be one of the integer keys from hero_image_keys / banner_image_keys, returned as a string (e.g. "22").
 - "cta.href" on the editorial banner MUST be one of editorial_stories[].href.
 - Hero cta.href should link to /collections/women, /collections/men, /collections/new-arrivals or a real collection handle.
 - Copy: editorial, restrained, curatorial. Headings ≤ 60 chars. Subheadings ≤ 160 chars. No emoji, no exclamation, no clichés, no fabricated reviews.
 - "hotspots": leave as an empty array [].
-- SEARCH SIGNALS: top_search_queries are terms shoppers are actively typing and getting results for — let them influence rail framing and which handles you surface (e.g. if "linen" recurs, lean rails toward linen-tagged pieces present in the signals). Reference at most one query subtly in a subheading; never quote queries verbatim in headings.
-- UNMET DEMAND: unmet_search_demand are queries returning zero results. Do NOT mention these in copy. Use them only as a soft steer — if an unmet term has an aesthetic adjacent piece in the signals, that piece can be elevated.
+- SEARCH SIGNALS: top_search_queries can influence framing. Reference at most one subtly in a subheading; never quote verbatim in a heading.
+- UNMET DEMAND: do NOT mention zero-result queries in copy.
 - Output ONLY the JSON object — no prose, no markdown.
 
 Signals JSON:
@@ -379,8 +445,8 @@ ${JSON.stringify(signalPayload, null, 2)}`;
     {
       system: PALACE_BRAND_VOICE,
       user: userPrompt,
-      maxTokens: 2200,
-      temperature: 0.4,
+      maxTokens: 2800,
+      temperature: 0.55,
     },
     { blocks: [] },
   );
@@ -389,18 +455,32 @@ ${JSON.stringify(signalPayload, null, 2)}`;
     throw new Error("LLM returned no blocks");
   }
 
-  // Resolve numeric/string image keys to URLs the frontend already understands.
-  // Editorial library files live at src/assets/editorial/library/<n>.png and are
-  // bundled by Vite — the renderer resolves the same key range via img(n).
-  // We store the raw key string in layout_json so the frontend can call img().
-  // Convert image keys to a normalized "library:<n>" token so the renderer can
-  // distinguish them from external URLs in the future without breaking schema.
   const normalizeImage = (val: unknown): string => {
     if (typeof val !== "string") return String(val ?? "");
     const m = val.match(/^\s*(\d+)\s*$/);
     if (m) return `library:${m[1]}`;
     return val;
   };
+
+  // Resolve the right backfill pool for a given rail id, in priority order.
+  const backfillPoolFor = (id: string): SignalProduct[] => {
+    const lc = id.toLowerCase();
+    if (lc.includes("women")) return [...womenPool, ...newArrivalsPool];
+    if (lc.includes("men")) return [...menPool, ...newArrivalsPool];
+    if (lc.includes("access") || lc.includes("bag"))
+      return [...bagsPool, ...accessoriesPool];
+    if (lc.includes("trend") || lc.includes("brand"))
+      return [...trendingProducts, ...newArrivalsPool, ...bagsPool, ...accessoriesPool];
+    if (lc.includes("new") || lc.includes("arrival"))
+      return [...newArrivalsPool, ...womenPool, ...menPool];
+    return [...newArrivalsPool, ...womenPool, ...menPool, ...bagsPool, ...accessoriesPool];
+  };
+
+  // HARD ENFORCEMENT of cross-rail uniqueness + min-per-rail. The model has
+  // been known to ignore the rule, so we redo the job here deterministically.
+  const usedHandles = new Set<string>();
+  const MIN_PER_RAIL = 6;
+  const MAX_PER_RAIL = 10;
 
   const cleanedBlocks = raw.blocks.map((b) => {
     const out: Record<string, unknown> = { ...b };
@@ -411,6 +491,36 @@ ${JSON.stringify(signalPayload, null, 2)}`;
     if (b.type === "editorial_banner" && !Array.isArray((b as RawBlock).hotspots)) {
       out.hotspots = [];
     }
+    if (b.type === "product_rail") {
+      const rawHandles = Array.isArray((b as RawBlock).productHandles)
+        ? ((b as RawBlock).productHandles as unknown[]).filter(
+            (h): h is string => typeof h === "string" && h.length > 0,
+          )
+        : [];
+      const seenInRail = new Set<string>();
+      const kept: string[] = [];
+      for (const h of rawHandles) {
+        if (kept.length >= MAX_PER_RAIL) break;
+        if (seenInRail.has(h) || usedHandles.has(h)) continue;
+        // Must exist in the signal pool, otherwise the renderer would drop it.
+        if (!allProducts.some((p) => p.handle === h)) continue;
+        seenInRail.add(h);
+        kept.push(h);
+      }
+      // Backfill from the right pool if the model under-delivered or
+      // collided too heavily with earlier rails.
+      if (kept.length < MIN_PER_RAIL) {
+        const pool = backfillPoolFor(String((b as RawBlock).id ?? ""));
+        for (const p of pool) {
+          if (kept.length >= MAX_PER_RAIL) break;
+          if (seenInRail.has(p.handle) || usedHandles.has(p.handle)) continue;
+          seenInRail.add(p.handle);
+          kept.push(p.handle);
+        }
+      }
+      for (const h of kept) usedHandles.add(h);
+      out.productHandles = kept;
+    }
     return out;
   });
 
@@ -420,7 +530,6 @@ ${JSON.stringify(signalPayload, null, 2)}`;
     source: "claude",
     blocks: cleanedBlocks,
   });
-
 }
 
 async function buildNextLayout(): Promise<HomepageLayout> {
