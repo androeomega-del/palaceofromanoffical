@@ -34,6 +34,7 @@ import { SizeFitGuide } from "@/components/product/size-fit-guide";
 import { PdpJournalLinks } from "@/components/pdp-journal-links";
 import { NotifyMeForm } from "@/components/atelier/notify-me-form";
 import { RecentlyViewedRail } from "@/components/recently-viewed-rail";
+import { ImageLightbox } from "@/components/product/image-lightbox";
 
 export const Route = createFileRoute("/product/$handle")({
   loader: async ({ params }) => {
