@@ -547,13 +547,20 @@ function ProductView({
                     }`}
                   >
                     {img.url && (
-                      <img
-                        src={cdnImage(img.url, { width: 1400 })}
-                        alt={img.altText ?? product.title}
-                        loading={i === 0 ? "eager" : "lazy"}
-                        decoding="async"
-                        className="w-full h-full object-cover transition-transform duration-[1400ms] hover:scale-[1.02]"
-                      />
+                      <button
+                        type="button"
+                        onClick={() => setLightboxIdx(i)}
+                        aria-label={`Open image ${i + 1} of ${images.length} in fullscreen`}
+                        className="block w-full h-full cursor-zoom-in"
+                      >
+                        <img
+                          src={cdnImage(img.url, { width: 1400 })}
+                          alt={img.altText ?? product.title}
+                          loading={i === 0 ? "eager" : "lazy"}
+                          decoding="async"
+                          className="w-full h-full object-cover transition-transform duration-[1400ms] hover:scale-[1.02]"
+                        />
+                      </button>
                     )}
                   </div>
                 );
