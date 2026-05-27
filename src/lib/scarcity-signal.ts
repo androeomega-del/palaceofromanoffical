@@ -70,19 +70,20 @@ export function computeScarcitySignal({
     };
   }
 
-  // Top-tier luxury restraint: only signal scarcity when stock is genuinely
-  // critical (≤ 2 across the entire size run). One restrained, curatorial
-  // line — no countdowns, no "Final Piece", no per-size counts.
-  // Tier name kept as "limited" so downstream visual treatments (the bronze
-  // halo on cards, the buy-box accent on PDP) continue to map cleanly.
-  if (availableCount > 0 && availableCount <= 2) {
+  // Top-tier luxury restraint: NAP/MR PORTER reserve scarcity tags for the
+  // genuinely-final piece only. Showing "Limited availability" on most cards
+  // in a row turns the signal into noise — so we now only badge when exactly
+  // one variant remains in the entire size run. Tier name kept as "limited"
+  // so downstream visual treatments (bronze halo, buy-box accent) keep
+  // mapping cleanly without a sweep through call sites.
+  if (availableCount === 1) {
     return {
       tier: "limited",
-      label: "Limited availability",
-      headline: "Limited availability",
+      label: "Final piece",
+      headline: "Final piece",
       rationale:
-        "A short remaining run across sizes — pieces in this category typically sell through before re-supply.",
-      remaining: availableCount,
+        "One remaining unit across the entire size run — once gone, this colourway rarely returns.",
+      remaining: 1,
     };
   }
 
