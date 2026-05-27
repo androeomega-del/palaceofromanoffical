@@ -20,7 +20,111 @@ const UnlockInput = z.object({
   answers: AnswersSchema,
   source: z.string().max(64).optional(),
   userAgent: z.string().max(500).optional(),
+  marketingConsent: z.boolean().optional(),
 });
+
+// Frequency caps (in hours) per email template. Welcome is one-shot per
+// subscriber so we use a large window as a defensive backstop in case the
+// newsletter insert path is bypassed.
+const EMAIL_FREQUENCY_HOURS: Record<string, number> = {
+  quiz_welcome_email: 24 * 365, // effectively one-time
+  quiz_lookbook_unlock: 24 * 7, // at most once per 7 days per email
+};
+
+const TEMPLATE_WELCOME = "quiz_welcome_email";
+const TEMPLATE_LOOKBOOK = "quiz_lookbook_unlock";
+
+/**
+ * Returns true if the recipient has opted out of marketing. Subscribers who
+ * have never signed up are treated as opted-in (they're actively unlocking
+ * the lookbook, which is itself an opt-in action).
+ */
+async function hasMarketingOptOut(email: string): Promise<boolean> {
+  const { data } = await supabaseAdmin
+    .from("newsletter_subscribers")
+    .select("marketing_consent")
+    .eq("email", email)
+    .maybeSingle();
+  return data ? data.marketing_consent === false : false;
+}
+
+/**
+ * Returns true if we sent the given template to this email within the
+ * frequency window. Reads append-only email_dispatch_log; service-role
+ * bypasses RLS.
+ */
+async function wasRecentlySent(
+  email: string,
+  templateName: string,
+): Promise<boolean> {
+  const hours = EMAIL_FREQUENCY_HOURS[templateName];
+  if (!hours) return false;
+  const sinceIso = new Date(Date.now() - hours * 3600_000).toISOString();
+  const { data, error } = await supabaseAdmin
+    .from("email_dispatch_log")
+    .select("id")
+    .eq("recipient_email", email)
+    .eq("template_name", templateName)
+    .eq("status", "sent")
+    .gte("created_at", sinceIso)
+    .limit(1)
+    .maybeSingle();
+  if (error) {
+    console.error("[quiz-unlock] dispatch log lookup failed:", error.message);
+    return false; // fail-open: don't silently skip transactional sends
+  }
+  return !!data;
+}
+
+async function logDispatch(
+  email: string,
+  templateName: string,
+  status: "sent" | "failed" | "skipped",
+  errorMessage?: string,
+  metadata?: Record<string, unknown>,
+) {
+  const { error } = await supabaseAdmin.from("email_dispatch_log").insert({
+    recipient_email: email,
+    template_name: templateName,
+    status,
+    error_message: errorMessage ?? null,
+    metadata: (metadata ?? {}) as never,
+  });
+  if (error) {
+    console.error("[quiz-unlock] dispatch log insert failed:", error.message);
+  }
+}
+
+/**
+ * Send wrapper that enforces consent + per-template frequency caps.
+ * Records the attempt to email_dispatch_log regardless of outcome.
+ */
+async function sendGatedEmail(
+  email: string,
+  templateName: string,
+  subject: string,
+  html: string,
+  text: string,
+): Promise<"sent" | "skipped_consent" | "skipped_frequency" | "failed"> {
+  if (await hasMarketingOptOut(email)) {
+    await logDispatch(email, templateName, "skipped", "marketing_opt_out");
+    return "skipped_consent";
+  }
+  if (await wasRecentlySent(email, templateName)) {
+    await logDispatch(email, templateName, "skipped", "frequency_cap");
+    return "skipped_frequency";
+  }
+  try {
+    await sendGmail(email, subject, html, text);
+    await logDispatch(email, templateName, "sent");
+    return "sent";
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error(`[quiz-unlock] ${templateName} send failed:`, msg);
+    await logDispatch(email, templateName, "failed", msg.slice(0, 500));
+    return "failed";
+  }
+}
 
 const LookupInput = z.object({
   email: z.string().min(5).max(320).email(),
@@ -65,6 +169,10 @@ export const unlockQuizLookbook = createServerFn({ method: "POST" })
     const email = data.email.trim().toLowerCase();
     const source = data.source ?? "style-quiz";
 
+    // Consent: default true (visitor is actively unlocking, which is an
+    // opt-in action), but honour an explicit false from the client.
+    const consent = data.marketingConsent !== false;
+
     // 1) Newsletter signup — dedupe via unique index on lower(email).
     const { data: subInserted, error: subErr } = await supabaseAdmin
       .from("newsletter_subscribers")
@@ -72,7 +180,7 @@ export const unlockQuizLookbook = createServerFn({ method: "POST" })
         email,
         source,
         user_agent: data.userAgent ?? null,
-        marketing_consent: true,
+        marketing_consent: consent,
       })
       .select("id")
       .maybeSingle();
@@ -104,26 +212,30 @@ export const unlockQuizLookbook = createServerFn({ method: "POST" })
       };
     }
 
-    // 3) Welcome email for genuinely new subscribers only.
+    // 3) Welcome email — only for genuinely new subscribers, and only if
+    //    consent + frequency cap allow it. The cap is a defensive backstop;
+    //    the newsletter unique-index check above is the primary gate.
     if (isNewSubscriber) {
-      try {
-        const { subject, html, text } = renderWelcomeEmail();
-        await sendGmail(email, subject, html, text);
-      } catch (e) {
-        const msg = e instanceof Error ? e.message : String(e);
-        console.error("[quiz-unlock] welcome email failed:", msg);
-      }
+      const welcome = renderWelcomeEmail();
+      await sendGatedEmail(
+        email,
+        TEMPLATE_WELCOME,
+        welcome.subject,
+        welcome.html,
+        welcome.text,
+      );
     }
 
-    // 4) Lookbook unlock confirmation — sent on every unlock so returning
-    //    subscribers also get the curated shop links for their latest answers.
-    try {
-      const { subject, html, text } = renderLookbookUnlockEmail(data.answers);
-      await sendGmail(email, subject, html, text);
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : String(e);
-      console.error("[quiz-unlock] lookbook confirmation email failed:", msg);
-    }
+    // 4) Lookbook unlock confirmation — capped to once per 7 days per email,
+    //    so repeat quiz takers don't get spammed with the same edit recap.
+    const lookbook = renderLookbookUnlockEmail(data.answers);
+    await sendGatedEmail(
+      email,
+      TEMPLATE_LOOKBOOK,
+      lookbook.subject,
+      lookbook.html,
+      lookbook.text,
+    );
 
     return {
       ok: true as const,
