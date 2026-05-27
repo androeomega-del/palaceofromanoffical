@@ -22,7 +22,6 @@ import {
   ClientFacets,
   ClientFacetPills,
   applyClientFacets,
-  emptyClientFacetState,
   clientFacetCount,
   type ClientFacetState,
 } from "@/components/client-facets";
@@ -46,7 +45,20 @@ const shopSearch = z.object({
   min: fallback(z.coerce.number().int().nonnegative().optional(), undefined),
   max: fallback(z.coerce.number().int().nonnegative().optional(), undefined),
   inStock: fallback(z.coerce.boolean(), true).default(true),
+  // Client-side facet selections (comma-separated for shareable URLs)
+  brands: fallback(z.string(), "").default(""),
+  sizes: fallback(z.string(), "").default(""),
+  colors: fallback(z.string(), "").default(""),
+  materials: fallback(z.string(), "").default(""),
 });
+
+function decodeSet(s: string): Set<string> {
+  if (!s) return new Set();
+  return new Set(s.split(",").map((x) => decodeURIComponent(x.trim())).filter(Boolean));
+}
+function encodeSet(set: Set<string>): string {
+  return [...set].map(encodeURIComponent).join(",");
+}
 
 export const Route = createFileRoute("/shop")({
   validateSearch: zodValidator(shopSearch),
@@ -92,14 +104,29 @@ function ShopPage() {
   // Dynamic facet selections — kept in component state (encoded JSON inputs)
   const [selections, setSelections] = useState<Selection[]>([]);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  // Client-derived facets (Brand / Price / Size / Colour / Material) used as
-  // a fallback when Shopify Storefront doesn't return native facet groups.
-  const [clientState, setClientState] = useState<ClientFacetState>(() => emptyClientFacetState());
+  // Client-derived facets (Brand / Price / Size / Colour / Material) — persisted in the URL
+  const clientState = useMemo<ClientFacetState>(
+    () => ({
+      brands: decodeSet(search.brands),
+      sizes: decodeSet(search.sizes),
+      colors: decodeSet(search.colors),
+      materials: decodeSet(search.materials),
+      price:
+        search.min != null && search.max != null
+          ? { min: search.min, max: search.max }
+          : null,
+    }),
+    [search.brands, search.sizes, search.colors, search.materials, search.min, search.max],
+  );
 
   // Reset facet selections whenever scope changes (gender/collection/q)
   useEffect(() => {
     setSelections([]);
-    setClientState(emptyClientFacetState());
+    navigate({
+      search: (prev: Record<string, unknown>) => ({ ...prev, brands: "", sizes: "", colors: "", materials: "" }),
+      replace: true,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search.gender, search.collection, search.q]);
 
   const priceRange = useMemo(
@@ -178,6 +205,16 @@ function ShopPage() {
   const update = (patch: Partial<typeof search>) =>
     navigate({ search: { ...search, ...patch }, replace: true });
 
+  const setClientState = (next: ClientFacetState) =>
+    update({
+      brands: encodeSet(next.brands),
+      sizes: encodeSet(next.sizes),
+      colors: encodeSet(next.colors),
+      materials: encodeSet(next.materials),
+      min: next.price?.min,
+      max: next.price?.max,
+    });
+
   const toggle = (filterId: string, v: StorefrontFilterValue) => {
     setSelections((curr) =>
       curr.some((s) => s.input === v.input)
@@ -189,8 +226,16 @@ function ShopPage() {
     setSelections((c) => c.filter((s) => s.input !== input));
   const clearAll = () => {
     setSelections([]);
-    setClientState(emptyClientFacetState());
-    update({ gender: undefined, collection: "", min: undefined, max: undefined });
+    update({
+      gender: undefined,
+      collection: "",
+      min: undefined,
+      max: undefined,
+      brands: "",
+      sizes: "",
+      colors: "",
+      materials: "",
+    });
   };
 
   const setPriceRange = (range: { min: number; max: number } | null) =>
