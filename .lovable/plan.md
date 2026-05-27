@@ -1,108 +1,99 @@
-# SEO + CRO Implementation Plan
+# Email Capture System — Implementation Plan
 
-Ordered highest → lowest ROI. Each batch is self-contained and staged per the staged-launch rule (assets, copy, SEO, links ready together; nav exposed only after the full batch lands).
+Goal: take subscribers from 2 → meaningful list by capturing emails at every high-intent moment, without violating GDPR/CAN-SPAM or the cart-drawer lockdown.
 
-Backlink outreach and email-sequence content are deliverables you execute outside the codebase — flagged below but not coded.
-
----
-
-## Batch 1 — On-PDP trust + CRO (highest ROI, ships first)
-Touches every product page immediately; lifts conversion on existing traffic.
-
-1. **Trust strip on every PDP** above the fold:
-   "100% Authentic · Official BrandsGateway Partner · Ships from Europe · 14-Day Returns"
-   - New component `src/components/product/TrustStrip.tsx`, inserted into the PDP route.
-2. **Sticky Add-to-Cart bar** (mobile + desktop) appearing after the main ATC scrolls out of view.
-   - New component `src/components/product/StickyAtcBar.tsx` using IntersectionObserver.
-3. **Inline size/fit guidance** — collapsible accordion under variant picker, content sourced from product type (shoes / RTW / accessories).
-   - New component `src/components/product/SizeFitGuide.tsx` with a small `size-guides.ts` map.
-4. **Editorial PDP copy block** — "The Piece" short paragraph + Maison heritage line above specs.
-   - New component `src/components/product/EditorialPiece.tsx`; sources existing maison data.
-
-Checkout protocol is locked per memory — none of cart-store, cart-drawer, use-cart-sync, formatCheckoutUrl, or Zustand shape will be touched.
-
-## Batch 2 — Category landing pages (high SEO ROI)
-Real, indexable landing pages targeting the achievable long-tail keywords identified in the Semrush pass.
-
-Routes to create (each with H1 = exact-match, 300+ words curatorial copy, FAQ schema, filtered product grid):
-- `/collections/italian-leather-wallets` → "Italian Leather Wallets"
-- `/collections/italian-leather-loafers` → "Italian Leather Loafers"
-- `/collections/designer-mens-shirts` → "Designer Men's Shirts"
-- `/collections/italian-leather-handbags` → "Italian Leather Handbags"
-
-Each route file:
-- `head()` with title, description, og:*, canonical, FAQPage + BreadcrumbList JSON-LD.
-- Filters existing Shopify products by tag/type/vendor (no fake products per memory).
-- Internal links to 2–3 related journal articles (Batch 3).
-
-Sitemap entries appended to `src/routes/sitemap[.]xml.ts`.
-
-## Batch 3 — Journal craftsmanship cluster (compounding SEO ROI)
-Long-tail authority content, internally linked to Batch 2 landing pages.
-
-Three new articles in the Journal blog (real copy, Palace of Roman voice, no Lorem):
-1. "How to Spot Real Italian Leather — A Buyer's Guide"
-2. "Made in Italy vs Designed in Italy — What the Label Really Means"
-3. "Caring for Fine Leather — A Maison-Level Guide"
-
-Each article links to relevant Batch 2 landing pages with descriptive anchor text. Articles published via the Shopify blog admin API (same path used for the Versace News article).
-
-## Batch 4 — Schema + internal-linking polish (technical SEO)
-- Verify/extend Product, Brand, Offer JSON-LD on every PDP route file.
-- Add BreadcrumbList JSON-LD to PDP + collection routes.
-- Add "Related Reading" rail on PDP routes linking 2 journal articles per maison.
-- Tighten internal anchor text across journal → collection → PDP.
-
-## Batch 5 — Abandoned cart recovery (CRO, requires infra)
-Email infrastructure setup, then 3-email sequence.
-
-1. Set up Lovable Emails infrastructure (`setup_email_infra`, scaffold transactional templates).
-2. Build cart-abandonment trigger:
-   - Capture email on cart drawer if not yet captured (lightweight, no friction).
-   - Persist abandoned cart snapshot in a new `abandoned_carts` Supabase table with RLS.
-   - pg_cron job enqueues recovery emails at +1h, +24h, +72h.
-3. Three React Email templates per the playbook:
-   - +1h: "Your selection is reserved" — image, item, secure-checkout link, no discount.
-   - +24h: Concierge — "Questions about sizing or the piece?", soft, human.
-   - +72h: Craftsmanship paragraph + complimentary shipping (never a % discount, per luxury positioning).
-4. One-click cart restore link → existing cart drawer rehydration.
-
-## Batch 6 — Exit-intent + retention micro-CRO (lowest-ROI, optional)
-- Exit-intent overlay on `/cart`: "Save your bag" → email capture (NOT a coupon).
-- Web Push opt-in after first PDP view, surfacing "Reserved item" + "Back in stock" nudges (browser-native Push API + service worker).
+Existing infra we'll reuse:
+- `newsletter_subscribers` table (already exists, public insert allowed)
+- `stock_alert_subscriptions` table (already exists, unused)
+- `abandoned_carts` table (already exists)
+- Lovable Emails not yet configured — we'll set it up in Phase 2
 
 ---
 
-## Out of scope (you action, not codeable)
-- Backlink outreach to Tatler / Lyst / menswear blogs.
-- Pitching the BrandsGateway authorised-reseller story to press.
-- Getting Palace of Roman into the Reddit r/handbags style threads organically.
+## Phase 1 — High-ROI captures (ship first)
+
+**1. Restock / "Notify me" on sold-out variants**
+- New component `<NotifyMeForm />` rendered on PDP when a variant is `available: false`
+- Replaces the disabled "Add to Cart" with email field + "Notify when available"
+- Server fn `subscribeToStockAlert` → inserts into `stock_alert_subscriptions`
+- New RLS policy: allow anon INSERT (with email/handle length validation)
+
+**2. Exit-intent "Private Client" modal**
+- New `<ExitIntentModal />` mounted in `__root.tsx`
+- Triggers on `mouseleave` toward top of viewport (desktop) + 30s + scroll-up (mobile)
+- Shown once per session via `sessionStorage`, suppressed if already subscribed (localStorage flag set on submit)
+- Copy: "Reserve your place on the Atelier List — first access to new arrivals and private edits"
+- Server fn `subscribeToNewsletter({source: 'exit_intent'})`
+
+**3. Footer "Atelier List" form (always-visible)**
+- New `<AtelierListForm />` added to existing footer
+- Replaces any generic newsletter copy with the editorial framing
+- Same server fn as #2 with `source: 'footer'`
+
+**4. Cart drawer email capture — SAFE pattern**
+- Per checkout-protocol lockdown: do NOT modify `cart-store`, `cart-drawer`, `use-cart-sync`, or checkout URL logic
+- Instead, create a separate `<CartEmailCapture />` component that the cart-drawer already-allowed slot can render (we'll add ONE slot at the bottom of cart-drawer above the checkout button — read-only above that line)
+- If user enters email → insert into `abandoned_carts` with current cart items snapshot
+- This unlocks future cart recovery emails without changing checkout flow
 
 ---
 
-## Technical notes (for the build batches)
-- All new routes use TanStack `createFileRoute` with full `head()`, canonical only on leaves.
-- All JSON-LD inline via the `scripts` array.
-- Sitemap auto-extends per new route.
-- No changes to `cart-store.ts`, `cart-drawer.tsx`, `use-cart-sync.ts`, `formatCheckoutUrl`, or the Zustand shape (checkout protocol lockdown).
-- USD-only display preserved via existing `priceMoney()` boundary.
-- No BG import scripts touched.
-- New journal articles published via the existing Shopify Admin API path (`SHOPIFY_ACCESS_TOKEN`).
-- Batches 2 and 3 ship behind-the-scenes first; nav links added only after content + schema + sitemap are live (staged-launch rule).
+## Phase 2 — Email infrastructure + automated sends
+
+**5. Set up Lovable Emails domain + infra**
+- Email setup dialog (sender domain on `notify.palaceofroman.com`)
+- Scaffold transactional email templates (atelier welcome, restock alert, cart recovery, win-back)
+- Templates use Palace of Roman brand styling (ivory bg, serif headings, bronze accents)
+
+**6. Restock alert sender (server fn + cron)**
+- Daily cron: query `stock_alert_subscriptions` where `notified_at IS NULL`, check Shopify variant availability, send + mark notified
+- Wired through existing pgmq email queue
+
+**7. Welcome email on subscribe**
+- Triggered from `subscribeToNewsletter` server fn
+- "Welcome to the Atelier List" + first-look CTA
 
 ---
 
-## Proposed shipping order
+## Phase 3 — Content-driven captures
 
-| Order | Batch | Why this position |
-|---|---|---|
-| 1 | Batch 1 (PDP trust + CRO) | Lifts conversion on today's traffic; no infra |
-| 2 | Batch 2 (Landing pages) | New indexable surface area; immediate SEO compounding |
-| 3 | Batch 3 (Journal cluster) | Authority + internal links to Batch 2 |
-| 4 | Batch 4 (Schema polish) | Compounds Batches 2+3 |
-| 5 | Batch 5 (Abandoned cart) | Highest infra cost; recovers lost revenue from prior batches |
-| 6 | Batch 6 (Exit-intent + push) | Smallest delta; ship last |
+**8. Style quiz**
+- New route `/atelier/signature` — 4-question quiz (silhouette, palette, occasion, season)
+- Results emailed (email required) + on-page result reveal with 6 curated catalog products
+
+**9. Gated "Roman Edit" lookbook**
+- New route `/atelier/lookbook` — email gate → reveals current editorial PDF (we'll generate from existing editorial library)
+- Single-field form, downloads PDF after subscribe
 
 ---
 
-**Approve to start with Batch 1**, or tell me to reorder / drop batches before I begin.
+## Technical details
+
+```
+New files (Phase 1):
+  src/components/atelier/NotifyMeForm.tsx
+  src/components/atelier/ExitIntentModal.tsx
+  src/components/atelier/AtelierListForm.tsx
+  src/components/atelier/CartEmailCapture.tsx
+  src/lib/atelier.functions.ts   ← subscribeToNewsletter, subscribeToStockAlert, captureAbandonedCart
+
+Migration (Phase 1):
+  - Add INSERT policy on stock_alert_subscriptions (anon, with validation)
+  - Add INSERT policy on abandoned_carts (anon, with validation)
+  - Add 'source' check constraint values to newsletter_subscribers
+```
+
+All server fns validate with Zod (email regex, length caps) and rate-limit-friendly (no auth required, but length+format constraints in RLS).
+
+Cart-drawer change: a single one-line render slot added above the existing checkout button — no changes to cart-store, mutations, or checkout URL logic. I'll show the diff for approval before touching it.
+
+---
+
+## What I need from you
+
+Reply with one of:
+- **"Ship Phase 1"** → I implement #1–#4 now (Phase 2/3 later turns)
+- **"Ship all phases"** → I do everything across multiple turns, asking for approval at each phase boundary
+- **"Adjust"** → tell me what to change/drop/reorder
+
+I recommend Phase 1 first — those four alone will move the needle, and we'll have real subscriber volume before investing in the email automation infrastructure.
