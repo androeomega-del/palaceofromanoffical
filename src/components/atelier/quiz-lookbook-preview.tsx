@@ -84,12 +84,7 @@ export function QuizLookbookPreview({ fallback }: { fallback: ReactNode }) {
   useEffect(() => {
     if (typeof window === "undefined") return;
     let cancelled = false;
-    let storedEmail: string | null = null;
-    try {
-      storedEmail = window.localStorage.getItem(EMAIL_KEY);
-    } catch {
-      // ignore
-    }
+    const storedEmail = getStoredQuizEmail();
     if (!storedEmail) {
       setChecked(true);
       return;
