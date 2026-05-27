@@ -3,6 +3,13 @@ import { ChevronDown, ChevronUp, Search, X } from "lucide-react";
 import type { StorefrontFilter, StorefrontFilterValue } from "@/lib/shopify";
 import { CATEGORY_COLLECTIONS, GENDERS, type Category, type Gender } from "@/lib/shop-taxonomy";
 import { cn } from "@/lib/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // Selection model: array of { id, label, input } where input is the JSON
 // string Shopify expects in the `filters` arg.
