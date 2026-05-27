@@ -87,6 +87,13 @@ export function ProductCard({
   // broken-image icon. Top-tier sites never ship a card without imagery.
   const [imgError, setImgError] = useState(false);
   const [img2Error, setImg2Error] = useState(false);
+  // Hydration gate for any badge whose visibility depends on the current wall
+  // clock (e.g. "New In" — pieces added in the last 14 days). Server-rendered
+  // HTML uses the build/SSR timestamp; the client may evaluate `Date.now()` a
+  // few minutes (or hours, with CDN caching) later, which flips the badge on
+  // products at the exact 14-day boundary and triggers React #418.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   useEffect(() => () => { if (successTimer.current) clearTimeout(successTimer.current); }, []);
 
   // Mobile: dismiss the revealed CTA overlay when tapping outside the card.
@@ -418,7 +425,10 @@ export function ProductCard({
           void hideMarkdown;
           // "New In" — quietly badge pieces added in the last 14 days when
           // nothing more urgent (sale / scarcity / sold out) applies.
-          if (p.createdAt) {
+          // Gate behind `mounted` — `Date.now()` differs between SSR and
+          // client hydration, so rendering this on the server would cause a
+          // text-content mismatch (React #418).
+          if (mounted && p.createdAt) {
             const ageDays = (Date.now() - new Date(p.createdAt).getTime()) / 86_400_000;
             if (ageDays >= 0 && ageDays <= 14) {
               return (
