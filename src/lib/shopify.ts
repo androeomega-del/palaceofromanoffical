@@ -41,6 +41,7 @@ export interface ShopifyProductNode {
   handle: string;
   vendor: string;
   productType: string;
+  createdAt?: string;
   priceRange: { minVariantPrice: Money };
   compareAtPriceRange?: { minVariantPrice: Money };
   images: { edges: Array<{ node: ShopifyImage }> };
@@ -120,6 +121,7 @@ const PRODUCT_FRAGMENT = `
     handle
     vendor
     productType
+    createdAt
     priceRange { minVariantPrice { amount currencyCode } }
     compareAtPriceRange { minVariantPrice { amount currencyCode } }
     images(first: 8) { edges { node { url altText width height } } }
@@ -551,3 +553,29 @@ export function formatPrice(money: Money | undefined) {
     maximumFractionDigits: 0,
   }).format(Math.round(amount));
 }
+
+// Display-only currency conversion. Checkout / cart / fulfilment remain in
+// USD (the source-of-truth currency). This helper exists purely so shoppers
+// browsing from the EU/UK can see a familiar price tag in the grid — the
+// actual charge is in USD and shown at checkout. Rates are conservative,
+// updated manually, and intentionally never used in any cart mutation.
+const DISPLAY_RATES: Record<string, { rate: number; symbol: string; code: string }> = {
+  USD: { rate: 1, symbol: "$", code: "USD" },
+  EUR: { rate: 0.92, symbol: "€", code: "EUR" },
+  GBP: { rate: 0.79, symbol: "£", code: "GBP" },
+};
+
+export function convertForDisplay(money: Money | undefined, currency: string): string {
+  if (!money) return "";
+  const usd = parseFloat(money.amount);
+  const target = DISPLAY_RATES[currency] ?? DISPLAY_RATES.USD;
+  const converted = usd * target.rate;
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: target.code,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(Math.round(converted));
+}
+
+export const SUPPORTED_DISPLAY_CURRENCIES = Object.keys(DISPLAY_RATES);
