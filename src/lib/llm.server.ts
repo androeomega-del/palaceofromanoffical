@@ -1,7 +1,7 @@
 // Server-only helper to call the Emergent Universal LLM proxy (OpenAI-compatible).
 // Keeps the EMERGENT_LLM_KEY off the client. Workers/fetch-friendly — no SDK.
 
-const EMERGENT_PROXY = "https://integrations.emergentagent.com/llm/chat/completions";
+const EMERGENT_PROXY = "https://integrations.emergentagent.com/llm/v1/chat/completions";
 const LOVABLE_GATEWAY = "https://ai.gateway.lovable.dev/v1/chat/completions";
 const DEFAULT_EMERGENT_MODEL = "claude-sonnet-4-5-20250929";
 const DEFAULT_LOVABLE_MODEL = "google/gemini-2.5-flash";
