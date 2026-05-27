@@ -8,12 +8,18 @@
 //   node scripts/shopify/activate-draft-new-arrivals.mjs
 //   node scripts/shopify/activate-draft-new-arrivals.mjs --limit=50
 //
-// Requires: SHOPIFY_ACCESS_TOKEN, SUPABASE_DB_URL
+// Auth (in priority order):
+//   1. OAuth Client Credentials Grant — SHOPIFY_CLIENT_ID + SHOPIFY_CLIENT_SECRET
+//      Exchanges for a short-lived Admin API token, auto-refreshed in memory.
+//   2. Static custom-app token — SHOPIFY_ACCESS_TOKEN (fallback).
+// Also requires: SUPABASE_DB_URL (skipped on --dry).
 import { execSync } from 'node:child_process';
 
 const SHOP = 'mwuwqi-vy.myshopify.com';
 const API = '2025-07';
-const TOKEN = process.env.SHOPIFY_ACCESS_TOKEN;
+const CLIENT_ID = process.env.SHOPIFY_CLIENT_ID;
+const CLIENT_SECRET = process.env.SHOPIFY_CLIENT_SECRET;
+const STATIC_TOKEN = process.env.SHOPIFY_ACCESS_TOKEN;
 const DB_URL = process.env.SUPABASE_DB_URL;
 const TAG = 'new-arrival';
 const DAYS = 7;
@@ -21,18 +27,61 @@ const DRY = process.argv.includes('--dry');
 const limitArg = process.argv.find((a) => a.startsWith('--limit='));
 const LIMIT = limitArg ? parseInt(limitArg.split('=')[1], 10) : Infinity;
 
-if (!TOKEN) { console.error('Missing SHOPIFY_ACCESS_TOKEN'); process.exit(1); }
+if (!CLIENT_ID && !CLIENT_SECRET && !STATIC_TOKEN) {
+  console.error('Missing auth: set SHOPIFY_CLIENT_ID+SHOPIFY_CLIENT_SECRET (OAuth) or SHOPIFY_ACCESS_TOKEN');
+  process.exit(1);
+}
 if (!DB_URL && !DRY) { console.error('Missing SUPABASE_DB_URL'); process.exit(1); }
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+// ---------- Auth: OAuth client_credentials with in-memory cache ----------
+let cachedToken = null; // { token, expiresAt }
+
+async function getAccessToken() {
+  // Prefer OAuth grant if both client creds are present.
+  if (CLIENT_ID && CLIENT_SECRET) {
+    const now = Date.now();
+    if (cachedToken && cachedToken.expiresAt - 60_000 > now) return cachedToken.token;
+    const res = await fetch(`https://${SHOP}/admin/oauth/access_token`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({
+        client_id: CLIENT_ID,
+        client_secret: CLIENT_SECRET,
+        grant_type: 'client_credentials',
+      }),
+    });
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      throw new Error(`OAuth client_credentials grant failed ${res.status}: ${text.slice(0, 240)}`);
+    }
+    const data = await res.json();
+    if (!data.access_token) throw new Error('OAuth grant returned no access_token');
+    cachedToken = {
+      token: data.access_token,
+      expiresAt: now + (data.expires_in ?? 3600) * 1000,
+    };
+    return cachedToken.token;
+  }
+  // Fallback to static custom-app token.
+  return STATIC_TOKEN;
+}
+
 async function gql(query, variables = {}) {
   for (let attempt = 0; attempt < 6; attempt++) {
+    const token = await getAccessToken();
     const res = await fetch(`https://${SHOP}/admin/api/${API}/graphql.json`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Shopify-Access-Token': TOKEN },
+      headers: { 'Content-Type': 'application/json', 'X-Shopify-Access-Token': token },
       body: JSON.stringify({ query, variables }),
     });
+    // Force-refresh OAuth token on 401 once.
+    if (res.status === 401 && CLIENT_ID && CLIENT_SECRET && attempt === 0) {
+      console.warn('401 — invalidating cached OAuth token and retrying');
+      cachedToken = null;
+      continue;
+    }
     if (res.status === 429) {
       const wait = parseFloat(res.headers.get('retry-after') || '2') * 1000;
       console.warn(`429 — sleeping ${wait}ms`);
