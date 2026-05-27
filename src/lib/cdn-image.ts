@@ -27,3 +27,25 @@ export function cdnImage(
     return url;
   }
 }
+
+/**
+ * Build a responsive `srcset` string for a Shopify CDN image at the given
+ * widths. Pass to `<img srcSet={...} sizes="..." />` alongside `src` for
+ * width-aware delivery. Non-Shopify URLs return an empty string (the
+ * caller falls back to plain `src`).
+ */
+export function cdnSrcSet(
+  url: string | null | undefined,
+  widths: number[] = [400, 700, 1000, 1400],
+): string {
+  if (!url) return "";
+  try {
+    const u = new URL(url);
+    if (!u.hostname.includes("cdn.shopify.com")) return "";
+  } catch {
+    return "";
+  }
+  return widths
+    .map((w) => `${cdnImage(url, { width: w })} ${w}w`)
+    .join(", ");
+}

@@ -3,7 +3,7 @@ import { Check, Eye, Heart, Loader2, ShoppingBag, Sparkles, X, Zap } from "lucid
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { formatPrice, type ShopifyProduct } from "@/lib/shopify";
-import { cdnImage } from "@/lib/cdn-image";
+import { cdnImage, cdnSrcSet } from "@/lib/cdn-image";
 import { computeScarcitySignal } from "@/lib/scarcity-signal";
 import { ShippingMeta } from "@/components/shipping-meta";
 import { useCartStore } from "@/stores/cart-store";
@@ -294,7 +294,11 @@ export function ProductCard({
         {img && (
           <img
             src={cdnImage(img.url, { width: 700 })}
+            srcSet={cdnSrcSet(img.url, [400, 700, 1000, 1400])}
+            sizes="(min-width: 1280px) 22vw, (min-width: 768px) 30vw, 50vw"
             alt={img.altText ?? altBase}
+            width={700}
+            height={875}
             loading="lazy"
             decoding="async"
             className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 group-hover:opacity-0"
@@ -303,7 +307,11 @@ export function ProductCard({
         {img2 ? (
           <img
             src={cdnImage(img2.url, { width: 700 })}
+            srcSet={cdnSrcSet(img2.url, [400, 700, 1000, 1400])}
+            sizes="(min-width: 1280px) 22vw, (min-width: 768px) 30vw, 50vw"
             alt={img2.altText ?? altBase}
+            width={700}
+            height={875}
             loading="lazy"
             decoding="async"
             className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-700"
@@ -312,8 +320,12 @@ export function ProductCard({
           img && (
             <img
               src={cdnImage(img.url, { width: 700 })}
+              srcSet={cdnSrcSet(img.url, [400, 700, 1000, 1400])}
+              sizes="(min-width: 1280px) 22vw, (min-width: 768px) 30vw, 50vw"
               alt=""
               aria-hidden
+              width={700}
+              height={875}
               loading="lazy"
               decoding="async"
               className="absolute inset-0 w-full h-full object-cover scale-105 opacity-0 group-hover:opacity-100 transition-all duration-700"
