@@ -316,6 +316,7 @@ function ProductView({
   );
   const [quantity, setQuantity] = useState(1);
   const [activeImg, setActiveImg] = useState(0);
+  const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
   const [sizeError, setSizeError] = useState<string | null>(null);
   const sizeErrorTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
