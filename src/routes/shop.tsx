@@ -206,6 +206,16 @@ function ShopPage() {
   const update = (patch: Partial<typeof search>) =>
     navigate({ search: { ...search, ...patch }, replace: true });
 
+  const setClientState = (next: ClientFacetState) =>
+    update({
+      brands: encodeSet(next.brands),
+      sizes: encodeSet(next.sizes),
+      colors: encodeSet(next.colors),
+      materials: encodeSet(next.materials),
+      min: next.price?.min,
+      max: next.price?.max,
+    });
+
   const toggle = (filterId: string, v: StorefrontFilterValue) => {
     setSelections((curr) =>
       curr.some((s) => s.input === v.input)
@@ -217,8 +227,16 @@ function ShopPage() {
     setSelections((c) => c.filter((s) => s.input !== input));
   const clearAll = () => {
     setSelections([]);
-    setClientState(emptyClientFacetState());
-    update({ gender: undefined, collection: "", min: undefined, max: undefined });
+    update({
+      gender: undefined,
+      collection: "",
+      min: undefined,
+      max: undefined,
+      brands: "",
+      sizes: "",
+      colors: "",
+      materials: "",
+    });
   };
 
   const setPriceRange = (range: { min: number; max: number } | null) =>
