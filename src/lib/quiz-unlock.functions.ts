@@ -3,6 +3,7 @@ import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { sendGmail } from "./gmail-send";
 import { renderWelcomeEmail } from "./welcome-email-template";
+import { renderLookbookUnlockEmail } from "./lookbook-unlock-email-template";
 
 const AnswersSchema = z.object({
   gender: z.enum(["Women", "Men", "Unisex"]).optional(),
@@ -112,6 +113,16 @@ export const unlockQuizLookbook = createServerFn({ method: "POST" })
         const msg = e instanceof Error ? e.message : String(e);
         console.error("[quiz-unlock] welcome email failed:", msg);
       }
+    }
+
+    // 4) Lookbook unlock confirmation — sent on every unlock so returning
+    //    subscribers also get the curated shop links for their latest answers.
+    try {
+      const { subject, html, text } = renderLookbookUnlockEmail(data.answers);
+      await sendGmail(email, subject, html, text);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      console.error("[quiz-unlock] lookbook confirmation email failed:", msg);
     }
 
     return {
