@@ -1,7 +1,7 @@
 // Server-only helper to call the Emergent Universal LLM proxy (OpenAI-compatible).
 // Keeps the EMERGENT_LLM_KEY off the client. Workers/fetch-friendly — no SDK.
 
-const EMERGENT_PROXY = "https://integrations.emergentagent.com/llm/chat/completions";
+const EMERGENT_PROXY = "https://integrations.emergentagent.com/llm/v1/chat/completions";
 const LOVABLE_GATEWAY = "https://ai.gateway.lovable.dev/v1/chat/completions";
 const DEFAULT_EMERGENT_MODEL = "claude-sonnet-4-5-20250929";
 const DEFAULT_LOVABLE_MODEL = "google/gemini-2.5-flash";
@@ -22,16 +22,10 @@ function getProvider(): { url: string; key: string; model: string; name: string 
   // Server runtime secrets are exposed through process.env; avoid import.meta.env
   // here because Vite's server module runner rejects dynamic import.meta access.
   const env = typeof process !== "undefined" ? process.env : undefined;
-  const emergentKey = env?.EMERGENT_LLM_KEY;
-  if (emergentKey) {
-    return {
-      url: EMERGENT_PROXY,
-      key: emergentKey,
-      model: DEFAULT_EMERGENT_MODEL,
-      name: "emergent",
-    };
-  }
 
+  // Prefer Lovable AI Gateway: Emergent's Universal Key proxy rejects
+  // external (non-Emergent-platform) callers on the free tier, so the
+  // gateway path is the only one that actually works from this Worker.
   const lovableKey = env?.LOVABLE_API_KEY;
   if (lovableKey) {
     return {
@@ -42,7 +36,17 @@ function getProvider(): { url: string; key: string; model: string; name: string 
     };
   }
 
-  throw new Error("No LLM key configured — missing EMERGENT_LLM_KEY and LOVABLE_API_KEY");
+  const emergentKey = env?.EMERGENT_LLM_KEY?.trim();
+  if (emergentKey) {
+    return {
+      url: EMERGENT_PROXY,
+      key: emergentKey,
+      model: DEFAULT_EMERGENT_MODEL,
+      name: "emergent",
+    };
+  }
+
+  throw new Error("No LLM key configured — missing LOVABLE_API_KEY and EMERGENT_LLM_KEY");
 }
 
 export async function callLlm(opts: CallLlmOptions): Promise<string> {
