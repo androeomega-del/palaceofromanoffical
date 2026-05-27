@@ -515,7 +515,7 @@ function ProductView({
                           width={900}
                           height={1125}
                           loading={i === 0 ? "eager" : "lazy"}
-                          fetchpriority={i === 0 ? "high" : undefined as never}
+                          fetchPriority={i === 0 ? "high" : undefined}
                           decoding="async"
                           className="w-full h-full object-cover"
                         />
@@ -566,7 +566,7 @@ function ProductView({
                           width={1400}
                           height={oversized ? 1750 : 1867}
                           loading={i === 0 ? "eager" : "lazy"}
-                          fetchpriority={i === 0 ? "high" : undefined as never}
+                          fetchPriority={i === 0 ? "high" : undefined}
                           decoding="async"
                           className="w-full h-full object-cover transition-transform duration-[1400ms] hover:scale-[1.02]"
                         />
