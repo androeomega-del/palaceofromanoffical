@@ -24,7 +24,7 @@ import { CampaignVideo } from "@/components/campaign-video";
 import { DefaultEditionBody } from "@/components/default-edition-body";
 import { TrendingNowRail } from "@/components/trending-now";
 
-import { CurationCountdown } from "@/components/curation-countdown";
+
 import { useChromeStore } from "@/stores/chrome-store";
 
 /**
