@@ -23,6 +23,7 @@ import { Route as LimitedFindsRouteImport } from './routes/limited-finds'
 import { Route as LegalNoticeRouteImport } from './routes/legal-notice'
 import { Route as JournalRouteImport } from './routes/journal'
 import { Route as FaqRouteImport } from './routes/faq'
+import { Route as DesignersRouteImport } from './routes/designers'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BrandsRouteImport } from './routes/brands'
 import { Route as AuthenticationRouteImport } from './routes/authentication'
@@ -164,6 +165,11 @@ const JournalRoute = JournalRouteImport.update({
 const FaqRoute = FaqRouteImport.update({
   id: '/faq',
   path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DesignersRoute = DesignersRouteImport.update({
+  id: '/designers',
+  path: '/designers',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -564,6 +570,7 @@ export interface FileRoutesByFullPath {
   '/authentication': typeof AuthenticationRoute
   '/brands': typeof BrandsRoute
   '/contact': typeof ContactRoute
+  '/designers': typeof DesignersRoute
   '/faq': typeof FaqRoute
   '/journal': typeof JournalRouteWithChildren
   '/legal-notice': typeof LegalNoticeRoute
@@ -651,6 +658,7 @@ export interface FileRoutesByTo {
   '/authentication': typeof AuthenticationRoute
   '/brands': typeof BrandsRoute
   '/contact': typeof ContactRoute
+  '/designers': typeof DesignersRoute
   '/faq': typeof FaqRoute
   '/journal': typeof JournalRouteWithChildren
   '/legal-notice': typeof LegalNoticeRoute
@@ -740,6 +748,7 @@ export interface FileRoutesById {
   '/authentication': typeof AuthenticationRoute
   '/brands': typeof BrandsRoute
   '/contact': typeof ContactRoute
+  '/designers': typeof DesignersRoute
   '/faq': typeof FaqRoute
   '/journal': typeof JournalRouteWithChildren
   '/legal-notice': typeof LegalNoticeRoute
@@ -830,6 +839,7 @@ export interface FileRouteTypes {
     | '/authentication'
     | '/brands'
     | '/contact'
+    | '/designers'
     | '/faq'
     | '/journal'
     | '/legal-notice'
@@ -917,6 +927,7 @@ export interface FileRouteTypes {
     | '/authentication'
     | '/brands'
     | '/contact'
+    | '/designers'
     | '/faq'
     | '/journal'
     | '/legal-notice'
@@ -1005,6 +1016,7 @@ export interface FileRouteTypes {
     | '/authentication'
     | '/brands'
     | '/contact'
+    | '/designers'
     | '/faq'
     | '/journal'
     | '/legal-notice'
@@ -1094,6 +1106,7 @@ export interface RootRouteChildren {
   AuthenticationRoute: typeof AuthenticationRoute
   BrandsRoute: typeof BrandsRoute
   ContactRoute: typeof ContactRoute
+  DesignersRoute: typeof DesignersRoute
   FaqRoute: typeof FaqRoute
   JournalRoute: typeof JournalRouteWithChildren
   LegalNoticeRoute: typeof LegalNoticeRoute
@@ -1262,6 +1275,13 @@ declare module '@tanstack/react-router' {
       path: '/faq'
       fullPath: '/faq'
       preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/designers': {
+      id: '/designers'
+      path: '/designers'
+      fullPath: '/designers'
+      preLoaderRoute: typeof DesignersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -1834,6 +1854,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticationRoute: AuthenticationRoute,
   BrandsRoute: BrandsRoute,
   ContactRoute: ContactRoute,
+  DesignersRoute: DesignersRoute,
   FaqRoute: FaqRoute,
   JournalRoute: JournalRouteWithChildren,
   LegalNoticeRoute: LegalNoticeRoute,

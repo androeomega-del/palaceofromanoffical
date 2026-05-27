@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Check, Heart, Loader2, ShoppingBag, X, Zap } from "lucide-react";
+import { Check, Eye, Heart, Loader2, ShoppingBag, X, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { formatPrice, type ShopifyProduct } from "@/lib/shopify";
@@ -400,23 +400,41 @@ export function ProductCard({
         })()}
 
 
-        {/* Wishlist heart — top right, always visible */}
-        <button
-          type="button"
-          onClick={onToggleWishlist}
-          aria-label={wishlisted ? "Remove from wishlist" : "Save to wishlist"}
-          aria-pressed={wishlisted}
-          className="absolute top-3 right-3 w-9 h-9 grid place-items-center bg-canvas/85 backdrop-blur-sm hover:bg-canvas transition-colors group/heart"
-        >
-          <Heart
-            className={`w-4 h-4 transition-all duration-300 ${
-              wishlisted
-                ? "fill-bronze stroke-bronze scale-110"
-                : "stroke-ink group-hover/heart:stroke-bronze"
-            }`}
-            strokeWidth={1.5}
-          />
-        </button>
+        {/* Top-right actions — wishlist heart (always) + Quick View (desktop hover) */}
+        <div className="absolute top-3 right-3 z-10 flex flex-col gap-2 items-end">
+          <button
+            type="button"
+            onClick={onToggleWishlist}
+            aria-label={wishlisted ? "Remove from wishlist" : "Save to wishlist"}
+            aria-pressed={wishlisted}
+            className="w-9 h-9 grid place-items-center bg-canvas/85 backdrop-blur-sm hover:bg-canvas transition-colors group/heart"
+          >
+            <Heart
+              className={`w-4 h-4 transition-all duration-300 ${
+                wishlisted
+                  ? "fill-bronze stroke-bronze scale-110"
+                  : "stroke-ink group-hover/heart:stroke-bronze"
+              }`}
+              strokeWidth={1.5}
+            />
+          </button>
+          {/* Quick-View — desktop hover only. Opens the size/variant sheet
+              without navigating away. Mobile already has the inline reveal CTA. */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setQuickViewOpen(true);
+              track({ handle: p.handle, event: "hover", ...meta });
+            }}
+            aria-label="Quick view"
+            title="Quick view"
+            className="hidden md:grid w-9 h-9 place-items-center bg-canvas/85 backdrop-blur-sm hover:bg-ink hover:text-canvas transition-all opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 duration-300"
+          >
+            <Eye className="w-4 h-4" strokeWidth={1.5} />
+          </button>
+        </div>
 
         {/* Bottom CTA — fixed-height container so size-pill swap never
             reflows the card. Three states: idle | sizing | success. */}
