@@ -133,25 +133,35 @@ export function ShopTheStoryStrip({
             <p className="text-sm text-ink/70 leading-relaxed">{caption}</p>
           )}
         </div>
-        <div className="hidden md:flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => scrollByPage(-1)}
-            disabled={!canPrev}
-            aria-label="Previous pieces"
-            className="w-11 h-11 grid place-items-center border border-ink/15 hover:border-ink hover:text-bronze transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            <ChevronLeft className="w-4 h-4" strokeWidth={1.5} />
-          </button>
-          <button
-            type="button"
-            onClick={() => scrollByPage(1)}
-            disabled={!canNext}
-            aria-label="Next pieces"
-            className="w-11 h-11 grid place-items-center border border-ink/15 hover:border-ink hover:text-bronze transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            <ChevronRight className="w-4 h-4" strokeWidth={1.5} />
-          </button>
+        <div className="flex items-center gap-4">
+          {ctaLabel && ctaHref && (
+            <Link
+              to={ctaHref}
+              className="text-[10px] uppercase tracking-[0.3em] border-b border-ink pb-1 hover:text-bronze hover:border-bronze transition-colors whitespace-nowrap"
+            >
+              {ctaLabel} →
+            </Link>
+          )}
+          <div className="hidden md:flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => scrollByPage(-1)}
+              disabled={!canPrev}
+              aria-label="Previous pieces"
+              className="w-11 h-11 grid place-items-center border border-ink/15 hover:border-ink hover:text-bronze transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              <ChevronLeft className="w-4 h-4" strokeWidth={1.5} />
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollByPage(1)}
+              disabled={!canNext}
+              aria-label="Next pieces"
+              className="w-11 h-11 grid place-items-center border border-ink/15 hover:border-ink hover:text-bronze transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              <ChevronRight className="w-4 h-4" strokeWidth={1.5} />
+            </button>
+          </div>
         </div>
       </div>
 
