@@ -37,8 +37,11 @@ export function ShopTheStoryStrip({
   title,
   caption,
   handles,
+  collection,
   query,
   limit = 8,
+  ctaLabel,
+  ctaHref,
 }: Props) {
   const [products, setProducts] = useState<ShopifyProduct[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,37 +51,46 @@ export function ShopTheStoryStrip({
 
   useEffect(() => {
     let cancelled = false;
-    const q = handles && handles.length > 0
-      ? handles.map((h) => `handle:${h}`).join(" OR ")
-      : query ?? "";
-    if (!q) {
-      setProducts([]);
-      setLoading(false);
-      return;
-    }
     setLoading(true);
-    fetchProducts({ first: Math.max(limit, handles?.length ?? limit), query: q })
-      .then((edges) => {
-        if (cancelled) return;
-        // Keep only in-stock pieces. Re-order to match handle list if given.
-        const available = edges.filter((e) =>
-          e.node.variants.edges.some((v) => v.node.availableForSale),
+
+    const filterInStock = (edges: ShopifyProduct[]) =>
+      edges.filter((e) =>
+        e.node.variants.edges.some((v) => v.node.availableForSale),
+      );
+
+    const run = async (): Promise<ShopifyProduct[]> => {
+      if (handles && handles.length > 0) {
+        const q = handles.map((h) => `handle:${h}`).join(" OR ");
+        const edges = await fetchProducts({ first: Math.max(limit, handles.length), query: q });
+        const order = new Map(handles.map((h, i) => [h, i]));
+        const available = filterInStock(edges);
+        available.sort(
+          (a, b) => (order.get(a.node.handle) ?? 999) - (order.get(b.node.handle) ?? 999),
         );
-        if (handles && handles.length > 0) {
-          const order = new Map(handles.map((h, i) => [h, i]));
-          available.sort(
-            (a, b) =>
-              (order.get(a.node.handle) ?? 999) - (order.get(b.node.handle) ?? 999),
-          );
-        }
-        setProducts(available.slice(0, limit));
-      })
+        return available.slice(0, limit);
+      }
+      if (collection) {
+        const c = await fetchCollection(collection, Math.min(Math.max(limit * 2, 12), 50));
+        if (!c) return [];
+        return filterInStock(c.products.edges as ShopifyProduct[]).slice(0, limit);
+      }
+      if (query) {
+        const edges = await fetchProducts({ first: Math.max(limit * 2, 12), query });
+        return filterInStock(edges).slice(0, limit);
+      }
+      return [];
+    };
+
+    run()
+      .then((list) => !cancelled && setProducts(list))
       .catch(() => !cancelled && setProducts([]))
       .finally(() => !cancelled && setLoading(false));
+
     return () => {
       cancelled = true;
     };
-  }, [handles?.join("|"), query, limit]);
+  }, [handles?.join("|"), collection, query, limit]);
+
 
   const updateEdges = () => {
     const el = trackRef.current;
