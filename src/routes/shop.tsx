@@ -18,6 +18,14 @@ import {
   type Selection,
   type SortValue,
 } from "@/components/catalog-filters";
+import {
+  ClientFacets,
+  ClientFacetPills,
+  applyClientFacets,
+  emptyClientFacetState,
+  clientFacetCount,
+  type ClientFacetState,
+} from "@/components/client-facets";
 import { findCategory, type Gender } from "@/lib/shop-taxonomy";
 import { routeHead } from "@/lib/seo";
 
