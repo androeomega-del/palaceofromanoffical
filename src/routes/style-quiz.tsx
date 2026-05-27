@@ -528,7 +528,7 @@ function StyleQuizPage() {
         } catch {}
       }
       setAlreadyUnlocked(true);
-      fireTrack("quiz_gate_submitted", { email: clean, answers });
+      fireTrack("quiz_gate_submitted", { step: total, email: clean, answers });
       setPhase("lookbook");
     } catch (err) {
       setEmailErr(
