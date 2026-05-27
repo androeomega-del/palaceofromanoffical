@@ -46,7 +46,20 @@ const shopSearch = z.object({
   min: fallback(z.coerce.number().int().nonnegative().optional(), undefined),
   max: fallback(z.coerce.number().int().nonnegative().optional(), undefined),
   inStock: fallback(z.coerce.boolean(), true).default(true),
+  // Client-side facet selections (comma-separated for shareable URLs)
+  brands: fallback(z.string(), "").default(""),
+  sizes: fallback(z.string(), "").default(""),
+  colors: fallback(z.string(), "").default(""),
+  materials: fallback(z.string(), "").default(""),
 });
+
+function decodeSet(s: string): Set<string> {
+  if (!s) return new Set();
+  return new Set(s.split(",").map((x) => decodeURIComponent(x.trim())).filter(Boolean));
+}
+function encodeSet(set: Set<string>): string {
+  return [...set].map(encodeURIComponent).join(",");
+}
 
 export const Route = createFileRoute("/shop")({
   validateSearch: zodValidator(shopSearch),
