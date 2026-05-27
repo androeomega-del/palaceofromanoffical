@@ -755,14 +755,12 @@ function StyleQuizPage() {
                   onClick={() =>
                     fireTrack("quiz_shop_clicked", {
                       answers,
-                      email:
-                        (typeof window !== "undefined" &&
-                          window.localStorage.getItem(EMAIL_KEY)) ||
-                        undefined,
+                      email: getStoredQuizEmail() ?? undefined,
                     })
                   }
                   className="group block"
                 >
+
                   <div className="relative aspect-[3/4] overflow-hidden bg-ink/5">
                     <img
                       src={c.src}
