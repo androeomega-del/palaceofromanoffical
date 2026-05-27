@@ -702,6 +702,15 @@ function StyleQuizPage() {
                   key={c.label}
                   to="/shop"
                   search={shopSearch as never}
+                  onClick={() =>
+                    fireTrack("quiz_shop_clicked", {
+                      answers,
+                      email:
+                        (typeof window !== "undefined" &&
+                          window.localStorage.getItem(EMAIL_KEY)) ||
+                        undefined,
+                    })
+                  }
                   className="group block"
                 >
                   <div className="relative aspect-[3/4] overflow-hidden bg-ink/5">
@@ -722,9 +731,16 @@ function StyleQuizPage() {
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-12 lg:mt-16">
               <button
-                onClick={() =>
-                  navigate({ to: "/shop", search: shopSearch as never })
-                }
+                onClick={() => {
+                  fireTrack("quiz_shop_clicked", {
+                    answers,
+                    email:
+                      (typeof window !== "undefined" &&
+                        window.localStorage.getItem(EMAIL_KEY)) ||
+                      undefined,
+                  });
+                  navigate({ to: "/shop", search: shopSearch as never });
+                }}
                 className="flex items-center gap-2 px-8 py-4 bg-ink text-background text-[11px] uppercase tracking-[0.25em] hover:bg-bronze transition-colors"
               >
                 Shop My Edit <ArrowRight className="w-3.5 h-3.5" />
