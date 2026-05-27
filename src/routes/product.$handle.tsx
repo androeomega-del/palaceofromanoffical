@@ -34,6 +34,7 @@ import { SizeFitGuide } from "@/components/product/size-fit-guide";
 import { PdpJournalLinks } from "@/components/pdp-journal-links";
 import { NotifyMeForm } from "@/components/atelier/notify-me-form";
 import { RecentlyViewedRail } from "@/components/recently-viewed-rail";
+import { ImageLightbox } from "@/components/product/image-lightbox";
 
 export const Route = createFileRoute("/product/$handle")({
   loader: async ({ params }) => {
@@ -315,6 +316,7 @@ function ProductView({
   );
   const [quantity, setQuantity] = useState(1);
   const [activeImg, setActiveImg] = useState(0);
+  const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
   const [sizeError, setSizeError] = useState<string | null>(null);
   const sizeErrorTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -499,13 +501,20 @@ function ProductView({
                 {(images.length ? images : [{ url: "", altText: product.title }]).map((img, i) => (
                   <div key={i} className="min-w-full snap-center aspect-[3/4] bg-white overflow-hidden">
                     {img.url && (
-                      <img
-                        src={cdnImage(img.url, { width: 900 })}
-                        alt={img.altText ?? product.title}
-                        loading={i === 0 ? "eager" : "lazy"}
-                        decoding="async"
-                        className="w-full h-full object-cover"
-                      />
+                      <button
+                        type="button"
+                        onClick={() => setLightboxIdx(i)}
+                        aria-label={`Open image ${i + 1} of ${images.length} in fullscreen`}
+                        className="block w-full h-full cursor-zoom-in"
+                      >
+                        <img
+                          src={cdnImage(img.url, { width: 900 })}
+                          alt={img.altText ?? product.title}
+                          loading={i === 0 ? "eager" : "lazy"}
+                          decoding="async"
+                          className="w-full h-full object-cover"
+                        />
+                      </button>
                     )}
                   </div>
                 ))}
@@ -538,13 +547,20 @@ function ProductView({
                     }`}
                   >
                     {img.url && (
-                      <img
-                        src={cdnImage(img.url, { width: 1400 })}
-                        alt={img.altText ?? product.title}
-                        loading={i === 0 ? "eager" : "lazy"}
-                        decoding="async"
-                        className="w-full h-full object-cover transition-transform duration-[1400ms] hover:scale-[1.02]"
-                      />
+                      <button
+                        type="button"
+                        onClick={() => setLightboxIdx(i)}
+                        aria-label={`Open image ${i + 1} of ${images.length} in fullscreen`}
+                        className="block w-full h-full cursor-zoom-in"
+                      >
+                        <img
+                          src={cdnImage(img.url, { width: 1400 })}
+                          alt={img.altText ?? product.title}
+                          loading={i === 0 ? "eager" : "lazy"}
+                          decoding="async"
+                          className="w-full h-full object-cover transition-transform duration-[1400ms] hover:scale-[1.02]"
+                        />
+                      </button>
                     )}
                   </div>
                 );
@@ -552,6 +568,16 @@ function ProductView({
             </div>
 
           </div>
+
+          {lightboxIdx !== null && images.length > 0 && (
+            <ImageLightbox
+              images={images}
+              index={lightboxIdx}
+              onIndexChange={setLightboxIdx}
+              onClose={() => setLightboxIdx(null)}
+              alt={product.title}
+            />
+          )}
 
           {/* ===== Info column ===== */}
           <div className="lg:col-span-5 lg:sticky lg:top-24 lg:self-start space-y-12">
