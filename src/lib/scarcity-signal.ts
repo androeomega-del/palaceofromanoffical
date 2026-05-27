@@ -57,8 +57,8 @@ type Input = {
 export function computeScarcitySignal({
   availableCount,
   totalVariants,
-  priceUsd = 0,
-  onSale = false,
+  priceUsd: _priceUsd = 0,
+  onSale: _onSale = false,
 }: Input): ScarcitySignal {
   if (totalVariants > 0 && availableCount === 0) {
     return {
@@ -70,72 +70,18 @@ export function computeScarcitySignal({
     };
   }
 
-  // Single-variant products (one-size pieces — bags, fragrance, accessories)
-  // can't be tiered by variant count without misleading the customer.
-  if (totalVariants <= 1) {
-    if (priceUsd >= 1800 && availableCount === 1) {
-      return {
-        tier: "archive",
-        label: "Archive Edition",
-        headline: "Archive Edition · acquire now",
-        rationale:
-          "Sourced from a closed seasonal allocation. Once this unit ships, the piece returns to the archive.",
-      };
-    }
-    return { tier: "none", label: "", headline: "", rationale: "" };
-  }
-
-  // Markdown + scarcity is the strongest combined signal — handle first.
-  if (onSale && availableCount <= 4 && availableCount > 0) {
-    return {
-      tier: "lastMarkdown",
-      label: `Last ${availableCount} at this price`,
-      headline: `Final ${availableCount} pieces at markdown`,
-      rationale:
-        "The remaining units at this revised price. Once they ship, the piece returns to full retail or sells through entirely.",
-      remaining: availableCount,
-    };
-  }
-
-  if (availableCount === 1) {
-    return {
-      tier: "finalPiece",
-      label: "Final Piece",
-      headline: "Final piece — last size available",
-      rationale:
-        "A single unit remains across every size in our partner inventory. Replenishment of this exact colourway is not confirmed.",
-      remaining: 1,
-    };
-  }
-
-  if (availableCount <= 3) {
-    if (priceUsd >= 1800) {
-      return {
-        tier: "archive",
-        label: `Only ${availableCount} Worldwide`,
-        headline: `Rare find · ${availableCount} pieces remaining`,
-        rationale:
-          "A high-value allocation that rarely re-stocks in the same fabric and colour. Acquire while the size run is intact.",
-        remaining: availableCount,
-      };
-    }
-    return {
-      tier: "rareFind",
-      label: `Rare — ${availableCount} Left`,
-      headline: `Rare find · only ${availableCount} pieces left`,
-      rationale:
-        "Limited reserve from our partner distributor. Sizes have been selling through over the past 14 days.",
-      remaining: availableCount,
-    };
-  }
-
-  if (availableCount <= 6) {
+  // Top-tier luxury restraint: only signal scarcity when stock is genuinely
+  // critical (≤ 2 across the entire size run). One restrained, curatorial
+  // line — no countdowns, no "Final Piece", no per-size counts.
+  // Tier name kept as "limited" so downstream visual treatments (the bronze
+  // halo on cards, the buy-box accent on PDP) continue to map cleanly.
+  if (availableCount > 0 && availableCount <= 2) {
     return {
       tier: "limited",
-      label: "Limited Availability",
+      label: "Limited availability",
       headline: "Limited availability",
       rationale:
-        "A short remaining run across sizes. Pieces in this category typically sell out before re-supply windows open.",
+        "A short remaining run across sizes — pieces in this category typically sell through before re-supply.",
       remaining: availableCount,
     };
   }

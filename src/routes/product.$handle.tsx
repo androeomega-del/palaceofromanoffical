@@ -605,14 +605,9 @@ function ProductView({
               <div className="flex items-baseline gap-4 pt-1">
                 <span className="font-serif text-3xl font-light">{formatPrice(currentPrice)}</span>
                 {off > 0 && (
-                  <>
-                    <span className="text-sm italic text-[var(--studio-bronze)] line-through decoration-[var(--studio-bronze)]/30">
-                      {formatPrice(compareAt!)}
-                    </span>
-                    <span className="text-[10px] tracking-[0.2em] uppercase border border-[var(--studio-bronze)]/30 px-2 py-1 text-[var(--studio-bronze)]">
-                      {off}% Off
-                    </span>
-                  </>
+                  <span className="text-sm italic text-[var(--studio-bronze)] line-through decoration-[var(--studio-bronze)]/30">
+                    {formatPrice(compareAt!)}
+                  </span>
                 )}
               </div>
               <p className="text-[10px] uppercase tracking-[0.25em] text-[var(--studio-muted)] font-medium">

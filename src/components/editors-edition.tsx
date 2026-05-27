@@ -152,9 +152,9 @@ function EditionBlocks({ layout }: { layout: HomepageLayout }) {
               // once, so honouring an AI for-you block would duplicate the
               // "Curated For You / An edit, shaped by your eye." section.
               if (block.type === "for_you_feed") return null;
-              if (block.type === "curation_countdown") return (
-                <CurationCountdown key={block.id} variant={block.variant ?? "hero"} />
-              );
+              // curation_countdown blocks are suppressed — pressure timers
+              // are off-brand for luxury (see QA pass vs NAP / MR PORTER).
+              if (block.type === "curation_countdown") return null;
               return null;
             } catch {
               return null;
