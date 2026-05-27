@@ -20,6 +20,7 @@ import { CampaignVideo } from "@/components/campaign-video";
 import { ForYouFeed } from "@/components/for-you-feed";
 import { TrendingNowRail } from "@/components/trending-now";
 import { CurationCountdown } from "@/components/curation-countdown";
+import { QuizLookbookPreview } from "@/components/atelier/quiz-lookbook-preview";
 
 import summerHero from "@/assets/summer-bento-hero.jpg";
 import editorialHero from "@/assets/editorial/may-2026/1.webp";
@@ -304,35 +305,41 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
         </div>
       </section>
 
-      {/* STYLE QUIZ CTA — narrows the catalog to a tailored edit in 4 taps. */}
-      <section aria-label="Take the style quiz" className="bg-canvas">
-        <div className="max-w-screen-2xl mx-auto px-6 md:px-10 py-10 md:py-14">
-          <Link
-            to="/style-quiz"
-            className="group relative flex flex-col md:flex-row items-start md:items-center justify-between gap-6 md:gap-10 border border-ink/10 hover:border-bronze/60 transition-colors px-6 md:px-10 py-8 md:py-9 bg-canvas-raised"
-          >
-            <div className="flex items-start gap-5 md:gap-6">
-              <span className="hidden md:inline-flex shrink-0 items-center justify-center w-12 h-12 rounded-full border border-bronze/40 text-bronze">
-                <Sparkles className="w-5 h-5" strokeWidth={1.25} />
-              </span>
-              <div>
-                <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">
-                  In 60 seconds
-                </p>
-                <h2 className="font-serif text-2xl md:text-3xl text-ink leading-tight">
-                  Find your edit — take the Style Quiz
-                </h2>
-                <p className="mt-2 text-[12px] md:text-[13px] text-muted-foreground max-w-xl">
-                  Four questions, one curated selection. We'll narrow thousands of pieces down to the ones made for you.
-                </p>
-              </div>
+      {/* STYLE QUIZ — returning subscribers see their saved "Your Edit"
+          preview (server-verified); first-time visitors see the CTA. */}
+      <QuizLookbookPreview
+        fallback={
+          <section aria-label="Take the style quiz" className="bg-canvas">
+            <div className="max-w-screen-2xl mx-auto px-6 md:px-10 py-10 md:py-14">
+              <Link
+                to="/style-quiz"
+                className="group relative flex flex-col md:flex-row items-start md:items-center justify-between gap-6 md:gap-10 border border-ink/10 hover:border-bronze/60 transition-colors px-6 md:px-10 py-8 md:py-9 bg-canvas-raised"
+              >
+                <div className="flex items-start gap-5 md:gap-6">
+                  <span className="hidden md:inline-flex shrink-0 items-center justify-center w-12 h-12 rounded-full border border-bronze/40 text-bronze">
+                    <Sparkles className="w-5 h-5" strokeWidth={1.25} />
+                  </span>
+                  <div>
+                    <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">
+                      In 60 seconds
+                    </p>
+                    <h2 className="font-serif text-2xl md:text-3xl text-ink leading-tight">
+                      Find your edit — take the Style Quiz
+                    </h2>
+                    <p className="mt-2 text-[12px] md:text-[13px] text-muted-foreground max-w-xl">
+                      Four questions, one curated selection. We'll narrow thousands of pieces down to the ones made for you.
+                    </p>
+                  </div>
+                </div>
+                <span className="inline-flex items-center gap-2 px-6 py-3.5 bg-ink text-canvas text-[11px] uppercase tracking-[0.25em] group-hover:bg-bronze transition-colors whitespace-nowrap">
+                  Start the Quiz →
+                </span>
+              </Link>
             </div>
-            <span className="inline-flex items-center gap-2 px-6 py-3.5 bg-ink text-canvas text-[11px] uppercase tracking-[0.25em] group-hover:bg-bronze transition-colors whitespace-nowrap">
-              Start the Quiz →
-            </span>
-          </Link>
-        </div>
-      </section>
+          </section>
+        }
+      />
+
 
       {/* AI-MANAGED EDITION BAND — sits between the Style Quiz and Trending.
           Refreshed on the 48-hour curation cycle; renders nothing when the
