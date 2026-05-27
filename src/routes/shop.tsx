@@ -124,7 +124,7 @@ function ShopPage() {
   useEffect(() => {
     setSelections([]);
     navigate({
-      search: (prev) => ({ ...prev, brands: "", sizes: "", colors: "", materials: "" }),
+      search: (prev: Record<string, unknown>) => ({ ...prev, brands: "", sizes: "", colors: "", materials: "" }),
       replace: true,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
