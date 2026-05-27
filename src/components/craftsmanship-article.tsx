@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { JournalShopRail } from "@/components/journal-shop-rail";
 
 export type RelatedLink = { to: string; label: string };
 
@@ -54,6 +55,8 @@ export function CraftsmanshipArticle({
             </ul>
           </aside>
         ) : null}
+
+        {related.length > 0 ? <JournalShopRail sources={related} /> : null}
 
         <nav className="mt-16 text-center">
           <Link
