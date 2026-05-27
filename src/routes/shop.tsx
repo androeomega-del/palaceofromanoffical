@@ -224,6 +224,15 @@ function ShopPage() {
         onToggle={toggle}
         onPriceChange={setPriceRange}
       />
+      {/* Client-derived facets as fallback when Storefront returns no native facets */}
+      {filters.length === 0 && rawEdges.length > 0 && (
+        <div className="mt-2 pt-4 border-t border-ink/10">
+          <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-2">
+            From this selection
+          </p>
+          <ClientFacets edges={rawEdges} state={clientState} onChange={setClientState} />
+        </div>
+      )}
     </aside>
   );
 
