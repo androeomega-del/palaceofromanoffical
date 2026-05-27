@@ -317,17 +317,51 @@ export const recordLookbookView = createServerFn({ method: "POST" })
   });
 
 /**
+ * Funnel events that must fire EXACTLY ONCE per session. Re-fires from the
+ * same session_id are deduped server-side so client retries, React StrictMode
+ * double-effects, refreshes, or back-button revisits cannot inflate counts.
+ */
+const UNIQUE_PER_SESSION_EVENTS = new Set([
+  "quiz_started",
+  "quiz_gate_viewed",
+  "quiz_gate_submitted",
+]);
+
+/**
  * Funnel analytics — fire-and-forget. Safe to call from anonymous visitors.
+ * Unique events are deduplicated per session_id so each one is recorded
+ * exactly once, with the step and page_path captured at first fire.
  */
 export const trackQuizFunnel = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => FunnelInput.parse(input))
   .handler(async ({ data }) => {
+    const email = data.email ? data.email.trim().toLowerCase() : null;
+    const sessionId = data.sessionId ?? null;
+
+    if (
+      UNIQUE_PER_SESSION_EVENTS.has(data.eventType) &&
+      sessionId
+    ) {
+      const { data: existing, error: dupErr } = await supabaseAdmin
+        .from("quiz_funnel_events")
+        .select("id")
+        .eq("event_type", data.eventType)
+        .eq("session_id", sessionId)
+        .limit(1)
+        .maybeSingle();
+      if (dupErr) {
+        console.error("[quiz-funnel] dedupe lookup failed:", dupErr.message);
+      } else if (existing) {
+        return { ok: true as const, deduped: true as const };
+      }
+    }
+
     const { error } = await supabaseAdmin.from("quiz_funnel_events").insert({
       event_type: data.eventType,
-      email: data.email ? data.email.trim().toLowerCase() : null,
+      email,
       step: data.step ?? null,
       answers_snapshot: data.answers ?? null,
-      session_id: data.sessionId ?? null,
+      session_id: sessionId,
       page_path: data.pagePath ?? null,
       user_agent: data.userAgent ?? null,
     });
@@ -335,5 +369,5 @@ export const trackQuizFunnel = createServerFn({ method: "POST" })
       console.error("[quiz-funnel] insert failed:", error.message);
       return { ok: false as const };
     }
-    return { ok: true as const };
+    return { ok: true as const, deduped: false as const };
   });
