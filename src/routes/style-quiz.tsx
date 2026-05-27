@@ -180,18 +180,120 @@ function buildQuestions(answers: Answers): Question[] {
   ];
 }
 
+const UNLOCK_KEY = "por_quiz_unlocked_v1";
+
+function buildShopSearch(answers: Answers): Record<string, unknown> {
+  const search: Record<string, unknown> = {};
+  if (answers.gender) search.gender = answers.gender;
+  if (answers.collection) search.collection = answers.collection;
+  if (answers.q) search.q = answers.q;
+  if (answers.min !== undefined) search.min = answers.min;
+  if (answers.max !== undefined) search.max = answers.max;
+  return search;
+}
+
+function curateLookbook(answers: Answers): {
+  title: string;
+  intro: string;
+  hero: string;
+  cards: { src: string; label: string; caption: string }[];
+} {
+  const g: Gender = answers.gender ?? "Women";
+  const isMen = g === "Men";
+  const isUnisex = g === "Unisex";
+
+  const moodMap: Record<string, { title: string; intro: string }> = {
+    "tailoring cashmere wool minimal": {
+      title: "The Quiet Luxury Edit",
+      intro:
+        "Tonal neutrals, considered tailoring, and the kind of pieces that whisper rather than shout.",
+    },
+    "evening tuxedo formal": {
+      title: "After Dark",
+      intro:
+        "Sharp tailoring and occasion pieces curated for the evenings that matter.",
+    },
+    "evening silk satin": {
+      title: "After Dark",
+      intro:
+        "Silk, satin, and the drama of an evening you'll remember — curated to your eye.",
+    },
+    "denim sneakers casual": {
+      title: "The Off-Duty Icon",
+      intro:
+        "Effortless pieces with provenance — denim, leather sneakers, and weekend-ready layers.",
+    },
+    "logo print colour bold": {
+      title: "Statement Edit",
+      intro:
+        "Bold colour, signature prints, and the maisons known for being unmistakable.",
+    },
+  };
+  const mood = (answers.q && moodMap[answers.q]) || {
+    title: "Your Edit",
+    intro: "A tailored selection from the boutique, curated to your answers.",
+  };
+
+  const hero = isMen ? menSuit : isUnisex ? knitwear : dgPortrait;
+
+  const cards = [
+    {
+      src: isMen ? menBags : isUnisex ? bags : womenBags,
+      label: "Carry",
+      caption: "Bags chosen for shape and craft.",
+    },
+    {
+      src: isMen ? mensShoesAlt : isUnisex ? loafers : womensShoesAlt,
+      label: "On Foot",
+      caption: "Footwear in your aesthetic.",
+    },
+    {
+      src: isMen ? suits : isUnisex ? knitwear : womenDress,
+      label: "Wear",
+      caption: "Ready-to-wear with intent.",
+    },
+    {
+      src: isMen
+        ? menAccessories
+        : isUnisex
+          ? accessoriesCol
+          : womenAccessories,
+      label: "Finish",
+      caption: "Accessories to complete it.",
+    },
+  ];
+
+  return { title: mood.title, intro: mood.intro, hero, cards };
+}
+
 function StyleQuizPage() {
   const navigate = useNavigate();
+  const subscribe = useServerFn(subscribeNewsletter);
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Answers>({});
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
-  const [finishing, setFinishing] = useState(false);
+  const [phase, setPhase] = useState<"quiz" | "gate" | "lookbook">("quiz");
+  const [email, setEmail] = useState("");
+  const [emailErr, setEmailErr] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [alreadyUnlocked, setAlreadyUnlocked] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setAlreadyUnlocked(window.localStorage.getItem(UNLOCK_KEY) === "1");
+  }, []);
 
   const questions = buildQuestions(answers);
   const total = questions.length;
   const isLast = step === total - 1;
   const question = questions[step];
-  const progressPct = ((step + (selectedIdx !== null ? 1 : 0)) / total) * 100;
+  const progressPct =
+    phase === "lookbook"
+      ? 100
+      : ((step + (selectedIdx !== null ? 1 : 0)) / (total + 1)) * 100;
+
+  const lookbook = useMemo(() => curateLookbook(answers), [answers]);
+  const shopSearch = useMemo(() => buildShopSearch(answers), [answers]);
 
   function pick(idx: number) {
     setSelectedIdx(idx);
@@ -204,22 +306,57 @@ function StyleQuizPage() {
     setSelectedIdx(null);
     if (!isLast) {
       setStep((s) => s + 1);
-    } else {
-      setFinishing(true);
-      const search: Record<string, unknown> = {};
-      if (merged.gender) search.gender = merged.gender;
-      if (merged.collection) search.collection = merged.collection;
-      if (merged.q) search.q = merged.q;
-      if (merged.min !== undefined) search.min = merged.min;
-      if (merged.max !== undefined) search.max = merged.max;
-      navigate({ to: "/shop", search: search as never });
+      return;
     }
+    setPhase(alreadyUnlocked ? "lookbook" : "gate");
   }
 
   function back() {
+    if (phase === "lookbook") {
+      setPhase(alreadyUnlocked ? "quiz" : "gate");
+      return;
+    }
+    if (phase === "gate") {
+      setPhase("quiz");
+      return;
+    }
     if (step === 0) return;
     setStep((s) => s - 1);
     setSelectedIdx(null);
+  }
+
+  async function submitEmail(e: React.FormEvent) {
+    e.preventDefault();
+    setEmailErr(null);
+    const clean = email.trim().toLowerCase();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(clean) || clean.length > 320) {
+      setEmailErr("Please enter a valid email.");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const ua =
+        typeof navigator !== "undefined" ? navigator.userAgent : undefined;
+      await subscribe({
+        data: {
+          email: clean,
+          source: "style-quiz",
+          userAgent: ua,
+          marketingConsent: true,
+        },
+      });
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem(UNLOCK_KEY, "1");
+      }
+      setAlreadyUnlocked(true);
+      setPhase("lookbook");
+    } catch (err) {
+      setEmailErr(
+        err instanceof Error ? err.message : "Something went wrong. Try again.",
+      );
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -234,7 +371,11 @@ function StyleQuizPage() {
             ← Palace of Roman
           </Link>
           <span className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
-            {String(step + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
+            {phase === "lookbook"
+              ? "Your edit"
+              : phase === "gate"
+                ? "Almost there"
+                : `${String(step + 1).padStart(2, "0")} / ${String(total).padStart(2, "0")}`}
           </span>
         </div>
 
@@ -246,95 +387,236 @@ function StyleQuizPage() {
           />
         </div>
 
-        {/* Title block */}
-        <div className="text-center mb-12 lg:mb-16">
-          <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-4">
-            {question.eyebrow}
-          </p>
-          <h1 className="font-serif text-3xl lg:text-5xl text-ink leading-tight">
-            {question.prompt}
-          </h1>
-        </div>
+        {phase === "quiz" && (
+          <>
+            <div className="text-center mb-12 lg:mb-16">
+              <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-4">
+                {question.eyebrow}
+              </p>
+              <h1 className="font-serif text-3xl lg:text-5xl text-ink leading-tight">
+                {question.prompt}
+              </h1>
+            </div>
 
-        {/* Options grid */}
-        <div
-          className={`grid gap-4 lg:gap-6 ${
-            question.options.length === 3
-              ? "grid-cols-1 sm:grid-cols-3"
-              : "grid-cols-2 lg:grid-cols-4"
-          }`}
-        >
-          {question.options.map((opt, idx) => {
-            const selected = selectedIdx === idx;
-            return (
+            <div
+              className={`grid gap-4 lg:gap-6 ${
+                question.options.length === 3
+                  ? "grid-cols-1 sm:grid-cols-3"
+                  : "grid-cols-2 lg:grid-cols-4"
+              }`}
+            >
+              {question.options.map((opt, idx) => {
+                const selected = selectedIdx === idx;
+                return (
+                  <button
+                    key={opt.label}
+                    onClick={() => pick(idx)}
+                    className={`group relative aspect-[3/4] overflow-hidden bg-ink/5 transition-all duration-300 ${
+                      selected
+                        ? "ring-2 ring-bronze ring-offset-4 ring-offset-background"
+                        : "hover:ring-1 hover:ring-ink/20 hover:ring-offset-2 hover:ring-offset-background"
+                    }`}
+                    aria-pressed={selected}
+                  >
+                    <img
+                      src={opt.image}
+                      alt=""
+                      className={`absolute inset-0 w-full h-full object-cover transition-transform duration-700 ${
+                        selected ? "scale-105" : "group-hover:scale-105"
+                      }`}
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                    {selected && (
+                      <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-bronze flex items-center justify-center">
+                        <Check
+                          className="w-4 h-4 text-white"
+                          strokeWidth={2.5}
+                        />
+                      </div>
+                    )}
+                    <div className="absolute inset-x-0 bottom-0 p-4 lg:p-5 text-left">
+                      <p className="font-serif text-lg lg:text-xl text-white leading-tight">
+                        {opt.label}
+                      </p>
+                      {opt.caption && (
+                        <p className="mt-1 text-[10px] uppercase tracking-[0.2em] text-white/75">
+                          {opt.caption}
+                        </p>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="flex items-center justify-between mt-12 lg:mt-16">
               <button
-                key={opt.label}
-                onClick={() => pick(idx)}
-                className={`group relative aspect-[3/4] overflow-hidden bg-ink/5 transition-all duration-300 ${
-                  selected
-                    ? "ring-2 ring-bronze ring-offset-4 ring-offset-background"
-                    : "hover:ring-1 hover:ring-ink/20 hover:ring-offset-2 hover:ring-offset-background"
-                }`}
-                aria-pressed={selected}
+                onClick={back}
+                disabled={step === 0}
+                className="flex items-center gap-2 text-[11px] uppercase tracking-[0.25em] text-muted-foreground hover:text-ink transition-colors disabled:opacity-30 disabled:pointer-events-none"
               >
-                <img
-                  src={opt.image}
-                  alt=""
-                  className={`absolute inset-0 w-full h-full object-cover transition-transform duration-700 ${
-                    selected ? "scale-105" : "group-hover:scale-105"
-                  }`}
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-                {selected && (
-                  <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-bronze flex items-center justify-center">
-                    <Check className="w-4 h-4 text-white" strokeWidth={2.5} />
-                  </div>
-                )}
-                <div className="absolute inset-x-0 bottom-0 p-4 lg:p-5 text-left">
-                  <p className="font-serif text-lg lg:text-xl text-white leading-tight">
-                    {opt.label}
-                  </p>
-                  {opt.caption && (
-                    <p className="mt-1 text-[10px] uppercase tracking-[0.2em] text-white/75">
-                      {opt.caption}
-                    </p>
-                  )}
-                </div>
+                <ArrowLeft className="w-3.5 h-3.5" /> Back
               </button>
-            );
-          })}
-        </div>
 
-        {/* Controls */}
-        <div className="flex items-center justify-between mt-12 lg:mt-16">
-          <button
-            onClick={back}
-            disabled={step === 0}
-            className="flex items-center gap-2 text-[11px] uppercase tracking-[0.25em] text-muted-foreground hover:text-ink transition-colors disabled:opacity-30 disabled:pointer-events-none"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" /> Back
-          </button>
+              <button
+                onClick={next}
+                disabled={selectedIdx === null}
+                className="flex items-center gap-2 px-7 py-3.5 bg-ink text-background text-[11px] uppercase tracking-[0.25em] hover:bg-bronze transition-colors disabled:opacity-30 disabled:pointer-events-none"
+              >
+                {isLast
+                  ? alreadyUnlocked
+                    ? "Reveal My Edit"
+                    : "Unlock My Edit"
+                  : "Continue"}
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
 
-          <button
-            onClick={next}
-            disabled={selectedIdx === null || finishing}
-            className="flex items-center gap-2 px-7 py-3.5 bg-ink text-background text-[11px] uppercase tracking-[0.25em] hover:bg-bronze transition-colors disabled:opacity-30 disabled:pointer-events-none"
-          >
-            {finishing ? "Curating…" : isLast ? "Reveal My Edit" : "Continue"}
-            <ArrowRight className="w-3.5 h-3.5" />
-          </button>
-        </div>
+            <div className="text-center mt-8">
+              <Link
+                to="/shop"
+                className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground hover:text-ink underline-offset-4 hover:underline transition-colors"
+              >
+                Skip the quiz — browse everything
+              </Link>
+            </div>
+          </>
+        )}
 
-        {/* Skip */}
-        <div className="text-center mt-8">
-          <Link
-            to="/shop"
-            className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground hover:text-ink underline-offset-4 hover:underline transition-colors"
-          >
-            Skip the quiz — browse everything
-          </Link>
-        </div>
+        {phase === "gate" && (
+          <div className="max-w-xl mx-auto text-center">
+            <div className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-bronze mb-4">
+              <Lock className="w-3 h-3" /> One last step
+            </div>
+            <h1 className="font-serif text-3xl lg:text-5xl text-ink leading-tight">
+              Your edit is ready.
+            </h1>
+            <p className="mt-4 text-sm lg:text-base text-muted-foreground">
+              Drop your email to unlock the curated lookbook — and we'll keep
+              you on the Atelier List for new arrivals matched to your eye.
+            </p>
+
+            <form onSubmit={submitEmail} className="mt-10 space-y-4 text-left">
+              <label className="block">
+                <span className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+                  Email
+                </span>
+                <input
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  required
+                  maxLength={320}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@domain.com"
+                  className="mt-2 w-full bg-transparent border-b border-ink/20 focus:border-bronze outline-none py-3 text-base placeholder:text-muted-foreground/60"
+                />
+              </label>
+              {emailErr && <p className="text-xs text-red-700">{emailErr}</p>}
+              <div className="flex items-center justify-between pt-4">
+                <button
+                  type="button"
+                  onClick={back}
+                  className="flex items-center gap-2 text-[11px] uppercase tracking-[0.25em] text-muted-foreground hover:text-ink"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" /> Edit answers
+                </button>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="flex items-center gap-2 px-7 py-3.5 bg-ink text-background text-[11px] uppercase tracking-[0.25em] hover:bg-bronze transition-colors disabled:opacity-50"
+                >
+                  {submitting ? "Unlocking…" : "Reveal My Edit"}
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground pt-2">
+                No spam. Unsubscribe anytime.
+              </p>
+            </form>
+          </div>
+        )}
+
+        {phase === "lookbook" && (
+          <div>
+            <div className="text-center mb-10 lg:mb-14">
+              <div className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-bronze mb-4">
+                <Sparkles className="w-3 h-3" /> Curated for you
+              </div>
+              <h1 className="font-serif text-3xl lg:text-5xl text-ink leading-tight">
+                {lookbook.title}
+              </h1>
+              <p className="mt-4 max-w-2xl mx-auto text-sm lg:text-base text-muted-foreground">
+                {lookbook.intro}
+              </p>
+            </div>
+
+            <div className="relative aspect-[16/9] overflow-hidden bg-ink/5 mb-10 lg:mb-14">
+              <img
+                src={lookbook.hero}
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+              <div className="absolute bottom-6 left-6 right-6 lg:bottom-10 lg:left-10">
+                <p className="text-[10px] uppercase tracking-[0.3em] text-white/80">
+                  Palace of Roman · {answers.gender ?? "Edit"}
+                </p>
+                <p className="mt-1 font-serif text-xl lg:text-3xl text-white max-w-xl">
+                  {lookbook.title}
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+              {lookbook.cards.map((c) => (
+                <Link
+                  key={c.label}
+                  to="/shop"
+                  search={shopSearch as never}
+                  className="group block"
+                >
+                  <div className="relative aspect-[3/4] overflow-hidden bg-ink/5">
+                    <img
+                      src={c.src}
+                      alt=""
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  </div>
+                  <p className="mt-3 font-serif text-base lg:text-lg text-ink">
+                    {c.label}
+                  </p>
+                  <p className="text-xs text-muted-foreground">{c.caption}</p>
+                </Link>
+              ))}
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-12 lg:mt-16">
+              <button
+                onClick={() =>
+                  navigate({ to: "/shop", search: shopSearch as never })
+                }
+                className="flex items-center gap-2 px-8 py-4 bg-ink text-background text-[11px] uppercase tracking-[0.25em] hover:bg-bronze transition-colors"
+              >
+                Shop My Edit <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={() => {
+                  setPhase("quiz");
+                  setStep(0);
+                  setAnswers({});
+                  setSelectedIdx(null);
+                }}
+                className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground hover:text-ink"
+              >
+                Retake the quiz
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </main>
   );
