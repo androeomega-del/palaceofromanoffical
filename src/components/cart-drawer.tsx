@@ -64,9 +64,21 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
         </SheetHeader>
 
         {items.length === 0 ? (
-          <div className="flex-1 flex flex-col items-center justify-center gap-4 px-6">
-            <ShoppingBag className="w-8 h-8 text-muted-foreground" strokeWidth={1} />
-            <p className="text-sm text-muted-foreground">Your bag is empty</p>
+          <div className="flex-1 flex flex-col items-center justify-center gap-5 px-6 text-center">
+            <ShoppingBag className="w-9 h-9 text-muted-foreground" strokeWidth={1} />
+            <div className="space-y-1.5">
+              <p className="text-sm">Your bag is empty</p>
+              <p className="text-[11px] text-muted-foreground max-w-[26ch] mx-auto leading-relaxed">
+                Pieces you add will live here until you're ready to check out.
+              </p>
+            </div>
+            <Link
+              to="/shop"
+              onClick={() => onOpenChange(false)}
+              className="mt-2 inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] border-b border-ink pb-1 hover:text-bronze hover:border-bronze transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
+            >
+              Browse the House <ArrowRight className="w-3 h-3" strokeWidth={1.5} />
+            </Link>
           </div>
         ) : (
           <>
