@@ -55,7 +55,21 @@ function usePageContext(): PageContext {
 export function ConciergeWidget() {
   const [open, setOpen] = useState(false);
   const [seenOnce, setSeenOnce] = useState(false);
+  // Luxury-tier behaviour: never overlap hero copy or PDP sticky CTAs. Stay
+  // hidden until the visitor has scrolled past one viewport (signal of intent
+  // to browse) and, on product pages, never compete with the add-to-bag bar.
+  const [revealed, setRevealed] = useState(false);
   const ctx = usePageContext();
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const check = () => {
+      if (window.scrollY > window.innerHeight * 0.9) setRevealed(true);
+    };
+    check();
+    window.addEventListener("scroll", check, { passive: true });
+    return () => window.removeEventListener("scroll", check);
+  }, []);
+
   const wishlist = useWishlistStore((s) => s.handles);
   const recent = useRecentlyViewedStore((s) => s.items);
   const interactionRecords = useInteractionStore((s) => s.records);
