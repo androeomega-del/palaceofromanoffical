@@ -115,6 +115,16 @@ export const unlockQuizLookbook = createServerFn({ method: "POST" })
       }
     }
 
+    // 4) Lookbook unlock confirmation — sent on every unlock so returning
+    //    subscribers also get the curated shop links for their latest answers.
+    try {
+      const { subject, html, text } = renderLookbookUnlockEmail(data.answers);
+      await sendGmail(email, subject, html, text);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      console.error("[quiz-unlock] lookbook confirmation email failed:", msg);
+    }
+
     return {
       ok: true as const,
       already: !isNewSubscriber,
