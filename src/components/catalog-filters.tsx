@@ -3,6 +3,13 @@ import { ChevronDown, ChevronUp, Search, X } from "lucide-react";
 import type { StorefrontFilter, StorefrontFilterValue } from "@/lib/shopify";
 import { CATEGORY_COLLECTIONS, GENDERS, type Category, type Gender } from "@/lib/shop-taxonomy";
 import { cn } from "@/lib/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // Selection model: array of { id, label, input } where input is the JSON
 // string Shopify expects in the `filters` arg.
@@ -300,19 +307,33 @@ export function CatalogSort({
   value: SortValue;
   onChange: (v: SortValue) => void;
 }) {
+  const current = SORT_OPTIONS.find((o) => o.value === value)?.label ?? "Featured";
   return (
-    <label className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em]">
+    <div className="inline-flex items-center gap-3 text-[10px] uppercase tracking-[0.25em]">
       <span className="text-muted-foreground">Sort</span>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value as SortValue)}
-        className="border border-ink/15 px-3 py-2 bg-transparent text-xs focus:outline-none focus:border-ink"
-      >
-        {SORT_OPTIONS.map((o) => (
-          <option key={o.value} value={o.value}>{o.label}</option>
-        ))}
-      </select>
-    </label>
+      <Select value={value} onValueChange={(v) => onChange(v as SortValue)}>
+        <SelectTrigger
+          aria-label="Sort products"
+          className="h-9 w-[200px] rounded-none border-0 border-b border-ink/20 bg-transparent px-0 text-[11px] uppercase tracking-[0.2em] text-ink shadow-none focus:border-bronze focus:ring-0 hover:border-ink"
+        >
+          <SelectValue>{current}</SelectValue>
+        </SelectTrigger>
+        <SelectContent
+          align="end"
+          className="rounded-none border border-ink/10 bg-canvas shadow-xl p-1"
+        >
+          {SORT_OPTIONS.map((o) => (
+            <SelectItem
+              key={o.value}
+              value={o.value}
+              className="rounded-none text-[11px] uppercase tracking-[0.2em] py-2.5 px-3 focus:bg-ink/[0.04] focus:text-bronze data-[state=checked]:text-bronze"
+            >
+              {o.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
   );
 }
 
