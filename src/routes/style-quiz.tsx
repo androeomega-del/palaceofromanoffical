@@ -432,7 +432,7 @@ function StyleQuizPage() {
   useEffect(() => {
     if (phase === "gate" && !gateViewedRef.current) {
       gateViewedRef.current = true;
-      fireTrack("quiz_gate_viewed", { answers });
+      fireTrack("quiz_gate_viewed", { step: total, answers });
     }
     if (phase === "lookbook" && !lookbookViewedRef.current) {
       lookbookViewedRef.current = true;
