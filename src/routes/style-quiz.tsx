@@ -291,7 +291,10 @@ function curateLookbook(answers: Answers): {
 
 function StyleQuizPage() {
   const navigate = useNavigate();
-  const subscribe = useServerFn(subscribeNewsletter);
+  const unlock = useServerFn(unlockQuizLookbook);
+  const lookupUnlock = useServerFn(getQuizUnlock);
+  const track = useServerFn(trackQuizFunnel);
+
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Answers>({});
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
@@ -301,9 +304,82 @@ function StyleQuizPage() {
   const [submitting, setSubmitting] = useState(false);
   const [alreadyUnlocked, setAlreadyUnlocked] = useState(false);
 
+  const startedRef = useRef(false);
+  const gateViewedRef = useRef(false);
+  const lookbookViewedRef = useRef(false);
+
+  const fireTrack = (
+    eventType:
+      | "quiz_started"
+      | "quiz_step"
+      | "quiz_gate_viewed"
+      | "quiz_gate_submitted"
+      | "quiz_lookbook_viewed"
+      | "quiz_shop_clicked"
+      | "quiz_unlock_resumed",
+    extra: { step?: number; email?: string; answers?: Answers } = {},
+  ) => {
+    const ua =
+      typeof navigator !== "undefined" ? navigator.userAgent : undefined;
+    const sessionId =
+      typeof window !== "undefined" ? getOrCreateSessionId() : undefined;
+    const pagePath =
+      typeof window !== "undefined" ? window.location.pathname : undefined;
+    // Fire and forget — never block UI on analytics.
+    void track({
+      data: {
+        eventType,
+        email: extra.email,
+        step: extra.step,
+        answers: extra.answers,
+        sessionId,
+        pagePath,
+        userAgent: ua,
+      },
+    }).catch(() => undefined);
+  };
+
+  // On mount: hydrate from localStorage, then VERIFY against the server so
+  // a cleared cookie / new device cannot fake an unlock. Also fire the
+  // "quiz_started" funnel event exactly once.
   useEffect(() => {
     if (typeof window === "undefined") return;
-    setAlreadyUnlocked(window.localStorage.getItem(UNLOCK_KEY) === "1");
+    if (startedRef.current) return;
+    startedRef.current = true;
+
+    fireTrack("quiz_started");
+
+    let storedEmail: string | null = null;
+    let storedAnswers: Answers | null = null;
+    try {
+      storedEmail = window.localStorage.getItem(EMAIL_KEY);
+      const a = window.localStorage.getItem(ANSWERS_KEY);
+      if (a) storedAnswers = JSON.parse(a) as Answers;
+    } catch {
+      // ignore corrupted storage
+    }
+
+    if (!storedEmail) return;
+
+    void lookupUnlock({ data: { email: storedEmail } })
+      .then((res) => {
+        if (!res.unlocked) {
+          // localStorage flag was stale — clear it.
+          try {
+            window.localStorage.removeItem(UNLOCK_KEY);
+          } catch {}
+          return;
+        }
+        setAlreadyUnlocked(true);
+        // Prefer the server's saved answers; fall back to local copy.
+        const merged = (res.answers && Object.keys(res.answers).length
+          ? res.answers
+          : storedAnswers) as Answers | null;
+        if (merged) setAnswers(merged);
+        fireTrack("quiz_unlock_resumed", { email: storedEmail ?? undefined });
+      })
+      .catch(() => undefined);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const questions = buildQuestions(answers);
@@ -318,6 +394,23 @@ function StyleQuizPage() {
   const lookbook = useMemo(() => curateLookbook(answers), [answers]);
   const shopSearch = useMemo(() => buildShopSearch(answers), [answers]);
 
+  // Fire gate/lookbook view events exactly once per phase entry.
+  useEffect(() => {
+    if (phase === "gate" && !gateViewedRef.current) {
+      gateViewedRef.current = true;
+      fireTrack("quiz_gate_viewed", { answers });
+    }
+    if (phase === "lookbook" && !lookbookViewedRef.current) {
+      lookbookViewedRef.current = true;
+      fireTrack("quiz_lookbook_viewed", { answers });
+    }
+    if (phase === "quiz") {
+      gateViewedRef.current = false;
+      lookbookViewedRef.current = false;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase]);
+
   function pick(idx: number) {
     setSelectedIdx(idx);
   }
@@ -327,6 +420,7 @@ function StyleQuizPage() {
     const merged = question.options[selectedIdx].apply(answers);
     setAnswers(merged);
     setSelectedIdx(null);
+    fireTrack("quiz_step", { step: step + 1, answers: merged });
     if (!isLast) {
       setStep((s) => s + 1);
       return;
@@ -360,18 +454,27 @@ function StyleQuizPage() {
     try {
       const ua =
         typeof navigator !== "undefined" ? navigator.userAgent : undefined;
-      await subscribe({
+      const res = await unlock({
         data: {
           email: clean,
+          answers,
           source: "style-quiz",
           userAgent: ua,
-          marketingConsent: true,
         },
       });
+      if (!res.ok) {
+        setEmailErr(res.error ?? "Could not unlock. Please try again.");
+        return;
+      }
       if (typeof window !== "undefined") {
-        window.localStorage.setItem(UNLOCK_KEY, "1");
+        try {
+          window.localStorage.setItem(UNLOCK_KEY, "1");
+          window.localStorage.setItem(EMAIL_KEY, clean);
+          window.localStorage.setItem(ANSWERS_KEY, JSON.stringify(answers));
+        } catch {}
       }
       setAlreadyUnlocked(true);
+      fireTrack("quiz_gate_submitted", { email: clean, answers });
       setPhase("lookbook");
     } catch (err) {
       setEmailErr(
