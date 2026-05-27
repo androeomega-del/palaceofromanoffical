@@ -10,20 +10,26 @@
  * narrative and catalog. Per mem://preferences/tag-products-always.
  */
 import { useEffect, useRef, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { fetchProducts, type ShopifyProduct } from "@/lib/shopify";
+import { fetchProducts, fetchCollection, type ShopifyProduct } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
 
 interface Props {
   eyebrow?: string;
   title: string;
   caption?: string;
-  /** Explicit product handles. Takes precedence over `query`. */
+  /** Explicit product handles. Takes precedence over `collection` and `query`. */
   handles?: string[];
+  /** Shopify collection handle — pulls that collection's products. */
+  collection?: string;
   /** Storefront search query (e.g. `vendor:Versace product_type:Bag`). */
   query?: string;
   /** Cap the number of pieces rendered. Default 8. */
   limit?: number;
+  /** Optional "View all" CTA shown beside the title. */
+  ctaLabel?: string;
+  ctaHref?: string;
 }
 
 export function ShopTheStoryStrip({
