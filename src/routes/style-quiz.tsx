@@ -782,10 +782,7 @@ function StyleQuizPage() {
                 onClick={() => {
                   fireTrack("quiz_shop_clicked", {
                     answers,
-                    email:
-                      (typeof window !== "undefined" &&
-                        window.localStorage.getItem(EMAIL_KEY)) ||
-                      undefined,
+                    email: getStoredQuizEmail() ?? undefined,
                   });
                   navigate({ to: "/shop", search: shopSearch as never });
                 }}
