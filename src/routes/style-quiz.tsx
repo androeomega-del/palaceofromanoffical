@@ -185,20 +185,24 @@ function buildQuestions(answers: Answers): Question[] {
   ];
 }
 
-const UNLOCK_KEY = "por_quiz_unlocked_v1";
-const EMAIL_KEY = "por_quiz_email_v1";
-const ANSWERS_KEY = "por_quiz_answers_v1";
-const SESSION_KEY = "por_quiz_session_v1";
+import {
+  QUIZ_SESSION_KEY,
+  getStoredQuizEmail,
+  getStoredQuizAnswers,
+  setStoredQuizUnlock,
+  clearStoredQuizUnlock,
+  normalizeEmail,
+} from "@/lib/quiz-identity";
 
 function getOrCreateSessionId(): string {
   if (typeof window === "undefined") return "";
   try {
-    let s = window.localStorage.getItem(SESSION_KEY);
+    let s = window.localStorage.getItem(QUIZ_SESSION_KEY);
     if (!s) {
       s =
         (globalThis.crypto?.randomUUID?.() ??
           `q_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`);
-      window.localStorage.setItem(SESSION_KEY, s);
+      window.localStorage.setItem(QUIZ_SESSION_KEY, s);
     }
     return s;
   } catch {
