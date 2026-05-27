@@ -501,13 +501,20 @@ function ProductView({
                 {(images.length ? images : [{ url: "", altText: product.title }]).map((img, i) => (
                   <div key={i} className="min-w-full snap-center aspect-[3/4] bg-white overflow-hidden">
                     {img.url && (
-                      <img
-                        src={cdnImage(img.url, { width: 900 })}
-                        alt={img.altText ?? product.title}
-                        loading={i === 0 ? "eager" : "lazy"}
-                        decoding="async"
-                        className="w-full h-full object-cover"
-                      />
+                      <button
+                        type="button"
+                        onClick={() => setLightboxIdx(i)}
+                        aria-label={`Open image ${i + 1} of ${images.length} in fullscreen`}
+                        className="block w-full h-full cursor-zoom-in"
+                      >
+                        <img
+                          src={cdnImage(img.url, { width: 900 })}
+                          alt={img.altText ?? product.title}
+                          loading={i === 0 ? "eager" : "lazy"}
+                          decoding="async"
+                          className="w-full h-full object-cover"
+                        />
+                      </button>
                     )}
                   </div>
                 ))}
