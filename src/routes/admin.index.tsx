@@ -86,6 +86,12 @@ const TILES: Tile[] = [
     icon: Mail,
   },
   {
+    to: "/admin/email-capture",
+    label: "Email Capture",
+    desc: "Restock, exit-intent, cart captures, send status",
+    icon: Mail,
+  },
+  {
     to: "/admin/seo-health",
     label: "SEO Health",
     desc: "Indexing, sitemap, metadata checks",
