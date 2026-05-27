@@ -190,11 +190,50 @@ const targets = drafts.slice(0, LIMIT === Infinity ? drafts.length : LIMIT);
 if (targets.length === 0) { console.log('Nothing to do.'); process.exit(0); }
 
 if (DRY) {
+  const { writeFileSync, mkdirSync } = await import('node:fs');
+  const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const outDir = '/mnt/documents';
+  try { mkdirSync(outDir, { recursive: true }); } catch {}
+  const jsonPath = `${outDir}/draft-activation-dry-${stamp}.json`;
+  const csvPath = `${outDir}/draft-activation-dry-${stamp}.csv`;
+  const expiresAtPreview = new Date(Date.now() + DAYS * 24 * 60 * 60 * 1000).toISOString();
+
+  const rows = targets.map((p) => ({
+    gid: p.id,
+    numeric_id: p.id.split('/').pop(),
+    handle: p.handle,
+    title: p.title,
+    status: p.status,
+    total_inventory: p.totalInventory,
+    existing_tags: p.tags.join('|'),
+    would_add_tag: p.tags.includes(TAG) ? '' : TAG,
+    would_set_status: 'ACTIVE',
+    would_publish_all_channels: true,
+    tag_expires_at: expiresAtPreview,
+  }));
+
+  writeFileSync(jsonPath, JSON.stringify({
+    generated_at: new Date().toISOString(),
+    tag: TAG,
+    expires_after_days: DAYS,
+    count: rows.length,
+    products: rows,
+  }, null, 2));
+
+  const headers = Object.keys(rows[0] ?? { gid: '', numeric_id: '', handle: '', title: '', status: '', total_inventory: '', existing_tags: '', would_add_tag: '', would_set_status: '', would_publish_all_channels: '', tag_expires_at: '' });
+  const esc = (v) => {
+    const s = v == null ? '' : String(v);
+    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  const csv = [headers.join(','), ...rows.map((r) => headers.map((h) => esc(r[h])).join(','))].join('\n');
+  writeFileSync(csvPath, csv);
+
   console.log('DRY RUN — first 10:');
   for (const p of targets.slice(0, 10)) {
     console.log(' -', p.id, p.handle, '| inv:', p.totalInventory, '| tags:', p.tags.join(','));
   }
   console.log(`Would activate + tag + publish ${targets.length} product(s).`);
+  console.log(`\nReports written:\n  ${jsonPath}\n  ${csvPath}`);
   process.exit(0);
 }
 
