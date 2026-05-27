@@ -33,6 +33,10 @@ function LocalTime({ iso }: { iso: string }) {
 }
 
 export const Route = createFileRoute("/admin/analytics")({
+  // Admin-only, auth-gated page — skip SSR entirely so server and client
+  // can never diverge (no prerender of a logged-out shell, no hydration
+  // mismatch from session/timezone/data state).
+  ssr: false,
   beforeLoad: adminBeforeLoad,
   component: AdminAnalytics,
   head: () => ({
