@@ -54,6 +54,7 @@ function FlatLinks({ items }: { items: FlatItem[] }) {
 }
 
 export function SiteHeader() {
+export function SiteHeader() {
   const totalItemsRaw = useCartStore((s) => s.items.reduce((sum, i) => sum + i.quantity, 0));
   const cartOpen = useCartStore((s) => s.isDrawerOpen);
   const setCartOpen = useCartStore((s) => s.setDrawerOpen);
