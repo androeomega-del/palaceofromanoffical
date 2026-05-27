@@ -19,6 +19,7 @@ import { CampaignVideo } from "@/components/campaign-video";
 
 import { ForYouFeed } from "@/components/for-you-feed";
 import { TrendingNowRail } from "@/components/trending-now";
+import { ShopTheStoryStrip } from "@/components/shop-the-story-strip";
 import { CurationCountdown } from "@/components/curation-countdown";
 import { QuizLookbookPreview } from "@/components/atelier/quiz-lookbook-preview";
 
@@ -353,6 +354,29 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
       {/* AI-curated For You feed — personalises off wishlist + recently viewed. */}
       <HydrationSafeClientOnly fallback={null}>
         <ForYouFeed />
+      </HydrationSafeClientOnly>
+
+      {/* Shop-the-Story rails wired to live Shopify collections. Each strip
+          self-hides if the collection is empty or unpublished. */}
+      <HydrationSafeClientOnly fallback={null}>
+        <ShopTheStoryStrip
+          eyebrow="This Week's Arrivals"
+          title="Just Landed"
+          caption="The newest pieces in the house — fresh from the maisons, ready to ship."
+          collection="new-arrivals"
+          limit={8}
+          ctaLabel="Shop All New In"
+          ctaHref="/collections/new-arrivals"
+        />
+        <ShopTheStoryStrip
+          eyebrow="House Favourites"
+          title="The Best Sellers"
+          caption="The pieces our clientele return to — quietly defining the season."
+          collection="best-sellers"
+          limit={8}
+          ctaLabel="Shop Best Sellers"
+          ctaHref="/collections/best-sellers"
+        />
       </HydrationSafeClientOnly>
 
       {/* The AI-curated edition now wraps the entire homepage via
