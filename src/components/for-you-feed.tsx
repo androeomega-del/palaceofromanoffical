@@ -81,7 +81,8 @@ export function ForYouFeed() {
   ]);
 
   const isPersonalized =
-    wishlist.length + recent.length + interactions.length > 0;
+    mounted && wishlist.length + recent.length + interactions.length > 0;
+
 
   return (
     <section
