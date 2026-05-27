@@ -67,6 +67,7 @@ import { Route as AdminInboxRouteImport } from './routes/admin.inbox'
 import { Route as AdminHomepageCurationRouteImport } from './routes/admin.homepage-curation'
 import { Route as AdminGrowthOsRouteImport } from './routes/admin.growth-os'
 import { Route as AdminEmailRecoveryRouteImport } from './routes/admin.email-recovery'
+import { Route as AdminEmailCaptureRouteImport } from './routes/admin.email-capture'
 import { Route as AdminCollectionImageQaRouteImport } from './routes/admin.collection-image-qa'
 import { Route as AdminCollectionImagePreviewRouteImport } from './routes/admin.collection-image-preview'
 import { Route as AdminCollectionHeroRegressionRouteImport } from './routes/admin.collection-hero-regression'
@@ -395,6 +396,11 @@ const AdminEmailRecoveryRoute = AdminEmailRecoveryRouteImport.update({
   path: '/admin/email-recovery',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminEmailCaptureRoute = AdminEmailCaptureRouteImport.update({
+  id: '/admin/email-capture',
+  path: '/admin/email-capture',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminCollectionImageQaRoute = AdminCollectionImageQaRouteImport.update({
   id: '/admin/collection-image-qa',
   path: '/admin/collection-image-qa',
@@ -580,6 +586,7 @@ export interface FileRoutesByFullPath {
   '/admin/collection-hero-regression': typeof AdminCollectionHeroRegressionRoute
   '/admin/collection-image-preview': typeof AdminCollectionImagePreviewRoute
   '/admin/collection-image-qa': typeof AdminCollectionImageQaRoute
+  '/admin/email-capture': typeof AdminEmailCaptureRoute
   '/admin/email-recovery': typeof AdminEmailRecoveryRoute
   '/admin/growth-os': typeof AdminGrowthOsRoute
   '/admin/homepage-curation': typeof AdminHomepageCurationRoute
@@ -666,6 +673,7 @@ export interface FileRoutesByTo {
   '/admin/collection-hero-regression': typeof AdminCollectionHeroRegressionRoute
   '/admin/collection-image-preview': typeof AdminCollectionImagePreviewRoute
   '/admin/collection-image-qa': typeof AdminCollectionImageQaRoute
+  '/admin/email-capture': typeof AdminEmailCaptureRoute
   '/admin/email-recovery': typeof AdminEmailRecoveryRoute
   '/admin/growth-os': typeof AdminGrowthOsRoute
   '/admin/homepage-curation': typeof AdminHomepageCurationRoute
@@ -754,6 +762,7 @@ export interface FileRoutesById {
   '/admin/collection-hero-regression': typeof AdminCollectionHeroRegressionRoute
   '/admin/collection-image-preview': typeof AdminCollectionImagePreviewRoute
   '/admin/collection-image-qa': typeof AdminCollectionImageQaRoute
+  '/admin/email-capture': typeof AdminEmailCaptureRoute
   '/admin/email-recovery': typeof AdminEmailRecoveryRoute
   '/admin/growth-os': typeof AdminGrowthOsRoute
   '/admin/homepage-curation': typeof AdminHomepageCurationRoute
@@ -843,6 +852,7 @@ export interface FileRouteTypes {
     | '/admin/collection-hero-regression'
     | '/admin/collection-image-preview'
     | '/admin/collection-image-qa'
+    | '/admin/email-capture'
     | '/admin/email-recovery'
     | '/admin/growth-os'
     | '/admin/homepage-curation'
@@ -929,6 +939,7 @@ export interface FileRouteTypes {
     | '/admin/collection-hero-regression'
     | '/admin/collection-image-preview'
     | '/admin/collection-image-qa'
+    | '/admin/email-capture'
     | '/admin/email-recovery'
     | '/admin/growth-os'
     | '/admin/homepage-curation'
@@ -1016,6 +1027,7 @@ export interface FileRouteTypes {
     | '/admin/collection-hero-regression'
     | '/admin/collection-image-preview'
     | '/admin/collection-image-qa'
+    | '/admin/email-capture'
     | '/admin/email-recovery'
     | '/admin/growth-os'
     | '/admin/homepage-curation'
@@ -1101,6 +1113,7 @@ export interface RootRouteChildren {
   AdminCollectionHeroRegressionRoute: typeof AdminCollectionHeroRegressionRoute
   AdminCollectionImagePreviewRoute: typeof AdminCollectionImagePreviewRoute
   AdminCollectionImageQaRoute: typeof AdminCollectionImageQaRoute
+  AdminEmailCaptureRoute: typeof AdminEmailCaptureRoute
   AdminEmailRecoveryRoute: typeof AdminEmailRecoveryRoute
   AdminGrowthOsRoute: typeof AdminGrowthOsRoute
   AdminHomepageCurationRoute: typeof AdminHomepageCurationRoute
@@ -1559,6 +1572,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminEmailRecoveryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/email-capture': {
+      id: '/admin/email-capture'
+      path: '/admin/email-capture'
+      fullPath: '/admin/email-capture'
+      preLoaderRoute: typeof AdminEmailCaptureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/collection-image-qa': {
       id: '/admin/collection-image-qa'
       path: '/admin/collection-image-qa'
@@ -1833,6 +1853,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminCollectionHeroRegressionRoute: AdminCollectionHeroRegressionRoute,
   AdminCollectionImagePreviewRoute: AdminCollectionImagePreviewRoute,
   AdminCollectionImageQaRoute: AdminCollectionImageQaRoute,
+  AdminEmailCaptureRoute: AdminEmailCaptureRoute,
   AdminEmailRecoveryRoute: AdminEmailRecoveryRoute,
   AdminGrowthOsRoute: AdminGrowthOsRoute,
   AdminHomepageCurationRoute: AdminHomepageCurationRoute,
