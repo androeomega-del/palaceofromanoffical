@@ -88,7 +88,7 @@ async function logDispatch(
     template_name: templateName,
     status,
     error_message: errorMessage ?? null,
-    metadata: metadata ?? {},
+    metadata: (metadata ?? {}) as never,
   });
   if (error) {
     console.error("[quiz-unlock] dispatch log insert failed:", error.message);
