@@ -7,6 +7,7 @@ import {
   unlockQuizLookbook,
   getQuizUnlock,
   trackQuizFunnel,
+  recordLookbookView,
 } from "@/lib/quiz-unlock.functions";
 
 // Gender-aware imagery — every option uses a real, on-topic marketing asset
