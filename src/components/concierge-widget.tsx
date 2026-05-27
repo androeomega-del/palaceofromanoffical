@@ -171,12 +171,16 @@ export function ConciergeWidget() {
 
   return (
     <>
-      {/* Floating launcher button (bottom-right). */}
+      {/* Floating launcher button (bottom-right). Hidden on PDP mobile to
+          avoid colliding with the sticky add-to-bag bar, and only revealed
+          once the visitor has scrolled past the first viewport. */}
       <button
         onClick={() => setOpen(true)}
         aria-label="Open AI concierge"
         data-testid="concierge-launcher"
-        className="fixed bottom-24 md:bottom-6 right-6 z-40 group flex items-center gap-2.5 bg-ink text-canvas pl-4 pr-5 py-3.5 rounded-full shadow-lg shadow-ink/30 hover:bg-bronze transition-colors"
+        className={`fixed bottom-24 md:bottom-6 right-6 z-40 group flex items-center gap-2.5 bg-ink text-canvas pl-3.5 md:pl-4 pr-4 md:pr-5 py-3 md:py-3.5 rounded-full shadow-lg shadow-ink/30 hover:bg-bronze transition-all duration-500 ${
+          revealed ? "opacity-100 translate-y-0" : "opacity-0 pointer-events-none translate-y-2"
+        } ${ctx.pageType === "product" ? "hidden md:flex" : ""}`}
       >
         <span className="relative flex">
           <Sparkles className="w-4 h-4" strokeWidth={1.5} />
@@ -187,8 +191,6 @@ export function ConciergeWidget() {
         </span>
       </button>
 
-      {/* One-time nudge tooltip pointing to the launcher. */}
-      {showNudge && (
         <div
           className="fixed bottom-44 md:bottom-24 right-6 z-40 max-w-[280px] bg-canvas border border-ink/15 px-4 py-3 shadow-xl text-xs leading-relaxed text-ink/80 animate-in fade-in slide-in-from-bottom-2 duration-500"
           data-testid="concierge-nudge"
