@@ -82,6 +82,11 @@ export function ProductCard({
   const successTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [revealed, setRevealed] = useState(false);
   const isTouchRef = useRef(false);
+  // Broken-image guard — if the Shopify CDN returns 404 or the URL is
+  // missing, swap in an editorial placeholder instead of leaving the native
+  // broken-image icon. Top-tier sites never ship a card without imagery.
+  const [imgError, setImgError] = useState(false);
+  const [img2Error, setImg2Error] = useState(false);
   useEffect(() => () => { if (successTimer.current) clearTimeout(successTimer.current); }, []);
 
   // Mobile: dismiss the revealed CTA overlay when tapping outside the card.
