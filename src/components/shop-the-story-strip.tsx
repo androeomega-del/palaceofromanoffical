@@ -135,12 +135,12 @@ export function ShopTheStoryStrip({
         </div>
         <div className="flex items-center gap-4">
           {ctaLabel && ctaHref && (
-            <Link
-              to={ctaHref}
+            <a
+              href={ctaHref}
               className="text-[10px] uppercase tracking-[0.3em] border-b border-ink pb-1 hover:text-bronze hover:border-bronze transition-colors whitespace-nowrap"
             >
               {ctaLabel} →
-            </Link>
+            </a>
           )}
           <div className="hidden md:flex items-center gap-2">
             <button
