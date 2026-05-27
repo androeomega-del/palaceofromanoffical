@@ -10,7 +10,7 @@
  * narrative and catalog. Per mem://preferences/tag-products-always.
  */
 import { useEffect, useRef, useState } from "react";
-import { Link } from "@tanstack/react-router";
+
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { fetchProducts, fetchCollection, type ShopifyProduct } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
