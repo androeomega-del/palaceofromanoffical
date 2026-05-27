@@ -2,7 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { Check, Eye, Heart, Loader2, ShoppingBag, Sparkles, X, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { formatPrice, type ShopifyProduct } from "@/lib/shopify";
+import { type ShopifyProduct } from "@/lib/shopify";
 import { cdnImage, cdnSrcSet } from "@/lib/cdn-image";
 import { computeScarcitySignal } from "@/lib/scarcity-signal";
 import { ShippingMeta } from "@/components/shipping-meta";
