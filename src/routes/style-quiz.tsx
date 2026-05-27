@@ -404,7 +404,27 @@ function StyleQuizPage() {
     }
     if (phase === "lookbook" && !lookbookViewedRef.current) {
       lookbookViewedRef.current = true;
-      fireTrack("quiz_lookbook_viewed", { answers });
+      const ua =
+        typeof navigator !== "undefined" ? navigator.userAgent : undefined;
+      const sessionId =
+        typeof window !== "undefined" ? getOrCreateSessionId() : undefined;
+      const pagePath =
+        typeof window !== "undefined" ? window.location.pathname : undefined;
+      const storedEmail =
+        typeof window !== "undefined"
+          ? window.localStorage.getItem(EMAIL_KEY)
+          : null;
+      // Record server-side with unlock verification so the event is tied
+      // to the subscriber record, not just a client-side fire-and-forget.
+      void recordView({
+        data: {
+          email: storedEmail ?? "",
+          answers,
+          sessionId,
+          pagePath,
+          userAgent: ua,
+        },
+      }).catch(() => undefined);
     }
     if (phase === "quiz") {
       gateViewedRef.current = false;
