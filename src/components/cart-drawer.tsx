@@ -108,6 +108,8 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
             <CartFbt productType={fbtProductType} excludeHandles={fbtExclude} />
 
             <div className="border-t border-ink/10 px-6 py-6 space-y-4">
+              <CartEmailCapture />
+
 
               {(() => {
                 const THRESHOLD = 250;
