@@ -33,6 +33,7 @@ import {
 import { SizeFitGuide } from "@/components/product/size-fit-guide";
 import { PdpJournalLinks } from "@/components/pdp-journal-links";
 import { NotifyMeForm } from "@/components/atelier/notify-me-form";
+import { RecentlyViewedRail } from "@/components/recently-viewed-rail";
 
 export const Route = createFileRoute("/product/$handle")({
   loader: async ({ params }) => {
@@ -716,7 +717,7 @@ function ProductView({
                   </AccordionContent>
                 </AccordionItem>
               )}
-              <AccordionItem value="sizing" className="border-0">
+              <AccordionItem value="sizing" id="sizing-accordion" className="border-0 scroll-mt-24">
                 <AccordionTrigger className="text-[11px] uppercase tracking-[0.25em] font-bold hover:no-underline py-6 [&>svg]:text-[var(--studio-bronze)]">
                   Sizing & Fit
                 </AccordionTrigger>
@@ -856,6 +857,9 @@ function ProductView({
             <StyleItWithRail items={styleItWith} />
           </section>
         )}
+
+        {/* ===== Recently Viewed — shopper's own browsing history ===== */}
+        <RecentlyViewedRail excludeHandle={product.handle} />
       </div>
 
       {/* Sticky mobile Add-to-Bag — appears once inline ATC is scrolled past */}
@@ -1035,10 +1039,14 @@ function VariantOption({
         {isSize && (
           <button
             type="button"
-            onClick={() => toast("Sizing guide coming soon — message concierge for a fit check.")}
-            className="text-[10px] uppercase tracking-[0.25em] text-[var(--studio-bronze)] hover:text-[var(--studio-ink)] transition-colors"
+            onClick={() => {
+              const el = document.querySelector('[data-state][data-value="sizing"], [data-radix-collection-item][value="sizing"]') as HTMLElement | null;
+              const target = el ?? document.getElementById("sizing-accordion");
+              target?.scrollIntoView({ behavior: "smooth", block: "center" });
+            }}
+            className="text-[10px] uppercase tracking-[0.25em] text-[var(--studio-bronze)] hover:text-[var(--studio-ink)] transition-colors underline-offset-4 hover:underline"
           >
-            Size Chart
+            Size & Fit Guide
           </button>
         )}
       </div>

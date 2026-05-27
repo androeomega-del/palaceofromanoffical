@@ -238,7 +238,16 @@ function ShopPage() {
 
   return (
     <div>
-      <section className="px-6 pt-12 pb-8 border-b border-ink/5">
+      {/* Breadcrumb */}
+      <div className="px-6 pt-8">
+        <div className="max-w-screen-2xl mx-auto flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+          <a href="/" className="hover:text-ink transition-colors">Home</a>
+          <span className="opacity-40">/</span>
+          <span className="text-ink">{headerTitle}</span>
+        </div>
+      </div>
+
+      <section className="px-6 pt-6 pb-8 border-b border-ink/5">
         <div className="max-w-screen-2xl mx-auto">
           <p className="text-[10px] uppercase tracking-[0.25em] text-bronze mb-3">
             {search.q ? `Results for "${search.q}"` : "Shop All"}
@@ -271,7 +280,7 @@ function ShopPage() {
               )}
             </form>
           </div>
-          <p className="mt-4 text-xs uppercase tracking-[0.2em] text-muted-foreground">
+          <p className="mt-4 text-xs uppercase tracking-[0.2em] text-muted-foreground" aria-live="polite">
             {q.isLoading ? "Loading…" : `${edges.length}${q.hasNextPage ? "+" : ""} Pieces`}
           </p>
         </div>
