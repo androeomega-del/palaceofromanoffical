@@ -2,7 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { Check, Eye, Heart, Loader2, ShoppingBag, Sparkles, X, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { formatPrice, type ShopifyProduct } from "@/lib/shopify";
+import { type ShopifyProduct } from "@/lib/shopify";
 import { cdnImage, cdnSrcSet } from "@/lib/cdn-image";
 import { computeScarcitySignal } from "@/lib/scarcity-signal";
 import { ShippingMeta } from "@/components/shipping-meta";
@@ -379,36 +379,22 @@ export function ProductCard({
             );
           }
           if (showScarcityBadge && !hideScarcity) {
+            // Single quiet label, no pulse, no counts. Top-tier luxury
+            // (NAP / MR PORTER / Farfetch) uses at most a discreet
+            // "Selling fast" / "Low stock" line — never countdown chips.
             return (
               <span
-                className="absolute top-3 left-3 z-10 text-[10px] uppercase tracking-[0.25em] bg-ink text-canvas px-2 py-1 font-medium"
+                className="absolute top-3 left-3 z-10 text-[10px] uppercase tracking-[0.25em] bg-canvas/95 backdrop-blur-sm text-ink border border-ink/15 px-2 py-1 font-medium"
                 title={scarcity.rationale}
               >
-                <span className="text-bronze mr-1 animate-pulse">●</span>
                 {scarcity.label}
               </span>
             );
           }
-          if (onSale && !hideMarkdown) {
-            const pct = Math.round(
-              (1 - parseFloat(price.amount) / parseFloat(compareAt!.amount)) * 100,
-            );
-            const label =
-              pct >= 40 ? "Final Reductions"
-              : pct >= 20 ? `House Markdown · −${pct}%`
-              : "Revised Price";
-            const tone =
-              pct >= 40 ? "bg-ink text-canvas"
-              : "bg-bronze text-canvas";
-            return (
-              <span
-                className={`absolute top-3 left-3 z-10 text-[10px] uppercase tracking-[0.25em] ${tone} px-2 py-1 font-medium`}
-                title={`Reduced from ${formatPrice(compareAt!)} — ${pct}% off retail`}
-              >
-                {label}
-              </span>
-            );
-          }
+          // Markdown / % OFF chips removed — strikethrough price alone
+          // signals the reduction without screaming. Sale-rail surfaces
+          // can still suppress via `suppressBadges` if needed.
+          void hideMarkdown;
           // "New In" — quietly badge pieces added in the last 14 days when
           // nothing more urgent (sale / scarcity / sold out) applies.
           if (p.createdAt) {
