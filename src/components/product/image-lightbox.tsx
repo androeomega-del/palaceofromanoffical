@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { X, ChevronLeft, ChevronRight, ZoomIn } from "lucide-react";
-import { cdnImage } from "@/lib/shopify";
+import { cdnImage } from "@/lib/cdn-image";
 
 type Img = { url: string; altText?: string | null };
 
