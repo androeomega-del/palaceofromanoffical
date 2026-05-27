@@ -99,18 +99,33 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
                         </p>
                         <div className="flex items-center justify-between mt-auto pt-3">
                           <div className="flex items-center border border-ink/10">
-                            <button onClick={() => updateQuantity(item.variantId, item.quantity - 1)} className="p-1.5 hover:bg-ink/5" aria-label="Decrease">
+                            <button
+                              onClick={() => updateQuantity(item.variantId, item.quantity - 1)}
+                              disabled={isLoading}
+                              className="p-1.5 hover:bg-ink/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze focus-visible:ring-inset"
+                              aria-label="Decrease"
+                            >
                               <Minus className="w-3 h-3" />
                             </button>
-                            <span className="text-xs w-6 text-center">{item.quantity}</span>
-                            <button onClick={() => updateQuantity(item.variantId, item.quantity + 1)} className="p-1.5 hover:bg-ink/5" aria-label="Increase">
+                            <span className="text-xs w-6 text-center tabular-nums">{item.quantity}</span>
+                            <button
+                              onClick={() => updateQuantity(item.variantId, item.quantity + 1)}
+                              disabled={isLoading}
+                              className="p-1.5 hover:bg-ink/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze focus-visible:ring-inset"
+                              aria-label="Increase"
+                            >
                               <Plus className="w-3 h-3" />
                             </button>
                           </div>
-                          <p className="text-sm">{formatPrice(item.price)}</p>
+                          <p className="text-sm tabular-nums">{formatPrice(item.price)}</p>
                         </div>
                       </div>
-                      <button onClick={() => removeItem(item.variantId)} aria-label="Remove" className="text-muted-foreground hover:text-ink h-fit">
+                      <button
+                        onClick={() => removeItem(item.variantId)}
+                        disabled={isLoading}
+                        aria-label="Remove"
+                        className="text-muted-foreground hover:text-ink h-fit disabled:opacity-40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze rounded-sm"
+                      >
                         <X className="w-4 h-4" />
                       </button>
                     </li>
