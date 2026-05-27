@@ -1,6 +1,7 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Minus, Plus, X, Loader2, ShoppingBag } from "lucide-react";
+import { Minus, Plus, X, Loader2, ShoppingBag, ArrowRight } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useCartStore } from "@/stores/cart-store";
 import { formatPrice } from "@/lib/shopify";
@@ -63,9 +64,21 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
         </SheetHeader>
 
         {items.length === 0 ? (
-          <div className="flex-1 flex flex-col items-center justify-center gap-4 px-6">
-            <ShoppingBag className="w-8 h-8 text-muted-foreground" strokeWidth={1} />
-            <p className="text-sm text-muted-foreground">Your bag is empty</p>
+          <div className="flex-1 flex flex-col items-center justify-center gap-5 px-6 text-center">
+            <ShoppingBag className="w-9 h-9 text-muted-foreground" strokeWidth={1} />
+            <div className="space-y-1.5">
+              <p className="text-sm">Your bag is empty</p>
+              <p className="text-[11px] text-muted-foreground max-w-[26ch] mx-auto leading-relaxed">
+                Pieces you add will live here until you're ready to check out.
+              </p>
+            </div>
+            <Link
+              to="/shop"
+              onClick={() => onOpenChange(false)}
+              className="mt-2 inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] border-b border-ink pb-1 hover:text-bronze hover:border-bronze transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
+            >
+              Browse the House <ArrowRight className="w-3 h-3" strokeWidth={1.5} />
+            </Link>
           </div>
         ) : (
           <>
@@ -86,18 +99,33 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
                         </p>
                         <div className="flex items-center justify-between mt-auto pt-3">
                           <div className="flex items-center border border-ink/10">
-                            <button onClick={() => updateQuantity(item.variantId, item.quantity - 1)} className="p-1.5 hover:bg-ink/5" aria-label="Decrease">
+                            <button
+                              onClick={() => updateQuantity(item.variantId, item.quantity - 1)}
+                              disabled={isLoading}
+                              className="p-1.5 hover:bg-ink/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze focus-visible:ring-inset"
+                              aria-label="Decrease"
+                            >
                               <Minus className="w-3 h-3" />
                             </button>
-                            <span className="text-xs w-6 text-center">{item.quantity}</span>
-                            <button onClick={() => updateQuantity(item.variantId, item.quantity + 1)} className="p-1.5 hover:bg-ink/5" aria-label="Increase">
+                            <span className="text-xs w-6 text-center tabular-nums">{item.quantity}</span>
+                            <button
+                              onClick={() => updateQuantity(item.variantId, item.quantity + 1)}
+                              disabled={isLoading}
+                              className="p-1.5 hover:bg-ink/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze focus-visible:ring-inset"
+                              aria-label="Increase"
+                            >
                               <Plus className="w-3 h-3" />
                             </button>
                           </div>
-                          <p className="text-sm">{formatPrice(item.price)}</p>
+                          <p className="text-sm tabular-nums">{formatPrice(item.price)}</p>
                         </div>
                       </div>
-                      <button onClick={() => removeItem(item.variantId)} aria-label="Remove" className="text-muted-foreground hover:text-ink h-fit">
+                      <button
+                        onClick={() => removeItem(item.variantId)}
+                        disabled={isLoading}
+                        aria-label="Remove"
+                        className="text-muted-foreground hover:text-ink h-fit disabled:opacity-40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze rounded-sm"
+                      >
                         <X className="w-4 h-4" />
                       </button>
                     </li>
@@ -135,9 +163,9 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
                   </div>
                 );
               })()}
-              <div className="flex justify-between items-baseline">
+              <div className="flex justify-between items-baseline" aria-live="polite">
                 <span className="text-xs uppercase tracking-[0.2em]">Subtotal</span>
-                <span className="text-lg font-serif">
+                <span className="text-lg font-serif tabular-nums">
                   {formatPrice({ amount: totalAmount.toFixed(2), currencyCode: currency })}
                 </span>
               </div>
