@@ -6,6 +6,7 @@ import { useCartStore } from "@/stores/cart-store";
 import { formatPrice } from "@/lib/shopify";
 import { trackCartEvent } from "@/lib/cart-analytics";
 import { CartFbt } from "@/components/cart-fbt";
+import { CartEmailCapture } from "@/components/atelier/cart-email-capture";
 
 export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
   // 1. Add mount state to prevent hydration errors
