@@ -861,6 +861,72 @@ export type Database = {
         }
         Relationships: []
       }
+      quiz_funnel_events: {
+        Row: {
+          answers_snapshot: Json | null
+          created_at: string
+          email: string | null
+          event_type: string
+          id: string
+          page_path: string | null
+          session_id: string | null
+          step: number | null
+          user_agent: string | null
+        }
+        Insert: {
+          answers_snapshot?: Json | null
+          created_at?: string
+          email?: string | null
+          event_type: string
+          id?: string
+          page_path?: string | null
+          session_id?: string | null
+          step?: number | null
+          user_agent?: string | null
+        }
+        Update: {
+          answers_snapshot?: Json | null
+          created_at?: string
+          email?: string | null
+          event_type?: string
+          id?: string
+          page_path?: string | null
+          session_id?: string | null
+          step?: number | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
+      quiz_unlocks: {
+        Row: {
+          answers: Json
+          created_at: string
+          email: string
+          id: string
+          source: string | null
+          updated_at: string
+          user_agent: string | null
+        }
+        Insert: {
+          answers?: Json
+          created_at?: string
+          email: string
+          id?: string
+          source?: string | null
+          updated_at?: string
+          user_agent?: string | null
+        }
+        Update: {
+          answers?: Json
+          created_at?: string
+          email?: string
+          id?: string
+          source?: string | null
+          updated_at?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       search_queries: {
         Row: {
           created_at: string
