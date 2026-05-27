@@ -19,6 +19,7 @@ import { CampaignVideo } from "@/components/campaign-video";
 
 import { ForYouFeed } from "@/components/for-you-feed";
 import { TrendingNowRail } from "@/components/trending-now";
+import { ShopTheStoryStrip } from "@/components/shop-the-story-strip";
 import { CurationCountdown } from "@/components/curation-countdown";
 import { QuizLookbookPreview } from "@/components/atelier/quiz-lookbook-preview";
 
