@@ -101,14 +101,34 @@ function FunnelBar({
   );
 }
 
+function useSessionReady() {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    supabase.auth.getSession().then(({ data }) => {
+      if (!cancelled && data.session?.access_token) setReady(true);
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      if (session?.access_token) setReady(true);
+    });
+    return () => {
+      cancelled = true;
+      sub.subscription.unsubscribe();
+    };
+  }, []);
+  return ready;
+}
+
 function AdminAnalytics() {
+  const sessionReady = useSessionReady();
   const { data, isLoading, isFetching, error, refetch } = useQuery({
     queryKey: ["admin", "cart-analytics"],
     queryFn: fetchCartAnalytics,
+    // Gate the query until the Supabase session is fully restored — prevents
+    // the cold-load 401 on mobile Safari before storage hydrates.
+    enabled: sessionReady,
     refetchInterval: 30_000,
     staleTime: 15_000,
-    // Retry transient network/5xx errors with exponential backoff, but
-    // never retry auth/permission failures (those won't fix themselves).
     retry: (failureCount, err) => {
       const msg = (err as Error)?.message ?? "";
       if (/unauthor|forbidden|401|403/i.test(msg)) return false;
