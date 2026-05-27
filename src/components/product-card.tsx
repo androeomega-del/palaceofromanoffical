@@ -68,7 +68,7 @@ export function ProductCard({
   const navigate = useNavigate();
   const addItem = useCartStore((s) => s.addItem);
   const openDrawer = useCartStore((s) => s.openDrawer);
-  const wishlisted = useWishlistStore((s) => s.handles.includes(p.handle));
+  const wishlistedRaw = useWishlistStore((s) => s.handles.includes(p.handle));
   const toggleWishlist = useWishlistStore((s) => s.toggle);
   const [adding, setAdding] = useState(false);
   const [buyingNow, setBuyingNow] = useState(false);
