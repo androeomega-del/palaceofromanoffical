@@ -35,6 +35,7 @@ import { PdpJournalLinks } from "@/components/pdp-journal-links";
 import { NotifyMeForm } from "@/components/atelier/notify-me-form";
 import { RecentlyViewedRail } from "@/components/recently-viewed-rail";
 import { ImageLightbox } from "@/components/product/image-lightbox";
+import { parseComposition, hasCompositionInfo } from "@/lib/product-composition";
 
 export const Route = createFileRoute("/product/$handle")({
   loader: async ({ params }) => {
