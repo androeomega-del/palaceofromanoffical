@@ -295,6 +295,7 @@ function StyleQuizPage() {
   const unlock = useServerFn(unlockQuizLookbook);
   const lookupUnlock = useServerFn(getQuizUnlock);
   const track = useServerFn(trackQuizFunnel);
+  const recordView = useServerFn(recordLookbookView);
 
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Answers>({});
