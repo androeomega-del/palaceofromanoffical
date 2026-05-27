@@ -291,47 +291,49 @@ function ShopPage() {
           <div className="hidden lg:block">{sidebar}</div>
 
           <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between gap-4 mb-6">
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setMobileFiltersOpen(true)}
-                  className="lg:hidden inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] border border-ink/15 px-3 py-2"
-                >
-                  <SlidersHorizontal className="h-3.5 w-3.5" /> Filters
-                </button>
-                <button
-                  onClick={() => update({ inStock: !search.inStock })}
-                  aria-pressed={search.inStock}
-                  className={
-                    "inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] border px-3 py-2 transition-colors " +
-                    (search.inStock
-                      ? "bg-ink text-canvas border-ink"
-                      : "border-ink/20 hover:border-ink")
-                  }
-                >
-                  <span className={"h-1.5 w-1.5 rounded-full " + (search.inStock ? "bg-canvas" : "bg-ink/40")} />
-                  In Stock Only
-                </button>
+            <div className="sticky top-0 z-30 -mx-6 px-6 py-3 mb-6 bg-canvas/85 backdrop-blur-md border-b border-ink/5">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setMobileFiltersOpen(true)}
+                    className="lg:hidden inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] border border-ink/15 px-3 py-2"
+                  >
+                    <SlidersHorizontal className="h-3.5 w-3.5" /> Filters
+                  </button>
+                  <button
+                    onClick={() => update({ inStock: !search.inStock })}
+                    aria-pressed={search.inStock}
+                    className={
+                      "inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] border px-3 py-2 transition-colors " +
+                      (search.inStock
+                        ? "bg-ink text-canvas border-ink"
+                        : "border-ink/20 hover:border-ink")
+                    }
+                  >
+                    <span className={"h-1.5 w-1.5 rounded-full " + (search.inStock ? "bg-canvas" : "bg-ink/40")} />
+                    In Stock Only
+                  </button>
+                </div>
+                <CatalogSort value={search.sort} onChange={(s) => update({ sort: s })} />
               </div>
-              <CatalogSort value={search.sort} onChange={(s) => update({ sort: s })} />
-            </div>
 
-            <ActiveFilterPills
-              selections={selections}
-              priceRange={priceRange}
-              gender={gender}
-              category={category}
-              onRemove={removeOne}
-              onClearPrice={() => update({ min: undefined, max: undefined })}
-              onClearGender={() => update({ gender: undefined })}
-              onClearCategory={() => update({ collection: "" })}
-              onClearAll={clearAll}
-            />
-            {clientFacetCount(clientState) > 0 && (
-              <div className="-mt-4 mb-6">
-                <ClientFacetPills state={clientState} onChange={setClientState} />
-              </div>
-            )}
+              <ActiveFilterPills
+                selections={selections}
+                priceRange={priceRange}
+                gender={gender}
+                category={category}
+                onRemove={removeOne}
+                onClearPrice={() => update({ min: undefined, max: undefined })}
+                onClearGender={() => update({ gender: undefined })}
+                onClearCategory={() => update({ collection: "" })}
+                onClearAll={clearAll}
+              />
+              {clientFacetCount(clientState) > 0 && (
+                <div className="mt-2">
+                  <ClientFacetPills state={clientState} onChange={setClientState} />
+                </div>
+              )}
+            </div>
 
             {q.isLoading ? (
               <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12">
