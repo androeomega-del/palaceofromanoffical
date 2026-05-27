@@ -22,7 +22,6 @@ import {
   ClientFacets,
   ClientFacetPills,
   applyClientFacets,
-  emptyClientFacetState,
   clientFacetCount,
   type ClientFacetState,
 } from "@/components/client-facets";
