@@ -497,8 +497,8 @@ function StyleQuizPage() {
   async function submitEmail(e: React.FormEvent) {
     e.preventDefault();
     setEmailErr(null);
-    const clean = email.trim().toLowerCase();
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(clean) || clean.length > 320) {
+    const clean = normalizeEmail(email);
+    if (!clean) {
       setEmailErr("Please enter a valid email.");
       return;
     }
@@ -518,13 +518,11 @@ function StyleQuizPage() {
         setEmailErr(res.error ?? "Could not unlock. Please try again.");
         return;
       }
-      if (typeof window !== "undefined") {
-        try {
-          window.localStorage.setItem(UNLOCK_KEY, "1");
-          window.localStorage.setItem(EMAIL_KEY, clean);
-          window.localStorage.setItem(ANSWERS_KEY, JSON.stringify(answers));
-        } catch {}
-      }
+      // Persist canonical email + answers; resume flows on this device
+      // (and the homepage preview) will read the exact same value the
+      // server keyed the unlock by.
+      setStoredQuizUnlock(clean, answers);
+      setEmail(clean);
       setAlreadyUnlocked(true);
       fireTrack("quiz_gate_submitted", { step: total, email: clean, answers });
       setPhase("lookbook");
