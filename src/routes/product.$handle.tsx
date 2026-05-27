@@ -569,6 +569,16 @@ function ProductView({
 
           </div>
 
+          {lightboxIdx !== null && images.length > 0 && (
+            <ImageLightbox
+              images={images}
+              index={lightboxIdx}
+              onIndexChange={setLightboxIdx}
+              onClose={() => setLightboxIdx(null)}
+              alt={product.title}
+            />
+          )}
+
           {/* ===== Info column ===== */}
           <div className="lg:col-span-5 lg:sticky lg:top-24 lg:self-start space-y-12">
             <header className="space-y-5">
