@@ -189,6 +189,7 @@ function ShopPage() {
     setSelections((c) => c.filter((s) => s.input !== input));
   const clearAll = () => {
     setSelections([]);
+    setClientState(emptyClientFacetState());
     update({ gender: undefined, collection: "", min: undefined, max: undefined });
   };
 
