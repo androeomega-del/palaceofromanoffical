@@ -20,7 +20,7 @@ import { ProductCard } from "@/components/product-card";
 import AIRecommendations from "@/components/ai-recommendations";
 import { PdpAuthenticityStrip } from "@/components/pdp-authenticity-strip";
 import { PdpShippingSheet } from "@/components/pdp-shipping-sheet";
-import { cdnImage } from "@/lib/cdn-image";
+import { cdnImage, cdnSrcSet } from "@/lib/cdn-image";
 import { PdpDeliveryBadge } from "@/components/pdp-delivery-badge";
 import { PdpBrandHeritage } from "@/components/pdp-brand-heritage";
 import { ProductReviews } from "@/components/product-reviews";
@@ -509,8 +509,13 @@ function ProductView({
                       >
                         <img
                           src={cdnImage(img.url, { width: 900 })}
+                          srcSet={cdnSrcSet(img.url, [600, 900, 1200])}
+                          sizes="100vw"
                           alt={img.altText ?? product.title}
+                          width={900}
+                          height={1125}
                           loading={i === 0 ? "eager" : "lazy"}
+                          fetchPriority={i === 0 ? "high" : undefined}
                           decoding="async"
                           className="w-full h-full object-cover"
                         />
@@ -555,8 +560,13 @@ function ProductView({
                       >
                         <img
                           src={cdnImage(img.url, { width: 1400 })}
+                          srcSet={cdnSrcSet(img.url, [800, 1200, 1600, 2000])}
+                          sizes="(min-width: 1280px) 50vw, 100vw"
                           alt={img.altText ?? product.title}
+                          width={1400}
+                          height={oversized ? 1750 : 1867}
                           loading={i === 0 ? "eager" : "lazy"}
+                          fetchPriority={i === 0 ? "high" : undefined}
                           decoding="async"
                           className="w-full h-full object-cover transition-transform duration-[1400ms] hover:scale-[1.02]"
                         />
