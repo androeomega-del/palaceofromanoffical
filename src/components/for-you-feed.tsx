@@ -39,6 +39,12 @@ export function ForYouFeed() {
   useEffect(() => {
     let cancelled = false;
     setState((s) => ({ ...s, loading: true }));
+    // Safety net: if the AI route stalls (Lovable AI gateway slow / cold),
+    // bail out of the spinner after 8s and render the CTA fallback so the
+    // homepage never shows an infinite "Curating your edit…" state.
+    const timeoutId = setTimeout(() => {
+      if (!cancelled) setState((s) => (s.loading ? { loading: false, data: null } : s));
+    }, 8000);
     fetchPersonalizedFeed({
       data: {
         wishlistHandles: wishlist.slice(0, 20),
@@ -55,6 +61,7 @@ export function ForYouFeed() {
       });
     return () => {
       cancelled = true;
+      clearTimeout(timeoutId);
     };
     // Stable identity — only re-run when handles meaningfully change.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -103,9 +110,18 @@ export function ForYouFeed() {
             Curating your edit…
           </div>
         ) : !state.data || !state.data.ok ? (
-          <p className="text-sm text-muted-foreground" data-testid="for-you-empty">
-            Your edit will appear once you've explored a few pieces.
-          </p>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4" data-testid="for-you-empty">
+            <p className="text-sm text-muted-foreground italic max-w-[42ch]">
+              Your edit will appear once you've explored a few pieces.
+            </p>
+            <Link
+              to="/shop"
+              search={{ q: "tag:new-arrival", title: "New Arrivals" }}
+              className="self-start sm:self-auto text-[11px] uppercase tracking-[0.25em] text-ink border-b border-bronze/40 hover:text-bronze hover:border-bronze transition-colors pb-0.5"
+            >
+              Start your edit — browse New Arrivals →
+            </Link>
+          </div>
         ) : state.data.products.length === 0 ? (
           <p className="text-sm text-muted-foreground">No matches yet — check back shortly.</p>
         ) : (

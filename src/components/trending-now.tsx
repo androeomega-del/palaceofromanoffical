@@ -24,9 +24,13 @@ export function TrendingNowRail() {
   // Hide the rail entirely if we don't have enough signal yet, or on
   // server error. The homepage continues to render the curated rails
   // already in place; this one only joins the lineup once data justifies it.
+  // Hide the rail entirely if we don't have enough signal yet, or on
+  // server error. The homepage continues to render the curated rails
+  // already in place; this one only joins the lineup once data justifies it.
+  // Minimum of 3 — a sparse 1-card row in a 4-col grid reads as broken.
   if (isLoading) return null;
   if (!data || !data.ok) return null;
-  if (data.products.length === 0) return null;
+  if (data.products.length < 3) return null;
 
   return (
     <section
@@ -55,14 +59,27 @@ export function TrendingNowRail() {
             Shop everything →
           </Link>
         </div>
-        <div
-          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12"
-          data-testid="trending-grid"
-        >
-          {data.products.slice(0, 8).map((p) => (
-            <ProductCard key={p.node.id} product={p} />
-          ))}
-        </div>
+        {(() => {
+          const items = data.products.slice(0, 8);
+          // Match grid columns to supply so we never render blank slots in
+          // a 4-up row. NAP/MR PORTER shrink to match available pieces.
+          const cols =
+            items.length >= 4
+              ? "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+              : items.length === 3
+              ? "grid-cols-1 sm:grid-cols-3"
+              : "grid-cols-1 sm:grid-cols-2";
+          return (
+            <div
+              className={`grid ${cols} gap-x-6 gap-y-12`}
+              data-testid="trending-grid"
+            >
+              {items.map((p) => (
+                <ProductCard key={p.node.id} product={p} />
+              ))}
+            </div>
+          );
+        })()}
       </div>
     </section>
   );

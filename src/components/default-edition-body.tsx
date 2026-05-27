@@ -441,30 +441,34 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
       </section>
 
       {/* SUNGLASSES RAIL — universal summer essential. Replaces the second
-          swim/beach rail (we already have two swim-led cards in the bento). */}
-      <section className="py-20 md:py-24 bg-canvas-raised">
-        <div className="max-w-screen-2xl mx-auto">
-          <div className="flex justify-between items-end mb-10 md:mb-12 px-6">
-            <div>
-              <span className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-3 block">
-                Summer Essentials
-              </span>
-              <h2 className="text-3xl md:text-4xl font-serif">Sunglasses &amp; Eyewear</h2>
-              <p className="text-xs md:text-sm text-muted-foreground mt-3 max-w-md">
-                Designer frames from the maisons — the finishing piece for every Resort look.
-              </p>
+          swim/beach rail (we already have two swim-led cards in the bento).
+          Hidden when supply is too thin to fill a rail — a single card with
+          empty space reads as broken on a top-tier site. */}
+      {(sunglassesQ.isLoading || dedupedRails.sunglasses.length >= 3) && (
+        <section className="py-20 md:py-24 bg-canvas-raised">
+          <div className="max-w-screen-2xl mx-auto">
+            <div className="flex justify-between items-end mb-10 md:mb-12 px-6">
+              <div>
+                <span className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-3 block">
+                  Summer Essentials
+                </span>
+                <h2 className="text-3xl md:text-4xl font-serif">Sunglasses &amp; Eyewear</h2>
+                <p className="text-xs md:text-sm text-muted-foreground mt-3 max-w-md">
+                  Designer frames from the maisons — the finishing piece for every Resort look.
+                </p>
+              </div>
+              <Link
+                to="/shop"
+                search={{ q: "product_type:Sunglasses OR product_type:Eyewear", title: "Sunglasses & Eyewear" }}
+                className="text-[11px] uppercase tracking-[0.25em] border-b border-ink/20 pb-1 hover:border-ink hidden md:inline-block"
+              >
+                Shop all eyewear
+              </Link>
             </div>
-            <Link
-              to="/shop"
-              search={{ q: "product_type:Sunglasses OR product_type:Eyewear", title: "Sunglasses & Eyewear" }}
-              className="text-[11px] uppercase tracking-[0.25em] border-b border-ink/20 pb-1 hover:border-ink hidden md:inline-block"
-            >
-              Shop all eyewear
-            </Link>
+            <HorizontalRail edges={dedupedRails.sunglasses} loading={sunglassesQ.isLoading} />
           </div>
-          <HorizontalRail edges={dedupedRails.sunglasses} loading={sunglassesQ.isLoading} />
-        </div>
-      </section>
+        </section>
+      )}
 
 
 

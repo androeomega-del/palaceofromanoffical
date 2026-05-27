@@ -82,6 +82,11 @@ export function ProductCard({
   const successTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [revealed, setRevealed] = useState(false);
   const isTouchRef = useRef(false);
+  // Broken-image guard — if the Shopify CDN returns 404 or the URL is
+  // missing, swap in an editorial placeholder instead of leaving the native
+  // broken-image icon. Top-tier sites never ship a card without imagery.
+  const [imgError, setImgError] = useState(false);
+  const [img2Error, setImg2Error] = useState(false);
   useEffect(() => () => { if (successTimer.current) clearTimeout(successTimer.current); }, []);
 
   // Mobile: dismiss the revealed CTA overlay when tapping outside the card.
@@ -291,7 +296,7 @@ export function ProductCard({
       onMouseLeave={onCardLeave}
     >
       <div className="w-full aspect-[4/5] bg-muted relative overflow-hidden mb-5 isolate">
-        {img && (
+        {img && !imgError && (
           <img
             src={cdnImage(img.url, { width: 700 })}
             srcSet={cdnSrcSet(img.url, [400, 700, 1000, 1400])}
@@ -301,10 +306,25 @@ export function ProductCard({
             height={875}
             loading="lazy"
             decoding="async"
+            onError={() => setImgError(true)}
             className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 group-hover:opacity-0"
           />
         )}
-        {img2 ? (
+        {(!img || imgError) && (
+          <div
+            aria-hidden
+            className="absolute inset-0 flex flex-col items-center justify-center bg-[color:var(--canvas)] text-center px-6"
+          >
+            <span className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-3">
+              {p.vendor ?? "Palace of Roman"}
+            </span>
+            <span className="text-[11px] uppercase tracking-[0.25em] text-ink/70 leading-relaxed line-clamp-3">
+              {p.title}
+            </span>
+            <span className="mt-4 h-px w-8 bg-bronze/40" />
+          </div>
+        )}
+        {img2 && !img2Error ? (
           <img
             src={cdnImage(img2.url, { width: 700 })}
             srcSet={cdnSrcSet(img2.url, [400, 700, 1000, 1400])}
@@ -314,10 +334,11 @@ export function ProductCard({
             height={875}
             loading="lazy"
             decoding="async"
+            onError={() => setImg2Error(true)}
             className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-700"
           />
         ) : (
-          img && (
+          img && !imgError && (
             <img
               src={cdnImage(img.url, { width: 700 })}
               srcSet={cdnSrcSet(img.url, [400, 700, 1000, 1400])}
