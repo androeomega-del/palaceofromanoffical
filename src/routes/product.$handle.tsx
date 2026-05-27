@@ -33,6 +33,8 @@ import {
 import { SizeFitGuide } from "@/components/product/size-fit-guide";
 import { PdpJournalLinks } from "@/components/pdp-journal-links";
 import { NotifyMeForm } from "@/components/atelier/notify-me-form";
+import { RecentlyViewedRail } from "@/components/recently-viewed-rail";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/product/$handle")({
   loader: async ({ params }) => {
@@ -856,6 +858,9 @@ function ProductView({
             <StyleItWithRail items={styleItWith} />
           </section>
         )}
+
+        {/* ===== Recently Viewed — shopper's own browsing history ===== */}
+        <RecentlyViewedRail excludeHandle={product.handle} />
       </div>
 
       {/* Sticky mobile Add-to-Bag — appears once inline ATC is scrolled past */}
