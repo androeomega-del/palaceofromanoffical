@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { useRouterState } from "@tanstack/react-router";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { AiSearchBar } from "@/components/ai-search-bar";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Check } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const SESSION_KEY = "por_exit_intent_shown_v1";
+const SUBSCRIBED_KEY = "por_atelier_subscribed_v1";
 
 // Routes where the overlay is allowed to trigger. Collection pages are the
 // primary target per the brief; home is included as a soft secondary surface.
@@ -81,25 +83,135 @@ export function ExitIntentStylist() {
           <div className="flex items-center gap-2 mb-5">
             <Sparkles className="w-3.5 h-3.5 text-bronze" strokeWidth={1.5} />
             <span className="text-[10px] uppercase tracking-[0.35em] text-bronze">
-              The AI Stylist
+              Before You Go
             </span>
           </div>
           <DialogTitle className="font-serif text-3xl md:text-4xl leading-tight text-ink mb-4 text-balance">
-            Can't find the exact vibe you're hunting for?
+            Reserve your place on the Atelier List
           </DialogTitle>
-          <DialogDescription className="text-sm text-ink/70 leading-relaxed mb-7">
-            Describe the mood, the silhouette, the occasion — even a colour
-            you saw in a film. The stylist will route you to a private edit
-            built around it.
+          <DialogDescription className="text-sm text-ink/70 leading-relaxed mb-6">
+            First access to new arrivals, private edits, and the pieces our
+            curators set aside for members before they reach the boutique.
           </DialogDescription>
 
-          <AiSearchBar onComplete={() => setOpen(false)} />
+          <AtelierListInline onSubscribed={() => undefined} />
 
-          <p className="mt-5 text-[10px] uppercase tracking-[0.25em] text-ink/40">
-            Try: "soft tailoring for a Capri dinner" or "quiet luxury knitwear"
-          </p>
+          <div className="mt-7 pt-6 border-t border-ink/10">
+            <p className="text-[10px] uppercase tracking-[0.3em] text-ink/50 mb-3">
+              Or talk to the AI stylist
+            </p>
+            <AiSearchBar onComplete={() => setOpen(false)} />
+            <p className="mt-3 text-[10px] uppercase tracking-[0.25em] text-ink/40">
+              Try: "soft tailoring for a Capri dinner"
+            </p>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function AtelierListInline({ onSubscribed }: { onSubscribed: () => void }) {
+  const alreadySubscribed =
+    typeof window !== "undefined" && localStorage.getItem(SUBSCRIBED_KEY) === "1";
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "sending" | "ok" | "error">(
+    alreadySubscribed ? "ok" : "idle",
+  );
+  const [error, setError] = useState<string | null>(null);
+
+  if (status === "ok") {
+    return (
+      <div
+        className="border border-bronze/40 bg-bronze/5 px-5 py-4 flex items-start gap-3"
+        role="status"
+        aria-live="polite"
+      >
+        <Check className="w-4 h-4 text-bronze mt-0.5 shrink-0" strokeWidth={1.5} />
+        <div>
+          <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-1">
+            You're on the Atelier List
+          </p>
+          <p className="text-sm text-ink leading-relaxed">
+            Watch your inbox for the next private edit.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const value = email.trim();
+    if (!value || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(value)) {
+      setStatus("error");
+      setError("Please enter a valid email address.");
+      return;
+    }
+    setStatus("sending");
+    setError(null);
+    try {
+      const { error: insertError } = await supabase
+        .from("newsletter_subscribers")
+        .insert({
+          email: value,
+          source: "exit_intent",
+          user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
+          marketing_consent: true,
+        });
+      if (insertError && insertError.code !== "23505") {
+        throw new Error(insertError.message);
+      }
+      try {
+        localStorage.setItem(SUBSCRIBED_KEY, "1");
+      } catch {
+        /* ignore */
+      }
+      setStatus("ok");
+      setEmail("");
+      onSubscribed();
+    } catch (err) {
+      console.debug("[exit-intent] subscribe failed:", err);
+      setStatus("error");
+      setError("Something went wrong. Please try again.");
+    }
+  };
+
+  return (
+    <form className="relative" onSubmit={onSubmit} noValidate>
+      <label htmlFor="exit-intent-email" className="sr-only">
+        Email address
+      </label>
+      <input
+        id="exit-intent-email"
+        type="email"
+        required
+        autoComplete="email"
+        placeholder="your@email.com"
+        value={email}
+        onChange={(e) => {
+          setEmail(e.target.value);
+          if (status === "error") setStatus("idle");
+        }}
+        disabled={status === "sending"}
+        className="bg-transparent border-b border-ink/30 py-3 pr-32 w-full text-sm focus:outline-none focus:border-bronze transition-colors disabled:opacity-50 placeholder:text-ink/40"
+        aria-invalid={status === "error"}
+      />
+      <button
+        type="submit"
+        disabled={status === "sending"}
+        className="absolute right-0 top-1/2 -translate-y-1/2 text-[10px] uppercase tracking-[0.25em] bg-ink text-canvas px-4 py-2.5 hover:bg-bronze transition-colors disabled:opacity-50"
+      >
+        {status === "sending" ? "Joining…" : "Reserve Place"}
+      </button>
+      {error && (
+        <p role="alert" className="mt-2 text-[10px] uppercase tracking-widest text-destructive">
+          {error}
+        </p>
+      )}
+      <p className="mt-3 text-[10px] text-ink/45 leading-relaxed">
+        Drop alerts and the occasional editorial. Unsubscribe anytime.
+      </p>
+    </form>
   );
 }

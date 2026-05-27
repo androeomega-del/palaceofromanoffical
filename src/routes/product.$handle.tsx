@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/accordion";
 import { SizeFitGuide } from "@/components/product/size-fit-guide";
 import { PdpJournalLinks } from "@/components/pdp-journal-links";
+import { NotifyMeForm } from "@/components/atelier/notify-me-form";
 
 export const Route = createFileRoute("/product/$handle")({
   loader: async ({ params }) => {
@@ -675,6 +676,16 @@ function ProductView({
                 </button>
               </div>
 
+              {selectedVariant && !selectedVariant.availableForSale && (
+                <NotifyMeForm
+                  variantGid={selectedVariant.id}
+                  productHandle={product.handle}
+                  productTitle={product.title}
+                  variantTitle={selectedVariant.title}
+                  imageUrl={product.images?.edges?.[0]?.node?.url ?? null}
+                  priceUsd={selectedVariant.price?.amount ?? null}
+                />
+              )}
 
               {/* Trust anchor — interactive, opens shipping/returns sheet. Full-width, flush under CTA row. */}
               <PdpShippingSheet />
