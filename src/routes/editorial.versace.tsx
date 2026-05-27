@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { EditorialStory, type StorySlide } from "@/components/editorial-story";
 import { img } from "@/lib/editorial-library";
 import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
+import { ShopTheStoryStrip } from "@/components/shop-the-story-strip";
 
 const SLIDES: StorySlide[] = [
   { n: 59, caption: "Medusa, in close-up." },
@@ -61,6 +62,12 @@ function VersaceEditPage() {
           { label: "Shoes", handle: "shoes" },
           { label: "Bags", handle: "bags" },
         ]}
+      />
+      <ShopTheStoryStrip
+        title="Shop the Versace Edit"
+        caption="Baroque print, gold hardware, engineered theatre — in stock and ready to ship."
+        query="vendor:Versace"
+        limit={8}
       />
       <section className="border-t border-ink/10 py-12 text-center px-6 bg-canvas">
         <Link

@@ -53,7 +53,27 @@ function FlatLinks({ items }: { items: FlatItem[] }) {
   );
 }
 
-export function SiteHeader() {
+function WishlistHeaderLink() {
+  const count = useWishlistStore((s) => s.handles.length);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const shown = mounted ? count : 0;
+  return (
+    <Link
+      to="/wishlist"
+      aria-label={`Wishlist (${shown})`}
+      className="relative hover:text-bronze transition-colors hidden sm:inline-flex items-center justify-center w-5 h-5"
+    >
+      <Heart className="w-4 h-4" strokeWidth={1.25} />
+      {shown > 0 && (
+        <span className="absolute -top-1.5 -right-2 min-w-[16px] h-[16px] px-1 grid place-items-center bg-bronze text-canvas text-[9px] font-semibold tabular-nums leading-none rounded-full">
+          {shown > 99 ? "99+" : shown}
+        </span>
+      )}
+    </Link>
+  );
+}
+
 export function SiteHeader() {
   const totalItemsRaw = useCartStore((s) => s.items.reduce((sum, i) => sum + i.quantity, 0));
   const cartOpen = useCartStore((s) => s.isDrawerOpen);
