@@ -45,6 +45,14 @@ const FunnelInput = z.object({
   userAgent: z.string().max(500).optional(),
 });
 
+const LookbookViewInput = z.object({
+  email: z.string().min(5).max(320).email(),
+  answers: AnswersSchema.optional(),
+  sessionId: z.string().max(64).optional(),
+  pagePath: z.string().max(500).optional(),
+  userAgent: z.string().max(500).optional(),
+});
+
 /**
  * Server-side unlock: subscribes the email to the Atelier List AND records
  * the curated answers so we can verify the unlock later without trusting
@@ -140,6 +148,49 @@ export const getQuizUnlock = createServerFn({ method: "POST" })
       answers: parsed.success ? parsed.data : {},
       updatedAt: row.updated_at,
     };
+  });
+
+/**
+ * Server-side lookbook view tracking.
+ * Verifies the email has a valid unlock before recording the view event,
+ * so lookbook views are always tied to a real subscriber record.
+ */
+export const recordLookbookView = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => LookbookViewInput.parse(input))
+  .handler(async ({ data }) => {
+    const email = data.email.trim().toLowerCase();
+
+    // Verify the unlock exists server-side — never trust localStorage.
+    const { data: unlock, error: lookupErr } = await supabaseAdmin
+      .from("quiz_unlocks")
+      .select("answers")
+      .eq("email", email)
+      .maybeSingle();
+
+    if (lookupErr) {
+      console.error("[lookbook-view] lookup failed:", lookupErr.message);
+      return { recorded: false as const, reason: "lookup_error" };
+    }
+    if (!unlock) {
+      return { recorded: false as const, reason: "no_unlock" };
+    }
+
+    // Record the funnel event server-side.
+    const { error } = await supabaseAdmin.from("quiz_funnel_events").insert({
+      event_type: "quiz_lookbook_viewed",
+      email,
+      answers_snapshot: data.answers ?? unlock.answers ?? null,
+      session_id: data.sessionId ?? null,
+      page_path: data.pagePath ?? null,
+      user_agent: data.userAgent ?? null,
+    });
+
+    if (error) {
+      console.error("[lookbook-view] insert failed:", error.message);
+      return { recorded: false as const, reason: "insert_error" };
+    }
+
+    return { recorded: true as const, answers: unlock.answers as QuizAnswers };
   });
 
 /**
