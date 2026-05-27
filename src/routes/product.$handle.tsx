@@ -34,10 +34,6 @@ import { SizeFitGuide } from "@/components/product/size-fit-guide";
 import { PdpJournalLinks } from "@/components/pdp-journal-links";
 import { NotifyMeForm } from "@/components/atelier/notify-me-form";
 import { RecentlyViewedRail } from "@/components/recently-viewed-rail";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-
-// Dialog import retained for future variants (intentionally unused at module scope).
-void Dialog; void DialogContent; void DialogHeader; void DialogTitle;
 
 export const Route = createFileRoute("/product/$handle")({
   loader: async ({ params }) => {
