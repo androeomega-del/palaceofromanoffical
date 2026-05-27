@@ -105,14 +105,29 @@ function ShopPage() {
   // Dynamic facet selections — kept in component state (encoded JSON inputs)
   const [selections, setSelections] = useState<Selection[]>([]);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  // Client-derived facets (Brand / Price / Size / Colour / Material) used as
-  // a fallback when Shopify Storefront doesn't return native facet groups.
-  const [clientState, setClientState] = useState<ClientFacetState>(() => emptyClientFacetState());
+  // Client-derived facets (Brand / Price / Size / Colour / Material) — persisted in the URL
+  const clientState = useMemo<ClientFacetState>(
+    () => ({
+      brands: decodeSet(search.brands),
+      sizes: decodeSet(search.sizes),
+      colors: decodeSet(search.colors),
+      materials: decodeSet(search.materials),
+      price:
+        search.min != null && search.max != null
+          ? { min: search.min, max: search.max }
+          : null,
+    }),
+    [search.brands, search.sizes, search.colors, search.materials, search.min, search.max],
+  );
 
   // Reset facet selections whenever scope changes (gender/collection/q)
   useEffect(() => {
     setSelections([]);
-    setClientState(emptyClientFacetState());
+    navigate({
+      search: (prev) => ({ ...prev, brands: "", sizes: "", colors: "", materials: "" }),
+      replace: true,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search.gender, search.collection, search.q]);
 
   const priceRange = useMemo(
