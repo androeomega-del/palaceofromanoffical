@@ -18,6 +18,14 @@ import {
   type Selection,
   type SortValue,
 } from "@/components/catalog-filters";
+import {
+  ClientFacets,
+  ClientFacetPills,
+  applyClientFacets,
+  emptyClientFacetState,
+  clientFacetCount,
+  type ClientFacetState,
+} from "@/components/client-facets";
 import { findCategory, type Gender } from "@/lib/shop-taxonomy";
 import { routeHead } from "@/lib/seo";
 
@@ -84,10 +92,14 @@ function ShopPage() {
   // Dynamic facet selections — kept in component state (encoded JSON inputs)
   const [selections, setSelections] = useState<Selection[]>([]);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  // Client-derived facets (Brand / Price / Size / Colour / Material) used as
+  // a fallback when Shopify Storefront doesn't return native facet groups.
+  const [clientState, setClientState] = useState<ClientFacetState>(() => emptyClientFacetState());
 
   // Reset facet selections whenever scope changes (gender/collection/q)
   useEffect(() => {
     setSelections([]);
+    setClientState(emptyClientFacetState());
   }, [search.gender, search.collection, search.q]);
 
   const priceRange = useMemo(
@@ -152,8 +164,15 @@ function ShopPage() {
   });
 
   const filters = q.data?.pages?.[0]?.filters ?? [];
-  const edges = useMemo(() => q.data?.pages.flatMap((p) => p.edges) ?? [], [q.data]);
+  const rawEdges = useMemo(() => q.data?.pages.flatMap((p) => p.edges) ?? [], [q.data]);
   const selectedInputs = useMemo(() => new Set(selections.map((s) => s.input)), [selections]);
+
+  // Apply client-derived facet filters (Brand / Price / Size / Colour / Material)
+  // in-memory. Used as a fallback when Shopify Storefront returns no native facets.
+  const edges = useMemo(
+    () => applyClientFacets(rawEdges, clientState),
+    [rawEdges, clientState],
+  );
 
   // URL helpers
   const update = (patch: Partial<typeof search>) =>
@@ -170,6 +189,7 @@ function ShopPage() {
     setSelections((c) => c.filter((s) => s.input !== input));
   const clearAll = () => {
     setSelections([]);
+    setClientState(emptyClientFacetState());
     update({ gender: undefined, collection: "", min: undefined, max: undefined });
   };
 
@@ -204,6 +224,15 @@ function ShopPage() {
         onToggle={toggle}
         onPriceChange={setPriceRange}
       />
+      {/* Client-derived facets as fallback when Storefront returns no native facets */}
+      {filters.length === 0 && rawEdges.length > 0 && (
+        <div className="mt-2 pt-4 border-t border-ink/10">
+          <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-2">
+            From this selection
+          </p>
+          <ClientFacets edges={rawEdges} state={clientState} onChange={setClientState} />
+        </div>
+      )}
     </aside>
   );
 
@@ -289,6 +318,11 @@ function ShopPage() {
               onClearCategory={() => update({ collection: "" })}
               onClearAll={clearAll}
             />
+            {clientFacetCount(clientState) > 0 && (
+              <div className="-mt-4 mb-6">
+                <ClientFacetPills state={clientState} onChange={setClientState} />
+              </div>
+            )}
 
             {q.isLoading ? (
               <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12">
