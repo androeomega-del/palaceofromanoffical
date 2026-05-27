@@ -35,6 +35,15 @@ export function ForYouFeed() {
     loading: boolean;
     data: RecommendationsResult | null;
   }>({ loading: true, data: null });
+  // SSR sees empty persisted stores; returning visitors hydrate with their
+  // saved wishlist / recently-viewed. Reading those values directly into
+  // rendered text ("Curated For You" vs "Today's Edit", different headline,
+  // conditional helper copy) produced a text-content hydration mismatch
+  // (React #418). Defer the personalised flag until after mount so SSR
+  // always renders the cold-start variant, then swap on the client.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
 
   useEffect(() => {
     let cancelled = false;
