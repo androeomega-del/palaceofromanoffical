@@ -6,7 +6,6 @@ import {
   getShippingOrigin,
   getShippingOriginOrDefault,
   formatOriginLabel,
-  HUB_FALLBACK_LABEL,
   type ShippingOrigin,
 } from "@/lib/shipping-origin";
 import { estimateForOriginAndZip } from "@/lib/delivery-estimate";
