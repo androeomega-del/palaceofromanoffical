@@ -14,14 +14,27 @@ export function CurrencySwitcher() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
-  // Avoid SSR/CSR text mismatch — render the persisted value only after mount.
-  const value = mounted ? currency : "USD";
+  // Browser extensions (Bitwarden, Honey, etc.) inject custom markup into
+  // `<select>` on the client — that diverges from the server-rendered HTML
+  // and triggers React 19 hydration warnings. Skip rendering the `<select>`
+  // until after mount so the server sends an inert label and only the
+  // client-side tree contains the interactive control.
+  if (!mounted) {
+    return (
+      <span
+        className="hidden sm:inline-flex items-center gap-1 text-[10px] uppercase tracking-[0.25em] text-ink/70"
+        aria-hidden
+      >
+        USD
+      </span>
+    );
+  }
 
   return (
     <label className="hidden sm:inline-flex items-center gap-1 text-[10px] uppercase tracking-[0.25em] text-ink/70 hover:text-ink transition-colors">
       <span className="sr-only">Display currency</span>
       <select
-        value={value}
+        value={currency}
         onChange={(e) => setCurrency(e.target.value as DisplayCurrency)}
         aria-label="Display currency"
         title="Display currency — checkout remains in USD"
