@@ -182,10 +182,7 @@ export function ConciergeWidget() {
           revealed ? "opacity-100 translate-y-0" : "opacity-0 pointer-events-none translate-y-2"
         } ${ctx.pageType === "product" ? "hidden md:flex" : ""}`}
       >
-        <span className="relative flex">
-          <Sparkles className="w-4 h-4" strokeWidth={1.5} />
-          <span className="absolute -top-1 -right-1 w-2 h-2 bg-bronze rounded-full animate-pulse" />
-        </span>
+        <Sparkles className="w-4 h-4" strokeWidth={1.5} />
         <span className="text-[10px] uppercase tracking-[0.25em] font-medium">
           Concierge
         </span>
