@@ -749,6 +749,45 @@ function ProductView({
                   </AccordionContent>
                 </AccordionItem>
               )}
+              {(() => {
+                const c = parseComposition(product.description ?? "");
+                if (!hasCompositionInfo(c)) return null;
+                return (
+                  <AccordionItem value="composition" className="border-0">
+                    <AccordionTrigger className="text-[11px] uppercase tracking-[0.25em] font-bold hover:no-underline py-6 [&>svg]:text-[var(--studio-bronze)]">
+                      Composition & Care
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <dl className="text-sm leading-[1.85] text-[var(--studio-muted)] space-y-3">
+                        {c.composition && (
+                          <div className="flex flex-col sm:flex-row sm:gap-6">
+                            <dt className="text-[10px] uppercase tracking-[0.25em] font-semibold text-[var(--studio-ink)] sm:w-40 shrink-0 pt-0.5">
+                              Composition
+                            </dt>
+                            <dd>{c.composition}</dd>
+                          </div>
+                        )}
+                        {c.care && (
+                          <div className="flex flex-col sm:flex-row sm:gap-6">
+                            <dt className="text-[10px] uppercase tracking-[0.25em] font-semibold text-[var(--studio-ink)] sm:w-40 shrink-0 pt-0.5">
+                              Care
+                            </dt>
+                            <dd>{c.care}</dd>
+                          </div>
+                        )}
+                        {c.madeIn && (
+                          <div className="flex flex-col sm:flex-row sm:gap-6">
+                            <dt className="text-[10px] uppercase tracking-[0.25em] font-semibold text-[var(--studio-ink)] sm:w-40 shrink-0 pt-0.5">
+                              Origin
+                            </dt>
+                            <dd>{c.madeIn}</dd>
+                          </div>
+                        )}
+                      </dl>
+                    </AccordionContent>
+                  </AccordionItem>
+                );
+              })()}
               <AccordionItem value="sizing" id="sizing-accordion" className="border-0 scroll-mt-24">
                 <AccordionTrigger className="text-[11px] uppercase tracking-[0.25em] font-bold hover:no-underline py-6 [&>svg]:text-[var(--studio-bronze)]">
                   Sizing & Fit
