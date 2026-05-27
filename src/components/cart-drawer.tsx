@@ -163,9 +163,9 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
                   </div>
                 );
               })()}
-              <div className="flex justify-between items-baseline">
+              <div className="flex justify-between items-baseline" aria-live="polite">
                 <span className="text-xs uppercase tracking-[0.2em]">Subtotal</span>
-                <span className="text-lg font-serif">
+                <span className="text-lg font-serif tabular-nums">
                   {formatPrice({ amount: totalAmount.toFixed(2), currencyCode: currency })}
                 </span>
               </div>
