@@ -310,6 +310,36 @@ function StyleQuizPage() {
   const gateViewedRef = useRef(false);
   const lookbookViewedRef = useRef(false);
 
+  // Cross-refresh dedupe for unique funnel events. Server also enforces
+  // dedupe by (session_id, event_type), but this avoids the unnecessary
+  // round-trip when the user reloads the page mid-quiz.
+  const ONCE_KEY = "por:quiz:funnel-once";
+  const hasFiredOnce = (eventType: string): boolean => {
+    if (typeof window === "undefined") return false;
+    try {
+      const raw = window.sessionStorage.getItem(ONCE_KEY);
+      const map = raw ? (JSON.parse(raw) as Record<string, true>) : {};
+      return Boolean(map[eventType]);
+    } catch {
+      return false;
+    }
+  };
+  const markFiredOnce = (eventType: string) => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = window.sessionStorage.getItem(ONCE_KEY);
+      const map = raw ? (JSON.parse(raw) as Record<string, true>) : {};
+      map[eventType] = true;
+      window.sessionStorage.setItem(ONCE_KEY, JSON.stringify(map));
+    } catch {}
+  };
+
+  const UNIQUE_EVENTS = new Set([
+    "quiz_started",
+    "quiz_gate_viewed",
+    "quiz_gate_submitted",
+  ]);
+
   const fireTrack = (
     eventType:
       | "quiz_started"
@@ -321,12 +351,14 @@ function StyleQuizPage() {
       | "quiz_unlock_resumed",
     extra: { step?: number; email?: string; answers?: Answers } = {},
   ) => {
+    if (UNIQUE_EVENTS.has(eventType) && hasFiredOnce(eventType)) return;
     const ua =
       typeof navigator !== "undefined" ? navigator.userAgent : undefined;
     const sessionId =
       typeof window !== "undefined" ? getOrCreateSessionId() : undefined;
     const pagePath =
       typeof window !== "undefined" ? window.location.pathname : undefined;
+    if (UNIQUE_EVENTS.has(eventType)) markFiredOnce(eventType);
     // Fire and forget — never block UI on analytics.
     void track({
       data: {
@@ -349,7 +381,7 @@ function StyleQuizPage() {
     if (startedRef.current) return;
     startedRef.current = true;
 
-    fireTrack("quiz_started");
+    fireTrack("quiz_started", { step: 0 });
 
     let storedEmail: string | null = null;
     let storedAnswers: Answers | null = null;
