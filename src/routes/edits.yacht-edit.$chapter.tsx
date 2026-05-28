@@ -116,8 +116,10 @@ const CHAPTERS: Record<string, ChapterDef> = {
         spots: [{ x: 50, y: 50, label: "Sunglasses", match: /sunglass|aviator|eyewear/i }],
       },
     ],
+    // On Deck = swim shorts + terry/piqué polos + tortoiseshell sunglasses.
+    // Exclude tailored trousers, loafers, dress shirts that belong to other chapters.
     productQuery:
-      'tag:Men AND (tag:"category:shorts" OR tag:"category:swimwear" OR title:polo OR title:sunglasses)',
+      'tag:Men AND (tag:"category:swimwear" OR tag:"category:shorts" OR title:swim OR title:polo OR title:sunglass) AND -title:trouser AND -title:loafer AND -title:blazer AND -title:jacket',
     shopTitle: "Shop the Deck Look",
     shopEyebrow: "Men's — Swim, Polo, Sunglasses",
     outroCtas: [
