@@ -673,7 +673,13 @@ function StyleQuizPage() {
               you on the Atelier List for new arrivals matched to your eye.
             </p>
 
-            <form onSubmit={submitEmail} className="mt-10 space-y-4 text-left">
+            <form
+              onSubmit={submitEmail}
+              action="javascript:void(0)"
+              method="post"
+              noValidate
+              className="mt-10 space-y-4 text-left"
+            >
               <label className="block">
                 <span className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
                   Email
