@@ -281,8 +281,10 @@ const CHAPTERS: Record<string, ChapterDef> = {
         spots: [{ x: 50, y: 55, label: "The Bag", match: /bag|case|wallet|crossbody/i }],
       },
     ],
+    // Watch Drawer = accessories only: belts, sunglasses, wallets, small leather.
+    // Exclude all apparel and footwear.
     productQuery:
-      'tag:Men AND (tag:"category:belts" OR title:sunglasses OR title:wallet OR tag:"category:bags")',
+      'tag:Men AND (tag:"category:belts" OR tag:"category:bags" OR title:sunglass OR title:eyewear OR title:wallet OR title:cardholder OR title:belt) AND -title:shirt AND -title:trouser AND -title:short AND -title:swim AND -title:shoe AND -title:loafer AND -title:sandal',
     shopTitle: "Shop the Watch Drawer",
     shopEyebrow: "Men's — Belts, Sunglasses, Small Leather",
     outroCtas: [
