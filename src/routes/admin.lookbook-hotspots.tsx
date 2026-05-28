@@ -229,6 +229,8 @@ function ImageDetailView({
     null,
   );
   const [addMode, setAddMode] = useState(false);
+  const [bulkMode, setBulkMode] = useState(false);
+  const [bulkIds, setBulkIds] = useState<Set<string>>(new Set());
 
   const invalidate = () => {
     qc.invalidateQueries({ queryKey: ["lookbook-image", imageId] });
