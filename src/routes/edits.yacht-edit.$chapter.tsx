@@ -171,8 +171,10 @@ const CHAPTERS: Record<string, ChapterDef> = {
         spots: [{ x: 50, y: 50, label: "Belt", match: /belt/i }],
       },
     ],
+    // Tender to Town = open linen camp-collar + woven leather slides + belts.
+    // Exclude swim/shorts and formal tailoring.
     productQuery:
-      'tag:Men AND (title:linen OR tag:"category:sandals" OR tag:"category:belts" OR title:slide)',
+      'tag:Men AND ((title:linen AND title:shirt) OR title:slide OR title:sandal OR tag:"category:sandals" OR tag:"category:belts") AND -title:swim AND -title:trouser AND -title:blazer AND -tag:"category:swimwear"',
     shopTitle: "Shop the Town Look",
     shopEyebrow: "Men's — Linen, Slides, Belts",
     outroCtas: [
