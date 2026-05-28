@@ -559,3 +559,100 @@ export const seedLookbookFromHomepage = createServerFn({ method: "POST" })
     return { inserted_images: insertedImages, inserted_hotspots: insertedHotspots, skipped };
   });
 
+// ─── Validate hotspot handles against catalog ─────────────────────────
+// Returns every hotspot whose product_handle is not present in bg_products,
+// grouped by image so the admin can jump in and fix each one. Also flags
+// handles that exist but are out of stock (warning, not invalid).
+export type InvalidHotspot = {
+  hotspot_id: string;
+  product_handle: string;
+  label: string | null;
+  surface_kind: string | null;
+  surface_slug: string | null;
+  lookbook_image_id: string;
+  image_url: string;
+  alt_text: string | null;
+  reason: "missing" | "out_of_stock";
+};
+
+export const validateLookbookHotspots = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .handler(async () => {
+    const { data: spots, error } = await supabaseAdmin
+      .from("lookbook_hotspots")
+      .select(
+        "id, product_handle, label, surface_kind, surface_slug, lookbook_image_id",
+      )
+      .limit(5000);
+    if (error) throw new Error(error.message);
+    const all = spots ?? [];
+    const handles = Array.from(new Set(all.map((s) => s.product_handle)));
+    if (handles.length === 0) {
+      return { total: 0, checked: 0, invalid: [] as InvalidHotspot[] };
+    }
+
+    // Chunk to avoid PostgREST URL limits
+    const chunks: string[][] = [];
+    for (let i = 0; i < handles.length; i += 200) chunks.push(handles.slice(i, i + 200));
+    const stockByHandle = new Map<string, boolean>();
+    for (const c of chunks) {
+      const { data: rows, error: pErr } = await supabaseAdmin
+        .from("bg_products")
+        .select("handle, in_stock")
+        .in("handle", c);
+      if (pErr) throw new Error(pErr.message);
+      for (const r of rows ?? []) stockByHandle.set(r.handle, !!r.in_stock);
+    }
+
+    const imageIds = Array.from(new Set(all.map((s) => s.lookbook_image_id)));
+    const imageMap = new Map<
+      string,
+      { image_url: string; alt_text: string | null }
+    >();
+    for (let i = 0; i < imageIds.length; i += 200) {
+      const c = imageIds.slice(i, i + 200);
+      const { data: imgs, error: iErr } = await supabaseAdmin
+        .from("lookbook_images")
+        .select("id, image_url, alt_text")
+        .in("id", c);
+      if (iErr) throw new Error(iErr.message);
+      for (const r of imgs ?? [])
+        imageMap.set(r.id, { image_url: r.image_url, alt_text: r.alt_text });
+    }
+
+    const invalid: InvalidHotspot[] = [];
+    for (const s of all) {
+      const has = stockByHandle.has(s.product_handle);
+      if (!has) {
+        const img = imageMap.get(s.lookbook_image_id);
+        invalid.push({
+          hotspot_id: s.id,
+          product_handle: s.product_handle,
+          label: s.label,
+          surface_kind: s.surface_kind,
+          surface_slug: s.surface_slug,
+          lookbook_image_id: s.lookbook_image_id,
+          image_url: img?.image_url ?? "",
+          alt_text: img?.alt_text ?? null,
+          reason: "missing",
+        });
+        continue;
+      }
+      if (stockByHandle.get(s.product_handle) === false) {
+        const img = imageMap.get(s.lookbook_image_id);
+        invalid.push({
+          hotspot_id: s.id,
+          product_handle: s.product_handle,
+          label: s.label,
+          surface_kind: s.surface_kind,
+          surface_slug: s.surface_slug,
+          lookbook_image_id: s.lookbook_image_id,
+          image_url: img?.image_url ?? "",
+          alt_text: img?.alt_text ?? null,
+          reason: "out_of_stock",
+        });
+      }
+    }
+    return { total: all.length, checked: handles.length, invalid };
+  });
+

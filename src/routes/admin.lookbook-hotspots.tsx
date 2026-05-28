@@ -17,6 +17,7 @@ import {
   searchCatalogForHotspot,
   getCatalogProductByHandle,
   seedLookbookFromHomepage,
+  validateLookbookHotspots,
   type LookbookHotspotRow,
 } from "@/lib/lookbook-hotspots.functions";
 import editorialHero from "@/assets/editorial/may-2026/1.webp";
@@ -83,6 +84,8 @@ function AdminLookbookHotspots() {
             <NewImageDialog />
           </div>
         </div>
+
+        <ValidationPanel onSelect={setSelectedImageId} />
 
 
         <Card className="p-4 mb-6">
@@ -614,6 +617,125 @@ function HotspotEditor({
           <Trash2 className="h-4 w-4" />
         </Button>
       </div>
+    </Card>
+  );
+}
+
+// ─── Validation panel ──────────────────────────────────────────────────
+// Cross-checks every seeded hotspot handle against the bg_products catalog
+// mirror and surfaces any that don't match a product (or that match an
+// out-of-stock one). Click a row to jump into the image for correction.
+function ValidationPanel({ onSelect }: { onSelect: (id: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const { data, isFetching, refetch, isError, error } = useQuery({
+    queryKey: ["lookbook-validate"],
+    queryFn: () => validateLookbookHotspots({}),
+    enabled: open,
+    staleTime: 30_000,
+  });
+
+  const missing = (data?.invalid ?? []).filter((i) => i.reason === "missing");
+  const oos = (data?.invalid ?? []).filter((i) => i.reason === "out_of_stock");
+
+  return (
+    <Card className="p-4 mb-6">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div>
+          <div className="text-[10px] uppercase tracking-[0.3em] text-bronze">
+            Catalog validation
+          </div>
+          <p className="text-sm text-muted-foreground mt-1">
+            Check every seeded hotspot handle against the BrandsGateway catalog
+            mirror.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setOpen(true);
+              void refetch();
+            }}
+            disabled={isFetching}
+          >
+            {isFetching ? (
+              <Loader2 className="h-4 w-4 animate-spin mr-1.5" />
+            ) : (
+              <AlertTriangle className="h-4 w-4 mr-1.5" />
+            )}
+            {open ? "Re-run validation" : "Validate handles"}
+          </Button>
+        </div>
+      </div>
+
+      {open && data && (
+        <div className="mt-4 border-t border-border pt-4">
+          <div className="flex gap-4 text-xs mb-3">
+            <span>
+              Checked <strong>{data.checked}</strong> unique handle(s) across{" "}
+              <strong>{data.total}</strong> hotspot(s).
+            </span>
+            <span className="text-destructive">
+              {missing.length} missing
+            </span>
+            <span className="text-amber-600">
+              {oos.length} out of stock
+            </span>
+          </div>
+
+          {missing.length === 0 && oos.length === 0 ? (
+            <p className="text-xs text-muted-foreground">
+              All hotspot handles resolve to a live, in-stock product. ✓
+            </p>
+          ) : (
+            <ul className="space-y-1.5 max-h-[420px] overflow-y-auto">
+              {[...missing, ...oos].map((row) => (
+                <li key={row.hotspot_id}>
+                  <button
+                    onClick={() => onSelect(row.lookbook_image_id)}
+                    className="w-full text-left flex items-center gap-3 p-2 rounded border border-border hover:border-bronze/50 transition-colors"
+                  >
+                    {row.image_url && (
+                      <img
+                        src={row.image_url}
+                        alt=""
+                        className="w-12 h-12 object-cover rounded shrink-0"
+                        loading="lazy"
+                      />
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <Badge
+                          variant={
+                            row.reason === "missing" ? "destructive" : "secondary"
+                          }
+                          className="text-[9px] py-0"
+                        >
+                          {row.reason === "missing" ? "Not in catalog" : "Out of stock"}
+                        </Badge>
+                        <span className="text-xs font-mono truncate">
+                          {row.product_handle}
+                        </span>
+                      </div>
+                      <div className="text-[10px] text-muted-foreground truncate mt-0.5">
+                        {row.surface_kind ?? "—"} / {row.surface_slug ?? "—"}
+                        {row.label ? ` · ${row.label}` : ""}
+                      </div>
+                    </div>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+
+      {isError && (
+        <p className="text-xs text-destructive mt-3">
+          {error instanceof Error ? error.message : "Validation failed"}
+        </p>
+      )}
     </Card>
   );
 }
