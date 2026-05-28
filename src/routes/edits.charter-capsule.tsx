@@ -379,6 +379,9 @@ function CharterCapsulePage() {
         </div>
       </section>
 
+      {/* SHARE THIS KIT */}
+      <ShareSection />
+
       {/* OUTRO */}
       <section className="border-t border-ink/10 py-20 md:py-28 text-center px-6 bg-canvas">
         <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-4">
@@ -412,5 +415,83 @@ function CharterCapsulePage() {
         </div>
       </section>
     </main>
+  );
+}
+
+function ShareSection() {
+  const [copied, setCopied] = useState(false);
+  const shareUrl = absoluteUrl(PATH);
+  const shareTitle = TITLE;
+  const shareDesc = DESC;
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Fallback: silently fail
+    }
+  };
+
+  const handleFacebook = () => {
+    const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+    window.open(url, "_blank", "width=600,height=400,scrollbars=yes");
+  };
+
+  const handleNativeShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: shareTitle, text: shareDesc, url: shareUrl });
+      } catch {
+        // User cancelled or share failed
+      }
+    }
+  };
+
+  return (
+    <section className="border-t border-ink/5 py-16 md:py-24 text-center px-6 bg-canvas-raised/20">
+      <div className="max-w-2xl mx-auto">
+        <span className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-4 block">
+          Share this kit
+        </span>
+        <h2 className="font-serif text-2xl md:text-4xl mb-4">
+          Know someone heading to the Med?
+        </h2>
+        <p className="text-sm md:text-base text-ink/70 leading-relaxed mb-8 max-w-lg mx-auto">
+          Send them the capsule. Eight pieces, seven days — no excess baggage.
+        </p>
+        <div className="flex flex-wrap justify-center gap-3 md:gap-4">
+          <button
+            type="button"
+            onClick={handleFacebook}
+            className="inline-flex items-center gap-2 px-7 py-3.5 border border-ink hover:bg-ink hover:text-canvas transition-colors text-[11px] uppercase tracking-[0.25em]"
+          >
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+            </svg>
+            Share on Facebook
+          </button>
+          <button
+            type="button"
+            onClick={handleCopy}
+            className="inline-flex items-center gap-2 px-7 py-3.5 border border-ink hover:bg-ink hover:text-canvas transition-colors text-[11px] uppercase tracking-[0.25em]"
+          >
+            {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+            {copied ? "Link copied" : "Copy link for Instagram"}
+          </button>
+          {typeof navigator !== "undefined" && "share" in navigator && (
+            <button
+              type="button"
+              onClick={handleNativeShare}
+              className="inline-flex items-center gap-2 px-7 py-3.5 border border-ink hover:bg-ink hover:text-canvas transition-colors text-[11px] uppercase tracking-[0.25em]"
+            >
+              <Share2 className="w-4 h-4" />
+              Share
+            </button>
+          )}
+        </div>
+      </div>
+    </section>
   );
 }
