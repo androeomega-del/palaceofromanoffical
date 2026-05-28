@@ -16,8 +16,12 @@ import {
   createHotspot,
   searchCatalogForHotspot,
   getCatalogProductByHandle,
+  seedLookbookFromHomepage,
   type LookbookHotspotRow,
 } from "@/lib/lookbook-hotspots.functions";
+import editorialHero from "@/assets/editorial-hero-may-2026.jpg";
+import mensDetail2 from "@/assets/mens-swim-detail-2.jpg";
+
 import {
   Loader2,
   Search,
