@@ -1124,42 +1124,61 @@ function SeedFromSourceButton() {
   });
 
   async function seedStaticSurfaces() {
-    let createdImages = 0;
-    let createdSpots = 0;
+    // One catalog read up-front instead of one per surface; then create
+    // each surface (image + its hotspots) in parallel. The previous
+    // serial loop was the main bottleneck of "Seed from source".
+    const existingAll = await listLookbookImages({ data: {} });
+    const existingSlugs = new Set(
+      existingAll.items
+        .map((i) => `${i.surface_kind ?? ""}::${i.surface_slug ?? ""}`),
+    );
+
     let skipped = 0;
-    for (const s of STATIC_HOTSPOT_SURFACES) {
-      const existing = await listLookbookImages({
-        data: { surface_kind: s.surface_kind, search: s.surface_slug },
-      });
-      if (existing.items.some((i) => i.surface_slug === s.surface_slug)) {
+    const toCreate = STATIC_HOTSPOT_SURFACES.filter((s) => {
+      if (existingSlugs.has(`${s.surface_kind}::${s.surface_slug}`)) {
         skipped++;
-        continue;
+        return false;
       }
-      const { image } = await createLookbookImage({
-        data: {
-          surface_kind: s.surface_kind,
-          surface_slug: s.surface_slug,
-          image_url: s.image_url.startsWith("http")
-            ? s.image_url
-            : `https://palaceofromanofficial.com${s.image_url}`,
-          alt_text: s.alt_text,
-        },
-      });
-      createdImages++;
-      for (const h of s.fallbackHotspots) {
-        await createHotspot({
+      return true;
+    });
+
+    const results = await Promise.all(
+      toCreate.map(async (s) => {
+        const { image } = await createLookbookImage({
           data: {
-            lookbook_image_id: image.id,
-            x: h.x,
-            y: h.y,
-            product_handle: h.handle,
-            label: h.label,
+            surface_kind: s.surface_kind,
+            surface_slug: s.surface_slug,
+            image_url: s.image_url.startsWith("http")
+              ? s.image_url
+              : `https://palaceofromanofficial.com${s.image_url}`,
+            alt_text: s.alt_text,
           },
         });
-        createdSpots++;
-      }
-    }
-    return { createdImages, createdSpots, skipped, total: STATIC_HOTSPOT_SURFACES.length };
+        await Promise.all(
+          s.fallbackHotspots.map((h) =>
+            createHotspot({
+              data: {
+                lookbook_image_id: image.id,
+                x: h.x,
+                y: h.y,
+                product_handle: h.handle,
+                label: h.label,
+              },
+            }),
+          ),
+        );
+        return { spots: s.fallbackHotspots.length };
+      }),
+    );
+
+    const createdImages = results.length;
+    const createdSpots = results.reduce((n, r) => n + r.spots, 0);
+    return {
+      createdImages,
+      createdSpots,
+      skipped,
+      total: STATIC_HOTSPOT_SURFACES.length,
+    };
   }
 
   const seedAll = useMutation({
