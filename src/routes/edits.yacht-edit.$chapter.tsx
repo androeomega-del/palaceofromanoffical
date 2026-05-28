@@ -60,8 +60,11 @@ const CHAPTERS: Record<string, ChapterDef> = {
         spots: [{ x: 45, y: 65, label: "The Loafer", match: /loafer|driver|moccasin/i }],
       },
     ],
+    // Boarding = linen tailoring + cotton-silk shirts + unlined suede loafers.
+    // Explicitly exclude swim/shorts/sandals so the gangway look doesn't
+    // collide with the On Deck or Tender chapters.
     productQuery:
-      'tag:Men AND (title:linen OR title:loafer OR title:polo OR tag:"category:shirts" OR tag:"category:shoes")',
+      'tag:Men AND (title:linen OR title:loafer OR title:driver OR title:moccasin OR (title:shirt AND (title:cotton OR title:silk OR title:linen))) AND -title:swim AND -title:short AND -title:sandal AND -title:slide AND -tag:"category:swimwear" AND -tag:"category:shorts" AND -tag:"category:sandals"',
     shopTitle: "Shop the Boarding Look",
     shopEyebrow: "Men's — Linen, Cotton-Silk, Suede",
     outroCtas: [
