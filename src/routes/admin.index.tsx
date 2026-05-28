@@ -110,6 +110,12 @@ const TILES: Tile[] = [
     icon: Boxes,
   },
   {
+    to: "/admin/product-images",
+    label: "Product Images — QA",
+    desc: "Data-bound generation, side-by-side approval per SKU",
+    icon: ImageIcon,
+  },
+  {
     to: "/admin/collection-image-qa",
     label: "Collection Images — QA",
     desc: "Review generated hero imagery",

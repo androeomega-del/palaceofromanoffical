@@ -204,7 +204,7 @@ export const listProductImageQueue = createServerFn({ method: "POST" })
     if (rErr) throw new Error(rErr.message);
 
     const byId = new Map<string, ProductImageReviewRow>();
-    for (const r of (reviews ?? []) as ProductImageReviewRow[]) byId.set(r.sku, r);
+    for (const r of (reviews ?? []) as unknown as ProductImageReviewRow[]) byId.set(r.sku, r);
 
     const items: QueueItem[] = (products ?? []).map((p) => ({
       sku: p.group_sku,
