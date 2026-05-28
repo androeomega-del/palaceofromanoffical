@@ -18,6 +18,7 @@ import {
   getCatalogProductByHandle,
   seedLookbookFromHomepage,
   validateLookbookHotspots,
+  bulkUpdateHotspots,
   type LookbookHotspotRow,
 } from "@/lib/lookbook-hotspots.functions";
 import editorialHero from "@/assets/editorial/may-2026/1.webp";
@@ -228,6 +229,8 @@ function ImageDetailView({
     null,
   );
   const [addMode, setAddMode] = useState(false);
+  const [bulkMode, setBulkMode] = useState(false);
+  const [bulkIds, setBulkIds] = useState<Set<string>>(new Set());
 
   const invalidate = () => {
     qc.invalidateQueries({ queryKey: ["lookbook-image", imageId] });
@@ -285,14 +288,29 @@ function ImageDetailView({
           / {image.surface_slug ?? image.edition_handle}
           {image.chapter_key ? ` / ${image.chapter_key}` : ""}
         </div>
-        <Button
-          size="sm"
-          variant={addMode ? "default" : "outline"}
-          onClick={() => setAddMode((v) => !v)}
-        >
-          <Plus className="h-3.5 w-3.5 mr-1" />
-          {addMode ? "Click image to place" : "Add hotspot"}
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            variant={bulkMode ? "default" : "outline"}
+            onClick={() => {
+              setBulkMode((v) => !v);
+              setBulkIds(new Set());
+              setSelectedHotspotId(null);
+              setAddMode(false);
+            }}
+          >
+            {bulkMode ? `Bulk: ${bulkIds.size} selected` : "Bulk select"}
+          </Button>
+          <Button
+            size="sm"
+            variant={addMode ? "default" : "outline"}
+            onClick={() => setAddMode((v) => !v)}
+            disabled={bulkMode}
+          >
+            <Plus className="h-3.5 w-3.5 mr-1" />
+            {addMode ? "Click image to place" : "Add hotspot"}
+          </Button>
+        </div>
       </div>
 
       <div className="grid lg:grid-cols-[1fr_400px] gap-6 p-6 max-w-[1600px] mx-auto">
@@ -308,29 +326,57 @@ function ImageDetailView({
               alt={image.alt_text ?? ""}
               className="w-full h-auto block"
             />
-            {hotspots.map((h) => (
-              <button
-                key={h.id}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedHotspotId(h.id);
-                }}
-                className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full border-2 transition-all ${
-                  selectedHotspotId === h.id
-                    ? "h-8 w-8 bg-bronze border-white shadow-lg"
-                    : "h-6 w-6 bg-white/90 border-bronze hover:bg-bronze hover:border-white"
-                }`}
-                style={{ left: `${h.x}%`, top: `${h.y}%` }}
-                title={`${h.label ?? ""} → ${h.product_handle}`}
-              >
-                <span className="sr-only">{h.product_handle}</span>
-              </button>
-            ))}
+            {hotspots.map((h) => {
+              const isSelected = selectedHotspotId === h.id;
+              const isChecked = bulkIds.has(h.id);
+              return (
+                <button
+                  key={h.id}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (bulkMode) {
+                      setBulkIds((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(h.id)) next.delete(h.id);
+                        else next.add(h.id);
+                        return next;
+                      });
+                    } else {
+                      setSelectedHotspotId(h.id);
+                    }
+                  }}
+                  className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full border-2 transition-all ${
+                    bulkMode
+                      ? isChecked
+                        ? "h-8 w-8 bg-emerald-500 border-white shadow-lg"
+                        : "h-6 w-6 bg-white/90 border-emerald-500 hover:bg-emerald-500/30"
+                      : isSelected
+                        ? "h-8 w-8 bg-bronze border-white shadow-lg"
+                        : "h-6 w-6 bg-white/90 border-bronze hover:bg-bronze hover:border-white"
+                  }`}
+                  style={{ left: `${h.x}%`, top: `${h.y}%` }}
+                  title={`${h.label ?? ""} → ${h.product_handle}`}
+                >
+                  <span className="sr-only">{h.product_handle}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
         <aside>
-          {selected ? (
+          {bulkMode ? (
+            <BulkReassignPanel
+              ids={Array.from(bulkIds)}
+              hotspots={hotspots}
+              onSelectAll={() => setBulkIds(new Set(hotspots.map((h) => h.id)))}
+              onClear={() => setBulkIds(new Set())}
+              onDone={() => {
+                setBulkIds(new Set());
+                invalidate();
+              }}
+            />
+          ) : selected ? (
             <HotspotEditor
               hotspot={selected}
               onClose={() => setSelectedHotspotId(null)}
@@ -341,7 +387,7 @@ function ImageDetailView({
               <p className="text-sm text-muted-foreground">
                 {hotspots.length === 0
                   ? "No hotspots on this image yet. Click “Add hotspot” to place one."
-                  : "Click any hotspot on the image to inspect or replace its linked product."}
+                  : "Click any hotspot on the image to inspect or replace its linked product. Use Bulk select to reassign several at once."}
               </p>
               {hotspots.length > 0 && (
                 <ul className="mt-4 space-y-2">
@@ -620,6 +666,182 @@ function HotspotEditor({
     </Card>
   );
 }
+
+// ─── Bulk reassign panel ───────────────────────────────────────────────
+// Lets the admin select several hotspots on the current image (via
+// Bulk select mode on the canvas) and reassign them all to one product
+// handle in a single round-trip.
+function BulkReassignPanel({
+  ids,
+  hotspots,
+  onSelectAll,
+  onClear,
+  onDone,
+}: {
+  ids: string[];
+  hotspots: LookbookHotspotRow[];
+  onSelectAll: () => void;
+  onClear: () => void;
+  onDone: () => void;
+}) {
+  const [query, setQuery] = useState("");
+  const [pendingHandle, setPendingHandle] = useState<string>("");
+  const [applyLabel, setApplyLabel] = useState(false);
+  const [pendingLabel, setPendingLabel] = useState("");
+
+  const { data: searchResults, isFetching: searching } = useQuery({
+    queryKey: ["catalog-search", query],
+    queryFn: () => searchCatalogForHotspot({ data: { q: query, limit: 20 } }),
+    enabled: query.trim().length >= 2,
+  });
+
+  const mutation = useMutation({
+    mutationFn: () =>
+      bulkUpdateHotspots({
+        data: {
+          ids,
+          product_handle: pendingHandle,
+          label: applyLabel ? pendingLabel.trim() || null : undefined,
+        },
+      }),
+    onSuccess: (r) => {
+      toast.success(`Reassigned ${r.updated} hotspot(s)`);
+      onDone();
+    },
+    onError: (err: Error) => toast.error(err.message),
+  });
+
+  const selectedSpots = hotspots.filter((h) => ids.includes(h.id));
+
+  return (
+    <Card className="p-5 sticky top-6">
+      <div className="flex items-start justify-between gap-3 mb-3">
+        <div>
+          <div className="text-[10px] uppercase tracking-[0.3em] text-bronze">
+            Bulk reassign
+          </div>
+          <div className="text-sm mt-1">
+            {ids.length} of {hotspots.length} hotspot(s) selected
+          </div>
+        </div>
+        <div className="flex gap-1">
+          <Button size="sm" variant="ghost" onClick={onSelectAll}>
+            All
+          </Button>
+          <Button size="sm" variant="ghost" onClick={onClear}>
+            None
+          </Button>
+        </div>
+      </div>
+
+      {ids.length === 0 ? (
+        <p className="text-xs text-muted-foreground">
+          Click hotspots on the image to add them to the selection, then pick a
+          product below to reassign them all in one save.
+        </p>
+      ) : (
+        <>
+          <ul className="text-[11px] mb-3 max-h-32 overflow-y-auto space-y-0.5">
+            {selectedSpots.map((h) => (
+              <li key={h.id} className="font-mono text-muted-foreground truncate">
+                · {h.product_handle}
+                {h.label ? ` — ${h.label}` : ""}
+              </li>
+            ))}
+          </ul>
+
+          <div className="mb-3">
+            <Label className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+              Replace all with…
+            </Label>
+            <div className="relative mt-1">
+              <Search className="h-4 w-4 absolute left-2 top-2.5 text-muted-foreground" />
+              <Input
+                placeholder="Search catalog"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className="pl-8"
+              />
+            </div>
+            <div className="mt-2 max-h-64 overflow-y-auto space-y-1.5">
+              {searching && (
+                <div className="text-xs text-muted-foreground py-2 text-center">
+                  Searching…
+                </div>
+              )}
+              {(searchResults?.items ?? []).map((r) => {
+                const isPending = pendingHandle === r.handle;
+                return (
+                  <button
+                    key={r.sku + r.handle}
+                    onClick={() => setPendingHandle(r.handle)}
+                    className={`w-full text-left p-2 rounded border flex gap-2 transition-colors ${
+                      isPending
+                        ? "border-bronze bg-bronze/10"
+                        : "border-border hover:border-bronze/40"
+                    }`}
+                  >
+                    {r.main_picture ? (
+                      <img
+                        src={r.main_picture}
+                        alt=""
+                        className="w-10 h-10 object-cover rounded shrink-0"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 bg-muted rounded shrink-0" />
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <div className="text-xs font-medium truncate">
+                        {r.name ?? r.handle}
+                      </div>
+                      <div className="text-[10px] text-muted-foreground truncate">
+                        {r.brand} · {r.color}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="mb-3">
+            <label className="flex items-center gap-2 text-xs">
+              <input
+                type="checkbox"
+                checked={applyLabel}
+                onChange={(e) => setApplyLabel(e.target.checked)}
+              />
+              Also overwrite label
+            </label>
+            {applyLabel && (
+              <Input
+                value={pendingLabel}
+                onChange={(e) => setPendingLabel(e.target.value)}
+                placeholder="New label (blank to clear)"
+                className="mt-2"
+              />
+            )}
+          </div>
+
+          <Button
+            onClick={() => mutation.mutate()}
+            disabled={!pendingHandle || mutation.isPending}
+            className="w-full"
+          >
+            {mutation.isPending ? (
+              <Loader2 className="h-4 w-4 animate-spin mr-1.5" />
+            ) : (
+              <ArrowLeftRight className="h-4 w-4 mr-1.5" />
+            )}
+            Reassign {ids.length} hotspot{ids.length === 1 ? "" : "s"}
+          </Button>
+        </>
+      )}
+    </Card>
+  );
+}
+
+
 
 // ─── Validation panel ──────────────────────────────────────────────────
 // Cross-checks every seeded hotspot handle against the bg_products catalog
