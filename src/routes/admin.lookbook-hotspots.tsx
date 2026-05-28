@@ -101,32 +101,13 @@ function AdminLookbookHotspots() {
 
 
 
-        <Card className="p-4 mb-6">
-          <div className="grid sm:grid-cols-2 gap-3">
-            <div>
-              <Label className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-                Surface kind
-              </Label>
-              <Input
-                placeholder="e.g. themed-edit, editorial, campaign, homepage, bg_product"
-                value={filterKind}
-                onChange={(e) => setFilterKind(e.target.value)}
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <Label className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-                Search slug / alt
-              </Label>
-              <Input
-                placeholder="yacht-edit, mens-swim, ..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="mt-1"
-              />
-            </div>
-          </div>
-        </Card>
+        <SurfaceKindFilter
+          filterKind={filterKind}
+          onFilterKindChange={setFilterKind}
+          searchTerm={searchTerm}
+          onSearchTermChange={setSearchTerm}
+        />
+
 
         <ImagesGrid
           filterKind={filterKind}
