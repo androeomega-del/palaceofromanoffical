@@ -1124,46 +1124,17 @@ function SeedFromSourceButton() {
   });
 
   async function seedStaticSurfaces() {
-    const staticSurfaces: Array<{
-      surface_kind: string;
-      surface_slug: string;
-      image_url: string;
-      alt_text: string;
-      hotspots: Array<{ x: number; y: number; handle: string; label: string }>;
-    }> = [
-      {
-        surface_kind: "editorial",
-        surface_slug: "may-2026-hero",
-        image_url: editorialHero,
-        alt_text: "May 2026 Editorial — Quiet authority",
-        hotspots: [
-          { x: 80, y: 11, handle: "alexander-mcqueen-black-acetate-sunglasses", label: "Eyewear" },
-          { x: 47, y: 56, handle: "alexander-mcqueen-black-calf-leather-bos-taurus-shoulder-bag", label: "Handbag" },
-          { x: 22, y: 88, handle: "alexander-mcqueen-beige-calf-leather-bos-taurus-chunky-sneakers", label: "Footwear" },
-        ],
-      },
-      {
-        surface_kind: "campaign",
-        surface_slug: "mens-swim-deck-flatlay",
-        image_url: mensDetail2,
-        alt_text: "Men's Resort 2026 deck flatlay",
-        hotspots: [
-          { x: 28, y: 22, handle: "black-polyamide-swim-shorts", label: "Black Swim Shorts" },
-          { x: 72, y: 22, handle: "blue-cotton-shirt", label: "Blue Cotton Shirt" },
-          { x: 45, y: 46, handle: "gold-metal-sunglasses-9", label: "Wraparound Sunglasses" },
-          { x: 22, y: 70, handle: "green-polyamide-swim-shorts", label: "Cassette-Print Swim Shorts" },
-          { x: 68, y: 62, handle: "brown-calf-leather-bos-taurus-flat-sandals", label: "FF Monogram Slides" },
-        ],
-      },
-    ];
-
     let createdImages = 0;
     let createdSpots = 0;
-    for (const s of staticSurfaces) {
+    let skipped = 0;
+    for (const s of STATIC_HOTSPOT_SURFACES) {
       const existing = await listLookbookImages({
         data: { surface_kind: s.surface_kind, search: s.surface_slug },
       });
-      if (existing.items.some((i) => i.surface_slug === s.surface_slug)) continue;
+      if (existing.items.some((i) => i.surface_slug === s.surface_slug)) {
+        skipped++;
+        continue;
+      }
       const { image } = await createLookbookImage({
         data: {
           surface_kind: s.surface_kind,
@@ -1175,7 +1146,7 @@ function SeedFromSourceButton() {
         },
       });
       createdImages++;
-      for (const h of s.hotspots) {
+      for (const h of s.fallbackHotspots) {
         await createHotspot({
           data: {
             lookbook_image_id: image.id,
@@ -1188,7 +1159,7 @@ function SeedFromSourceButton() {
         createdSpots++;
       }
     }
-    return { createdImages, createdSpots };
+    return { createdImages, createdSpots, skipped, total: STATIC_HOTSPOT_SURFACES.length };
   }
 
   const seedAll = useMutation({
