@@ -85,6 +85,8 @@ function AdminLookbookHotspots() {
           </div>
         </div>
 
+        <ValidationPanel onSelect={setSelectedImageId} />
+
 
         <Card className="p-4 mb-6">
           <div className="grid sm:grid-cols-2 gap-3">
