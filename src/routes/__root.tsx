@@ -218,10 +218,21 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      // Non-blocking webfont load: preload as style, then swap to stylesheet
+      // on load so the CSS request doesn't block first paint. <noscript>
+      // fallback added below in scripts[] is unnecessary — html.css fallback
+      // (var(--font-serif) / var(--font-sans)) already covers no-JS users.
+      {
+        rel: "preload",
+        as: "style",
+        href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Karla:wght@400;500;600&display=swap",
+      } as any,
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Karla:wght@300;400;500;600;700&display=swap",
-      },
+        href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Karla:wght@400;500;600&display=swap",
+        media: "print",
+        onLoad: "this.media='all'",
+      } as any,
       // AI / LLM discovery surface — points crawlers at the curated site summary.
       { rel: "alternate", type: "text/markdown", href: "/llms.txt", title: "llms.txt" },
       // Sitemap discovery for crawlers that read <link rel="sitemap">.
