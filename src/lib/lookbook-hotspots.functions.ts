@@ -197,7 +197,7 @@ export const createHotspot = createServerFn({ method: "POST" })
         })
         .parse(d),
   )
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
     const { data: img } = await supabaseAdmin
       .from("lookbook_images")
       .select("surface_kind, surface_slug")
@@ -217,8 +217,23 @@ export const createHotspot = createServerFn({ method: "POST" })
       .select("*")
       .single();
     if (error) throw new Error(error.message);
+    await supabaseAdmin.from("homepage_layout_audit").insert({
+      action: "hotspot_create",
+      actor: context.userId ?? "admin",
+      details: {
+        hotspot_id: row.id,
+        lookbook_image_id: data.lookbook_image_id,
+        surface_kind: img?.surface_kind ?? null,
+        surface_slug: img?.surface_slug ?? null,
+        product_handle: data.product_handle,
+        label: data.label ?? null,
+        x: data.x,
+        y: data.y,
+      },
+    });
     return { hotspot: row as LookbookHotspotRow };
   });
+
 
 export const updateHotspot = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
