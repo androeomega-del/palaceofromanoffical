@@ -81,7 +81,7 @@ export function SiteFooter() {
             <span className="opacity-30">·</span>
             <span>14-Day Returns</span>
             <span className="opacity-30">·</span>
-            <span>Ships Worldwide</span>
+            <span>Concierge replies within 24h · Mon–Sat</span>
             <span className="opacity-30">·</span>
             <a href="mailto:support@palaceofromanofficial.com" className="hover:text-ink transition-colors normal-case tracking-normal">
               support@palaceofromanofficial.com
