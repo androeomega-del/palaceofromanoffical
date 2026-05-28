@@ -330,9 +330,8 @@ function Attr({
 // ── Raw Shopify Admin API probe — shows status, headers, body verbatim.
 function ShopifyDebugPanel() {
   const [handle, setHandle] = useState("");
-  const [result, setResult] = useState<Awaited<
-    ReturnType<typeof shopifyAdminDebugProbe>
-  > | null>(null);
+  type ProbeResult = Awaited<ReturnType<typeof shopifyAdminDebugProbe>>;
+  const [result, setResult] = useState<ProbeResult | null>(null);
 
   const probeMut = useMutation({
     mutationFn: () =>
