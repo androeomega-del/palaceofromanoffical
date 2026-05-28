@@ -33,10 +33,6 @@ function LegalNoticePage() {
           <p>
             <strong className="font-medium">Palace of Roman</strong> is operated as a sole proprietorship by the founder. The boutique operates exclusively online; there is no physical showroom, atelier or in-person appointment service.
           </p>
-          <p className="mt-4 text-sm text-ink/70">
-            <span className="text-muted-foreground">Founder / Owner:</span>{" "}
-            <em className="text-muted-foreground">[To be completed — please provide your full legal name]</em>
-          </p>
         </section>
 
         <section>
