@@ -10,11 +10,14 @@ import {
   generateProductImageForSku,
   reviewProductImage,
   buildProductImagePrompt,
+  shopifyAdminDebugProbe,
+  resolveShoppableOverlay,
   type QueueItem,
   type CatalogSource,
 } from "@/lib/product-image-review.functions";
-import { Loader2, Sparkles, Check, X, RefreshCw } from "lucide-react";
+import { Loader2, Sparkles, Check, X, RefreshCw, Bug, ExternalLink, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
 
 export const Route = createFileRoute("/admin/product-images")({
   beforeLoad: adminBeforeLoad,
@@ -71,6 +74,8 @@ function AdminProductImages() {
             regen.
           </p>
         </header>
+
+        <ShopifyDebugPanel />
 
         {/* Source selector — per batch */}
         <div className="mb-5">
@@ -280,6 +285,10 @@ function ReviewRow({ item }: { item: QueueItem }) {
             )}
           </div>
 
+          {status === "approved" && (
+            <ShoppableOverlayPreview sku={item.sku} source={item.source} />
+          )}
+
           <Textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
@@ -315,5 +324,151 @@ function Attr({
         {v ?? <span className="text-muted-foreground/60">—</span>}
       </dd>
     </>
+  );
+}
+
+// ── Raw Shopify Admin API probe — shows status, headers, body verbatim.
+function ShopifyDebugPanel() {
+  const [handle, setHandle] = useState("");
+  type ProbeResult = Awaited<ReturnType<typeof shopifyAdminDebugProbe>>;
+  const [result, setResult] = useState<ProbeResult | null>(null);
+
+  const probeMut = useMutation({
+    mutationFn: () =>
+      shopifyAdminDebugProbe({
+        data: handle.trim() ? { handle: handle.trim() } : {},
+      }),
+    onSuccess: (r) => setResult(r),
+    onError: (e: Error) =>
+      setResult({
+        ok: false,
+        url: null,
+        status: 0,
+        statusText: "client-error",
+        headers: {},
+        body: e.message,
+      } as ProbeResult),
+  });
+
+  return (
+    <Card className="p-4 mb-6 border-dashed">
+      <div className="flex items-center gap-2 mb-3">
+        <Bug className="h-4 w-4 text-bronze" />
+        <p className="text-[10px] uppercase tracking-[0.3em] text-bronze">
+          Shopify Admin API — raw probe
+        </p>
+      </div>
+      <div className="flex flex-wrap items-center gap-2">
+        <Input
+          value={handle}
+          onChange={(e) => setHandle(e.target.value)}
+          placeholder="product handle (optional — empty fetches first active product)"
+          className="text-xs max-w-md"
+        />
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => probeMut.mutate()}
+          disabled={probeMut.isPending}
+        >
+          {probeMut.isPending ? (
+            <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
+          ) : (
+            <Bug className="h-3.5 w-3.5 mr-1.5" />
+          )}
+          Fire single-product call
+        </Button>
+      </div>
+
+      {result && (
+        <div className="mt-4 grid gap-3 text-[11px] font-mono">
+          <div>
+            <span className="text-muted-foreground">URL: </span>
+            <span className="break-all">{result.url ?? "—"}</span>
+          </div>
+          <div>
+            <span className="text-muted-foreground">Status: </span>
+            <span
+              className={
+                result.status >= 200 && result.status < 300
+                  ? "text-emerald-600"
+                  : "text-rose-600"
+              }
+            >
+              {result.status} {result.statusText}
+            </span>
+          </div>
+          <details open>
+            <summary className="cursor-pointer text-muted-foreground">
+              Headers ({Object.keys(result.headers).length})
+            </summary>
+            <pre className="mt-1 whitespace-pre-wrap break-all p-2 bg-muted/40 rounded">
+              {Object.entries(result.headers)
+                .map(([k, v]) => `${k}: ${v}`)
+                .join("\n")}
+            </pre>
+          </details>
+          <details open>
+            <summary className="cursor-pointer text-muted-foreground">
+              Body ({result.body.length} chars)
+            </summary>
+            <pre className="mt-1 whitespace-pre-wrap break-all p-2 bg-muted/40 rounded max-h-96 overflow-auto">
+              {result.body}
+            </pre>
+          </details>
+        </div>
+      )}
+    </Card>
+  );
+}
+
+// ── Shoppable overlay preview — label + URL are read from the SKU on
+//    the review record (catalog data only, never the image itself).
+function ShoppableOverlayPreview({
+  sku,
+  source,
+}: {
+  sku: string;
+  source: CatalogSource;
+}) {
+  const q = useQuery({
+    queryKey: ["shoppable-overlay", source, sku],
+    queryFn: () => resolveShoppableOverlay({ data: { sku, source } }),
+    staleTime: 60_000,
+  });
+
+  return (
+    <div className="rounded border border-border bg-muted/30 p-3 text-xs">
+      <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">
+        Shoppable overlay (data-bound to SKU)
+      </p>
+      {q.isLoading && <p className="text-muted-foreground">Resolving…</p>}
+      {q.isError && (
+        <p className="text-rose-600">{(q.error as Error).message}</p>
+      )}
+      {q.data && (
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <ShoppingBag className="h-3.5 w-3.5 text-bronze" />
+            <span className="font-medium capitalize">{q.data.label}</span>
+          </div>
+          <div className="font-mono text-[10px] text-muted-foreground">
+            SKU {q.data.sku} → handle {q.data.handle ?? "—"}
+          </div>
+          {q.data.url ? (
+            <a
+              href={q.data.url}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1 text-foreground underline"
+            >
+              {q.data.url} <ExternalLink className="h-3 w-3" />
+            </a>
+          ) : (
+            <p className="text-rose-600">No Shopify URL — SKU has no handle.</p>
+          )}
+        </div>
+      )}
+    </div>
   );
 }

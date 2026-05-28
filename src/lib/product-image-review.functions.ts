@@ -436,3 +436,104 @@ export const reviewProductImage = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true as const };
   });
+
+// ─── DEBUG: raw Shopify Admin API probe ────────────────────────────────
+// Returns status code, headers, and body verbatim — never interpreted.
+export const shopifyAdminDebugProbe = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((d: { handle?: string; sku?: string } | undefined) =>
+    z
+      .object({
+        handle: z.string().min(1).max(255).optional(),
+        sku: z.string().min(1).max(128).optional(),
+      })
+      .parse(d ?? {}),
+  )
+  .handler(async ({ data }) => {
+    const token = process.env.SHOPIFY_ACCESS_TOKEN;
+    const domain = process.env.SHOPIFY_STORE_DOMAIN;
+    if (!token || !domain) {
+      return {
+        ok: false as const,
+        url: null as string | null,
+        status: 0,
+        statusText: "missing-credentials",
+        headers: {} as Record<string, string>,
+        body:
+          "SHOPIFY_ACCESS_TOKEN or SHOPIFY_STORE_DOMAIN is not set in the server env.",
+      };
+    }
+    const qs = data.handle
+      ? `handle=${encodeURIComponent(data.handle)}`
+      : `limit=1&fields=id,handle,title,variants&status=active`;
+    const url = `https://${domain}/admin/api/${SHOPIFY_API_VERSION}/products.json?${qs}`;
+    const res = await fetch(url, {
+      headers: {
+        "X-Shopify-Access-Token": token,
+        "Content-Type": "application/json",
+      },
+    });
+    const headers: Record<string, string> = {};
+    res.headers.forEach((v, k) => {
+      headers[k] = v;
+    });
+    const body = await res.text();
+    return {
+      ok: res.ok,
+      url,
+      status: res.status,
+      statusText: res.statusText,
+      headers,
+      body,
+    };
+  });
+
+// ─── Shoppable overlay metadata (DATA-BOUND ONLY) ──────────────────────
+// Used on approved images. Label = "[color] [style]" from the catalog
+// record; URL is the Shopify product page resolved by SKU → handle.
+// NEVER inferred from the image.
+export const resolveShoppableOverlay = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((d: { sku: string; source: string }) =>
+    z.object({ sku: skuSchema, source: sourceSchema }).parse(d),
+  )
+  .handler(async ({ data }) => {
+    const { data: review, error: revErr } = await supabaseAdmin
+      .from("product_image_reviews")
+      .select("sku, source, handle, status, attributes")
+      .eq("sku", data.sku)
+      .eq("source", data.source)
+      .maybeSingle();
+    if (revErr) throw new Error(revErr.message);
+    if (!review) throw new Error(`No review row for SKU ${data.sku}`);
+    if (review.status !== "approved") {
+      throw new Error(`SKU ${data.sku} is not approved (status=${review.status})`);
+    }
+    const attrs = (review.attributes ?? {}) as Partial<CatalogAttributes>;
+
+    // SKU → Shopify handle. Variant map first, fall back to row handle.
+    const { data: vm } = await supabaseAdmin
+      .from("shopify_variant_map")
+      .select("product_handle")
+      .eq("sku", data.sku)
+      .maybeSingle();
+    const resolvedHandle = vm?.product_handle ?? review.handle ?? null;
+
+    // Label is strictly "[color] [style]" from the catalog record.
+    const labelParts = [attrs.color, attrs.style ?? attrs.subcategory]
+      .filter((s): s is string => !!s && s.trim().length > 0);
+    const label = labelParts.length ? labelParts.join(" ") : (attrs.name ?? data.sku);
+
+    const domain = process.env.SHOPIFY_STORE_DOMAIN;
+    const url = resolvedHandle && domain
+      ? `https://${domain}/products/${resolvedHandle}`
+      : null;
+
+    return {
+      sku: review.sku,
+      source: review.source as CatalogSource,
+      handle: resolvedHandle,
+      label,
+      url,
+    };
+  });
