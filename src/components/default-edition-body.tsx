@@ -15,6 +15,7 @@ import { ShieldCheck, Plane, RotateCcw, Sparkles } from "lucide-react";
 import { fetchProducts, fetchCollection, fetchSearchFiltered, type ShopifyProduct } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
 import { EditorialHotspots, EditorialHotspotsBySurface } from "@/components/editorial-hotspots";
+import { findStaticHotspotSurface } from "@/lib/static-hotspot-registry";
 import { CampaignVideo } from "@/components/campaign-video";
 
 import { ForYouFeed } from "@/components/for-you-feed";
