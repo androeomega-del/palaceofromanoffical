@@ -60,7 +60,7 @@ function LegalNoticePage() {
           </ul>
           <p className="mt-4 text-sm text-ink/70">
             <span className="text-muted-foreground">Registered business address:</span>{" "}
-            Virtual mailbox / PO Box <em className="text-muted-foreground">[address to be added]</em>
+            Palace of Roman, 8605 Santa Monica Blvd PMB 610211, West Hollywood, California 90069-4109, US
           </p>
         </section>
 
