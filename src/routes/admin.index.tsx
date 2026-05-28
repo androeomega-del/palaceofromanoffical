@@ -116,6 +116,12 @@ const TILES: Tile[] = [
     icon: ImageIcon,
   },
   {
+    to: "/admin/lookbook-hotspots",
+    label: "Lookbook Hotspots",
+    desc: "Audit and correct mis-tagged shoppable placements",
+    icon: CheckSquare,
+  },
+  {
     to: "/admin/collection-image-qa",
     label: "Collection Images — QA",
     desc: "Review generated hero imagery",

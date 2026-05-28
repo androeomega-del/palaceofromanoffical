@@ -654,6 +654,8 @@ export type Database = {
           lookbook_image_id: string
           product_handle: string
           sort_order: number
+          surface_kind: string | null
+          surface_slug: string | null
           variant_gid: string | null
           x: number
           y: number
@@ -665,6 +667,8 @@ export type Database = {
           lookbook_image_id: string
           product_handle: string
           sort_order?: number
+          surface_kind?: string | null
+          surface_slug?: string | null
           variant_gid?: string | null
           x: number
           y: number
@@ -676,6 +680,8 @@ export type Database = {
           lookbook_image_id?: string
           product_handle?: string
           sort_order?: number
+          surface_kind?: string | null
+          surface_slug?: string | null
           variant_gid?: string | null
           x?: number
           y?: number
@@ -694,36 +700,48 @@ export type Database = {
         Row: {
           alt_text: string | null
           blur_data_url: string | null
+          chapter_key: string | null
           created_at: string
           edition_handle: string
+          external_id: string | null
           height: number | null
           id: string
           image_url: string
           sort_order: number
+          surface_kind: string | null
+          surface_slug: string | null
           updated_at: string
           width: number | null
         }
         Insert: {
           alt_text?: string | null
           blur_data_url?: string | null
+          chapter_key?: string | null
           created_at?: string
           edition_handle: string
+          external_id?: string | null
           height?: number | null
           id?: string
           image_url: string
           sort_order?: number
+          surface_kind?: string | null
+          surface_slug?: string | null
           updated_at?: string
           width?: number | null
         }
         Update: {
           alt_text?: string | null
           blur_data_url?: string | null
+          chapter_key?: string | null
           created_at?: string
           edition_handle?: string
+          external_id?: string | null
           height?: number | null
           id?: string
           image_url?: string
           sort_order?: number
+          surface_kind?: string | null
+          surface_slug?: string | null
           updated_at?: string
           width?: number | null
         }
