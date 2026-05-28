@@ -241,15 +241,6 @@ export const updateHotspot = createServerFn({ method: "POST" })
         .parse(d),
   )
   .handler(async ({ data }) => {
-    const patch: Record<string, unknown> = {};
-    if (data.product_handle !== undefined)
-      patch.product_handle = data.product_handle;
-    if (data.label !== undefined) patch.label = data.label;
-    if (data.x !== undefined) patch.x = data.x;
-    if (data.y !== undefined) patch.y = data.y;
-    if (Object.keys(patch).length === 0) return { ok: true as const };
-
-    // Audit: record before/after for the hotspot
     const patch: {
       product_handle?: string;
       label?: string | null;
@@ -261,6 +252,15 @@ export const updateHotspot = createServerFn({ method: "POST" })
     if (data.label !== undefined) patch.label = data.label;
     if (data.x !== undefined) patch.x = data.x;
     if (data.y !== undefined) patch.y = data.y;
+    if (Object.keys(patch).length === 0) return { ok: true as const };
+
+    // Audit: record before/after for the hotspot
+    const { data: before } = await supabaseAdmin
+      .from("lookbook_hotspots")
+      .select("id, product_handle, label, surface_kind, surface_slug")
+      .eq("id", data.id)
+      .maybeSingle();
+
     const { data: row, error } = await supabaseAdmin
       .from("lookbook_hotspots")
       .update(patch)
