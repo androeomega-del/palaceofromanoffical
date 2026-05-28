@@ -66,6 +66,7 @@ import { Route as AdminShopifySyncRouteImport } from './routes/admin.shopify-syn
 import { Route as AdminSeoHealthRouteImport } from './routes/admin.seo-health'
 import { Route as AdminReviewsRouteImport } from './routes/admin.reviews'
 import { Route as AdminProductImagesRouteImport } from './routes/admin.product-images'
+import { Route as AdminLookbookHotspotsRouteImport } from './routes/admin.lookbook-hotspots'
 import { Route as AdminLandingPagesRouteImport } from './routes/admin.landing-pages'
 import { Route as AdminInventorySyncRouteImport } from './routes/admin.inventory-sync'
 import { Route as AdminInboxRouteImport } from './routes/admin.inbox'
@@ -398,6 +399,11 @@ const AdminProductImagesRoute = AdminProductImagesRouteImport.update({
   path: '/admin/product-images',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminLookbookHotspotsRoute = AdminLookbookHotspotsRouteImport.update({
+  id: '/admin/lookbook-hotspots',
+  path: '/admin/lookbook-hotspots',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminLandingPagesRoute = AdminLandingPagesRouteImport.update({
   id: '/admin/landing-pages',
   path: '/admin/landing-pages',
@@ -637,6 +643,7 @@ export interface FileRoutesByFullPath {
   '/admin/inbox': typeof AdminInboxRoute
   '/admin/inventory-sync': typeof AdminInventorySyncRoute
   '/admin/landing-pages': typeof AdminLandingPagesRoute
+  '/admin/lookbook-hotspots': typeof AdminLookbookHotspotsRoute
   '/admin/product-images': typeof AdminProductImagesRoute
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/seo-health': typeof AdminSeoHealthRoute
@@ -731,6 +738,7 @@ export interface FileRoutesByTo {
   '/admin/inbox': typeof AdminInboxRoute
   '/admin/inventory-sync': typeof AdminInventorySyncRoute
   '/admin/landing-pages': typeof AdminLandingPagesRoute
+  '/admin/lookbook-hotspots': typeof AdminLookbookHotspotsRoute
   '/admin/product-images': typeof AdminProductImagesRoute
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/seo-health': typeof AdminSeoHealthRoute
@@ -826,6 +834,7 @@ export interface FileRoutesById {
   '/admin/inbox': typeof AdminInboxRoute
   '/admin/inventory-sync': typeof AdminInventorySyncRoute
   '/admin/landing-pages': typeof AdminLandingPagesRoute
+  '/admin/lookbook-hotspots': typeof AdminLookbookHotspotsRoute
   '/admin/product-images': typeof AdminProductImagesRoute
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/seo-health': typeof AdminSeoHealthRoute
@@ -923,6 +932,7 @@ export interface FileRouteTypes {
     | '/admin/inbox'
     | '/admin/inventory-sync'
     | '/admin/landing-pages'
+    | '/admin/lookbook-hotspots'
     | '/admin/product-images'
     | '/admin/reviews'
     | '/admin/seo-health'
@@ -1017,6 +1027,7 @@ export interface FileRouteTypes {
     | '/admin/inbox'
     | '/admin/inventory-sync'
     | '/admin/landing-pages'
+    | '/admin/lookbook-hotspots'
     | '/admin/product-images'
     | '/admin/reviews'
     | '/admin/seo-health'
@@ -1111,6 +1122,7 @@ export interface FileRouteTypes {
     | '/admin/inbox'
     | '/admin/inventory-sync'
     | '/admin/landing-pages'
+    | '/admin/lookbook-hotspots'
     | '/admin/product-images'
     | '/admin/reviews'
     | '/admin/seo-health'
@@ -1204,6 +1216,7 @@ export interface RootRouteChildren {
   AdminInboxRoute: typeof AdminInboxRoute
   AdminInventorySyncRoute: typeof AdminInventorySyncRoute
   AdminLandingPagesRoute: typeof AdminLandingPagesRoute
+  AdminLookbookHotspotsRoute: typeof AdminLookbookHotspotsRoute
   AdminProductImagesRoute: typeof AdminProductImagesRoute
   AdminReviewsRoute: typeof AdminReviewsRoute
   AdminSeoHealthRoute: typeof AdminSeoHealthRoute
@@ -1652,6 +1665,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProductImagesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/lookbook-hotspots': {
+      id: '/admin/lookbook-hotspots'
+      path: '/admin/lookbook-hotspots'
+      fullPath: '/admin/lookbook-hotspots'
+      preLoaderRoute: typeof AdminLookbookHotspotsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/landing-pages': {
       id: '/admin/landing-pages'
       path: '/admin/landing-pages'
@@ -2012,6 +2032,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminInboxRoute: AdminInboxRoute,
   AdminInventorySyncRoute: AdminInventorySyncRoute,
   AdminLandingPagesRoute: AdminLandingPagesRoute,
+  AdminLookbookHotspotsRoute: AdminLookbookHotspotsRoute,
   AdminProductImagesRoute: AdminProductImagesRoute,
   AdminReviewsRoute: AdminReviewsRoute,
   AdminSeoHealthRoute: AdminSeoHealthRoute,
