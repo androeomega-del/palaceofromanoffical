@@ -158,7 +158,7 @@ export const createLookbookImage = createServerFn({ method: "POST" })
         })
         .parse(d),
   )
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
     const { data: row, error } = await supabaseAdmin
       .from("lookbook_images")
       .insert({
@@ -173,8 +173,21 @@ export const createLookbookImage = createServerFn({ method: "POST" })
       .select("*")
       .single();
     if (error) throw new Error(error.message);
+    await supabaseAdmin.from("homepage_layout_audit").insert({
+      action: "lookbook_image_create",
+      actor: context.userId ?? "admin",
+      details: {
+        lookbook_image_id: row.id,
+        surface_kind: data.surface_kind,
+        surface_slug: data.surface_slug,
+        edition_handle: data.edition_handle ?? data.surface_slug,
+        chapter_key: data.chapter_key ?? null,
+        image_url: data.image_url,
+      },
+    });
     return { image: row as LookbookImageRow };
   });
+
 
 // ─── Hotspot mutations ────────────────────────────────────────────────
 export const createHotspot = createServerFn({ method: "POST" })
