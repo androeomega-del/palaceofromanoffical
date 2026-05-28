@@ -451,11 +451,8 @@ export function EditorialHotspotsBySurface({
   aspect?: string;
   className?: string;
 }) {
-  // Lazy-import the server fn to avoid bundling the admin reader into all
-  // pages that just import editorial-hotspots. useQuery owns SWR for us.
-  const { useServerFn } = require("@tanstack/react-start") as typeof import("@tanstack/react-start");
-  const { getLookbookForSurface } = require("@/lib/lookbook-hotspots.functions") as typeof import("@/lib/lookbook-hotspots.functions");
   const fetcher = useServerFn(getLookbookForSurface);
+
   const { data } = useQuery({
     queryKey: ["lookbook-surface", surfaceKind, surfaceSlug],
     queryFn: () =>
