@@ -1,55 +1,33 @@
 /**
  * Shared `beforeLoad` guard for admin routes.
  *
- * Fixes the login-loop bug: the prior pattern called the protected serverFn
- * `ensureAdmin()` directly and treated ANY thrown error as "not authenticated"
- * → redirect to /login. If the Supabase session wasn't fully hydrated yet, or
- * the user was signed in but lacked the admin role, this looped them straight
- * back to login forever.
+ * Root cause of the prior "stuck loading / kicked back to /" behaviour:
+ * the previous guard awaited `supabase.auth.getUser()` (a network call) and
+ * `ensureAdmin()` (another network call) INSIDE `beforeLoad`. Any transient
+ * network blip, cold-worker spin-up, or token-refresh race would either
+ *   (a) hang the route navigation (infinite "loading…"), or
+ *   (b) be caught and redirect the user to "/" so login appeared to fail.
  *
- * New behaviour:
- *  1. Await `supabase.auth.getUser()` first. This hydrates / refreshes the
- *     session BEFORE we call any `requireSupabaseAuth`-protected serverFn,
- *     so the bearer token is actually present.
- *  2. If no user → redirect to /login (real auth failure).
- *  3. If user is signed in but not an admin → redirect to "/" (no loop).
- *  4. If admin check succeeds → continue.
+ * Fix: do only a synchronous, in-memory session check here using
+ * `getSession()` (reads from localStorage, no network). The serverFns the
+ * page calls are already protected by `requireAdmin` on the server — they
+ * are the real gate. If there's no local session at all, send to /login.
+ * That's it. No network in beforeLoad → no hang, no flapping redirects.
  */
-
 import { redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
-import { ensureAdmin } from "@/lib/admin-guard.functions";
 
 export async function adminBeforeLoad() {
-  // During SSR there is no Supabase session in storage, so we can't
-  // verify the user. DO NOT redirect — that would log a signed-in admin
-  // out on every navigation to an admin page. Skip the check on the
-  // server; the client re-runs beforeLoad after hydration and enforces
-  // the real gate then. Admin page components fetch their data via
-  // serverFns called client-side, so SSR rendering an empty shell is
-  // safe.
-  if (typeof window === "undefined") {
-    return;
-  }
+  // SSR / prerender: no localStorage, no session to check. Render the
+  // shell; the client re-runs beforeLoad after hydration.
+  if (typeof window === "undefined") return;
 
-
-
-  const { data, error } = await supabase.auth.getUser();
-  if (error || !data.user) {
+  const { data } = await supabase.auth.getSession();
+  if (!data.session?.access_token) {
     throw redirect({ to: "/login" });
   }
-  const { data: sessionData } = await supabase.auth.getSession();
-  const accessToken = sessionData.session?.access_token;
-  if (!accessToken) {
-    throw redirect({ to: "/login" });
-  }
-  try {
-    await ensureAdmin({
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
-  } catch {
-    // Signed in but not an admin (or transient server error) — DO NOT loop
-    // back to /login. Send them home so they aren't trapped.
-    throw redirect({ to: "/" });
-  }
+  // Signed-in callers proceed. requireAdmin on each serverFn enforces the
+  // actual admin role server-side; non-admins will see a clear error in
+  // the dashboard rather than a silent redirect loop.
 }
+
