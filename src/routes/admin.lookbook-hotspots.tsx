@@ -1413,16 +1413,27 @@ function AuditList({
 }
 
 export function ImageHistoryPanel({
-  imageId,
+  surfaceKind,
+  surfaceSlug,
 }: {
-  imageId: string;
+  surfaceKind: string | null;
+  surfaceSlug: string | null;
 }) {
+  const enabled = !!surfaceSlug;
   const { data, isFetching, refetch } = useQuery({
-    queryKey: ["hotspot-audit", "image", imageId],
+    queryKey: ["hotspot-audit", "surface", surfaceKind, surfaceSlug],
     queryFn: () =>
-      listHotspotAudit({ data: { lookbook_image_id: imageId, limit: 50 } }),
+      listHotspotAudit({
+        data: {
+          surface_kind: surfaceKind ?? undefined,
+          surface_slug: surfaceSlug ?? undefined,
+          limit: 50,
+        },
+      }),
+    enabled,
     staleTime: 15_000,
   });
+  if (!enabled) return null;
   return (
     <Card className="p-4 mt-4">
       <div className="flex items-center justify-between mb-3">
@@ -1430,7 +1441,7 @@ export function ImageHistoryPanel({
           <div className="text-[10px] uppercase tracking-[0.3em] text-bronze">
             History
           </div>
-          <div className="text-sm">Changes to this image and its hotspots</div>
+          <div className="text-sm">Changes scoped to this surface</div>
         </div>
         <Button
           size="sm"
@@ -1449,3 +1460,4 @@ export function ImageHistoryPanel({
     </Card>
   );
 }
+
