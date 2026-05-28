@@ -564,11 +564,10 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
               surfaceSlug="may-2026-hero"
               src={editorialHero}
               alt="May 2026 Editorial — Quiet authority"
-              fallbackHotspots={[
-                { x: 80, y: 11, label: "Eyewear", sublabel: "Alexander McQueen Acetate Sunglasses", handle: "alexander-mcqueen-black-acetate-sunglasses" },
-                { x: 47, y: 56, label: "Handbag", sublabel: "Alexander McQueen Bos Taurus Shoulder Bag", handle: "alexander-mcqueen-black-calf-leather-bos-taurus-shoulder-bag" },
-                { x: 22, y: 88, label: "Footwear", sublabel: "Alexander McQueen Chunky Sneakers", handle: "alexander-mcqueen-beige-calf-leather-bos-taurus-chunky-sneakers" },
-              ]}
+              fallbackHotspots={
+                findStaticHotspotSurface("editorial", "may-2026-hero")
+                  ?.fallbackHotspots ?? []
+              }
             />
             <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mt-3">
               Tap the markers to shop the look
