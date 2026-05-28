@@ -1,18 +1,20 @@
 /**
  * Product image review — strict data-bound generation + side-by-side QA.
  *
- * RULES (per project policy):
- *  1. The image prompt is built ONLY from the catalog row's own data fields
- *     (color, style/subcategory, category, gender, brand, material). We
- *     NEVER infer attributes from the generated image.
- *  2. Tags / alt-text / labels stored alongside the image are pulled from
- *     the catalog record BEFORE generation runs — never from a visual
- *     interpretation of the output.
- *  3. SKU is the only link between an image file and the catalog row. The
- *     generated PNG is stored at `${sku}.png` in the `product-images`
- *     bucket; the review row is keyed by SKU.
- *  4. Every generated image lands as `status='pending'` so a human can
- *     approve or reject it before publishing.
+ * Two catalog sources are supported:
+ *   - 'bg_products' → rows in the BrandsGateway mirror table
+ *   - 'shopify'     → live products from the Shopify Admin API
+ *
+ * RULES (per project policy, applied to BOTH sources):
+ *  1. Prompts are built ONLY from catalog fields (color, style/subcategory,
+ *     category, SKU, gender, brand, material). Never inferred from output.
+ *  2. Tags / alt-text are pulled from the catalog record BEFORE generation.
+ *  3. (sku, source) is the unique link between an image and its catalog row.
+ *     Generated PNG is stored at `${source}/${sku}.png` in `product-images`.
+ *  4. Every generated image lands as `status='pending'`. Approved rows write
+ *     back the SKU reference. Rejected rows re-enter the queue (status flips
+ *     back to 'ungenerated' on next regen) — reviewer notes become an
+ *     optional override appended to the data-bound prompt.
  */
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
@@ -20,6 +22,8 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { requireAdmin } from "@/lib/admin-middleware";
 
 const skuSchema = z.string().min(1).max(128).regex(/^[A-Za-z0-9._\-/]+$/);
+const sourceSchema = z.enum(["bg_products", "shopify"]);
+export type CatalogSource = z.infer<typeof sourceSchema>;
 
 export type CatalogAttributes = {
   sku: string;
@@ -32,10 +36,12 @@ export type CatalogAttributes = {
   subsubcategory: string | null;
   color: string | null;
   material: string | null;
+  style: string | null;
 };
 
 export type ProductImageReviewRow = {
   sku: string;
+  source: CatalogSource;
   handle: string;
   attributes: CatalogAttributes;
   prompt: string;
@@ -49,17 +55,17 @@ export type ProductImageReviewRow = {
 
 export type QueueItem = {
   sku: string;
+  source: CatalogSource;
   catalog: CatalogAttributes;
   review: ProductImageReviewRow | null;
   mainPicture: string | null;
 };
 
 // ─── Prompt builder (DATA-BOUND ONLY) ──────────────────────────────────
-//
-// Important: this function takes the catalog row as its single input and
-// composes the prompt purely from its fields. Do not add free-text
-// embellishment or anything derived from a previously generated image.
-export function buildProductImagePrompt(c: CatalogAttributes): string {
+export function buildProductImagePrompt(
+  c: CatalogAttributes,
+  override?: string | null,
+): string {
   const genderWord = (() => {
     const g = (c.gender ?? "").toLowerCase();
     if (g.startsWith("m")) return "men";
@@ -68,7 +74,6 @@ export function buildProductImagePrompt(c: CatalogAttributes): string {
     return null;
   })();
 
-  // category phrase, most specific first
   const categoryParts = [c.subsubcategory, c.subcategory, c.category]
     .filter((v): v is string => !!v && v.length > 0);
   const categoryPhrase = categoryParts[0] ?? "fashion item";
@@ -76,6 +81,7 @@ export function buildProductImagePrompt(c: CatalogAttributes): string {
   const subject = [
     c.color,
     c.material,
+    c.style,
     categoryPhrase,
     genderWord ? `for ${genderWord}` : null,
     c.brand ? `by ${c.brand}` : null,
@@ -83,22 +89,23 @@ export function buildProductImagePrompt(c: CatalogAttributes): string {
     .filter(Boolean)
     .join(" ");
 
-  // Reference fields (NOT visual cues). Useful for traceability in the
-  // generated prompt without instructing the model to invent extra detail.
   const refs = [`SKU ${c.sku}`, c.name ? `model ref: ${c.name}` : null]
     .filter(Boolean)
     .join("; ");
 
-  return [
+  const base = [
     `Editorial product photograph of ${subject}.`,
     "Studio lighting, neutral seamless background, single product, centred composition, 4:5 vertical.",
     "No text, no logos overlaid, no watermarks, no humans, no props beyond the product itself.",
     `Catalog reference (do not render as text): ${refs}.`,
   ].join(" ");
+
+  const trimmed = (override ?? "").trim();
+  return trimmed ? `${base} Reviewer override: ${trimmed}` : base;
 }
 
-// ─── Catalog fetch ─────────────────────────────────────────────────────
-async function fetchCatalogRow(sku: string): Promise<CatalogAttributes> {
+// ─── BG catalog ────────────────────────────────────────────────────────
+async function fetchBgCatalogRow(sku: string): Promise<CatalogAttributes> {
   const { data, error } = await supabaseAdmin
     .from("bg_products")
     .select(
@@ -107,7 +114,7 @@ async function fetchCatalogRow(sku: string): Promise<CatalogAttributes> {
     .eq("group_sku", sku)
     .maybeSingle();
   if (error) throw new Error(error.message);
-  if (!data) throw new Error(`No catalog row for SKU ${sku}`);
+  if (!data) throw new Error(`No bg_products row for SKU ${sku}`);
   return {
     sku: data.group_sku,
     handle: data.handle,
@@ -119,10 +126,135 @@ async function fetchCatalogRow(sku: string): Promise<CatalogAttributes> {
     subsubcategory: data.subsubcategory,
     color: data.color,
     material: data.material,
+    style: data.subcategory ?? null,
   };
 }
 
-// ─── Image generation (Lovable AI Gateway) ─────────────────────────────
+async function listBgCatalog(limit: number): Promise<{
+  items: { sku: string; catalog: CatalogAttributes; mainPicture: string | null }[];
+}> {
+  const { data, error } = await supabaseAdmin
+    .from("bg_products")
+    .select(
+      "group_sku, handle, name, brand, gender, category, subcategory, subsubcategory, color, material, main_picture, modified_at",
+    )
+    .eq("in_stock", true)
+    .gt("total_stock", 0)
+    .order("modified_at", { ascending: false, nullsFirst: false })
+    .limit(limit);
+  if (error) throw new Error(error.message);
+  return {
+    items: (data ?? []).map((p) => ({
+      sku: p.group_sku,
+      catalog: {
+        sku: p.group_sku,
+        handle: p.handle,
+        name: p.name,
+        brand: p.brand,
+        gender: p.gender,
+        category: p.category,
+        subcategory: p.subcategory,
+        subsubcategory: p.subsubcategory,
+        color: p.color,
+        material: p.material,
+        style: p.subcategory ?? null,
+      },
+      mainPicture: p.main_picture,
+    })),
+  };
+}
+
+// ─── Shopify catalog ───────────────────────────────────────────────────
+// Maps tags + metafields → attributes. Tags use `key:value` convention
+// (e.g. `color:navy`, `style:swim-briefs`, `gender:men`). Recognised keys:
+// color, style, category, subcategory, material, gender. SKU is read from
+// the first variant.
+const SHOPIFY_API_VERSION = "2025-07";
+
+type ShopifyProduct = {
+  id: number;
+  handle: string;
+  title: string;
+  vendor: string | null;
+  product_type: string | null;
+  tags: string; // comma separated
+  image: { src: string } | null;
+  variants: Array<{ sku: string | null }>;
+  metafields?: Array<{ namespace: string; key: string; value: string }>;
+};
+
+function parseShopifyTags(tagsCsv: string): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const raw of tagsCsv.split(",")) {
+    const tag = raw.trim();
+    const m = /^([a-zA-Z_-]+)\s*:\s*(.+)$/.exec(tag);
+    if (m) out[m[1].toLowerCase()] = m[2].trim();
+  }
+  return out;
+}
+
+function shopifyToCatalog(p: ShopifyProduct): CatalogAttributes | null {
+  const sku = p.variants.find((v) => !!v.sku)?.sku ?? null;
+  if (!sku) return null;
+  const tagMap = parseShopifyTags(p.tags ?? "");
+  const mf: Record<string, string> = {};
+  for (const m of p.metafields ?? []) mf[m.key.toLowerCase()] = m.value;
+  const pick = (k: string) => mf[k] ?? tagMap[k] ?? null;
+  return {
+    sku,
+    handle: p.handle,
+    name: p.title,
+    brand: p.vendor,
+    gender: pick("gender"),
+    category: p.product_type || pick("category"),
+    subcategory: pick("subcategory"),
+    subsubcategory: null,
+    color: pick("color"),
+    material: pick("material"),
+    style: pick("style") ?? pick("subcategory"),
+  };
+}
+
+async function shopifyAdminFetch(path: string): Promise<unknown> {
+  const token = process.env.SHOPIFY_ACCESS_TOKEN;
+  const domain = process.env.SHOPIFY_STORE_DOMAIN;
+  if (!token || !domain) throw new Error("Shopify credentials missing");
+  const url = `https://${domain}/admin/api/${SHOPIFY_API_VERSION}/${path}`;
+  const res = await fetch(url, {
+    headers: {
+      "X-Shopify-Access-Token": token,
+      "Content-Type": "application/json",
+    },
+  });
+  if (!res.ok) throw new Error(`Shopify ${res.status}: ${await res.text()}`);
+  return res.json();
+}
+
+async function listShopifyCatalog(limit: number) {
+  const json = (await shopifyAdminFetch(
+    `products.json?limit=${Math.min(limit, 250)}&status=active`,
+  )) as { products: ShopifyProduct[] };
+  const items: { sku: string; catalog: CatalogAttributes; mainPicture: string | null }[] = [];
+  for (const p of json.products) {
+    const cat = shopifyToCatalog(p);
+    if (cat) items.push({ sku: cat.sku, catalog: cat, mainPicture: p.image?.src ?? null });
+  }
+  return { items };
+}
+
+async function fetchShopifyCatalogRow(sku: string): Promise<CatalogAttributes> {
+  // Shopify Admin search by SKU
+  const json = (await shopifyAdminFetch(
+    `products.json?limit=50&fields=id,handle,title,vendor,product_type,tags,image,variants&status=active`,
+  )) as { products: ShopifyProduct[] };
+  for (const p of json.products) {
+    const cat = shopifyToCatalog(p);
+    if (cat && cat.sku === sku) return cat;
+  }
+  throw new Error(`No Shopify product for SKU ${sku}`);
+}
+
+// ─── Image generation ──────────────────────────────────────────────────
 async function generateImageBytes(prompt: string): Promise<Uint8Array> {
   const apiKey = process.env.LOVABLE_API_KEY;
   if (!apiKey) throw new Error("LOVABLE_API_KEY missing");
@@ -142,9 +274,7 @@ async function generateImageBytes(prompt: string): Promise<Uint8Array> {
       }),
     },
   );
-  if (!res.ok) {
-    throw new Error(`AI gateway ${res.status}: ${await res.text()}`);
-  }
+  if (!res.ok) throw new Error(`AI gateway ${res.status}: ${await res.text()}`);
   const json = (await res.json()) as {
     choices?: Array<{
       message?: { images?: Array<{ image_url?: { url?: string } }> };
@@ -159,69 +289,52 @@ async function generateImageBytes(prompt: string): Promise<Uint8Array> {
   return bytes;
 }
 
-// Sanitise SKU for storage filename (storage rejects slashes mid-path
-// only when used as separators; collapsing to underscore is safer).
-function skuToPath(sku: string): string {
-  return `${sku.replace(/[^A-Za-z0-9._-]/g, "_")}.png`;
+function skuToPath(source: CatalogSource, sku: string): string {
+  const safe = sku.replace(/[^A-Za-z0-9._-]/g, "_");
+  return `${source}/${safe}.png`;
 }
 
 // ─── Server fns ────────────────────────────────────────────────────────
 
-/**
- * Queue: most-recent in-stock catalog rows joined with their review row
- * (if any). Filterable by status.
- */
 export const listProductImageQueue = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
-  .inputValidator((d: { status?: string; limit?: number } | undefined) =>
-    z
-      .object({
-        status: z
-          .enum(["all", "pending", "approved", "rejected", "ungenerated"])
-          .default("ungenerated"),
-        limit: z.number().int().min(1).max(200).default(40),
-      })
-      .parse(d ?? {}),
+  .inputValidator(
+    (d: { status?: string; limit?: number; source?: string } | undefined) =>
+      z
+        .object({
+          source: sourceSchema.default("bg_products"),
+          status: z
+            .enum(["all", "pending", "approved", "rejected", "ungenerated"])
+            .default("ungenerated"),
+          limit: z.number().int().min(1).max(200).default(40),
+        })
+        .parse(d ?? {}),
   )
   .handler(async ({ data }) => {
-    // Pull a window of in-stock products to consider
-    const { data: products, error: pErr } = await supabaseAdmin
-      .from("bg_products")
-      .select(
-        "group_sku, handle, name, brand, gender, category, subcategory, subsubcategory, color, material, main_picture, modified_at",
-      )
-      .eq("in_stock", true)
-      .gt("total_stock", 0)
-      .order("modified_at", { ascending: false, nullsFirst: false })
-      .limit(data.limit * 3); // overscan; we filter below
-    if (pErr) throw new Error(pErr.message);
+    const catalog =
+      data.source === "shopify"
+        ? await listShopifyCatalog(data.limit * 3)
+        : await listBgCatalog(data.limit * 3);
 
-    const skus = (products ?? []).map((p) => p.group_sku);
+    const skus = catalog.items.map((p) => p.sku);
     const { data: reviews, error: rErr } = await supabaseAdmin
       .from("product_image_reviews")
       .select("*")
+      .eq("source", data.source)
       .in("sku", skus.length ? skus : ["__none__"]);
     if (rErr) throw new Error(rErr.message);
 
     const byId = new Map<string, ProductImageReviewRow>();
-    for (const r of (reviews ?? []) as unknown as ProductImageReviewRow[]) byId.set(r.sku, r);
+    for (const r of (reviews ?? []) as unknown as ProductImageReviewRow[]) {
+      byId.set(r.sku, r);
+    }
 
-    const items: QueueItem[] = (products ?? []).map((p) => ({
-      sku: p.group_sku,
-      catalog: {
-        sku: p.group_sku,
-        handle: p.handle,
-        name: p.name,
-        brand: p.brand,
-        gender: p.gender,
-        category: p.category,
-        subcategory: p.subcategory,
-        subsubcategory: p.subsubcategory,
-        color: p.color,
-        material: p.material,
-      },
-      mainPicture: p.main_picture,
-      review: byId.get(p.group_sku) ?? null,
+    const items: QueueItem[] = catalog.items.map((p) => ({
+      sku: p.sku,
+      source: data.source,
+      catalog: p.catalog,
+      mainPicture: p.mainPicture,
+      review: byId.get(p.sku) ?? null,
     }));
 
     const filtered = items.filter((it) => {
@@ -230,25 +343,30 @@ export const listProductImageQueue = createServerFn({ method: "POST" })
       return it.review?.status === data.status;
     });
 
-    return { items: filtered.slice(0, data.limit) };
+    return { items: filtered.slice(0, data.limit), source: data.source };
   });
 
-/**
- * Generate (or regenerate) an image for one SKU. The prompt is built
- * STRICTLY from catalog fields by `buildProductImagePrompt`. Writes a
- * `pending` review row; reviewer approves/rejects separately.
- */
 export const generateProductImageForSku = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
-  .inputValidator((d: { sku: string }) =>
-    z.object({ sku: skuSchema }).parse(d),
+  .inputValidator((d: { sku: string; source: string; override?: string }) =>
+    z
+      .object({
+        sku: skuSchema,
+        source: sourceSchema,
+        override: z.string().max(2000).optional(),
+      })
+      .parse(d),
   )
   .handler(async ({ data }) => {
-    const catalog = await fetchCatalogRow(data.sku);
-    const prompt = buildProductImagePrompt(catalog);
+    const catalog =
+      data.source === "shopify"
+        ? await fetchShopifyCatalogRow(data.sku)
+        : await fetchBgCatalogRow(data.sku);
 
+    const prompt = buildProductImagePrompt(catalog, data.override ?? null);
     const bytes = await generateImageBytes(prompt);
-    const path = skuToPath(catalog.sku);
+    const path = skuToPath(data.source, catalog.sku);
+
     const { error: upErr } = await supabaseAdmin.storage
       .from("product-images")
       .upload(path, bytes, {
@@ -263,33 +381,45 @@ export const generateProductImageForSku = createServerFn({ method: "POST" })
 
     const { error: dbErr } = await supabaseAdmin
       .from("product_image_reviews")
-      .upsert({
-        sku: catalog.sku,
-        handle: catalog.handle,
-        attributes: catalog,
-        prompt,
-        image_url: pub.publicUrl,
-        image_path: path,
-        status: "pending",
-        reviewer_notes: null,
-        reviewed_by: null,
-        reviewed_at: null,
-      });
+      .upsert(
+        {
+          sku: catalog.sku,
+          source: data.source,
+          handle: catalog.handle,
+          attributes: catalog,
+          prompt,
+          image_url: pub.publicUrl,
+          image_path: path,
+          status: "pending",
+          reviewer_notes: data.override ?? null,
+          reviewed_by: null,
+          reviewed_at: null,
+        },
+        { onConflict: "sku,source" },
+      );
     if (dbErr) throw new Error(dbErr.message);
 
-    return { ok: true as const, sku: catalog.sku, imageUrl: pub.publicUrl, prompt };
+    return {
+      ok: true as const,
+      sku: catalog.sku,
+      source: data.source,
+      imageUrl: pub.publicUrl,
+      prompt,
+    };
   });
 
 export const reviewProductImage = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
-  .inputValidator((d: { sku: string; decision: string; notes?: string }) =>
-    z
-      .object({
-        sku: skuSchema,
-        decision: z.enum(["approved", "rejected"]),
-        notes: z.string().max(2000).optional(),
-      })
-      .parse(d),
+  .inputValidator(
+    (d: { sku: string; source: string; decision: string; notes?: string }) =>
+      z
+        .object({
+          sku: skuSchema,
+          source: sourceSchema,
+          decision: z.enum(["approved", "rejected"]),
+          notes: z.string().max(2000).optional(),
+        })
+        .parse(d),
   )
   .handler(async ({ data, context }) => {
     const { userId } = context;
@@ -301,7 +431,8 @@ export const reviewProductImage = createServerFn({ method: "POST" })
         reviewed_by: userId,
         reviewed_at: new Date().toISOString(),
       })
-      .eq("sku", data.sku);
+      .eq("sku", data.sku)
+      .eq("source", data.source);
     if (error) throw new Error(error.message);
     return { ok: true as const };
   });

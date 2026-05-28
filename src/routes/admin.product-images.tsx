@@ -11,6 +11,7 @@ import {
   reviewProductImage,
   buildProductImagePrompt,
   type QueueItem,
+  type CatalogSource,
 } from "@/lib/product-image-review.functions";
 import { Loader2, Sparkles, Check, X, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
@@ -36,13 +37,20 @@ const FILTERS: { key: Filter; label: string }[] = [
   { key: "all", label: "All" },
 ];
 
+const SOURCES: { key: CatalogSource; label: string; hint: string }[] = [
+  { key: "bg_products", label: "BrandsGateway", hint: "bg_products table" },
+  { key: "shopify", label: "Shopify (live)", hint: "Admin API · tags + metafields" },
+];
+
 function AdminProductImages() {
   const qc = useQueryClient();
   const [filter, setFilter] = useState<Filter>("ungenerated");
+  const [source, setSource] = useState<CatalogSource>("bg_products");
 
   const queueQ = useQuery({
-    queryKey: ["product-image-queue", filter],
-    queryFn: () => listProductImageQueue({ data: { status: filter, limit: 40 } }),
+    queryKey: ["product-image-queue", source, filter],
+    queryFn: () =>
+      listProductImageQueue({ data: { source, status: filter, limit: 40 } }),
     staleTime: 30_000,
   });
 
@@ -55,12 +63,35 @@ function AdminProductImages() {
           <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-2">Admin</p>
           <h1 className="font-serif text-3xl md:text-4xl">Product Images — QA</h1>
           <p className="mt-2 text-sm text-muted-foreground max-w-3xl">
-            Catalog attributes on the left, generated image on the right.
-            Prompts are built strictly from <code>color · style · category · gender · brand · material</code> on
-            the <code>bg_products</code> row. Approve only when the image
-            matches the data — never the other way around.
+            Pick the catalog source for this batch. Prompts are built strictly
+            from <code>color · style · category · sku · gender</code> on the
+            source record — never inferred from the generated image. Approved
+            images write back the SKU reference; rejected items re-enter the
+            queue with the reviewer note used as a prompt override on the next
+            regen.
           </p>
         </header>
+
+        {/* Source selector — per batch */}
+        <div className="mb-5">
+          <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">Data source (per batch)</p>
+          <div className="inline-flex rounded border border-border overflow-hidden">
+            {SOURCES.map((s) => (
+              <button
+                key={s.key}
+                onClick={() => setSource(s.key)}
+                className={`px-4 py-2 text-xs text-left transition-colors ${
+                  source === s.key
+                    ? "bg-foreground text-background"
+                    : "bg-transparent hover:bg-muted/40"
+                }`}
+              >
+                <span className="block font-medium">{s.label}</span>
+                <span className="block text-[10px] opacity-70">{s.hint}</span>
+              </button>
+            ))}
+          </div>
+        </div>
 
         <div className="flex flex-wrap gap-2 mb-6">
           {FILTERS.map((f) => (
@@ -92,7 +123,9 @@ function AdminProductImages() {
           </div>
         )}
         {queueQ.isError && (
-          <div className="text-sm text-rose-600">Failed to load queue.</div>
+          <div className="text-sm text-rose-600">
+            Failed to load queue: {(queueQ.error as Error)?.message}
+          </div>
         )}
         {queueQ.isSuccess && items.length === 0 && (
           <div className="text-sm text-muted-foreground">Nothing in this bucket.</div>
@@ -100,7 +133,7 @@ function AdminProductImages() {
 
         <div className="grid gap-6">
           {items.map((item) => (
-            <ReviewRow key={item.sku} item={item} />
+            <ReviewRow key={`${item.source}:${item.sku}`} item={item} />
           ))}
         </div>
       </div>
@@ -112,10 +145,14 @@ function ReviewRow({ item }: { item: QueueItem }) {
   const qc = useQueryClient();
   const [notes, setNotes] = useState(item.review?.reviewer_notes ?? "");
 
-  const previewPrompt = item.review?.prompt ?? buildProductImagePrompt(item.catalog);
+  const previewPrompt =
+    item.review?.prompt ?? buildProductImagePrompt(item.catalog, notes || null);
 
   const genMut = useMutation({
-    mutationFn: () => generateProductImageForSku({ data: { sku: item.sku } }),
+    mutationFn: () =>
+      generateProductImageForSku({
+        data: { sku: item.sku, source: item.source, override: notes || undefined },
+      }),
     onSuccess: () => {
       toast.success(`Generated image for ${item.sku}`);
       qc.invalidateQueries({ queryKey: ["product-image-queue"] });
@@ -125,9 +162,11 @@ function ReviewRow({ item }: { item: QueueItem }) {
 
   const reviewMut = useMutation({
     mutationFn: (decision: "approved" | "rejected") =>
-      reviewProductImage({ data: { sku: item.sku, decision, notes } }),
+      reviewProductImage({
+        data: { sku: item.sku, source: item.source, decision, notes },
+      }),
     onSuccess: (_d, decision) => {
-      toast.success(decision === "approved" ? "Approved" : "Rejected");
+      toast.success(decision === "approved" ? "Approved — SKU linked" : "Rejected — re-queued");
       qc.invalidateQueries({ queryKey: ["product-image-queue"] });
     },
     onError: (e: Error) => toast.error(e.message || "Failed"),
@@ -146,10 +185,12 @@ function ReviewRow({ item }: { item: QueueItem }) {
   return (
     <Card className="p-5">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* LEFT — Catalog attributes (truth) */}
+        {/* LEFT — Catalog attributes */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] uppercase tracking-[0.3em] text-bronze">Catalog attributes</p>
+            <p className="text-[10px] uppercase tracking-[0.3em] text-bronze">
+              {item.source === "shopify" ? "Shopify attributes" : "BrandsGateway attributes"}
+            </p>
             <span className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border ${statusStyle}`}>
               {status}
             </span>
@@ -161,8 +202,8 @@ function ReviewRow({ item }: { item: QueueItem }) {
             <Attr k="Brand" v={item.catalog.brand} />
             <Attr k="Gender" v={item.catalog.gender} />
             <Attr k="Category" v={item.catalog.category} />
+            <Attr k="Style" v={item.catalog.style} />
             <Attr k="Subcategory" v={item.catalog.subcategory} />
-            <Attr k="Sub-sub" v={item.catalog.subsubcategory} />
             <Attr k="Color" v={item.catalog.color} highlight />
             <Attr k="Material" v={item.catalog.material} />
           </dl>
@@ -176,10 +217,10 @@ function ReviewRow({ item }: { item: QueueItem }) {
 
           {item.mainPicture && (
             <details className="text-[11px] text-muted-foreground">
-              <summary className="cursor-pointer">Supplier reference photo</summary>
+              <summary className="cursor-pointer">Catalog reference photo</summary>
               <img
                 src={item.mainPicture}
-                alt={`Supplier reference for SKU ${item.catalog.sku}`}
+                alt={`Catalog reference for SKU ${item.catalog.sku}`}
                 loading="lazy"
                 className="mt-2 max-h-48 w-auto rounded border border-border"
               />
@@ -194,7 +235,7 @@ function ReviewRow({ item }: { item: QueueItem }) {
             {item.review?.image_url ? (
               <img
                 src={item.review.image_url}
-                alt={`Generated: ${item.catalog.color ?? ""} ${item.catalog.subcategory ?? item.catalog.category ?? ""} (SKU ${item.catalog.sku})`}
+                alt={`Generated: ${item.catalog.color ?? ""} ${item.catalog.style ?? item.catalog.subcategory ?? item.catalog.category ?? ""} (SKU ${item.catalog.sku})`}
                 className="w-full h-full object-cover"
               />
             ) : (
@@ -233,7 +274,7 @@ function ReviewRow({ item }: { item: QueueItem }) {
                   onClick={() => reviewMut.mutate("rejected")}
                   disabled={reviewMut.isPending}
                 >
-                  <X className="h-3.5 w-3.5 mr-1.5" /> Reject
+                  <X className="h-3.5 w-3.5 mr-1.5" /> Reject & re-queue
                 </Button>
               </>
             )}
@@ -242,7 +283,7 @@ function ReviewRow({ item }: { item: QueueItem }) {
           <Textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            placeholder="Reviewer notes (e.g. wrong color, hardware mismatch)…"
+            placeholder="Override note — used as a prompt override on next regen (e.g. 'shot from above, flat lay')…"
             rows={2}
             className="text-xs"
           />
