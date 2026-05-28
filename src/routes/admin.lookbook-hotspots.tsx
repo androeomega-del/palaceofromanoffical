@@ -8,6 +8,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   listLookbookImages,
   getLookbookImage,
   createLookbookImage,
@@ -38,6 +45,7 @@ import {
   ImagePlus,
 } from "lucide-react";
 import { toast } from "sonner";
+
 
 export const Route = createFileRoute("/admin/lookbook-hotspots")({
   beforeLoad: adminBeforeLoad,
@@ -93,32 +101,13 @@ function AdminLookbookHotspots() {
 
 
 
-        <Card className="p-4 mb-6">
-          <div className="grid sm:grid-cols-2 gap-3">
-            <div>
-              <Label className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-                Surface kind
-              </Label>
-              <Input
-                placeholder="e.g. themed-edit, editorial, campaign, homepage, bg_product"
-                value={filterKind}
-                onChange={(e) => setFilterKind(e.target.value)}
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <Label className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-                Search slug / alt
-              </Label>
-              <Input
-                placeholder="yacht-edit, mens-swim, ..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="mt-1"
-              />
-            </div>
-          </div>
-        </Card>
+        <SurfaceKindFilter
+          filterKind={filterKind}
+          onFilterKindChange={setFilterKind}
+          searchTerm={searchTerm}
+          onSearchTermChange={setSearchTerm}
+        />
+
 
         <ImagesGrid
           filterKind={filterKind}
@@ -129,6 +118,84 @@ function AdminLookbookHotspots() {
     </main>
   );
 }
+
+// ─── Surface kind filter (dropdown) ────────────────────────────────────
+// Replaces the previous free-text input. Options are derived from:
+//   1. Known kinds in the static registry (always present, even when DB empty)
+//   2. Any additional distinct surface_kinds found in the current rows
+// so admins never have to memorise or type a value.
+function SurfaceKindFilter({
+  filterKind,
+  onFilterKindChange,
+  searchTerm,
+  onSearchTermChange,
+}: {
+  filterKind: string;
+  onFilterKindChange: (v: string) => void;
+  searchTerm: string;
+  onSearchTermChange: (v: string) => void;
+}) {
+  // Fetch the full (unfiltered) list once to populate the dropdown.
+  // Cached by react-query so the kinds menu doesn't re-fetch on every keystroke.
+  const { data: allImages } = useQuery({
+    queryKey: ["lookbook-images", "all-for-kinds"],
+    queryFn: () => listLookbookImages({ data: {} }),
+    staleTime: 60_000,
+  });
+
+  const kinds = useMemo(() => {
+    const fromStatic = STATIC_HOTSPOT_SURFACES.map((s) => s.surface_kind);
+    // Other known kinds the codebase emits but that may not yet have a
+    // registry entry. Keeps the dropdown useful before any seeding runs.
+    const wellKnown = ["editorial", "themed-edit", "campaign", "homepage", "bg_product"];
+    const fromDb = (allImages?.items ?? [])
+      .map((i) => i.surface_kind)
+      .filter((k): k is string => !!k);
+    return Array.from(new Set([...fromStatic, ...wellKnown, ...fromDb])).sort();
+  }, [allImages]);
+
+  const ALL = "__all__";
+
+  return (
+    <Card className="p-4 mb-6">
+      <div className="grid sm:grid-cols-2 gap-3">
+        <div>
+          <Label className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+            Surface kind
+          </Label>
+          <Select
+            value={filterKind === "" ? ALL : filterKind}
+            onValueChange={(v) => onFilterKindChange(v === ALL ? "" : v)}
+          >
+            <SelectTrigger className="mt-1">
+              <SelectValue placeholder="All surfaces" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ALL}>All surfaces</SelectItem>
+              {kinds.map((k) => (
+                <SelectItem key={k} value={k}>
+                  {k}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+            Search slug / alt
+          </Label>
+          <Input
+            placeholder="yacht-edit, mens-swim, ..."
+            value={searchTerm}
+            onChange={(e) => onSearchTermChange(e.target.value)}
+            className="mt-1"
+          />
+        </div>
+      </div>
+    </Card>
+  );
+}
+
 
 // ─── Images grid ───────────────────────────────────────────────────────
 function ImagesGrid({
