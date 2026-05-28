@@ -320,6 +320,56 @@ export const deleteHotspot = createServerFn({ method: "POST" })
     return { ok: true as const };
   });
 
+// ─── Bulk update: reassign many hotspots to a single product handle ────
+export const bulkUpdateHotspots = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator(
+    (d: { ids: string[]; product_handle: string; label?: string | null }) =>
+      z
+        .object({
+          ids: z.array(uuid).min(1).max(200),
+          product_handle: handle,
+          label: z.string().max(120).nullable().optional(),
+        })
+        .parse(d),
+  )
+  .handler(async ({ data }) => {
+    const { data: before } = await supabaseAdmin
+      .from("lookbook_hotspots")
+      .select("id, product_handle, label, surface_kind, surface_slug")
+      .in("id", data.ids);
+
+    const patch: { product_handle: string; label?: string | null } = {
+      product_handle: data.product_handle,
+    };
+    if (data.label !== undefined) patch.label = data.label;
+
+    const { error } = await supabaseAdmin
+      .from("lookbook_hotspots")
+      .update(patch)
+      .in("id", data.ids);
+    if (error) throw new Error(error.message);
+
+    if (before && before.length) {
+      await supabaseAdmin.from("homepage_layout_audit").insert({
+        action: "hotspot_bulk_update",
+        actor: "admin",
+        details: {
+          count: before.length,
+          after: { product_handle: data.product_handle, label: data.label ?? null },
+          before: before.map((b) => ({
+            hotspot_id: b.id,
+            product_handle: b.product_handle,
+            label: b.label,
+            surface_kind: b.surface_kind,
+            surface_slug: b.surface_slug,
+          })),
+        },
+      });
+    }
+    return { updated: before?.length ?? 0 };
+  });
+
 // ─── Catalog search (for picking replacement product) ──────────────────
 export type CatalogSearchResult = {
   sku: string;
