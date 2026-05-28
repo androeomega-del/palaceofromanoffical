@@ -530,13 +530,9 @@ export const resolveShoppableOverlay = createServerFn({ method: "POST" })
     }
     const attrs = (review.attributes ?? {}) as Partial<CatalogAttributes>;
 
-    // SKU → Shopify handle. Variant map first, fall back to row handle.
-    const { data: vm } = await supabaseAdmin
-      .from("shopify_variant_map")
-      .select("product_handle")
-      .eq("sku", data.sku)
-      .maybeSingle();
-    const resolvedHandle = vm?.product_handle ?? review.handle ?? null;
+    // Handle is the one stored on the queue row at enqueue time — that
+    // value is the SKU↔handle binding. No re-resolution here.
+    const resolvedHandle = review.handle ?? null;
 
     // Label is strictly "[color] [style]" from the catalog record.
     const labelParts = [attrs.color, attrs.style ?? attrs.subcategory]
