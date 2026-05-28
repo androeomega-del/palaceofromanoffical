@@ -226,8 +226,10 @@ const CHAPTERS: Record<string, ChapterDef> = {
         spots: [{ x: 50, y: 50, label: "The Jacket", match: /jacket|blazer|coat/i }],
       },
     ],
+    // Sunset Dinner = ivory/light trousers + silk-cotton shirts + unstructured jackets/blazers.
+    // Exclude swim, shorts, sandals — terrace is dressed.
     productQuery:
-      'tag:Men AND (title:linen OR title:trouser OR title:shirt OR tag:"category:jackets" OR tag:"category:shirts")',
+      'tag:Men AND (title:trouser OR title:pant OR (title:shirt AND (title:silk OR title:cotton OR title:linen)) OR title:blazer OR title:jacket OR tag:"category:jackets") AND -title:swim AND -title:short AND -title:sandal AND -title:slide AND -tag:"category:swimwear" AND -tag:"category:shorts" AND -tag:"category:sandals"',
     shopTitle: "Shop the Terrace Look",
     shopEyebrow: "Men's — Trousers, Shirts, Soft Jackets",
     outroCtas: [
