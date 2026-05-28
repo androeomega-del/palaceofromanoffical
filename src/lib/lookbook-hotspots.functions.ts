@@ -827,5 +827,5 @@ export const listHotspotAudit = createServerFn({ method: "POST" })
 
     const { data: rows, error } = await q;
     if (error) throw new Error(error.message);
-    return { items: (rows ?? []) as HotspotAuditRow[] };
+    return { items: (rows ?? []) as unknown as HotspotAuditRow[] };
   });
