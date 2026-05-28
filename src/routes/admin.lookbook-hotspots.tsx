@@ -1169,10 +1169,10 @@ function SeedFromSourceButton() {
       return { homepage: hp, static: stat };
     },
     onSuccess: (r) => {
-      const total =
-        r.homepage.inserted_images + r.static.createdImages;
+      const total = r.homepage.inserted_images + r.static.createdImages;
+      const spots = r.homepage.inserted_hotspots + r.static.createdSpots;
       toast.success(
-        `Seeded ${total} image(s), ${r.homepage.inserted_hotspots + r.static.createdSpots} hotspot(s). Skipped ${r.homepage.skipped} already-present homepage block(s).`,
+        `Seeded ${total} image(s), ${spots} hotspot(s). Skipped ${r.homepage.skipped} homepage block(s) and ${r.static.skipped}/${r.static.total} static surface(s) already present.`,
       );
       qc.invalidateQueries({ queryKey: ["lookbook-images"] });
     },
