@@ -756,13 +756,22 @@ export const validateLookbookHotspots = createServerFn({ method: "POST" })
 // Reads homepage_layout_audit, scoped to actions emitted by this admin
 // tool. Optional filters narrow by hotspot / image / surface so the
 // detail view can show a per-image change history.
+type JsonValue =
+  | string
+  | number
+  | boolean
+  | null
+  | { [k: string]: JsonValue }
+  | JsonValue[];
+
 export type HotspotAuditRow = {
   id: string;
   created_at: string;
   action: string;
   actor: string | null;
-  details: Record<string, unknown>;
+  details: JsonValue;
 };
+
 
 export const HOTSPOT_AUDIT_ACTIONS = [
   "hotspot_create",
