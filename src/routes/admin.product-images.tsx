@@ -347,7 +347,7 @@ function ShopifyDebugPanel() {
         statusText: "client-error",
         headers: {},
         body: e.message,
-      }),
+      } as ProbeResult),
   });
 
   return (
