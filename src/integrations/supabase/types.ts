@@ -780,6 +780,51 @@ export type Database = {
         }
         Relationships: []
       }
+      product_image_reviews: {
+        Row: {
+          attributes: Json
+          created_at: string
+          handle: string
+          image_path: string | null
+          image_url: string | null
+          prompt: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          reviewer_notes: string | null
+          sku: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          attributes?: Json
+          created_at?: string
+          handle: string
+          image_path?: string | null
+          image_url?: string | null
+          prompt: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          reviewer_notes?: string | null
+          sku: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          attributes?: Json
+          created_at?: string
+          handle?: string
+          image_path?: string | null
+          image_url?: string | null
+          prompt?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          reviewer_notes?: string | null
+          sku?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       product_origins: {
         Row: {
           city: string | null
