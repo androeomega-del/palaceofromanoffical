@@ -416,7 +416,12 @@ function ImageDetailView({
               )}
             </Card>
           )}
+          <ImageHistoryPanel
+            surfaceKind={image.surface_kind}
+            surfaceSlug={image.surface_slug}
+          />
         </aside>
+
       </div>
     </main>
   );
