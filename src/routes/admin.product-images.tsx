@@ -10,11 +10,14 @@ import {
   generateProductImageForSku,
   reviewProductImage,
   buildProductImagePrompt,
+  shopifyAdminDebugProbe,
+  resolveShoppableOverlay,
   type QueueItem,
   type CatalogSource,
 } from "@/lib/product-image-review.functions";
-import { Loader2, Sparkles, Check, X, RefreshCw } from "lucide-react";
+import { Loader2, Sparkles, Check, X, RefreshCw, Bug, ExternalLink, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
 
 export const Route = createFileRoute("/admin/product-images")({
   beforeLoad: adminBeforeLoad,
