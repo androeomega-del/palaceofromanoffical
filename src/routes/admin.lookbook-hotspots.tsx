@@ -363,10 +363,20 @@ function ImageDetailView({
             })}
           </div>
         </div>
-        </div>
 
         <aside>
-          {selected ? (
+          {bulkMode ? (
+            <BulkReassignPanel
+              ids={Array.from(bulkIds)}
+              hotspots={hotspots}
+              onSelectAll={() => setBulkIds(new Set(hotspots.map((h) => h.id)))}
+              onClear={() => setBulkIds(new Set())}
+              onDone={() => {
+                setBulkIds(new Set());
+                invalidate();
+              }}
+            />
+          ) : selected ? (
             <HotspotEditor
               hotspot={selected}
               onClose={() => setSelectedHotspotId(null)}
@@ -377,7 +387,7 @@ function ImageDetailView({
               <p className="text-sm text-muted-foreground">
                 {hotspots.length === 0
                   ? "No hotspots on this image yet. Click “Add hotspot” to place one."
-                  : "Click any hotspot on the image to inspect or replace its linked product."}
+                  : "Click any hotspot on the image to inspect or replace its linked product. Use Bulk select to reassign several at once."}
               </p>
               {hotspots.length > 0 && (
                 <ul className="mt-4 space-y-2">
