@@ -285,6 +285,10 @@ function ReviewRow({ item }: { item: QueueItem }) {
             )}
           </div>
 
+          {status === "approved" && (
+            <ShoppableOverlayPreview sku={item.sku} source={item.source} />
+          )}
+
           <Textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
