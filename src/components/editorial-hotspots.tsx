@@ -35,6 +35,50 @@ export function EditorialHotspots({ src, alt, hotspots, aspect = "4/5", classNam
   const containerRef = useRef<HTMLDivElement>(null);
   const { reduced } = useReducedMotion();
 
+  // CATALOG-TRUTH GUARD: verify every hotspot's handle resolves to a live,
+  // available product in the Shopify catalog. Hotspots whose product is
+  // missing or sold out are filtered out before render so we never tag
+  // images with items not actually purchasable (e.g. a shoulder bag pin
+  // on an image whose linked McQueen bag is unavailable). Queries share
+  // the ["hotspot-product", handle] cache key with HotspotCard so this
+  // adds no extra network requests on subsequent reveals.
+  const handleList = useMemo(
+    () => Array.from(new Set(hotspots.map((h) => h.handle))),
+    [hotspots],
+  );
+  const productQueries = useQueries({
+    queries: handleList.map((handle) => ({
+      queryKey: ["hotspot-product", handle],
+      queryFn: () => fetchProductByHandle(handle),
+      staleTime: 5 * 60 * 1000,
+    })),
+  });
+  const availabilityByHandle = useMemo(() => {
+    const map = new Map<string, "available" | "unavailable" | "unknown">();
+    handleList.forEach((h, i) => {
+      const q = productQueries[i];
+      if (q.isLoading || q.isFetching) {
+        map.set(h, "unknown");
+      } else if (!q.data) {
+        map.set(h, "unavailable");
+      } else {
+        const variants = q.data.variants?.edges?.map((e) => e.node) ?? [];
+        const anyAvailable =
+          q.data.availableForSale || variants.some((v) => v.availableForSale);
+        map.set(h, anyAvailable ? "available" : "unavailable");
+      }
+    });
+    return map;
+  }, [handleList, productQueries]);
+  const visibleHotspots = useMemo(
+    () =>
+      hotspots.filter(
+        (h) => (availabilityByHandle.get(h.handle) ?? "unknown") !== "unavailable",
+      ),
+    [hotspots, availabilityByHandle],
+  );
+
+
   // Close the revealed tooltip when tapping outside any hotspot
   useEffect(() => {
     if (!revealedHandle) return;
