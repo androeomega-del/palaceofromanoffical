@@ -75,6 +75,8 @@ function AdminProductImages() {
           </p>
         </header>
 
+        <ShopifyDebugPanel />
+
         {/* Source selector — per batch */}
         <div className="mb-5">
           <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">Data source (per batch)</p>
