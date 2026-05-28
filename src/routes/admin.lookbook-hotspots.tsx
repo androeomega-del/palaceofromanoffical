@@ -294,6 +294,23 @@ function ImageDetailView({
           {image.chapter_key ? ` / ${image.chapter_key}` : ""}
         </div>
         <div className="flex gap-2">
+          {image.surface_kind && image.surface_slug && (
+            <Button asChild size="sm" variant="outline">
+              <Link
+                to="/preview/lookbook"
+                search={{
+                  kind: image.surface_kind,
+                  slug: image.surface_slug,
+                  chapter: image.chapter_key ?? undefined,
+                }}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Preview
+              </Link>
+            </Button>
+          )}
+
           <Button
             size="sm"
             variant={bulkMode ? "default" : "outline"}
