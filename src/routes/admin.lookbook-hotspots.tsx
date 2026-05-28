@@ -19,8 +19,11 @@ import {
   seedLookbookFromHomepage,
   validateLookbookHotspots,
   bulkUpdateHotspots,
+  listHotspotAudit,
   type LookbookHotspotRow,
+  type HotspotAuditRow,
 } from "@/lib/lookbook-hotspots.functions";
+
 import editorialHero from "@/assets/editorial/may-2026/1.webp";
 import mensDetail2 from "@/assets/mens-swim-detail-2.jpg";
 
