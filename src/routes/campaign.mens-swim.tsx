@@ -367,12 +367,15 @@ function MensSwimCampaign() {
             </Link>
           </div>
           <div className="relative">
-            <EditorialHotspots
+            <EditorialHotspotsBySurface
+              surfaceKind="campaign"
+              surfaceSlug="mens-swim-deck-flatlay"
               src={mensDetail2}
               alt="Men's Resort 2026 flatlay in golden hour palm shadow on teak deck: Givenchy black swim shorts, Brunello Cucinelli blue cotton shirt, Bottega Veneta green Cassette-print swim shorts, Fendi brown FF monogram leather slides and Bottega Veneta gold wraparound sunglasses"
-              hotspots={detail2Spots}
+              fallbackHotspots={detail2Spots}
               aspect="4/5"
             />
+
             <figcaption className="mt-3 flex items-baseline justify-between gap-4">
               <span className="font-serif italic text-base md:text-lg text-ink">The Tyrrhenian kit.</span>
               <span className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
