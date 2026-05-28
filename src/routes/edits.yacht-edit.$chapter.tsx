@@ -60,8 +60,11 @@ const CHAPTERS: Record<string, ChapterDef> = {
         spots: [{ x: 45, y: 65, label: "The Loafer", match: /loafer|driver|moccasin/i }],
       },
     ],
+    // Boarding = linen tailoring + cotton-silk shirts + unlined suede loafers.
+    // Explicitly exclude swim/shorts/sandals so the gangway look doesn't
+    // collide with the On Deck or Tender chapters.
     productQuery:
-      'tag:Men AND (title:linen OR title:loafer OR title:polo OR tag:"category:shirts" OR tag:"category:shoes")',
+      'tag:Men AND (title:linen OR title:loafer OR title:driver OR title:moccasin OR (title:shirt AND (title:cotton OR title:silk OR title:linen))) AND -title:swim AND -title:short AND -title:sandal AND -title:slide AND -tag:"category:swimwear" AND -tag:"category:shorts" AND -tag:"category:sandals"',
     shopTitle: "Shop the Boarding Look",
     shopEyebrow: "Men's — Linen, Cotton-Silk, Suede",
     outroCtas: [
@@ -113,8 +116,10 @@ const CHAPTERS: Record<string, ChapterDef> = {
         spots: [{ x: 50, y: 50, label: "Sunglasses", match: /sunglass|aviator|eyewear/i }],
       },
     ],
+    // On Deck = swim shorts + terry/piqué polos + tortoiseshell sunglasses.
+    // Exclude tailored trousers, loafers, dress shirts that belong to other chapters.
     productQuery:
-      'tag:Men AND (tag:"category:shorts" OR tag:"category:swimwear" OR title:polo OR title:sunglasses)',
+      'tag:Men AND (tag:"category:swimwear" OR tag:"category:shorts" OR title:swim OR title:polo OR title:sunglass) AND -title:trouser AND -title:loafer AND -title:blazer AND -title:jacket',
     shopTitle: "Shop the Deck Look",
     shopEyebrow: "Men's — Swim, Polo, Sunglasses",
     outroCtas: [
@@ -166,8 +171,10 @@ const CHAPTERS: Record<string, ChapterDef> = {
         spots: [{ x: 50, y: 50, label: "Belt", match: /belt/i }],
       },
     ],
+    // Tender to Town = open linen camp-collar + woven leather slides + belts.
+    // Exclude swim/shorts and formal tailoring.
     productQuery:
-      'tag:Men AND (title:linen OR tag:"category:sandals" OR tag:"category:belts" OR title:slide)',
+      'tag:Men AND ((title:linen AND title:shirt) OR title:slide OR title:sandal OR tag:"category:sandals" OR tag:"category:belts") AND -title:swim AND -title:trouser AND -title:blazer AND -tag:"category:swimwear"',
     shopTitle: "Shop the Town Look",
     shopEyebrow: "Men's — Linen, Slides, Belts",
     outroCtas: [
@@ -219,8 +226,10 @@ const CHAPTERS: Record<string, ChapterDef> = {
         spots: [{ x: 50, y: 50, label: "The Jacket", match: /jacket|blazer|coat/i }],
       },
     ],
+    // Sunset Dinner = ivory/light trousers + silk-cotton shirts + unstructured jackets/blazers.
+    // Exclude swim, shorts, sandals — terrace is dressed.
     productQuery:
-      'tag:Men AND (title:linen OR title:trouser OR title:shirt OR tag:"category:jackets" OR tag:"category:shirts")',
+      'tag:Men AND (title:trouser OR title:pant OR (title:shirt AND (title:silk OR title:cotton OR title:linen)) OR title:blazer OR title:jacket OR tag:"category:jackets") AND -title:swim AND -title:short AND -title:sandal AND -title:slide AND -tag:"category:swimwear" AND -tag:"category:shorts" AND -tag:"category:sandals"',
     shopTitle: "Shop the Terrace Look",
     shopEyebrow: "Men's — Trousers, Shirts, Soft Jackets",
     outroCtas: [
@@ -272,8 +281,10 @@ const CHAPTERS: Record<string, ChapterDef> = {
         spots: [{ x: 50, y: 55, label: "The Bag", match: /bag|case|wallet|crossbody/i }],
       },
     ],
+    // Watch Drawer = accessories only: belts, sunglasses, wallets, small leather.
+    // Exclude all apparel and footwear.
     productQuery:
-      'tag:Men AND (tag:"category:belts" OR title:sunglasses OR title:wallet OR tag:"category:bags")',
+      'tag:Men AND (tag:"category:belts" OR tag:"category:bags" OR title:sunglass OR title:eyewear OR title:wallet OR title:cardholder OR title:belt) AND -title:shirt AND -title:trouser AND -title:short AND -title:swim AND -title:shoe AND -title:loafer AND -title:sandal',
     shopTitle: "Shop the Watch Drawer",
     shopEyebrow: "Men's — Belts, Sunglasses, Small Leather",
     outroCtas: [
