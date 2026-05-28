@@ -413,3 +413,149 @@ export const getCatalogProductByHandle = createServerFn({ method: "POST" })
       } as CatalogSearchResult,
     };
   });
+
+// ─── Public reader: get hotspots for a (surface_kind, surface_slug) ────
+// Public — used by the storefront to render shoppable overlays from DB.
+// Returns null when nothing has been seeded for that surface yet, so the
+// caller can fall back to its inline hotspot array.
+export const getLookbookForSurface = createServerFn({ method: "POST" })
+  .inputValidator(
+    (d: { surface_kind: string; surface_slug: string; chapter_key?: string }) =>
+      z
+        .object({
+          surface_kind: surfaceKind,
+          surface_slug: surfaceSlug,
+          chapter_key: z.string().min(1).max(255).optional(),
+        })
+        .parse(d),
+  )
+  .handler(async ({ data }) => {
+    let q = supabaseAdmin
+      .from("lookbook_images")
+      .select(
+        "id, surface_kind, surface_slug, chapter_key, image_url, alt_text, sort_order",
+      )
+      .eq("surface_kind", data.surface_kind)
+      .eq("surface_slug", data.surface_slug)
+      .order("sort_order", { ascending: true })
+      .limit(1);
+    if (data.chapter_key) q = q.eq("chapter_key", data.chapter_key);
+    const { data: imgs, error } = await q;
+    if (error) throw new Error(error.message);
+    const img = imgs?.[0];
+    if (!img) return { image: null, hotspots: [] as LookbookHotspotRow[] };
+    const { data: spots, error: sErr } = await supabaseAdmin
+      .from("lookbook_hotspots")
+      .select(
+        "id, lookbook_image_id, product_handle, label, x, y, sort_order, surface_kind, surface_slug",
+      )
+      .eq("lookbook_image_id", img.id)
+      .order("sort_order", { ascending: true });
+    if (sErr) throw new Error(sErr.message);
+    return {
+      image: img as Pick<
+        LookbookImageRow,
+        | "id"
+        | "surface_kind"
+        | "surface_slug"
+        | "chapter_key"
+        | "image_url"
+        | "alt_text"
+        | "sort_order"
+      >,
+      hotspots: (spots ?? []) as LookbookHotspotRow[],
+    };
+  });
+
+// ─── Seed homepage layout hotspots into the lookbook tables ────────────
+// Walks the active homepage_daily_layout.layout_json and inserts every
+// editorial_banner block that has at least one hotspot. Idempotent on
+// (surface_kind='homepage', surface_slug=block.id): skips blocks whose
+// image+hotspots are already present.
+export const seedLookbookFromHomepage = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .handler(async () => {
+    const { data: layoutRow, error: lErr } = await supabaseAdmin
+      .from("homepage_daily_layout")
+      .select("id, layout_json")
+      .eq("is_active", true)
+      .order("generated_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (lErr) throw new Error(lErr.message);
+    if (!layoutRow) return { inserted_images: 0, inserted_hotspots: 0, skipped: 0 };
+
+    const blocks = ((layoutRow.layout_json as { blocks?: unknown[] })?.blocks ?? []) as Array<{
+      id?: string;
+      type?: string;
+      image?: string;
+      alt?: string;
+      hotspots?: Array<{
+        x: number;
+        y: number;
+        handle: string;
+        label?: string;
+        sublabel?: string;
+      }>;
+    }>;
+
+    let insertedImages = 0;
+    let insertedHotspots = 0;
+    let skipped = 0;
+
+    for (const b of blocks) {
+      if (b.type !== "editorial_banner" || !b.id || !b.image) continue;
+      if (!b.hotspots || b.hotspots.length === 0) continue;
+
+      const slug = b.id.slice(0, 200);
+
+      // Skip if already seeded
+      const { data: existing } = await supabaseAdmin
+        .from("lookbook_images")
+        .select("id")
+        .eq("surface_kind", "homepage")
+        .eq("surface_slug", slug)
+        .limit(1)
+        .maybeSingle();
+      if (existing) {
+        skipped++;
+        continue;
+      }
+
+      const { data: imgRow, error: iErr } = await supabaseAdmin
+        .from("lookbook_images")
+        .insert({
+          surface_kind: "homepage",
+          surface_slug: slug,
+          edition_handle: "homepage",
+          chapter_key: null,
+          image_url: b.image,
+          alt_text: b.alt ?? null,
+          sort_order: 0,
+          external_id: b.id,
+        })
+        .select("id")
+        .single();
+      if (iErr) throw new Error(iErr.message);
+      insertedImages++;
+
+      const rows = b.hotspots.map((h, i) => ({
+        lookbook_image_id: imgRow!.id,
+        x: h.x,
+        y: h.y,
+        product_handle: h.handle,
+        label: h.label ?? null,
+        sort_order: i,
+        surface_kind: "homepage",
+        surface_slug: slug,
+      }));
+      const { error: sErr } = await supabaseAdmin
+        .from("lookbook_hotspots")
+        .insert(rows);
+      if (sErr) throw new Error(sErr.message);
+      insertedHotspots += rows.length;
+    }
+
+    return { inserted_images: insertedImages, inserted_hotspots: insertedHotspots, skipped };
+  });
+
