@@ -33,10 +33,6 @@ function LegalNoticePage() {
           <p>
             <strong className="font-medium">Palace of Roman</strong> is operated as a sole proprietorship by the founder. The boutique operates exclusively online; there is no physical showroom, atelier or in-person appointment service.
           </p>
-          <p className="mt-4 text-sm text-ink/70">
-            <span className="text-muted-foreground">Founder / Owner:</span>{" "}
-            <em className="text-muted-foreground">[To be completed — please provide your full legal name]</em>
-          </p>
         </section>
 
         <section>
@@ -67,15 +63,10 @@ function LegalNoticePage() {
         <section>
           <SectionTitle kicker="03">Business registration</SectionTitle>
           <p className="text-sm text-ink/70">
-            <span className="text-muted-foreground">Legal entity type:</span> Sole proprietorship
+            <span className="text-muted-foreground">Legal entity type:</span> Sole proprietorship registered in California, United States.
           </p>
           <p className="mt-2 text-sm text-ink/70">
-            <span className="text-muted-foreground">EIN (Employer Identification Number):</span>{" "}
-            <em className="text-muted-foreground">[on file — to be displayed]</em>
-          </p>
-          <p className="mt-2 text-sm text-ink/70">
-            <span className="text-muted-foreground">Tax / VAT ID:</span>{" "}
-            <em className="text-muted-foreground">[if applicable]</em>
+            Tax identification details are held on file and disclosed to authorities, payment processors and wholesale partners on request.
           </p>
         </section>
 
