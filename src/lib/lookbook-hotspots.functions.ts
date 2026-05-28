@@ -557,7 +557,8 @@ export const getLookbookForSurface = createServerFn({ method: "POST" })
 // image+hotspots are already present.
 export const seedLookbookFromHomepage = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
-  .handler(async () => {
+  .handler(async ({ context }) => {
+
     const { data: layoutRow, error: lErr } = await supabaseAdmin
       .from("homepage_daily_layout")
       .select("id, layout_json")
