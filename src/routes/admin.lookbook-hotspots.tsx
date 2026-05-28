@@ -17,6 +17,7 @@ import {
   searchCatalogForHotspot,
   getCatalogProductByHandle,
   seedLookbookFromHomepage,
+  validateLookbookHotspots,
   type LookbookHotspotRow,
 } from "@/lib/lookbook-hotspots.functions";
 import editorialHero from "@/assets/editorial/may-2026/1.webp";
