@@ -751,3 +751,72 @@ export const validateLookbookHotspots = createServerFn({ method: "POST" })
     return { total: all.length, checked: handles.length, invalid };
   });
 
+
+// ─── Audit log: hotspot edits + seeding runs ──────────────────────────
+// Reads homepage_layout_audit, scoped to actions emitted by this admin
+// tool. Optional filters narrow by hotspot / image / surface so the
+// detail view can show a per-image change history.
+export type HotspotAuditRow = {
+  id: string;
+  created_at: string;
+  action: string;
+  actor: string | null;
+  details: Record<string, unknown>;
+};
+
+export const HOTSPOT_AUDIT_ACTIONS = [
+  "hotspot_create",
+  "hotspot_update",
+  "hotspot_delete",
+  "hotspot_bulk_update",
+  "lookbook_image_create",
+  "lookbook_seed_homepage",
+] as const;
+
+export const listHotspotAudit = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator(
+    (d:
+      | {
+          hotspot_id?: string;
+          lookbook_image_id?: string;
+          surface_kind?: string;
+          surface_slug?: string;
+          limit?: number;
+        }
+      | undefined) =>
+      z
+        .object({
+          hotspot_id: uuid.optional(),
+          lookbook_image_id: uuid.optional(),
+          surface_kind: surfaceKind.optional(),
+          surface_slug: surfaceSlug.optional(),
+          limit: z.number().int().min(1).max(500).default(100),
+        })
+        .parse(d ?? {}),
+  )
+  .handler(async ({ data }) => {
+    let q = supabaseAdmin
+      .from("homepage_layout_audit")
+      .select("id, created_at, action, actor, details")
+      .in("action", HOTSPOT_AUDIT_ACTIONS as unknown as string[])
+      .order("created_at", { ascending: false })
+      .limit(data.limit);
+
+    // jsonb filter on details->>field. Apply the narrowest filter we have.
+    if (data.hotspot_id) {
+      q = q.eq("details->>hotspot_id", data.hotspot_id);
+    } else if (data.lookbook_image_id) {
+      q = q.eq("details->>lookbook_image_id", data.lookbook_image_id);
+    } else if (data.surface_slug) {
+      q = q.eq("details->>surface_slug", data.surface_slug);
+      if (data.surface_kind)
+        q = q.eq("details->>surface_kind", data.surface_kind);
+    } else if (data.surface_kind) {
+      q = q.eq("details->>surface_kind", data.surface_kind);
+    }
+
+    const { data: rows, error } = await q;
+    if (error) throw new Error(error.message);
+    return { items: (rows ?? []) as HotspotAuditRow[] };
+  });
