@@ -36,6 +36,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AccountIndexRouteImport } from './routes/account.index'
 import { Route as SwimSizeGuideRouteImport } from './routes/swim.size-guide'
 import { Route as ProductHandleRouteImport } from './routes/product.$handle'
+import { Route as EditsYachtEditRouteImport } from './routes/edits.yacht-edit'
 import { Route as EditorialWomensEditRouteImport } from './routes/editorial.womens-edit'
 import { Route as EditorialVersaceNowRouteImport } from './routes/editorial.versace-now'
 import { Route as EditorialVersaceRouteImport } from './routes/editorial.versace'
@@ -78,6 +79,7 @@ import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 import { Route as AccountRegisterRouteImport } from './routes/account.register'
 import { Route as AccountRecoverRouteImport } from './routes/account.recover'
 import { Route as AccountLoginRouteImport } from './routes/account.login'
+import { Route as EditsYachtEditIndexRouteImport } from './routes/edits.yacht-edit.index'
 import { Route as JournalStyleTheInvestmentSunglassesEditRouteImport } from './routes/journal.style.the-investment-sunglasses-edit'
 import { Route as JournalStyleTheCashmereFieldGuideRouteImport } from './routes/journal.style.the-cashmere-field-guide'
 import { Route as JournalStyleLuxurySneakersAsModernTailoringRouteImport } from './routes/journal.style.luxury-sneakers-as-modern-tailoring'
@@ -85,6 +87,7 @@ import { Route as JournalCraftsmanshipSpotRealItalianLeatherRouteImport } from '
 import { Route as JournalCraftsmanshipMadeInItalyVsDesignedInItalyRouteImport } from './routes/journal.craftsmanship.made-in-italy-vs-designed-in-italy'
 import { Route as JournalCraftsmanshipCaringForFineLeatherRouteImport } from './routes/journal.craftsmanship.caring-for-fine-leather'
 import { Route as JournalBlogHandleArticleHandleRouteImport } from './routes/journal.$blogHandle.$articleHandle'
+import { Route as EditsYachtEditChapterRouteImport } from './routes/edits.yacht-edit.$chapter'
 import { Route as ApiPublicSeoHealthRouteImport } from './routes/api/public/seo-health'
 import { Route as ApiPublicStockAlertsSubscribeRouteImport } from './routes/api/public/stock-alerts/subscribe'
 import { Route as ApiPublicHooksSyncCollectionImagesRouteImport } from './routes/api/public/hooks/sync-collection-images'
@@ -231,6 +234,11 @@ const SwimSizeGuideRoute = SwimSizeGuideRouteImport.update({
 const ProductHandleRoute = ProductHandleRouteImport.update({
   id: '/product/$handle',
   path: '/product/$handle',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EditsYachtEditRoute = EditsYachtEditRouteImport.update({
+  id: '/edits/yacht-edit',
+  path: '/edits/yacht-edit',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EditorialWomensEditRoute = EditorialWomensEditRouteImport.update({
@@ -455,6 +463,11 @@ const AccountLoginRoute = AccountLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => AccountRoute,
 } as any)
+const EditsYachtEditIndexRoute = EditsYachtEditIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => EditsYachtEditRoute,
+} as any)
 const JournalStyleTheInvestmentSunglassesEditRoute =
   JournalStyleTheInvestmentSunglassesEditRouteImport.update({
     id: '/style/the-investment-sunglasses-edit',
@@ -497,6 +510,11 @@ const JournalBlogHandleArticleHandleRoute =
     path: '/$blogHandle/$articleHandle',
     getParentRoute: () => JournalRoute,
   } as any)
+const EditsYachtEditChapterRoute = EditsYachtEditChapterRouteImport.update({
+  id: '/$chapter',
+  path: '/$chapter',
+  getParentRoute: () => EditsYachtEditRoute,
+} as any)
 const ApiPublicSeoHealthRoute = ApiPublicSeoHealthRouteImport.update({
   id: '/api/public/seo-health',
   path: '/api/public/seo-health',
@@ -634,12 +652,14 @@ export interface FileRoutesByFullPath {
   '/editorial/versace': typeof EditorialVersaceRoute
   '/editorial/versace-now': typeof EditorialVersaceNowRoute
   '/editorial/womens-edit': typeof EditorialWomensEditRoute
+  '/edits/yacht-edit': typeof EditsYachtEditRouteWithChildren
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/collections/': typeof CollectionsIndexRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
+  '/edits/yacht-edit/$chapter': typeof EditsYachtEditChapterRoute
   '/journal/$blogHandle/$articleHandle': typeof JournalBlogHandleArticleHandleRoute
   '/journal/craftsmanship/caring-for-fine-leather': typeof JournalCraftsmanshipCaringForFineLeatherRoute
   '/journal/craftsmanship/made-in-italy-vs-designed-in-italy': typeof JournalCraftsmanshipMadeInItalyVsDesignedInItalyRoute
@@ -647,6 +667,7 @@ export interface FileRoutesByFullPath {
   '/journal/style/luxury-sneakers-as-modern-tailoring': typeof JournalStyleLuxurySneakersAsModernTailoringRoute
   '/journal/style/the-cashmere-field-guide': typeof JournalStyleTheCashmereFieldGuideRoute
   '/journal/style/the-investment-sunglasses-edit': typeof JournalStyleTheInvestmentSunglassesEditRoute
+  '/edits/yacht-edit/': typeof EditsYachtEditIndexRoute
   '/api/public/ai/recommendations': typeof ApiPublicAiRecommendationsRoute
   '/api/public/cron/abandoned-cart-recovery': typeof ApiPublicCronAbandonedCartRecoveryRoute
   '/api/public/cron/back-in-stock-notify': typeof ApiPublicCronBackInStockNotifyRoute
@@ -729,6 +750,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/collections': typeof CollectionsIndexRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
+  '/edits/yacht-edit/$chapter': typeof EditsYachtEditChapterRoute
   '/journal/$blogHandle/$articleHandle': typeof JournalBlogHandleArticleHandleRoute
   '/journal/craftsmanship/caring-for-fine-leather': typeof JournalCraftsmanshipCaringForFineLeatherRoute
   '/journal/craftsmanship/made-in-italy-vs-designed-in-italy': typeof JournalCraftsmanshipMadeInItalyVsDesignedInItalyRoute
@@ -736,6 +758,7 @@ export interface FileRoutesByTo {
   '/journal/style/luxury-sneakers-as-modern-tailoring': typeof JournalStyleLuxurySneakersAsModernTailoringRoute
   '/journal/style/the-cashmere-field-guide': typeof JournalStyleTheCashmereFieldGuideRoute
   '/journal/style/the-investment-sunglasses-edit': typeof JournalStyleTheInvestmentSunglassesEditRoute
+  '/edits/yacht-edit': typeof EditsYachtEditIndexRoute
   '/api/public/ai/recommendations': typeof ApiPublicAiRecommendationsRoute
   '/api/public/cron/abandoned-cart-recovery': typeof ApiPublicCronAbandonedCartRecoveryRoute
   '/api/public/cron/back-in-stock-notify': typeof ApiPublicCronBackInStockNotifyRoute
@@ -814,12 +837,14 @@ export interface FileRoutesById {
   '/editorial/versace': typeof EditorialVersaceRoute
   '/editorial/versace-now': typeof EditorialVersaceNowRoute
   '/editorial/womens-edit': typeof EditorialWomensEditRoute
+  '/edits/yacht-edit': typeof EditsYachtEditRouteWithChildren
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/collections/': typeof CollectionsIndexRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
+  '/edits/yacht-edit/$chapter': typeof EditsYachtEditChapterRoute
   '/journal/$blogHandle/$articleHandle': typeof JournalBlogHandleArticleHandleRoute
   '/journal/craftsmanship/caring-for-fine-leather': typeof JournalCraftsmanshipCaringForFineLeatherRoute
   '/journal/craftsmanship/made-in-italy-vs-designed-in-italy': typeof JournalCraftsmanshipMadeInItalyVsDesignedInItalyRoute
@@ -827,6 +852,7 @@ export interface FileRoutesById {
   '/journal/style/luxury-sneakers-as-modern-tailoring': typeof JournalStyleLuxurySneakersAsModernTailoringRoute
   '/journal/style/the-cashmere-field-guide': typeof JournalStyleTheCashmereFieldGuideRoute
   '/journal/style/the-investment-sunglasses-edit': typeof JournalStyleTheInvestmentSunglassesEditRoute
+  '/edits/yacht-edit/': typeof EditsYachtEditIndexRoute
   '/api/public/ai/recommendations': typeof ApiPublicAiRecommendationsRoute
   '/api/public/cron/abandoned-cart-recovery': typeof ApiPublicCronAbandonedCartRecoveryRoute
   '/api/public/cron/back-in-stock-notify': typeof ApiPublicCronBackInStockNotifyRoute
@@ -906,12 +932,14 @@ export interface FileRouteTypes {
     | '/editorial/versace'
     | '/editorial/versace-now'
     | '/editorial/womens-edit'
+    | '/edits/yacht-edit'
     | '/product/$handle'
     | '/swim/size-guide'
     | '/account/'
     | '/admin/'
     | '/collections/'
     | '/api/public/seo-health'
+    | '/edits/yacht-edit/$chapter'
     | '/journal/$blogHandle/$articleHandle'
     | '/journal/craftsmanship/caring-for-fine-leather'
     | '/journal/craftsmanship/made-in-italy-vs-designed-in-italy'
@@ -919,6 +947,7 @@ export interface FileRouteTypes {
     | '/journal/style/luxury-sneakers-as-modern-tailoring'
     | '/journal/style/the-cashmere-field-guide'
     | '/journal/style/the-investment-sunglasses-edit'
+    | '/edits/yacht-edit/'
     | '/api/public/ai/recommendations'
     | '/api/public/cron/abandoned-cart-recovery'
     | '/api/public/cron/back-in-stock-notify'
@@ -1001,6 +1030,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/collections'
     | '/api/public/seo-health'
+    | '/edits/yacht-edit/$chapter'
     | '/journal/$blogHandle/$articleHandle'
     | '/journal/craftsmanship/caring-for-fine-leather'
     | '/journal/craftsmanship/made-in-italy-vs-designed-in-italy'
@@ -1008,6 +1038,7 @@ export interface FileRouteTypes {
     | '/journal/style/luxury-sneakers-as-modern-tailoring'
     | '/journal/style/the-cashmere-field-guide'
     | '/journal/style/the-investment-sunglasses-edit'
+    | '/edits/yacht-edit'
     | '/api/public/ai/recommendations'
     | '/api/public/cron/abandoned-cart-recovery'
     | '/api/public/cron/back-in-stock-notify'
@@ -1085,12 +1116,14 @@ export interface FileRouteTypes {
     | '/editorial/versace'
     | '/editorial/versace-now'
     | '/editorial/womens-edit'
+    | '/edits/yacht-edit'
     | '/product/$handle'
     | '/swim/size-guide'
     | '/account/'
     | '/admin/'
     | '/collections/'
     | '/api/public/seo-health'
+    | '/edits/yacht-edit/$chapter'
     | '/journal/$blogHandle/$articleHandle'
     | '/journal/craftsmanship/caring-for-fine-leather'
     | '/journal/craftsmanship/made-in-italy-vs-designed-in-italy'
@@ -1098,6 +1131,7 @@ export interface FileRouteTypes {
     | '/journal/style/luxury-sneakers-as-modern-tailoring'
     | '/journal/style/the-cashmere-field-guide'
     | '/journal/style/the-investment-sunglasses-edit'
+    | '/edits/yacht-edit/'
     | '/api/public/ai/recommendations'
     | '/api/public/cron/abandoned-cart-recovery'
     | '/api/public/cron/back-in-stock-notify'
@@ -1173,6 +1207,7 @@ export interface RootRouteChildren {
   EditorialVersaceRoute: typeof EditorialVersaceRoute
   EditorialVersaceNowRoute: typeof EditorialVersaceNowRoute
   EditorialWomensEditRoute: typeof EditorialWomensEditRoute
+  EditsYachtEditRoute: typeof EditsYachtEditRouteWithChildren
   ProductHandleRoute: typeof ProductHandleRoute
   AdminIndexRoute: typeof AdminIndexRoute
   CollectionsIndexRoute: typeof CollectionsIndexRoute
@@ -1379,6 +1414,13 @@ declare module '@tanstack/react-router' {
       path: '/product/$handle'
       fullPath: '/product/$handle'
       preLoaderRoute: typeof ProductHandleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/edits/yacht-edit': {
+      id: '/edits/yacht-edit'
+      path: '/edits/yacht-edit'
+      fullPath: '/edits/yacht-edit'
+      preLoaderRoute: typeof EditsYachtEditRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/editorial/womens-edit': {
@@ -1675,6 +1717,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountLoginRouteImport
       parentRoute: typeof AccountRoute
     }
+    '/edits/yacht-edit/': {
+      id: '/edits/yacht-edit/'
+      path: '/'
+      fullPath: '/edits/yacht-edit/'
+      preLoaderRoute: typeof EditsYachtEditIndexRouteImport
+      parentRoute: typeof EditsYachtEditRoute
+    }
     '/journal/style/the-investment-sunglasses-edit': {
       id: '/journal/style/the-investment-sunglasses-edit'
       path: '/style/the-investment-sunglasses-edit'
@@ -1723,6 +1772,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/journal/$blogHandle/$articleHandle'
       preLoaderRoute: typeof JournalBlogHandleArticleHandleRouteImport
       parentRoute: typeof JournalRoute
+    }
+    '/edits/yacht-edit/$chapter': {
+      id: '/edits/yacht-edit/$chapter'
+      path: '/$chapter'
+      fullPath: '/edits/yacht-edit/$chapter'
+      preLoaderRoute: typeof EditsYachtEditChapterRouteImport
+      parentRoute: typeof EditsYachtEditRoute
     }
     '/api/public/seo-health': {
       id: '/api/public/seo-health'
@@ -1867,6 +1923,20 @@ const SwimRouteChildren: SwimRouteChildren = {
 
 const SwimRouteWithChildren = SwimRoute._addFileChildren(SwimRouteChildren)
 
+interface EditsYachtEditRouteChildren {
+  EditsYachtEditChapterRoute: typeof EditsYachtEditChapterRoute
+  EditsYachtEditIndexRoute: typeof EditsYachtEditIndexRoute
+}
+
+const EditsYachtEditRouteChildren: EditsYachtEditRouteChildren = {
+  EditsYachtEditChapterRoute: EditsYachtEditChapterRoute,
+  EditsYachtEditIndexRoute: EditsYachtEditIndexRoute,
+}
+
+const EditsYachtEditRouteWithChildren = EditsYachtEditRoute._addFileChildren(
+  EditsYachtEditRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
@@ -1930,6 +2000,7 @@ const rootRouteChildren: RootRouteChildren = {
   EditorialVersaceRoute: EditorialVersaceRoute,
   EditorialVersaceNowRoute: EditorialVersaceNowRoute,
   EditorialWomensEditRoute: EditorialWomensEditRoute,
+  EditsYachtEditRoute: EditsYachtEditRouteWithChildren,
   ProductHandleRoute: ProductHandleRoute,
   AdminIndexRoute: AdminIndexRoute,
   CollectionsIndexRoute: CollectionsIndexRoute,
