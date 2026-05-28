@@ -36,6 +36,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AccountIndexRouteImport } from './routes/account.index'
 import { Route as SwimSizeGuideRouteImport } from './routes/swim.size-guide'
 import { Route as ProductHandleRouteImport } from './routes/product.$handle'
+import { Route as PreviewLookbookRouteImport } from './routes/preview.lookbook'
 import { Route as EditsYachtEditRouteImport } from './routes/edits.yacht-edit'
 import { Route as EditsCharterCapsuleRouteImport } from './routes/edits.charter-capsule'
 import { Route as EditorialWomensEditRouteImport } from './routes/editorial.womens-edit'
@@ -237,6 +238,11 @@ const SwimSizeGuideRoute = SwimSizeGuideRouteImport.update({
 const ProductHandleRoute = ProductHandleRouteImport.update({
   id: '/product/$handle',
   path: '/product/$handle',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PreviewLookbookRoute = PreviewLookbookRouteImport.update({
+  id: '/preview/lookbook',
+  path: '/preview/lookbook',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EditsYachtEditRoute = EditsYachtEditRouteImport.update({
@@ -674,6 +680,7 @@ export interface FileRoutesByFullPath {
   '/editorial/womens-edit': typeof EditorialWomensEditRoute
   '/edits/charter-capsule': typeof EditsCharterCapsuleRoute
   '/edits/yacht-edit': typeof EditsYachtEditRouteWithChildren
+  '/preview/lookbook': typeof PreviewLookbookRoute
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/account/': typeof AccountIndexRoute
@@ -768,6 +775,7 @@ export interface FileRoutesByTo {
   '/editorial/versace-now': typeof EditorialVersaceNowRoute
   '/editorial/womens-edit': typeof EditorialWomensEditRoute
   '/edits/charter-capsule': typeof EditsCharterCapsuleRoute
+  '/preview/lookbook': typeof PreviewLookbookRoute
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/account': typeof AccountIndexRoute
@@ -865,6 +873,7 @@ export interface FileRoutesById {
   '/editorial/womens-edit': typeof EditorialWomensEditRoute
   '/edits/charter-capsule': typeof EditsCharterCapsuleRoute
   '/edits/yacht-edit': typeof EditsYachtEditRouteWithChildren
+  '/preview/lookbook': typeof PreviewLookbookRoute
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/account/': typeof AccountIndexRoute
@@ -963,6 +972,7 @@ export interface FileRouteTypes {
     | '/editorial/womens-edit'
     | '/edits/charter-capsule'
     | '/edits/yacht-edit'
+    | '/preview/lookbook'
     | '/product/$handle'
     | '/swim/size-guide'
     | '/account/'
@@ -1057,6 +1067,7 @@ export interface FileRouteTypes {
     | '/editorial/versace-now'
     | '/editorial/womens-edit'
     | '/edits/charter-capsule'
+    | '/preview/lookbook'
     | '/product/$handle'
     | '/swim/size-guide'
     | '/account'
@@ -1153,6 +1164,7 @@ export interface FileRouteTypes {
     | '/editorial/womens-edit'
     | '/edits/charter-capsule'
     | '/edits/yacht-edit'
+    | '/preview/lookbook'
     | '/product/$handle'
     | '/swim/size-guide'
     | '/account/'
@@ -1247,6 +1259,7 @@ export interface RootRouteChildren {
   EditorialWomensEditRoute: typeof EditorialWomensEditRoute
   EditsCharterCapsuleRoute: typeof EditsCharterCapsuleRoute
   EditsYachtEditRoute: typeof EditsYachtEditRouteWithChildren
+  PreviewLookbookRoute: typeof PreviewLookbookRoute
   ProductHandleRoute: typeof ProductHandleRoute
   AdminIndexRoute: typeof AdminIndexRoute
   CollectionsIndexRoute: typeof CollectionsIndexRoute
@@ -1453,6 +1466,13 @@ declare module '@tanstack/react-router' {
       path: '/product/$handle'
       fullPath: '/product/$handle'
       preLoaderRoute: typeof ProductHandleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/preview/lookbook': {
+      id: '/preview/lookbook'
+      path: '/preview/lookbook'
+      fullPath: '/preview/lookbook'
+      preLoaderRoute: typeof PreviewLookbookRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/edits/yacht-edit': {
@@ -2064,6 +2084,7 @@ const rootRouteChildren: RootRouteChildren = {
   EditorialWomensEditRoute: EditorialWomensEditRoute,
   EditsCharterCapsuleRoute: EditsCharterCapsuleRoute,
   EditsYachtEditRoute: EditsYachtEditRouteWithChildren,
+  PreviewLookbookRoute: PreviewLookbookRoute,
   ProductHandleRoute: ProductHandleRoute,
   AdminIndexRoute: AdminIndexRoute,
   CollectionsIndexRoute: CollectionsIndexRoute,
