@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { fetchProductsPage, type ShopifyProductNode } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
 import { img } from "@/lib/editorial-library";
@@ -10,7 +10,7 @@ import {
   ShopTheEditError,
   ShopTheEditSkeleton,
 } from "@/components/shop-the-edit-state";
-import { Loader2 } from "lucide-react";
+import { Loader2, Copy, Check, Share2 } from "lucide-react";
 
 // ─── The Capsule ───────────────────────────────────────────────────────────
 // Eight pieces. Seven days on the Med. Each slot picks the best-matching
