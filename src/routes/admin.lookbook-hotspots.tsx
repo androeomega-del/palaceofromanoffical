@@ -286,17 +286,33 @@ function ImageDetailView({
             {image.surface_kind ?? "—"}
           </span>{" "}
           / {image.surface_slug ?? image.edition_handle}
-          {image.chapter_key ? ` / ${image.chapter_key}` : ""}
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            variant={bulkMode ? "default" : "outline"}
+            onClick={() => {
+              setBulkMode((v) => !v);
+              setBulkIds(new Set());
+              setSelectedHotspotId(null);
+              setAddMode(false);
+            }}
+          >
+            {bulkMode ? `Bulk: ${bulkIds.size} selected` : "Bulk select"}
+          </Button>
+          <Button
+            size="sm"
+            variant={addMode ? "default" : "outline"}
+            onClick={() => setAddMode((v) => !v)}
+            disabled={bulkMode}
+          >
+            <Plus className="h-3.5 w-3.5 mr-1" />
+            {addMode ? "Click image to place" : "Add hotspot"}
+          </Button>
         </div>
-        <Button
-          size="sm"
-          variant={addMode ? "default" : "outline"}
-          onClick={() => setAddMode((v) => !v)}
-        >
-          <Plus className="h-3.5 w-3.5 mr-1" />
-          {addMode ? "Click image to place" : "Add hotspot"}
-        </Button>
       </div>
+
+      <div className="grid lg:grid-cols-[1fr_400px] gap-6 p-6 max-w-[1600px] mx-auto">
+        <div>
 
       <div className="grid lg:grid-cols-[1fr_400px] gap-6 p-6 max-w-[1600px] mx-auto">
         <div>
