@@ -286,6 +286,8 @@ function ImageDetailView({
             {image.surface_kind ?? "—"}
           </span>{" "}
           / {image.surface_slug ?? image.edition_handle}
+          {image.chapter_key ? ` / ${image.chapter_key}` : ""}
+        </div>
         <div className="flex gap-2">
           <Button
             size="sm"
@@ -313,9 +315,6 @@ function ImageDetailView({
 
       <div className="grid lg:grid-cols-[1fr_400px] gap-6 p-6 max-w-[1600px] mx-auto">
         <div>
-
-      <div className="grid lg:grid-cols-[1fr_400px] gap-6 p-6 max-w-[1600px] mx-auto">
-        <div>
           <div
             className={`relative bg-muted rounded-md overflow-hidden ${
               addMode ? "cursor-crosshair" : ""
@@ -327,25 +326,43 @@ function ImageDetailView({
               alt={image.alt_text ?? ""}
               className="w-full h-auto block"
             />
-            {hotspots.map((h) => (
-              <button
-                key={h.id}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedHotspotId(h.id);
-                }}
-                className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full border-2 transition-all ${
-                  selectedHotspotId === h.id
-                    ? "h-8 w-8 bg-bronze border-white shadow-lg"
-                    : "h-6 w-6 bg-white/90 border-bronze hover:bg-bronze hover:border-white"
-                }`}
-                style={{ left: `${h.x}%`, top: `${h.y}%` }}
-                title={`${h.label ?? ""} → ${h.product_handle}`}
-              >
-                <span className="sr-only">{h.product_handle}</span>
-              </button>
-            ))}
+            {hotspots.map((h) => {
+              const isSelected = selectedHotspotId === h.id;
+              const isChecked = bulkIds.has(h.id);
+              return (
+                <button
+                  key={h.id}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (bulkMode) {
+                      setBulkIds((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(h.id)) next.delete(h.id);
+                        else next.add(h.id);
+                        return next;
+                      });
+                    } else {
+                      setSelectedHotspotId(h.id);
+                    }
+                  }}
+                  className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full border-2 transition-all ${
+                    bulkMode
+                      ? isChecked
+                        ? "h-8 w-8 bg-emerald-500 border-white shadow-lg"
+                        : "h-6 w-6 bg-white/90 border-emerald-500 hover:bg-emerald-500/30"
+                      : isSelected
+                        ? "h-8 w-8 bg-bronze border-white shadow-lg"
+                        : "h-6 w-6 bg-white/90 border-bronze hover:bg-bronze hover:border-white"
+                  }`}
+                  style={{ left: `${h.x}%`, top: `${h.y}%` }}
+                  title={`${h.label ?? ""} → ${h.product_handle}`}
+                >
+                  <span className="sr-only">{h.product_handle}</span>
+                </button>
+              );
+            })}
           </div>
+        </div>
         </div>
 
         <aside>
