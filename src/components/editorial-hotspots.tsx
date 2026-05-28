@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQueries, useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { Link } from "@tanstack/react-router";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,8 @@ import { useCartStore } from "@/stores/cart-store";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { Loader2, Plus } from "lucide-react";
 import { toast } from "sonner";
+import { getLookbookForSurface } from "@/lib/lookbook-hotspots.functions";
+
 
 
 export type Hotspot = {
