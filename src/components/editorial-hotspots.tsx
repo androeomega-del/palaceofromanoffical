@@ -119,7 +119,7 @@ export function EditorialHotspots({ src, alt, hotspots, aspect = "4/5", classNam
     >
       <img src={src} alt={alt} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
 
-      {hotspots.map((h) => {
+      {visibleHotspots.map((h) => {
         const tipId = `hotspot-tip-${h.handle}`;
         const isRightHalf = h.x > 65;
         const isBottomHalf = h.y > 70;
