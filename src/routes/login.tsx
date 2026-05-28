@@ -51,18 +51,33 @@ function LoginPage() {
         if (signInError) throw signInError;
         accessToken = data.session?.access_token;
       }
-      if (accessToken) {
+      if (!accessToken) {
+        // Email-confirmation required (signup) — show a clear message
+        // instead of pretending we redirected.
+        throw new Error(
+          "Check your email to confirm your account before signing in.",
+        );
+      }
+      // Best-effort founder bootstrap (no-op if an admin already exists).
+      // Don't fail the redirect on its error — the guard handles non-admins.
+      try {
         await bootstrapAdminIfFirst({
           headers: { Authorization: `Bearer ${accessToken}` },
         });
+      } catch (err) {
+        console.warn("[login] bootstrapAdminIfFirst failed", err);
       }
-      navigate({ to: redirectTo });
+      // Hard navigation guarantees router context, query cache, and
+      // auth-attacher all see the freshly-persisted session — eliminates
+      // the "signed in but not redirected" race that ate prior fixes.
+      window.location.assign(redirectTo);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Authentication failed");
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
