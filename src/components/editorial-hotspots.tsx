@@ -420,3 +420,66 @@ function QuickShopBody({ product, onClose }: { product: ShopifyProduct["node"]; 
     </div>
   );
 }
+
+/**
+ * DB-first variant: reads hotspots from the `lookbook_images` /
+ * `lookbook_hotspots` tables for a given (surface_kind, surface_slug). If
+ * no row is seeded yet, falls back to the inline `fallbackHotspots` so the
+ * storefront never breaks while seeds are still propagating.
+ *
+ * The admin Lookbook Hotspots tool writes to those tables — so once seeded,
+ * a placement correction made there is reflected on the public page
+ * without a code change.
+ */
+export function EditorialHotspotsBySurface({
+  surfaceKind,
+  surfaceSlug,
+  src,
+  alt,
+  fallbackHotspots,
+  aspect = "4/5",
+  className = "",
+}: {
+  surfaceKind: string;
+  surfaceSlug: string;
+  src: string;
+  alt: string;
+  fallbackHotspots: Hotspot[];
+  aspect?: string;
+  className?: string;
+}) {
+  // Lazy-import the server fn to avoid bundling the admin reader into all
+  // pages that just import editorial-hotspots. useQuery owns SWR for us.
+  const { useServerFn } = require("@tanstack/react-start") as typeof import("@tanstack/react-start");
+  const { getLookbookForSurface } = require("@/lib/lookbook-hotspots.functions") as typeof import("@/lib/lookbook-hotspots.functions");
+  const fetcher = useServerFn(getLookbookForSurface);
+  const { data } = useQuery({
+    queryKey: ["lookbook-surface", surfaceKind, surfaceSlug],
+    queryFn: () =>
+      fetcher({ data: { surface_kind: surfaceKind, surface_slug: surfaceSlug } }),
+    staleTime: 60_000,
+  });
+  const spots = useMemo<Hotspot[]>(() => {
+    if (data?.image && data.hotspots.length > 0) {
+      return data.hotspots.map((h) => ({
+        x: Number(h.x),
+        y: Number(h.y),
+        handle: h.product_handle,
+        label: h.label ?? undefined,
+      }));
+    }
+    return fallbackHotspots;
+  }, [data, fallbackHotspots]);
+  const effectiveSrc = data?.image?.image_url ?? src;
+  const effectiveAlt = data?.image?.alt_text ?? alt;
+  return (
+    <EditorialHotspots
+      src={effectiveSrc}
+      alt={effectiveAlt}
+      hotspots={spots}
+      aspect={aspect}
+      className={className}
+    />
+  );
+}
+
