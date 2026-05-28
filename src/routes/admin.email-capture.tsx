@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { adminBeforeLoad } from "@/lib/admin-route-guard";
 import { getEmailCaptureDashboard } from "@/lib/email-capture-dashboard.functions";
+import { exportNewsletterCsv } from "@/lib/newsletter-export.functions";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,6 +15,7 @@ import {
   Send,
   AlertTriangle,
   CheckCircle2,
+  Download,
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin/email-capture")({
@@ -104,6 +107,25 @@ function AdminEmailCapture() {
     refetchInterval: 60_000,
     staleTime: 30_000,
   });
+  const [exporting, setExporting] = useState(false);
+
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      const res = await exportNewsletterCsv();
+      const blob = new Blob([res.csv], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = res.filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } finally {
+      setExporting(false);
+    }
+  };
 
   return (
     <main className="min-h-screen bg-canvas px-6 py-12 md:py-16">
@@ -124,17 +146,28 @@ function AdminEmailCapture() {
               dispatch status.
             </p>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => refetch()}
-            disabled={isFetching}
-          >
-            <RefreshCw
-              className={`h-3 w-3 mr-2 ${isFetching ? "animate-spin" : ""}`}
-            />
-            Refresh
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExport}
+              disabled={exporting}
+            >
+              <Download className={`h-3 w-3 mr-2 ${exporting ? "animate-pulse" : ""}`} />
+              {exporting ? "Exporting…" : "Export CSV"}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => refetch()}
+              disabled={isFetching}
+            >
+              <RefreshCw
+                className={`h-3 w-3 mr-2 ${isFetching ? "animate-spin" : ""}`}
+              />
+              Refresh
+            </Button>
+          </div>
         </div>
 
         {isLoading ? (
