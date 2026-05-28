@@ -352,7 +352,8 @@ export const bulkUpdateHotspots = createServerFn({ method: "POST" })
         })
         .parse(d),
   )
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
+
     const { data: before } = await supabaseAdmin
       .from("lookbook_hotspots")
       .select("id, product_handle, label, surface_kind, surface_slug")
