@@ -741,3 +741,115 @@ function NewImageDialog() {
     </Card>
   );
 }
+
+// ─── Seed from source ──────────────────────────────────────────────────
+// One-click seeder: walks the active homepage_daily_layout (server-side)
+// and inserts the two known static surfaces (May 2026 hero + Men's Swim
+// deck flatlay). Idempotent: skips images whose (surface_kind, surface_slug)
+// already exist.
+function SeedFromSourceButton() {
+  const qc = useQueryClient();
+  const seedHomepage = useMutation({
+    mutationFn: () => seedLookbookFromHomepage({}),
+  });
+
+  async function seedStaticSurfaces() {
+    const staticSurfaces: Array<{
+      surface_kind: string;
+      surface_slug: string;
+      image_url: string;
+      alt_text: string;
+      hotspots: Array<{ x: number; y: number; handle: string; label: string }>;
+    }> = [
+      {
+        surface_kind: "editorial",
+        surface_slug: "may-2026-hero",
+        image_url: editorialHero,
+        alt_text: "May 2026 Editorial — Quiet authority",
+        hotspots: [
+          { x: 80, y: 11, handle: "alexander-mcqueen-black-acetate-sunglasses", label: "Eyewear" },
+          { x: 47, y: 56, handle: "alexander-mcqueen-black-calf-leather-bos-taurus-shoulder-bag", label: "Handbag" },
+          { x: 22, y: 88, handle: "alexander-mcqueen-beige-calf-leather-bos-taurus-chunky-sneakers", label: "Footwear" },
+        ],
+      },
+      {
+        surface_kind: "campaign",
+        surface_slug: "mens-swim-deck-flatlay",
+        image_url: mensDetail2,
+        alt_text: "Men's Resort 2026 deck flatlay",
+        hotspots: [
+          { x: 28, y: 22, handle: "black-polyamide-swim-shorts", label: "Black Swim Shorts" },
+          { x: 72, y: 22, handle: "blue-cotton-shirt", label: "Blue Cotton Shirt" },
+          { x: 45, y: 46, handle: "gold-metal-sunglasses-9", label: "Wraparound Sunglasses" },
+          { x: 22, y: 70, handle: "green-polyamide-swim-shorts", label: "Cassette-Print Swim Shorts" },
+          { x: 68, y: 62, handle: "brown-calf-leather-bos-taurus-flat-sandals", label: "FF Monogram Slides" },
+        ],
+      },
+    ];
+
+    let createdImages = 0;
+    let createdSpots = 0;
+    for (const s of staticSurfaces) {
+      const existing = await listLookbookImages({
+        data: { surface_kind: s.surface_kind, search: s.surface_slug },
+      });
+      if (existing.items.some((i) => i.surface_slug === s.surface_slug)) continue;
+      const { image } = await createLookbookImage({
+        data: {
+          surface_kind: s.surface_kind,
+          surface_slug: s.surface_slug,
+          image_url: s.image_url.startsWith("http")
+            ? s.image_url
+            : `https://palaceofromanofficial.com${s.image_url}`,
+          alt_text: s.alt_text,
+        },
+      });
+      createdImages++;
+      for (const h of s.hotspots) {
+        await createHotspot({
+          data: {
+            lookbook_image_id: image.id,
+            x: h.x,
+            y: h.y,
+            product_handle: h.handle,
+            label: h.label,
+          },
+        });
+        createdSpots++;
+      }
+    }
+    return { createdImages, createdSpots };
+  }
+
+  const seedAll = useMutation({
+    mutationFn: async () => {
+      const hp = await seedHomepage.mutateAsync();
+      const stat = await seedStaticSurfaces();
+      return { homepage: hp, static: stat };
+    },
+    onSuccess: (r) => {
+      const total =
+        r.homepage.inserted_images + r.static.createdImages;
+      toast.success(
+        `Seeded ${total} image(s), ${r.homepage.inserted_hotspots + r.static.createdSpots} hotspot(s). Skipped ${r.homepage.skipped} already-present homepage block(s).`,
+      );
+      qc.invalidateQueries({ queryKey: ["lookbook-images"] });
+    },
+    onError: (e: unknown) =>
+      toast.error(e instanceof Error ? e.message : "Seed failed"),
+  });
+
+  return (
+    <Button
+      variant="outline"
+      onClick={() => seedAll.mutate()}
+      disabled={seedAll.isPending}
+    >
+      {seedAll.isPending ? (
+        <Loader2 className="h-4 w-4 animate-spin mr-1.5" />
+      ) : null}
+      Seed from source
+    </Button>
+  );
+}
+
