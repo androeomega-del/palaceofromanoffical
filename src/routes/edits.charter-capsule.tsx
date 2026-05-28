@@ -418,15 +418,23 @@ function CharterCapsulePage() {
   );
 }
 
+function buildShareUrl(content: string) {
+  const url = new URL(absoluteUrl(PATH));
+  url.searchParams.set("utm_source", "palaceofroman");
+  url.searchParams.set("utm_medium", "social");
+  url.searchParams.set("utm_campaign", "charter_capsule");
+  url.searchParams.set("utm_content", content);
+  return url.toString();
+}
+
 function ShareSection() {
   const [copied, setCopied] = useState(false);
-  const shareUrl = absoluteUrl(PATH);
   const shareTitle = TITLE;
   const shareDesc = DESC;
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(shareUrl);
+      await navigator.clipboard.writeText(buildShareUrl("instagram_copy"));
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -435,14 +443,14 @@ function ShareSection() {
   };
 
   const handleFacebook = () => {
-    const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+    const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(buildShareUrl("facebook_share"))}`;
     window.open(url, "_blank", "width=600,height=400,scrollbars=yes");
   };
 
   const handleNativeShare = async () => {
     if (navigator.share) {
       try {
-        await navigator.share({ title: shareTitle, text: shareDesc, url: shareUrl });
+        await navigator.share({ title: shareTitle, text: shareDesc, url: buildShareUrl("native_share") });
       } catch {
         // User cancelled or share failed
       }
