@@ -158,7 +158,7 @@ export const createLookbookImage = createServerFn({ method: "POST" })
         })
         .parse(d),
   )
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
     const { data: row, error } = await supabaseAdmin
       .from("lookbook_images")
       .insert({
@@ -173,8 +173,21 @@ export const createLookbookImage = createServerFn({ method: "POST" })
       .select("*")
       .single();
     if (error) throw new Error(error.message);
+    await supabaseAdmin.from("homepage_layout_audit").insert({
+      action: "lookbook_image_create",
+      actor: context.userId ?? "admin",
+      details: {
+        lookbook_image_id: row.id,
+        surface_kind: data.surface_kind,
+        surface_slug: data.surface_slug,
+        edition_handle: data.edition_handle ?? data.surface_slug,
+        chapter_key: data.chapter_key ?? null,
+        image_url: data.image_url,
+      },
+    });
     return { image: row as LookbookImageRow };
   });
+
 
 // ─── Hotspot mutations ────────────────────────────────────────────────
 export const createHotspot = createServerFn({ method: "POST" })
@@ -197,7 +210,7 @@ export const createHotspot = createServerFn({ method: "POST" })
         })
         .parse(d),
   )
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
     const { data: img } = await supabaseAdmin
       .from("lookbook_images")
       .select("surface_kind, surface_slug")
@@ -217,8 +230,23 @@ export const createHotspot = createServerFn({ method: "POST" })
       .select("*")
       .single();
     if (error) throw new Error(error.message);
+    await supabaseAdmin.from("homepage_layout_audit").insert({
+      action: "hotspot_create",
+      actor: context.userId ?? "admin",
+      details: {
+        hotspot_id: row.id,
+        lookbook_image_id: data.lookbook_image_id,
+        surface_kind: img?.surface_kind ?? null,
+        surface_slug: img?.surface_slug ?? null,
+        product_handle: data.product_handle,
+        label: data.label ?? null,
+        x: data.x,
+        y: data.y,
+      },
+    });
     return { hotspot: row as LookbookHotspotRow };
   });
+
 
 export const updateHotspot = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
@@ -240,7 +268,8 @@ export const updateHotspot = createServerFn({ method: "POST" })
         })
         .parse(d),
   )
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
+
     const patch: {
       product_handle?: string;
       label?: string | null;
@@ -272,7 +301,8 @@ export const updateHotspot = createServerFn({ method: "POST" })
     if (before) {
       await supabaseAdmin.from("homepage_layout_audit").insert({
         action: "hotspot_update",
-        actor: "admin",
+        actor: context.userId ?? "admin",
+
         details: {
           hotspot_id: data.id,
           surface_kind: before.surface_kind,
@@ -291,7 +321,8 @@ export const updateHotspot = createServerFn({ method: "POST" })
 export const deleteHotspot = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
   .inputValidator((d: { id: string }) => z.object({ id: uuid }).parse(d))
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
+
     const { data: before } = await supabaseAdmin
       .from("lookbook_hotspots")
       .select("id, product_handle, label, surface_kind, surface_slug")
@@ -305,7 +336,8 @@ export const deleteHotspot = createServerFn({ method: "POST" })
     if (before) {
       await supabaseAdmin.from("homepage_layout_audit").insert({
         action: "hotspot_delete",
-        actor: "admin",
+        actor: context.userId ?? "admin",
+
         details: {
           hotspot_id: data.id,
           surface_kind: before.surface_kind,
@@ -333,7 +365,8 @@ export const bulkUpdateHotspots = createServerFn({ method: "POST" })
         })
         .parse(d),
   )
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
+
     const { data: before } = await supabaseAdmin
       .from("lookbook_hotspots")
       .select("id, product_handle, label, surface_kind, surface_slug")
@@ -353,7 +386,7 @@ export const bulkUpdateHotspots = createServerFn({ method: "POST" })
     if (before && before.length) {
       await supabaseAdmin.from("homepage_layout_audit").insert({
         action: "hotspot_bulk_update",
-        actor: "admin",
+        actor: context.userId ?? "admin",
         details: {
           count: before.length,
           after: { product_handle: data.product_handle, label: data.label ?? null },
@@ -524,7 +557,8 @@ export const getLookbookForSurface = createServerFn({ method: "POST" })
 // image+hotspots are already present.
 export const seedLookbookFromHomepage = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
-  .handler(async () => {
+  .handler(async ({ context }) => {
+
     const { data: layoutRow, error: lErr } = await supabaseAdmin
       .from("homepage_daily_layout")
       .select("id, layout_json")
@@ -606,7 +640,18 @@ export const seedLookbookFromHomepage = createServerFn({ method: "POST" })
       insertedHotspots += rows.length;
     }
 
+    await supabaseAdmin.from("homepage_layout_audit").insert({
+      action: "lookbook_seed_homepage",
+      actor: context.userId ?? "admin",
+      details: {
+        layout_id: layoutRow.id,
+        inserted_images: insertedImages,
+        inserted_hotspots: insertedHotspots,
+        skipped,
+      },
+    });
     return { inserted_images: insertedImages, inserted_hotspots: insertedHotspots, skipped };
+
   });
 
 // ─── Validate hotspot handles against catalog ─────────────────────────
@@ -706,3 +751,81 @@ export const validateLookbookHotspots = createServerFn({ method: "POST" })
     return { total: all.length, checked: handles.length, invalid };
   });
 
+
+// ─── Audit log: hotspot edits + seeding runs ──────────────────────────
+// Reads homepage_layout_audit, scoped to actions emitted by this admin
+// tool. Optional filters narrow by hotspot / image / surface so the
+// detail view can show a per-image change history.
+type JsonValue =
+  | string
+  | number
+  | boolean
+  | null
+  | { [k: string]: JsonValue }
+  | JsonValue[];
+
+export type HotspotAuditRow = {
+  id: string;
+  created_at: string;
+  action: string;
+  actor: string | null;
+  details: JsonValue;
+};
+
+
+export const HOTSPOT_AUDIT_ACTIONS = [
+  "hotspot_create",
+  "hotspot_update",
+  "hotspot_delete",
+  "hotspot_bulk_update",
+  "lookbook_image_create",
+  "lookbook_seed_homepage",
+] as const;
+
+export const listHotspotAudit = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator(
+    (d:
+      | {
+          hotspot_id?: string;
+          lookbook_image_id?: string;
+          surface_kind?: string;
+          surface_slug?: string;
+          limit?: number;
+        }
+      | undefined) =>
+      z
+        .object({
+          hotspot_id: uuid.optional(),
+          lookbook_image_id: uuid.optional(),
+          surface_kind: surfaceKind.optional(),
+          surface_slug: surfaceSlug.optional(),
+          limit: z.number().int().min(1).max(500).default(100),
+        })
+        .parse(d ?? {}),
+  )
+  .handler(async ({ data }) => {
+    let q = supabaseAdmin
+      .from("homepage_layout_audit")
+      .select("id, created_at, action, actor, details")
+      .in("action", HOTSPOT_AUDIT_ACTIONS as unknown as string[])
+      .order("created_at", { ascending: false })
+      .limit(data.limit);
+
+    // jsonb filter on details->>field. Apply the narrowest filter we have.
+    if (data.hotspot_id) {
+      q = q.eq("details->>hotspot_id", data.hotspot_id);
+    } else if (data.lookbook_image_id) {
+      q = q.eq("details->>lookbook_image_id", data.lookbook_image_id);
+    } else if (data.surface_slug) {
+      q = q.eq("details->>surface_slug", data.surface_slug);
+      if (data.surface_kind)
+        q = q.eq("details->>surface_kind", data.surface_kind);
+    } else if (data.surface_kind) {
+      q = q.eq("details->>surface_kind", data.surface_kind);
+    }
+
+    const { data: rows, error } = await q;
+    if (error) throw new Error(error.message);
+    return { items: (rows ?? []) as unknown as HotspotAuditRow[] };
+  });
