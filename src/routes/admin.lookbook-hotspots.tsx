@@ -90,6 +90,8 @@ function AdminLookbookHotspots() {
         </div>
 
         <ValidationPanel onSelect={setSelectedImageId} />
+        <HistoryPanel />
+
 
 
         <Card className="p-4 mb-6">
