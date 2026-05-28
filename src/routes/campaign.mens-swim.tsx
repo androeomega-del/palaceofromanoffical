@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { fetchProducts, type ShopifyProduct } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
 import { CampaignVideo } from "@/components/campaign-video";
-import { EditorialHotspots, type Hotspot } from "@/components/editorial-hotspots";
+import { EditorialHotspots, EditorialHotspotsBySurface, type Hotspot } from "@/components/editorial-hotspots";
 import {
   ShopTheEditEmpty,
   ShopTheEditError,
