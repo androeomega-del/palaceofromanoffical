@@ -1202,3 +1202,250 @@ function SeedFromSourceButton() {
   );
 }
 
+
+// ─── Audit / history panel ─────────────────────────────────────────────
+function actionLabel(action: string): string {
+  switch (action) {
+    case "hotspot_create":
+      return "Hotspot added";
+    case "hotspot_update":
+      return "Hotspot edited";
+    case "hotspot_delete":
+      return "Hotspot removed";
+    case "hotspot_bulk_update":
+      return "Bulk reassign";
+    case "lookbook_image_create":
+      return "Image added";
+    case "lookbook_seed_homepage":
+      return "Seed run";
+    default:
+      return action;
+  }
+}
+
+function shortActor(actor: string | null): string {
+  if (!actor) return "system";
+  if (actor.length >= 8 && actor.includes("-")) return actor.slice(0, 8);
+  return actor;
+}
+
+function relTime(iso: string): string {
+  const t = new Date(iso).getTime();
+  const diff = Math.max(0, Date.now() - t);
+  const m = Math.floor(diff / 60_000);
+  if (m < 1) return "just now";
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  const d = Math.floor(h / 24);
+  if (d < 30) return `${d}d ago`;
+  return new Date(iso).toLocaleDateString();
+}
+
+function AuditDetailsSummary({ row }: { row: HotspotAuditRow }) {
+  const d = (row.details ?? {}) as Record<string, unknown>;
+  if (row.action === "hotspot_update") {
+    const before = (d.before ?? {}) as Record<string, unknown>;
+    const after = (d.after ?? {}) as Record<string, unknown>;
+    return (
+      <span className="font-mono text-[11px]">
+        {String(before.product_handle ?? "?")}
+        <ArrowLeftRight className="inline h-3 w-3 mx-1 opacity-60" />
+        {String(after.product_handle ?? "?")}
+      </span>
+    );
+  }
+  if (row.action === "hotspot_create") {
+    return (
+      <span className="font-mono text-[11px]">
+        + {String(d.product_handle ?? "?")}
+      </span>
+    );
+  }
+  if (row.action === "hotspot_delete") {
+    const removed = (d.removed ?? {}) as Record<string, unknown>;
+    return (
+      <span className="font-mono text-[11px]">
+        − {String(removed.product_handle ?? "?")}
+      </span>
+    );
+  }
+  if (row.action === "hotspot_bulk_update") {
+    const after = (d.after ?? {}) as Record<string, unknown>;
+    return (
+      <span className="font-mono text-[11px]">
+        {String(d.count ?? 0)} →{" "}
+        {String(after.product_handle ?? "?")}
+      </span>
+    );
+  }
+  if (row.action === "lookbook_image_create") {
+    return (
+      <span className="font-mono text-[11px]">
+        {String(d.surface_kind ?? "—")} / {String(d.surface_slug ?? "—")}
+      </span>
+    );
+  }
+  if (row.action === "lookbook_seed_homepage") {
+    return (
+      <span className="text-[11px]">
+        +{String(d.inserted_images ?? 0)} images, +
+        {String(d.inserted_hotspots ?? 0)} hotspots, {String(d.skipped ?? 0)}{" "}
+        skipped
+      </span>
+    );
+  }
+  return null;
+}
+
+function HistoryPanel() {
+  const [open, setOpen] = useState(false);
+  const { data, isFetching, refetch } = useQuery({
+    queryKey: ["hotspot-audit", "global"],
+    queryFn: () => listHotspotAudit({ data: { limit: 100 } }),
+    enabled: open,
+    staleTime: 30_000,
+  });
+
+  return (
+    <Card className="p-4 mb-6">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center justify-between text-left"
+      >
+        <div>
+          <div className="text-[10px] uppercase tracking-[0.3em] text-bronze">
+            Change history
+          </div>
+          <div className="text-sm">
+            Recent hotspot edits, image additions and seeding runs
+          </div>
+        </div>
+        <span className="text-xs text-muted-foreground">
+          {open ? "Hide" : "Show"}
+        </span>
+      </button>
+      {open && (
+        <div className="mt-4">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-xs text-muted-foreground">
+              Last 100 entries across all surfaces.
+            </p>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => refetch()}
+              disabled={isFetching}
+            >
+              {isFetching ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                "Refresh"
+              )}
+            </Button>
+          </div>
+          <AuditList rows={data?.items ?? []} loading={isFetching} />
+        </div>
+      )}
+    </Card>
+  );
+}
+
+function AuditList({
+  rows,
+  loading,
+}: {
+  rows: HotspotAuditRow[];
+  loading: boolean;
+}) {
+  if (loading && rows.length === 0) {
+    return (
+      <div className="py-6 text-center">
+        <Loader2 className="h-4 w-4 animate-spin mx-auto text-bronze" />
+      </div>
+    );
+  }
+  if (rows.length === 0) {
+    return (
+      <p className="text-xs text-muted-foreground py-4">
+        No audit entries yet.
+      </p>
+    );
+  }
+  return (
+    <ul className="divide-y divide-border max-h-[420px] overflow-auto rounded border border-border">
+      {rows.map((r) => {
+        const d = (r.details ?? {}) as Record<string, unknown>;
+        const surfaceKind = (d.surface_kind as string | undefined) ?? null;
+        const surfaceSlug = (d.surface_slug as string | undefined) ?? null;
+        return (
+          <li key={r.id} className="px-3 py-2 text-xs flex items-start gap-3">
+            <div className="w-28 shrink-0 text-muted-foreground">
+              {relTime(r.created_at)}
+            </div>
+            <div className="w-32 shrink-0">
+              <Badge variant="secondary" className="text-[10px]">
+                {actionLabel(r.action)}
+              </Badge>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="truncate">
+                <AuditDetailsSummary row={r} />
+              </div>
+              {(surfaceKind || surfaceSlug) && (
+                <div className="text-[10px] text-muted-foreground truncate">
+                  {surfaceKind ?? "—"} / {surfaceSlug ?? "—"}
+                </div>
+              )}
+            </div>
+            <div
+              className="w-20 shrink-0 text-right text-muted-foreground font-mono"
+              title={r.actor ?? "system"}
+            >
+              {shortActor(r.actor)}
+            </div>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+export function ImageHistoryPanel({
+  imageId,
+}: {
+  imageId: string;
+}) {
+  const { data, isFetching, refetch } = useQuery({
+    queryKey: ["hotspot-audit", "image", imageId],
+    queryFn: () =>
+      listHotspotAudit({ data: { lookbook_image_id: imageId, limit: 50 } }),
+    staleTime: 15_000,
+  });
+  return (
+    <Card className="p-4 mt-4">
+      <div className="flex items-center justify-between mb-3">
+        <div>
+          <div className="text-[10px] uppercase tracking-[0.3em] text-bronze">
+            History
+          </div>
+          <div className="text-sm">Changes to this image and its hotspots</div>
+        </div>
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => refetch()}
+          disabled={isFetching}
+        >
+          {isFetching ? (
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          ) : (
+            "Refresh"
+          )}
+        </Button>
+      </div>
+      <AuditList rows={data?.items ?? []} loading={isFetching} />
+    </Card>
+  );
+}
