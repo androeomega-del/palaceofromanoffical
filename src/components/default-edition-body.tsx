@@ -558,10 +558,12 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
             </Link>
           </div>
           <div className="order-1 md:order-2">
-            <EditorialHotspots
+            <EditorialHotspotsBySurface
+              surfaceKind="editorial"
+              surfaceSlug="may-2026-hero"
               src={editorialHero}
               alt="May 2026 Editorial — Quiet authority"
-              hotspots={[
+              fallbackHotspots={[
                 { x: 80, y: 11, label: "Eyewear", sublabel: "Alexander McQueen Acetate Sunglasses", handle: "alexander-mcqueen-black-acetate-sunglasses" },
                 { x: 47, y: 56, label: "Handbag", sublabel: "Alexander McQueen Bos Taurus Shoulder Bag", handle: "alexander-mcqueen-black-calf-leather-bos-taurus-shoulder-bag" },
                 { x: 22, y: 88, label: "Footwear", sublabel: "Alexander McQueen Chunky Sneakers", handle: "alexander-mcqueen-beige-calf-leather-bos-taurus-chunky-sneakers" },
@@ -571,6 +573,7 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
               Tap the markers to shop the look
             </p>
           </div>
+
         </div>
       </section>
 
