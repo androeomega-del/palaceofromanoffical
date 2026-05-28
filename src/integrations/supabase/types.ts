@@ -1273,6 +1273,22 @@ export type Database = {
       }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
+      validate_lookbook_hotspots: {
+        Args: never
+        Returns: {
+          alt_text: string
+          hotspot_id: string
+          image_url: string
+          label: string
+          lookbook_image_id: string
+          product_handle: string
+          reason: string
+          surface_kind: string
+          surface_slug: string
+          total_hotspots: number
+          unique_handles: number
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
