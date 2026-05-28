@@ -63,10 +63,10 @@ export function EditorialHotspots({ src, alt, hotspots, aspect = "4/5", classNam
         map.set(h, "unavailable");
       } else {
         const variants = q.data.variants?.edges?.map((e) => e.node) ?? [];
-        const anyAvailable =
-          q.data.availableForSale || variants.some((v) => v.availableForSale);
+        const anyAvailable = variants.some((v) => v.availableForSale);
         map.set(h, anyAvailable ? "available" : "unavailable");
       }
+
     });
     return map;
   }, [handleList, productQueries]);
