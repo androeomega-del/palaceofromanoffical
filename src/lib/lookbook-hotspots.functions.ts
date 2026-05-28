@@ -288,7 +288,8 @@ export const updateHotspot = createServerFn({ method: "POST" })
     if (before) {
       await supabaseAdmin.from("homepage_layout_audit").insert({
         action: "hotspot_update",
-        actor: "admin",
+        actor: context.userId ?? "admin",
+
         details: {
           hotspot_id: data.id,
           surface_kind: before.surface_kind,
