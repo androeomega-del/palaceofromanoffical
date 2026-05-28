@@ -37,6 +37,7 @@ import { Route as AccountIndexRouteImport } from './routes/account.index'
 import { Route as SwimSizeGuideRouteImport } from './routes/swim.size-guide'
 import { Route as ProductHandleRouteImport } from './routes/product.$handle'
 import { Route as EditsYachtEditRouteImport } from './routes/edits.yacht-edit'
+import { Route as EditsCharterCapsuleRouteImport } from './routes/edits.charter-capsule'
 import { Route as EditorialWomensEditRouteImport } from './routes/editorial.womens-edit'
 import { Route as EditorialVersaceNowRouteImport } from './routes/editorial.versace-now'
 import { Route as EditorialVersaceRouteImport } from './routes/editorial.versace'
@@ -239,6 +240,11 @@ const ProductHandleRoute = ProductHandleRouteImport.update({
 const EditsYachtEditRoute = EditsYachtEditRouteImport.update({
   id: '/edits/yacht-edit',
   path: '/edits/yacht-edit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EditsCharterCapsuleRoute = EditsCharterCapsuleRouteImport.update({
+  id: '/edits/charter-capsule',
+  path: '/edits/charter-capsule',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EditorialWomensEditRoute = EditorialWomensEditRouteImport.update({
@@ -652,6 +658,7 @@ export interface FileRoutesByFullPath {
   '/editorial/versace': typeof EditorialVersaceRoute
   '/editorial/versace-now': typeof EditorialVersaceNowRoute
   '/editorial/womens-edit': typeof EditorialWomensEditRoute
+  '/edits/charter-capsule': typeof EditsCharterCapsuleRoute
   '/edits/yacht-edit': typeof EditsYachtEditRouteWithChildren
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
@@ -744,6 +751,7 @@ export interface FileRoutesByTo {
   '/editorial/versace': typeof EditorialVersaceRoute
   '/editorial/versace-now': typeof EditorialVersaceNowRoute
   '/editorial/womens-edit': typeof EditorialWomensEditRoute
+  '/edits/charter-capsule': typeof EditsCharterCapsuleRoute
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/account': typeof AccountIndexRoute
@@ -837,6 +845,7 @@ export interface FileRoutesById {
   '/editorial/versace': typeof EditorialVersaceRoute
   '/editorial/versace-now': typeof EditorialVersaceNowRoute
   '/editorial/womens-edit': typeof EditorialWomensEditRoute
+  '/edits/charter-capsule': typeof EditsCharterCapsuleRoute
   '/edits/yacht-edit': typeof EditsYachtEditRouteWithChildren
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
@@ -932,6 +941,7 @@ export interface FileRouteTypes {
     | '/editorial/versace'
     | '/editorial/versace-now'
     | '/editorial/womens-edit'
+    | '/edits/charter-capsule'
     | '/edits/yacht-edit'
     | '/product/$handle'
     | '/swim/size-guide'
@@ -1024,6 +1034,7 @@ export interface FileRouteTypes {
     | '/editorial/versace'
     | '/editorial/versace-now'
     | '/editorial/womens-edit'
+    | '/edits/charter-capsule'
     | '/product/$handle'
     | '/swim/size-guide'
     | '/account'
@@ -1116,6 +1127,7 @@ export interface FileRouteTypes {
     | '/editorial/versace'
     | '/editorial/versace-now'
     | '/editorial/womens-edit'
+    | '/edits/charter-capsule'
     | '/edits/yacht-edit'
     | '/product/$handle'
     | '/swim/size-guide'
@@ -1207,6 +1219,7 @@ export interface RootRouteChildren {
   EditorialVersaceRoute: typeof EditorialVersaceRoute
   EditorialVersaceNowRoute: typeof EditorialVersaceNowRoute
   EditorialWomensEditRoute: typeof EditorialWomensEditRoute
+  EditsCharterCapsuleRoute: typeof EditsCharterCapsuleRoute
   EditsYachtEditRoute: typeof EditsYachtEditRouteWithChildren
   ProductHandleRoute: typeof ProductHandleRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -1421,6 +1434,13 @@ declare module '@tanstack/react-router' {
       path: '/edits/yacht-edit'
       fullPath: '/edits/yacht-edit'
       preLoaderRoute: typeof EditsYachtEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/edits/charter-capsule': {
+      id: '/edits/charter-capsule'
+      path: '/edits/charter-capsule'
+      fullPath: '/edits/charter-capsule'
+      preLoaderRoute: typeof EditsCharterCapsuleRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/editorial/womens-edit': {
@@ -2000,6 +2020,7 @@ const rootRouteChildren: RootRouteChildren = {
   EditorialVersaceRoute: EditorialVersaceRoute,
   EditorialVersaceNowRoute: EditorialVersaceNowRoute,
   EditorialWomensEditRoute: EditorialWomensEditRoute,
+  EditsCharterCapsuleRoute: EditsCharterCapsuleRoute,
   EditsYachtEditRoute: EditsYachtEditRouteWithChildren,
   ProductHandleRoute: ProductHandleRoute,
   AdminIndexRoute: AdminIndexRoute,
