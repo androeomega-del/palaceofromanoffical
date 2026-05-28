@@ -363,6 +363,18 @@ export const generateProductImageForSku = createServerFn({ method: "POST" })
         ? await fetchShopifyCatalogRow(data.sku)
         : await fetchBgCatalogRow(data.sku);
 
+    // ENQUEUE-TIME HANDLE BINDING — resolve the live Shopify handle for
+    // this SKU and persist it on the queue row alongside the SKU. The
+    // shoppable button URL is built from this handle later; it is never
+    // inferred from the generated image.
+    let storedHandle = catalog.handle;
+    const { data: vm } = await supabaseAdmin
+      .from("shopify_variant_map")
+      .select("product_handle")
+      .eq("sku", data.sku)
+      .maybeSingle();
+    if (vm?.product_handle) storedHandle = vm.product_handle;
+
     const prompt = buildProductImagePrompt(catalog, data.override ?? null);
     const bytes = await generateImageBytes(prompt);
     const path = skuToPath(data.source, catalog.sku);
@@ -385,8 +397,8 @@ export const generateProductImageForSku = createServerFn({ method: "POST" })
         {
           sku: catalog.sku,
           source: data.source,
-          handle: catalog.handle,
-          attributes: catalog,
+          handle: storedHandle,
+          attributes: { ...catalog, handle: storedHandle },
           prompt,
           image_url: pub.publicUrl,
           image_path: path,
@@ -399,10 +411,17 @@ export const generateProductImageForSku = createServerFn({ method: "POST" })
       );
     if (dbErr) throw new Error(dbErr.message);
 
+    const domain = process.env.SHOPIFY_STORE_DOMAIN;
+    const shoppableUrl = domain
+      ? `https://${domain}/products/${storedHandle}`
+      : null;
+
     return {
       ok: true as const,
       sku: catalog.sku,
       source: data.source,
+      handle: storedHandle,
+      shoppableUrl,
       imageUrl: pub.publicUrl,
       prompt,
     };
@@ -511,13 +530,9 @@ export const resolveShoppableOverlay = createServerFn({ method: "POST" })
     }
     const attrs = (review.attributes ?? {}) as Partial<CatalogAttributes>;
 
-    // SKU → Shopify handle. Variant map first, fall back to row handle.
-    const { data: vm } = await supabaseAdmin
-      .from("shopify_variant_map")
-      .select("product_handle")
-      .eq("sku", data.sku)
-      .maybeSingle();
-    const resolvedHandle = vm?.product_handle ?? review.handle ?? null;
+    // Handle is the one stored on the queue row at enqueue time — that
+    // value is the SKU↔handle binding. No re-resolution here.
+    const resolvedHandle = review.handle ?? null;
 
     // Label is strictly "[color] [style]" from the catalog record.
     const labelParts = [attrs.color, attrs.style ?? attrs.subcategory]
