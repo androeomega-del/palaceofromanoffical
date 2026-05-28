@@ -308,7 +308,8 @@ export const updateHotspot = createServerFn({ method: "POST" })
 export const deleteHotspot = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
   .inputValidator((d: { id: string }) => z.object({ id: uuid }).parse(d))
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
+
     const { data: before } = await supabaseAdmin
       .from("lookbook_hotspots")
       .select("id, product_handle, label, surface_kind, surface_slug")
