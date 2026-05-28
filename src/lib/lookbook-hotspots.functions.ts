@@ -373,7 +373,7 @@ export const bulkUpdateHotspots = createServerFn({ method: "POST" })
     if (before && before.length) {
       await supabaseAdmin.from("homepage_layout_audit").insert({
         action: "hotspot_bulk_update",
-        actor: "admin",
+        actor: context.userId ?? "admin",
         details: {
           count: before.length,
           after: { product_handle: data.product_handle, label: data.label ?? null },
