@@ -792,6 +792,7 @@ export type Database = {
           reviewed_by: string | null
           reviewer_notes: string | null
           sku: string
+          source: string
           status: string
           updated_at: string
         }
@@ -806,6 +807,7 @@ export type Database = {
           reviewed_by?: string | null
           reviewer_notes?: string | null
           sku: string
+          source?: string
           status?: string
           updated_at?: string
         }
@@ -820,6 +822,7 @@ export type Database = {
           reviewed_by?: string | null
           reviewer_notes?: string | null
           sku?: string
+          source?: string
           status?: string
           updated_at?: string
         }
