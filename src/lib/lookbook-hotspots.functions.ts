@@ -255,7 +255,8 @@ export const updateHotspot = createServerFn({ method: "POST" })
         })
         .parse(d),
   )
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
+
     const patch: {
       product_handle?: string;
       label?: string | null;
