@@ -228,6 +228,31 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "sitemap", type: "application/xml", href: "/sitemap.xml", title: "Sitemap" },
     ],
     scripts: [
+      // --- Plausible Analytics (privacy-first, no cookie banner) ---
+      // Tracks pageviews + outbound clicks against the palaceofromanofficial.com
+      // dashboard at https://plausible.io. Add the domain in your Plausible
+      // account; no key/ID is required client-side.
+      {
+        defer: true,
+        "data-domain": "palaceofromanofficial.com",
+        src: "https://plausible.io/js/script.outbound-links.js",
+      },
+      {
+        children:
+          "window.plausible=window.plausible||function(){(window.plausible.q=window.plausible.q||[]).push(arguments)}",
+      },
+      // --- Google Analytics 4 ---
+      // TODO: replace G-XXXXXXXXXX with the Measurement ID from your GA4 property
+      // (Admin → Data Streams → Web → Measurement ID). Until then GA4 will fail
+      // silently — Plausible will still record traffic.
+      {
+        async: true,
+        src: "https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX",
+      },
+      {
+        children:
+          "window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX',{anonymize_ip:true});",
+      },
       {
         type: "application/ld+json",
         children: JSON.stringify({
