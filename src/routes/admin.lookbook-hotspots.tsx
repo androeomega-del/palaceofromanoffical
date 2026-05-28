@@ -78,8 +78,12 @@ function AdminLookbookHotspots() {
               linked product.
             </p>
           </div>
-          <NewImageDialog />
+          <div className="flex gap-2">
+            <SeedFromSourceButton />
+            <NewImageDialog />
+          </div>
         </div>
+
 
         <Card className="p-4 mb-6">
           <div className="grid sm:grid-cols-2 gap-3">
