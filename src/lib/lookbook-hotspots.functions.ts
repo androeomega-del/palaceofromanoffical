@@ -640,7 +640,18 @@ export const seedLookbookFromHomepage = createServerFn({ method: "POST" })
       insertedHotspots += rows.length;
     }
 
+    await supabaseAdmin.from("homepage_layout_audit").insert({
+      action: "lookbook_seed_homepage",
+      actor: context.userId ?? "admin",
+      details: {
+        layout_id: layoutRow.id,
+        inserted_images: insertedImages,
+        inserted_hotspots: insertedHotspots,
+        skipped,
+      },
+    });
     return { inserted_images: insertedImages, inserted_hotspots: insertedHotspots, skipped };
+
   });
 
 // ─── Validate hotspot handles against catalog ─────────────────────────
