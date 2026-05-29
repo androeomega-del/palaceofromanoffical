@@ -17,6 +17,15 @@ const surfaceKind = z.string().min(1).max(64);
 const surfaceSlug = z.string().min(1).max(255);
 const handle = z.string().min(1).max(255).regex(/^[a-z0-9-]+$/);
 
+const toStoredCoordinate = (value: number) =>
+  Math.max(0, Math.min(1, value > 1 ? value / 100 : value));
+
+const fromStoredHotspot = <T extends { x: number; y: number }>(row: T): T => ({
+  ...row,
+  x: Number(row.x) <= 1 ? Number(row.x) * 100 : Number(row.x),
+  y: Number(row.y) <= 1 ? Number(row.y) * 100 : Number(row.y),
+});
+
 export type LookbookImageRow = {
   id: string;
   surface_kind: string | null;
@@ -129,7 +138,7 @@ export const getLookbookImage = createServerFn({ method: "POST" })
 
     return {
       image: img as LookbookImageRow,
-      hotspots: (spots ?? []) as LookbookHotspotRow[],
+      hotspots: ((spots ?? []) as LookbookHotspotRow[]).map(fromStoredHotspot),
     };
   });
 
@@ -220,8 +229,8 @@ export const createHotspot = createServerFn({ method: "POST" })
       .from("lookbook_hotspots")
       .insert({
         lookbook_image_id: data.lookbook_image_id,
-        x: data.x,
-        y: data.y,
+        x: toStoredCoordinate(data.x),
+        y: toStoredCoordinate(data.y),
         product_handle: data.product_handle,
         label: data.label ?? null,
         surface_kind: img?.surface_kind ?? null,
