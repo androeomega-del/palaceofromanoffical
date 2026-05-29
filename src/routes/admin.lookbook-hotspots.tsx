@@ -58,6 +58,13 @@ export const Route = createFileRoute("/admin/lookbook-hotspots")({
   }),
 });
 
+function resolveLookbookImageSrc(src: string) {
+  const trimmed = src.trim();
+  if (!trimmed) return "";
+  if (trimmed.startsWith("/") || /^https?:\/\//i.test(trimmed)) return trimmed;
+  return `/${trimmed}`;
+}
+
 function AdminLookbookHotspots() {
   const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
   const [filterKind, setFilterKind] = useState<string>("");
@@ -236,10 +243,11 @@ function ImagesGrid({
         >
           <div className="aspect-[4/5] bg-muted relative">
             <img
-              src={img.image_url}
+              src={resolveLookbookImageSrc(img.image_url)}
               alt={img.alt_text ?? ""}
               className="w-full h-full object-cover"
-              loading="lazy"
+              loading="eager"
+              decoding="async"
             />
             <Badge
               variant={img.hotspot_count > 0 ? "default" : "secondary"}
@@ -384,7 +392,13 @@ function ImageDetailView({ imageId, onBack }: { imageId: string; onBack: () => v
             }`}
             onClick={handleCanvasClick}
           >
-            <img src={image.image_url} alt={image.alt_text ?? ""} className="w-full h-auto block" />
+            <img
+              src={resolveLookbookImageSrc(image.image_url)}
+              alt={image.alt_text ?? ""}
+              className="w-full h-auto block"
+              loading="eager"
+              decoding="async"
+            />
             {hotspots.map((h) => {
               const isSelected = selectedHotspotId === h.id;
               const isChecked = bulkIds.has(h.id);
