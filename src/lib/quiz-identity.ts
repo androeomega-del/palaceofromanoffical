@@ -68,7 +68,11 @@ export function getStoredQuizEmail(): string | null {
  * Persist the canonical email + unlock flag together. Always normalises
  * first so the stored value matches what the server keyed the unlock by.
  */
-export function setStoredQuizUnlock(email: string, answers: QuizAnswers) {
+export function setStoredQuizUnlock(
+  email: string,
+  answers: QuizAnswers,
+  token?: { token: string; iat: number },
+) {
   const ls = safeLocalStorage();
   if (!ls) return;
   const normalized = normalizeEmail(email);
@@ -77,7 +81,30 @@ export function setStoredQuizUnlock(email: string, answers: QuizAnswers) {
     ls.setItem(QUIZ_UNLOCK_KEY, "1");
     ls.setItem(QUIZ_EMAIL_KEY, normalized);
     ls.setItem(QUIZ_ANSWERS_KEY, JSON.stringify(answers));
+    if (token) {
+      ls.setItem(QUIZ_TOKEN_KEY, JSON.stringify(token));
+    }
   } catch {}
+}
+
+export function getStoredQuizToken(): { token: string; iat: number } | null {
+  const ls = safeLocalStorage();
+  if (!ls) return null;
+  try {
+    const raw = ls.getItem(QUIZ_TOKEN_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (
+      parsed &&
+      typeof parsed.token === "string" &&
+      typeof parsed.iat === "number"
+    ) {
+      return parsed;
+    }
+    return null;
+  } catch {
+    return null;
+  }
 }
 
 export function getStoredQuizAnswers(): QuizAnswers | null {
@@ -97,5 +124,7 @@ export function clearStoredQuizUnlock() {
   if (!ls) return;
   try {
     ls.removeItem(QUIZ_UNLOCK_KEY);
+    ls.removeItem(QUIZ_TOKEN_KEY);
   } catch {}
 }
+
