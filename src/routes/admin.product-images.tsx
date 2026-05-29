@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { adminBeforeLoad } from "@/lib/admin-route-guard";
+import { callAdminServerFn } from "@/lib/admin-server-call";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -54,7 +55,7 @@ function AdminProductImages() {
   const queueQ = useQuery({
     queryKey: ["product-image-queue", source, filter],
     queryFn: () =>
-      listProductImageQueue({ data: { source, status: filter, limit: 40 } }),
+      callAdminServerFn(listProductImageQueue, { data: { source, status: filter, limit: 40 } }),
     staleTime: 30_000,
   });
 
@@ -156,7 +157,7 @@ function ReviewRow({ item }: { item: QueueItem }) {
 
   const genMut = useMutation({
     mutationFn: () =>
-      generateProductImageForSku({
+      callAdminServerFn(generateProductImageForSku, {
         data: { sku: item.sku, source: item.source, override: notes || undefined },
       }),
     onSuccess: () => {
@@ -168,7 +169,7 @@ function ReviewRow({ item }: { item: QueueItem }) {
 
   const reviewMut = useMutation({
     mutationFn: (decision: "approved" | "rejected") =>
-      reviewProductImage({
+      callAdminServerFn(reviewProductImage, {
         data: { sku: item.sku, source: item.source, decision, notes },
       }),
     onSuccess: (_d, decision) => {
@@ -336,7 +337,7 @@ function ShopifyDebugPanel() {
 
   const probeMut = useMutation({
     mutationFn: () =>
-      shopifyAdminDebugProbe({
+      callAdminServerFn(shopifyAdminDebugProbe, {
         data: handle.trim() ? { handle: handle.trim() } : {},
       }),
     onSuccess: (r) => setResult(r),
@@ -434,7 +435,7 @@ function ShoppableOverlayPreview({
 }) {
   const q = useQuery({
     queryKey: ["shoppable-overlay", source, sku],
-    queryFn: () => resolveShoppableOverlay({ data: { sku, source } }),
+    queryFn: () => callAdminServerFn(resolveShoppableOverlay, { data: { sku, source } }),
     staleTime: 60_000,
   });
 

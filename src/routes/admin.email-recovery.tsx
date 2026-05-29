@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { adminBeforeLoad } from "@/lib/admin-route-guard";
 import { getEmailRecoveryDashboard } from "@/lib/email-recovery-dashboard.functions";
+import { callAdminServerFn } from "@/lib/admin-server-call";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, RefreshCw, AlertTriangle, CheckCircle2 } from "lucide-react";
@@ -69,7 +70,7 @@ function formatWhen(iso: string): string {
 function AdminEmailRecovery() {
   const { data, isLoading, isFetching, error, refetch } = useQuery({
     queryKey: ["admin", "email-recovery"],
-    queryFn: () => getEmailRecoveryDashboard(),
+    queryFn: () => callAdminServerFn(getEmailRecoveryDashboard),
     refetchInterval: 60_000,
     staleTime: 30_000,
   });

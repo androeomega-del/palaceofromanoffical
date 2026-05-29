@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
 import { adminBeforeLoad } from "@/lib/admin-route-guard";
+import { callAdminServerFn } from "@/lib/admin-server-call";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -140,7 +141,7 @@ function SurfaceKindFilter({
   // Cached by react-query so the kinds menu doesn't re-fetch on every keystroke.
   const { data: allImages } = useQuery({
     queryKey: ["lookbook-images", "all-for-kinds"],
-    queryFn: () => listLookbookImages({ data: {} }),
+    queryFn: () => callAdminServerFn(listLookbookImages, { data: {} }),
     staleTime: 60_000,
   });
 
@@ -211,7 +212,7 @@ function ImagesGrid({
   const { data, isLoading } = useQuery({
     queryKey: ["lookbook-images", filterKind, searchTerm],
     queryFn: () =>
-      listLookbookImages({
+      callAdminServerFn(listLookbookImages, {
         data: {
           surface_kind: filterKind.trim() || undefined,
           search: searchTerm.trim() || undefined,
@@ -295,7 +296,7 @@ function ImageDetailView({
   const qc = useQueryClient();
   const { data, isLoading } = useQuery({
     queryKey: ["lookbook-image", imageId],
-    queryFn: () => getLookbookImage({ data: { id: imageId } }),
+    queryFn: () => callAdminServerFn(getLookbookImage, { data: { id: imageId } }),
   });
   const [selectedHotspotId, setSelectedHotspotId] = useState<string | null>(
     null,
@@ -326,7 +327,7 @@ function ImageDetailView({
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
     setAddMode(false);
-    void createHotspot({
+    void callAdminServerFn(createHotspot, {
       data: {
         lookbook_image_id: imageId,
         x: Math.round(x * 100) / 100,
@@ -537,7 +538,7 @@ function HotspotEditor({
   const { data: currentProduct } = useQuery({
     queryKey: ["catalog-product", pendingHandle],
     queryFn: () =>
-      getCatalogProductByHandle({ data: { handle: pendingHandle } }).catch(
+      callAdminServerFn(getCatalogProductByHandle, { data: { handle: pendingHandle } }).catch(
         () => ({ product: null }),
       ),
     enabled: !!pendingHandle && pendingHandle !== "placeholder",
@@ -545,13 +546,13 @@ function HotspotEditor({
 
   const { data: searchResults, isFetching: searching } = useQuery({
     queryKey: ["catalog-search", query],
-    queryFn: () => searchCatalogForHotspot({ data: { q: query, limit: 20 } }),
+    queryFn: () => callAdminServerFn(searchCatalogForHotspot, { data: { q: query, limit: 20 } }),
     enabled: query.trim().length >= 2,
   });
 
   const saveMutation = useMutation({
     mutationFn: () =>
-      updateHotspot({
+      callAdminServerFn(updateHotspot, {
         data: {
           id: hotspot.id,
           product_handle: pendingHandle,
@@ -566,7 +567,7 @@ function HotspotEditor({
   });
 
   const deleteMutation = useMutation({
-    mutationFn: () => deleteHotspot({ data: { id: hotspot.id } }),
+    mutationFn: () => callAdminServerFn(deleteHotspot, { data: { id: hotspot.id } }),
     onSuccess: () => {
       toast.success("Hotspot deleted");
       onChanged();
@@ -785,13 +786,13 @@ function BulkReassignPanel({
 
   const { data: searchResults, isFetching: searching } = useQuery({
     queryKey: ["catalog-search", query],
-    queryFn: () => searchCatalogForHotspot({ data: { q: query, limit: 20 } }),
+    queryFn: () => callAdminServerFn(searchCatalogForHotspot, { data: { q: query, limit: 20 } }),
     enabled: query.trim().length >= 2,
   });
 
   const mutation = useMutation({
     mutationFn: () =>
-      bulkUpdateHotspots({
+      callAdminServerFn(bulkUpdateHotspots, {
         data: {
           ids,
           product_handle: pendingHandle,
@@ -945,7 +946,7 @@ function ValidationPanel({ onSelect }: { onSelect: (id: string) => void }) {
   const [open, setOpen] = useState(false);
   const { data, isFetching, refetch, isError, error } = useQuery({
     queryKey: ["lookbook-validate"],
-    queryFn: () => validateLookbookHotspots({}),
+    queryFn: () => callAdminServerFn(validateLookbookHotspots),
     enabled: open,
     staleTime: 30_000,
   });
@@ -1070,7 +1071,7 @@ function NewImageDialog() {
 
   const mutation = useMutation({
     mutationFn: () =>
-      createLookbookImage({
+      callAdminServerFn(createLookbookImage, {
         data: {
           surface_kind: form.surface_kind.trim(),
           surface_slug: form.surface_slug.trim(),
@@ -1188,14 +1189,14 @@ function NewImageDialog() {
 function SeedFromSourceButton() {
   const qc = useQueryClient();
   const seedHomepage = useMutation({
-    mutationFn: () => seedLookbookFromHomepage({}),
+    mutationFn: () => callAdminServerFn(seedLookbookFromHomepage),
   });
 
   async function seedStaticSurfaces() {
     // One catalog read up-front instead of one per surface; then create
     // each surface (image + its hotspots) in parallel. The previous
     // serial loop was the main bottleneck of "Seed from source".
-    const existingAll = await listLookbookImages({ data: {} });
+    const existingAll = await callAdminServerFn(listLookbookImages, { data: {} });
     const existingSlugs = new Set(
       existingAll.items
         .map((i) => `${i.surface_kind ?? ""}::${i.surface_slug ?? ""}`),
@@ -1212,7 +1213,7 @@ function SeedFromSourceButton() {
 
     const results = await Promise.all(
       toCreate.map(async (s) => {
-        const { image } = await createLookbookImage({
+        const { image } = await callAdminServerFn(createLookbookImage, {
           data: {
             surface_kind: s.surface_kind,
             surface_slug: s.surface_slug,
@@ -1224,7 +1225,7 @@ function SeedFromSourceButton() {
         });
         await Promise.all(
           s.fallbackHotspots.map((h) =>
-            createHotspot({
+            callAdminServerFn(createHotspot, {
               data: {
                 lookbook_image_id: image.id,
                 x: h.x,
@@ -1381,7 +1382,7 @@ function HistoryPanel() {
   const [open, setOpen] = useState(false);
   const { data, isFetching, refetch } = useQuery({
     queryKey: ["hotspot-audit", "global"],
-    queryFn: () => listHotspotAudit({ data: { limit: 100 } }),
+    queryFn: () => callAdminServerFn(listHotspotAudit, { data: { limit: 100 } }),
     enabled: open,
     staleTime: 30_000,
   });
@@ -1502,7 +1503,7 @@ export function ImageHistoryPanel({
   const { data, isFetching, refetch } = useQuery({
     queryKey: ["hotspot-audit", "surface", surfaceKind, surfaceSlug],
     queryFn: () =>
-      listHotspotAudit({
+      callAdminServerFn(listHotspotAudit, {
         data: {
           surface_kind: surfaceKind ?? undefined,
           surface_slug: surfaceSlug ?? undefined,
