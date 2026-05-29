@@ -253,7 +253,7 @@ export const createHotspot = createServerFn({ method: "POST" })
         y: data.y,
       },
     });
-    return { hotspot: row as LookbookHotspotRow };
+    return { hotspot: fromStoredHotspot(row as LookbookHotspotRow) };
   });
 
 
@@ -555,7 +555,7 @@ export const getLookbookForSurface = createServerFn({ method: "POST" })
         | "alt_text"
         | "sort_order"
       >,
-      hotspots: (spots ?? []) as LookbookHotspotRow[],
+      hotspots: ((spots ?? []) as LookbookHotspotRow[]).map(fromStoredHotspot),
     };
   });
 
@@ -634,8 +634,8 @@ export const seedLookbookFromHomepage = createServerFn({ method: "POST" })
 
       const rows = b.hotspots.map((h, i) => ({
         lookbook_image_id: imgRow!.id,
-        x: h.x,
-        y: h.y,
+        x: toStoredCoordinate(h.x),
+        y: toStoredCoordinate(h.y),
         product_handle: h.handle,
         label: h.label ?? null,
         sort_order: i,
