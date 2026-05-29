@@ -265,17 +265,19 @@ export const getQuizUnlock = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => LookupInput.parse(input))
   .handler(async ({ data }) => {
     const email = data.email.trim().toLowerCase();
+    // Require a signed token issued at unlock time. Without it, the caller
+    // cannot prove they own the email, so we return a uniform negative
+    // response — preventing email enumeration via this endpoint.
+    if (!verifyQuizToken(email, data.iat, data.token)) {
+      return { unlocked: false as const };
+    }
     const { data: row, error } = await supabaseAdmin
       .from("quiz_unlocks")
       .select("answers, source, created_at, updated_at")
       .eq("email", email)
       .maybeSingle();
 
-    if (error) {
-      console.error("[quiz-unlock] lookup failed:", error.message);
-      return { unlocked: false as const };
-    }
-    if (!row) return { unlocked: false as const };
+    if (error || !row) return { unlocked: false as const };
 
     const parsed = AnswersSchema.safeParse(row.answers ?? {});
     return {
@@ -284,6 +286,7 @@ export const getQuizUnlock = createServerFn({ method: "POST" })
       updatedAt: row.updated_at,
     };
   });
+
 
 /**
  * Server-side lookbook view tracking.
