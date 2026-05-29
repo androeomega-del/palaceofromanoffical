@@ -1197,14 +1197,17 @@ function SeedFromSourceButton() {
     // each surface (image + its hotspots) in parallel. The previous
     // serial loop was the main bottleneck of "Seed from source".
     const existingAll = await callAdminServerFn(listLookbookImages, { data: {} });
-    const existingSlugs = new Set(
-      existingAll.items
-        .map((i) => `${i.surface_kind ?? ""}::${i.surface_slug ?? ""}`),
+    const existingBySlug = new Map(
+      existingAll.items.map((i) => [
+        `${i.surface_kind ?? ""}::${i.surface_slug ?? ""}`,
+        { id: i.id, hotspotCount: i.hotspot_count },
+      ]),
     );
 
     let skipped = 0;
     const toCreate = STATIC_HOTSPOT_SURFACES.filter((s) => {
-      if (existingSlugs.has(`${s.surface_kind}::${s.surface_slug}`)) {
+      const existing = existingBySlug.get(`${s.surface_kind}::${s.surface_slug}`);
+      if (existing && existing.hotspotCount > 0) {
         skipped++;
         return false;
       }
@@ -1213,7 +1216,8 @@ function SeedFromSourceButton() {
 
     const results = await Promise.all(
       toCreate.map(async (s) => {
-        const { image } = await callAdminServerFn(createLookbookImage, {
+        const existing = existingBySlug.get(`${s.surface_kind}::${s.surface_slug}`);
+        const imageId = existing?.id ?? (await callAdminServerFn(createLookbookImage, {
           data: {
             surface_kind: s.surface_kind,
             surface_slug: s.surface_slug,
@@ -1222,12 +1226,12 @@ function SeedFromSourceButton() {
               : `https://palaceofromanofficial.com${s.image_url}`,
             alt_text: s.alt_text,
           },
-        });
+        })).image.id;
         await Promise.all(
           s.fallbackHotspots.map((h) =>
             callAdminServerFn(createHotspot, {
               data: {
-                lookbook_image_id: image.id,
+                lookbook_image_id: imageId,
                 x: h.x,
                 y: h.y,
                 product_handle: h.handle,
