@@ -60,9 +60,7 @@ import { Route as CollectionsDesignerCrossbodyBagsRouteImport } from './routes/c
 import { Route as CollectionsDesignerBeltsRouteImport } from './routes/collections.designer-belts'
 import { Route as CollectionsCashmereSweatersRouteImport } from './routes/collections.cashmere-sweaters'
 import { Route as CollectionsHandleRouteImport } from './routes/collections.$handle'
-import { Route as CampaignSummer2026RouteImport } from './routes/campaign.summer-2026'
 import { Route as CampaignMensSwimRouteImport } from './routes/campaign.mens-swim'
-import { Route as BriefSummer2026RouteImport } from './routes/brief.summer-2026'
 import { Route as BrandVendorRouteImport } from './routes/brand.$vendor'
 import { Route as AdminTrendingBrandsRouteImport } from './routes/admin.trending-brands'
 import { Route as AdminShopifySyncRouteImport } from './routes/admin.shopify-sync'
@@ -372,19 +370,9 @@ const CollectionsHandleRoute = CollectionsHandleRouteImport.update({
   path: '/collections/$handle',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CampaignSummer2026Route = CampaignSummer2026RouteImport.update({
-  id: '/campaign/summer-2026',
-  path: '/campaign/summer-2026',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const CampaignMensSwimRoute = CampaignMensSwimRouteImport.update({
   id: '/campaign/mens-swim',
   path: '/campaign/mens-swim',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BriefSummer2026Route = BriefSummer2026RouteImport.update({
-  id: '/brief/summer-2026',
-  path: '/brief/summer-2026',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BrandVendorRoute = BrandVendorRouteImport.update({
@@ -668,9 +656,7 @@ export interface FileRoutesByFullPath {
   '/admin/shopify-sync': typeof AdminShopifySyncRoute
   '/admin/trending-brands': typeof AdminTrendingBrandsRoute
   '/brand/$vendor': typeof BrandVendorRoute
-  '/brief/summer-2026': typeof BriefSummer2026Route
   '/campaign/mens-swim': typeof CampaignMensSwimRoute
-  '/campaign/summer-2026': typeof CampaignSummer2026Route
   '/collections/$handle': typeof CollectionsHandleRoute
   '/collections/cashmere-sweaters': typeof CollectionsCashmereSweatersRoute
   '/collections/designer-belts': typeof CollectionsDesignerBeltsRoute
@@ -766,9 +752,7 @@ export interface FileRoutesByTo {
   '/admin/shopify-sync': typeof AdminShopifySyncRoute
   '/admin/trending-brands': typeof AdminTrendingBrandsRoute
   '/brand/$vendor': typeof BrandVendorRoute
-  '/brief/summer-2026': typeof BriefSummer2026Route
   '/campaign/mens-swim': typeof CampaignMensSwimRoute
-  '/campaign/summer-2026': typeof CampaignSummer2026Route
   '/collections/$handle': typeof CollectionsHandleRoute
   '/collections/cashmere-sweaters': typeof CollectionsCashmereSweatersRoute
   '/collections/designer-belts': typeof CollectionsDesignerBeltsRoute
@@ -865,9 +849,7 @@ export interface FileRoutesById {
   '/admin/shopify-sync': typeof AdminShopifySyncRoute
   '/admin/trending-brands': typeof AdminTrendingBrandsRoute
   '/brand/$vendor': typeof BrandVendorRoute
-  '/brief/summer-2026': typeof BriefSummer2026Route
   '/campaign/mens-swim': typeof CampaignMensSwimRoute
-  '/campaign/summer-2026': typeof CampaignSummer2026Route
   '/collections/$handle': typeof CollectionsHandleRoute
   '/collections/cashmere-sweaters': typeof CollectionsCashmereSweatersRoute
   '/collections/designer-belts': typeof CollectionsDesignerBeltsRoute
@@ -966,9 +948,7 @@ export interface FileRouteTypes {
     | '/admin/shopify-sync'
     | '/admin/trending-brands'
     | '/brand/$vendor'
-    | '/brief/summer-2026'
     | '/campaign/mens-swim'
-    | '/campaign/summer-2026'
     | '/collections/$handle'
     | '/collections/cashmere-sweaters'
     | '/collections/designer-belts'
@@ -1064,9 +1044,7 @@ export interface FileRouteTypes {
     | '/admin/shopify-sync'
     | '/admin/trending-brands'
     | '/brand/$vendor'
-    | '/brief/summer-2026'
     | '/campaign/mens-swim'
-    | '/campaign/summer-2026'
     | '/collections/$handle'
     | '/collections/cashmere-sweaters'
     | '/collections/designer-belts'
@@ -1162,9 +1140,7 @@ export interface FileRouteTypes {
     | '/admin/shopify-sync'
     | '/admin/trending-brands'
     | '/brand/$vendor'
-    | '/brief/summer-2026'
     | '/campaign/mens-swim'
-    | '/campaign/summer-2026'
     | '/collections/$handle'
     | '/collections/cashmere-sweaters'
     | '/collections/designer-belts'
@@ -1259,9 +1235,7 @@ export interface RootRouteChildren {
   AdminShopifySyncRoute: typeof AdminShopifySyncRoute
   AdminTrendingBrandsRoute: typeof AdminTrendingBrandsRoute
   BrandVendorRoute: typeof BrandVendorRoute
-  BriefSummer2026Route: typeof BriefSummer2026Route
   CampaignMensSwimRoute: typeof CampaignMensSwimRoute
-  CampaignSummer2026Route: typeof CampaignSummer2026Route
   CollectionsHandleRoute: typeof CollectionsHandleRoute
   CollectionsCashmereSweatersRoute: typeof CollectionsCashmereSweatersRoute
   CollectionsDesignerBeltsRoute: typeof CollectionsDesignerBeltsRoute
@@ -1662,25 +1636,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CollectionsHandleRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/campaign/summer-2026': {
-      id: '/campaign/summer-2026'
-      path: '/campaign/summer-2026'
-      fullPath: '/campaign/summer-2026'
-      preLoaderRoute: typeof CampaignSummer2026RouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/campaign/mens-swim': {
       id: '/campaign/mens-swim'
       path: '/campaign/mens-swim'
       fullPath: '/campaign/mens-swim'
       preLoaderRoute: typeof CampaignMensSwimRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/brief/summer-2026': {
-      id: '/brief/summer-2026'
-      path: '/brief/summer-2026'
-      fullPath: '/brief/summer-2026'
-      preLoaderRoute: typeof BriefSummer2026RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/brand/$vendor': {
@@ -2099,9 +2059,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminShopifySyncRoute: AdminShopifySyncRoute,
   AdminTrendingBrandsRoute: AdminTrendingBrandsRoute,
   BrandVendorRoute: BrandVendorRoute,
-  BriefSummer2026Route: BriefSummer2026Route,
   CampaignMensSwimRoute: CampaignMensSwimRoute,
-  CampaignSummer2026Route: CampaignSummer2026Route,
   CollectionsHandleRoute: CollectionsHandleRoute,
   CollectionsCashmereSweatersRoute: CollectionsCashmereSweatersRoute,
   CollectionsDesignerBeltsRoute: CollectionsDesignerBeltsRoute,
