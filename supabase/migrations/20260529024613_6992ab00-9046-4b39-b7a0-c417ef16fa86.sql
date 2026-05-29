@@ -1,0 +1,1 @@
+DELETE FROM public.lookbook_hotspots WHERE id = '7d78b8ea-76b5-4b51-a53f-00dfe80e6d77';
