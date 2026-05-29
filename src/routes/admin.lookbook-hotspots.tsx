@@ -241,7 +241,10 @@ function ImagesGrid({
           className="overflow-hidden cursor-pointer hover:border-bronze/50 transition-colors"
           onClick={() => onSelect(img.id)}
         >
-          <div className="aspect-[4/5] bg-muted relative">
+          <div
+            className="aspect-[4/5] bg-muted bg-cover bg-center relative"
+            style={{ backgroundImage: `url(${resolveLookbookImageSrc(img.image_url)})` }}
+          >
             <img
               src={resolveLookbookImageSrc(img.image_url)}
               alt={img.alt_text ?? ""}
@@ -387,9 +390,10 @@ function ImageDetailView({ imageId, onBack }: { imageId: string; onBack: () => v
       <div className="grid lg:grid-cols-[1fr_400px] gap-6 p-6 max-w-[1600px] mx-auto">
         <div>
           <div
-            className={`relative bg-muted rounded-md overflow-hidden ${
+            className={`relative bg-muted bg-cover bg-center rounded-md overflow-hidden ${
               addMode ? "cursor-crosshair" : ""
             }`}
+            style={{ backgroundImage: `url(${resolveLookbookImageSrc(image.image_url)})` }}
             onClick={handleCanvasClick}
           >
             <img
