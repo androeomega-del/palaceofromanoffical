@@ -278,7 +278,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "@type": "Organization",
           name: "Palace of Roman",
           url: "https://palaceofromanofficial.com",
-          logo: "https://palaceofromanofficial.com/favicon.ico",
+          logo: "https://palaceofromanofficial.com/brand/logo-wordmark.png",
           description: "Curated multi-brand luxury fashion retailer offering premium designer clothing, shoes, accessories and jewelry from 500+ houses including Gucci, Prada, Armani and Versace. Ships worldwide.",
           email: "concierge@palaceofromanofficial.com",
           sameAs: [
