@@ -17,6 +17,8 @@ export const QUIZ_UNLOCK_KEY = "por_quiz_unlocked_v1";
 export const QUIZ_EMAIL_KEY = "por_quiz_email_v1";
 export const QUIZ_ANSWERS_KEY = "por_quiz_answers_v1";
 export const QUIZ_SESSION_KEY = "por_quiz_session_v1";
+export const QUIZ_TOKEN_KEY = "por_quiz_token_v1";
+
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
