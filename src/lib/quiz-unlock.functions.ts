@@ -298,6 +298,13 @@ export const recordLookbookView = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const email = data.email.trim().toLowerCase();
 
+    // Require a signed token so this endpoint can't be used to enumerate
+    // which addresses are subscribers. Return a uniform negative response
+    // regardless of whether the token, the email, or the unlock is missing.
+    if (!verifyQuizToken(email, data.iat, data.token)) {
+      return { recorded: false as const, reason: "unauthorized" as const };
+    }
+
     // Verify the unlock exists server-side — never trust localStorage.
     const { data: unlock, error: lookupErr } = await supabaseAdmin
       .from("quiz_unlocks")
@@ -305,13 +312,11 @@ export const recordLookbookView = createServerFn({ method: "POST" })
       .eq("email", email)
       .maybeSingle();
 
-    if (lookupErr) {
-      console.error("[lookbook-view] lookup failed:", lookupErr.message);
-      return { recorded: false as const, reason: "lookup_error" };
+    if (lookupErr || !unlock) {
+      if (lookupErr) console.error("[lookbook-view] lookup failed:", lookupErr.message);
+      return { recorded: false as const, reason: "unauthorized" as const };
     }
-    if (!unlock) {
-      return { recorded: false as const, reason: "no_unlock" };
-    }
+
 
     // Record the funnel event server-side.
     const { error } = await supabaseAdmin.from("quiz_funnel_events").insert({
