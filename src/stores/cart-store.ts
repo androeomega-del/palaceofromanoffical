@@ -240,6 +240,8 @@ export const useCartStore = create<CartStore>()(
           return false;
         } finally {
           set({ isLoading: false });
+          // Revalidate price/availability/quantity against Shopify (background).
+          void get().syncCart();
         }
       },
 
@@ -257,6 +259,7 @@ export const useCartStore = create<CartStore>()(
           } else if (r.cartNotFound) clearCart();
         } finally {
           set({ isLoading: false });
+          void get().syncCart();
         }
       },
 
@@ -283,6 +286,7 @@ export const useCartStore = create<CartStore>()(
           } else if (r.cartNotFound) clearCart();
         } finally {
           set({ isLoading: false });
+          void get().syncCart();
         }
       },
 
