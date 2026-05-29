@@ -130,7 +130,10 @@ async function sendGatedEmail(
 
 const LookupInput = z.object({
   email: z.string().min(5).max(320).email(),
+  token: z.string().min(8).max(256),
+  iat: z.number().int().positive(),
 });
+
 
 const EVENT_TYPES = [
   "quiz_started",
