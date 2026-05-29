@@ -4,6 +4,8 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { sendGmail } from "./gmail-send";
 import { renderWelcomeEmail } from "./welcome-email-template";
 import { renderLookbookUnlockEmail } from "./lookbook-unlock-email-template";
+import { issueQuizToken, verifyQuizToken } from "./quiz-token.server";
+
 
 const AnswersSchema = z.object({
   gender: z.enum(["Women", "Men", "Unisex"]).optional(),
@@ -128,7 +130,10 @@ async function sendGatedEmail(
 
 const LookupInput = z.object({
   email: z.string().min(5).max(320).email(),
+  token: z.string().min(8).max(256),
+  iat: z.number().int().positive(),
 });
+
 
 const EVENT_TYPES = [
   "quiz_started",
@@ -152,11 +157,14 @@ const FunnelInput = z.object({
 
 const LookbookViewInput = z.object({
   email: z.string().min(5).max(320).email(),
+  token: z.string().min(8).max(256),
+  iat: z.number().int().positive(),
   answers: AnswersSchema.optional(),
   sessionId: z.string().max(64).optional(),
   pagePath: z.string().max(500).optional(),
   userAgent: z.string().max(500).optional(),
 });
+
 
 /**
  * Server-side unlock: subscribes the email to the Atelier List AND records
@@ -237,12 +245,16 @@ export const unlockQuizLookbook = createServerFn({ method: "POST" })
       lookbook.text,
     );
 
+    const { token, iat } = issueQuizToken(email);
     return {
       ok: true as const,
       already: !isNewSubscriber,
       answers: data.answers,
+      token,
+      iat,
     };
   });
+
 
 /**
  * Public lookup: returns the saved answers if the email has an unlock on
@@ -253,17 +265,19 @@ export const getQuizUnlock = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => LookupInput.parse(input))
   .handler(async ({ data }) => {
     const email = data.email.trim().toLowerCase();
+    // Require a signed token issued at unlock time. Without it, the caller
+    // cannot prove they own the email, so we return a uniform negative
+    // response — preventing email enumeration via this endpoint.
+    if (!verifyQuizToken(email, data.iat, data.token)) {
+      return { unlocked: false as const };
+    }
     const { data: row, error } = await supabaseAdmin
       .from("quiz_unlocks")
       .select("answers, source, created_at, updated_at")
       .eq("email", email)
       .maybeSingle();
 
-    if (error) {
-      console.error("[quiz-unlock] lookup failed:", error.message);
-      return { unlocked: false as const };
-    }
-    if (!row) return { unlocked: false as const };
+    if (error || !row) return { unlocked: false as const };
 
     const parsed = AnswersSchema.safeParse(row.answers ?? {});
     return {
@@ -272,6 +286,7 @@ export const getQuizUnlock = createServerFn({ method: "POST" })
       updatedAt: row.updated_at,
     };
   });
+
 
 /**
  * Server-side lookbook view tracking.
@@ -283,6 +298,13 @@ export const recordLookbookView = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const email = data.email.trim().toLowerCase();
 
+    // Require a signed token so this endpoint can't be used to enumerate
+    // which addresses are subscribers. Return a uniform negative response
+    // regardless of whether the token, the email, or the unlock is missing.
+    if (!verifyQuizToken(email, data.iat, data.token)) {
+      return { recorded: false as const, reason: "unauthorized" as const };
+    }
+
     // Verify the unlock exists server-side — never trust localStorage.
     const { data: unlock, error: lookupErr } = await supabaseAdmin
       .from("quiz_unlocks")
@@ -290,13 +312,11 @@ export const recordLookbookView = createServerFn({ method: "POST" })
       .eq("email", email)
       .maybeSingle();
 
-    if (lookupErr) {
-      console.error("[lookbook-view] lookup failed:", lookupErr.message);
-      return { recorded: false as const, reason: "lookup_error" };
+    if (lookupErr || !unlock) {
+      if (lookupErr) console.error("[lookbook-view] lookup failed:", lookupErr.message);
+      return { recorded: false as const, reason: "unauthorized" as const };
     }
-    if (!unlock) {
-      return { recorded: false as const, reason: "no_unlock" };
-    }
+
 
     // Record the funnel event server-side.
     const { error } = await supabaseAdmin.from("quiz_funnel_events").insert({

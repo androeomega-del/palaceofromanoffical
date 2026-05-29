@@ -189,10 +189,12 @@ import {
   QUIZ_SESSION_KEY,
   getStoredQuizEmail,
   getStoredQuizAnswers,
+  getStoredQuizToken,
   setStoredQuizUnlock,
   clearStoredQuizUnlock,
   normalizeEmail,
 } from "@/lib/quiz-identity";
+
 
 function getOrCreateSessionId(): string {
   if (typeof window === "undefined") return "";
@@ -392,8 +394,20 @@ function StyleQuizPage() {
     if (storedEmail) setEmail(storedEmail);
 
     if (!storedEmail) return;
+    const storedToken = getStoredQuizToken();
+    if (!storedToken) {
+      // No signed token — can't verify, treat as not unlocked.
+      clearStoredQuizUnlock();
+      return;
+    }
 
-    void lookupUnlock({ data: { email: storedEmail } })
+    void lookupUnlock({
+      data: {
+        email: storedEmail,
+        token: storedToken.token,
+        iat: storedToken.iat,
+      },
+    })
       .then((res) => {
         if (!res.unlocked) {
           // localStorage flag was stale — clear it.
@@ -414,6 +428,7 @@ function StyleQuizPage() {
         fireTrack("quiz_unlock_resumed", { email: storedEmail });
       })
       .catch(() => undefined);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -444,18 +459,24 @@ function StyleQuizPage() {
       const pagePath =
         typeof window !== "undefined" ? window.location.pathname : undefined;
       const storedEmail = getStoredQuizEmail();
+      const storedToken = getStoredQuizToken();
       // Record server-side with unlock verification so the event is tied
       // to the subscriber record, not just a client-side fire-and-forget.
-      void recordView({
-        data: {
-          email: storedEmail ?? "",
-          answers,
-          sessionId,
-          pagePath,
-          userAgent: ua,
-        },
-      }).catch(() => undefined);
+      if (storedEmail && storedToken) {
+        void recordView({
+          data: {
+            email: storedEmail,
+            token: storedToken.token,
+            iat: storedToken.iat,
+            answers,
+            sessionId,
+            pagePath,
+            userAgent: ua,
+          },
+        }).catch(() => undefined);
+      }
     }
+
     if (phase === "quiz") {
       gateViewedRef.current = false;
       lookbookViewedRef.current = false;
@@ -521,7 +542,12 @@ function StyleQuizPage() {
       // Persist canonical email + answers; resume flows on this device
       // (and the homepage preview) will read the exact same value the
       // server keyed the unlock by.
-      setStoredQuizUnlock(clean, answers);
+      setStoredQuizUnlock(
+        clean,
+        answers,
+        res.token && res.iat ? { token: res.token, iat: res.iat } : undefined,
+      );
+
       setEmail(clean);
       setAlreadyUnlocked(true);
       fireTrack("quiz_gate_submitted", { step: total, email: clean, answers });
