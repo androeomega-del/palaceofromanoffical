@@ -189,10 +189,12 @@ import {
   QUIZ_SESSION_KEY,
   getStoredQuizEmail,
   getStoredQuizAnswers,
+  getStoredQuizToken,
   setStoredQuizUnlock,
   clearStoredQuizUnlock,
   normalizeEmail,
 } from "@/lib/quiz-identity";
+
 
 function getOrCreateSessionId(): string {
   if (typeof window === "undefined") return "";
