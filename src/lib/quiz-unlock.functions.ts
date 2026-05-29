@@ -157,11 +157,14 @@ const FunnelInput = z.object({
 
 const LookbookViewInput = z.object({
   email: z.string().min(5).max(320).email(),
+  token: z.string().min(8).max(256),
+  iat: z.number().int().positive(),
   answers: AnswersSchema.optional(),
   sessionId: z.string().max(64).optional(),
   pagePath: z.string().max(500).optional(),
   userAgent: z.string().max(500).optional(),
 });
+
 
 /**
  * Server-side unlock: subscribes the email to the Atelier List AND records
