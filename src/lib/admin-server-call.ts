@@ -1,19 +1,22 @@
 import { supabase } from "@/integrations/supabase/client";
 
-type AnyServerFn = (options: unknown) => Promise<unknown>;
+type AdminHeaders = { headers?: Record<string, string> };
 
-export async function callAdminServerFn<TFn extends AnyServerFn>(
-  fn: TFn,
-  options: Omit<NonNullable<Parameters<TFn>[0]>, "headers"> = {} as Omit<
-    NonNullable<Parameters<TFn>[0]>,
-    "headers"
-  >,
-): Promise<Awaited<ReturnType<TFn>>> {
+export async function callAdminServerFn<TResult>(
+  fn: (options?: AdminHeaders) => Promise<TResult>,
+): Promise<TResult>;
+export async function callAdminServerFn<TData, TResult>(
+  fn: (options: { data: TData } & AdminHeaders) => Promise<TResult>,
+  options: { data: TData },
+): Promise<TResult>;
+export async function callAdminServerFn<TResult>(
+  fn: (options?: { data?: unknown } & AdminHeaders) => Promise<TResult>,
+  options: { data?: unknown } = {},
+): Promise<TResult> {
   const { data } = await supabase.auth.getSession();
   const token = data.session?.access_token;
 
-  const callable = fn as (options: unknown) => Promise<Awaited<ReturnType<TFn>>>;
-  return callable({
+  return fn({
     ...options,
     headers: token ? { Authorization: `Bearer ${token}` } : {},
   });
