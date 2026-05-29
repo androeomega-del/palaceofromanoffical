@@ -238,6 +238,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "alternate", type: "text/markdown", href: "/llms.txt", title: "llms.txt" },
       // Sitemap discovery for crawlers that read <link rel="sitemap">.
       { rel: "sitemap", type: "application/xml", href: "/sitemap.xml", title: "Sitemap" },
+      // Favicons & app icons (PR monogram on onyx + antique gold)
+      { rel: "icon", href: "/favicon.ico", sizes: "any" },
+      { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32.png" },
+      { rel: "icon", type: "image/png", sizes: "192x192", href: "/favicon-192.png" },
+      { rel: "icon", type: "image/png", sizes: "512x512", href: "/favicon-512.png" },
+      { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" },
     ],
     scripts: [
       // --- Plausible Analytics (privacy-first, no cookie banner) ---
