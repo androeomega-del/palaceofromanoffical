@@ -459,18 +459,24 @@ function StyleQuizPage() {
       const pagePath =
         typeof window !== "undefined" ? window.location.pathname : undefined;
       const storedEmail = getStoredQuizEmail();
+      const storedToken = getStoredQuizToken();
       // Record server-side with unlock verification so the event is tied
       // to the subscriber record, not just a client-side fire-and-forget.
-      void recordView({
-        data: {
-          email: storedEmail ?? "",
-          answers,
-          sessionId,
-          pagePath,
-          userAgent: ua,
-        },
-      }).catch(() => undefined);
+      if (storedEmail && storedToken) {
+        void recordView({
+          data: {
+            email: storedEmail,
+            token: storedToken.token,
+            iat: storedToken.iat,
+            answers,
+            sessionId,
+            pagePath,
+            userAgent: ua,
+          },
+        }).catch(() => undefined);
+      }
     }
+
     if (phase === "quiz") {
       gateViewedRef.current = false;
       lookbookViewedRef.current = false;
