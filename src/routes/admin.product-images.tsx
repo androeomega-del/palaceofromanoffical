@@ -16,7 +16,16 @@ import {
   type QueueItem,
   type CatalogSource,
 } from "@/lib/product-image-review.functions";
-import { Loader2, Sparkles, Check, X, RefreshCw, Bug, ExternalLink, ShoppingBag } from "lucide-react";
+import {
+  Loader2,
+  Sparkles,
+  Check,
+  X,
+  RefreshCw,
+  Bug,
+  ExternalLink,
+  ShoppingBag,
+} from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 
@@ -68,12 +77,11 @@ function AdminProductImages() {
           <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-2">Admin</p>
           <h1 className="font-serif text-3xl md:text-4xl">Product Images — QA</h1>
           <p className="mt-2 text-sm text-muted-foreground max-w-3xl">
-            Pick the catalog source for this batch. Prompts are built strictly
-            from <code>color · style · category · sku · gender</code> on the
-            source record — never inferred from the generated image. Approved
-            images write back the SKU reference; rejected items re-enter the
-            queue with the reviewer note used as a prompt override on the next
-            regen.
+            Pick the catalog source for this batch. Prompts are built strictly from{" "}
+            <code>color · style · category · sku · gender</code> on the source record — never
+            inferred from the generated image. Approved images write back the SKU reference;
+            rejected items re-enter the queue with the reviewer note used as a prompt override on
+            the next regen.
           </p>
         </header>
 
@@ -81,7 +89,9 @@ function AdminProductImages() {
 
         {/* Source selector — per batch */}
         <div className="mb-5">
-          <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">Data source (per batch)</p>
+          <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">
+            Data source (per batch)
+          </p>
           <div className="inline-flex rounded border border-border overflow-hidden">
             {SOURCES.map((s) => (
               <button
@@ -152,8 +162,7 @@ function ReviewRow({ item }: { item: QueueItem }) {
   const qc = useQueryClient();
   const [notes, setNotes] = useState(item.review?.reviewer_notes ?? "");
 
-  const previewPrompt =
-    item.review?.prompt ?? buildProductImagePrompt(item.catalog, notes || null);
+  const previewPrompt = item.review?.prompt ?? buildProductImagePrompt(item.catalog, notes || null);
 
   const genMut = useMutation({
     mutationFn: () =>
@@ -198,11 +207,15 @@ function ReviewRow({ item }: { item: QueueItem }) {
             <p className="text-[10px] uppercase tracking-[0.3em] text-bronze">
               {item.source === "shopify" ? "Shopify attributes" : "BrandsGateway attributes"}
             </p>
-            <span className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border ${statusStyle}`}>
+            <span
+              className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border ${statusStyle}`}
+            >
               {status}
             </span>
           </div>
-          <h3 className="font-serif text-lg leading-tight">{item.catalog.name ?? item.catalog.handle}</h3>
+          <h3 className="font-serif text-lg leading-tight">
+            {item.catalog.name ?? item.catalog.handle}
+          </h3>
           <dl className="text-xs grid grid-cols-[110px_1fr] gap-y-1.5 gap-x-3">
             <Attr k="SKU" v={item.catalog.sku} mono />
             <Attr k="Handle" v={item.catalog.handle} mono />
@@ -287,9 +300,7 @@ function ReviewRow({ item }: { item: QueueItem }) {
             )}
           </div>
 
-          {status === "approved" && (
-            <ShoppableOverlayPreview sku={item.sku} source={item.source} />
-          )}
+          {status === "approved" && <ShoppableOverlayPreview sku={item.sku} source={item.source} />}
 
           <Textarea
             value={notes}
@@ -392,9 +403,7 @@ function ShopifyDebugPanel() {
             <span className="text-muted-foreground">Status: </span>
             <span
               className={
-                result.status >= 200 && result.status < 300
-                  ? "text-emerald-600"
-                  : "text-rose-600"
+                result.status >= 200 && result.status < 300 ? "text-emerald-600" : "text-rose-600"
               }
             >
               {result.status} {result.statusText}
@@ -426,13 +435,7 @@ function ShopifyDebugPanel() {
 
 // ── Shoppable overlay preview — label + URL are read from the SKU on
 //    the review record (catalog data only, never the image itself).
-function ShoppableOverlayPreview({
-  sku,
-  source,
-}: {
-  sku: string;
-  source: CatalogSource;
-}) {
+function ShoppableOverlayPreview({ sku, source }: { sku: string; source: CatalogSource }) {
   const q = useQuery({
     queryKey: ["shoppable-overlay", source, sku],
     queryFn: () => callAdminServerFn(resolveShoppableOverlay, { data: { sku, source } }),
@@ -445,9 +448,7 @@ function ShoppableOverlayPreview({
         Shoppable overlay (data-bound to SKU)
       </p>
       {q.isLoading && <p className="text-muted-foreground">Resolving…</p>}
-      {q.isError && (
-        <p className="text-rose-600">{(q.error as Error).message}</p>
-      )}
+      {q.isError && <p className="text-rose-600">{(q.error as Error).message}</p>}
       {q.data && (
         <div className="space-y-2">
           <div className="flex items-center gap-2">

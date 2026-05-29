@@ -34,7 +34,6 @@ import {
 
 import { STATIC_HOTSPOT_SURFACES } from "@/lib/static-hotspot-registry";
 
-
 import {
   Loader2,
   Search,
@@ -46,7 +45,6 @@ import {
   ImagePlus,
 } from "lucide-react";
 import { toast } from "sonner";
-
 
 export const Route = createFileRoute("/admin/lookbook-hotspots")({
   ssr: false,
@@ -66,12 +64,7 @@ function AdminLookbookHotspots() {
   const [searchTerm, setSearchTerm] = useState<string>("");
 
   if (selectedImageId) {
-    return (
-      <ImageDetailView
-        imageId={selectedImageId}
-        onBack={() => setSelectedImageId(null)}
-      />
-    );
+    return <ImageDetailView imageId={selectedImageId} onBack={() => setSelectedImageId(null)} />;
   }
 
   return (
@@ -87,9 +80,8 @@ function AdminLookbookHotspots() {
             </Link>
             <h1 className="font-serif text-4xl">Lookbook Hotspots</h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              Audit and correct shoppable placements. Click an image to see its
-              hotspots overlaid; click any hotspot to swap or delete the
-              linked product.
+              Audit and correct shoppable placements. Click an image to see its hotspots overlaid;
+              click any hotspot to swap or delete the linked product.
             </p>
           </div>
           <div className="flex gap-2">
@@ -101,8 +93,6 @@ function AdminLookbookHotspots() {
         <ValidationPanel onSelect={setSelectedImageId} />
         <HistoryPanel />
 
-
-
         <SurfaceKindFilter
           filterKind={filterKind}
           onFilterKindChange={setFilterKind}
@@ -110,12 +100,7 @@ function AdminLookbookHotspots() {
           onSearchTermChange={setSearchTerm}
         />
 
-
-        <ImagesGrid
-          filterKind={filterKind}
-          searchTerm={searchTerm}
-          onSelect={setSelectedImageId}
-        />
+        <ImagesGrid filterKind={filterKind} searchTerm={searchTerm} onSelect={setSelectedImageId} />
       </div>
     </main>
   );
@@ -198,7 +183,6 @@ function SurfaceKindFilter({
   );
 }
 
-
 // ─── Images grid ───────────────────────────────────────────────────────
 function ImagesGrid({
   filterKind,
@@ -236,8 +220,7 @@ function ImagesGrid({
           No shoppable images in the lookbook tables yet.
         </p>
         <p className="text-xs text-muted-foreground mt-2">
-          Add one with the “New image” button above, or seed from existing
-          editorial pages.
+          Add one with the “New image” button above, or seed from existing editorial pages.
         </p>
       </Card>
     );
@@ -274,9 +257,7 @@ function ImagesGrid({
               {img.surface_slug ?? img.edition_handle}
             </div>
             {img.chapter_key && (
-              <div className="text-xs text-muted-foreground truncate">
-                {img.chapter_key}
-              </div>
+              <div className="text-xs text-muted-foreground truncate">{img.chapter_key}</div>
             )}
           </div>
         </Card>
@@ -286,21 +267,13 @@ function ImagesGrid({
 }
 
 // ─── Detail view ───────────────────────────────────────────────────────
-function ImageDetailView({
-  imageId,
-  onBack,
-}: {
-  imageId: string;
-  onBack: () => void;
-}) {
+function ImageDetailView({ imageId, onBack }: { imageId: string; onBack: () => void }) {
   const qc = useQueryClient();
   const { data, isLoading } = useQuery({
     queryKey: ["lookbook-image", imageId],
     queryFn: () => callAdminServerFn(getLookbookImage, { data: { id: imageId } }),
   });
-  const [selectedHotspotId, setSelectedHotspotId] = useState<string | null>(
-    null,
-  );
+  const [selectedHotspotId, setSelectedHotspotId] = useState<string | null>(null);
   const [addMode, setAddMode] = useState(false);
   const [bulkMode, setBulkMode] = useState(false);
   const [bulkIds, setBulkIds] = useState<Set<string>>(new Set());
@@ -411,11 +384,7 @@ function ImageDetailView({
             }`}
             onClick={handleCanvasClick}
           >
-            <img
-              src={image.image_url}
-              alt={image.alt_text ?? ""}
-              className="w-full h-auto block"
-            />
+            <img src={image.image_url} alt={image.alt_text ?? ""} className="w-full h-auto block" />
             {hotspots.map((h) => {
               const isSelected = selectedHotspotId === h.id;
               const isChecked = bulkIds.has(h.id);
@@ -488,12 +457,7 @@ function ImageDetailView({
                         onClick={() => setSelectedHotspotId(h.id)}
                       >
                         <span className="font-mono">{h.product_handle}</span>
-                        {h.label && (
-                          <span className="text-muted-foreground">
-                            {" "}
-                            — {h.label}
-                          </span>
-                        )}
+                        {h.label && <span className="text-muted-foreground"> — {h.label}</span>}
                       </button>
                     </li>
                   ))}
@@ -501,12 +465,8 @@ function ImageDetailView({
               )}
             </Card>
           )}
-          <ImageHistoryPanel
-            surfaceKind={image.surface_kind}
-            surfaceSlug={image.surface_slug}
-          />
+          <ImageHistoryPanel surfaceKind={image.surface_kind} surfaceSlug={image.surface_slug} />
         </aside>
-
       </div>
     </main>
   );
@@ -522,9 +482,7 @@ function HotspotEditor({
   onClose: () => void;
   onChanged: () => void;
 }) {
-  const [pendingHandle, setPendingHandle] = useState<string>(
-    hotspot.product_handle,
-  );
+  const [pendingHandle, setPendingHandle] = useState<string>(hotspot.product_handle);
   const [pendingLabel, setPendingLabel] = useState<string>(hotspot.label ?? "");
   const [query, setQuery] = useState("");
 
@@ -586,9 +544,7 @@ function HotspotEditor({
     <Card className="p-5 sticky top-6">
       <div className="flex items-start justify-between gap-3 mb-4">
         <div>
-          <div className="text-[10px] uppercase tracking-[0.3em] text-bronze">
-            Hotspot
-          </div>
+          <div className="text-[10px] uppercase tracking-[0.3em] text-bronze">Hotspot</div>
           <div className="text-xs text-muted-foreground">
             ({hotspot.x.toFixed(1)}%, {hotspot.y.toFixed(1)}%)
           </div>
@@ -606,16 +562,10 @@ function HotspotEditor({
           {product ? (
             <div className="flex gap-3">
               {product.main_picture && (
-                <img
-                  src={product.main_picture}
-                  alt=""
-                  className="w-16 h-16 object-cover rounded"
-                />
+                <img src={product.main_picture} alt="" className="w-16 h-16 object-cover rounded" />
               )}
               <div className="min-w-0 flex-1">
-                <div className="text-sm font-medium truncate">
-                  {product.name ?? product.handle}
-                </div>
+                <div className="text-sm font-medium truncate">{product.name ?? product.handle}</div>
                 <div className="text-xs text-muted-foreground truncate">
                   {product.brand} · {product.color} · {product.subcategory}
                 </div>
@@ -633,10 +583,9 @@ function HotspotEditor({
             <div className="flex items-start gap-2 text-xs text-amber-600">
               <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
               <div>
-                Handle{" "}
-                <span className="font-mono">{pendingHandle}</span> not found in
-                the BrandsGateway catalog mirror — this hotspot points to a
-                product we don't have. Search below to replace it.
+                Handle <span className="font-mono">{pendingHandle}</span> not found in the
+                BrandsGateway catalog mirror — this hotspot points to a product we don't have.
+                Search below to replace it.
               </div>
             </div>
           )}
@@ -678,9 +627,7 @@ function HotspotEditor({
         </div>
         <div className="mt-2 max-h-72 overflow-y-auto space-y-1.5">
           {searching && (
-            <div className="text-xs text-muted-foreground py-2 text-center">
-              Searching…
-            </div>
+            <div className="text-xs text-muted-foreground py-2 text-center">Searching…</div>
           )}
           {(searchResults?.items ?? []).map((r) => {
             const isPending = pendingHandle === r.handle;
@@ -689,9 +636,7 @@ function HotspotEditor({
                 key={r.sku + r.handle}
                 onClick={() => setPendingHandle(r.handle)}
                 className={`w-full text-left p-2 rounded border flex gap-2 transition-colors ${
-                  isPending
-                    ? "border-bronze bg-bronze/10"
-                    : "border-border hover:border-bronze/40"
+                  isPending ? "border-bronze bg-bronze/10" : "border-border hover:border-bronze/40"
                 }`}
               >
                 {r.main_picture ? (
@@ -704,9 +649,7 @@ function HotspotEditor({
                   <div className="w-12 h-12 bg-muted rounded shrink-0" />
                 )}
                 <div className="min-w-0 flex-1">
-                  <div className="text-xs font-medium truncate">
-                    {r.name ?? r.handle}
-                  </div>
+                  <div className="text-xs font-medium truncate">{r.name ?? r.handle}</div>
                   <div className="text-[10px] text-muted-foreground truncate">
                     {r.brand} · {r.color} · {r.subcategory}
                   </div>
@@ -725,13 +668,9 @@ function HotspotEditor({
               </button>
             );
           })}
-          {query.trim().length >= 2 &&
-            !searching &&
-            (searchResults?.items ?? []).length === 0 && (
-              <div className="text-xs text-muted-foreground py-2 text-center">
-                No matches.
-              </div>
-            )}
+          {query.trim().length >= 2 && !searching && (searchResults?.items ?? []).length === 0 && (
+            <div className="text-xs text-muted-foreground py-2 text-center">No matches.</div>
+          )}
         </div>
       </div>
 
@@ -812,9 +751,7 @@ function BulkReassignPanel({
     <Card className="p-5 sticky top-6">
       <div className="flex items-start justify-between gap-3 mb-3">
         <div>
-          <div className="text-[10px] uppercase tracking-[0.3em] text-bronze">
-            Bulk reassign
-          </div>
+          <div className="text-[10px] uppercase tracking-[0.3em] text-bronze">Bulk reassign</div>
           <div className="text-sm mt-1">
             {ids.length} of {hotspots.length} hotspot(s) selected
           </div>
@@ -831,8 +768,8 @@ function BulkReassignPanel({
 
       {ids.length === 0 ? (
         <p className="text-xs text-muted-foreground">
-          Click hotspots on the image to add them to the selection, then pick a
-          product below to reassign them all in one save.
+          Click hotspots on the image to add them to the selection, then pick a product below to
+          reassign them all in one save.
         </p>
       ) : (
         <>
@@ -860,9 +797,7 @@ function BulkReassignPanel({
             </div>
             <div className="mt-2 max-h-64 overflow-y-auto space-y-1.5">
               {searching && (
-                <div className="text-xs text-muted-foreground py-2 text-center">
-                  Searching…
-                </div>
+                <div className="text-xs text-muted-foreground py-2 text-center">Searching…</div>
               )}
               {(searchResults?.items ?? []).map((r) => {
                 const isPending = pendingHandle === r.handle;
@@ -886,9 +821,7 @@ function BulkReassignPanel({
                       <div className="w-10 h-10 bg-muted rounded shrink-0" />
                     )}
                     <div className="min-w-0 flex-1">
-                      <div className="text-xs font-medium truncate">
-                        {r.name ?? r.handle}
-                      </div>
+                      <div className="text-xs font-medium truncate">{r.name ?? r.handle}</div>
                       <div className="text-[10px] text-muted-foreground truncate">
                         {r.brand} · {r.color}
                       </div>
@@ -936,8 +869,6 @@ function BulkReassignPanel({
   );
 }
 
-
-
 // ─── Validation panel ──────────────────────────────────────────────────
 // Cross-checks every seeded hotspot handle against the bg_products catalog
 // mirror and surfaces any that don't match a product (or that match an
@@ -962,8 +893,7 @@ function ValidationPanel({ onSelect }: { onSelect: (id: string) => void }) {
             Catalog validation
           </div>
           <p className="text-sm text-muted-foreground mt-1">
-            Check every seeded hotspot handle against the BrandsGateway catalog
-            mirror.
+            Check every seeded hotspot handle against the BrandsGateway catalog mirror.
           </p>
         </div>
         <div className="flex gap-2">
@@ -993,12 +923,8 @@ function ValidationPanel({ onSelect }: { onSelect: (id: string) => void }) {
               Checked <strong>{data.checked}</strong> unique handle(s) across{" "}
               <strong>{data.total}</strong> hotspot(s).
             </span>
-            <span className="text-destructive">
-              {missing.length} missing
-            </span>
-            <span className="text-amber-600">
-              {oos.length} out of stock
-            </span>
+            <span className="text-destructive">{missing.length} missing</span>
+            <span className="text-amber-600">{oos.length} out of stock</span>
           </div>
 
           {missing.length === 0 && oos.length === 0 ? (
@@ -1024,16 +950,12 @@ function ValidationPanel({ onSelect }: { onSelect: (id: string) => void }) {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <Badge
-                          variant={
-                            row.reason === "missing" ? "destructive" : "secondary"
-                          }
+                          variant={row.reason === "missing" ? "destructive" : "secondary"}
                           className="text-[9px] py-0"
                         >
                           {row.reason === "missing" ? "Not in catalog" : "Out of stock"}
                         </Badge>
-                        <span className="text-xs font-mono truncate">
-                          {row.product_handle}
-                        </span>
+                        <span className="text-xs font-mono truncate">{row.product_handle}</span>
                       </div>
                       <div className="text-[10px] text-muted-foreground truncate mt-0.5">
                         {row.surface_kind ?? "—"} / {row.surface_slug ?? "—"}
@@ -1117,9 +1039,7 @@ function NewImageDialog() {
           <Label className="text-xs">Surface kind</Label>
           <Input
             value={form.surface_kind}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, surface_kind: e.target.value }))
-            }
+            onChange={(e) => setForm((f) => ({ ...f, surface_kind: e.target.value }))}
             placeholder="editorial, themed-edit, campaign, homepage, bg_product"
           />
         </div>
@@ -1127,9 +1047,7 @@ function NewImageDialog() {
           <Label className="text-xs">Surface slug *</Label>
           <Input
             value={form.surface_slug}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, surface_slug: e.target.value }))
-            }
+            onChange={(e) => setForm((f) => ({ ...f, surface_slug: e.target.value }))}
             placeholder="may-2026, mens-swim, yacht-edit/monaco"
           />
         </div>
@@ -1137,9 +1055,7 @@ function NewImageDialog() {
           <Label className="text-xs">Chapter key (optional)</Label>
           <Input
             value={form.chapter_key}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, chapter_key: e.target.value }))
-            }
+            onChange={(e) => setForm((f) => ({ ...f, chapter_key: e.target.value }))}
             placeholder="hero, look-1, ..."
           />
         </div>
@@ -1147,9 +1063,7 @@ function NewImageDialog() {
           <Label className="text-xs">Image URL *</Label>
           <Input
             value={form.image_url}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, image_url: e.target.value }))
-            }
+            onChange={(e) => setForm((f) => ({ ...f, image_url: e.target.value }))}
             placeholder="https://..."
           />
         </div>
@@ -1157,23 +1071,15 @@ function NewImageDialog() {
           <Label className="text-xs">Alt text</Label>
           <Input
             value={form.alt_text}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, alt_text: e.target.value }))
-            }
+            onChange={(e) => setForm((f) => ({ ...f, alt_text: e.target.value }))}
           />
         </div>
         <Button
           onClick={() => mutation.mutate()}
-          disabled={
-            mutation.isPending ||
-            !form.surface_slug.trim() ||
-            !form.image_url.trim()
-          }
+          disabled={mutation.isPending || !form.surface_slug.trim() || !form.image_url.trim()}
           className="w-full"
         >
-          {mutation.isPending ? (
-            <Loader2 className="h-4 w-4 animate-spin mr-1.5" />
-          ) : null}
+          {mutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-1.5" /> : null}
           Create
         </Button>
       </div>
@@ -1217,16 +1123,20 @@ function SeedFromSourceButton() {
     const results = await Promise.all(
       toCreate.map(async (s) => {
         const existing = existingBySlug.get(`${s.surface_kind}::${s.surface_slug}`);
-        const imageId = existing?.id ?? (await callAdminServerFn(createLookbookImage, {
-          data: {
-            surface_kind: s.surface_kind,
-            surface_slug: s.surface_slug,
-            image_url: s.image_url.startsWith("http")
-              ? s.image_url
-              : `https://palaceofromanofficial.com${s.image_url}`,
-            alt_text: s.alt_text,
-          },
-        })).image.id;
+        const imageId =
+          existing?.id ??
+          (
+            await callAdminServerFn(createLookbookImage, {
+              data: {
+                surface_kind: s.surface_kind,
+                surface_slug: s.surface_slug,
+                image_url: s.image_url.startsWith("http")
+                  ? s.image_url
+                  : `https://palaceofromanofficial.com${s.image_url}`,
+                alt_text: s.alt_text,
+              },
+            })
+          ).image.id;
         await Promise.all(
           s.fallbackHotspots.map((h) =>
             callAdminServerFn(createHotspot, {
@@ -1268,24 +1178,16 @@ function SeedFromSourceButton() {
       );
       qc.invalidateQueries({ queryKey: ["lookbook-images"] });
     },
-    onError: (e: unknown) =>
-      toast.error(e instanceof Error ? e.message : "Seed failed"),
+    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Seed failed"),
   });
 
   return (
-    <Button
-      variant="outline"
-      onClick={() => seedAll.mutate()}
-      disabled={seedAll.isPending}
-    >
-      {seedAll.isPending ? (
-        <Loader2 className="h-4 w-4 animate-spin mr-1.5" />
-      ) : null}
+    <Button variant="outline" onClick={() => seedAll.mutate()} disabled={seedAll.isPending}>
+      {seedAll.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-1.5" /> : null}
       Seed from source
     </Button>
   );
 }
-
 
 // ─── Audit / history panel ─────────────────────────────────────────────
 function actionLabel(action: string): string {
@@ -1340,26 +1242,17 @@ function AuditDetailsSummary({ row }: { row: HotspotAuditRow }) {
     );
   }
   if (row.action === "hotspot_create") {
-    return (
-      <span className="font-mono text-[11px]">
-        + {String(d.product_handle ?? "?")}
-      </span>
-    );
+    return <span className="font-mono text-[11px]">+ {String(d.product_handle ?? "?")}</span>;
   }
   if (row.action === "hotspot_delete") {
     const removed = (d.removed ?? {}) as Record<string, unknown>;
-    return (
-      <span className="font-mono text-[11px]">
-        − {String(removed.product_handle ?? "?")}
-      </span>
-    );
+    return <span className="font-mono text-[11px]">− {String(removed.product_handle ?? "?")}</span>;
   }
   if (row.action === "hotspot_bulk_update") {
     const after = (d.after ?? {}) as Record<string, unknown>;
     return (
       <span className="font-mono text-[11px]">
-        {String(d.count ?? 0)} →{" "}
-        {String(after.product_handle ?? "?")}
+        {String(d.count ?? 0)} → {String(after.product_handle ?? "?")}
       </span>
     );
   }
@@ -1373,9 +1266,8 @@ function AuditDetailsSummary({ row }: { row: HotspotAuditRow }) {
   if (row.action === "lookbook_seed_homepage") {
     return (
       <span className="text-[11px]">
-        +{String(d.inserted_images ?? 0)} images, +
-        {String(d.inserted_hotspots ?? 0)} hotspots, {String(d.skipped ?? 0)}{" "}
-        skipped
+        +{String(d.inserted_images ?? 0)} images, +{String(d.inserted_hotspots ?? 0)} hotspots,{" "}
+        {String(d.skipped ?? 0)} skipped
       </span>
     );
   }
@@ -1399,34 +1291,17 @@ function HistoryPanel() {
         className="w-full flex items-center justify-between text-left"
       >
         <div>
-          <div className="text-[10px] uppercase tracking-[0.3em] text-bronze">
-            Change history
-          </div>
-          <div className="text-sm">
-            Recent hotspot edits, image additions and seeding runs
-          </div>
+          <div className="text-[10px] uppercase tracking-[0.3em] text-bronze">Change history</div>
+          <div className="text-sm">Recent hotspot edits, image additions and seeding runs</div>
         </div>
-        <span className="text-xs text-muted-foreground">
-          {open ? "Hide" : "Show"}
-        </span>
+        <span className="text-xs text-muted-foreground">{open ? "Hide" : "Show"}</span>
       </button>
       {open && (
         <div className="mt-4">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-xs text-muted-foreground">
-              Last 100 entries across all surfaces.
-            </p>
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => refetch()}
-              disabled={isFetching}
-            >
-              {isFetching ? (
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              ) : (
-                "Refresh"
-              )}
+            <p className="text-xs text-muted-foreground">Last 100 entries across all surfaces.</p>
+            <Button size="sm" variant="ghost" onClick={() => refetch()} disabled={isFetching}>
+              {isFetching ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Refresh"}
             </Button>
           </div>
           <AuditList rows={data?.items ?? []} loading={isFetching} />
@@ -1436,13 +1311,7 @@ function HistoryPanel() {
   );
 }
 
-function AuditList({
-  rows,
-  loading,
-}: {
-  rows: HotspotAuditRow[];
-  loading: boolean;
-}) {
+function AuditList({ rows, loading }: { rows: HotspotAuditRow[]; loading: boolean }) {
   if (loading && rows.length === 0) {
     return (
       <div className="py-6 text-center">
@@ -1451,11 +1320,7 @@ function AuditList({
     );
   }
   if (rows.length === 0) {
-    return (
-      <p className="text-xs text-muted-foreground py-4">
-        No audit entries yet.
-      </p>
-    );
+    return <p className="text-xs text-muted-foreground py-4">No audit entries yet.</p>;
   }
   return (
     <ul className="divide-y divide-border max-h-[420px] overflow-auto rounded border border-border">
@@ -1465,9 +1330,7 @@ function AuditList({
         const surfaceSlug = (d.surface_slug as string | undefined) ?? null;
         return (
           <li key={r.id} className="px-3 py-2 text-xs flex items-start gap-3">
-            <div className="w-28 shrink-0 text-muted-foreground">
-              {relTime(r.created_at)}
-            </div>
+            <div className="w-28 shrink-0 text-muted-foreground">{relTime(r.created_at)}</div>
             <div className="w-32 shrink-0">
               <Badge variant="secondary" className="text-[10px]">
                 {actionLabel(r.action)}
@@ -1522,26 +1385,14 @@ export function ImageHistoryPanel({
     <Card className="p-4 mt-4">
       <div className="flex items-center justify-between mb-3">
         <div>
-          <div className="text-[10px] uppercase tracking-[0.3em] text-bronze">
-            History
-          </div>
+          <div className="text-[10px] uppercase tracking-[0.3em] text-bronze">History</div>
           <div className="text-sm">Changes scoped to this surface</div>
         </div>
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={() => refetch()}
-          disabled={isFetching}
-        >
-          {isFetching ? (
-            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-          ) : (
-            "Refresh"
-          )}
+        <Button size="sm" variant="ghost" onClick={() => refetch()} disabled={isFetching}>
+          {isFetching ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Refresh"}
         </Button>
       </div>
       <AuditList rows={data?.items ?? []} loading={isFetching} />
     </Card>
   );
 }
-

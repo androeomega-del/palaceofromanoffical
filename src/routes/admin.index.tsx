@@ -23,10 +23,7 @@ export const Route = createFileRoute("/admin/")({
   beforeLoad: adminBeforeLoad,
   component: AdminHub,
   head: () => ({
-    meta: [
-      { title: "Admin — Palace of Roman" },
-      { name: "robots", content: "noindex, nofollow" },
-    ],
+    meta: [{ title: "Admin — Palace of Roman" }, { name: "robots", content: "noindex, nofollow" }],
   }),
 });
 
@@ -155,9 +152,7 @@ function AdminHub() {
         <div className="mb-10">
           <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-3">Admin</p>
           <h1 className="font-serif text-4xl md:text-5xl">Operations</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Internal dashboards. Not indexed.
-          </p>
+          <p className="mt-2 text-sm text-muted-foreground">Internal dashboards. Not indexed.</p>
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
