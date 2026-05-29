@@ -230,9 +230,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Karla:wght@400;500;600&display=swap",
-        media: "print",
-        onLoad: "this.media='all'",
-      } as any,
+      },
       // AI / LLM discovery surface — points crawlers at the curated site summary.
       { rel: "alternate", type: "text/markdown", href: "/llms.txt", title: "llms.txt" },
       // Sitemap discovery for crawlers that read <link rel="sitemap">.
