@@ -24,7 +24,7 @@ export const Route = createFileRoute("/")({
     ],
     links: [
       { rel: "canonical", href: "https://palaceofromanofficial.com/" },
-      { rel: "preload", as: "image", href: summerHero, fetchpriority: "high" } as any,
+      { rel: "preload", as: "image", href: summerHero, fetchPriority: "high" } as any,
     ],
   }),
   component: HomePage,
