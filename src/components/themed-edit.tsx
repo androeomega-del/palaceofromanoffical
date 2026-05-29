@@ -108,31 +108,13 @@ export function ThemedEdit({
   // Resolve per-chapter hotspots against the fetched product pool.
   // Each spot picks the best-matching unused product (by regex on title),
   // falling back to any unused product so chapters always get tagged.
-  const chapterHotspots = useMemo<Array<Hotspot[]>>(() => {
-    const pool = products.map((p) => p.node);
-    const used = new Set<string>();
-    return chapters.map((c) => {
-      if (!c.spots?.length) return [];
-      const out: Hotspot[] = [];
-      for (const s of c.spots) {
-        const pick = s.match
-          ? pool.find((p) => !used.has(p.handle) && s.match!.test(p.title))
-          : pool.find((p) => !used.has(p.handle));
-        // Strict: never tag a hotspot with an unrelated product. If no
-        // catalog product matches the spot's regex, skip the spot entirely.
-        if (!pick) continue;
-        used.add(pick.handle);
-        out.push({
-          x: s.x,
-          y: s.y,
-          handle: pick.handle,
-          label: s.label,
-          sublabel: pick.vendor,
-        });
-      }
-      return out;
-    });
-  }, [chapters, products]);
+  // Hotspots disabled site-wide: every editorial chapter renders untagged.
+  const chapterHotspots = useMemo<Array<Hotspot[]>>(
+    () => chapters.map(() => []),
+    [chapters],
+  );
+  void products;
+
 
   return (
     <main className="bg-canvas text-ink">

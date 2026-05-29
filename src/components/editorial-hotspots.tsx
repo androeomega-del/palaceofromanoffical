@@ -32,7 +32,17 @@ type Props = {
   className?: string;
 };
 
-export function EditorialHotspots({ src, alt, hotspots, aspect = "4/5", className = "" }: Props) {
+export function EditorialHotspots({ src, alt, hotspots: _hotspots, aspect = "4/5", className = "" }: Props) {
+  // Tags disabled site-wide — render the image only, no shoppable dots.
+  return (
+    <div className={`relative w-full overflow-hidden ${className}`} style={{ aspectRatio: aspect }}>
+      <img src={src} alt={alt} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+    </div>
+  );
+}
+
+function _EditorialHotspotsLegacy({ src, alt, hotspots, aspect = "4/5", className = "" }: Props) {
+
   const [openHandle, setOpenHandle] = useState<string | null>(null);
   const [revealedHandle, setRevealedHandle] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
