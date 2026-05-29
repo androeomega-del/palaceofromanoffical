@@ -38,16 +38,22 @@ export function checkWebhookSecret(request: Request): Response | null {
     return new Response("Server not configured", { status: 500 });
   }
 
-  // 1. Strong shared-secret path
+  // 1. Strong shared-secret path. When SYNC_WEBHOOK_SECRET is configured,
+  //    this is the ONLY accepted credential — we skip the anon-key fallback
+  //    entirely so the publicly-bundled anon key can't be used to trigger
+  //    cron emails or AI-cost endpoints.
   if (sharedSecret) {
     const provided =
       request.headers.get("x-webhook-secret") ||
       request.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ||
       "";
     if (provided && timingSafeEqualStr(provided, sharedSecret)) return null;
+    return new Response("Unauthorized", { status: 401 });
   }
 
-  // 2. Supabase anon-key path (matches the current pg_cron schedules)
+  // 2. Supabase anon-key path (legacy fallback for projects that haven't
+  //    yet set SYNC_WEBHOOK_SECRET). Operators should configure the strong
+  //    secret to disable this entirely.
   if (anonKey) {
     const apikey = request.headers.get("apikey") || "";
     if (apikey && timingSafeEqualStr(apikey, anonKey)) return null;
@@ -55,3 +61,4 @@ export function checkWebhookSecret(request: Request): Response | null {
 
   return new Response("Unauthorized", { status: 401 });
 }
+
