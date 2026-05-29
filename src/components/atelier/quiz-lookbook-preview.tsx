@@ -18,7 +18,8 @@ import {
   trackQuizFunnel,
   type QuizAnswers,
 } from "@/lib/quiz-unlock.functions";
-import { getStoredQuizEmail } from "@/lib/quiz-identity";
+import { getStoredQuizEmail, getStoredQuizToken } from "@/lib/quiz-identity";
+
 
 // Reuse the same gender-aware imagery the quiz uses, so the homepage
 // teaser feels like a continuation of the same edit.
