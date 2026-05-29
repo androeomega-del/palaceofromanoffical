@@ -10,7 +10,8 @@ export async function callAdminServerFn<TData, TResult>(
   options: { data: TData },
 ): Promise<TResult>;
 export async function callAdminServerFn<TResult>(
-  fn: (options?: { data?: unknown } & AdminHeaders) => Promise<TResult>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  fn: (options: any) => Promise<TResult>,
   options: { data?: unknown } = {},
 ): Promise<TResult> {
   const { data } = await supabase.auth.getSession();
