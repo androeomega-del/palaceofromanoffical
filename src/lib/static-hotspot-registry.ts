@@ -20,9 +20,6 @@
  *      so the registry stays the single source of truth.
  */
 
-import editorialHero from "@/assets/editorial/may-2026/1.webp";
-import mensDetail2 from "@/assets/mens-swim-detail-2.jpg";
-
 export type StaticHotspot = {
   x: number;
   y: number;
@@ -45,7 +42,7 @@ export const STATIC_HOTSPOT_SURFACES: StaticHotspotSurface[] = [
   {
     surface_kind: "editorial",
     surface_slug: "may-2026-hero",
-    image_url: editorialHero,
+    image_url: "/lookbook/editorial/may-2026/1.webp",
     alt_text: "May 2026 Editorial — Quiet authority",
     source: "src/components/default-edition-body.tsx",
     fallbackHotspots: [
@@ -77,7 +74,7 @@ export const STATIC_HOTSPOT_SURFACES: StaticHotspotSurface[] = [
   {
     surface_kind: "campaign",
     surface_slug: "mens-swim-deck-flatlay",
-    image_url: mensDetail2,
+    image_url: "/lookbook/mens-swim-detail-2.jpg",
     alt_text: "Men's Resort 2026 deck flatlay",
     source: "src/routes/campaign.mens-swim.tsx",
     fallbackHotspots: [

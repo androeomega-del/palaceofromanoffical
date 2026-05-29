@@ -58,6 +58,13 @@ export const Route = createFileRoute("/admin/lookbook-hotspots")({
   }),
 });
 
+function resolveLookbookImageSrc(src: string) {
+  const trimmed = src.trim();
+  if (!trimmed) return "";
+  if (trimmed.startsWith("/") || /^https?:\/\//i.test(trimmed)) return trimmed;
+  return `/${trimmed}`;
+}
+
 function AdminLookbookHotspots() {
   const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
   const [filterKind, setFilterKind] = useState<string>("");
@@ -234,12 +241,16 @@ function ImagesGrid({
           className="overflow-hidden cursor-pointer hover:border-bronze/50 transition-colors"
           onClick={() => onSelect(img.id)}
         >
-          <div className="aspect-[4/5] bg-muted relative">
+          <div
+            className="aspect-[4/5] bg-muted bg-cover bg-center relative"
+            style={{ backgroundImage: `url(${resolveLookbookImageSrc(img.image_url)})` }}
+          >
             <img
-              src={img.image_url}
+              src={resolveLookbookImageSrc(img.image_url)}
               alt={img.alt_text ?? ""}
               className="w-full h-full object-cover"
-              loading="lazy"
+              loading="eager"
+              decoding="async"
             />
             <Badge
               variant={img.hotspot_count > 0 ? "default" : "secondary"}
@@ -379,12 +390,19 @@ function ImageDetailView({ imageId, onBack }: { imageId: string; onBack: () => v
       <div className="grid lg:grid-cols-[1fr_400px] gap-6 p-6 max-w-[1600px] mx-auto">
         <div>
           <div
-            className={`relative bg-muted rounded-md overflow-hidden ${
+            className={`relative bg-muted bg-cover bg-center rounded-md overflow-hidden ${
               addMode ? "cursor-crosshair" : ""
             }`}
+            style={{ backgroundImage: `url(${resolveLookbookImageSrc(image.image_url)})` }}
             onClick={handleCanvasClick}
           >
-            <img src={image.image_url} alt={image.alt_text ?? ""} className="w-full h-auto block" />
+            <img
+              src={resolveLookbookImageSrc(image.image_url)}
+              alt={image.alt_text ?? ""}
+              className="w-full h-auto block"
+              loading="eager"
+              decoding="async"
+            />
             {hotspots.map((h) => {
               const isSelected = selectedHotspotId === h.id;
               const isChecked = bulkIds.has(h.id);
