@@ -90,7 +90,7 @@ export const listLookbookImages = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
 
     const ids = (imgs ?? []).map((r) => r.id);
-    let counts = new Map<string, number>();
+    const counts = new Map<string, number>();
     if (ids.length) {
       const { data: spots, error: sErr } = await supabaseAdmin
         .from("lookbook_hotspots")

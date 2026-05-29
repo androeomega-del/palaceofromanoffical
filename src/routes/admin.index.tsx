@@ -157,7 +157,7 @@ function AdminHub() {
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {TILES.map((t) => (
-            <Link key={t.to} to={t.to as any} className="group">
+            <Link key={t.to} to={t.to as never} className="group">
               <Card className="p-6 h-full hover:border-bronze/50 transition-colors">
                 <div className="flex items-start gap-4">
                   <div className="rounded-md bg-bronze/10 text-bronze p-2.5 group-hover:bg-bronze/20 transition-colors">
