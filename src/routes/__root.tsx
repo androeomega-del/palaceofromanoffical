@@ -211,8 +211,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Palace of Roman — Curated Luxury Fashion" },
       { name: "twitter:description", content: "Curated luxury fashion from Gucci, Prada, Saint Laurent, Armani and 500+ designer houses. 100% authentic, shipped worldwide." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/d3633d38-5bae-4a69-b9bc-c6762b9650c4" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/d3633d38-5bae-4a69-b9bc-c6762b9650c4" },
+      { property: "og:image", content: "https://palaceofromanofficial.com/og-image.jpg" },
+      { property: "og:image:width", content: "1920" },
+      { property: "og:image:height", content: "1008" },
+      { property: "og:image:alt", content: "Palace of Roman — The Maison · Curated Luxury" },
+      { name: "twitter:image", content: "https://palaceofromanofficial.com/og-image.jpg" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -235,6 +238,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "alternate", type: "text/markdown", href: "/llms.txt", title: "llms.txt" },
       // Sitemap discovery for crawlers that read <link rel="sitemap">.
       { rel: "sitemap", type: "application/xml", href: "/sitemap.xml", title: "Sitemap" },
+      // Favicons & app icons (PR monogram on onyx + antique gold)
+      { rel: "icon", href: "/favicon.ico", sizes: "any" },
+      { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32.png" },
+      { rel: "icon", type: "image/png", sizes: "192x192", href: "/favicon-192.png" },
+      { rel: "icon", type: "image/png", sizes: "512x512", href: "/favicon-512.png" },
+      { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" },
     ],
     scripts: [
       // --- Plausible Analytics (privacy-first, no cookie banner) ---
@@ -269,7 +278,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "@type": "Organization",
           name: "Palace of Roman",
           url: "https://palaceofromanofficial.com",
-          logo: "https://palaceofromanofficial.com/favicon.ico",
+          logo: "https://palaceofromanofficial.com/brand/logo-wordmark.png",
           description: "Curated multi-brand luxury fashion retailer offering premium designer clothing, shoes, accessories and jewelry from 500+ houses including Gucci, Prada, Armani and Versace. Ships worldwide.",
           email: "concierge@palaceofromanofficial.com",
           sameAs: [
