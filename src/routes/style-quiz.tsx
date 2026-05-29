@@ -542,7 +542,12 @@ function StyleQuizPage() {
       // Persist canonical email + answers; resume flows on this device
       // (and the homepage preview) will read the exact same value the
       // server keyed the unlock by.
-      setStoredQuizUnlock(clean, answers);
+      setStoredQuizUnlock(
+        clean,
+        answers,
+        res.token && res.iat ? { token: res.token, iat: res.iat } : undefined,
+      );
+
       setEmail(clean);
       setAlreadyUnlocked(true);
       fireTrack("quiz_gate_submitted", { step: total, email: clean, answers });
