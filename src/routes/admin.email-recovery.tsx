@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, RefreshCw, AlertTriangle, CheckCircle2 } from "lucide-react";
 
 export const Route = createFileRoute("/admin/email-recovery")({
+  ssr: false,
   beforeLoad: adminBeforeLoad,
   component: AdminEmailRecovery,
   head: () => ({

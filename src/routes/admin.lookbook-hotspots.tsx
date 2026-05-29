@@ -48,6 +48,7 @@ import { toast } from "sonner";
 
 
 export const Route = createFileRoute("/admin/lookbook-hotspots")({
+  ssr: false,
   beforeLoad: adminBeforeLoad,
   component: AdminLookbookHotspots,
   head: () => ({
