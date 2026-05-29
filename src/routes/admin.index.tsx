@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin/")({
+  ssr: false,
   beforeLoad: adminBeforeLoad,
   component: AdminHub,
   head: () => ({
