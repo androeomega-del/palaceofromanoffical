@@ -86,11 +86,15 @@ export function QuizLookbookPreview({ fallback }: { fallback: ReactNode }) {
     if (typeof window === "undefined") return;
     let cancelled = false;
     const storedEmail = getStoredQuizEmail();
-    if (!storedEmail) {
+    const storedToken = getStoredQuizToken();
+    if (!storedEmail || !storedToken) {
       setChecked(true);
       return;
     }
-    void lookupUnlock({ data: { email: storedEmail } })
+    void lookupUnlock({
+      data: { email: storedEmail, token: storedToken.token, iat: storedToken.iat },
+    })
+
       .then((res) => {
         if (cancelled) return;
         if (res.unlocked) setAnswers((res.answers ?? {}) as QuizAnswers);
