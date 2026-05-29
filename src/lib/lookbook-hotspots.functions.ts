@@ -15,7 +15,20 @@ import { requireAdmin } from "@/lib/admin-middleware";
 const uuid = z.string().uuid();
 const surfaceKind = z.string().min(1).max(64);
 const surfaceSlug = z.string().min(1).max(255);
-const handle = z.string().min(1).max(255).regex(/^[a-z0-9-]+$/);
+const handle = z
+  .string()
+  .min(1)
+  .max(255)
+  .regex(/^[a-z0-9-]+$/);
+
+const toStoredCoordinate = (value: number) =>
+  Math.max(0, Math.min(1, value > 1 ? value / 100 : value));
+
+const fromStoredHotspot = <T extends { x: number; y: number }>(row: T): T => ({
+  ...row,
+  x: Number(row.x) <= 1 ? Number(row.x) * 100 : Number(row.x),
+  y: Number(row.y) <= 1 ? Number(row.y) * 100 : Number(row.y),
+});
 
 export type LookbookImageRow = {
   id: string;
@@ -50,14 +63,13 @@ export type LookbookImageWithCount = LookbookImageRow & {
 // ─── List ──────────────────────────────────────────────────────────────
 export const listLookbookImages = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
-  .inputValidator(
-    (d: { surface_kind?: string; search?: string } | undefined) =>
-      z
-        .object({
-          surface_kind: surfaceKind.optional(),
-          search: z.string().max(200).optional(),
-        })
-        .parse(d ?? {}),
+  .inputValidator((d: { surface_kind?: string; search?: string } | undefined) =>
+    z
+      .object({
+        surface_kind: surfaceKind.optional(),
+        search: z.string().max(200).optional(),
+      })
+      .parse(d ?? {}),
   )
   .handler(async ({ data }) => {
     let q = supabaseAdmin
@@ -72,15 +84,13 @@ export const listLookbookImages = createServerFn({ method: "POST" })
     if (data.surface_kind) q = q.eq("surface_kind", data.surface_kind);
     if (data.search && data.search.trim().length > 0) {
       const s = `%${data.search.trim()}%`;
-      q = q.or(
-        `surface_slug.ilike.${s},alt_text.ilike.${s},edition_handle.ilike.${s}`,
-      );
+      q = q.or(`surface_slug.ilike.${s},alt_text.ilike.${s},edition_handle.ilike.${s}`);
     }
     const { data: imgs, error } = await q;
     if (error) throw new Error(error.message);
 
     const ids = (imgs ?? []).map((r) => r.id);
-    let counts = new Map<string, number>();
+    const counts = new Map<string, number>();
     if (ids.length) {
       const { data: spots, error: sErr } = await supabaseAdmin
         .from("lookbook_hotspots")
@@ -88,10 +98,7 @@ export const listLookbookImages = createServerFn({ method: "POST" })
         .in("lookbook_image_id", ids);
       if (sErr) throw new Error(sErr.message);
       for (const s of spots ?? []) {
-        counts.set(
-          s.lookbook_image_id,
-          (counts.get(s.lookbook_image_id) ?? 0) + 1,
-        );
+        counts.set(s.lookbook_image_id, (counts.get(s.lookbook_image_id) ?? 0) + 1);
       }
     }
     return {
@@ -129,7 +136,7 @@ export const getLookbookImage = createServerFn({ method: "POST" })
 
     return {
       image: img as LookbookImageRow,
-      hotspots: (spots ?? []) as LookbookHotspotRow[],
+      hotspots: ((spots ?? []) as LookbookHotspotRow[]).map(fromStoredHotspot),
     };
   });
 
@@ -188,7 +195,6 @@ export const createLookbookImage = createServerFn({ method: "POST" })
     return { image: row as LookbookImageRow };
   });
 
-
 // ─── Hotspot mutations ────────────────────────────────────────────────
 export const createHotspot = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
@@ -220,8 +226,8 @@ export const createHotspot = createServerFn({ method: "POST" })
       .from("lookbook_hotspots")
       .insert({
         lookbook_image_id: data.lookbook_image_id,
-        x: data.x,
-        y: data.y,
+        x: toStoredCoordinate(data.x),
+        y: toStoredCoordinate(data.y),
         product_handle: data.product_handle,
         label: data.label ?? null,
         surface_kind: img?.surface_kind ?? null,
@@ -244,20 +250,13 @@ export const createHotspot = createServerFn({ method: "POST" })
         y: data.y,
       },
     });
-    return { hotspot: row as LookbookHotspotRow };
+    return { hotspot: fromStoredHotspot(row as LookbookHotspotRow) };
   });
-
 
 export const updateHotspot = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
   .inputValidator(
-    (d: {
-      id: string;
-      product_handle?: string;
-      label?: string | null;
-      x?: number;
-      y?: number;
-    }) =>
+    (d: { id: string; product_handle?: string; label?: string | null; x?: number; y?: number }) =>
       z
         .object({
           id: uuid,
@@ -269,18 +268,16 @@ export const updateHotspot = createServerFn({ method: "POST" })
         .parse(d),
   )
   .handler(async ({ data, context }) => {
-
     const patch: {
       product_handle?: string;
       label?: string | null;
       x?: number;
       y?: number;
     } = {};
-    if (data.product_handle !== undefined)
-      patch.product_handle = data.product_handle;
+    if (data.product_handle !== undefined) patch.product_handle = data.product_handle;
     if (data.label !== undefined) patch.label = data.label;
-    if (data.x !== undefined) patch.x = data.x;
-    if (data.y !== undefined) patch.y = data.y;
+    if (data.x !== undefined) patch.x = toStoredCoordinate(data.x);
+    if (data.y !== undefined) patch.y = toStoredCoordinate(data.y);
     if (Object.keys(patch).length === 0) return { ok: true as const };
 
     // Audit: record before/after for the hotspot
@@ -315,23 +312,19 @@ export const updateHotspot = createServerFn({ method: "POST" })
         },
       });
     }
-    return { hotspot: row as LookbookHotspotRow };
+    return { hotspot: fromStoredHotspot(row as LookbookHotspotRow) };
   });
 
 export const deleteHotspot = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
   .inputValidator((d: { id: string }) => z.object({ id: uuid }).parse(d))
   .handler(async ({ data, context }) => {
-
     const { data: before } = await supabaseAdmin
       .from("lookbook_hotspots")
       .select("id, product_handle, label, surface_kind, surface_slug")
       .eq("id", data.id)
       .maybeSingle();
-    const { error } = await supabaseAdmin
-      .from("lookbook_hotspots")
-      .delete()
-      .eq("id", data.id);
+    const { error } = await supabaseAdmin.from("lookbook_hotspots").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     if (before) {
       await supabaseAdmin.from("homepage_layout_audit").insert({
@@ -355,18 +348,16 @@ export const deleteHotspot = createServerFn({ method: "POST" })
 // ─── Bulk update: reassign many hotspots to a single product handle ────
 export const bulkUpdateHotspots = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
-  .inputValidator(
-    (d: { ids: string[]; product_handle: string; label?: string | null }) =>
-      z
-        .object({
-          ids: z.array(uuid).min(1).max(200),
-          product_handle: handle,
-          label: z.string().max(120).nullable().optional(),
-        })
-        .parse(d),
+  .inputValidator((d: { ids: string[]; product_handle: string; label?: string | null }) =>
+    z
+      .object({
+        ids: z.array(uuid).min(1).max(200),
+        product_handle: handle,
+        label: z.string().max(120).nullable().optional(),
+      })
+      .parse(d),
   )
   .handler(async ({ data, context }) => {
-
     const { data: before } = await supabaseAdmin
       .from("lookbook_hotspots")
       .select("id, product_handle, label, surface_kind, surface_slug")
@@ -469,9 +460,7 @@ export const searchCatalogForHotspot = createServerFn({ method: "POST" })
 // ─── Lookup a product by handle (to show "currently linked" details) ───
 export const getCatalogProductByHandle = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
-  .inputValidator((d: { handle: string }) =>
-    z.object({ handle: handle }).parse(d),
-  )
+  .inputValidator((d: { handle: string }) => z.object({ handle: handle }).parse(d))
   .handler(async ({ data }) => {
     const { data: row, error } = await supabaseAdmin
       .from("bg_products")
@@ -502,22 +491,19 @@ export const getCatalogProductByHandle = createServerFn({ method: "POST" })
 // Returns null when nothing has been seeded for that surface yet, so the
 // caller can fall back to its inline hotspot array.
 export const getLookbookForSurface = createServerFn({ method: "POST" })
-  .inputValidator(
-    (d: { surface_kind: string; surface_slug: string; chapter_key?: string }) =>
-      z
-        .object({
-          surface_kind: surfaceKind,
-          surface_slug: surfaceSlug,
-          chapter_key: z.string().min(1).max(255).optional(),
-        })
-        .parse(d),
+  .inputValidator((d: { surface_kind: string; surface_slug: string; chapter_key?: string }) =>
+    z
+      .object({
+        surface_kind: surfaceKind,
+        surface_slug: surfaceSlug,
+        chapter_key: z.string().min(1).max(255).optional(),
+      })
+      .parse(d),
   )
   .handler(async ({ data }) => {
     let q = supabaseAdmin
       .from("lookbook_images")
-      .select(
-        "id, surface_kind, surface_slug, chapter_key, image_url, alt_text, sort_order",
-      )
+      .select("id, surface_kind, surface_slug, chapter_key, image_url, alt_text, sort_order")
       .eq("surface_kind", data.surface_kind)
       .eq("surface_slug", data.surface_slug)
       .order("sort_order", { ascending: true })
@@ -546,7 +532,7 @@ export const getLookbookForSurface = createServerFn({ method: "POST" })
         | "alt_text"
         | "sort_order"
       >,
-      hotspots: (spots ?? []) as LookbookHotspotRow[],
+      hotspots: ((spots ?? []) as LookbookHotspotRow[]).map(fromStoredHotspot),
     };
   });
 
@@ -558,7 +544,6 @@ export const getLookbookForSurface = createServerFn({ method: "POST" })
 export const seedLookbookFromHomepage = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
   .handler(async ({ context }) => {
-
     const { data: layoutRow, error: lErr } = await supabaseAdmin
       .from("homepage_daily_layout")
       .select("id, layout_json")
@@ -625,17 +610,15 @@ export const seedLookbookFromHomepage = createServerFn({ method: "POST" })
 
       const rows = b.hotspots.map((h, i) => ({
         lookbook_image_id: imgRow!.id,
-        x: h.x,
-        y: h.y,
+        x: toStoredCoordinate(h.x),
+        y: toStoredCoordinate(h.y),
         product_handle: h.handle,
         label: h.label ?? null,
         sort_order: i,
         surface_kind: "homepage",
         surface_slug: slug,
       }));
-      const { error: sErr } = await supabaseAdmin
-        .from("lookbook_hotspots")
-        .insert(rows);
+      const { error: sErr } = await supabaseAdmin.from("lookbook_hotspots").insert(rows);
       if (sErr) throw new Error(sErr.message);
       insertedHotspots += rows.length;
     }
@@ -651,7 +634,6 @@ export const seedLookbookFromHomepage = createServerFn({ method: "POST" })
       },
     });
     return { inserted_images: insertedImages, inserted_hotspots: insertedHotspots, skipped };
-
   });
 
 // ─── Validate hotspot handles against catalog ─────────────────────────
@@ -677,9 +659,7 @@ export const validateLookbookHotspots = createServerFn({ method: "POST" })
     // bg_products + lookbook_images and returns only invalid rows, plus
     // total counts for the panel header. Avoids the previous 3+ chunked
     // round-trips (which were the slow path of the admin tool).
-    const { data, error } = await supabaseAdmin.rpc(
-      "validate_lookbook_hotspots",
-    );
+    const { data, error } = await supabaseAdmin.rpc("validate_lookbook_hotspots");
     if (error) throw new Error(error.message);
     const rows = (data ?? []) as Array<{
       hotspot_id: string;
@@ -710,18 +690,11 @@ export const validateLookbookHotspots = createServerFn({ method: "POST" })
     return { total, checked, invalid };
   });
 
-
 // ─── Audit log: hotspot edits + seeding runs ──────────────────────────
 // Reads homepage_layout_audit, scoped to actions emitted by this admin
 // tool. Optional filters narrow by hotspot / image / surface so the
 // detail view can show a per-image change history.
-type JsonValue =
-  | string
-  | number
-  | boolean
-  | null
-  | { [k: string]: JsonValue }
-  | JsonValue[];
+type JsonValue = string | number | boolean | null | { [k: string]: JsonValue } | JsonValue[];
 
 export type HotspotAuditRow = {
   id: string;
@@ -730,7 +703,6 @@ export type HotspotAuditRow = {
   actor: string | null;
   details: JsonValue;
 };
-
 
 export const HOTSPOT_AUDIT_ACTIONS = [
   "hotspot_create",
@@ -744,15 +716,17 @@ export const HOTSPOT_AUDIT_ACTIONS = [
 export const listHotspotAudit = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
   .inputValidator(
-    (d:
-      | {
-          hotspot_id?: string;
-          lookbook_image_id?: string;
-          surface_kind?: string;
-          surface_slug?: string;
-          limit?: number;
-        }
-      | undefined) =>
+    (
+      d:
+        | {
+            hotspot_id?: string;
+            lookbook_image_id?: string;
+            surface_kind?: string;
+            surface_slug?: string;
+            limit?: number;
+          }
+        | undefined,
+    ) =>
       z
         .object({
           hotspot_id: uuid.optional(),
@@ -778,8 +752,7 @@ export const listHotspotAudit = createServerFn({ method: "POST" })
       q = q.eq("details->>lookbook_image_id", data.lookbook_image_id);
     } else if (data.surface_slug) {
       q = q.eq("details->>surface_slug", data.surface_slug);
-      if (data.surface_kind)
-        q = q.eq("details->>surface_kind", data.surface_kind);
+      if (data.surface_kind) q = q.eq("details->>surface_kind", data.surface_kind);
     } else if (data.surface_kind) {
       q = q.eq("details->>surface_kind", data.surface_kind);
     }

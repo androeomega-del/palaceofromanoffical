@@ -2,11 +2,13 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { adminBeforeLoad } from "@/lib/admin-route-guard";
 import { getEmailRecoveryDashboard } from "@/lib/email-recovery-dashboard.functions";
+import { callAdminServerFn } from "@/lib/admin-server-call";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, RefreshCw, AlertTriangle, CheckCircle2 } from "lucide-react";
 
 export const Route = createFileRoute("/admin/email-recovery")({
+  ssr: false,
   beforeLoad: adminBeforeLoad,
   component: AdminEmailRecovery,
   head: () => ({
@@ -36,20 +38,11 @@ function Stat({
   hint?: string;
   tone?: "default" | "warn" | "good";
 }) {
-  const toneCls =
-    tone === "warn"
-      ? "text-red-700"
-      : tone === "good"
-        ? "text-emerald-700"
-        : "";
+  const toneCls = tone === "warn" ? "text-red-700" : tone === "good" ? "text-emerald-700" : "";
   return (
     <Card className="p-6">
-      <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
-        {label}
-      </div>
-      <div className={`mt-3 font-serif text-3xl md:text-4xl tabular-nums ${toneCls}`}>
-        {value}
-      </div>
+      <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">{label}</div>
+      <div className={`mt-3 font-serif text-3xl md:text-4xl tabular-nums ${toneCls}`}>{value}</div>
       {hint ? <div className="mt-1 text-xs text-muted-foreground">{hint}</div> : null}
     </Card>
   );
@@ -68,7 +61,7 @@ function formatWhen(iso: string): string {
 function AdminEmailRecovery() {
   const { data, isLoading, isFetching, error, refetch } = useQuery({
     queryKey: ["admin", "email-recovery"],
-    queryFn: () => getEmailRecoveryDashboard(),
+    queryFn: () => callAdminServerFn(getEmailRecoveryDashboard),
     refetchInterval: 60_000,
     staleTime: 30_000,
   });
@@ -92,15 +85,8 @@ function AdminEmailRecovery() {
                 <ArrowLeft className="h-4 w-4 mr-1.5" /> Admin
               </Button>
             </Link>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => refetch()}
-              disabled={isFetching}
-            >
-              <RefreshCw
-                className={`h-4 w-4 mr-1.5 ${isFetching ? "animate-spin" : ""}`}
-              />
+            <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isFetching}>
+              <RefreshCw className={`h-4 w-4 mr-1.5 ${isFetching ? "animate-spin" : ""}`} />
               Refresh
             </Button>
           </div>
@@ -111,8 +97,7 @@ function AdminEmailRecovery() {
         ) : error ? (
           <Card className="p-6 border-red-200">
             <p className="text-sm text-red-700">
-              Failed to load dashboard:{" "}
-              {error instanceof Error ? error.message : String(error)}
+              Failed to load dashboard: {error instanceof Error ? error.message : String(error)}
             </p>
           </Card>
         ) : data ? (
@@ -121,7 +106,11 @@ function AdminEmailRecovery() {
             <section>
               <h2 className="font-serif text-2xl mb-4">Cart Recovery</h2>
               <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <Stat label="Abandoned carts" value={fmt(data.cartRecovery.totalCarts)} hint="With captured email" />
+                <Stat
+                  label="Abandoned carts"
+                  value={fmt(data.cartRecovery.totalCarts)}
+                  hint="With captured email"
+                />
                 <Stat label="Recovery emails sent" value={fmt(data.cartRecovery.emailsSent)} />
                 <Stat
                   label="Recovered"
@@ -129,10 +118,7 @@ function AdminEmailRecovery() {
                   hint={`${data.cartRecovery.recoveryRate}% of sends`}
                   tone="good"
                 />
-                <Stat
-                  label="Recovered value"
-                  value={usd(data.cartRecovery.recoveredValueUsd)}
-                />
+                <Stat label="Recovered value" value={usd(data.cartRecovery.recoveredValueUsd)} />
                 <Stat
                   label="Eligible right now"
                   value={fmt(data.cartRecovery.eligibleNow)}
@@ -219,9 +205,7 @@ function AdminEmailRecovery() {
                           <span className="inline-block min-w-[100px] text-[10px] uppercase tracking-wider text-muted-foreground">
                             {d.template_name}
                           </span>
-                          <span className="flex-1 truncate font-mono">
-                            {d.recipient_email}
-                          </span>
+                          <span className="flex-1 truncate font-mono">{d.recipient_email}</span>
                           <span className="text-muted-foreground whitespace-nowrap">
                             {formatWhen(d.created_at)}
                           </span>
