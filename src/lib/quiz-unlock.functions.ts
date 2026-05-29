@@ -4,6 +4,8 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { sendGmail } from "./gmail-send";
 import { renderWelcomeEmail } from "./welcome-email-template";
 import { renderLookbookUnlockEmail } from "./lookbook-unlock-email-template";
+import { issueQuizToken, verifyQuizToken } from "./quiz-token.server";
+
 
 const AnswersSchema = z.object({
   gender: z.enum(["Women", "Men", "Unisex"]).optional(),
