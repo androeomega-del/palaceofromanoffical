@@ -1130,9 +1130,7 @@ function SeedFromSourceButton() {
               data: {
                 surface_kind: s.surface_kind,
                 surface_slug: s.surface_slug,
-                image_url: s.image_url.startsWith("http")
-                  ? s.image_url
-                  : `https://palaceofromanofficial.com${s.image_url}`,
+                image_url: s.image_url,
                 alt_text: s.alt_text,
               },
             })
