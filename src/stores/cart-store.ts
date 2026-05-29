@@ -300,7 +300,53 @@ export const useCartStore = create<CartStore>()(
           const data = await storefrontApiRequest<any>(CART_QUERY, { id: cartId });
           if (!data) return;
           const cart = data?.data?.cart;
-          if (!cart || cart.totalQuantity === 0) clearCart();
+          if (!cart || cart.totalQuantity === 0) {
+            clearCart();
+            return;
+          }
+          // Build lookup of authoritative line state from Shopify.
+          const edges: Array<{ node: any }> = cart.lines?.edges ?? [];
+          const byLineId = new Map<string, { quantity: number; available: boolean; price: Money | null }>();
+          for (const { node } of edges) {
+            const m = node?.merchandise;
+            byLineId.set(node.id, {
+              quantity: Number(node.quantity ?? 0),
+              available: Boolean(m?.availableForSale),
+              price: m?.price ? { amount: String(m.price.amount), currencyCode: m.price.currencyCode } : null,
+            });
+          }
+          // Reconcile local items against Shopify: drop unavailable/missing,
+          // refresh price + quantity to the server's source of truth.
+          const cur = get().items;
+          const next: CartItem[] = [];
+          for (const item of cur) {
+            if (!item.lineId) { next.push(item); continue; }
+            const live = byLineId.get(item.lineId);
+            if (!live) continue; // line removed server-side
+            if (!live.available || live.quantity <= 0) continue; // sold out / zeroed
+            next.push({
+              ...item,
+              quantity: live.quantity,
+              price: live.price ?? item.price,
+            });
+          }
+          // Only write if something actually changed to avoid render churn.
+          const changed =
+            next.length !== cur.length ||
+            next.some((n, i) => {
+              const o = cur[i];
+              return (
+                !o ||
+                o.lineId !== n.lineId ||
+                o.quantity !== n.quantity ||
+                o.price.amount !== n.price.amount ||
+                o.price.currencyCode !== n.price.currencyCode
+              );
+            });
+          if (changed) {
+            if (next.length === 0) clearCart();
+            else set({ items: next });
+          }
         } catch (e) {
           console.error("syncCart failed", e);
         } finally {
