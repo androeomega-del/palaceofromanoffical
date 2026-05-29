@@ -394,8 +394,20 @@ function StyleQuizPage() {
     if (storedEmail) setEmail(storedEmail);
 
     if (!storedEmail) return;
+    const storedToken = getStoredQuizToken();
+    if (!storedToken) {
+      // No signed token — can't verify, treat as not unlocked.
+      clearStoredQuizUnlock();
+      return;
+    }
 
-    void lookupUnlock({ data: { email: storedEmail } })
+    void lookupUnlock({
+      data: {
+        email: storedEmail,
+        token: storedToken.token,
+        iat: storedToken.iat,
+      },
+    })
       .then((res) => {
         if (!res.unlocked) {
           // localStorage flag was stale — clear it.
@@ -416,6 +428,7 @@ function StyleQuizPage() {
         fireTrack("quiz_unlock_resumed", { email: storedEmail });
       })
       .catch(() => undefined);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
