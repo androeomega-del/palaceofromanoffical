@@ -32,7 +32,29 @@ interface CartStore {
   getCheckoutUrl: () => string | null;
 }
 
-const CART_QUERY = `query cart($id: ID!) { cart(id: $id) { id totalQuantity } }`;
+const CART_QUERY = `
+  query cart($id: ID!) {
+    cart(id: $id) {
+      id
+      totalQuantity
+      lines(first: 100) {
+        edges {
+          node {
+            id
+            quantity
+            merchandise {
+              ... on ProductVariant {
+                id
+                availableForSale
+                price { amount currencyCode }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
 
 const CART_CREATE_MUTATION = `
   mutation cartCreate($input: CartInput!) {
