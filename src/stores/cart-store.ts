@@ -92,14 +92,14 @@ const CART_LINES_REMOVE_MUTATION = `
 function formatCheckoutUrl(checkoutUrl: string): string {
   try {
     const url = new URL(checkoutUrl);
-    // Shopify returns the checkout URL on the storefront's primary domain
-    // (palaceofroman.com), but that domain serves the Lovable SPA — not
-    // Shopify's checkout. Force the host back to the myshopify.com
-    // permanent domain so the buyer actually lands on Shopify checkout.
-    // Do NOT rewrite the pathname — Shopify's /cart/c/{token} URLs work
-    // natively on the myshopify.com domain; the /checkouts/cn/ tokens are
-    // a different format and rewriting produces a 404.
-    url.host = "mwuwqi-vy.myshopify.com";
+    // Shopify primary domain is checkout.palaceofromanofficial.com, so
+    // checkoutUrl is already branded. We just ensure https + the
+    // channel=online_store flag required for password-free checkout.
+    // Legacy persisted carts may still carry the old myshopify host —
+    // rewrite those to the branded checkout subdomain.
+    if (url.host === "mwuwqi-vy.myshopify.com" || url.host === "palaceofroman.com" || url.host === "palaceofromanofficial.com") {
+      url.host = "checkout.palaceofromanofficial.com";
+    }
     url.protocol = "https:";
     url.searchParams.set("channel", "online_store");
     return url.toString();
@@ -107,6 +107,7 @@ function formatCheckoutUrl(checkoutUrl: string): string {
     return checkoutUrl;
   }
 }
+
 
 function isCartNotFoundError(errs: Array<{ field: string[] | null; message: string }>) {
   return errs.some((e) => {
