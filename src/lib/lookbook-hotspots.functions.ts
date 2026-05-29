@@ -21,6 +21,14 @@ const handle = z
   .max(255)
   .regex(/^[a-z0-9-]+$/);
 
+const imageUrl = z
+  .string()
+  .min(1)
+  .max(2048)
+  .refine((value) => value.startsWith("/") || /^https?:\/\//i.test(value), {
+    message: "Image URL must be a site path or an http(s) URL",
+  });
+
 const toStoredCoordinate = (value: number) =>
   Math.max(0, Math.min(1, value > 1 ? value / 100 : value));
 
@@ -159,7 +167,7 @@ export const createLookbookImage = createServerFn({ method: "POST" })
           surface_slug: surfaceSlug,
           edition_handle: z.string().min(1).max(255).optional(),
           chapter_key: z.string().min(1).max(255).optional(),
-          image_url: z.string().url().max(2048),
+          image_url: imageUrl,
           alt_text: z.string().max(500).optional(),
           sort_order: z.number().int().min(0).max(9999).optional(),
         })
