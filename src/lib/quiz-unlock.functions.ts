@@ -245,12 +245,16 @@ export const unlockQuizLookbook = createServerFn({ method: "POST" })
       lookbook.text,
     );
 
+    const { token, iat } = issueQuizToken(email);
     return {
       ok: true as const,
       already: !isNewSubscriber,
       answers: data.answers,
+      token,
+      iat,
     };
   });
+
 
 /**
  * Public lookup: returns the saved answers if the email has an unlock on
