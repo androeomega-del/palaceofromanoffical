@@ -373,18 +373,20 @@ function BrandSpotlightRail() {
 function BrandSpotlightTile({
   brand,
 }: {
-  brand: { label: string; vendor: string; handle: string; alt: string };
+  brand: { label: string; vendor: string; handle: string; alt: string; src?: string };
 }) {
   const { data } = useQuery({
     queryKey: ["men", "brand-spotlight", brand.handle],
     queryFn: () => fetchCollection(brand.handle, 1),
     staleTime: 15 * 60 * 1000,
   });
-  const imgUrl =
+  const shopifyUrl =
     data?.image?.url ??
     data?.products?.edges?.[0]?.node?.images?.edges?.[0]?.node?.url ??
     null;
-  const alt = data?.image?.altText ?? brand.alt;
+  const imgUrl = brand.src ?? shopifyUrl;
+  const alt = brand.src ? brand.alt : (data?.image?.altText ?? brand.alt);
+
 
   return (
     <Link
