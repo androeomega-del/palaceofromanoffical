@@ -38,11 +38,13 @@ export function FarfetchEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {})
   return (
     <>
       <DepartmentGateway />
-      <NewInRail />
+      <BestSellersRail />
       <SeasonalCampaignBanner />
+      <NewInRail />
       <CategoryQuickLinks />
       {aiBlocks}
       <DiscreteTrustStrip />
+      <BrandStatement />
     </>
   );
 }
@@ -137,7 +139,7 @@ function NewInRail() {
               New In
             </p>
             <h2 className="font-serif text-subhead-md md:text-subhead-lg text-ink">
-              Just landed at Palace of Roman
+              Just landed — and already low stock
             </h2>
           </div>
           <Link
@@ -241,6 +243,9 @@ function CategoryQuickLinks() {
   return (
     <section aria-label="Shop by category" className="bg-canvas pt-16 md:pt-24">
       <div className="max-w-screen-2xl mx-auto px-6 md:px-10">
+        <p className="text-eyebrow uppercase text-bronze-deep mb-5">
+          SHOP BY WHAT YOU ACTUALLY NEED
+        </p>
         <div className="flex items-baseline justify-between mb-8 md:mb-10">
           <h2 className="font-serif text-subhead-md md:text-subhead-lg text-ink">
             Shop by category
