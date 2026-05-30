@@ -298,7 +298,7 @@ function NewInThisWeek() {
       ariaLabel="New in this week"
       eyebrow="New In This Week"
       title="Just Landed"
-      description="New arrivals composed as a look — clothing, an accent, another piece, then the shoe to finish."
+      description="The latest arrivals, added this week."
       actions={
         <Link
           to="/men"
