@@ -74,7 +74,6 @@ function MenHomePage() {
       <ShopByOccasion />
       <FeaturedProductRail />
       <AccessoryCampaignBanner />
-      <HeritageBlock />
       <TrustStrip />
     </>
   );
@@ -651,34 +650,8 @@ function CampaignTile({
 /*  10. Heritage Block                                                 */
 /* ─────────────────────────────────────────────────────────────────── */
 
-function HeritageBlock() {
-  return (
-    <section aria-label="About Palace of Roman" className="bg-canvas-raised mt-16 md:mt-24 py-16 md:py-24 border-y border-ink/10">
-      <div className="max-w-screen-md mx-auto px-6 md:px-10 text-center">
-        <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-5">
-          The House
-        </p>
-        <h2 className="font-serif text-3xl md:text-4xl text-ink mb-6 leading-[1.1]">
-          A curated boutique, not a catalogue.
-        </h2>
-        <p className="text-[14px] md:text-[15px] text-muted-foreground leading-relaxed mb-8 max-w-xl mx-auto">
-          Every piece is sourced through our authorised European distribution
-          partners and arrives with full authenticity guaranteed. We ship
-          worldwide.
-        </p>
-        <Link
-          to="/about"
-          className="inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.3em] text-ink border-b border-bronze pb-1 hover:text-bronze transition-colors"
-        >
-          Our Story →
-        </Link>
-      </div>
-    </section>
-  );
-}
-
 /* ─────────────────────────────────────────────────────────────────── */
-/*  11. Trust Strip                                                    */
+/*  10. Service Carousel                                               */
 /* ─────────────────────────────────────────────────────────────────── */
 
 function TrustStrip() {
@@ -689,19 +662,21 @@ function TrustStrip() {
     { Icon: MessageCircle, label: "Personal Concierge" },
   ];
   return (
-    <section aria-label="Service promise" className="bg-canvas">
-      <div className="max-w-screen-2xl mx-auto px-6 md:px-10 py-10 md:py-14">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-10">
-          {items.map(({ Icon, label }) => (
-            <div key={label} className="flex flex-col items-center text-center">
-              <Icon className="w-5 h-5 text-bronze mb-3" strokeWidth={1.25} />
-              <p className="text-[11px] uppercase tracking-[0.25em] text-ink">
-                {label}
-              </p>
-            </div>
-          ))}
+    <CarouselSection
+      ariaLabel="Service promise"
+      title="The service promise"
+      description="Quiet assurances for a considered luxury purchase."
+      sectionClassName="bg-canvas pt-16 md:pt-24 pb-10 md:pb-14"
+      itemClassName="basis-[58%] sm:basis-[40%] md:basis-[28%] lg:basis-[22%]"
+    >
+      {items.map(({ Icon, label }) => (
+        <div key={label} className="min-h-36 border border-ink/10 bg-canvas-raised flex flex-col items-center justify-center text-center px-6">
+          <Icon className="w-5 h-5 text-bronze mb-3" strokeWidth={1.25} />
+          <p className="text-[11px] uppercase tracking-[0.25em] text-ink">
+            {label}
+          </p>
         </div>
-      </div>
-    </section>
+      ))}
+    </CarouselSection>
   );
 }
