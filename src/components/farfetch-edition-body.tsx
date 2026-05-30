@@ -198,19 +198,19 @@ function SeasonalCampaignBanner() {
             />
           </div>
           <div className="flex flex-col justify-center px-6 md:px-10 lg:px-14 py-8 md:py-16 order-2 md:order-1 bg-canvas">
-            <p className="text-[10px] uppercase tracking-[0.4em] text-bronze-deep mb-5">
+            <p className="text-eyebrow uppercase text-bronze-deep mb-5">
               The Resort Edit
             </p>
-            <h2 className="font-serif text-3xl md:text-5xl leading-[1.05] text-ink mb-5 max-w-[18ch]">
+            <h2 className="font-serif text-headline-md md:text-display-sm text-ink mb-5 max-w-[18ch]">
               The Mediterranean, rendered in cloth.
             </h2>
-            <p className="text-[14px] md:text-[15px] text-muted-foreground leading-relaxed max-w-md mb-8">
+            <p className="text-base text-muted-foreground leading-relaxed max-w-md mb-8">
               Sun-bleached linens, sea-soaked silks, and the houses that know
               the difference between dressing for warmth and dressing for light.
               Curated from Versace, Dolce &amp; Gabbana, Brunello Cucinelli and
               the maisons defining the season.
             </p>
-            <span className="inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.3em] text-ink border-b border-bronze/50 pb-1 self-start group-hover:text-bronze group-hover:border-bronze transition-colors">
+            <span className="inline-flex items-center gap-3 text-cta-lg uppercase text-ink border-b border-bronze/50 pb-1 self-start group-hover:text-bronze group-hover:border-bronze transition-colors">
               Explore the Edit →
             </span>
           </div>
