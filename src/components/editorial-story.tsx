@@ -88,7 +88,15 @@ export function EditorialStory({
             <span className="font-serif italic text-white text-xl md:text-3xl">
               {hero.caption}
             </span>
-            {hero.shopHandle && (
+            {hero.productHandle ? (
+              <Link
+                to="/product/$handle"
+                params={{ handle: hero.productHandle }}
+                className="text-[10px] uppercase tracking-[0.3em] text-white border-b border-white/60 hover:border-white pb-1"
+              >
+                {hero.shopLabel ?? "Shop the piece"} →
+              </Link>
+            ) : hero.shopHandle ? (
               <Link
                 to="/collections/$handle"
                 params={{ handle: hero.shopHandle }}
@@ -96,7 +104,7 @@ export function EditorialStory({
               >
                 {hero.shopLabel ?? "Shop"} →
               </Link>
-            )}
+            ) : null}
           </div>
         </div>
       </section>
