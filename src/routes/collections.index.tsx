@@ -30,7 +30,7 @@ const MAIN_HANDLE_ALLOWLIST = new Set<string>([
   "women-accessories", "womens-accessories", "womens-accessories-1",
   "men-clothing", "mens-clothing",
   "men-shoes", "mens-shoes",
-  "men-bags", "mens-bags-wallets",
+  "men-bags", "mens-bags", "mens-wallets",
   "men-accessories", "mens-accessories",
   "accessories", "bags", "clothing", "shoes",
   "handbags", "backpacks", "boots", "loafers",

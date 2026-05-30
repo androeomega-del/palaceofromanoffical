@@ -33,7 +33,7 @@ const SLIDES: Slide[] = [
   { n: 6, caption: "Worn lightly.", shop: { kind: "collection", handle: "womens-clothing", label: "Shop Women's" } },
   { n: 7, caption: "Cut, refined.", shop: { kind: "collection", handle: "womens-bags", label: "Shop Women's Bags" } },
   { n: 8, caption: "The everyday object.", shop: { kind: "collection", handle: "womens-bags", label: "Shop Women's Bags" } },
-  { n: 9, caption: "Discreet luxury.", shop: { kind: "collection", handle: "mens-bags-wallets", label: "Shop Men's Bags" } },
+  { n: 9, caption: "Discreet luxury.", shop: { kind: "collection", handle: "mens-bags", label: "Shop Men's Bags" } },
   { n: 10, caption: "Tonal study.", shop: { kind: "collection", handle: "womens-bags", label: "Shop Women's Bags" } },
   { n: 11, caption: "Material weight.", shop: { kind: "collection", handle: "womens-clothing", label: "Shop Women's" } },
   { n: 12, caption: "Pressed light.", shop: { kind: "collection", handle: "womens-bags", label: "Shop Women's Bags" } },
@@ -41,7 +41,7 @@ const SLIDES: Slide[] = [
   { n: 14, caption: "Surface and shadow.", shop: { kind: "collection", handle: "womens-accessories-1", label: "Shop Women's Accessories" } },
   { n: 15, caption: "Slow proportion.", shop: { kind: "collection", handle: "womens-clothing", label: "Shop Women's" } },
   { n: 16, caption: "Modern restraint.", shop: { kind: "collection", handle: "mens-accessories", label: "Shop Men's Accessories" } },
-  { n: 17, caption: "Patient craft.", shop: { kind: "collection", handle: "mens-bags-wallets", label: "Shop Men's Wallets" } },
+  { n: 17, caption: "Patient craft.", shop: { kind: "collection", handle: "mens-wallets", label: "Shop Men's Wallets" } },
   { n: 18, caption: "Soft tailoring.", shop: { kind: "collection", handle: "womens-bags", label: "Shop Women's Bags" } },
   { n: 19, caption: "Edited motion.", shop: { kind: "collection", handle: "mens-sneakers", label: "Shop Men's Sneakers" } },
   { n: 20, caption: "Inherited line.", shop: { kind: "collection", handle: "womens-accessories-1", label: "Shop Women's Accessories" } },
@@ -263,8 +263,11 @@ function EditorialMay2026() {
           <Link to="/collections/$handle" params={{ handle: "mens-sweaters-knitwear" }} className="px-6 py-3 border border-ink hover:bg-ink hover:text-canvas transition-colors text-[11px] uppercase tracking-[0.25em]">
             Men's Knitwear
           </Link>
-          <Link to="/collections/$handle" params={{ handle: "mens-bags-wallets" }} className="px-6 py-3 border border-ink hover:bg-ink hover:text-canvas transition-colors text-[11px] uppercase tracking-[0.25em]">
-            Men's Bags &amp; Wallets
+          <Link to="/collections/$handle" params={{ handle: "mens-bags" }} className="px-6 py-3 border border-ink hover:bg-ink hover:text-canvas transition-colors text-[11px] uppercase tracking-[0.25em]">
+            Men's Bags
+          </Link>
+          <Link to="/collections/$handle" params={{ handle: "mens-wallets" }} className="px-6 py-3 border border-ink hover:bg-ink hover:text-canvas transition-colors text-[11px] uppercase tracking-[0.25em]">
+            Men's Wallets
           </Link>
           <Link to="/collections/$handle" params={{ handle: "mens-sneakers" }} className="px-6 py-3 border border-ink hover:bg-ink hover:text-canvas transition-colors text-[11px] uppercase tracking-[0.25em]">
             Men's Sneakers

@@ -31,7 +31,8 @@ import mensUnderwear from "@/assets/collections/auto/mens-underwear-loungewear.j
 import mensSneakers from "@/assets/collections/auto/mens-sneakers.jpg";
 import mensBoots from "@/assets/collections/auto/mens-boots.jpg";
 import mensSandals from "@/assets/collections/auto/mens-sandals-slides.jpg";
-import mensBagsWallets from "@/assets/collections/auto/mens-bags-wallets.jpg";
+import mensBags from "@/assets/collections/auto/mens-bags.jpg";
+import mensWallets from "@/assets/collections/auto/mens-wallets.jpg";
 import mensBelts from "@/assets/collections/auto/mens-belts.jpg";
 import mensWatchesJewelry from "@/assets/collections/auto/mens-watches-jewelry.jpg";
 import womensClothing from "@/assets/collections/auto/womens-clothing.jpg";
@@ -107,7 +108,9 @@ const BY_HANDLE: Record<string, string> = {
   "mens-sneakers": mensSneakers,
   "mens-boots": mensBoots,
   "mens-sandals-slides": mensSandals,
-  "mens-bags-wallets": mensBagsWallets,
+  "mens-bags": mensBags,
+  "mens-wallets": mensWallets,
+  "mens-bags-wallets": mensBags,
   "mens-belts": mensBelts,
   "mens-watches-jewelry": mensWatchesJewelry,
   "womens-clothing": womensClothing,
@@ -204,7 +207,7 @@ const FALLBACK_RULES: { test: RegExp; img: string }[] = [
   { test: /\bmen('?s)?\b.*(active|sport|gym)/, img: mensActivewear },
   { test: /\bmen('?s)?\b.*(underwear|lounge|pajama|sleep)/, img: mensUnderwear },
   { test: /\bmen('?s)?\b.*(watch|jewel)/, img: mensWatchesJewelry },
-  { test: /\bmen('?s)?\b.*(bag|wallet|brief)/, img: mensBagsWallets },
+  { test: /\bmen('?s)?\b.*(bag|wallet|brief)/, img: mensBags },
   { test: /\bmen('?s)?\b.*(belt)/, img: mensBelts },
   { test: /\bmen('?s)?\b.*(access)/, img: mensAccessories },
   { test: /\bmen('?s)?\b/, img: mensClothing },
@@ -264,8 +267,7 @@ const HANDLE_ALIASES: Record<string, string> = {
   "mens-outerwear": "mens-jackets-coats",
   "mens-sandals": "mens-sandals-slides",
   "mens-slides": "mens-sandals-slides",
-  "mens-bags": "mens-bags-wallets",
-  "mens-wallets": "mens-bags-wallets",
+  "mens-bags-wallets": "mens-bags",
   "mens-watches": "mens-watches-jewelry",
   "mens-jewelry": "mens-watches-jewelry",
   "mens-underwear": "mens-underwear-loungewear",
@@ -423,7 +425,8 @@ const ALT_BY_HANDLE: Record<string, string> = {
   "mens-sneakers": "Men's designer sneakers — luxury low- and high-top trainers",
   "mens-boots": "Men's designer boots — luxury Chelsea, lace-up and ankle boots",
   "mens-sandals-slides": "Men's designer sandals and slides",
-  "mens-bags-wallets": "Men's designer bags and wallets — briefcases, backpacks and leather goods",
+  "mens-bags": "Men's designer bags — luxury briefcases, backpacks, messenger bags and totes",
+  "mens-wallets": "Men's designer wallets and small leather goods — bifolds, card-holders and zip-around wallets",
   "mens-belts": "Men's designer belts in luxury leather",
   "mens-watches-jewelry": "Men's designer watches and jewelry",
 };
@@ -625,7 +628,8 @@ const FOCAL_BY_HANDLE: Record<string, string> = {
   "mens-sneakers": "50% 60%",
   "mens-boots": "50% 60%",
   "mens-sandals-slides": "50% 60%",
-  "mens-bags-wallets": "50% 50%",
+  "mens-bags": "50% 50%",
+  "mens-wallets": "50% 50%",
   "mens-belts": "50% 50%",
   "mens-watches-jewelry": "50% 50%",
   "mens-accessories": "50% 45%",
@@ -816,7 +820,8 @@ const TOPIC_EXPECTATIONS: Record<string, TopicExpectation> = {
   "mens-sneakers": { gender: "mens", category: [/\b(sneaker|trainer|kicks)\w*/] },
   "mens-boots": { gender: "mens", category: [/\bboot\w*/] },
   "mens-sandals-slides": { gender: "mens", category: [/\b(sandal|slide|flip[- ]?flop)\w*/] },
-  "mens-bags-wallets": { gender: "mens", category: [/\b(bag|wallet|briefcase|backpack|messenger|pouch)\w*/] },
+  "mens-bags": { gender: "mens", category: [/\b(bag|briefcase|backpack|messenger|tote|pouch|holdall|duffel)\w*/] },
+  "mens-wallets": { gender: "mens", category: [/\b(wallet|cardholder|card[- ]?holder|billfold|bifold|zip[- ]?around)\w*/] },
   "mens-belts": { gender: "mens", category: [/\bbelt\w*/] },
   "mens-watches-jewelry": { gender: "mens", category: [/\b(watch|jewel|cufflink|bracelet|ring|necklace)\w*/] },
   "mens-accessories": { gender: "mens", category: [/\b(access|belt|wallet|bag|tie|cufflink|sunglass|hat)\w*/] },
