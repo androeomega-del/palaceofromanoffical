@@ -1200,7 +1200,7 @@ function VariantOption({
 
 function ProductSkeleton() {
   return (
-    <div className="px-6 py-12 max-w-screen-2xl mx-auto">
+    <div className="px-6 py-8 max-w-screen-2xl mx-auto">
       <div className="grid grid-cols-1 lg:grid-cols-[1.25fr_1fr] gap-12 lg:gap-16">
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-2 aspect-[4/5] bg-muted animate-pulse" />

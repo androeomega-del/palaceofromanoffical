@@ -20,7 +20,7 @@ export function CraftsmanshipArticle({
 }) {
   return (
     <main className="bg-canvas text-ink">
-      <article className="mx-auto max-w-3xl px-6 py-16 md:py-24">
+      <article className="mx-auto max-w-3xl px-6 py-10 md:py-20">
         <header className="mb-12 text-center border-b border-ink/10 pb-10">
           <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-5">
             {eyebrow} · {readingMinutes} min read

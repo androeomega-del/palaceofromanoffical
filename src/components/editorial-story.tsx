@@ -110,7 +110,7 @@ export function EditorialStory({
       </section>
 
       {/* Chapters */}
-      <div className="max-w-screen-2xl mx-auto px-6 py-16 md:py-24 space-y-20 md:space-y-32">
+      <div className="max-w-screen-2xl mx-auto px-6 py-10 md:py-20 space-y-20 md:space-y-32">
         {chapters.map((chapter, ci) => {
           if (chapter.length === 1) {
             return (
@@ -150,7 +150,7 @@ export function EditorialStory({
       </div>
 
       {/* Outro */}
-      <section className="border-t border-ink/10 py-20 md:py-28 text-center px-6">
+      <section className="border-t border-ink/10 py-12 md:py-24 text-center px-6">
         <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-4">End of issue</p>
         <h2 className="font-serif text-3xl md:text-5xl mb-8">Shop the edit</h2>
         <div className="flex flex-wrap justify-center gap-3 md:gap-4">

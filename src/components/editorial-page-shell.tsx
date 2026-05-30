@@ -50,7 +50,7 @@ export function EditorialPageShell({ eyebrow, title, intro, heroImage, heroAlt, 
         </section>
       )}
 
-      <div className="max-w-screen-2xl mx-auto px-6 py-20 md:py-28">{children}</div>
+      <div className="max-w-screen-2xl mx-auto px-6 py-12 md:py-24">{children}</div>
     </main>
   );
 }

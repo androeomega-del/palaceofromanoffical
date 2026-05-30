@@ -415,7 +415,7 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
       {/* SUMMER LINEN RAIL — gender-neutral white & natural edit. Replaces
           the duplicate "Trending This Week" that the AI edition band also
           renders, so visitors never see Trending twice. */}
-      <section className="py-20 md:py-24 bg-canvas">
+      <section className="py-12 md:py-20 bg-canvas">
         <div className="max-w-screen-2xl mx-auto">
           <div className="flex justify-between items-end mb-10 md:mb-12 px-6">
             <div>
@@ -441,7 +441,7 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
 
       {/* ITALIAN LEATHER ATELIER — handbags & small leather goods. Replaces
           the duplicate "Curated For You" the AI edition used to render. */}
-      <section className="py-20 md:py-24 bg-canvas">
+      <section className="py-12 md:py-20 bg-canvas">
         <div className="max-w-screen-2xl mx-auto">
           <div className="flex justify-between items-end mb-10 md:mb-12 px-6">
             <div>
@@ -470,7 +470,7 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
           Hidden when supply is too thin to fill a rail — a single card with
           empty space reads as broken on a top-tier site. */}
       {(sunglassesQ.isLoading || dedupedRails.sunglasses.length >= 3) && (
-        <section className="py-20 md:py-24 bg-canvas-raised">
+        <section className="py-12 md:py-20 bg-canvas-raised">
           <div className="max-w-screen-2xl mx-auto">
             <div className="flex justify-between items-end mb-10 md:mb-12 px-6">
               <div>
@@ -502,7 +502,7 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
 
 
       {/* 3. NEW ARRIVALS — horizontal scroll rail */}
-      <section className="py-24 bg-canvas-raised">
+      <section className="py-14 bg-canvas-raised">
         <div className="max-w-screen-2xl mx-auto">
           <div className="flex justify-between items-end mb-12 px-6">
             <div>
@@ -521,7 +521,7 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
       </section>
 
       {/* 4. FEATURED BRANDS — brands stocked in BOTH women's and men's */}
-      <section className="py-28 border-y border-ink/5">
+      <section className="py-16 border-y border-ink/5">
         <div className="max-w-screen-2xl mx-auto px-6">
           <div className="text-center mb-16">
             <span className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-4 block">Maisons</span>
@@ -560,7 +560,7 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
       </section>
 
       {/* 5. EDITORIAL TEASER — May 2026 */}
-      <section className="py-28">
+      <section className="py-16">
         <div className="max-w-screen-2xl mx-auto px-6 grid md:grid-cols-2 gap-10 lg:gap-16 items-center">
           <div className="order-2 md:order-1">
             <span className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-4 block">The Edit</span>
@@ -602,7 +602,7 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
       </section>
 
       {/* 6. EDITORIAL SPLIT — two panels, sub-CTAs for clothing + shoes */}
-      <section className="py-28 border-t border-ink/5">
+      <section className="py-16 border-t border-ink/5">
         <div className="max-w-screen-2xl mx-auto px-6 grid md:grid-cols-2 gap-6 lg:gap-10">
           <EditorialPanel
             image={womenEditorialQ.data?.[0]?.node?.images?.edges?.[0]?.node}
@@ -626,7 +626,7 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
       </section>
 
       {/* 6b. WARDROBE ESSENTIALS — Polos, Long Sleeve Tees, Hoodies */}
-      <section className="py-28 border-t border-ink/5 bg-canvas-raised">
+      <section className="py-16 border-t border-ink/5 bg-canvas-raised">
         <div className="max-w-screen-2xl mx-auto px-6">
           <div className="text-center mb-16 max-w-xl mx-auto">
             <span className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-4 block">
@@ -674,7 +674,7 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
 
 
       {/* 6. BEST SELLERS */}
-      <section className="py-28">
+      <section className="py-16">
         <div className="max-w-screen-2xl mx-auto px-6">
           {(() => {
             const bestEdges = dedupedRails.bestSellers;
@@ -731,7 +731,7 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
 
 
       {/* 7. TRUST / WHY SHOP WITH US — four pillars with icons */}
-      <section className="py-24 border-t border-ink/5 bg-canvas-raised">
+      <section className="py-14 border-t border-ink/5 bg-canvas-raised">
         <div className="max-w-screen-2xl mx-auto px-6">
           <div className="text-center mb-16">
             <span className="text-[10px] uppercase tracking-[0.32em] text-bronze mb-4 block">The House</span>
@@ -937,7 +937,7 @@ function HorizontalRail({ edges, loading }: { edges: ShopifyProduct[]; loading?:
     );
   }
   if (edges.length === 0) {
-    return <p className="text-center text-sm text-muted-foreground py-16 px-6">No new arrivals yet.</p>;
+    return <p className="text-center text-sm text-muted-foreground py-10 px-6">No new arrivals yet.</p>;
   }
   return (
     <div className="flex gap-6 overflow-x-auto px-6 pb-4 snap-x snap-mandatory scrollbar-hide">
@@ -965,7 +965,7 @@ function ProductGrid({ edges, loading }: { edges: ShopifyProduct[]; loading?: bo
     );
   }
   if (edges.length === 0) {
-    return <p className="py-24 text-center text-sm text-muted-foreground">No products found.</p>;
+    return <p className="py-14 text-center text-sm text-muted-foreground">No products found.</p>;
   }
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
@@ -993,7 +993,7 @@ function ProductCarousel({ edges, loading }: { edges: ShopifyProduct[]; loading?
     );
   }
   if (edges.length === 0) {
-    return <p className="py-24 text-center text-sm text-muted-foreground">No products found.</p>;
+    return <p className="py-14 text-center text-sm text-muted-foreground">No products found.</p>;
   }
 
   return (
@@ -1022,7 +1022,7 @@ function NewsletterStrip() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   return (
-    <section className="py-28 bg-ink text-canvas">
+    <section className="py-16 bg-ink text-canvas">
       <div className="max-w-2xl mx-auto px-6 text-center">
         <span className="text-[10px] uppercase tracking-[0.35em] text-bronze mb-6 block">The Dispatch</span>
         <h2 className="text-3xl md:text-4xl font-serif mb-5">Receive our quarterly edit.</h2>

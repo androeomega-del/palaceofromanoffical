@@ -34,7 +34,7 @@ export function ShopTheEditError({
   isRetrying?: boolean;
 }) {
   return (
-    <div className="py-24 text-center border border-ink/10 bg-canvas">
+    <div className="py-14 text-center border border-ink/10 bg-canvas">
       <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-4">
         The edit is momentarily unavailable
       </p>
@@ -73,7 +73,7 @@ export function ShopTheEditEmpty({
   ctaHandle?: string;
 }) {
   return (
-    <div className="py-24 text-center border border-ink/10 bg-canvas">
+    <div className="py-14 text-center border border-ink/10 bg-canvas">
       <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-4">
         Between deliveries
       </p>

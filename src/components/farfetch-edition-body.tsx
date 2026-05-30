@@ -197,7 +197,7 @@ function SeasonalCampaignBanner() {
               className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-[1.04]"
             />
           </div>
-          <div className="flex flex-col justify-center px-8 md:px-14 py-12 md:py-20 order-2 md:order-1 bg-canvas">
+          <div className="flex flex-col justify-center px-8 md:px-14 py-8 md:py-16 order-2 md:order-1 bg-canvas">
             <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-5">
               The Resort Edit
             </p>

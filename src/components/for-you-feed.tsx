@@ -86,7 +86,7 @@ export function ForYouFeed() {
 
   return (
     <section
-      className="px-6 py-20 border-t border-ink/5 bg-canvas"
+      className="px-6 py-12 border-t border-ink/5 bg-canvas"
       data-testid="for-you-feed"
     >
       <div className="max-w-screen-2xl mx-auto">

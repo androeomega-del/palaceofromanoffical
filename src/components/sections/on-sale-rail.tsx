@@ -41,7 +41,7 @@ export function OnSaleRail({
   if (!isLoading && (!data || data.length === 0)) return null;
 
   return (
-    <section className="py-16 md:py-20 bg-ink/5">
+    <section className="py-10 md:py-16 bg-ink/5">
       <div className="max-w-screen-2xl mx-auto px-5 md:px-10">
         <header className="mb-8">
           <p className="text-[11px] uppercase tracking-[0.32em] text-bronze">
