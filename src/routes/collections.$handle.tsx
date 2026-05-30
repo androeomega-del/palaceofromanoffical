@@ -7,7 +7,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { fetchCollectionFiltered, fetchCollection, fetchProductsPage, type StorefrontFilterValue } from "@/lib/shopify";
 import { fetchCollectionTotal } from "@/lib/collection-count.functions";
 import { fetchCollectionCategoryCounts } from "@/lib/collection-category-counts.functions";
-import { CATEGORY_BUCKETS, bucketProduct, type CategoryBucketLabel } from "@/lib/category-buckets";
+import { bucketsForHandle, bucketProduct } from "@/lib/category-buckets";
 import { ProductCard } from "@/components/product-card";
 import { absoluteUrl, SITE_URL } from "@/lib/seo";
 import { collectionSeo } from "@/lib/collection-seo";
@@ -395,17 +395,21 @@ function CollectionPage() {
 
   // Match a loaded product to the active chip. For layering-edit we use
   // title-regex; for everything else we use the shared bucketProduct
-  // helper that the server-side aggregation also uses.
+  // helper scoped to the gender-specific bucket set for this handle.
+  const activeBuckets = useMemo(() => bucketsForHandle(handle), [handle]);
   function matchesActiveType(
     node: { title?: string | null; tags?: string[] | null },
     label: string,
   ): boolean {
     if (isLayering) return inferLayeringType(node.title ?? "") === label;
     return (
-      bucketProduct({
-        title: node.title ?? "",
-        tags: Array.isArray(node.tags) ? node.tags : [],
-      }) === label
+      bucketProduct(
+        {
+          title: node.title ?? "",
+          tags: Array.isArray(node.tags) ? node.tags : [],
+        },
+        activeBuckets,
+      ) === label
     );
   }
 
@@ -424,11 +428,11 @@ function CollectionPage() {
       );
     }
     if (!categoryCounts) return [];
-    return CATEGORY_BUCKETS.map((b) => ({
-      label: b.label as string,
-      count: categoryCounts[b.label as CategoryBucketLabel] ?? 0,
+    return activeBuckets.map((b) => ({
+      label: b.label,
+      count: categoryCounts[b.label] ?? 0,
     })).filter((chip) => chip.count > 0);
-  }, [isLayering, discountEdges, categoryCounts]);
+  }, [isLayering, discountEdges, categoryCounts, activeBuckets]);
 
   const edges = useMemo(() => {
     if (!typeFilter) return discountEdges;
@@ -451,7 +455,7 @@ function CollectionPage() {
   const noun = (n: number) => (n === 1 ? "Piece" : "Pieces");
   const activeBucketTrueCount: number | null =
     typeFilter && !isLayering && categoryCounts
-      ? categoryCounts[typeFilter as CategoryBucketLabel] ?? null
+      ? categoryCounts[typeFilter] ?? null
       : null;
   let countLabel: string;
   if (q.isLoading) {
