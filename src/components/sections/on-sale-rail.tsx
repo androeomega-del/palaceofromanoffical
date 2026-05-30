@@ -41,13 +41,13 @@ export function OnSaleRail({
   if (!isLoading && (!data || data.length === 0)) return null;
 
   return (
-    <section className="py-10 md:py-16 bg-ink/5">
+    <section className="py-section-sm md:py-16 bg-ink/5">
       <div className="max-w-screen-2xl mx-auto px-5 md:px-10">
         <header className="mb-8">
-          <p className="text-[11px] uppercase tracking-[0.32em] text-bronze-deep">
+          <p className="text-eyebrow uppercase text-bronze-deep">
             The Markdowns
           </p>
-          <h2 className="mt-2 font-serif text-2xl md:text-3xl tracking-[0.04em] text-ink">
+          <h2 className="mt-tight font-serif text-subhead-md md:text-subhead-lg tracking-subhead-open text-ink">
             On Sale — quietly reduced
           </h2>
         </header>
@@ -67,7 +67,7 @@ export function OnSaleRail({
         <div className="mt-10 flex justify-center">
           <Link
             to={ctaTo}
-            className="inline-flex items-center h-11 px-7 bg-ink text-canvas text-[11px] uppercase tracking-[0.3em] hover:bg-bronze transition-colors"
+            className="inline-flex items-center h-tap-target px-7 bg-ink text-canvas text-cta-lg uppercase hover:bg-bronze transition-colors"
           >
             Shop the Sale
           </Link>

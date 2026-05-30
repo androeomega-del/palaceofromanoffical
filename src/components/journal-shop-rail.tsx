@@ -47,7 +47,7 @@ export function JournalShopRail({ sources, eyebrow = "From the catalog" }: { sou
 
   return (
     <section className="mt-16 border-t border-ink/10 pt-12">
-      <p className="text-[10px] uppercase tracking-[0.4em] text-bronze-deep mb-8 text-center">{eyebrow}</p>
+      <p className="text-eyebrow uppercase text-bronze-deep mb-8 text-center">{eyebrow}</p>
       <div className="space-y-12">
         {q.data.map((group) => (
           <div key={group.handle}>
@@ -55,7 +55,7 @@ export function JournalShopRail({ sources, eyebrow = "From the catalog" }: { sou
               <h3 className="font-serif text-xl">{group.label}</h3>
               <Link
                 to={`/collections/${group.handle}` as string}
-                className="text-[10px] uppercase tracking-[0.3em] text-bronze-deep hover:text-ink transition-colors"
+                className="text-cta-lg uppercase text-bronze-deep hover:text-ink transition-colors"
               >
                 Shop all →
               </Link>

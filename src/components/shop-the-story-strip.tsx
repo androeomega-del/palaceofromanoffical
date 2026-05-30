@@ -125,7 +125,7 @@ export function ShopTheStoryStrip({
     <section className="max-w-7xl mx-auto px-6 md:px-10 my-24 md:my-32">
       <div className="flex items-end justify-between mb-10 gap-6 flex-wrap">
         <div className="space-y-3 max-w-xl">
-          <p className="text-[10px] tracking-[0.32em] uppercase text-bronze-deep">
+          <p className="text-eyebrow uppercase text-bronze-deep">
             {eyebrow}
           </p>
           <h2 className="font-serif text-3xl md:text-4xl">{title}</h2>
@@ -137,7 +137,7 @@ export function ShopTheStoryStrip({
           {ctaLabel && ctaHref && (
             <a
               href={ctaHref}
-              className="text-[10px] uppercase tracking-[0.3em] border-b border-ink pb-1 hover:text-bronze hover:border-bronze transition-colors whitespace-nowrap"
+              className="text-cta-lg uppercase border-b border-ink pb-1 hover:text-bronze hover:border-bronze transition-colors whitespace-nowrap"
             >
               {ctaLabel} →
             </a>

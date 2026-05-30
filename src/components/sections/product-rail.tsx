@@ -64,13 +64,13 @@ export function ProductRail({
   const skeletonCount = columns;
 
   return (
-    <section className="py-10 md:py-16 bg-canvas">
+    <section className="py-section-sm md:py-16 bg-canvas">
       <div className="max-w-screen-2xl mx-auto px-5 md:px-10">
         <header className="mb-8">
-          <p className="text-[11px] uppercase tracking-[0.32em] text-bronze-deep">
+          <p className="text-eyebrow uppercase text-bronze-deep">
             {eyebrow}
           </p>
-          <h2 className="mt-2 font-serif text-2xl md:text-3xl tracking-[0.04em] text-ink">
+          <h2 className="mt-tight font-serif text-subhead-md md:text-subhead-lg tracking-subhead-open text-ink">
             {title}
           </h2>
         </header>
@@ -91,7 +91,7 @@ export function ProductRail({
         <div className="mt-10 flex justify-center">
           <a
             href={ctaTo}
-            className="inline-flex items-center h-11 px-7 border border-ink text-ink text-[11px] uppercase tracking-[0.3em] hover:bg-ink hover:text-canvas transition-colors"
+            className="inline-flex items-center h-tap-target px-7 border border-ink text-ink text-cta-lg uppercase hover:bg-ink hover:text-canvas transition-colors"
           >
             {ctaLabel}
           </a>

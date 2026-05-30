@@ -28,15 +28,15 @@ export function BrandsOfTheMoment({
 }) {
   if (!brands || brands.length === 0) return null;
   return (
-    <section className="py-10 md:py-16 bg-canvas">
+    <section className="py-section-sm md:py-16 bg-canvas">
       <div className="max-w-screen-2xl mx-auto px-5 md:px-10">
         <header className="mb-8 flex items-end justify-between">
-          <h2 className="font-serif text-2xl md:text-3xl tracking-[0.04em] text-ink">
+          <h2 className="font-serif text-subhead-md md:text-subhead-lg tracking-subhead-open text-ink">
             {eyebrow}
           </h2>
           <Link
             to="/brands"
-            className="hidden md:inline text-[11px] uppercase tracking-[0.3em] text-bronze-deep hover:text-ink transition-colors"
+            className="hidden md:inline text-cta-lg uppercase text-bronze-deep hover:text-ink transition-colors"
           >
             All maisons →
           </Link>
@@ -58,15 +58,16 @@ export function BrandsOfTheMoment({
               />
               <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/15 to-transparent" />
               <div className="absolute inset-x-0 bottom-0 p-6">
-                <p className="font-serif text-canvas text-2xl md:text-3xl tracking-[0.04em] leading-tight">
+                <p className="font-serif text-canvas text-subhead-md md:text-subhead-lg tracking-subhead-open leading-tight">
                   {b.vendor}
                 </p>
                 {b.note && (
-                  <p className="mt-2 text-[11px] uppercase tracking-[0.28em] text-canvas/80">
+                  <p className="mt-2 text-eyebrow-tight uppercase text-canvas/80">
                     {b.note}
                   </p>
                 )}
-                <span className="mt-3 inline-block text-[10px] uppercase tracking-[0.3em] text-canvas border-b border-bronze pb-0.5">
+                {/* text-bronze is decorative-on-dark border here, not text — passes */}
+                <span className="mt-3 inline-block text-cta-lg uppercase text-canvas border-b border-bronze pb-0.5">
                   Shop the Maison
                 </span>
               </div>

@@ -134,7 +134,7 @@ export function ThemedEdit({
         <div className="relative h-full flex items-end">
           <div className="max-w-screen-2xl mx-auto px-6 md:px-10 pb-16 md:pb-24 w-full">
             {/* text-bronze passes on dark hero gradient overlay (~4.5:1) — do not change to bronze-deep */}
-            <span className="block text-[10px] md:text-xs uppercase tracking-[0.5em] text-bronze mb-5">
+            <span className="block text-eyebrow-loose uppercase text-bronze mb-5">
               {issueLabel}
             </span>
             <h1 className="font-serif text-canvas text-5xl md:text-7xl lg:text-[8rem] leading-[0.92] max-w-5xl text-balance">
@@ -161,7 +161,7 @@ export function ThemedEdit({
       {/* MANIFESTO */}
       <section className="px-6 md:px-10 py-14 md:py-28 bg-canvas">
         <div className="max-w-3xl mx-auto text-center">
-          <span className="text-[10px] uppercase tracking-[0.4em] text-bronze-deep mb-6 block">
+          <span className="text-eyebrow uppercase text-bronze-deep mb-6 block">
             The Manifesto
           </span>
           <p className="font-serif text-2xl md:text-4xl leading-[1.25] text-ink mb-8 text-balance">
@@ -215,7 +215,7 @@ export function ThemedEdit({
                   >
                     <div className="px-5 pb-6 pt-10 md:p-12 lg:p-16 max-w-[88%] md:max-w-lg lg:max-w-xl text-canvas">
                       {/* text-bronze passes on dark chapter gradient overlay (~4.5:1) — do not change to bronze-deep */}
-                      <span className="text-[9px] md:text-[10px] uppercase tracking-[0.35em] md:tracking-[0.4em] text-bronze mb-2 md:mb-3 block">
+                      <span className="text-eyebrow uppercase text-bronze mb-2 md:mb-3 block">
                         {c.eyebrow}
                       </span>
                       <h2 className="font-serif text-canvas text-[1.6rem] md:text-4xl lg:text-5xl leading-[1.02] md:leading-[1.05] mb-2.5 md:mb-4 text-balance">
@@ -226,7 +226,7 @@ export function ThemedEdit({
                       </p>
                       {spots.length > 0 && (
                         // text-bronze passes on dark chapter gradient overlay (~4.5:1) — do not change to bronze-deep
-                        <p className="mt-3 md:mt-5 text-[9px] md:text-[10px] uppercase tracking-[0.3em] text-bronze">
+                        <p className="mt-3 md:mt-5 text-cta-lg uppercase text-bronze">
                           Tap the marks to shop the look
                         </p>
                       )}
@@ -248,7 +248,7 @@ export function ThemedEdit({
         <div className="max-w-screen-2xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-12">
             <div>
-              <span className="text-[10px] uppercase tracking-[0.3em] text-bronze-deep mb-3 block">
+              <span className="text-cta-lg uppercase text-bronze-deep mb-3 block">
                 {shopEyebrow}
               </span>
               <h2 className="font-serif text-3xl md:text-5xl leading-[1.05]">
@@ -352,7 +352,7 @@ export function ThemedEdit({
 
       {/* OUTRO */}
       <section className="border-t border-ink/10 py-12 md:py-24 text-center px-6 bg-canvas">
-        <p className="text-[10px] uppercase tracking-[0.4em] text-bronze-deep mb-4">
+        <p className="text-eyebrow uppercase text-bronze-deep mb-4">
           End of edit
         </p>
         <h2 className="font-serif text-3xl md:text-5xl mb-8">Continue exploring</h2>
@@ -362,7 +362,7 @@ export function ThemedEdit({
               key={c.handle}
               to="/collections/$handle"
               params={{ handle: c.handle }}
-              className="px-6 py-3 border border-ink hover:bg-ink hover:text-canvas transition-colors text-[11px] uppercase tracking-[0.25em]"
+              className="px-6 py-3 border border-ink hover:bg-ink hover:text-canvas transition-colors text-cta-md uppercase"
             >
               {c.label}
             </Link>
