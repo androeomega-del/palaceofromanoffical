@@ -24,6 +24,8 @@ import { ProductCard } from "@/components/product-card";
 import marketingMenResort from "@/assets/marketing-men-resort-summer.jpg";
 import marketingMen from "@/assets/marketing-men-summer.jpg";
 import marketingAccessories from "@/assets/marketing-accessories-summer.jpg";
+import editorialAsianMaleTailoring from "@/assets/editorial-asian-male-tailoring.jpg";
+import editorialLatinoMaleEvening from "@/assets/editorial-latino-male-evening.jpg";
 
 export const Route = createFileRoute("/men")({
   head: () => ({
@@ -749,8 +751,8 @@ const TRENDING_EDITORIALS: {
     title: "The unstructured suit.",
     body: "Soft-shouldered jackets, fluid trousers, and the discreet codes of new menswear power.",
     to: "/editorial/mens-edit",
-    image: marketingMen,
-    alt: "Quiet luxury tailoring — soft-shouldered unstructured jackets",
+    image: editorialAsianMaleTailoring,
+    alt: "Quiet luxury tailoring — soft-shouldered unstructured cream linen suit photographed in Mediterranean light",
   },
   {
     eyebrow: "Trend 02 — Mediterranean Resort",
@@ -773,8 +775,8 @@ const TRENDING_EDITORIALS: {
     title: "Silk, after dark.",
     body: "The silk shirt, the dinner jacket, and the details holding up under candlelight.",
     to: "/editorial/the-new-evening",
-    image: marketingMenResort,
-    alt: "Evening menswear — silk shirts and the dinner jacket",
+    image: editorialLatinoMaleEvening,
+    alt: "Evening menswear — black silk shirt and tailored dinner jacket photographed by candlelight",
   },
 ];
 
