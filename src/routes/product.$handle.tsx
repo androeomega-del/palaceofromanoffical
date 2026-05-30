@@ -518,7 +518,7 @@ function ProductView({
                           loading={i === 0 ? "eager" : "lazy"}
                           fetchPriority={i === 0 ? "high" : undefined}
                           decoding="async"
-                          className="w-full h-full object-contain p-5"
+                          className="w-full h-full object-contain p-2"
                         />
                       </button>
                     )}
