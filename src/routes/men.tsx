@@ -683,3 +683,196 @@ function TrustStrip() {
     </CarouselSection>
   );
 }
+
+/* ─────────────────────────────────────────────────────────────────── */
+/*  SS26 Sale — up to 50% off                                          */
+/* ─────────────────────────────────────────────────────────────────── */
+
+function SaleCarousel() {
+  // Try a dedicated sale collection, fall back to mens-new-arrivals filtered
+  // to anything with compareAtPrice. Surface raw products either way so the
+  // rail is never empty during the staged launch.
+  const sale = useQuery({
+    queryKey: ["men", "ss26-sale"],
+    queryFn: () => fetchCollection("mens-sale", 12),
+    staleTime: 10 * 60 * 1000,
+  });
+  const fallback = useQuery({
+    queryKey: ["men", "ss26-sale-fallback"],
+    queryFn: () => fetchCollection("sale", 12),
+    enabled: !!sale.data && (sale.data?.products?.edges?.length ?? 0) === 0,
+    staleTime: 10 * 60 * 1000,
+  });
+  const fromSale = sale.data?.products?.edges ?? [];
+  const fromFallback = fallback.data?.products?.edges ?? [];
+  const products = fromSale.length > 0 ? fromSale : fromFallback;
+  const sourceHandle = fromSale.length > 0 ? "mens-sale" : "sale";
+
+  return (
+    <CarouselSection
+      ariaLabel="SS26 sale up to 50 percent off"
+      eyebrow="SS26 Sale — Up to 50% Off"
+      title="The end of season."
+      description="A closing edit from the houses defining spring–summer 2026. While stock lasts."
+      sectionClassName="bg-canvas-raised border-y border-bronze/30 mt-16 md:mt-24 py-14 md:py-20"
+      actions={
+        <Link
+          to="/collections/$handle"
+          params={{ handle: sourceHandle }}
+          className="inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.3em] text-ink border-b border-bronze pb-1 hover:text-bronze transition-colors"
+        >
+          Shop the Sale →
+        </Link>
+      }
+    >
+      {products.length > 0
+        ? products.slice(0, 12).map((p) => <ProductCard key={p.node.id} product={p} />)
+        : Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="aspect-[3/4] por-shimmer bg-muted" />
+          ))}
+    </CarouselSection>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────── */
+/*  Trending Now — 4 editorials on the season's defining trends        */
+/* ─────────────────────────────────────────────────────────────────── */
+
+const TRENDING_EDITORIALS: {
+  eyebrow: string;
+  title: string;
+  body: string;
+  to: string;
+  image: string;
+  alt: string;
+}[] = [
+  {
+    eyebrow: "Trend 01 — Quiet Luxury Tailoring",
+    title: "The unstructured suit.",
+    body: "Soft-shouldered jackets, fluid trousers, and the discreet codes of new menswear power.",
+    to: "/editorial/mens-edit",
+    image: marketingMen,
+    alt: "Quiet luxury tailoring — soft-shouldered unstructured jackets",
+  },
+  {
+    eyebrow: "Trend 02 — Mediterranean Resort",
+    title: "Linen, at length.",
+    body: "Sun-bleached linens, camp collars, and the wardrobe built for the long Mediterranean afternoon.",
+    to: "/editorial/resort-2026",
+    image: marketingMenResort,
+    alt: "Mediterranean resort menswear — linen camp collars and sea-soaked silks",
+  },
+  {
+    eyebrow: "Trend 03 — Heritage Leather",
+    title: "The new loafer.",
+    body: "Polished horsebits, suede drivers, and the footwear quietly reshaping the season.",
+    to: "/trends/tom-ford-essentials",
+    image: marketingAccessories,
+    alt: "Heritage leather menswear — loafers, drivers and polished horsebit hardware",
+  },
+  {
+    eyebrow: "Trend 04 — The New Evening",
+    title: "Silk, after dark.",
+    body: "The silk shirt, the dinner jacket, and the details holding up under candlelight.",
+    to: "/editorial/the-new-evening",
+    image: marketingMenResort,
+    alt: "Evening menswear — silk shirts and the dinner jacket",
+  },
+];
+
+function TrendingEditorials() {
+  return (
+    <CarouselSection
+      ariaLabel="Trending now in menswear"
+      eyebrow="Trending Now"
+      title="The edits defining the season."
+      description="Four trends shaping menswear right now, written by the Palace of Roman buying desk."
+      itemClassName="basis-[86%] sm:basis-[64%] md:basis-[46%] lg:basis-[28%]"
+    >
+      {TRENDING_EDITORIALS.map((e) => (
+        <a
+          key={e.title}
+          href={e.to}
+          className="group relative block aspect-[3/4] overflow-hidden bg-muted"
+        >
+          <img
+            src={e.image}
+            alt={e.alt}
+            loading="lazy"
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-[1.04]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/20 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 p-6 md:p-7 text-canvas">
+            <p className="text-[10px] uppercase tracking-[0.35em] text-bronze mb-3">
+              {e.eyebrow}
+            </p>
+            <h3 className="font-serif text-xl md:text-2xl leading-[1.1] mb-3">
+              {e.title}
+            </h3>
+            <p className="text-[12px] md:text-[13px] text-canvas/85 leading-relaxed mb-4">
+              {e.body}
+            </p>
+            <span className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-canvas border-b border-bronze pb-1 group-hover:text-bronze transition-colors">
+              Read the Edit →
+            </span>
+          </div>
+        </a>
+      ))}
+    </CarouselSection>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────── */
+/*  Hero Brands — Two more, by popular demand                          */
+/* ─────────────────────────────────────────────────────────────────── */
+
+const SPOTLIGHT_BRANDS_TWO: { label: string; vendor: string; handle: string; alt: string }[] = [
+  { label: "Gucci", vendor: "gucci", handle: "brand-gucci", alt: "Gucci menswear" },
+  { label: "Prada", vendor: "prada", handle: "brand-prada", alt: "Prada menswear" },
+];
+
+function BrandSpotlightRailTwo() {
+  return (
+    <CarouselSection
+      ariaLabel="Hero brands — by popular demand"
+      eyebrow="By Popular Demand"
+      title="Two more houses in focus."
+      description="The maisons our clients return to, season after season."
+      sectionClassName="bg-canvas-raised border-y border-ink/10 mt-16 md:mt-24 py-14 md:py-20"
+      itemClassName="basis-[84%] sm:basis-[58%] md:basis-[46%] lg:basis-[42%]"
+    >
+      {SPOTLIGHT_BRANDS_TWO.map((b) => (
+        <BrandSpotlightTile key={b.vendor} brand={b} />
+      ))}
+    </CarouselSection>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────── */
+/*  Brands of the Moment                                               */
+/* ─────────────────────────────────────────────────────────────────── */
+
+const BRANDS_OF_THE_MOMENT: { label: string; vendor: string; handle: string; alt: string }[] = [
+  { label: "Brunello Cucinelli", vendor: "brunello-cucinelli", handle: "brand-brunello-cucinelli", alt: "Brunello Cucinelli menswear" },
+  { label: "Giorgio Armani", vendor: "giorgio-armani", handle: "brand-giorgio-armani", alt: "Giorgio Armani menswear" },
+  { label: "Tom Ford", vendor: "tom-ford", handle: "brand-tom-ford", alt: "Tom Ford menswear" },
+  { label: "Saint Laurent", vendor: "saint-laurent", handle: "brand-saint-laurent", alt: "Saint Laurent menswear" },
+  { label: "Loro Piana", vendor: "loro-piana", handle: "brand-loro-piana", alt: "Loro Piana menswear" },
+  { label: "Bottega Veneta", vendor: "bottega-veneta", handle: "brand-bottega-veneta", alt: "Bottega Veneta menswear" },
+];
+
+function BrandsOfTheMoment() {
+  return (
+    <CarouselSection
+      ariaLabel="Brands of the moment"
+      eyebrow="Brands of the Moment"
+      title="Houses in motion."
+      description="The maisons our buying desk is watching this season."
+      itemClassName="basis-[68%] sm:basis-[44%] md:basis-[30%] lg:basis-[22%]"
+    >
+      {BRANDS_OF_THE_MOMENT.map((b) => (
+        <BrandSpotlightTile key={b.vendor} brand={b} />
+      ))}
+    </CarouselSection>
+  );
+}
