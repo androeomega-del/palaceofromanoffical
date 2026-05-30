@@ -540,40 +540,26 @@ function FeaturedProductRail() {
   const sourceHandle = fromPicks.length > 0 ? "mens-editor-picks" : "mens-tailoring";
 
   return (
-    <section aria-label="The Buyer's Pick" className="bg-canvas pt-16 md:pt-24">
-      <div className="max-w-screen-2xl mx-auto px-6 md:px-10">
-        <div className="flex items-end justify-between mb-8 md:mb-10 gap-6">
-          <div>
-            <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-3">
-              The Buyer's Pick
-            </p>
-            <h2 className="font-serif text-3xl md:text-4xl text-ink">
-              Chosen with intention.
-            </h2>
-          </div>
-          <Link
-            to="/collections/$handle"
-            params={{ handle: sourceHandle }}
-            className="hidden md:inline-flex shrink-0 items-center gap-3 text-[11px] uppercase tracking-[0.3em] text-ink border-b border-bronze/50 pb-1 hover:text-bronze hover:border-bronze transition-colors"
-          >
-            Explore the Edit →
-          </Link>
-        </div>
-        {products.length === 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="aspect-[3/4] por-shimmer bg-muted" />
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
-            {products.slice(0, 8).map((p) => (
-              <ProductCard key={p.node.id} product={p} />
-            ))}
-          </div>
-        )}
-      </div>
-    </section>
+    <CarouselSection
+      ariaLabel="The Buyer's Pick"
+      eyebrow="The Buyer's Pick"
+      title="Chosen with intention."
+      actions={
+        <Link
+          to="/collections/$handle"
+          params={{ handle: sourceHandle }}
+          className="inline-flex shrink-0 items-center gap-3 text-[11px] uppercase tracking-[0.3em] text-ink border-b border-bronze/50 pb-1 hover:text-bronze hover:border-bronze transition-colors"
+        >
+          Explore the Edit →
+        </Link>
+      }
+    >
+      {products.length > 0
+        ? products.slice(0, 8).map((p) => <ProductCard key={p.node.id} product={p} />)
+        : Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="aspect-[3/4] por-shimmer bg-muted" />
+          ))}
+    </CarouselSection>
   );
 }
 
@@ -583,39 +569,81 @@ function FeaturedProductRail() {
 
 function AccessoryCampaignBanner() {
   return (
-    <section aria-label="The Accessory Edit" className="bg-canvas pt-16 md:pt-24">
-      <div className="max-w-screen-2xl mx-auto px-6 md:px-10">
-        <Link
-          to="/collections/$handle"
-          params={{ handle: "mens-accessories" }}
-          className="group grid grid-cols-1 md:grid-cols-2 items-stretch border border-ink/10 overflow-hidden"
-        >
-          <div className="flex flex-col justify-center px-8 md:px-14 py-12 md:py-20 bg-canvas">
-            <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-5">
-              The Accessory Edit
-            </p>
-            <h2 className="font-serif text-3xl md:text-5xl leading-[1.05] text-ink mb-5 max-w-[18ch]">
-              The Accessory Edit
-            </h2>
-            <p className="text-[14px] md:text-[15px] text-muted-foreground leading-relaxed max-w-md mb-8">
-              The belt that holds the look together. The sunglasses that finish
-              it. The small pieces that carry a wardrobe's signature.
-            </p>
-            <span className="inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.3em] text-ink border-b border-bronze/50 pb-1 self-start group-hover:text-bronze group-hover:border-bronze transition-colors">
-              Explore Accessories →
-            </span>
-          </div>
-          <div className="relative aspect-[4/5] md:aspect-auto md:min-h-[480px] overflow-hidden bg-muted">
-            <img
-              src={marketingAccessories}
-              alt="Men's accessories — belts, sunglasses and the small pieces that carry a wardrobe's signature"
-              loading="lazy"
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-[1.04]"
-            />
-          </div>
-        </Link>
+    <CarouselSection
+      ariaLabel="The Accessory Edit"
+      eyebrow="Accessories"
+      title="Finishing pieces"
+      description="The belt, the sunglasses, the small pieces that carry a wardrobe's signature."
+      itemClassName="basis-[86%] sm:basis-[64%] md:basis-[46%] lg:basis-[42%]"
+    >
+      <CampaignTile
+        eyebrow="The Accessory Edit"
+        headline="The Accessory Edit"
+        body="The belt that holds the look together. The sunglasses that finish it."
+        cta="Explore Accessories →"
+        handle="mens-accessories"
+        image={marketingAccessories}
+        alt="Men's accessories — belts, sunglasses and the small pieces that carry a wardrobe's signature"
+      />
+      <CampaignTile
+        eyebrow="Travel"
+        headline="Pack for the long arrival."
+        body="Weekend bags, eyewear, and resort essentials selected for movement."
+        cta="Explore Travel →"
+        handle="mens-bags"
+        image={marketingMenResort}
+        alt="Men's travel accessories arranged for a resort wardrobe"
+      />
+    </CarouselSection>
+  );
+}
+
+function CampaignTile({
+  eyebrow,
+  headline,
+  body,
+  cta,
+  handle,
+  image,
+  alt,
+}: {
+  eyebrow: string;
+  headline: string;
+  body: string;
+  cta: string;
+  handle: string;
+  image: string;
+  alt: string;
+}) {
+  return (
+    <Link
+      to="/collections/$handle"
+      params={{ handle }}
+      className="group grid grid-cols-1 md:grid-cols-2 items-stretch border border-ink/10 overflow-hidden bg-canvas h-full"
+    >
+      <div className="flex flex-col justify-center px-8 md:px-10 py-10 md:py-14 bg-canvas">
+        <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-5">
+          {eyebrow}
+        </p>
+        <h3 className="font-serif text-3xl md:text-4xl leading-[1.05] text-ink mb-5 max-w-[16ch]">
+          {headline}
+        </h3>
+        <p className="text-[14px] md:text-[15px] text-muted-foreground leading-relaxed max-w-md mb-8">
+          {body}
+        </p>
+        <span className="inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.3em] text-ink border-b border-bronze/50 pb-1 self-start group-hover:text-bronze group-hover:border-bronze transition-colors">
+          {cta}
+        </span>
       </div>
-    </section>
+      <div className="relative aspect-[4/5] md:aspect-auto overflow-hidden bg-muted">
+        <img
+          src={image}
+          alt={alt}
+          loading="lazy"
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-[1.04]"
+        />
+      </div>
+    </Link>
   );
 }
 
