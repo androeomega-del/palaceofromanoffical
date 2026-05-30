@@ -569,8 +569,10 @@ export type Database = {
           handle: string
           id: string
           page_path: string | null
+          position: number | null
           product_type: string | null
           session_id: string | null
+          surface: string | null
           user_agent: string | null
           vendor: string | null
         }
@@ -580,8 +582,10 @@ export type Database = {
           handle: string
           id?: string
           page_path?: string | null
+          position?: number | null
           product_type?: string | null
           session_id?: string | null
+          surface?: string | null
           user_agent?: string | null
           vendor?: string | null
         }
@@ -591,8 +595,10 @@ export type Database = {
           handle?: string
           id?: string
           page_path?: string | null
+          position?: number | null
           product_type?: string | null
           session_id?: string | null
+          surface?: string | null
           user_agent?: string | null
           vendor?: string | null
         }
