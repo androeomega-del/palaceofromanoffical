@@ -94,11 +94,11 @@ export function SiteHeader() {
   return (
     <>
       {announceOpen && (
-        <div className="relative w-full bg-ink text-canvas text-[10px] py-2.5 uppercase tracking-[0.32em] text-center border-b border-ink/10">
+        <div className="relative w-full bg-ink text-canvas text-[10px] py-2 uppercase tracking-[0.28em] text-center border-b border-ink/10">
           <span className="text-bronze">●</span>{" "}
-          <span className="font-medium">The Curated Luxury Hunt</span>
+          <span className="font-medium">Authentic luxury fashion</span>
           <span className="opacity-50 mx-2">·</span>
-          Weekly Limited-Edition Drops
+          Worldwide delivery
           <span className="opacity-50 mx-2">·</span>
           <Link to="/collections/$handle" params={{ handle: "new-arrivals" }} className="underline decoration-bronze/60 underline-offset-4 hover:text-bronze transition-colors">
             See This Week's Edit →
@@ -124,7 +124,7 @@ export function SiteHeader() {
         }
       >
         {/* ───── Row 1: tabs / logo / utility ───── */}
-        <div className="max-w-screen-2xl mx-auto px-5 md:px-10 h-16 grid grid-cols-[1fr_auto_1fr] items-center gap-6">
+          <div className="max-w-screen-2xl mx-auto px-4 md:px-10 h-16 grid grid-cols-[1fr_auto_1fr] items-center gap-3 md:gap-6">
           {/* Left: dept tabs (lg+) or mobile menu button */}
           <div className="justify-self-start flex items-center">
             <button
@@ -143,22 +143,24 @@ export function SiteHeader() {
           {/* Center: serif wordmark */}
           <Link
             to="/"
-            className="text-xl md:text-2xl font-serif tracking-[0.18em] uppercase whitespace-nowrap justify-self-center leading-none"
+            className="text-[17px] sm:text-xl md:text-2xl font-serif tracking-[0.14em] md:tracking-[0.18em] uppercase whitespace-nowrap justify-self-center leading-none"
           >
             Palace of Roman
           </Link>
 
           {/* Right: utility cluster */}
-          <div className="flex items-center gap-5 md:gap-6 justify-self-end">
+          <div className="flex items-center gap-3 sm:gap-5 md:gap-6 justify-self-end">
             <Link
               to="/style-quiz"
               className="hidden xl:inline text-[11px] uppercase tracking-[0.25em] text-bronze hover:text-ink transition-colors"
             >
               Style Quiz
             </Link>
-            <DeliverToButton />
-            <CurrencySwitcher />
-            <ReducedMotionToggle />
+            <div className="hidden xl:flex items-center gap-6">
+              <DeliverToButton />
+              <CurrencySwitcher />
+              <ReducedMotionToggle />
+            </div>
             <button
               aria-label="Search"
               onClick={() => setSearchOpen(true)}
