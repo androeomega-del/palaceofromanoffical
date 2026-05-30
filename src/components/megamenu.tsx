@@ -219,6 +219,14 @@ export function DesktopMegamenu() {
           />
         );
       })}
+      <VacationTrigger
+        isOpen={openKey === "vacation"}
+        onOpen={() => openNow("vacation")}
+        onScheduleClose={scheduleClose}
+        onCloseAndFocus={() => closeAndFocusTrigger("vacation")}
+        onArrow={(e) => onTriggerArrow(e, "vacation")}
+        registerTrigger={registerTrigger("vacation")}
+      />
       <BrandsTrigger
         isOpen={openKey === "brands"}
         onOpen={() => openNow("brands")}
