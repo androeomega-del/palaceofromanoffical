@@ -102,7 +102,7 @@ type CrossEntry = {
   men:   { column: string; order: number } | null;
 };
 const CROSS_CATEGORIES: CrossEntry[] = [
-  { handle: "best-sellers", label: "Best Sellers",  women: { column: "Apparel", order: 1 },           men: { column: "Apparel", order: 1 } },
+  // best-sellers hidden until sales-data-driven collection exists.
   // Curated cross-category edit (polos, long sleeves, turtlenecks, cardigans,
   // hoodies, sweatshirts). Surfaces high in both gender menus.
   { handle: "layering-edit", label: "The Layering Edit", women: { column: "Apparel", order: 2 }, men: { column: "Shirts & Knitwear", order: -1 } },
@@ -131,7 +131,7 @@ const CROSS_CATEGORIES: CrossEntry[] = [
   // (handled by WOMEN_RULES / MEN_RULES). Do not duplicate here.
   // Watches hidden from nav until inventory exists (0 products as of May 2026).
   { handle: "hats",           label: "Hats",           women: { column: "Fine Accessories", order: 3 },  men: { column: "Accessories", order: 3 } },
-  { handle: "gloves",         label: "Gloves",         women: { column: "Fine Accessories", order: 4 },  men: { column: "Accessories", order: 4 } },
+  // gloves hidden — 0 catalog products.
   { handle: "other-accessories", label: "Other Accessories", women: { column: "Fine Accessories", order: 8 }, men: { column: "Accessories", order: 8 } },
 
   // ---------------------------------------------------------------------------
@@ -148,8 +148,7 @@ const CROSS_CATEGORIES: CrossEntry[] = [
   { handle: "tshirts-women",      label: "T-Shirts",           women: { column: "Apparel", order: 15 }, men: null },
   { handle: "shirts-women",       label: "Shirts",             women: { column: "Apparel", order: 16 }, men: null },
   { handle: "knitwear-women",     label: "Knitwear",           women: { column: "Apparel", order: 17 }, men: null },
-  { handle: "jackets-women",      label: "Jackets",            women: { column: "Apparel", order: 18 }, men: null },
-  { handle: "coats-women",        label: "Coats",              women: { column: "Apparel", order: 19 }, men: null },
+  // jackets-women, coats-women hidden — 0 catalog products.
   { handle: "denim-women",        label: "Denim",              women: { column: "Apparel", order: 20 }, men: null },
   { handle: "pants-women",        label: "Pants",              women: { column: "Apparel", order: 21 }, men: null },
   { handle: "shorts-women",       label: "Shorts",             women: { column: "Apparel", order: 22 }, men: null },
