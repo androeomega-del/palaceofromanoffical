@@ -295,7 +295,7 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
           signalling authenticity + fast EU dispatch before the visitor scrolls. */}
       <section aria-label="Why shop Palace of Roman" className="border-y border-ink/10 bg-canvas">
         <div className="max-w-screen-2xl mx-auto px-6 py-3 md:py-4 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-[10px] md:text-[11px] uppercase tracking-[0.28em] text-ink/75">
-          <span className="inline-flex items-center gap-2"><ShieldCheck className="w-3.5 h-3.5 text-bronze" strokeWidth={1.5} /> Official BrandsGateway Partner</span>
+          <span className="inline-flex items-center gap-2"><ShieldCheck className="w-3.5 h-3.5 text-bronze" strokeWidth={1.5} /> Global Boutique Partners</span>
           <span className="hidden md:inline opacity-30">·</span>
           <span>100% Authentic</span>
           <span className="hidden md:inline opacity-30">·</span>
