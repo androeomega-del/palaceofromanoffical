@@ -154,10 +154,22 @@
   45% { transform: scale(1.06); }
   100% { transform: scale(1); }
 }
+@keyframes por-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
 @media (prefers-reduced-motion: no-preference) {
   .por-shake { animation: por-shake 380ms ease-in-out; }
   .por-badge-pop { animation: por-badge-pop 360ms cubic-bezier(0.34, 1.56, 0.64, 1); }
   .por-tick { animation: por-tick 280ms cubic-bezier(0.34, 1.56, 0.64, 1); }
+  .por-shimmer {
+    background: linear-gradient(90deg, var(--muted) 0%, var(--canvas-raised) 50%, var(--muted) 100%);
+    background-size: 200% 100%;
+    animation: por-shimmer 1.8s ease-in-out infinite;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .por-shimmer { background: var(--muted); }
 }
 
 
