@@ -15,9 +15,9 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { adminGraphql } from "@/lib/shopify-admin.server";
 import {
-  CATEGORY_BUCKETS,
+  bucketsForHandle,
   bucketProduct,
-  type CategoryBucketLabel,
+  type CategoryBucket,
 } from "@/lib/category-buckets";
 
 const Input = z.object({ handle: z.string().min(1).max(255) });
@@ -52,20 +52,20 @@ type PageResp = {
 
 export type CollectionCategoryCounts = {
   /** Absolute count per bucket label across the entire collection. */
-  counts: Record<CategoryBucketLabel, number>;
+  counts: Record<string, number>;
   /** Total products that fell into ANY bucket (not the collection total). */
   bucketedTotal: number;
   /** Total products walked (== collection productsCount equivalent). */
   walkedTotal: number;
 };
 
-function emptyCounts(): Record<CategoryBucketLabel, number> {
-  return CATEGORY_BUCKETS.reduce(
+function emptyCounts(buckets: ReadonlyArray<CategoryBucket>): Record<string, number> {
+  return buckets.reduce(
     (acc, b) => {
       acc[b.label] = 0;
       return acc;
     },
-    {} as Record<CategoryBucketLabel, number>,
+    {} as Record<string, number>,
   );
 }
 
