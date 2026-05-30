@@ -14,7 +14,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { ShieldCheck, Plane, RotateCcw, MessageCircle, ChevronLeft, ChevronRight } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { Children, type ReactNode, useCallback, useEffect, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 
 import { fetchCollection } from "@/lib/shopify";
@@ -74,9 +74,111 @@ function MenHomePage() {
       <ShopByOccasion />
       <FeaturedProductRail />
       <AccessoryCampaignBanner />
-      <HeritageBlock />
       <TrustStrip />
     </>
+  );
+}
+
+type CarouselSectionProps = {
+  ariaLabel: string;
+  eyebrow?: string;
+  title: string;
+  description?: string;
+  actions?: ReactNode;
+  children: ReactNode;
+  sectionClassName?: string;
+  itemClassName?: string;
+};
+
+function CarouselSection({
+  ariaLabel,
+  eyebrow,
+  title,
+  description,
+  actions,
+  children,
+  sectionClassName = "bg-canvas pt-16 md:pt-24",
+  itemClassName = "basis-[68%] sm:basis-[42%] md:basis-[32%] lg:basis-[24%]",
+}: CarouselSectionProps) {
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    align: "start",
+    containScroll: "trimSnaps",
+    dragFree: true,
+  });
+  const [canPrev, setCanPrev] = useState(false);
+  const [canNext, setCanNext] = useState(false);
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setCanPrev(emblaApi.canScrollPrev());
+    setCanNext(emblaApi.canScrollNext());
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    onSelect();
+    emblaApi.on("select", onSelect);
+    emblaApi.on("reInit", onSelect);
+    return () => {
+      emblaApi.off("select", onSelect);
+      emblaApi.off("reInit", onSelect);
+    };
+  }, [emblaApi, onSelect]);
+
+  return (
+    <section aria-label={ariaLabel} className={sectionClassName}>
+      <div className="max-w-screen-2xl mx-auto px-6 md:px-10">
+        <div className="flex items-end justify-between mb-8 md:mb-10 gap-6">
+          <div>
+            {eyebrow ? (
+              <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-3">
+                {eyebrow}
+              </p>
+            ) : null}
+            <h2 className="font-serif text-3xl md:text-4xl text-ink mb-3">
+              {title}
+            </h2>
+            {description ? (
+              <p className="text-[14px] md:text-[15px] text-muted-foreground max-w-lg leading-relaxed">
+                {description}
+              </p>
+            ) : null}
+          </div>
+          <div className="hidden md:flex items-center gap-6 shrink-0">
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                aria-label={`Previous ${ariaLabel}`}
+                onClick={() => emblaApi?.scrollPrev()}
+                disabled={!canPrev}
+                className="w-10 h-10 grid place-items-center border border-ink/15 hover:border-ink transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <ChevronLeft className="w-4 h-4" strokeWidth={1.5} />
+              </button>
+              <button
+                type="button"
+                aria-label={`Next ${ariaLabel}`}
+                onClick={() => emblaApi?.scrollNext()}
+                disabled={!canNext}
+                className="w-10 h-10 grid place-items-center border border-ink/15 hover:border-ink transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <ChevronRight className="w-4 h-4" strokeWidth={1.5} />
+              </button>
+            </div>
+            {actions}
+          </div>
+        </div>
+        <div className="overflow-hidden -mx-2" ref={emblaRef}>
+          <div className="flex">
+            {Children.toArray(children).map((child, index) => (
+              <div key={index} className={`px-2 shrink-0 ${itemClassName}`}>
+                {child}
+              </div>
+            ))}
+          </div>
+        </div>
+        {actions ? <div className="md:hidden mt-8 text-center">{actions}</div> : null}
+      </div>
+    </section>
   );
 }
 
@@ -134,102 +236,29 @@ function NewInThisWeek() {
     staleTime: 10 * 60 * 1000,
   });
   const products = data?.products?.edges ?? [];
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    align: "start",
-    containScroll: "trimSnaps",
-    dragFree: true,
-  });
-  const [canPrev, setCanPrev] = useState(false);
-  const [canNext, setCanNext] = useState(false);
-  const onSelect = useCallback(() => {
-    if (!emblaApi) return;
-    setCanPrev(emblaApi.canScrollPrev());
-    setCanNext(emblaApi.canScrollNext());
-  }, [emblaApi]);
-  useEffect(() => {
-    if (!emblaApi) return;
-    onSelect();
-    emblaApi.on("select", onSelect);
-    emblaApi.on("reInit", onSelect);
-  }, [emblaApi, onSelect]);
 
   return (
-    <section aria-label="New in this week" className="bg-canvas pt-16 md:pt-24">
-      <div className="max-w-screen-2xl mx-auto px-6 md:px-10">
-        <div className="flex items-end justify-between mb-8 md:mb-10 gap-6">
-          <div>
-            <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-3">
-              New In This Week
-            </p>
-            <h2 className="font-serif text-3xl md:text-4xl text-ink mb-4">
-              Just Landed
-            </h2>
-            <p className="text-[14px] md:text-[15px] text-muted-foreground max-w-lg leading-relaxed">
-              New arrivals from Versace, Dolce &amp; Gabbana, Brunello Cucinelli
-              and the names defining resort 2026.
-            </p>
-          </div>
-          <div className="hidden md:flex items-center gap-6 shrink-0">
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                aria-label="Previous"
-                onClick={() => emblaApi?.scrollPrev()}
-                disabled={!canPrev}
-                className="w-10 h-10 grid place-items-center border border-ink/15 hover:border-ink transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-              >
-                <ChevronLeft className="w-4 h-4" strokeWidth={1.5} />
-              </button>
-              <button
-                type="button"
-                aria-label="Next"
-                onClick={() => emblaApi?.scrollNext()}
-                disabled={!canNext}
-                className="w-10 h-10 grid place-items-center border border-ink/15 hover:border-ink transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-              >
-                <ChevronRight className="w-4 h-4" strokeWidth={1.5} />
-              </button>
-            </div>
-            <Link
-              to="/collections/$handle"
-              params={{ handle: "mens-new-arrivals" }}
-              className="inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.3em] text-ink border-b border-bronze/50 pb-1 hover:text-bronze hover:border-bronze transition-colors"
-            >
-              Explore New In →
-            </Link>
-          </div>
-        </div>
-        {products.length === 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="aspect-[3/4] por-shimmer bg-muted" />
-            ))}
-          </div>
-        ) : (
-          <div className="overflow-hidden -mx-2" ref={emblaRef}>
-            <div className="flex">
-              {products.map((p) => (
-                <div
-                  key={p.node.id}
-                  className="px-2 shrink-0 basis-[68%] sm:basis-[42%] md:basis-[32%] lg:basis-[24%]"
-                >
-                  <ProductCard product={p} />
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-        <div className="md:hidden mt-8 text-center">
-          <Link
-            to="/collections/$handle"
-            params={{ handle: "mens-new-arrivals" }}
-            className="inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.3em] text-ink border-b border-bronze/50 pb-1"
-          >
-            Explore New In →
-          </Link>
-        </div>
-      </div>
-    </section>
+    <CarouselSection
+      ariaLabel="New in this week"
+      eyebrow="New In This Week"
+      title="Just Landed"
+      description="New arrivals from Versace, Dolce & Gabbana, Brunello Cucinelli and the names defining resort 2026."
+      actions={
+        <Link
+          to="/collections/$handle"
+          params={{ handle: "mens-new-arrivals" }}
+          className="inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.3em] text-ink border-b border-bronze/50 pb-1 hover:text-bronze hover:border-bronze transition-colors"
+        >
+          Explore New In →
+        </Link>
+      }
+    >
+      {products.length > 0
+        ? products.map((p) => <ProductCard key={p.node.id} product={p} />)
+        : Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="aspect-[3/4] por-shimmer bg-muted" />
+          ))}
+    </CarouselSection>
   );
 }
 
@@ -248,23 +277,16 @@ const TRENDING_TILES: { handle: string; label: string; alt: string }[] = [
 
 function TrendingCategories() {
   return (
-    <section aria-label="Dress the season" className="bg-canvas pt-16 md:pt-24">
-      <div className="max-w-screen-2xl mx-auto px-6 md:px-10">
-        <div className="text-center mb-10 md:mb-12">
-          <h2 className="font-serif text-3xl md:text-4xl text-ink mb-3">
-            Dress the Season
-          </h2>
-          <p className="text-[14px] text-muted-foreground">
-            The resort wardrobe, arranged.
-          </p>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-5">
-          {TRENDING_TILES.map((t) => (
-            <TrendingTile key={t.handle} tile={t} />
-          ))}
-        </div>
-      </div>
-    </section>
+    <CarouselSection
+      ariaLabel="Dress the season"
+      title="Dress the Season"
+      description="The resort wardrobe, arranged."
+      itemClassName="basis-[58%] sm:basis-[36%] md:basis-[24%] lg:basis-[16.666%]"
+    >
+      {TRENDING_TILES.map((t) => (
+        <TrendingTile key={t.handle} tile={t} />
+      ))}
+    </CarouselSection>
   );
 }
 
@@ -312,31 +334,22 @@ function TrendingTile({ tile }: { tile: { handle: string; label: string; alt: st
 const SPOTLIGHT_BRANDS: { label: string; vendor: string; handle: string; alt: string }[] = [
   { label: "Versace", vendor: "versace", handle: "brand-versace", alt: "Versace menswear" },
   { label: "Dolce & Gabbana", vendor: "dolce-gabbana", handle: "brand-dolce-gabbana", alt: "Dolce & Gabbana menswear" },
-  { label: "Brunello Cucinelli", vendor: "brunello-cucinelli", handle: "brand-brunello-cucinelli", alt: "Brunello Cucinelli menswear" },
-  { label: "Armani", vendor: "armani", handle: "brand-armani", alt: "Giorgio Armani menswear" },
-  { label: "Gucci", vendor: "gucci", handle: "brand-gucci", alt: "Gucci menswear" },
-  { label: "Prada", vendor: "prada", handle: "brand-prada", alt: "Prada menswear" },
 ];
 
 function BrandSpotlightRail() {
   return (
-    <section aria-label="The Houses" className="bg-canvas-raised border-y border-ink/10 mt-16 md:mt-24 py-14 md:py-20">
-      <div className="max-w-screen-2xl mx-auto px-6 md:px-10">
-        <div className="text-center mb-10 md:mb-12">
-          <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-3">
-            The Houses
-          </p>
-          <h2 className="font-serif text-3xl md:text-4xl text-ink">
-            Maisons defining the season
-          </h2>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-5">
-          {SPOTLIGHT_BRANDS.map((b) => (
-            <BrandSpotlightTile key={b.vendor} brand={b} />
-          ))}
-        </div>
-      </div>
-    </section>
+    <CarouselSection
+      ariaLabel="Hero brands"
+      eyebrow="The Houses"
+      title="Hero brands"
+      description="Two maisons leading the season at Palace of Roman."
+      sectionClassName="bg-canvas-raised border-y border-ink/10 mt-16 md:mt-24 py-14 md:py-20"
+      itemClassName="basis-[84%] sm:basis-[58%] md:basis-[46%] lg:basis-[42%]"
+    >
+      {SPOTLIGHT_BRANDS.map((b) => (
+        <BrandSpotlightTile key={b.vendor} brand={b} />
+      ))}
+    </CarouselSection>
   );
 }
 
@@ -388,28 +401,32 @@ function BrandSpotlightTile({
 
 function EditorialSplit() {
   return (
-    <section aria-label="Editorial features" className="bg-canvas pt-16 md:pt-24">
-      <div className="max-w-screen-2xl mx-auto px-6 md:px-10 grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
-        <EditorialTile
-          eyebrow="The Resort Edit"
-          headline="Tailoring that breathes."
-          body="Unstructured jackets, fluid trousers, and the linen that makes 35 degrees feel intentional."
-          cta="Explore Resort Tailoring →"
-          handle="mens-tailoring"
-          image={marketingMen}
-          alt="Resort tailoring — unstructured linen and fluid trousers photographed in soft Mediterranean light"
-        />
-        <EditorialTile
-          eyebrow="Evening"
-          headline="After dark."
-          body="The dinner jacket, the silk shirt, the details that hold up under candlelight."
-          cta="Explore Evening →"
-          handle="mens-tailoring"
-          image={marketingMenResort}
-          alt="Evening menswear — the dinner jacket and silk shirt"
-        />
-      </div>
-    </section>
+    <CarouselSection
+      ariaLabel="Editorial features"
+      eyebrow="Editorial"
+      title="The Palace of Roman edit"
+      description="Seasonal stories arranged as shoppable fashion chapters."
+      itemClassName="basis-[86%] sm:basis-[64%] md:basis-[46%] lg:basis-[42%]"
+    >
+      <EditorialTile
+        eyebrow="The Resort Edit"
+        headline="Tailoring that breathes."
+        body="Unstructured jackets, fluid trousers, and the linen that makes 35 degrees feel intentional."
+        cta="Explore Resort Tailoring →"
+        handle="mens-tailoring"
+        image={marketingMen}
+        alt="Resort tailoring — unstructured linen and fluid trousers photographed in soft Mediterranean light"
+      />
+      <EditorialTile
+        eyebrow="Evening"
+        headline="After dark."
+        body="The dinner jacket, the silk shirt, the details that hold up under candlelight."
+        cta="Explore Evening →"
+        handle="mens-tailoring"
+        image={marketingMenResort}
+        alt="Evening menswear — the dinner jacket and silk shirt"
+      />
+    </CarouselSection>
   );
 }
 
@@ -474,27 +491,25 @@ const OCCASIONS: { label: string; handle: string }[] = [
 
 function ShopByOccasion() {
   return (
-    <section aria-label="Shop by occasion" className="bg-canvas pt-16 md:pt-24">
-      <div className="max-w-screen-2xl mx-auto px-6 md:px-10">
-        <h2 className="font-serif text-3xl md:text-4xl text-ink text-center mb-10 md:mb-12">
-          Shop by Occasion
-        </h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-ink/10 border border-ink/10">
-          {OCCASIONS.map((o) => (
-            <Link
-              key={o.label}
-              to="/collections/$handle"
-              params={{ handle: o.handle }}
-              className="bg-canvas hover:bg-canvas-raised transition-colors py-10 md:py-14 text-center group"
-            >
-              <span className="font-serif text-xl md:text-2xl text-ink group-hover:text-bronze transition-colors">
-                {o.label}
-              </span>
-            </Link>
-          ))}
-        </div>
-      </div>
-    </section>
+    <CarouselSection
+      ariaLabel="Shop by occasion"
+      title="Shop by Occasion"
+      description="Four ways into the wardrobe."
+      itemClassName="basis-[62%] sm:basis-[42%] md:basis-[28%] lg:basis-[22%]"
+    >
+      {OCCASIONS.map((o) => (
+        <Link
+          key={o.label}
+          to="/collections/$handle"
+          params={{ handle: o.handle }}
+          className="min-h-36 md:min-h-44 border border-ink/10 bg-canvas hover:bg-canvas-raised transition-colors flex items-center justify-center text-center group"
+        >
+          <span className="font-serif text-xl md:text-2xl text-ink group-hover:text-bronze transition-colors">
+            {o.label}
+          </span>
+        </Link>
+      ))}
+    </CarouselSection>
   );
 }
 
@@ -524,40 +539,26 @@ function FeaturedProductRail() {
   const sourceHandle = fromPicks.length > 0 ? "mens-editor-picks" : "mens-tailoring";
 
   return (
-    <section aria-label="The Buyer's Pick" className="bg-canvas pt-16 md:pt-24">
-      <div className="max-w-screen-2xl mx-auto px-6 md:px-10">
-        <div className="flex items-end justify-between mb-8 md:mb-10 gap-6">
-          <div>
-            <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-3">
-              The Buyer's Pick
-            </p>
-            <h2 className="font-serif text-3xl md:text-4xl text-ink">
-              Chosen with intention.
-            </h2>
-          </div>
-          <Link
-            to="/collections/$handle"
-            params={{ handle: sourceHandle }}
-            className="hidden md:inline-flex shrink-0 items-center gap-3 text-[11px] uppercase tracking-[0.3em] text-ink border-b border-bronze/50 pb-1 hover:text-bronze hover:border-bronze transition-colors"
-          >
-            Explore the Edit →
-          </Link>
-        </div>
-        {products.length === 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="aspect-[3/4] por-shimmer bg-muted" />
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
-            {products.slice(0, 8).map((p) => (
-              <ProductCard key={p.node.id} product={p} />
-            ))}
-          </div>
-        )}
-      </div>
-    </section>
+    <CarouselSection
+      ariaLabel="The Buyer's Pick"
+      eyebrow="The Buyer's Pick"
+      title="Chosen with intention."
+      actions={
+        <Link
+          to="/collections/$handle"
+          params={{ handle: sourceHandle }}
+          className="inline-flex shrink-0 items-center gap-3 text-[11px] uppercase tracking-[0.3em] text-ink border-b border-bronze/50 pb-1 hover:text-bronze hover:border-bronze transition-colors"
+        >
+          Explore the Edit →
+        </Link>
+      }
+    >
+      {products.length > 0
+        ? products.slice(0, 8).map((p) => <ProductCard key={p.node.id} product={p} />)
+        : Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="aspect-[3/4] por-shimmer bg-muted" />
+          ))}
+    </CarouselSection>
   );
 }
 
@@ -567,39 +568,81 @@ function FeaturedProductRail() {
 
 function AccessoryCampaignBanner() {
   return (
-    <section aria-label="The Accessory Edit" className="bg-canvas pt-16 md:pt-24">
-      <div className="max-w-screen-2xl mx-auto px-6 md:px-10">
-        <Link
-          to="/collections/$handle"
-          params={{ handle: "mens-accessories" }}
-          className="group grid grid-cols-1 md:grid-cols-2 items-stretch border border-ink/10 overflow-hidden"
-        >
-          <div className="flex flex-col justify-center px-8 md:px-14 py-12 md:py-20 bg-canvas">
-            <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-5">
-              The Accessory Edit
-            </p>
-            <h2 className="font-serif text-3xl md:text-5xl leading-[1.05] text-ink mb-5 max-w-[18ch]">
-              The Accessory Edit
-            </h2>
-            <p className="text-[14px] md:text-[15px] text-muted-foreground leading-relaxed max-w-md mb-8">
-              The belt that holds the look together. The sunglasses that finish
-              it. The small pieces that carry a wardrobe's signature.
-            </p>
-            <span className="inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.3em] text-ink border-b border-bronze/50 pb-1 self-start group-hover:text-bronze group-hover:border-bronze transition-colors">
-              Explore Accessories →
-            </span>
-          </div>
-          <div className="relative aspect-[4/5] md:aspect-auto md:min-h-[480px] overflow-hidden bg-muted">
-            <img
-              src={marketingAccessories}
-              alt="Men's accessories — belts, sunglasses and the small pieces that carry a wardrobe's signature"
-              loading="lazy"
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-[1.04]"
-            />
-          </div>
-        </Link>
+    <CarouselSection
+      ariaLabel="The Accessory Edit"
+      eyebrow="Accessories"
+      title="Finishing pieces"
+      description="The belt, the sunglasses, the small pieces that carry a wardrobe's signature."
+      itemClassName="basis-[86%] sm:basis-[64%] md:basis-[46%] lg:basis-[42%]"
+    >
+      <CampaignTile
+        eyebrow="The Accessory Edit"
+        headline="The Accessory Edit"
+        body="The belt that holds the look together. The sunglasses that finish it."
+        cta="Explore Accessories →"
+        handle="mens-accessories"
+        image={marketingAccessories}
+        alt="Men's accessories — belts, sunglasses and the small pieces that carry a wardrobe's signature"
+      />
+      <CampaignTile
+        eyebrow="Travel"
+        headline="Pack for the long arrival."
+        body="Weekend bags, eyewear, and resort essentials selected for movement."
+        cta="Explore Travel →"
+        handle="mens-bags"
+        image={marketingMenResort}
+        alt="Men's travel accessories arranged for a resort wardrobe"
+      />
+    </CarouselSection>
+  );
+}
+
+function CampaignTile({
+  eyebrow,
+  headline,
+  body,
+  cta,
+  handle,
+  image,
+  alt,
+}: {
+  eyebrow: string;
+  headline: string;
+  body: string;
+  cta: string;
+  handle: string;
+  image: string;
+  alt: string;
+}) {
+  return (
+    <Link
+      to="/collections/$handle"
+      params={{ handle }}
+      className="group grid grid-cols-1 md:grid-cols-2 items-stretch border border-ink/10 overflow-hidden bg-canvas h-full"
+    >
+      <div className="flex flex-col justify-center px-8 md:px-10 py-10 md:py-14 bg-canvas">
+        <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-5">
+          {eyebrow}
+        </p>
+        <h3 className="font-serif text-3xl md:text-4xl leading-[1.05] text-ink mb-5 max-w-[16ch]">
+          {headline}
+        </h3>
+        <p className="text-[14px] md:text-[15px] text-muted-foreground leading-relaxed max-w-md mb-8">
+          {body}
+        </p>
+        <span className="inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.3em] text-ink border-b border-bronze/50 pb-1 self-start group-hover:text-bronze group-hover:border-bronze transition-colors">
+          {cta}
+        </span>
       </div>
-    </section>
+      <div className="relative aspect-[4/5] md:aspect-auto overflow-hidden bg-muted">
+        <img
+          src={image}
+          alt={alt}
+          loading="lazy"
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-[1.04]"
+        />
+      </div>
+    </Link>
   );
 }
 
@@ -607,34 +650,8 @@ function AccessoryCampaignBanner() {
 /*  10. Heritage Block                                                 */
 /* ─────────────────────────────────────────────────────────────────── */
 
-function HeritageBlock() {
-  return (
-    <section aria-label="About Palace of Roman" className="bg-canvas-raised mt-16 md:mt-24 py-16 md:py-24 border-y border-ink/10">
-      <div className="max-w-screen-md mx-auto px-6 md:px-10 text-center">
-        <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-5">
-          The House
-        </p>
-        <h2 className="font-serif text-3xl md:text-4xl text-ink mb-6 leading-[1.1]">
-          A curated boutique, not a catalogue.
-        </h2>
-        <p className="text-[14px] md:text-[15px] text-muted-foreground leading-relaxed mb-8 max-w-xl mx-auto">
-          Every piece is sourced through our authorised European distribution
-          partners and arrives with full authenticity guaranteed. We ship
-          worldwide.
-        </p>
-        <Link
-          to="/about"
-          className="inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.3em] text-ink border-b border-bronze pb-1 hover:text-bronze transition-colors"
-        >
-          Our Story →
-        </Link>
-      </div>
-    </section>
-  );
-}
-
 /* ─────────────────────────────────────────────────────────────────── */
-/*  11. Trust Strip                                                    */
+/*  10. Service Carousel                                               */
 /* ─────────────────────────────────────────────────────────────────── */
 
 function TrustStrip() {
@@ -645,19 +662,21 @@ function TrustStrip() {
     { Icon: MessageCircle, label: "Personal Concierge" },
   ];
   return (
-    <section aria-label="Service promise" className="bg-canvas">
-      <div className="max-w-screen-2xl mx-auto px-6 md:px-10 py-10 md:py-14">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-10">
-          {items.map(({ Icon, label }) => (
-            <div key={label} className="flex flex-col items-center text-center">
-              <Icon className="w-5 h-5 text-bronze mb-3" strokeWidth={1.25} />
-              <p className="text-[11px] uppercase tracking-[0.25em] text-ink">
-                {label}
-              </p>
-            </div>
-          ))}
+    <CarouselSection
+      ariaLabel="Service promise"
+      title="The service promise"
+      description="Quiet assurances for a considered luxury purchase."
+      sectionClassName="bg-canvas pt-16 md:pt-24 pb-10 md:pb-14"
+      itemClassName="basis-[58%] sm:basis-[40%] md:basis-[28%] lg:basis-[22%]"
+    >
+      {items.map(({ Icon, label }) => (
+        <div key={label} className="min-h-36 border border-ink/10 bg-canvas-raised flex flex-col items-center justify-center text-center px-6">
+          <Icon className="w-5 h-5 text-bronze mb-3" strokeWidth={1.25} />
+          <p className="text-[11px] uppercase tracking-[0.25em] text-ink">
+            {label}
+          </p>
         </div>
-      </div>
-    </section>
+      ))}
+    </CarouselSection>
   );
 }
