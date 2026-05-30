@@ -52,16 +52,16 @@ export const Route = createFileRoute("/men")({
       { property: "og:url", content: "https://palaceofromanofficial.com/men" },
       {
         property: "og:image",
-        content: `https://palaceofromanofficial.com${marketingMenResort}`,
+        content: `https://palaceofromanofficial.com${editorialHeroResort}`,
       },
       {
         name: "twitter:image",
-        content: `https://palaceofromanofficial.com${marketingMenResort}`,
+        content: `https://palaceofromanofficial.com${editorialHeroResort}`,
       },
     ],
     links: [
       { rel: "canonical", href: "https://palaceofromanofficial.com/men" },
-      { rel: "preload", as: "image", href: marketingMenResort, fetchPriority: "high" } as any,
+      { rel: "preload", as: "image", href: editorialHeroResort, fetchPriority: "high" } as any,
     ],
   }),
   component: MenHomePage,
@@ -224,8 +224,8 @@ function HeroBanner() {
         {/* Right: full-bleed editorial image */}
         <div className="order-1 md:order-2 relative aspect-[4/5] md:aspect-auto bg-muted overflow-hidden">
           <img
-            src={marketingMenResort}
-            alt="Menswear Resort 2026 — sun-bleached linens and sea-soaked silks photographed in late Mediterranean light"
+            src={editorialHeroResort}
+            alt="Menswear Resort 2026 — supermodel in linen on a Mediterranean terrace at golden hour"
             loading="eager"
             fetchPriority="high"
             className="absolute inset-0 w-full h-full object-cover"
@@ -424,8 +424,8 @@ function EditorialSplit() {
         body="Unstructured jackets, fluid trousers, and the linen that makes 35 degrees feel intentional."
         cta="Explore Resort Tailoring →"
         handle="mens-tailoring"
-        image={marketingMen}
-        alt="Resort tailoring — unstructured linen and fluid trousers photographed in soft Mediterranean light"
+        image={editorialResortTailoring}
+        alt="Resort tailoring — supermodel in a soft taupe linen jacket and camel silk shirt photographed in a sunlit Roman palazzo"
       />
       <EditorialTile
         eyebrow="Evening"
@@ -433,8 +433,8 @@ function EditorialSplit() {
         body="The dinner jacket, the silk shirt, the details that hold up under candlelight."
         cta="Explore Evening →"
         handle="mens-tailoring"
-        image={marketingMenResort}
-        alt="Evening menswear — the dinner jacket and silk shirt"
+        image={editorialEveningSupermodel}
+        alt="Evening menswear — supermodel in a midnight navy peak-lapel dinner jacket and silk shirt by candlelight"
       />
     </CarouselSection>
   );
@@ -591,8 +591,8 @@ function AccessoryCampaignBanner() {
         body="The belt that holds the look together. The sunglasses that finish it."
         cta="Explore Accessories →"
         handle="mens-accessories"
-        image={marketingAccessories}
-        alt="Men's accessories — belts, sunglasses and the small pieces that carry a wardrobe's signature"
+        image={editorialAccessoriesStilllife}
+        alt="The Accessory Edit — black leather belt with gold buckle, tortoiseshell aviator sunglasses and silk pocket square on travertine marble"
       />
       <CampaignTile
         eyebrow="Travel"
@@ -600,8 +600,8 @@ function AccessoryCampaignBanner() {
         body="Weekend bags, eyewear, and resort essentials selected for movement."
         cta="Explore Travel →"
         handle="mens-bags"
-        image={marketingMenResort}
-        alt="Men's travel accessories arranged for a resort wardrobe"
+        image={editorialTravelSupermodel}
+        alt="Travel menswear — supermodel walking through a Mediterranean station at sunrise with a cognac leather weekender and camel cashmere coat"
       />
     </CarouselSection>
   );
