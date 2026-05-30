@@ -389,10 +389,10 @@ function ShopPage() {
             {q.isLoading ? (
               <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12">
                 {Array.from({ length: 9 }).map((_, i) => (
-                  <div key={i} className="animate-pulse">
-                    <div className="w-full aspect-[4/5] bg-muted mb-5" />
-                    <div className="h-2 w-16 bg-muted mb-2" />
-                    <div className="h-3 w-3/4 bg-muted" />
+                  <div key={i}>
+                    <div className="w-full aspect-[4/5] por-shimmer mb-5" />
+                    <div className="h-2 w-16 por-shimmer mb-2" />
+                    <div className="h-3 w-3/4 por-shimmer" />
                   </div>
                 ))}
               </div>
