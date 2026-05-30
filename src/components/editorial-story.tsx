@@ -3,6 +3,10 @@ import { img } from "@/lib/editorial-library";
 
 export type StorySlide = {
   n: number;
+  /** Optional explicit image src; overrides the editorial-library lookup by `n`. */
+  src?: string;
+  /** Optional alt text override; falls back to caption. */
+  alt?: string;
   caption: string;
   shopHandle?: string;
   shopLabel?: string;
@@ -70,8 +74,8 @@ export function EditorialStory({
       <section className="px-0 md:px-6">
         <div className="relative w-full overflow-hidden aspect-[16/10] md:aspect-[21/9] bg-canvas-raised">
           <img
-            src={img(hero.n)}
-            alt={hero.caption}
+            src={hero.src ?? img(hero.n)}
+            alt={hero.alt ?? hero.caption}
             loading="eager"
             fetchPriority="high"
             decoding="async"
@@ -168,8 +172,8 @@ function Frame({ slide, aspect = "aspect-[4/5]" }: { slide: StorySlide; aspect?:
     <figure className="group relative">
       <div className={`overflow-hidden bg-canvas-raised ${aspect}`}>
         <img
-          src={img(slide.n)}
-          alt={slide.caption}
+          src={slide.src ?? img(slide.n)}
+          alt={slide.alt ?? slide.caption}
           loading="lazy"
           decoding="async"
           className="w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.02]"
