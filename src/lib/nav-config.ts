@@ -51,9 +51,9 @@ type ClassifierRule = {
 const WOMEN_RULES: ClassifierRule[] = [
   { column: "Apparel",          order: 0,  match: (s) => s === "clothing",        label: "All Clothing" },
   { column: "Shoes",            order: 0,  match: (s) => s === "shoes",           label: "All Shoes" },
-  { column: "Bags & Leather",   order: 0,  match: (s) => s === "bags",            label: "Bags" },
-  { column: "Bags & Leather",   order: 1,  match: (s) => s === "wallets",         label: "Wallets" },
-  { column: "Bags & Leather",   order: 2,  match: (s) => s === "belts",           label: "Belts" },
+  { column: "Carry",   order: 0,  match: (s) => s === "bags",            label: "Bags" },
+  { column: "Carry",   order: 1,  match: (s) => s === "wallets",         label: "Wallets" },
+  { column: "Carry",   order: 2,  match: (s) => s === "belts",           label: "Belts" },
   { column: "Fine Accessories", order: 0,  match: (s) => s === "jewelry",         label: "Jewellery" },
   // Watches hidden from nav until inventory exists (0 products as of May 2026).
   { column: "Fine Accessories", order: 2,  match: (s) => s === "scarves",         label: "Scarves & Shawls" },
@@ -69,11 +69,11 @@ const MEN_RULES: ClassifierRule[] = [
   { column: "Shirts & Knitwear",    order: 1, match: (s) => s === "tshirts-polos",          label: "T-Shirts & Polos" },
   { column: "Shirts & Knitwear",    order: 2, match: (s) => s === "sweaters-knitwear",      label: "Sweaters & Knitwear" },
   { column: "Shirts & Knitwear",    order: 3, match: (s) => s === "hoodies-sweatshirts",    label: "Hoodies & Sweatshirts" },
-  { column: "Bottoms & Beach",      order: 0, match: (s) => s === "pants-trousers",         label: "Pants & Trousers" },
-  { column: "Bottoms & Beach",      order: 1, match: (s) => s === "shorts",                 label: "Shorts" },
-  { column: "Bottoms & Beach",      order: 2, match: (s) => s === "activewear",             label: "Activewear" },
-  { column: "Bottoms & Beach",      order: 3, match: (s) => s === "swimwear",               label: "Swimwear" },
-  { column: "Bottoms & Beach",      order: 4, match: (s) => s === "underwear-loungewear",   label: "Underwear & Lounge" },
+  { column: "Coastal",      order: 0, match: (s) => s === "pants-trousers",         label: "Pants & Trousers" },
+  { column: "Coastal",      order: 1, match: (s) => s === "shorts",                 label: "Shorts" },
+  { column: "Coastal",      order: 2, match: (s) => s === "activewear",             label: "Activewear" },
+  { column: "Coastal",      order: 3, match: (s) => s === "swimwear",               label: "Swimwear" },
+  { column: "Coastal",      order: 4, match: (s) => s === "underwear-loungewear",   label: "Underwear & Lounge" },
   { column: "Shoes",                order: 0, match: (s) => s === "shoes",                  label: "All Shoes" },
   { column: "Shoes",                order: 1, match: (s) => s === "sneakers",               label: "Sneakers" },
   { column: "Shoes",                order: 2, match: (s) => s === "boots",                  label: "Boots" },
@@ -84,8 +84,8 @@ const MEN_RULES: ClassifierRule[] = [
   { column: "Accessories",          order: 9, match: (s) => s === "accessories" || s.startsWith("accessories"), label: "All Accessories" },
 ];
 
-const WOMEN_COLUMN_ORDER = ["Apparel", "Shoes", "Bags & Leather", "Fine Accessories", "More"];
-const MEN_COLUMN_ORDER   = ["Apparel", "Tailoring", "Shirts & Knitwear", "Bottoms & Beach", "Shoes", "Accessories", "More"];
+const WOMEN_COLUMN_ORDER = ["Apparel", "Shoes", "Carry", "Fine Accessories", "More"];
+const MEN_COLUMN_ORDER   = ["Apparel", "Tailoring", "Shirts & Knitwear", "Coastal", "Shoes", "Accessories", "More"];
 
 /**
  * Cross-gender category collections (no `women-`/`men-` prefix) that should
@@ -113,19 +113,19 @@ const CROSS_CATEGORIES: CrossEntry[] = [
   { handle: "shirts",         label: "Shirts",         women: { column: "Apparel", order: 5 },           men: { column: "Shirts & Knitwear", order: 0 } },
   { handle: "skirts",         label: "Skirts",         women: { column: "Apparel", order: 6 },           men: null },
   { handle: "suits",          label: "Suits",          women: null,                                       men: { column: "Tailoring", order: 0 } },
-  { handle: "swimwear",       label: "Swimwear",       women: { column: "Apparel", order: 7 },           men: { column: "Bottoms & Beach", order: 3 } },
-  { handle: "sleepwear",      label: "Sleepwear",      women: { column: "Apparel", order: 8 },           men: { column: "Bottoms & Beach", order: 5 } },
+  { handle: "swimwear",       label: "Swimwear",       women: { column: "Apparel", order: 7 },           men: { column: "Coastal", order: 3 } },
+  { handle: "sleepwear",      label: "Sleepwear",      women: { column: "Apparel", order: 8 },           men: { column: "Coastal", order: 5 } },
   { handle: "boots",          label: "Boots",          women: { column: "Shoes", order: 2 },             men: { column: "Shoes", order: 2 } },
   { handle: "loafers",        label: "Loafers",        women: { column: "Shoes", order: 3 },             men: { column: "Shoes", order: 4 } },
   // Oxfords & Derbies hidden from nav: only 3 products (below ≥5 threshold).
   // Bag sub-types — surface in the Bags column for both genders so every
   // category collection we built is reachable from the menu.
-  { handle: "handbags",       label: "Handbags",       women: { column: "Bags & Leather", order: 3 },    men: { column: "Accessories", order: 0 } },
-  { handle: "shoulder-bags",  label: "Shoulder Bags",  women: { column: "Bags & Leather", order: 4 },    men: { column: "Accessories", order: 0 } },
-  { handle: "crossbody-bags", label: "Crossbody Bags", women: { column: "Bags & Leather", order: 5 },    men: { column: "Accessories", order: 0 } },
-  { handle: "tote-bags",      label: "Tote Bags",      women: { column: "Bags & Leather", order: 6 },    men: { column: "Accessories", order: 0 } },
-  { handle: "clutch-bags",    label: "Clutch Bags",    women: { column: "Bags & Leather", order: 7 },    men: { column: "Accessories", order: 0 } },
-  { handle: "backpacks",      label: "Backpacks",      women: { column: "Bags & Leather", order: 8 },    men: { column: "Accessories", order: 0 } },
+  { handle: "handbags",       label: "Handbags",       women: { column: "Carry", order: 3 },    men: { column: "Accessories", order: 0 } },
+  { handle: "shoulder-bags",  label: "Shoulder Bags",  women: { column: "Carry", order: 4 },    men: { column: "Accessories", order: 0 } },
+  { handle: "crossbody-bags", label: "Crossbody Bags", women: { column: "Carry", order: 5 },    men: { column: "Accessories", order: 0 } },
+  { handle: "tote-bags",      label: "Tote Bags",      women: { column: "Carry", order: 6 },    men: { column: "Accessories", order: 0 } },
+  { handle: "clutch-bags",    label: "Clutch Bags",    women: { column: "Carry", order: 7 },    men: { column: "Accessories", order: 0 } },
+  { handle: "backpacks",      label: "Backpacks",      women: { column: "Carry", order: 8 },    men: { column: "Accessories", order: 0 } },
   // `accessories` is the global (unisex) collection — gender dropdowns use
   // the prefixed `women-accessories` / `mens-accessories` as "All Accessories"
   // (handled by WOMEN_RULES / MEN_RULES). Do not duplicate here.
@@ -184,18 +184,18 @@ const CROSS_CATEGORIES: CrossEntry[] = [
   { handle: "coats-men",          label: "Coats",              women: null, men: { column: "Tailoring", order: 12 } },
   { handle: "trench-coats",       label: "Trench Coats",       women: { column: "Apparel", order: 36 }, men: { column: "Tailoring", order: 12 } },
   { handle: "parkas",             label: "Parkas",             women: null, men: { column: "Tailoring", order: 12 } },
-  { handle: "denim-men",          label: "Denim",              women: null, men: { column: "Bottoms & Beach", order: 10 } },
+  { handle: "denim-men",          label: "Denim",              women: null, men: { column: "Coastal", order: 10 } },
 
-  { handle: "skinny-jeans",       label: "Skinny Jeans",       women: null, men: { column: "Bottoms & Beach", order: 11 } },
-  { handle: "slim-fit-jeans",     label: "Slim Fit Jeans",     women: null, men: { column: "Bottoms & Beach", order: 12 } },
-  { handle: "casual-pants",       label: "Casual Pants",       women: null, men: { column: "Bottoms & Beach", order: 13 } },
-  { handle: "dress-pants",        label: "Dress Pants",        women: null, men: { column: "Bottoms & Beach", order: 14 } },
-  { handle: "athletic-pants",     label: "Athletic Pants",     women: null, men: { column: "Bottoms & Beach", order: 15 } },
-  { handle: "joggers",            label: "Joggers",            women: null, men: { column: "Bottoms & Beach", order: 16 } },
-  { handle: "sportswear",         label: "Sportswear",         women: null, men: { column: "Bottoms & Beach", order: 17 } },
-  { handle: "bermuda-shorts",     label: "Bermuda Shorts",     women: null, men: { column: "Bottoms & Beach", order: 18 } },
-  { handle: "swimwear-men",       label: "Swimwear",           women: null, men: { column: "Bottoms & Beach", order: 19 } },
-  { handle: "underwear-men",      label: "Underwear",          women: null, men: { column: "Bottoms & Beach", order: 20 } },
+  { handle: "skinny-jeans",       label: "Skinny Jeans",       women: null, men: { column: "Coastal", order: 11 } },
+  { handle: "slim-fit-jeans",     label: "Slim Fit Jeans",     women: null, men: { column: "Coastal", order: 12 } },
+  { handle: "casual-pants",       label: "Casual Pants",       women: null, men: { column: "Coastal", order: 13 } },
+  { handle: "dress-pants",        label: "Dress Pants",        women: null, men: { column: "Coastal", order: 14 } },
+  { handle: "athletic-pants",     label: "Athletic Pants",     women: null, men: { column: "Coastal", order: 15 } },
+  { handle: "joggers",            label: "Joggers",            women: null, men: { column: "Coastal", order: 16 } },
+  { handle: "sportswear",         label: "Sportswear",         women: null, men: { column: "Coastal", order: 17 } },
+  { handle: "bermuda-shorts",     label: "Bermuda Shorts",     women: null, men: { column: "Coastal", order: 18 } },
+  { handle: "swimwear-men",       label: "Swimwear",           women: null, men: { column: "Coastal", order: 19 } },
+  { handle: "underwear-men",      label: "Underwear",          women: null, men: { column: "Coastal", order: 20 } },
   { handle: "suits",              label: "Suits",              women: null, men: { column: "Tailoring", order: 13 } },
 
   // Unisex — shoes
@@ -208,12 +208,12 @@ const CROSS_CATEGORIES: CrossEntry[] = [
   { handle: "slip-on-loafers",    label: "Slip-On Loafers",    women: { column: "Shoes", order: 16 }, men: { column: "Shoes", order: 16 } },
 
   // Unisex — bags & leather
-  { handle: "leather-goods",      label: "Leather Goods",      women: { column: "Bags & Leather", order: 10 }, men: { column: "Accessories", order: 10 } },
+  { handle: "leather-goods",      label: "Leather Goods",      women: { column: "Carry", order: 10 }, men: { column: "Accessories", order: 10 } },
 
   // Unisex — accessories
   { handle: "belts",              label: "Belts",              women: { column: "Fine Accessories", order: 10 }, men: { column: "Accessories", order: 11 } },
   { handle: "regular-belts",      label: "Regular Belts",      women: { column: "Fine Accessories", order: 11 }, men: { column: "Accessories", order: 12 } },
-  { handle: "wallets",            label: "Wallets",            women: { column: "Bags & Leather", order: 11 }, men: { column: "Accessories", order: 13 } },
+  { handle: "wallets",            label: "Wallets",            women: { column: "Carry", order: 11 }, men: { column: "Accessories", order: 13 } },
   { handle: "scarves",            label: "Scarves",            women: { column: "Fine Accessories", order: 12 }, men: { column: "Accessories", order: 14 } },
   { handle: "sunglasses",         label: "Sunglasses",         women: { column: "Fine Accessories", order: 13 }, men: { column: "Accessories", order: 15 } },
   { handle: "eyewear",            label: "Eyewear",            women: { column: "Fine Accessories", order: 14 }, men: { column: "Accessories", order: 16 } },
