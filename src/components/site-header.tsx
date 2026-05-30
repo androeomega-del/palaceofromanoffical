@@ -241,47 +241,8 @@ export function SiteHeader() {
             onClick={() => setMobileOpen(false)}
             aria-hidden="true"
           />
-          <div className="absolute left-0 top-0 h-full w-[88%] max-w-sm bg-canvas shadow-2xl flex flex-col">
-            <div className="flex items-center justify-between px-6 h-20 border-b border-ink/10">
-              <Link
-                to="/"
-                onClick={() => setMobileOpen(false)}
-                className="text-base font-serif tracking-[0.18em] uppercase"
-              >
-                Palace of Roman
-              </Link>
-              <button
-                type="button"
-                aria-label="Close menu"
-                onClick={() => setMobileOpen(false)}
-                className="hover:text-bronze"
-              >
-                <X className="w-5 h-5" strokeWidth={1.25} />
-              </button>
-            </div>
-            <div
-              className="flex-1 overflow-y-auto px-6 py-4"
-              onClick={(e) => {
-                // Auto-close when tapping any link inside the drawer
-                if ((e.target as HTMLElement).closest("a")) setMobileOpen(false);
-              }}
-            >
-              <MobileMegamenu />
-              <div className="mt-4 pt-4 border-t border-ink/10 flex flex-col gap-1">
-                {[...flatLeft, ...flatRight].map((n) => (
-                  <Link
-                    key={n.label}
-                    to={n.to as any}
-                    params={n.params as any}
-                    className={`py-3 text-[12px] uppercase tracking-[0.3em] ${
-                      n.accent ? "text-bronze" : "text-ink"
-                    }`}
-                  >
-                    {n.label}
-                  </Link>
-                ))}
-              </div>
-            </div>
+          <div className="absolute left-0 top-0 h-full w-[92%] max-w-sm bg-canvas shadow-2xl">
+            <MobileFarfetchMenu onClose={() => setMobileOpen(false)} />
           </div>
         </div>
       )}
