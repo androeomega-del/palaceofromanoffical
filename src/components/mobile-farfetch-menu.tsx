@@ -205,7 +205,7 @@ export function MobileFarfetchMenu({ onClose }: { onClose: () => void }) {
                   active ? "text-ink" : "text-ink/45"
                 }`}
               >
-                {t === "women" ? "Women" : "Men"}
+                {t === "women" ? "The Women's Edit" : "The Men's Edit"}
                 {active && (
                   <span
                     aria-hidden="true"
