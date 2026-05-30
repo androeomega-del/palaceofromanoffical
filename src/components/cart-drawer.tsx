@@ -91,8 +91,8 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
                   const img = item.product.node.images?.edges?.[0]?.node;
                   return (
                     <li key={item.variantId} className="flex gap-4">
-                      <div className="w-20 h-24 bg-muted overflow-hidden flex-shrink-0">
-                        {img && <img src={img.url} alt={img.altText ?? item.product.node.title} className="w-full h-full object-cover" />}
+                      <div className="w-20 h-24 bg-canvas-raised overflow-hidden flex-shrink-0">
+                        {img && <img src={img.url} alt={img.altText ?? item.product.node.title} className="w-full h-full object-contain p-2" />}
                       </div>
                       <div className="flex-1 min-w-0 flex flex-col">
                         <p className="text-[10px] uppercase tracking-widest text-bronze">{item.product.node.vendor}</p>

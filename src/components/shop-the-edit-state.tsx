@@ -17,7 +17,7 @@ export function ShopTheEditSkeleton({
     <div className={`grid ${columns} gap-x-6 gap-y-14`} aria-busy="true" aria-live="polite">
       {Array.from({ length: count }).map((_, i) => (
         <div key={i}>
-          <div className="w-full aspect-[4/5] por-shimmer mb-5" />
+          <div className="w-full aspect-[3/4] por-shimmer mb-5" />
           <div className="h-2 w-16 por-shimmer mb-2" />
           <div className="h-3 w-3/4 por-shimmer" />
         </div>
