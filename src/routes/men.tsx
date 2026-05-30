@@ -30,6 +30,16 @@ import editorialResortTailoring from "@/assets/editorial-resort-tailoring.jpg";
 import editorialEveningSupermodel from "@/assets/editorial-evening-supermodel.jpg";
 import editorialAccessoriesStilllife from "@/assets/editorial-accessories-stilllife.jpg";
 import editorialTravelSupermodel from "@/assets/editorial-travel-supermodel.jpg";
+import brandVersace from "@/assets/brand-versace.jpg";
+import brandDolceGabbana from "@/assets/brand-dolce-gabbana.jpg";
+import brandGucci from "@/assets/brand-gucci.jpg";
+import brandPrada from "@/assets/brand-prada.jpg";
+import brandBrunelloCucinelli from "@/assets/brand-brunello-cucinelli.jpg";
+import brandGiorgioArmani from "@/assets/brand-giorgio-armani.jpg";
+import brandTomFord from "@/assets/brand-tom-ford.jpg";
+import brandSaintLaurent from "@/assets/brand-saint-laurent.jpg";
+import brandLoroPiana from "@/assets/brand-loro-piana.jpg";
+import brandBottegaVeneta from "@/assets/brand-bottega-veneta.jpg";
 
 export const Route = createFileRoute("/men")({
   head: () => ({
