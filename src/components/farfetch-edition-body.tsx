@@ -27,7 +27,7 @@ import { ProductCard } from "@/components/product-card";
 
 import marketingWomen from "@/assets/marketing-women-summer.jpg";
 import marketingMen from "@/assets/marketing-men-summer.jpg";
-import marketingAccessories from "@/assets/marketing-accessories-summer.jpg";
+
 import marketingMensResort from "@/assets/marketing-men-resort-summer.jpg";
 
 /* ────────────────────────────────────────────────────────────────────────── */
