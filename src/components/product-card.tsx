@@ -14,6 +14,34 @@ import { PriceTag } from "@/components/price-tag";
 
 export type SuppressedBadge = "markdown" | "scarcity";
 
+/**
+ * "New Season" eligibility — derived from the season token written into the
+ * product description. We badge a piece only if its description names the
+ * CURRENT or UPCOMING season. Today (May 2026) that means:
+ *   - Current : SS26 / Spring-Summer 2026
+ *   - Upcoming: Pre-Fall 2026, FW26 / AW26 / Fall-Winter 2026, Resort/Cruise 2027
+ * Update this allow-list when the calendar rolls.
+ */
+const NEW_SEASON_PATTERNS: RegExp[] = [
+  // SS26 / S/S 26 / Spring-Summer 2026
+  /\bs[\s/.-]?s[\s/.-]?(?:20)?26\b/i,
+  /\bspring[\s/-]?summer\s*(?:20)?26\b/i,
+  // FW26 / AW26 / A/W 26 / Fall-Winter 2026 / Autumn-Winter 2026
+  /\b(?:f[\s/.-]?w|a[\s/.-]?w)[\s/.-]?(?:20)?26\b/i,
+  /\b(?:fall|autumn)[\s/-]?winter\s*(?:20)?26\b/i,
+  // Pre-Fall 2026
+  /\bpre[\s-]?fall\s*(?:20)?26\b/i,
+  // Resort / Cruise 2027
+  /\b(?:resort|cruise)\s*(?:20)?27\b/i,
+];
+
+function isCurrentOrUpcomingSeason(description?: string | null): boolean {
+  if (!description) return false;
+  // Strip HTML so tokens inside markup still match.
+  const text = description.replace(/<[^>]*>/g, " ");
+  return NEW_SEASON_PATTERNS.some((re) => re.test(text));
+}
+
 export function ProductCard({
   product,
   suppressBadges = [],
