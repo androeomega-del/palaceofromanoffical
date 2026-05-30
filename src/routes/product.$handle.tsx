@@ -543,13 +543,16 @@ function ProductView({
 
             {/* Desktop: hero frame, then editorial 2-column grid */}
             <div className="hidden lg:grid grid-cols-2 gap-3 xl:gap-4">
-              {(images.length ? images : [{ url: "", altText: product.title }]).map((img, i) => {
+              {(images.length ? images : [{ url: "", altText: product.title }]).map((img, i, arr) => {
                 const hero = i === 0;
+                // Make the trailing orphan span the full row to avoid an empty cell
+                const isLastOrphan = !hero && i === arr.length - 1 && (arr.length - 1) % 2 === 1;
+                const wide = hero || isLastOrphan;
                 return (
                   <div
                     key={img.url || i}
                     className={`bg-secondary overflow-hidden ${
-                      hero ? "col-span-2 aspect-[4/5]" : "aspect-[3/4]"
+                      wide ? "col-span-2 aspect-[4/5]" : "aspect-[3/4]"
                     }`}
                   >
                     {img.url && (
@@ -560,12 +563,12 @@ function ProductView({
                         className="block w-full h-full cursor-zoom-in"
                       >
                         <img
-                          src={cdnImage(img.url, { width: hero ? 1600 : 1000 })}
-                          srcSet={cdnSrcSet(img.url, hero ? [800, 1200, 1600, 2000] : [500, 800, 1100])}
-                          sizes={hero ? "(min-width: 1280px) 58vw, 100vw" : "(min-width: 1280px) 29vw, 50vw"}
+                          src={cdnImage(img.url, { width: wide ? 1600 : 1000 })}
+                          srcSet={cdnSrcSet(img.url, wide ? [800, 1200, 1600, 2000] : [500, 800, 1100])}
+                          sizes={wide ? "(min-width: 1280px) 58vw, 100vw" : "(min-width: 1280px) 29vw, 50vw"}
                           alt={img.altText ?? product.title}
-                          width={hero ? 1600 : 1000}
-                          height={hero ? 2000 : 1333}
+                          width={wide ? 1600 : 1000}
+                          height={wide ? 2000 : 1333}
                           loading={i === 0 ? "eager" : "lazy"}
                           fetchPriority={i === 0 ? "high" : undefined}
                           decoding="async"
