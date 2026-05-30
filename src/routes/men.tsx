@@ -254,13 +254,11 @@ function NewInThisWeek() {
         </Link>
       }
     >
-      {(products.length > 0 ? products : Array.from({ length: 4 })).map((p, i) =>
-        "node" in p ? (
-          <ProductCard key={p.node.id} product={p} />
-        ) : (
-          <div key={i} className="aspect-[3/4] por-shimmer bg-muted" />
-        ),
-      )}
+      {products.length > 0
+        ? products.map((p) => <ProductCard key={p.node.id} product={p} />)
+        : Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="aspect-[3/4] por-shimmer bg-muted" />
+          ))}
     </CarouselSection>
   );
 }
