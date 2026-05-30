@@ -1001,6 +1001,37 @@ export function MobileMegamenu() {
 
 
       <MobileAccordion
+        label="Best Sellers"
+        isOpen={openKey === "best-sellers"}
+        onToggle={() => setOpenKey(openKey === "best-sellers" ? null : "best-sellers")}
+      >
+        <p className="text-[11px] font-light italic text-ink/60 mb-1">
+          The pieces our clients return for, organised by maison.
+        </p>
+        {brandGroups.length === 0 ? (
+          <p className="text-[12px] text-muted-foreground">Loading houses…</p>
+        ) : (
+          brandGroups.map((col) => (
+            <div key={col.heading} className="flex flex-col gap-1.5">
+              <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-1">
+                {col.heading}
+              </p>
+              {col.items.map((b) => (
+                <Link
+                  key={b.vendor}
+                  to="/brand/$vendor"
+                  params={{ vendor: vendorSlug(b.vendor) }}
+                  className="text-[14px] text-ink/85 hover:text-bronze py-1"
+                >
+                  {b.vendor}
+                </Link>
+              ))}
+            </div>
+          ))
+        )}
+      </MobileAccordion>
+
+      <MobileAccordion
         label="Brands"
         isOpen={openKey === "brands"}
         onToggle={() => setOpenKey(openKey === "brands" ? null : "brands")}
