@@ -92,10 +92,9 @@ function DepartmentGateway() {
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
           {DEPARTMENTS.map((d) => (
-            <Link
+            <a
               key={d.label}
-              to={d.to}
-              params={d.params}
+              href={d.params ? `/collections/${d.params.handle}` : d.to}
               className="group relative block aspect-[3/4] md:aspect-[3/4] overflow-hidden bg-muted"
             >
               <img
@@ -107,11 +106,11 @@ function DepartmentGateway() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-ink/10 to-transparent" />
               <div className="absolute inset-x-0 bottom-0 p-6 md:p-8 flex items-end justify-center">
-                <span className="font-serif text-2xl md:text-4xl text-canvas tracking-[0.04em] uppercase">
+                <span className="font-serif text-[1.6rem] sm:text-3xl lg:text-4xl text-canvas tracking-[0.02em] uppercase leading-none max-w-full px-1 text-center break-words">
                   {d.label}
                 </span>
               </div>
-            </Link>
+            </a>
           ))}
         </div>
       </div>
