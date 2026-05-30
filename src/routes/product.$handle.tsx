@@ -541,15 +541,15 @@ function ProductView({
               )}
             </div>
 
-            {/* Desktop: stacked tall frames */}
-            <div className="hidden lg:flex flex-col gap-8">
+            {/* Desktop: hero frame, then editorial 2-column grid */}
+            <div className="hidden lg:grid grid-cols-2 gap-3 xl:gap-4">
               {(images.length ? images : [{ url: "", altText: product.title }]).map((img, i) => {
-                const oversized = editorial && i === 0;
+                const hero = i === 0;
                 return (
                   <div
                     key={img.url || i}
                     className={`bg-secondary overflow-hidden ${
-                      oversized ? "aspect-[4/5]" : "aspect-[3/4]"
+                      hero ? "col-span-2 aspect-[4/5]" : "aspect-[3/4]"
                     }`}
                   >
                     {img.url && (
@@ -560,16 +560,16 @@ function ProductView({
                         className="block w-full h-full cursor-zoom-in"
                       >
                         <img
-                          src={cdnImage(img.url, { width: 1400 })}
-                          srcSet={cdnSrcSet(img.url, [800, 1200, 1600, 2000])}
-                          sizes="(min-width: 1280px) 50vw, 100vw"
+                          src={cdnImage(img.url, { width: hero ? 1600 : 1000 })}
+                          srcSet={cdnSrcSet(img.url, hero ? [800, 1200, 1600, 2000] : [500, 800, 1100])}
+                          sizes={hero ? "(min-width: 1280px) 58vw, 100vw" : "(min-width: 1280px) 29vw, 50vw"}
                           alt={img.altText ?? product.title}
-                          width={1400}
-                          height={oversized ? 1750 : 1867}
+                          width={hero ? 1600 : 1000}
+                          height={hero ? 2000 : 1333}
                           loading={i === 0 ? "eager" : "lazy"}
                           fetchPriority={i === 0 ? "high" : undefined}
                           decoding="async"
-                            className="w-full h-full object-contain p-8 transition-transform duration-[1000ms] motion-safe:hover:scale-[1.015]"
+                          className="w-full h-full object-contain p-6 xl:p-8 transition-transform duration-[1000ms] motion-safe:hover:scale-[1.015]"
                         />
                       </button>
                     )}
