@@ -486,8 +486,8 @@ function ProductView({
         </div>
       </div>
 
-      <div className="px-6 md:px-10 pt-10 pb-20">
-        <div className="max-w-screen-2xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+      <div className="px-6 md:px-10 pt-6 md:pt-8 pb-10 md:pb-14">
+        <div className="max-w-screen-2xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-10 lg:gap-12 items-start">
           {/* ===== Gallery — stacked editorial ===== */}
           <div className="lg:col-span-7">
             {/* Mobile: snap carousel */}
