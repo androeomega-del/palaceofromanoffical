@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WomenRouteImport } from './routes/women'
 import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as VacationStylistRouteImport } from './routes/vacation-stylist'
 import { Route as TermsRouteImport } from './routes/terms'
@@ -112,6 +113,11 @@ import { Route as ApiPublicCronBackInStockNotifyRouteImport } from './routes/api
 import { Route as ApiPublicCronAbandonedCartRecoveryRouteImport } from './routes/api/public/cron/abandoned-cart-recovery'
 import { Route as ApiPublicAiRecommendationsRouteImport } from './routes/api/public/ai.recommendations'
 
+const WomenRoute = WomenRouteImport.update({
+  id: '/women',
+  path: '/women',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WishlistRoute = WishlistRouteImport.update({
   id: '/wishlist',
   path: '/wishlist',
@@ -678,6 +684,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/vacation-stylist': typeof VacationStylistRoute
   '/wishlist': typeof WishlistRoute
+  '/women': typeof WomenRoute
   '/account/login': typeof AccountLoginRoute
   '/account/recover': typeof AccountRecoverRoute
   '/account/register': typeof AccountRegisterRoute
@@ -781,6 +788,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/vacation-stylist': typeof VacationStylistRoute
   '/wishlist': typeof WishlistRoute
+  '/women': typeof WomenRoute
   '/account/login': typeof AccountLoginRoute
   '/account/recover': typeof AccountRecoverRoute
   '/account/register': typeof AccountRegisterRoute
@@ -885,6 +893,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/vacation-stylist': typeof VacationStylistRoute
   '/wishlist': typeof WishlistRoute
+  '/women': typeof WomenRoute
   '/account/login': typeof AccountLoginRoute
   '/account/recover': typeof AccountRecoverRoute
   '/account/register': typeof AccountRegisterRoute
@@ -991,6 +1000,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/vacation-stylist'
     | '/wishlist'
+    | '/women'
     | '/account/login'
     | '/account/recover'
     | '/account/register'
@@ -1094,6 +1104,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/vacation-stylist'
     | '/wishlist'
+    | '/women'
     | '/account/login'
     | '/account/recover'
     | '/account/register'
@@ -1197,6 +1208,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/vacation-stylist'
     | '/wishlist'
+    | '/women'
     | '/account/login'
     | '/account/recover'
     | '/account/register'
@@ -1302,6 +1314,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   VacationStylistRoute: typeof VacationStylistRoute
   WishlistRoute: typeof WishlistRoute
+  WomenRoute: typeof WomenRoute
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminCollectionFocalRoute: typeof AdminCollectionFocalRoute
   AdminCollectionHeroRegressionRoute: typeof AdminCollectionHeroRegressionRoute
@@ -1370,6 +1383,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/women': {
+      id: '/women'
+      path: '/women'
+      fullPath: '/women'
+      preLoaderRoute: typeof WomenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/wishlist': {
       id: '/wishlist'
       path: '/wishlist'
@@ -2182,6 +2202,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   VacationStylistRoute: VacationStylistRoute,
   WishlistRoute: WishlistRoute,
+  WomenRoute: WomenRoute,
   AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminCollectionFocalRoute: AdminCollectionFocalRoute,
   AdminCollectionHeroRegressionRoute: AdminCollectionHeroRegressionRoute,
