@@ -16,11 +16,16 @@ import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
 import { ProductCard } from "@/components/product-card";
 import type { ShopifyProduct } from "@/lib/shopify";
 
+// Loose at the prop boundary so any `queryOptions(...)` factory whose
+// queryFn resolves to ShopifyProduct[] is assignable, regardless of the
+// exact queryKey tuple shape. Keeps presets type-clean without forcing
+// them to widen their own keys.
 type ProductRailQueryOptions = UseQueryOptions<
   ShopifyProduct[],
   Error,
   ShopifyProduct[],
-  readonly unknown[]
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  any
 >;
 
 export interface ProductRailProps {
