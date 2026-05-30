@@ -636,7 +636,7 @@ function CollectionPage() {
       )}
 
       {isEditorial && (featuredQ.data?.length ?? 0) > 0 && (
-        <section className="px-6 pt-16 pb-4">
+        <section className="px-4 md:px-6 pt-10 md:pt-16 pb-4">
           <div className="max-w-screen-2xl mx-auto">
             <div className="flex items-end justify-between mb-10">
               <div>
