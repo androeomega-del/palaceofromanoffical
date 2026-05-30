@@ -655,7 +655,7 @@ function CollectionPage() {
 
               ))}
             </div>
-            <div className="mt-16 border-t border-ink/10" />
+            
           </div>
         </section>
       )}
