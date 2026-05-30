@@ -138,9 +138,9 @@ export function ProductCard({
             dwellTimer = setTimeout(() => {
               if (impressionFired.current) return;
               impressionFired.current = true;
-              track({ handle: p.handle, event: "impression", vendor: p.vendor, productType: p.productType });
+              track({ handle: p.handle, event: "impression", vendor: p.vendor, productType: p.productType, surface, position });
               if (hasScarcity) {
-                track({ handle: p.handle, event: "scarcity_view", vendor: p.vendor, productType: p.productType });
+                track({ handle: p.handle, event: "scarcity_view", vendor: p.vendor, productType: p.productType, surface, position });
               }
               observer.disconnect();
             }, 600);
@@ -157,7 +157,7 @@ export function ProductCard({
       if (dwellTimer) clearTimeout(dwellTimer);
       observer.disconnect();
     };
-  }, [p.handle, p.vendor, p.productType, track, hasScarcity]);
+  }, [p.handle, p.vendor, p.productType, track, hasScarcity, surface, position]);
 
   const onCardClick = (e: React.MouseEvent) => {
     // Mobile/touch: first tap reveals the CTA overlay; second tap navigates.
