@@ -457,6 +457,63 @@ export function ClientFacets({
 
   return (
     <div className="divide-y divide-ink/10">
+      {saleCount > 0 && (
+        <div>
+          <GroupHeader
+            label="Price Status"
+            open={open.sale}
+            onToggle={() => setOpen((s) => ({ ...s, sale: !s.sale }))}
+            count={state.sale !== "any" ? 1 : 0}
+          />
+          {open.sale && (
+            <div className="pb-3 flex flex-wrap gap-2">
+              {(
+                [
+                  { v: "any" as const, label: "All" },
+                  { v: "sale" as const, label: "On Sale" },
+                  { v: "full" as const, label: "Full Price" },
+                ]
+              ).map((opt) => {
+                const active = state.sale === opt.v;
+                return (
+                  <button
+                    key={opt.v}
+                    onClick={() => onChange({ ...state, sale: opt.v })}
+                    aria-pressed={active}
+                    className={cn(
+                      "px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] border transition-colors",
+                      active ? "bg-ink text-canvas border-ink" : "border-ink/20 hover:border-ink",
+                    )}
+                  >
+                    {opt.label}
+                    {opt.v === "sale" && (
+                      <span className="ml-2 text-bronze tabular-nums">{saleCount}</span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+      {occasions.length > 0 && (
+        <div>
+          <GroupHeader
+            label="Occasion"
+            open={open.occasion}
+            onToggle={() => setOpen((s) => ({ ...s, occasion: !s.occasion }))}
+            count={state.occasions.size}
+          />
+          {open.occasion && (
+            <CheckList
+              buckets={occasions}
+              selected={state.occasions}
+              onToggle={(l) => toggleSet("occasions", l)}
+              initiallyVisible={6}
+            />
+          )}
+        </div>
+      )}
       {brands.length > 1 && (
         <div>
           <GroupHeader label="Designer" open={open.brand} onToggle={() => setOpen((s) => ({ ...s, brand: !s.brand }))} count={state.brands.size} />
