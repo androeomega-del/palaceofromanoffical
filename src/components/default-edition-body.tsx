@@ -739,7 +739,7 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-10">
             {[
-              { Icon: ShieldCheck, title: "100% Authentic Guaranteed", body: "Official BrandsGateway partner — every piece authorised and sourced from the brands or their authorised distributors." },
+              { Icon: ShieldCheck, title: "100% Authentic Guaranteed", body: "Every piece sourced through our network of authorised European boutiques and distributors — arriving sealed, in original packaging." },
               { Icon: Plane, title: "Tracked Worldwide Shipping", body: "Complimentary DHL or FedEx tracked dispatch on orders above $250, with full traceability door to door." },
               { Icon: RotateCcw, title: "Considered Returns", body: "14-day returns on full-priced pieces from the day your parcel is delivered — quietly handled, no questions." },
               { Icon: Sparkles, title: "VIP Email Concierge", body: "A direct line for sourcing requests, sizing and styling — same-day reply from a member of the house." },
