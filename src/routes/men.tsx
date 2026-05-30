@@ -6,8 +6,8 @@
  *
  * Staged-launch: this page is intentionally NOT linked from primary nav
  * or the home edition body yet. It ships with the spec's revised copy,
- * verified Shopify handles (mens-tailoring / mens-swimwear / mens-shoes /
- * mens-sneakers / mens-bags / mens-sunglasses / mens-accessories /
+ * verified Shopify handles (men-clothing / swimwear / men-shoes /
+ * men-shoes / men-bags / men-accessories / men-accessories /
  * mens-new-arrivals / mens-editor-picks) and existing marketing assets —
  * no new image generation in this pass.
  */
@@ -323,12 +323,12 @@ function NewInThisWeek() {
 /* ─────────────────────────────────────────────────────────────────── */
 
 const TRENDING_TILES: { handle: string; label: string; alt: string }[] = [
-  { handle: "mens-tailoring", label: "Tailoring", alt: "Men's tailoring — unstructured jackets and fluid trousers" },
-  { handle: "mens-swimwear", label: "Swimwear", alt: "Men's swimwear — swim shorts and resort essentials" },
-  { handle: "mens-shoes", label: "Footwear", alt: "Men's footwear — loafers, drivers and dress shoes" },
-  { handle: "mens-sneakers", label: "Trainers", alt: "Men's trainers — designer sneakers" },
-  { handle: "mens-bags", label: "Bags", alt: "Men's bags — briefcases, totes and weekenders" },
-  { handle: "mens-sunglasses", label: "Sunglasses", alt: "Men's sunglasses — designer eyewear" },
+  { handle: "men-clothing", label: "Tailoring", alt: "Men's tailoring — unstructured jackets and fluid trousers" },
+  { handle: "swimwear", label: "Swimwear", alt: "Men's swimwear — swim shorts and resort essentials" },
+  { handle: "men-shoes", label: "Footwear", alt: "Men's footwear — loafers, drivers and dress shoes" },
+  { handle: "men-shoes", label: "Trainers", alt: "Men's trainers — designer sneakers" },
+  { handle: "men-bags", label: "Bags", alt: "Men's bags — briefcases, totes and weekenders" },
+  { handle: "men-accessories", label: "Sunglasses", alt: "Men's sunglasses — designer eyewear" },
 ];
 
 function TrendingCategories() {
@@ -469,7 +469,7 @@ function EditorialSplit() {
         headline="Tailoring that breathes."
         body="Unstructured jackets, fluid trousers, and the linen that makes 35 degrees feel intentional."
         cta="Explore Resort Tailoring →"
-        handle="mens-tailoring"
+        handle="men-clothing"
         image={editorialResortTailoring}
         alt="Resort tailoring — supermodel in a soft taupe linen jacket and camel silk shirt photographed in a sunlit Roman palazzo"
       />
@@ -478,7 +478,7 @@ function EditorialSplit() {
         headline="After dark."
         body="The dinner jacket, the silk shirt, the details that hold up under candlelight."
         cta="Explore Evening →"
-        handle="mens-tailoring"
+        handle="men-clothing"
         image={editorialEveningSupermodel}
         alt="Evening menswear — supermodel in a midnight navy peak-lapel dinner jacket and silk shirt by candlelight"
       />
@@ -539,10 +539,10 @@ function EditorialTile({
 /* ─────────────────────────────────────────────────────────────────── */
 
 const OCCASIONS: { label: string; handle: string }[] = [
-  { label: "Workwear", handle: "mens-tailoring" },
-  { label: "Weekend", handle: "mens-clothing" },
-  { label: "Evening", handle: "mens-tailoring" },
-  { label: "Travel", handle: "mens-bags" },
+  { label: "Workwear", handle: "men-clothing" },
+  { label: "Weekend", handle: "men-clothing" },
+  { label: "Evening", handle: "men-clothing" },
+  { label: "Travel", handle: "men-bags" },
 ];
 
 function ShopByOccasion() {
@@ -574,17 +574,17 @@ function ShopByOccasion() {
 /* ─────────────────────────────────────────────────────────────────── */
 
 function FeaturedProductRail() {
-  // Buyer's Pick: source from mens-clothing (the deepest, most reliably
-  // stocked men's collection), with mens-shoes as a fallback so the rail
+  // Buyer's Pick: source from men-clothing (the deepest, most reliably
+  // stocked men's collection), with men-shoes as a fallback so the rail
   // is never empty.
   const picks = useQuery({
     queryKey: ["men", "buyers-pick", "v2"],
-    queryFn: () => fetchCollection("mens-clothing", 12),
+    queryFn: () => fetchCollection("men-clothing", 12),
     staleTime: 10 * 60 * 1000,
   });
   const fallback = useQuery({
     queryKey: ["men", "buyers-pick-fallback", "v2"],
-    queryFn: () => fetchCollection("mens-shoes", 12),
+    queryFn: () => fetchCollection("men-shoes", 12),
     enabled: !!picks.data && (picks.data?.products?.edges?.length ?? 0) === 0,
     staleTime: 10 * 60 * 1000,
   });
@@ -592,7 +592,7 @@ function FeaturedProductRail() {
   const fromPicks = picks.data?.products?.edges ?? [];
   const fromFallback = fallback.data?.products?.edges ?? [];
   const products = fromPicks.length > 0 ? fromPicks : fromFallback;
-  const sourceHandle = fromPicks.length > 0 ? "mens-clothing" : "mens-shoes";
+  const sourceHandle = fromPicks.length > 0 ? "men-clothing" : "men-shoes";
 
 
   return (
@@ -637,7 +637,7 @@ function AccessoryCampaignBanner() {
         headline="The Accessory Edit"
         body="The belt that holds the look together. The sunglasses that finish it."
         cta="Explore Accessories →"
-        handle="mens-accessories"
+        handle="men-accessories"
         image={editorialAccessoriesHero}
         alt="The Accessory Edit — male model in palace gardens with sunglasses, crossbody bag and cognac belt"
       />
@@ -646,7 +646,7 @@ function AccessoryCampaignBanner() {
         headline="Pack for the long arrival."
         body="Weekend bags, eyewear, and resort essentials selected for movement."
         cta="Explore Travel →"
-        handle="mens-bags"
+        handle="men-bags"
         image={editorialTravelSupermodel}
         alt="Travel menswear — supermodel walking through a Mediterranean station at sunrise with a cognac leather weekender and camel cashmere coat"
       />
@@ -745,7 +745,7 @@ function TrustStrip() {
 /* ─────────────────────────────────────────────────────────────────── */
 
 function SaleCarousel() {
-  // No live "mens-sale" collection yet — query products with a compare-at
+  // No live "men-sale" collection yet — query products with a compare-at
   // price tagged Men. Keeps the rail full during the staged launch.
   const { data } = useQuery({
     queryKey: ["men", "ss26-sale", "v2"],
