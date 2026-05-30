@@ -651,13 +651,12 @@ export function ProductCard({
 
 
       </div>
-      <p className="text-[10px] uppercase tracking-widest mb-1 text-bronze">{p.vendor}</p>
-      <h3 className="text-sm font-medium leading-snug line-clamp-2 text-balance">{p.title}</h3>
-      <div className="flex items-baseline gap-3 mt-1.5">
+      <p className="text-[10px] uppercase tracking-[0.18em] mb-1.5 text-muted-foreground">{p.vendor}</p>
+      <h3 className="text-[13px] md:text-sm font-medium leading-snug line-clamp-2 text-balance group-hover:underline underline-offset-4 decoration-ink/30">{p.title}</h3>
+      <div className="flex items-baseline gap-2.5 mt-2">
         <PriceTag money={price} className="text-sm" />
         {onSale && <PriceTag money={compareAt} strike className="text-xs text-muted-foreground" />}
       </div>
-      <ShippingMeta vendor={p.vendor} handle={p.handle} variant="card" />
 
     </Link>
     <QuickViewSheet
