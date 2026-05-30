@@ -402,28 +402,32 @@ function BrandSpotlightTile({
 
 function EditorialSplit() {
   return (
-    <section aria-label="Editorial features" className="bg-canvas pt-16 md:pt-24">
-      <div className="max-w-screen-2xl mx-auto px-6 md:px-10 grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
-        <EditorialTile
-          eyebrow="The Resort Edit"
-          headline="Tailoring that breathes."
-          body="Unstructured jackets, fluid trousers, and the linen that makes 35 degrees feel intentional."
-          cta="Explore Resort Tailoring →"
-          handle="mens-tailoring"
-          image={marketingMen}
-          alt="Resort tailoring — unstructured linen and fluid trousers photographed in soft Mediterranean light"
-        />
-        <EditorialTile
-          eyebrow="Evening"
-          headline="After dark."
-          body="The dinner jacket, the silk shirt, the details that hold up under candlelight."
-          cta="Explore Evening →"
-          handle="mens-tailoring"
-          image={marketingMenResort}
-          alt="Evening menswear — the dinner jacket and silk shirt"
-        />
-      </div>
-    </section>
+    <CarouselSection
+      ariaLabel="Editorial features"
+      eyebrow="Editorial"
+      title="The Palace of Roman edit"
+      description="Seasonal stories arranged as shoppable fashion chapters."
+      itemClassName="basis-[86%] sm:basis-[64%] md:basis-[46%] lg:basis-[42%]"
+    >
+      <EditorialTile
+        eyebrow="The Resort Edit"
+        headline="Tailoring that breathes."
+        body="Unstructured jackets, fluid trousers, and the linen that makes 35 degrees feel intentional."
+        cta="Explore Resort Tailoring →"
+        handle="mens-tailoring"
+        image={marketingMen}
+        alt="Resort tailoring — unstructured linen and fluid trousers photographed in soft Mediterranean light"
+      />
+      <EditorialTile
+        eyebrow="Evening"
+        headline="After dark."
+        body="The dinner jacket, the silk shirt, the details that hold up under candlelight."
+        cta="Explore Evening →"
+        handle="mens-tailoring"
+        image={marketingMenResort}
+        alt="Evening menswear — the dinner jacket and silk shirt"
+      />
+    </CarouselSection>
   );
 }
 
@@ -488,27 +492,25 @@ const OCCASIONS: { label: string; handle: string }[] = [
 
 function ShopByOccasion() {
   return (
-    <section aria-label="Shop by occasion" className="bg-canvas pt-16 md:pt-24">
-      <div className="max-w-screen-2xl mx-auto px-6 md:px-10">
-        <h2 className="font-serif text-3xl md:text-4xl text-ink text-center mb-10 md:mb-12">
-          Shop by Occasion
-        </h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-ink/10 border border-ink/10">
-          {OCCASIONS.map((o) => (
-            <Link
-              key={o.label}
-              to="/collections/$handle"
-              params={{ handle: o.handle }}
-              className="bg-canvas hover:bg-canvas-raised transition-colors py-10 md:py-14 text-center group"
-            >
-              <span className="font-serif text-xl md:text-2xl text-ink group-hover:text-bronze transition-colors">
-                {o.label}
-              </span>
-            </Link>
-          ))}
-        </div>
-      </div>
-    </section>
+    <CarouselSection
+      ariaLabel="Shop by occasion"
+      title="Shop by Occasion"
+      description="Four ways into the wardrobe."
+      itemClassName="basis-[62%] sm:basis-[42%] md:basis-[28%] lg:basis-[22%]"
+    >
+      {OCCASIONS.map((o) => (
+        <Link
+          key={o.label}
+          to="/collections/$handle"
+          params={{ handle: o.handle }}
+          className="min-h-36 md:min-h-44 border border-ink/10 bg-canvas hover:bg-canvas-raised transition-colors flex items-center justify-center text-center group"
+        >
+          <span className="font-serif text-xl md:text-2xl text-ink group-hover:text-bronze transition-colors">
+            {o.label}
+          </span>
+        </Link>
+      ))}
+    </CarouselSection>
   );
 }
 
