@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WishlistRouteImport } from './routes/wishlist'
+import { Route as VacationStylistRouteImport } from './routes/vacation-stylist'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SwimRouteImport } from './routes/swim'
 import { Route as StyleQuizRouteImport } from './routes/style-quiz'
@@ -109,6 +110,11 @@ import { Route as ApiPublicAiRecommendationsRouteImport } from './routes/api/pub
 const WishlistRoute = WishlistRouteImport.update({
   id: '/wishlist',
   path: '/wishlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VacationStylistRoute = VacationStylistRouteImport.update({
+  id: '/vacation-stylist',
+  path: '/vacation-stylist',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TermsRoute = TermsRouteImport.update({
@@ -639,6 +645,7 @@ export interface FileRoutesByFullPath {
   '/style-quiz': typeof StyleQuizRoute
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
+  '/vacation-stylist': typeof VacationStylistRoute
   '/wishlist': typeof WishlistRoute
   '/account/login': typeof AccountLoginRoute
   '/account/recover': typeof AccountRecoverRoute
@@ -736,6 +743,7 @@ export interface FileRoutesByTo {
   '/style-quiz': typeof StyleQuizRoute
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
+  '/vacation-stylist': typeof VacationStylistRoute
   '/wishlist': typeof WishlistRoute
   '/account/login': typeof AccountLoginRoute
   '/account/recover': typeof AccountRecoverRoute
@@ -834,6 +842,7 @@ export interface FileRoutesById {
   '/style-quiz': typeof StyleQuizRoute
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
+  '/vacation-stylist': typeof VacationStylistRoute
   '/wishlist': typeof WishlistRoute
   '/account/login': typeof AccountLoginRoute
   '/account/recover': typeof AccountRecoverRoute
@@ -934,6 +943,7 @@ export interface FileRouteTypes {
     | '/style-quiz'
     | '/swim'
     | '/terms'
+    | '/vacation-stylist'
     | '/wishlist'
     | '/account/login'
     | '/account/recover'
@@ -1031,6 +1041,7 @@ export interface FileRouteTypes {
     | '/style-quiz'
     | '/swim'
     | '/terms'
+    | '/vacation-stylist'
     | '/wishlist'
     | '/account/login'
     | '/account/recover'
@@ -1128,6 +1139,7 @@ export interface FileRouteTypes {
     | '/style-quiz'
     | '/swim'
     | '/terms'
+    | '/vacation-stylist'
     | '/wishlist'
     | '/account/login'
     | '/account/recover'
@@ -1227,6 +1239,7 @@ export interface RootRouteChildren {
   StyleQuizRoute: typeof StyleQuizRoute
   SwimRoute: typeof SwimRouteWithChildren
   TermsRoute: typeof TermsRoute
+  VacationStylistRoute: typeof VacationStylistRoute
   WishlistRoute: typeof WishlistRoute
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminCollectionFocalRoute: typeof AdminCollectionFocalRoute
@@ -1297,6 +1310,13 @@ declare module '@tanstack/react-router' {
       path: '/wishlist'
       fullPath: '/wishlist'
       preLoaderRoute: typeof WishlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vacation-stylist': {
+      id: '/vacation-stylist'
+      path: '/vacation-stylist'
+      fullPath: '/vacation-stylist'
+      preLoaderRoute: typeof VacationStylistRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/terms': {
@@ -2059,6 +2079,7 @@ const rootRouteChildren: RootRouteChildren = {
   StyleQuizRoute: StyleQuizRoute,
   SwimRoute: SwimRouteWithChildren,
   TermsRoute: TermsRoute,
+  VacationStylistRoute: VacationStylistRoute,
   WishlistRoute: WishlistRoute,
   AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminCollectionFocalRoute: AdminCollectionFocalRoute,
