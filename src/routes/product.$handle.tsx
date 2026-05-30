@@ -629,7 +629,7 @@ function ProductView({
             <div
               id="buy"
               ref={buyRef}
-              className={`space-y-10 scroll-mt-28 rounded-md transition-shadow duration-700 ${
+              className={`space-y-6 md:space-y-7 scroll-mt-28 rounded-md transition-shadow duration-700 ${
                 flashBuy
                   ? "ring-2 ring-[var(--studio-bronze)] ring-offset-8 ring-offset-[var(--studio-bg)] shadow-[0_0_0_8px_color-mix(in_oklab,var(--studio-bronze)_15%,transparent)]"
                   : "ring-0"
