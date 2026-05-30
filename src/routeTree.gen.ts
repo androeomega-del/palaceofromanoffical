@@ -19,6 +19,7 @@ import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ShippingReturnsRouteImport } from './routes/shipping-returns'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as OrderConfirmedRouteImport } from './routes/order-confirmed'
+import { Route as MenRouteImport } from './routes/men'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LinksRouteImport } from './routes/links'
 import { Route as LimitedFindsRouteImport } from './routes/limited-finds'
@@ -159,6 +160,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
 const OrderConfirmedRoute = OrderConfirmedRouteImport.update({
   id: '/order-confirmed',
   path: '/order-confirmed',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MenRoute = MenRouteImport.update({
+  id: '/men',
+  path: '/men',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -661,6 +667,7 @@ export interface FileRoutesByFullPath {
   '/limited-finds': typeof LimitedFindsRoute
   '/links': typeof LinksRoute
   '/login': typeof LoginRoute
+  '/men': typeof MenRoute
   '/order-confirmed': typeof OrderConfirmedRoute
   '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
@@ -763,6 +770,7 @@ export interface FileRoutesByTo {
   '/limited-finds': typeof LimitedFindsRoute
   '/links': typeof LinksRoute
   '/login': typeof LoginRoute
+  '/men': typeof MenRoute
   '/order-confirmed': typeof OrderConfirmedRoute
   '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
@@ -866,6 +874,7 @@ export interface FileRoutesById {
   '/limited-finds': typeof LimitedFindsRoute
   '/links': typeof LinksRoute
   '/login': typeof LoginRoute
+  '/men': typeof MenRoute
   '/order-confirmed': typeof OrderConfirmedRoute
   '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
@@ -971,6 +980,7 @@ export interface FileRouteTypes {
     | '/limited-finds'
     | '/links'
     | '/login'
+    | '/men'
     | '/order-confirmed'
     | '/privacy'
     | '/shipping-returns'
@@ -1073,6 +1083,7 @@ export interface FileRouteTypes {
     | '/limited-finds'
     | '/links'
     | '/login'
+    | '/men'
     | '/order-confirmed'
     | '/privacy'
     | '/shipping-returns'
@@ -1175,6 +1186,7 @@ export interface FileRouteTypes {
     | '/limited-finds'
     | '/links'
     | '/login'
+    | '/men'
     | '/order-confirmed'
     | '/privacy'
     | '/shipping-returns'
@@ -1279,6 +1291,7 @@ export interface RootRouteChildren {
   LimitedFindsRoute: typeof LimitedFindsRoute
   LinksRoute: typeof LinksRoute
   LoginRoute: typeof LoginRoute
+  MenRoute: typeof MenRoute
   OrderConfirmedRoute: typeof OrderConfirmedRoute
   PrivacyRoute: typeof PrivacyRoute
   ShippingReturnsRoute: typeof ShippingReturnsRoute
@@ -1425,6 +1438,13 @@ declare module '@tanstack/react-router' {
       path: '/order-confirmed'
       fullPath: '/order-confirmed'
       preLoaderRoute: typeof OrderConfirmedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/men': {
+      id: '/men'
+      path: '/men'
+      fullPath: '/men'
+      preLoaderRoute: typeof MenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -2151,6 +2171,7 @@ const rootRouteChildren: RootRouteChildren = {
   LimitedFindsRoute: LimitedFindsRoute,
   LinksRoute: LinksRoute,
   LoginRoute: LoginRoute,
+  MenRoute: MenRoute,
   OrderConfirmedRoute: OrderConfirmedRoute,
   PrivacyRoute: PrivacyRoute,
   ShippingReturnsRoute: ShippingReturnsRoute,
@@ -2235,13 +2256,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
