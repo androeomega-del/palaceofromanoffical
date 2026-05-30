@@ -17,7 +17,7 @@ import { ShieldCheck, Plane, RotateCcw, MessageCircle, ChevronLeft, ChevronRight
 import { Children, type ReactNode, useCallback, useEffect, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 
-import { fetchCollection } from "@/lib/shopify";
+import { fetchCollection, fetchProducts } from "@/lib/shopify";
 import { cdnImage } from "@/lib/cdn-image";
 import { ProductCard } from "@/components/product-card";
 
