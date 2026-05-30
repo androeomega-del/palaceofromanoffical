@@ -612,7 +612,7 @@ function CollectionPage() {
             <div className="absolute inset-0 bg-gradient-to-t from-canvas via-canvas/40 to-transparent" />
           </section>
 
-          <section className="px-6 pt-12 pb-8 border-b border-ink/5">
+          <section className="px-4 md:px-6 pt-8 md:pt-12 pb-6 md:pb-8">
             <div className="max-w-screen-2xl mx-auto">
               <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
                 <Link to="/" className="hover:text-ink transition-colors">Home</Link>
