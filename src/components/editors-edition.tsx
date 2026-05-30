@@ -21,7 +21,9 @@ import { EditorialHotspots } from "@/components/editorial-hotspots";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { CampaignVideo } from "@/components/campaign-video";
-import { DefaultEditionBody } from "@/components/default-edition-body";
+// PHASE 1: FarfetchEditionBody replaces DefaultEditionBody as the homepage
+// body. To revert, swap this import back to:
+//   import { DefaultEditionBody } from "@/components/default-edition-body";
 import { FarfetchEditionBody } from "@/components/farfetch-edition-body";
 import { TrendingNowRail } from "@/components/trending-now";
 
