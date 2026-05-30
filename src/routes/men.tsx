@@ -250,11 +250,17 @@ function HeroBanner() {
 
 function NewInThisWeek() {
   const { data } = useQuery({
-    queryKey: ["men", "new-arrivals"],
-    queryFn: () => fetchCollection("mens-new-arrivals", 16),
+    queryKey: ["men", "just-landed", "v2"],
+    queryFn: () =>
+      fetchProducts({
+        first: 16,
+        query: 'tag:Men AND tag:"New with tags"',
+        sortKey: "CREATED_AT",
+        reverse: true,
+      }),
     staleTime: 10 * 60 * 1000,
   });
-  const products = data?.products?.edges ?? [];
+  const products = data ?? [];
 
   return (
     <CarouselSection
@@ -264,8 +270,8 @@ function NewInThisWeek() {
       description="New arrivals from Versace, Dolce & Gabbana, Brunello Cucinelli and the names defining resort 2026."
       actions={
         <Link
-          to="/collections/$handle"
-          params={{ handle: "mens-new-arrivals" }}
+          to="/men"
+          hash="just-landed"
           className="inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.3em] text-ink border-b border-bronze/50 pb-1 hover:text-bronze hover:border-bronze transition-colors"
         >
           Explore New In →
