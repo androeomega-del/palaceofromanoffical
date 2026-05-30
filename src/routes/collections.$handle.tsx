@@ -284,37 +284,35 @@ function CollectionPage() {
   const q = useInfiniteQuery({
     queryKey: ["collection-filtered", handle, filterInputs, sortKey, reverse],
     queryFn: async ({ pageParam }) => {
-      return fetchCollectionFiltered({
-        if (handle === "new-arrivals") {
-          const page = await fetchProductsPage({
-            first: 48,
-            after: pageParam as string | null,
-            sortKey: sortKey === "CREATED" ? "CREATED_AT" : sortKey,
-            reverse,
-          });
-          return {
-            collection: {
-              id: "virtual-new-arrivals",
-              title: "New Arrivals",
-              handle: "new-arrivals",
-              description: "",
-              image: null,
-              updatedAt: new Date(0).toISOString(),
-            },
-            filters: [],
-            edges: page.edges,
-            pageInfo: page.pageInfo,
-          };
-        }
-        return fetchCollectionFiltered({
-          handle,
+      if (handle === "new-arrivals") {
+        const page = await fetchProductsPage({
           first: 48,
           after: pageParam as string | null,
-          filters: filterInputs,
-          sortKey,
+          sortKey: sortKey === "CREATED" ? "CREATED_AT" : sortKey,
           reverse,
         });
-      },
+        return {
+          collection: {
+            id: "virtual-new-arrivals",
+            title: "New Arrivals",
+            handle: "new-arrivals",
+            description: "",
+            image: null,
+            updatedAt: new Date(0).toISOString(),
+          },
+          filters: [],
+          edges: page.edges,
+          pageInfo: page.pageInfo,
+        };
+      }
+      return fetchCollectionFiltered({
+        handle,
+        first: 48,
+        after: pageParam as string | null,
+        filters: filterInputs,
+        sortKey,
+        reverse,
+      });
     },
     initialPageParam: null as string | null,
     getNextPageParam: (last) =>
