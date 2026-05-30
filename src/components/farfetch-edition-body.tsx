@@ -121,7 +121,63 @@ function DepartmentGateway() {
 }
 
 /* ────────────────────────────────────────────────────────────────────────── */
-/*  2. Seasonal campaign banner — single editorial hero                       */
+/*  2. New In — horizontal commerce rail                                      */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+function NewInRail() {
+  const { data, isLoading } = useQuery({
+    queryKey: ["home", "farfetch-new-in"],
+    queryFn: () => fetchProducts({ first: 12, sortKey: "CREATED_AT", reverse: true }),
+    staleTime: 10 * 60 * 1000,
+  });
+  const products = data ?? [];
+
+  return (
+    <section aria-label="New in" className="bg-canvas pt-14 md:pt-20">
+      <div className="max-w-screen-2xl mx-auto px-6 md:px-10">
+        <div className="flex items-end justify-between gap-6 mb-7 md:mb-9">
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.34em] text-bronze mb-2">
+              New In
+            </p>
+            <h2 className="font-serif text-2xl md:text-3xl text-ink">
+              Just landed at Palace of Roman
+            </h2>
+          </div>
+          <Link
+            to="/collections/$handle"
+            params={{ handle: "new-arrivals" }}
+            className="hidden sm:inline-flex text-[11px] uppercase tracking-[0.25em] border-b border-ink/25 pb-1 hover:text-bronze hover:border-bronze transition-colors"
+          >
+            Shop all →
+          </Link>
+        </div>
+        {isLoading ? (
+          <div className="flex gap-4 overflow-hidden">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="shrink-0 w-[46vw] sm:w-[30vw] lg:w-[19vw] xl:w-[15vw]">
+                <div className="aspect-[3/4] por-shimmer mb-3" />
+                <div className="h-2 w-20 por-shimmer mb-2" />
+                <div className="h-3 w-3/4 por-shimmer" />
+              </div>
+            ))}
+          </div>
+        ) : products.length > 0 ? (
+          <div className="flex gap-4 md:gap-5 overflow-x-auto pb-4 -mx-6 md:-mx-10 px-6 md:px-10 snap-x snap-mandatory scrollbar-hide">
+            {products.map((p) => (
+              <div key={p.node.id} className="shrink-0 w-[46vw] sm:w-[30vw] lg:w-[19vw] xl:w-[15vw] snap-start">
+                <ProductCard product={p} />
+              </div>
+            ))}
+          </div>
+        ) : null}
+      </div>
+    </section>
+  );
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/*  3. Seasonal campaign banner — single editorial hero                       */
 /* ────────────────────────────────────────────────────────────────────────── */
 
 function SeasonalCampaignBanner() {
