@@ -21,8 +21,9 @@ import { useQuery } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { ShieldCheck, Plane, RotateCcw, MessageCircle } from "lucide-react";
 
-import { fetchCollection } from "@/lib/shopify";
+import { fetchCollection, fetchProducts } from "@/lib/shopify";
 import { cdnImage } from "@/lib/cdn-image";
+import { ProductCard } from "@/components/product-card";
 
 import marketingWomen from "@/assets/marketing-women-summer.jpg";
 import marketingMen from "@/assets/marketing-men-summer.jpg";
@@ -37,6 +38,7 @@ export function FarfetchEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {})
   return (
     <>
       <DepartmentGateway />
+      <NewInRail />
       <SeasonalCampaignBanner />
       <CategoryQuickLinks />
       {aiBlocks}
