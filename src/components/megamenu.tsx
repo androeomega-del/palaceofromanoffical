@@ -644,6 +644,144 @@ function BrandsPanel({
   );
 }
 
+// -----------------------------------------------------------------------------
+// Vacation megamenu — curated occasion/destination links to existing routes
+// -----------------------------------------------------------------------------
+
+function VacationTrigger({
+  isOpen,
+  onOpen,
+  onScheduleClose,
+  onCloseAndFocus,
+  onArrow,
+  registerTrigger,
+}: {
+  isOpen: boolean;
+  onOpen: () => void;
+  onScheduleClose: () => void;
+  onCloseAndFocus: () => void;
+  onArrow: (e: React.KeyboardEvent) => void;
+  registerTrigger: (el: HTMLButtonElement | null) => void;
+}) {
+  const panelId = useId();
+
+  const onKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (e.key === "Enter" || e.key === " " || e.key === "ArrowDown") {
+      e.preventDefault();
+      onOpen();
+      focusFirstLinkInPanel(panelId);
+      return;
+    }
+    if (e.key === "Escape" && isOpen) {
+      e.preventDefault();
+      onCloseAndFocus();
+      return;
+    }
+    onArrow(e);
+  };
+
+  return (
+    <div className="relative" onMouseEnter={onOpen} role="none">
+      <button
+        ref={registerTrigger}
+        type="button"
+        role="menuitem"
+        aria-haspopup="true"
+        aria-expanded={isOpen}
+        aria-controls={panelId}
+        onClick={() => (isOpen ? onCloseAndFocus() : onOpen())}
+        onKeyDown={onKeyDown}
+        onFocus={onOpen}
+        className={`${TRIGGER_CLASS} ${isOpen ? "text-bronze" : ""}`}
+      >
+        Vacation
+      </button>
+      <VacationPanel
+        id={panelId}
+        isOpen={isOpen}
+        onMouseEnter={onOpen}
+        onMouseLeave={onScheduleClose}
+      />
+    </div>
+  );
+}
+
+function VacationPanel({
+  id,
+  isOpen,
+  onMouseEnter,
+  onMouseLeave,
+}: {
+  id: string;
+  isOpen: boolean;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
+}) {
+  return (
+    <div
+      id={id}
+      role="region"
+      aria-label="Vacation navigation"
+      hidden={!isOpen}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      onKeyDown={(e) => onPanelKeyDown(e, id)}
+      className="fixed left-0 right-0 top-20 z-40 bg-canvas border-t border-ink/10 shadow-[0_40px_80px_-40px_rgba(0,0,0,0.12)]"
+    >
+      <div className="max-w-screen-2xl mx-auto px-12 py-16 grid grid-cols-[1fr_minmax(340px,30%)] gap-16">
+        <div
+          className="grid gap-x-12 gap-y-2"
+          style={{ gridTemplateColumns: `repeat(${VACATION_COLUMNS.length}, minmax(0, 1fr))` }}
+        >
+          {VACATION_COLUMNS.map((col) => (
+            <div key={col.heading} className="flex flex-col gap-5">
+              <p className="font-serif italic text-[13px] tracking-[0.04em] text-bronze pb-3 border-b border-ink/15">
+                {col.heading}
+              </p>
+              <ul className="flex flex-col gap-2.5">
+                {col.items.map((it) => (
+                  <li key={it.label + it.to}>
+                    <a
+                      href={it.to}
+                      className="text-[13px] font-light text-ink/75 hover:text-ink transition-colors inline-block normal-case tracking-normal leading-relaxed"
+                    >
+                      {it.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        <a
+          href={VACATION_FEATURE.to}
+          className="group relative block aspect-[4/5] overflow-hidden bg-muted"
+        >
+          <img
+            src={VACATION_FEATURE.img}
+            alt={VACATION_FEATURE.title}
+            loading="lazy"
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/20 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 p-8">
+            <p className="text-[10px] uppercase tracking-[0.4em] text-canvas/75 mb-3">
+              {VACATION_FEATURE.eyebrow}
+            </p>
+            <p className="font-serif text-[28px] leading-[1.15] text-canvas text-balance">
+              {VACATION_FEATURE.title}
+            </p>
+            <span className="mt-5 inline-block text-[10px] uppercase tracking-[0.35em] text-canvas/90 border-b border-canvas/40 pb-1">
+              {VACATION_FEATURE.cta}
+            </span>
+          </div>
+        </a>
+      </div>
+    </div>
+  );
+}
+
 /**
  * Mobile / small-screen accordion. Each department + Brands is an expandable
  * group fed from the same live Shopify data. Button + region are wired with
