@@ -669,7 +669,7 @@ function CollectionPage() {
           {/* Main column */}
           <div className="flex-1 min-w-0">
             {/* Sort dropdown — same menu on every catalog surface */}
-            <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-ink/10 pb-4">
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-4 pb-2">
               <button
                 type="button"
                 onClick={() => setMobileFiltersOpen(true)}
