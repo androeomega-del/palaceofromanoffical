@@ -52,7 +52,7 @@ export const Route = createFileRoute("/trends/dolce-gabbana-icons")({
     const desc =
       "The Dolce & Gabbana pieces that define the maison — Sicilian lace, baroque tailoring, crystal eveningwear. Authentic, in stock, ready to ship.";
     const path = "/trends/dolce-gabbana-icons";
-    const image = img(31);
+    const image = dgHero;
     const rh = routeHead({ path, title, description: desc, image, type: "article" });
     return {
       meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
