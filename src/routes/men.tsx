@@ -350,9 +350,9 @@ function TrendingTile({ tile }: { tile: { handle: string; label: string; alt: st
 /*  5. Brand Spotlight Rail                                            */
 /* ─────────────────────────────────────────────────────────────────── */
 
-const SPOTLIGHT_BRANDS: { label: string; vendor: string; handle: string; alt: string }[] = [
-  { label: "Versace", vendor: "versace", handle: "brand-versace", alt: "Versace menswear" },
-  { label: "Dolce & Gabbana", vendor: "dolce-gabbana", handle: "brand-dolce-gabbana", alt: "Dolce & Gabbana menswear" },
+const SPOTLIGHT_BRANDS: { label: string; vendor: string; handle: string; alt: string; src: string }[] = [
+  { label: "Versace", vendor: "versace", handle: "brand-versace", alt: "Versace menswear", src: brandVersace },
+  { label: "Dolce & Gabbana", vendor: "dolce-gabbana", handle: "brand-dolce-gabbana", alt: "Dolce & Gabbana menswear", src: brandDolceGabbana },
 ];
 
 function BrandSpotlightRail() {
