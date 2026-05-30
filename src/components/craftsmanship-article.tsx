@@ -61,7 +61,7 @@ export function CraftsmanshipArticle({
         <nav className="mt-16 text-center">
           <Link
             to="/journal"
-            className="text-[10px] uppercase tracking-[0.3em] border-b border-ink/30 pb-1 hover:border-ink"
+            className="text-cta-lg uppercase border-b border-ink/30 pb-1 hover:border-ink"
           >
             ← Return to the Journal
           </Link>
