@@ -661,7 +661,7 @@ function CollectionPage() {
       )}
 
 
-      <section className="px-6 py-12">
+      <section className="px-4 md:px-6 py-8 md:py-12">
         <div className="max-w-screen-2xl mx-auto flex gap-10">
           {/* Desktop sidebar */}
           <div className="hidden lg:block">{sidebar}</div>
