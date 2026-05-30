@@ -102,9 +102,15 @@ export function enqueueInteractionEvent(input: {
     | "cart"
     | "scarcity_view"
     | "scarcity_click"
-    | "scarcity_cart";
+    | "scarcity_cart"
+    | "rail_impression"
+    | "rail_tap";
   vendor?: string;
   productType?: string;
+  /** Rail surface id (e.g. `rail:best-sellers`). Optional — only set on rail-originated events. */
+  surface?: string;
+  /** 0-indexed slot within the rail. Optional. */
+  position?: number;
 }): void {
   if (typeof window === "undefined") return;
   if (!input.handle) return;
@@ -118,6 +124,11 @@ export function enqueueInteractionEvent(input: {
     session_id: getSessionId(),
     page_path: trim(window.location.pathname, 500),
     user_agent: trim(navigator.userAgent, 500),
+    surface: trim(input.surface ?? null, 64),
+    position:
+      typeof input.position === "number" && input.position >= 0 && input.position <= 100
+        ? Math.floor(input.position)
+        : null,
   });
   if (queue.length >= BATCH_LIMIT) void flush();
 }
