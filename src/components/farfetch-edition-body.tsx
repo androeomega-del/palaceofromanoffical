@@ -27,7 +27,7 @@ import { ProductCard } from "@/components/product-card";
 
 import marketingWomen from "@/assets/marketing-women-summer.jpg";
 import marketingMen from "@/assets/marketing-men-summer.jpg";
-import marketingAccessories from "@/assets/marketing-accessories-summer.jpg";
+
 import marketingMensResort from "@/assets/marketing-men-resort-summer.jpg";
 
 /* ────────────────────────────────────────────────────────────────────────── */
@@ -71,13 +71,6 @@ const DEPARTMENTS: {
     image: marketingMen,
     alt: "Menswear — tailoring, ready-to-wear, and designer essentials",
   },
-  {
-    label: "Accessories",
-    to: "/collections/$handle",
-    params: { handle: "womens-accessories" },
-    image: marketingAccessories,
-    alt: "Accessories — bags, eyewear, scarves and fine pieces",
-  },
 ];
 
 function DepartmentGateway() {
@@ -86,16 +79,21 @@ function DepartmentGateway() {
       aria-label="Shop by department"
       className="bg-canvas pt-6 md:pt-10"
     >
-      <div className="max-w-screen-2xl mx-auto px-6 md:px-10">
-        <p className="text-center text-eyebrow uppercase text-bronze-deep mb-6 md:mb-8">
+      <div className="max-w-screen-2xl mx-auto md:px-10">
+        <p className="text-center text-eyebrow uppercase text-bronze-deep mb-6 md:mb-8 px-6 md:px-0">
           The Edit — Resort 2026
         </p>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
+        {/* Mobile: horizontal-scroll, 82vw tiles, second tile peeks at 18vw to signal scroll.
+            Desktop (md+): standard two-column grid. */}
+        <div
+          className="flex md:grid md:grid-cols-2 gap-4 md:gap-5 overflow-x-auto md:overflow-visible snap-x snap-mandatory pl-6 pr-6 md:pl-0 md:pr-0 -mx-px md:mx-0 scrollbar-hide"
+          style={{ scrollPaddingLeft: "1.5rem" }}
+        >
           {DEPARTMENTS.map((d, i) => (
             <a
               key={d.label}
               href={d.params ? `/collections/${d.params.handle}` : d.to}
-              className="group relative block aspect-[4/5] lg:aspect-[3/4] overflow-hidden bg-muted"
+              className="group relative block aspect-[4/5] lg:aspect-[3/4] overflow-hidden bg-muted shrink-0 snap-start w-[82vw] md:w-auto"
             >
               <img
                 src={d.image}

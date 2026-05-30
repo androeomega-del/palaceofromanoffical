@@ -66,7 +66,7 @@ export function SiteHeader() {
     prevCount.current = totalItems;
   }, [totalItems]);
 
-  const ANNOUNCE_KEY = "por-announce-dismissed-v1";
+  const ANNOUNCE_KEY = "por-announce-dismissed-v2";
   const [announceOpen, setAnnounceOpen] = useState(true);
   useEffect(() => {
     try {
@@ -94,14 +94,13 @@ export function SiteHeader() {
   return (
     <>
       {announceOpen && (
-        <div className="relative w-full bg-ink text-canvas text-[10px] py-2 uppercase tracking-[0.28em] text-center border-b border-ink/10">
-          <span className="text-bronze">●</span>{" "}
-          <span className="font-medium">Authentic luxury fashion</span>
-          <span className="opacity-50 mx-2">·</span>
-          Worldwide delivery
-          <span className="opacity-50 mx-2">·</span>
-          <Link to="/collections/$handle" params={{ handle: "new-arrivals" }} className="underline decoration-bronze/60 underline-offset-4 hover:text-bronze transition-colors">
-            See This Week's Edit →
+        <div className="relative w-full bg-ink text-canvas text-[10px] py-2.5 uppercase tracking-[0.28em] text-center border-b border-ink/10">
+          <Link
+            to="/account/login"
+            className="inline-flex items-center gap-2 hover:text-bronze transition-colors"
+          >
+            <span>Members receive new arrivals 24 hours early — sign in</span>
+            <span aria-hidden="true">›</span>
           </Link>
           <button
             type="button"
