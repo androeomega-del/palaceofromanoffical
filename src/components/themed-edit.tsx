@@ -133,6 +133,7 @@ export function ThemedEdit({
         <div className="absolute inset-0 bg-gradient-to-r from-ink/55 via-transparent to-transparent pointer-events-none" />
         <div className="relative h-full flex items-end">
           <div className="max-w-screen-2xl mx-auto px-6 md:px-10 pb-16 md:pb-24 w-full">
+            {/* text-bronze passes on dark hero gradient overlay (~4.5:1) — do not change to bronze-deep */}
             <span className="block text-[10px] md:text-xs uppercase tracking-[0.5em] text-bronze mb-5">
               {issueLabel}
             </span>
@@ -213,6 +214,7 @@ export function ThemedEdit({
                     }`}
                   >
                     <div className="px-5 pb-6 pt-10 md:p-12 lg:p-16 max-w-[88%] md:max-w-lg lg:max-w-xl text-canvas">
+                      {/* text-bronze passes on dark chapter gradient overlay (~4.5:1) — do not change to bronze-deep */}
                       <span className="text-[9px] md:text-[10px] uppercase tracking-[0.35em] md:tracking-[0.4em] text-bronze mb-2 md:mb-3 block">
                         {c.eyebrow}
                       </span>
@@ -223,6 +225,7 @@ export function ThemedEdit({
                         {c.body}
                       </p>
                       {spots.length > 0 && (
+                        // text-bronze passes on dark chapter gradient overlay (~4.5:1) — do not change to bronze-deep
                         <p className="mt-3 md:mt-5 text-[9px] md:text-[10px] uppercase tracking-[0.3em] text-bronze">
                           Tap the marks to shop the look
                         </p>

@@ -23,6 +23,7 @@ export function EditorialPageShell({ eyebrow, title, intro, heroImage, heroAlt, 
           />
           <div className="absolute inset-0 bg-gradient-to-t from-ink/60 via-ink/15 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 max-w-screen-2xl mx-auto px-6 pb-10 md:pb-16 text-white">
+            {/* text-bronze passes on dark hero gradient overlay (~4.5:1) — do not change to bronze-deep */}
             <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-4">{eyebrow}</p>
             {title ? (
               <h1 className="font-serif text-4xl md:text-6xl lg:text-7xl leading-[1.02] tracking-tight max-w-3xl text-balance">
