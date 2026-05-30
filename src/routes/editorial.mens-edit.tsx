@@ -93,7 +93,8 @@ export const Route = createFileRoute("/editorial/mens-edit")({
       outroCtas={[
         { label: "Men's Clothing", handle: "mens-clothing" },
         { label: "Men's Shoes", handle: "mens-shoes" },
-        { label: "Men's Bags", handle: "mens-bags-wallets" },
+        { label: "Men's Bags", handle: "mens-bags" },
+        { label: "Men's Wallets", handle: "mens-wallets" },
         { label: "Men's Accessories", handle: "mens-accessories" },
       ]}
     />
