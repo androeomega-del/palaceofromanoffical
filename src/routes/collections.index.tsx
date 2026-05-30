@@ -23,7 +23,7 @@ const FILTER_KEYS: FilterKey[] = FILTERS.map((f) => f.key);
 // Brand collections (gucci, prada, etc.) and deep sub-categories are excluded —
 // they remain reachable from inside their parent collection / brand pages.
 const MAIN_HANDLE_ALLOWLIST = new Set<string>([
-  "women", "men", "unisex",
+  "women", "men",
   "women-clothing", "womens-clothing",
   "women-shoes", "womens-shoes",
   "women-bags", "womens-bags",
