@@ -215,6 +215,8 @@ function ShopPage() {
       sizes: encodeSet(next.sizes),
       colors: encodeSet(next.colors),
       materials: encodeSet(next.materials),
+      occasions: encodeSet(next.occasions),
+      sale: next.sale,
       min: next.price?.min,
       max: next.price?.max,
     });
