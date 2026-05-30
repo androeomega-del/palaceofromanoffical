@@ -653,7 +653,7 @@ function CampaignTile({
           {cta}
         </span>
       </div>
-      <div className="relative aspect-[4/5] md:aspect-auto overflow-hidden bg-muted">
+      <div className="relative min-h-[420px] md:min-h-0 md:aspect-auto overflow-hidden bg-muted">
         <img
           src={image}
           alt={alt}
