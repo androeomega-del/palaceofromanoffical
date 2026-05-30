@@ -28,6 +28,11 @@ import editorialAsianMaleTailoring from "@/assets/editorial-asian-male-tailoring
 import editorialLatinoMaleEvening from "@/assets/editorial-latino-male-evening.jpg";
 import editorialLinenSupermodel from "@/assets/editorial-linen-supermodel.jpg";
 import editorialLoaferSupermodel from "@/assets/editorial-loafer-supermodel.jpg";
+import editorialHeroResort from "@/assets/editorial-hero-resort.jpg";
+import editorialResortTailoring from "@/assets/editorial-resort-tailoring.jpg";
+import editorialEveningSupermodel from "@/assets/editorial-evening-supermodel.jpg";
+import editorialAccessoriesStilllife from "@/assets/editorial-accessories-stilllife.jpg";
+import editorialTravelSupermodel from "@/assets/editorial-travel-supermodel.jpg";
 
 export const Route = createFileRoute("/men")({
   head: () => ({
