@@ -324,7 +324,7 @@ function DiscreteTrustStrip() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-10">
           {items.map(({ Icon, label, caption }) => (
             <div key={label} className="flex flex-col items-center text-center">
-              <Icon className="w-5 h-5 text-bronze mb-3" strokeWidth={1.25} />
+              <Icon className="w-5 h-5 text-bronze-deep mb-3" strokeWidth={1.25} />
               <p className="text-[11px] uppercase tracking-[0.25em] text-ink mb-1.5">
                 {label}
               </p>
