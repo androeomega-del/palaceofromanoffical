@@ -124,11 +124,11 @@ function DepartmentGateway() {
 
 function NewInRail() {
   const { data, isLoading } = useQuery({
-    queryKey: ["home", "farfetch-new-in"],
-    queryFn: () => fetchProducts({ first: 12, sortKey: "CREATED_AT", reverse: true }),
+    queryKey: ["home", "low-stock-rail"],
+    queryFn: () => fetchCollection("low-stock", 12),
     staleTime: 10 * 60 * 1000,
   });
-  const products = data ?? [];
+  const products = data?.products?.edges ?? [];
 
   return (
     <section aria-label="New in" className="bg-canvas pt-14 md:pt-20">
