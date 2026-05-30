@@ -17,16 +17,18 @@ export const Route = createFileRoute("/")({
   },
   head: () => ({
     meta: [
-      { title: "Palace of Roman — Curated Luxury Fashion" },
-      { name: "description", content: "Shop curated luxury fashion from Gucci, Prada, Saint Laurent, Versace and 500+ designer houses. 100% authentic. Worldwide shipping." },
-      { property: "og:title", content: "Palace of Roman — Curated Luxury Fashion" },
-      { property: "og:description", content: "Shop curated luxury fashion from 500+ designer houses. 100% authentic. Worldwide shipping." },
+      { title: "Palace of Roman | Curated Luxury Menswear & Womenswear" },
+      { name: "description", content: "Discover handpicked designer pieces from the world's leading maisons. New arrivals weekly. Express delivery and free returns." },
+      { property: "og:title", content: "Palace of Roman | Curated Luxury Menswear & Womenswear" },
+      { property: "og:description", content: "Discover handpicked designer pieces from the world's leading maisons. New arrivals weekly. Express delivery and free returns." },
       { property: "og:url", content: "https://palaceofromanofficial.com/" },
+      { property: "og:type", content: "website" },
       { property: "og:image", content: `https://palaceofromanofficial.com${heroImage}` },
+      { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:image", content: `https://palaceofromanofficial.com${heroImage}` },
     ],
     links: [
-      { rel: "canonical", href: "https://palaceofromanofficial.com/men" },
+      { rel: "canonical", href: "https://palaceofromanofficial.com/" },
       { rel: "preload", as: "image", href: summerHero, fetchPriority: "high" } as any,
     ],
   }),
