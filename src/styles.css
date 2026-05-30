@@ -40,6 +40,102 @@
 
   --font-serif: "Cormorant Garamond", ui-serif, Georgia, serif;
   --font-sans: "Karla", ui-sans-serif, system-ui, sans-serif;
+
+  /* ──────────────────────────────────────────────────────────────────────
+     Editorial type scale (audit §2.1). Paired `--text-*--line-height`
+     and `--text-*--letter-spacing` are picked up by Tailwind v4 so a single
+     utility (e.g. `text-eyebrow`) sets size + leading + tracking together.
+     ────────────────────────────────────────────────────────────────────── */
+
+  /* Eyebrows — uppercase micro-labels, Karla 400 */
+  --text-eyebrow: 11px;
+  --text-eyebrow--line-height: 1;
+  --text-eyebrow--letter-spacing: 0.32em;
+  --text-eyebrow-tight: 11px;
+  --text-eyebrow-tight--line-height: 1;
+  --text-eyebrow-tight--letter-spacing: 0.28em;
+  --text-eyebrow-loose: 12px;
+  --text-eyebrow-loose--line-height: 1;
+  --text-eyebrow-loose--letter-spacing: 0.4em;
+
+  /* CTAs — buttons & links, Karla 400/500 uppercase */
+  --text-cta-sm: 11px;
+  --text-cta-sm--line-height: 1;
+  --text-cta-sm--letter-spacing: 0.28em;
+  --text-cta-md: 11px;
+  --text-cta-md--line-height: 1;
+  --text-cta-md--letter-spacing: 0.25em;
+  --text-cta-lg: 11px;
+  --text-cta-lg--line-height: 1;
+  --text-cta-lg--letter-spacing: 0.3em;
+
+  /* Subheads — Cormorant 400, mid-size */
+  --text-subhead-sm: 20px;
+  --text-subhead-sm--line-height: 1.2;
+  --text-subhead-sm--letter-spacing: -0.01em;
+  --text-subhead-md: 24px;
+  --text-subhead-md--line-height: 1.2;
+  --text-subhead-md--letter-spacing: -0.01em;
+  --text-subhead-lg: 30px;
+  --text-subhead-lg--line-height: 1.15;
+  --text-subhead-lg--letter-spacing: -0.015em;
+
+  /* Headlines — short editorial headlines, Cormorant 400 */
+  --text-headline-sm: 28px;
+  --text-headline-sm--line-height: 1.1;
+  --text-headline-sm--letter-spacing: -0.03em;
+  --text-headline-md: 36px;
+  --text-headline-md--line-height: 1.1;
+  --text-headline-md--letter-spacing: -0.025em;
+
+  /* Display — hero headlines. Tracking follows the responsive curve in
+     `--tracking-display-*` (tighter on small screens, opens on desktop). */
+  --text-display-sm: 44px;
+  --text-display-sm--line-height: 1;
+  --text-display-sm--letter-spacing: -0.035em;
+  --text-display-md: 60px;
+  --text-display-md--line-height: 1.02;
+  --text-display-md--letter-spacing: -0.03em;
+  --text-display-lg: 72px;
+  --text-display-lg--line-height: 1;
+  --text-display-lg--letter-spacing: -0.025em;
+  --text-display-xl: 96px;
+  --text-display-xl--line-height: 0.95;
+  --text-display-xl--letter-spacing: -0.025em;
+  --text-display-2xl: 120px;
+  --text-display-2xl--line-height: 0.95;
+  --text-display-2xl--letter-spacing: -0.02em;
+
+  /* Body / prose. Note: `--text-prose` was intentionally dropped — single
+     15px site had no defender and 16px is the readable floor; prose body
+     uses `text-base`. */
+  --text-body-sm: 13px;
+  --text-body-sm--line-height: 1.5;
+  --text-prose-lg: 17px;
+  --text-prose-lg--line-height: 1.8;
+
+  /* Responsive display tracking curve — opt-in on display heads only.
+     -0.035em at ≤390 → -0.025em at ≥768 → -0.02em at ≥1440. */
+  --tracking-display-sm: -0.035em;
+  --tracking-display-md: -0.025em;
+  --tracking-display-lg: -0.02em;
+  /* Opt-in open tracking for rail subheads (positive). */
+  --tracking-subhead-open: 0.04em;
+  /* Eyebrow tracking aliases (also bundled into the text-* utilities above
+     but exposed so non-eyebrow text can borrow the spacing). */
+  --tracking-eyebrow: 0.32em;
+  --tracking-eyebrow-tight: 0.28em;
+
+  /* Spacing scale (audit §2.2). Tailwind v4 surfaces these as named
+     spacing utilities (e.g. `py-section-sm`, `h-tap-target`). */
+  --spacing-tight: 8px;
+  --spacing-snug: 16px;
+  --spacing-section-xs: 32px;
+  --spacing-section-sm: 48px;
+  --spacing-section-md: 80px;
+  --spacing-section-lg: 128px;
+  --spacing-section-xl: 160px;
+  --spacing-tap-target: 44px;
 }
 
 :root {
