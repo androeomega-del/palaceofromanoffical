@@ -163,11 +163,27 @@ export function ConciergeWidget() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, signal]);
 
-  // Show a one-time nudge tooltip 8s after first product view.
-  const showNudge = !open && !seenOnce && recent.length >= 1;
+  // Show a one-time nudge tooltip 8s after first product view — but only on
+  // surfaces where it can't overlap critical reading content. Editorial /
+  // themed-edit / brand-story pages (`pageType: "other"`) have full-bleed
+  // chapter copy at the bottom of the viewport that the teaser would cover,
+  // so we suppress it there. PDP is already excluded for the sticky-CTA
+  // reason below. Brand pages also have hero copy near the fold — skip.
+  const nudgeAllowedHere =
+    ctx.pageType === "home" ||
+    ctx.pageType === "shop" ||
+    ctx.pageType === "collection";
+  const showNudge =
+    !open && !seenOnce && recent.length >= 1 && nudgeAllowedHere;
   useEffect(() => {
     if (open) setSeenOnce(true);
   }, [open]);
+  // Auto-dismiss the nudge after 8s so it never sits indefinitely over copy.
+  useEffect(() => {
+    if (!showNudge) return;
+    const t = setTimeout(() => setSeenOnce(true), 8000);
+    return () => clearTimeout(t);
+  }, [showNudge]);
 
   return (
     <>
@@ -187,7 +203,7 @@ export function ConciergeWidget() {
           Concierge
         </span>
       </button>
-      {showNudge && revealed && ctx.pageType !== "product" && (
+      {showNudge && revealed && (
         <div
           className="fixed bottom-44 md:bottom-24 right-6 z-40 max-w-[280px] bg-canvas border border-ink/15 px-4 py-3 shadow-xl text-xs leading-relaxed text-ink/80 animate-in fade-in slide-in-from-bottom-2 duration-500"
           data-testid="concierge-nudge"
