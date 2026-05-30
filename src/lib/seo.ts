@@ -70,11 +70,9 @@ export function routeHead(opts: {
     { name: "twitter:title", content: opts.title },
     { name: "twitter:description", content: opts.description },
   ];
-  if (opts.image) {
-    const imgUrl = absoluteUrl(opts.image);
-    meta.push({ property: "og:image", content: imgUrl });
-    meta.push({ name: "twitter:image", content: imgUrl });
-  }
+  const imgUrl = opts.image ? absoluteUrl(opts.image) : absoluteUrl("/assets/og-default.png");
+  meta.push({ property: "og:image", content: imgUrl });
+  meta.push({ name: "twitter:image", content: imgUrl });
   return {
     meta,
     links: [{ rel: "canonical", href: url }],
