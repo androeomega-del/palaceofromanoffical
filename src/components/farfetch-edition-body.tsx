@@ -135,7 +135,7 @@ function NewInRail() {
       <div className="max-w-screen-2xl mx-auto px-6 md:px-10">
         <div className="flex items-end justify-between gap-6 mb-7 md:mb-9">
           <div>
-            <p className="text-[10px] uppercase tracking-[0.34em] text-bronze mb-2">
+            <p className="text-[10px] uppercase tracking-[0.3em] text-bronze-deep mb-2">
               New In
             </p>
             <h2 className="font-serif text-2xl md:text-3xl text-ink">
