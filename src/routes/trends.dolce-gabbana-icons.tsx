@@ -84,7 +84,7 @@ function DolceGabbanaIconsPage() {
         issueLabel="The Maison Edit"
         title="Dolce & Gabbana, Iconic."
         subtitle="Sicily · Baroque · Crystal — In Stock Now"
-        intro="The pieces that define Domenico and Stefano's house — pulled from the mainline collection, authenticated, ready to ship from the Palace of Roman atelier."
+        intro="The pieces that define Domenico and Stefano's house — pulled from the mainline collection, authenticated, and ready to ship through our authorised boutique network."
         heroN={0}
         heroSrc={dgHero}
         heroAlt="Dolce & Gabbana editorial — Sicilian baroque in close detail."

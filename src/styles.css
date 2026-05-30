@@ -44,13 +44,13 @@
 :root {
   --radius: 0rem;
 
-  /* Brand — Mediterranean Blue (sand / honey / sea / deep navy) */
-  --canvas: oklch(0.945 0.022 85);        /* #f4ede0 sand */
-  --canvas-raised: oklch(0.905 0.030 82); /* warmer raised sand */
-  --ink: oklch(0.31 0.078 250);           /* #0f3057 deep navy */
-  --bronze: oklch(0.74 0.082 70);         /* #d4a574 honey */
+  /* Brand — Palace boutique commerce (ivory / ink / antique gold / sea) */
+  --canvas: oklch(0.985 0.006 85);        /* near-white ivory */
+  --canvas-raised: oklch(0.952 0.014 82); /* warm editorial surface */
+  --ink: oklch(0.18 0.018 248);           /* luxury ink */
+  --bronze: oklch(0.65 0.092 78);         /* antique gold */
   --bronze-soft: oklch(0.84 0.055 78);    /* pale honey */
-  --sea: oklch(0.59 0.105 235);           /* #3a7ca5 sea blue */
+  --sea: oklch(0.48 0.085 230);           /* restrained blue */
 
   /* Semantic mapped to brand */
   --background: var(--canvas);
@@ -69,8 +69,8 @@
   --accent-foreground: var(--canvas);
   --destructive: oklch(0.55 0.2 27);
   --destructive-foreground: var(--canvas);
-  --border: oklch(0.31 0.078 250 / 12%);
-  --input: oklch(0.31 0.078 250 / 16%);
+  --border: oklch(0.18 0.018 248 / 12%);
+  --input: oklch(0.18 0.018 248 / 16%);
   --ring: var(--sea);
 }
 
@@ -100,9 +100,18 @@
   /* Hairline rule used across editorial layouts */
   .hairline { height: 1px; background: color-mix(in oklab, var(--ink) 14%, transparent); }
 
-  /* Studio surface — kept as a no-op alias so existing PDP markup keeps working
-     now that Studio IS the global theme. */
-  .studio { background: var(--canvas); color: var(--ink); }
+  /* Commerce/PDP aliases: Farfetch-clean structure with Palace tokens. */
+  .studio,
+  .commerce-shell {
+    --studio-bg: var(--canvas);
+    --studio-canvas: var(--canvas);
+    --studio-ink: var(--ink);
+    --studio-muted: var(--muted-foreground);
+    --studio-rule: var(--border);
+    --studio-bronze: var(--bronze);
+    background: var(--canvas);
+    color: var(--ink);
+  }
 
   /* Noir scope — reverts a single section to the original Noir & Gold palette.
      Used for dramatic dark moments (e.g. homepage hero) on an otherwise

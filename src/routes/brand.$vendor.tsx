@@ -6,6 +6,7 @@ import { ProductCard } from "@/components/product-card";
 import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
 import { CatalogSort, SORT_OPTIONS, type SortValue } from "@/components/catalog-filters";
 import { brandFromSlug, heritageFor } from "@/lib/brand-heritage";
+import { cdnImage } from "@/lib/cdn-image";
 
 type SortKey = SortValue;
 const SORT_KEYS: SortKey[] = SORT_OPTIONS.map((o) => o.value);
@@ -99,20 +100,21 @@ function BrandPage() {
   });
 
   const edges = useMemo(() => q.data?.pages.flatMap((p) => p.edges) ?? [], [q.data]);
+  const heroImage = edges[0]?.node.images?.edges?.[0]?.node;
 
   return (
     <div data-testid={`brand-page-${vendor}`}>
       {/* SEO-rich heritage hero — captures long-tail brand-name search intent */}
-      <section className="px-6 pt-16 pb-14 border-b border-ink/5 bg-canvas">
-        <div className="max-w-screen-2xl mx-auto">
+      <section className="border-b border-ink/10 bg-canvas">
+        <div className="max-w-screen-2xl mx-auto px-6 md:px-10 py-10 md:py-16">
           <Link
             to="/brands"
             className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground hover:text-ink"
           >
             ← All Houses
           </Link>
-          <div className="mt-8 grid grid-cols-1 lg:grid-cols-12 gap-10">
-            <div className="lg:col-span-7">
+          <div className="mt-8 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-end">
+            <div className="lg:col-span-6">
               <p className="text-[11px] uppercase tracking-[0.3em] text-bronze mb-4">
                 {heritage.meta}
               </p>
@@ -125,31 +127,41 @@ function BrandPage() {
               <p className="text-base md:text-lg font-serif italic text-ink/80 max-w-[42ch] mb-6">
                 {heritage.tagline}
               </p>
-              <p className="text-sm text-muted-foreground leading-relaxed max-w-[60ch]">
+              <p className="text-sm text-muted-foreground leading-relaxed max-w-[58ch]">
                 {heritage.description}
               </p>
             </div>
-            <div className="lg:col-span-5 lg:border-l lg:border-ink/10 lg:pl-10 flex flex-col justify-end">
-              <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-4">
-                Iconic Pieces
-              </p>
-              <ul className="space-y-2.5">
-                {heritage.signatures.map((s) => (
-                  <li
-                    key={s}
-                    className="text-sm border-b border-ink/5 pb-2.5 flex items-center gap-3"
-                  >
-                    <span className="text-bronze text-xs">◆</span>
-                    {s}
-                  </li>
-                ))}
-              </ul>
-              {edges.length > 0 && (
-                <p className="mt-8 text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                  {edges.length}
-                  {q.hasNextPage ? "+" : ""} {edges.length === 1 ? "Piece" : "Pieces"} in stock
+            <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-[1fr_0.8fr] gap-5 items-end">
+              <div className="relative aspect-[3/4] bg-secondary overflow-hidden">
+                {heroImage ? (
+                  <img
+                    src={cdnImage(heroImage.url, { width: 900 })}
+                    alt={heroImage.altText ?? `${name} at Palace of Roman`}
+                    loading="eager"
+                    className="absolute inset-0 h-full w-full object-contain p-8"
+                  />
+                ) : (
+                  <div className="absolute inset-0 por-shimmer" aria-hidden="true" />
+                )}
+              </div>
+              <div className="border-t border-ink/10 pt-5 sm:border-t-0 sm:border-l sm:pl-6 sm:border-ink/10">
+                <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-4">
+                  Signatures
                 </p>
-              )}
+                <ul className="space-y-2.5">
+                  {heritage.signatures.slice(0, 5).map((s) => (
+                    <li key={s} className="text-sm border-b border-ink/5 pb-2.5 flex items-center gap-3">
+                      <span className="text-bronze text-xs">◆</span>
+                      {s}
+                    </li>
+                  ))}
+                </ul>
+                {edges.length > 0 && (
+                  <p className="mt-8 text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                    {edges.length}{q.hasNextPage ? "+" : ""} {edges.length === 1 ? "Piece" : "Pieces"} in stock
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -189,7 +201,7 @@ function BrandPage() {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-16">
+              <div className="grid grid-cols-2 lg:grid-cols-4 2xl:grid-cols-5 gap-x-5 md:gap-x-6 gap-y-14">
                 {edges.map((e) => (
                   <ProductCard key={e.node.id} product={e} />
                 ))}

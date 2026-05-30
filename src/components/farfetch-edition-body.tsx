@@ -21,8 +21,9 @@ import { useQuery } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { ShieldCheck, Plane, RotateCcw, MessageCircle } from "lucide-react";
 
-import { fetchCollection } from "@/lib/shopify";
+import { fetchCollection, fetchProducts } from "@/lib/shopify";
 import { cdnImage } from "@/lib/cdn-image";
+import { ProductCard } from "@/components/product-card";
 
 import marketingWomen from "@/assets/marketing-women-summer.jpg";
 import marketingMen from "@/assets/marketing-men-summer.jpg";
@@ -37,6 +38,7 @@ export function FarfetchEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {})
   return (
     <>
       <DepartmentGateway />
+      <NewInRail />
       <SeasonalCampaignBanner />
       <CategoryQuickLinks />
       {aiBlocks}
@@ -52,7 +54,7 @@ export function FarfetchEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {})
 const DEPARTMENTS: {
   label: string;
   to: string;
-  params: { handle: string };
+  params?: { handle: string };
   image: string;
   alt: string;
 }[] = [
@@ -65,8 +67,7 @@ const DEPARTMENTS: {
   },
   {
     label: "Menswear",
-    to: "/collections/$handle",
-    params: { handle: "mens-clothing" },
+    to: "/men",
     image: marketingMen,
     alt: "Menswear — tailoring, ready-to-wear, and designer essentials",
   },
@@ -91,10 +92,9 @@ function DepartmentGateway() {
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
           {DEPARTMENTS.map((d) => (
-            <Link
+            <a
               key={d.label}
-              to={d.to}
-              params={d.params}
+              href={d.params ? `/collections/${d.params.handle}` : d.to}
               className="group relative block aspect-[3/4] md:aspect-[3/4] overflow-hidden bg-muted"
             >
               <img
@@ -106,11 +106,11 @@ function DepartmentGateway() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-ink/10 to-transparent" />
               <div className="absolute inset-x-0 bottom-0 p-6 md:p-8 flex items-end justify-center">
-                <span className="font-serif text-2xl md:text-4xl text-canvas tracking-[0.04em] uppercase">
+                <span className="font-serif text-[1.6rem] sm:text-3xl lg:text-4xl text-canvas tracking-[0.02em] uppercase leading-none max-w-full px-1 text-center break-words">
                   {d.label}
                 </span>
               </div>
-            </Link>
+            </a>
           ))}
         </div>
       </div>
@@ -119,7 +119,63 @@ function DepartmentGateway() {
 }
 
 /* ────────────────────────────────────────────────────────────────────────── */
-/*  2. Seasonal campaign banner — single editorial hero                       */
+/*  2. New In — horizontal commerce rail                                      */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+function NewInRail() {
+  const { data, isLoading } = useQuery({
+    queryKey: ["home", "farfetch-new-in"],
+    queryFn: () => fetchProducts({ first: 12, sortKey: "CREATED_AT", reverse: true }),
+    staleTime: 10 * 60 * 1000,
+  });
+  const products = data ?? [];
+
+  return (
+    <section aria-label="New in" className="bg-canvas pt-14 md:pt-20">
+      <div className="max-w-screen-2xl mx-auto px-6 md:px-10">
+        <div className="flex items-end justify-between gap-6 mb-7 md:mb-9">
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.34em] text-bronze mb-2">
+              New In
+            </p>
+            <h2 className="font-serif text-2xl md:text-3xl text-ink">
+              Just landed at Palace of Roman
+            </h2>
+          </div>
+          <Link
+            to="/collections/$handle"
+            params={{ handle: "new-arrivals" }}
+            className="hidden sm:inline-flex text-[11px] uppercase tracking-[0.25em] border-b border-ink/25 pb-1 hover:text-bronze hover:border-bronze transition-colors"
+          >
+            Shop all →
+          </Link>
+        </div>
+        {isLoading ? (
+          <div className="flex gap-4 overflow-hidden">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="shrink-0 w-[46vw] sm:w-[30vw] lg:w-[19vw] xl:w-[15vw]">
+                <div className="aspect-[3/4] por-shimmer mb-3" />
+                <div className="h-2 w-20 por-shimmer mb-2" />
+                <div className="h-3 w-3/4 por-shimmer" />
+              </div>
+            ))}
+          </div>
+        ) : products.length > 0 ? (
+          <div className="flex gap-4 md:gap-5 overflow-x-auto pb-4 -mx-6 md:-mx-10 px-6 md:px-10 snap-x snap-mandatory scrollbar-hide">
+            {products.map((p) => (
+              <div key={p.node.id} className="shrink-0 w-[46vw] sm:w-[30vw] lg:w-[19vw] xl:w-[15vw] snap-start">
+                <ProductCard product={p} />
+              </div>
+            ))}
+          </div>
+        ) : null}
+      </div>
+    </section>
+  );
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/*  3. Seasonal campaign banner — single editorial hero                       */
 /* ────────────────────────────────────────────────────────────────────────── */
 
 function SeasonalCampaignBanner() {

@@ -4,7 +4,7 @@ import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo, useState, useEffect, useRef, useCallback } from "react";
 import { useServerFn } from "@tanstack/react-start";
 
-import { fetchCollectionFiltered, fetchCollection, type StorefrontFilterValue } from "@/lib/shopify";
+import { fetchCollectionFiltered, fetchCollection, fetchProductsPage, type StorefrontFilterValue } from "@/lib/shopify";
 import { fetchCollectionTotal } from "@/lib/collection-count.functions";
 import { fetchCollectionCategoryCounts } from "@/lib/collection-category-counts.functions";
 import { CATEGORY_BUCKETS, bucketProduct, type CategoryBucketLabel } from "@/lib/category-buckets";
@@ -242,6 +242,7 @@ function CollectionPage() {
 
   const [selections, setSelections] = useState<Selection[]>([]);
   const [priceRange, setPriceRange] = useState<{ min: number; max: number } | null>(null);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   // Active category chip (single-select, mutually exclusive).
   // For most collections, this is one of CATEGORY_BUCKETS labels (driven
@@ -276,12 +277,34 @@ function CollectionPage() {
     return arr;
   }, [selections, priceRange]);
 
-  const [sortKey, reverseStr] = sort.split("-");
+  const effectiveSort = handle === "new-arrivals" && sort === "BEST_SELLING-false" ? "CREATED-true" : sort;
+  const [sortKey, reverseStr] = effectiveSort.split("-");
   const reverse = reverseStr === "true";
 
   const q = useInfiniteQuery({
     queryKey: ["collection-filtered", handle, filterInputs, sortKey, reverse],
     queryFn: async ({ pageParam }) => {
+      if (handle === "new-arrivals") {
+        const page = await fetchProductsPage({
+          first: 48,
+          after: pageParam as string | null,
+          sortKey: sortKey === "CREATED" ? "CREATED_AT" : sortKey,
+          reverse,
+        });
+        return {
+          collection: {
+            id: "virtual-new-arrivals",
+            title: "New Arrivals",
+            handle: "new-arrivals",
+            description: "",
+            image: page.edges[0]?.node.images?.edges?.[0]?.node ?? null,
+            updatedAt: new Date(0).toISOString(),
+          },
+          filters: [],
+          edges: page.edges,
+          pageInfo: page.pageInfo,
+        };
+      }
       return fetchCollectionFiltered({
         handle,
         first: 48,
@@ -304,7 +327,7 @@ function CollectionPage() {
     queryFn: () => fetchTotal({ data: { handle } }),
     staleTime: 5 * 60_000,
   });
-  const total = totalQ.data?.total ?? null;
+  const total = handle === "new-arrivals" ? null : totalQ.data?.total ?? null;
 
   // True per-bucket counts via Admin-API walk of the entire collection.
   // Disabled for the bespoke layering-edit chip set (no aggregation
@@ -642,9 +665,40 @@ function CollectionPage() {
           {/* Main column */}
           <div className="flex-1 min-w-0">
             {/* Sort dropdown — same menu on every catalog surface */}
-            <div className="mb-5 flex flex-wrap items-center justify-end gap-4">
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-ink/10 pb-4">
+              <button
+                type="button"
+                onClick={() => setMobileFiltersOpen(true)}
+                className="lg:hidden text-[11px] uppercase tracking-[0.25em] border-b border-ink/30 pb-1 hover:text-bronze hover:border-bronze transition-colors"
+              >
+                Filter
+              </button>
               <CatalogSort value={sort} onChange={setSort} />
             </div>
+
+            {mobileFiltersOpen && (
+              <div className="fixed inset-0 z-[70] lg:hidden" role="dialog" aria-modal="true" aria-label="Filter products">
+                <button
+                  type="button"
+                  aria-label="Close filters"
+                  onClick={() => setMobileFiltersOpen(false)}
+                  className="absolute inset-0 bg-ink/40"
+                />
+                <div className="absolute inset-y-0 left-0 w-[88%] max-w-sm bg-canvas px-6 py-6 overflow-y-auto shadow-2xl">
+                  <div className="mb-6 flex items-center justify-between border-b border-ink/10 pb-4">
+                    <p className="text-[11px] uppercase tracking-[0.25em] text-ink">Filter</p>
+                    <button
+                      type="button"
+                      onClick={() => setMobileFiltersOpen(false)}
+                      className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground hover:text-ink"
+                    >
+                      Close
+                    </button>
+                  </div>
+                  {sidebar}
+                </div>
+              </div>
+            )}
 
 
 
@@ -696,7 +750,7 @@ function CollectionPage() {
             />
 
             {q.isLoading ? (
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12">
+              <div className="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-x-5 md:gap-x-6 gap-y-12">
                 {Array.from({ length: 9 }).map((_, i) => (
                   <div key={i}>
                     <div className="w-full aspect-[4/5] por-shimmer mb-5" />
@@ -721,7 +775,7 @@ function CollectionPage() {
               </div>
             ) : (
               <>
-                <div className={`grid grid-cols-2 lg:grid-cols-3 ${gridGap}`}>
+                <div className={`grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 ${gridGap}`}>
                   {gridEdges.map((e) => (
                     <ProductCard key={e.node.id} product={e} suppressBadges={[...suppressedBadges]} />
                   ))}
