@@ -28,7 +28,9 @@ export type InteractionEvent =
   | "cart"
   | "scarcity_view"
   | "scarcity_click"
-  | "scarcity_cart";
+  | "scarcity_cart"
+  | "rail_impression"
+  | "rail_tap";
 
 const WEIGHTS: Record<InteractionEvent, number> = {
   impression: 0.1,
@@ -43,6 +45,11 @@ const WEIGHTS: Record<InteractionEvent, number> = {
   scarcity_view: 0,
   scarcity_click: 0,
   scarcity_cart: 0,
+  // Rail events flow through to interaction_events for surface-level
+  // analytics (which rail is converting). Personalisation score is unchanged
+  // — the underlying impression/click on the card already counts.
+  rail_impression: 0,
+  rail_tap: 0,
 };
 
 type InteractionRecord = {
