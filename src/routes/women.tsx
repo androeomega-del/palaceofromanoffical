@@ -28,12 +28,12 @@ import editPradaHero from "@/assets/women/edit-prada-hero.jpg";
 import editDgHero from "@/assets/women/edit-dg-hero.jpg";
 import editBagsHero from "@/assets/women/edit-bags-hero.jpg";
 
-import brandPrada from "@/assets/brand-prada.jpg";
-import brandBrunelloCucinelli from "@/assets/brand-brunello-cucinelli.jpg";
-import brandDolceGabbana from "@/assets/brand-dolce-gabbana.jpg";
-import brandTomFord from "@/assets/brand-tom-ford.jpg";
-import brandSaintLaurent from "@/assets/brand-saint-laurent.jpg";
-import brandBottegaVeneta from "@/assets/brand-bottega-veneta.jpg";
+import brandSaintLaurent from "@/assets/brand-saint-laurent-women.jpg";
+import brandPrada from "@/assets/brand-prada-women.jpg";
+import brandDolceGabbana from "@/assets/brand-dolce-gabbana-women.jpg";
+import brandBottegaVeneta from "@/assets/brand-bottega-veneta-women.jpg";
+import brandGucci from "@/assets/brand-gucci-women.jpg";
+import brandVersace from "@/assets/brand-versace-women.jpg";
 
 export const Route = createFileRoute("/women")({
   head: () => ({
