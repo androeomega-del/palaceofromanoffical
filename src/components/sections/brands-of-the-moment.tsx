@@ -28,7 +28,7 @@ export function BrandsOfTheMoment({
 }) {
   if (!brands || brands.length === 0) return null;
   return (
-    <section className="py-16 md:py-20 bg-canvas">
+    <section className="py-10 md:py-16 bg-canvas">
       <div className="max-w-screen-2xl mx-auto px-5 md:px-10">
         <header className="mb-8 flex items-end justify-between">
           <h2 className="font-serif text-2xl md:text-3xl tracking-[0.04em] text-ink">

@@ -158,7 +158,7 @@ export function ThemedEdit({
       </section>
 
       {/* MANIFESTO */}
-      <section className="px-6 md:px-10 py-24 md:py-32 bg-canvas">
+      <section className="px-6 md:px-10 py-14 md:py-28 bg-canvas">
         <div className="max-w-3xl mx-auto text-center">
           <span className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-6 block">
             The Manifesto
@@ -240,7 +240,7 @@ export function ThemedEdit({
       {/* SHOP THE EDIT */}
       <section
         id="shop"
-        className="px-6 md:px-10 py-20 md:py-28 scroll-mt-20 bg-canvas-raised/40 border-y border-ink/5"
+        className="px-6 md:px-10 py-12 md:py-24 scroll-mt-20 bg-canvas-raised/40 border-y border-ink/5"
       >
         <div className="max-w-screen-2xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-12">
@@ -348,7 +348,7 @@ export function ThemedEdit({
       {extra}
 
       {/* OUTRO */}
-      <section className="border-t border-ink/10 py-20 md:py-28 text-center px-6 bg-canvas">
+      <section className="border-t border-ink/10 py-12 md:py-24 text-center px-6 bg-canvas">
         <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-4">
           End of edit
         </p>

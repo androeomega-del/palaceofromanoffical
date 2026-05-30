@@ -34,7 +34,7 @@ export function TrendingNowRail() {
 
   return (
     <section
-      className="px-6 py-20 md:py-24 bg-canvas border-t border-ink/5"
+      className="px-6 py-12 md:py-20 bg-canvas border-t border-ink/5"
       data-testid="trending-now"
     >
       <div className="max-w-screen-2xl mx-auto">

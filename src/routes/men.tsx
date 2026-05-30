@@ -396,7 +396,7 @@ function BrandSpotlightRail() {
   return (
     <section
       aria-label="Hero brands"
-      className="bg-canvas-raised border-y border-ink/10 mt-16 md:mt-24 py-14 md:py-20"
+      className="bg-canvas-raised border-y border-ink/10 mt-16 md:mt-24 py-14 md:py-16"
     >
       <div className="max-w-screen-md mx-auto px-5 md:px-10 flex flex-col gap-6 md:gap-10">
         {SPOTLIGHT_BRANDS.map((b) => (
@@ -765,7 +765,7 @@ function SaleCarousel() {
       eyebrow="SS26 Sale — Up to 50% Off"
       title="The end of season."
       description="A closing edit from the houses defining spring–summer 2026. While stock lasts."
-      sectionClassName="bg-canvas-raised border-y border-bronze/30 mt-16 md:mt-24 py-14 md:py-20"
+      sectionClassName="bg-canvas-raised border-y border-bronze/30 mt-16 md:mt-24 py-14 md:py-16"
       actions={
         <Link
           to="/men"
@@ -886,7 +886,7 @@ function BrandSpotlightRailTwo() {
   return (
     <section
       aria-label="Hero brands — by popular demand"
-      className="bg-canvas-raised border-y border-ink/10 mt-16 md:mt-24 py-14 md:py-20"
+      className="bg-canvas-raised border-y border-ink/10 mt-16 md:mt-24 py-14 md:py-16"
     >
       <div className="max-w-screen-md mx-auto px-5 md:px-10 flex flex-col gap-6 md:gap-10">
         {SPOTLIGHT_BRANDS_TWO.map((b) => (

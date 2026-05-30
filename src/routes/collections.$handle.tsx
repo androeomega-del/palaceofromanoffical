@@ -764,7 +764,7 @@ function CollectionPage() {
                 ))}
               </div>
             ) : edges.length === 0 ? (
-              <div className="py-32 text-center">
+              <div className="py-20 text-center">
                 <p className="text-sm text-muted-foreground mb-6">
                   No pieces match the current filters.
                 </p>
