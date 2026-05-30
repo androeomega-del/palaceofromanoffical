@@ -54,7 +54,7 @@ export function FarfetchEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {})
 const DEPARTMENTS: {
   label: string;
   to: string;
-  params: { handle: string };
+  params?: { handle: string };
   image: string;
   alt: string;
 }[] = [
@@ -67,8 +67,7 @@ const DEPARTMENTS: {
   },
   {
     label: "Menswear",
-    to: "/collections/$handle",
-    params: { handle: "mens-clothing" },
+    to: "/men",
     image: marketingMen,
     alt: "Menswear — tailoring, ready-to-wear, and designer essentials",
   },
