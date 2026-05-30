@@ -456,7 +456,7 @@ export function DepartmentTabs() {
   const dept = useDeptStore((s) => s.dept);
   const setDept = useDeptStore((s) => s.setDept);
   const TABS: { key: Dept; label: string; to: string }[] = [
-    { key: "women", label: "Women", to: "/" },
+    { key: "women", label: "Women", to: "/women" },
     { key: "men", label: "Men", to: "/men" },
   ];
   return (
