@@ -13,7 +13,9 @@
  */
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ShieldCheck, Plane, RotateCcw, MessageCircle } from "lucide-react";
+import { ShieldCheck, Plane, RotateCcw, MessageCircle, ChevronLeft, ChevronRight } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import useEmblaCarousel from "embla-carousel-react";
 
 import { fetchCollection } from "@/lib/shopify";
 import { cdnImage } from "@/lib/cdn-image";
@@ -57,9 +59,13 @@ export const Route = createFileRoute("/men")({
 });
 
 function MenHomePage() {
+  // Sync the global dept store so the header's category rail switches to Men
+  // for shoppers who land directly on /men.
+  useEffect(() => {
+    import("@/stores/dept-store").then((m) => m.useDeptStore.getState().setDept("men"));
+  }, []);
   return (
-    <main>
-      <PromoStrip />
+    <>
       <HeroBanner />
       <NewInThisWeek />
       <TrendingCategories />
@@ -70,21 +76,7 @@ function MenHomePage() {
       <AccessoryCampaignBanner />
       <HeritageBlock />
       <TrustStrip />
-    </main>
-  );
-}
-
-/* ─────────────────────────────────────────────────────────────────── */
-/*  1. Promo Strip                                                     */
-/* ─────────────────────────────────────────────────────────────────── */
-
-function PromoStrip() {
-  return (
-    <div className="w-full bg-ink text-canvas text-[10px] md:text-[11px] py-2.5 uppercase tracking-[0.32em] text-center">
-      Complimentary worldwide shipping on orders over $500
-      <span className="opacity-50 mx-2">·</span>
-      <span className="text-bronze">Resort 2026 now in</span>
-    </div>
+    </>
   );
 }
 
