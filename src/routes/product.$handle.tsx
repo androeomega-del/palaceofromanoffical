@@ -526,7 +526,7 @@ function ProductView({
                 ))}
               </div>
               {images.length > 1 && (
-                <div className="flex justify-center gap-1.5 mt-4">
+                <div className="flex justify-center gap-1.5 mt-2">
                   {images.map((_, i) => (
                     <span
                       key={i}
