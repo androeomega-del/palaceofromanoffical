@@ -125,6 +125,7 @@
     --ink: oklch(0.94 0.012 80);            /* warm ivory */
     --bronze: oklch(0.76 0.105 82);         /* gold */
     --bronze-soft: oklch(0.86 0.085 85);
+    --bronze-deep: oklch(0.82 0.110 82);    /* lifted bronze for AA eyebrow text on dark canvas */
     --background: var(--canvas);
     --foreground: var(--ink);
     --card: var(--canvas-raised);
