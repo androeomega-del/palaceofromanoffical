@@ -18,6 +18,8 @@ export type SuppressedBadge = "markdown" | "scarcity";
 export function ProductCard({
   product,
   suppressBadges = [],
+  surface,
+  position,
 }: {
   product: ShopifyProduct;
   /**
@@ -28,6 +30,10 @@ export function ProductCard({
    * never automatically suppressed; opt-out is per-surface.
    */
    suppressBadges?: SuppressedBadge[];
+  /** Analytics surface id, e.g. `rail:best-sellers`. Strict `rail:[a-z0-9-]+` pattern enforced server-side. */
+  surface?: string;
+  /** 0-indexed slot within the surface. */
+  position?: number;
 }) {
   const p = product.node;
   const img = p.images?.edges?.[0]?.node;
