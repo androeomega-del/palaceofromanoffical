@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import { type ShopifyProduct } from "@/lib/shopify";
 import { cdnImage, cdnSrcSet } from "@/lib/cdn-image";
 import { computeScarcitySignal } from "@/lib/scarcity-signal";
-import { ShippingMeta } from "@/components/shipping-meta";
 import { useCartStore } from "@/stores/cart-store";
 import { useWishlistStore } from "@/stores/wishlist-store";
 import { useInteractionStore } from "@/stores/interaction-store";
@@ -299,13 +298,13 @@ export function ProductCard({
       ref={cardRef}
       to="/product/$handle"
       params={{ handle: p.handle }}
-      className="group block"
+      className="group block h-full"
       onClick={onCardClick}
       onPointerDown={onCardPointerDown}
       onMouseEnter={onCardEnter}
       onMouseLeave={onCardLeave}
     >
-      <div className="w-full aspect-[4/5] bg-muted relative overflow-hidden mb-5 isolate">
+      <div className="w-full aspect-[3/4] bg-secondary relative overflow-hidden mb-3 isolate">
         {img && !imgError && (
           <img
             src={cdnImage(img.url, { width: 700 })}
@@ -317,7 +316,7 @@ export function ProductCard({
             loading="lazy"
             decoding="async"
             onError={() => setImgError(true)}
-            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 group-hover:opacity-0"
+            className="absolute inset-0 w-full h-full object-contain p-4 transition-opacity duration-500 group-hover:opacity-0"
           />
         )}
         {(!img || imgError) && (
@@ -345,7 +344,7 @@ export function ProductCard({
             loading="lazy"
             decoding="async"
             onError={() => setImg2Error(true)}
-            className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-700"
+            className="absolute inset-0 w-full h-full object-contain p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
           />
         ) : (
           img && !imgError && (
@@ -359,7 +358,7 @@ export function ProductCard({
               height={875}
               loading="lazy"
               decoding="async"
-              className="absolute inset-0 w-full h-full object-cover scale-105 opacity-0 group-hover:opacity-100 transition-all duration-700"
+              className="absolute inset-0 w-full h-full object-contain p-4 scale-[1.02] opacity-0 group-hover:opacity-100 transition-all duration-500"
             />
           )
         )}
