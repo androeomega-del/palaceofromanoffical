@@ -85,7 +85,8 @@ function DolceGabbanaIconsPage() {
         title="Dolce & Gabbana, Iconic."
         subtitle="Sicily · Baroque · Crystal — In Stock Now"
         intro="The pieces that define Domenico and Stefano's house — pulled from the mainline collection, authenticated, ready to ship from the Palace of Roman atelier."
-        heroN={31}
+        heroN={0}
+        heroSrc={dgHero}
         heroAlt="Dolce & Gabbana editorial — Sicilian baroque in close detail."
         manifesto="Romance is a discipline. Dolce & Gabbana have spent forty years proving it — in lace, in print, in the weight of a single crystal sewn by hand."
         chapters={CHAPTERS}
