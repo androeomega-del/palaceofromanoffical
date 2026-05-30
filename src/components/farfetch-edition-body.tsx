@@ -275,15 +275,26 @@ type CategoryTile = {
   handle: string;
   label: string;
   fallbackAlt: string;
+  /** Local editorial hero. Always used in preference to the Shopify
+   *  collection image / first product image so the homepage holds a
+   *  consistent, art-directed look. */
+  image: string;
 };
 
+import newArrivalsImg from "@/assets/home-categories/new-arrivals.jpg";
+import clothingImg from "@/assets/home-categories/clothing.jpg";
+import shoesImg from "@/assets/home-categories/shoes.jpg";
+import bagsImg from "@/assets/home-categories/bags.jpg";
+import sunglassesImg from "@/assets/home-categories/sunglasses.jpg";
+import accessoriesImg from "@/assets/home-categories/accessories.jpg";
+
 const CATEGORY_TILES: CategoryTile[] = [
-  { handle: "new-arrivals", label: "New In", fallbackAlt: "New arrivals — fresh pieces this week" },
-  { handle: "womens-clothing", label: "Clothing", fallbackAlt: "Designer clothing" },
-  { handle: "womens-shoes", label: "Shoes", fallbackAlt: "Designer shoes" },
-  { handle: "italian-leather-handbags", label: "Bags", fallbackAlt: "Designer handbags" },
-  { handle: "designer-sunglasses", label: "Eyewear", fallbackAlt: "Designer sunglasses" },
-  { handle: "silk-scarves", label: "Silk & Scarves", fallbackAlt: "Silk scarves" },
+  { handle: "new-arrivals", label: "New In",      fallbackAlt: "New arrivals — fresh pieces this week",          image: newArrivalsImg },
+  { handle: "clothing",     label: "Clothing",    fallbackAlt: "Designer clothing across menswear and womenswear", image: clothingImg },
+  { handle: "shoes",        label: "Shoes",       fallbackAlt: "Designer shoes — loafers, sneakers, boots and more", image: shoesImg },
+  { handle: "bags",         label: "Bags",        fallbackAlt: "Designer handbags, totes and crossbody",         image: bagsImg },
+  { handle: "sunglasses",   label: "Sunglasses",  fallbackAlt: "Designer sunglasses",                            image: sunglassesImg },
+  { handle: "accessories",  label: "Accessories", fallbackAlt: "Belts, wallets, jewellery and fine accessories", image: accessoriesImg },
 ];
 
 function CategoryQuickLinks() {
@@ -315,20 +326,6 @@ function CategoryQuickLinks() {
 }
 
 function CategoryTile({ tile }: { tile: CategoryTile }) {
-  const { data } = useQuery({
-    queryKey: ["home", "category-tile", tile.handle],
-    queryFn: () => fetchCollection(tile.handle, 1),
-    staleTime: 10 * 60 * 1000,
-  });
-  const firstProduct = data?.products?.edges?.[0]?.node;
-  const productImg = firstProduct?.images?.edges?.[0]?.node;
-  const collectionImg = data?.image;
-  const imgUrl = productImg?.url ?? collectionImg?.url ?? null;
-  const alt =
-    productImg?.altText ??
-    collectionImg?.altText ??
-    tile.fallbackAlt;
-
   return (
     <Link
       to="/collections/$handle"
@@ -336,16 +333,14 @@ function CategoryTile({ tile }: { tile: CategoryTile }) {
       className="group block"
     >
       <div className="relative aspect-[3/4] bg-muted overflow-hidden mb-3">
-        {imgUrl ? (
-          <img
-            src={cdnImage(imgUrl, { width: 600 })}
-            alt={alt}
-            loading="lazy"
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.05]"
-          />
-        ) : (
-          <div className="absolute inset-0 por-shimmer" aria-hidden="true" />
-        )}
+        <img
+          src={tile.image}
+          alt={tile.fallbackAlt}
+          loading="lazy"
+          width={768}
+          height={1024}
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.05]"
+        />
       </div>
       <p className="text-cta-sm uppercase text-ink text-center group-hover:text-bronze-deep transition-colors">
         {tile.label}
@@ -353,6 +348,7 @@ function CategoryTile({ tile }: { tile: CategoryTile }) {
     </Link>
   );
 }
+
 
 /* ────────────────────────────────────────────────────────────────────────── */
 /*  4. Discrete trust strip — single row, no urgency                          */
