@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Check, Eye, Heart, Loader2, ShoppingBag, Sparkles, X, Zap } from "lucide-react";
+import { Check, Eye, Heart, Loader2, ShoppingBag, X, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { type ShopifyProduct } from "@/lib/shopify";
