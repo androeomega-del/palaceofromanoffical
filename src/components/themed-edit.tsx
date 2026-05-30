@@ -212,18 +212,18 @@ export function ThemedEdit({
                       c.flip ? "md:justify-end" : "md:justify-start"
                     }`}
                   >
-                    <div className="p-6 md:p-12 lg:p-16 max-w-xl text-canvas">
-                      <span className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-3 block">
+                    <div className="px-5 pb-6 pt-10 md:p-12 lg:p-16 max-w-[88%] md:max-w-lg lg:max-w-xl text-canvas">
+                      <span className="text-[9px] md:text-[10px] uppercase tracking-[0.35em] md:tracking-[0.4em] text-bronze mb-2 md:mb-3 block">
                         {c.eyebrow}
                       </span>
-                      <h2 className="font-serif text-canvas text-2xl md:text-4xl lg:text-5xl leading-[1.05] mb-4 text-balance">
+                      <h2 className="font-serif text-canvas text-[1.6rem] md:text-4xl lg:text-5xl leading-[1.02] md:leading-[1.05] mb-2.5 md:mb-4 text-balance">
                         {c.title}
                       </h2>
-                      <p className="text-sm md:text-base text-canvas/85 leading-relaxed">
+                      <p className="text-[13px] md:text-base text-canvas/85 leading-[1.5] md:leading-relaxed">
                         {c.body}
                       </p>
                       {spots.length > 0 && (
-                        <p className="mt-5 text-[10px] uppercase tracking-[0.3em] text-bronze">
+                        <p className="mt-3 md:mt-5 text-[9px] md:text-[10px] uppercase tracking-[0.3em] text-bronze">
                           Tap the marks to shop the look
                         </p>
                       )}
