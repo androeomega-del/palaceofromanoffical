@@ -182,42 +182,53 @@ export function ThemedEdit({
               key={`${c.n}-${i}`}
               className="px-6 md:px-10 bg-canvas"
             >
-              <div className="max-w-screen-2xl mx-auto grid md:grid-cols-2 gap-10 md:gap-20 items-center">
-                <div className={`relative ${c.flip ? "md:order-2" : ""}`}>
+              <div className="max-w-screen-2xl mx-auto">
+                <div className="relative overflow-hidden bg-canvas-raised aspect-[4/5] md:aspect-[21/9]">
                   {spots.length > 0 ? (
                     <EditorialHotspots
                       src={chapterSrc}
                       alt={c.alt}
-                      aspect="4/5"
+                      aspect="21/9"
                       hotspots={spots}
                     />
                   ) : (
-                    <div className="aspect-[4/5] overflow-hidden bg-canvas-raised">
-                      <img
-                        src={chapterSrc}
-                        alt={c.alt}
-                        loading="lazy"
-                        decoding="async"
-                        className="w-full h-full object-cover"
-                      />
+                    <img
+                      src={chapterSrc}
+                      alt={c.alt}
+                      loading="lazy"
+                      decoding="async"
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                  )}
+                  <div
+                    className={`absolute inset-0 pointer-events-none bg-gradient-to-t from-ink/85 via-ink/35 to-transparent ${
+                      c.flip
+                        ? "md:bg-gradient-to-l md:from-ink/75 md:via-ink/20 md:to-transparent"
+                        : "md:bg-gradient-to-r md:from-ink/75 md:via-ink/20 md:to-transparent"
+                    }`}
+                  />
+                  <div
+                    className={`absolute inset-0 flex items-end md:items-center pointer-events-none ${
+                      c.flip ? "md:justify-end" : "md:justify-start"
+                    }`}
+                  >
+                    <div className="p-6 md:p-12 lg:p-16 max-w-xl text-canvas">
+                      <span className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-3 block">
+                        {c.eyebrow}
+                      </span>
+                      <h2 className="font-serif text-canvas text-2xl md:text-4xl lg:text-5xl leading-[1.05] mb-4 text-balance">
+                        {c.title}
+                      </h2>
+                      <p className="text-sm md:text-base text-canvas/85 leading-relaxed">
+                        {c.body}
+                      </p>
+                      {spots.length > 0 && (
+                        <p className="mt-5 text-[10px] uppercase tracking-[0.3em] text-bronze">
+                          Tap the marks to shop the look
+                        </p>
+                      )}
                     </div>
-                  )}
-                </div>
-                <div className={c.flip ? "md:order-1" : ""}>
-                  <span className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-4 block">
-                    {c.eyebrow}
-                  </span>
-                  <h2 className="font-serif text-3xl md:text-5xl leading-[1.05] mb-6 text-balance">
-                    {c.title}
-                  </h2>
-                  <p className="text-sm md:text-base text-ink/80 leading-relaxed">
-                    {c.body}
-                  </p>
-                  {spots.length > 0 && (
-                    <p className="mt-6 text-[10px] uppercase tracking-[0.3em] text-bronze">
-                      Tap the marks to shop the look
-                    </p>
-                  )}
+                  </div>
                 </div>
               </div>
             </section>
