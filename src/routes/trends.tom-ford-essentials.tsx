@@ -1,7 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ThemedEdit, type ThemedChapter } from "@/components/themed-edit";
-import { img } from "@/lib/editorial-library";
 import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
+import tfHero from "@/assets/trends/tf-hero.jpg";
+import tfC1 from "@/assets/trends/tf-chapter-1.jpg";
+import tfC2 from "@/assets/trends/tf-chapter-2.jpg";
+import tfC3 from "@/assets/trends/tf-chapter-3.jpg";
 
 const CHAPTERS: ThemedChapter[] = [
   {
