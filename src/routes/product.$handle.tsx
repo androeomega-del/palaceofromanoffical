@@ -500,7 +500,7 @@ function ProductView({
                 }}
               >
                 {(images.length ? images : [{ url: "", altText: product.title }]).map((img, i) => (
-                  <div key={i} className="min-w-full snap-center aspect-[3/4] bg-secondary overflow-hidden">
+                  <div key={i} className="min-w-full snap-center aspect-square bg-secondary overflow-hidden">
                     {img.url && (
                       <button
                         type="button"
