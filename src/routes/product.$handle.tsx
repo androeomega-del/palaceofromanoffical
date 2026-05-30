@@ -668,8 +668,8 @@ function ProductView({
                 </p>
               )}
 
-              <div className="flex gap-4">
-                <div className="flex items-center border border-[var(--studio-rule)] bg-white h-16 shadow-sm">
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center border border-[var(--studio-rule)] bg-white h-14 shadow-sm self-start">
                   <button
                     type="button"
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
@@ -691,7 +691,7 @@ function ProductView({
                 <button
                   onClick={handleAdd}
                   aria-busy={isLoading}
-                  className="flex-1 h-16 bg-[var(--studio-ink)] text-[var(--studio-bg)] hover:bg-[var(--studio-bronze)] transition-colors duration-700 text-[11px] uppercase tracking-[0.3em] font-semibold inline-flex items-center justify-center gap-2 shadow-lg"
+                  className="w-full h-16 bg-[var(--studio-ink)] text-[var(--studio-bg)] hover:bg-[var(--studio-bronze)] transition-colors duration-700 text-[11px] uppercase tracking-[0.3em] font-semibold inline-flex items-center justify-center gap-2 shadow-lg"
                 >
                   {isLoading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
