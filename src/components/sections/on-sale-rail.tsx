@@ -12,6 +12,9 @@ import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { fetchProducts } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
+import { useRailImpression } from "@/hooks/use-rail-impression";
+
+const SURFACE = "rail:on-sale";
 
 export function OnSaleRail({
   dept = "Women",
@@ -38,10 +41,16 @@ export function OnSaleRail({
     staleTime: 5 * 60_000,
   });
 
+  const railRef = useRailImpression(SURFACE, data?.[0]?.node.handle);
+
   if (!isLoading && (!data || data.length === 0)) return null;
 
   return (
-    <section className="py-section-sm md:py-16 bg-ink/5">
+    <section
+      ref={railRef as React.RefObject<HTMLElement>}
+      data-rail-surface={SURFACE}
+      className="py-section-sm md:py-16 bg-ink/5"
+    >
       <div className="max-w-screen-2xl mx-auto px-5 md:px-10">
         <header className="mb-8">
           <p className="text-eyebrow uppercase text-bronze-deep">
@@ -61,7 +70,9 @@ export function OnSaleRail({
                   aria-hidden="true"
                 />
               ))
-            : data?.map((p) => <ProductCard key={p.node.id} product={p} />)}
+            : data?.map((p, i) => (
+                <ProductCard key={p.node.id} product={p} surface={SURFACE} position={i} />
+              ))}
         </div>
 
         <div className="mt-10 flex justify-center">
