@@ -574,6 +574,8 @@ export function ClientFacetPills({
   for (const sz of state.sizes) items.push({ key: `sz:${sz}`, label: `Size ${sz}`, onClear: () => { const s = new Set(state.sizes); s.delete(sz); onChange({ ...state, sizes: s }); } });
   for (const c of state.colors) items.push({ key: `c:${c}`, label: c, onClear: () => { const s = new Set(state.colors); s.delete(c); onChange({ ...state, colors: s }); } });
   for (const m of state.materials) items.push({ key: `m:${m}`, label: m, onClear: () => { const s = new Set(state.materials); s.delete(m); onChange({ ...state, materials: s }); } });
+  for (const o of state.occasions) items.push({ key: `o:${o}`, label: o, onClear: () => { const s = new Set(state.occasions); s.delete(o); onChange({ ...state, occasions: s }); } });
+  if (state.sale !== "any") items.push({ key: "sale", label: state.sale === "sale" ? "On Sale" : "Full Price", onClear: () => onChange({ ...state, sale: "any" }) });
   if (state.price) items.push({ key: "price", label: `$${state.price.min}–$${state.price.max}`, onClear: () => onChange({ ...state, price: null }) });
 
   if (items.length === 0) return null;
