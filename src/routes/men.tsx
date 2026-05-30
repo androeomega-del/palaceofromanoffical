@@ -350,9 +350,9 @@ function TrendingTile({ tile }: { tile: { handle: string; label: string; alt: st
 /*  5. Brand Spotlight Rail                                            */
 /* ─────────────────────────────────────────────────────────────────── */
 
-const SPOTLIGHT_BRANDS: { label: string; vendor: string; handle: string; alt: string }[] = [
-  { label: "Versace", vendor: "versace", handle: "brand-versace", alt: "Versace menswear" },
-  { label: "Dolce & Gabbana", vendor: "dolce-gabbana", handle: "brand-dolce-gabbana", alt: "Dolce & Gabbana menswear" },
+const SPOTLIGHT_BRANDS: { label: string; vendor: string; handle: string; alt: string; src: string }[] = [
+  { label: "Versace", vendor: "versace", handle: "brand-versace", alt: "Versace menswear", src: brandVersace },
+  { label: "Dolce & Gabbana", vendor: "dolce-gabbana", handle: "brand-dolce-gabbana", alt: "Dolce & Gabbana menswear", src: brandDolceGabbana },
 ];
 
 function BrandSpotlightRail() {
@@ -373,18 +373,20 @@ function BrandSpotlightRail() {
 function BrandSpotlightTile({
   brand,
 }: {
-  brand: { label: string; vendor: string; handle: string; alt: string };
+  brand: { label: string; vendor: string; handle: string; alt: string; src?: string };
 }) {
   const { data } = useQuery({
     queryKey: ["men", "brand-spotlight", brand.handle],
     queryFn: () => fetchCollection(brand.handle, 1),
     staleTime: 15 * 60 * 1000,
   });
-  const imgUrl =
+  const shopifyUrl =
     data?.image?.url ??
     data?.products?.edges?.[0]?.node?.images?.edges?.[0]?.node?.url ??
     null;
-  const alt = data?.image?.altText ?? brand.alt;
+  const imgUrl = brand.src ?? shopifyUrl;
+  const alt = brand.src ? brand.alt : (data?.image?.altText ?? brand.alt);
+
 
   return (
     <Link
@@ -395,7 +397,7 @@ function BrandSpotlightTile({
       <div className="relative aspect-[3/4] bg-muted overflow-hidden mb-3">
         {imgUrl ? (
           <img
-            src={cdnImage(imgUrl, { width: 600 })}
+            src={brand.src ? brand.src : cdnImage(imgUrl, { width: 600 })}
             alt={alt}
             loading="lazy"
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.05]"
@@ -840,9 +842,9 @@ function TrendingEditorials() {
 /*  Hero Brands — Two more, by popular demand                          */
 /* ─────────────────────────────────────────────────────────────────── */
 
-const SPOTLIGHT_BRANDS_TWO: { label: string; vendor: string; handle: string; alt: string }[] = [
-  { label: "Gucci", vendor: "gucci", handle: "brand-gucci", alt: "Gucci menswear" },
-  { label: "Prada", vendor: "prada", handle: "brand-prada", alt: "Prada menswear" },
+const SPOTLIGHT_BRANDS_TWO: { label: string; vendor: string; handle: string; alt: string; src: string }[] = [
+  { label: "Gucci", vendor: "gucci", handle: "brand-gucci", alt: "Gucci menswear", src: brandGucci },
+  { label: "Prada", vendor: "prada", handle: "brand-prada", alt: "Prada menswear", src: brandPrada },
 ];
 
 function BrandSpotlightRailTwo() {
@@ -864,13 +866,13 @@ function BrandSpotlightRailTwo() {
 /*  Brands of the Moment                                               */
 /* ─────────────────────────────────────────────────────────────────── */
 
-const BRANDS_OF_THE_MOMENT: { label: string; vendor: string; handle: string; alt: string }[] = [
-  { label: "Brunello Cucinelli", vendor: "brunello-cucinelli", handle: "brand-brunello-cucinelli", alt: "Brunello Cucinelli menswear" },
-  { label: "Giorgio Armani", vendor: "giorgio-armani", handle: "brand-giorgio-armani", alt: "Giorgio Armani menswear" },
-  { label: "Tom Ford", vendor: "tom-ford", handle: "brand-tom-ford", alt: "Tom Ford menswear" },
-  { label: "Saint Laurent", vendor: "saint-laurent", handle: "brand-saint-laurent", alt: "Saint Laurent menswear" },
-  { label: "Loro Piana", vendor: "loro-piana", handle: "brand-loro-piana", alt: "Loro Piana menswear" },
-  { label: "Bottega Veneta", vendor: "bottega-veneta", handle: "brand-bottega-veneta", alt: "Bottega Veneta menswear" },
+const BRANDS_OF_THE_MOMENT: { label: string; vendor: string; handle: string; alt: string; src: string }[] = [
+  { label: "Brunello Cucinelli", vendor: "brunello-cucinelli", handle: "brand-brunello-cucinelli", alt: "Brunello Cucinelli menswear", src: brandBrunelloCucinelli },
+  { label: "Giorgio Armani", vendor: "giorgio-armani", handle: "brand-giorgio-armani", alt: "Giorgio Armani menswear", src: brandGiorgioArmani },
+  { label: "Tom Ford", vendor: "tom-ford", handle: "brand-tom-ford", alt: "Tom Ford menswear", src: brandTomFord },
+  { label: "Saint Laurent", vendor: "saint-laurent", handle: "brand-saint-laurent", alt: "Saint Laurent menswear", src: brandSaintLaurent },
+  { label: "Loro Piana", vendor: "loro-piana", handle: "brand-loro-piana", alt: "Loro Piana menswear", src: brandLoroPiana },
+  { label: "Bottega Veneta", vendor: "bottega-veneta", handle: "brand-bottega-veneta", alt: "Bottega Veneta menswear", src: brandBottegaVeneta },
 ];
 
 function BrandsOfTheMoment() {
