@@ -1183,8 +1183,8 @@ function VariantOption({
               disabled={!candidate}
               className={`min-w-16 h-14 px-4 text-[11px] uppercase tracking-widest border transition-all duration-300 ${
                 active
-                  ? "border-[var(--studio-ink)] bg-[var(--studio-ink)] text-[var(--studio-bg)]"
-                  : "border-[var(--studio-ink)]/10 bg-white hover:border-[var(--studio-ink)]"
+                  ? "por-tick border-[var(--studio-ink)] bg-[var(--studio-ink)] text-[var(--studio-bg)]"
+                  : "border-[var(--studio-ink)]/10 bg-white hover:border-[var(--studio-ink)] motion-safe:hover:-translate-y-px"
               } ${unavailable ? "line-through opacity-50" : ""}`}
             >
               {value}
