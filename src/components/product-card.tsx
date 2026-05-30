@@ -423,20 +423,20 @@ export function ProductCard({
               );
             }
           }
-          // "New Season" — quietly badge pieces added in the last 30 days.
-          // Gate behind `mounted` to avoid SSR/client hydration mismatch (#418).
-          if (mounted && p.createdAt) {
-            const ageDays = (Date.now() - new Date(p.createdAt).getTime()) / 86_400_000;
-            if (ageDays >= 0 && ageDays <= 30) {
-              return (
-                <span
-                  className="absolute top-3 left-3 z-10 text-[10px] uppercase tracking-[0.25em] bg-canvas/95 backdrop-blur-sm text-ink border border-ink/15 px-2 py-1 font-medium"
-                  title="New season arrival"
-                >
-                  New Season
-                </span>
-              );
-            }
+          // "New Season" — only pieces whose description names the current
+          // or upcoming season. Source of truth = the season token written
+          // into each product's description (e.g. "SS26", "Spring/Summer
+          // 2026", "FW26", "Fall/Winter 2026", "Resort 2027", "Pre-Fall
+          // 2026", "Cruise 2027"). No more time-based heuristic.
+          if (isCurrentOrUpcomingSeason(p.description)) {
+            return (
+              <span
+                className="absolute top-3 left-3 z-10 text-[10px] uppercase tracking-[0.25em] bg-canvas/95 backdrop-blur-sm text-ink border border-ink/15 px-2 py-1 font-medium"
+                title="New season arrival"
+              >
+                New Season
+              </span>
+            );
           }
           return null;
         })()}
