@@ -10,6 +10,8 @@
 import { Link } from "@tanstack/react-router";
 import { vendorSlug } from "@/lib/nav-config";
 import { imgForKey } from "@/lib/editorial-library";
+import { useRailImpression } from "@/hooks/use-rail-impression";
+import { enqueueInteractionEvent } from "@/lib/interaction-flush";
 
 export type BrandTile = {
   vendor: string;
@@ -19,6 +21,8 @@ export type BrandTile = {
   imageKey?: string;
 };
 
+const SURFACE = "rail:brands-of-the-moment";
+
 export function BrandsOfTheMoment({
   eyebrow = "Brands of the Moment",
   brands,
@@ -26,9 +30,15 @@ export function BrandsOfTheMoment({
   eyebrow?: string;
   brands: BrandTile[];
 }) {
+  const firstKey = brands?.[0] ? `brand-${vendorSlug(brands[0].vendor)}` : undefined;
+  const railRef = useRailImpression(SURFACE, firstKey);
   if (!brands || brands.length === 0) return null;
   return (
-    <section className="py-section-sm md:py-16 bg-canvas">
+    <section
+      ref={railRef as React.RefObject<HTMLElement>}
+      data-rail-surface={SURFACE}
+      className="py-section-sm md:py-16 bg-canvas"
+    >
       <div className="max-w-screen-2xl mx-auto px-5 md:px-10">
         <header className="mb-8 flex items-end justify-between">
           <h2 className="font-serif text-subhead-md md:text-subhead-lg tracking-subhead-open text-ink">
@@ -43,36 +53,48 @@ export function BrandsOfTheMoment({
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-5">
-          {brands.map((b) => (
-            <Link
-              key={b.vendor}
-              to="/brand/$vendor"
-              params={{ vendor: vendorSlug(b.vendor) }}
-              className="group relative block aspect-[4/5] overflow-hidden bg-ink/5"
-            >
-              <img
-                src={imgForKey(b.imageKey ?? `brand-${b.vendor}`)}
-                alt={b.vendor}
-                loading="lazy"
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/15 to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 p-6">
-                <p className="font-serif text-canvas text-subhead-md md:text-subhead-lg tracking-subhead-open leading-tight">
-                  {b.vendor}
-                </p>
-                {b.note && (
-                  <p className="mt-2 text-eyebrow-tight uppercase text-canvas/80">
-                    {b.note}
+          {brands.map((b, i) => {
+            const handleKey = `brand-${vendorSlug(b.vendor)}`;
+            return (
+              <Link
+                key={b.vendor}
+                to="/brand/$vendor"
+                params={{ vendor: vendorSlug(b.vendor) }}
+                onClick={() =>
+                  enqueueInteractionEvent({
+                    handle: handleKey,
+                    event_type: "rail_tap",
+                    vendor: b.vendor,
+                    surface: SURFACE,
+                    position: i,
+                  })
+                }
+                className="group relative block aspect-[4/5] overflow-hidden bg-ink/5"
+              >
+                <img
+                  src={imgForKey(b.imageKey ?? `brand-${b.vendor}`)}
+                  alt={b.vendor}
+                  loading="lazy"
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/15 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 p-6">
+                  <p className="font-serif text-canvas text-subhead-md md:text-subhead-lg tracking-subhead-open leading-tight">
+                    {b.vendor}
                   </p>
-                )}
-                {/* text-bronze is decorative-on-dark border here, not text — passes */}
-                <span className="mt-3 inline-block text-cta-lg uppercase text-canvas border-b border-bronze pb-0.5">
-                  Shop the Maison
-                </span>
-              </div>
-            </Link>
-          ))}
+                  {b.note && (
+                    <p className="mt-2 text-eyebrow-tight uppercase text-canvas/80">
+                      {b.note}
+                    </p>
+                  )}
+                  {/* text-bronze is decorative-on-dark border here, not text — passes */}
+                  <span className="mt-3 inline-block text-cta-lg uppercase text-canvas border-b border-bronze pb-0.5">
+                    Shop the Maison
+                  </span>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </section>

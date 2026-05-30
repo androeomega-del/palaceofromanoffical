@@ -17,6 +17,7 @@
 // into /shop is preferable anyway — resets scroll, lands on a fresh grid.
 import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
 import { ProductCard } from "@/components/product-card";
+import { useRailImpression } from "@/hooks/use-rail-impression";
 import type { ShopifyProduct } from "@/lib/shopify";
 
 // Loose at the prop boundary so any `queryOptions(...)` factory whose
@@ -44,6 +45,11 @@ export interface ProductRailProps {
   skeletonAspect?: string;
   /** Hide the entire section when the query resolves with zero products. Default true. */
   hideWhenEmpty?: boolean;
+  /**
+   * Analytics surface id — `rail:<name>` (lowercase kebab). Required for
+   * every rail preset so cross-surface analytics stay consistent from day 1.
+   */
+  surface: string;
 }
 
 export function ProductRail({
@@ -55,8 +61,10 @@ export function ProductRail({
   columns = 4,
   skeletonAspect = "3/4",
   hideWhenEmpty = true,
+  surface,
 }: ProductRailProps) {
   const { data, isLoading } = useQuery(queryOptions);
+  const railRef = useRailImpression(surface, data?.[0]?.node.handle);
 
   if (!isLoading && hideWhenEmpty && (!data || data.length === 0)) return null;
 
@@ -64,7 +72,11 @@ export function ProductRail({
   const skeletonCount = columns;
 
   return (
-    <section className="py-section-sm md:py-16 bg-canvas">
+    <section
+      ref={railRef as React.RefObject<HTMLElement>}
+      data-rail-surface={surface}
+      className="py-section-sm md:py-16 bg-canvas"
+    >
       <div className="max-w-screen-2xl mx-auto px-5 md:px-10">
         <header className="mb-8">
           <p className="text-eyebrow uppercase text-bronze-deep">
@@ -85,7 +97,9 @@ export function ProductRail({
                   aria-hidden="true"
                 />
               ))
-            : data?.map((p) => <ProductCard key={p.node.id} product={p} />)}
+            : data?.map((p, i) => (
+                <ProductCard key={p.node.id} product={p} surface={surface} position={i} />
+              ))}
         </div>
 
         <div className="mt-10 flex justify-center">

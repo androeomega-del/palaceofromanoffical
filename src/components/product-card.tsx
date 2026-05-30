@@ -18,6 +18,8 @@ export type SuppressedBadge = "markdown" | "scarcity";
 export function ProductCard({
   product,
   suppressBadges = [],
+  surface,
+  position,
 }: {
   product: ShopifyProduct;
   /**
@@ -28,6 +30,10 @@ export function ProductCard({
    * never automatically suppressed; opt-out is per-surface.
    */
    suppressBadges?: SuppressedBadge[];
+  /** Analytics surface id, e.g. `rail:best-sellers`. Strict `rail:[a-z0-9-]+` pattern enforced server-side. */
+  surface?: string;
+  /** 0-indexed slot within the surface. */
+  position?: number;
 }) {
   const p = product.node;
   const img = p.images?.edges?.[0]?.node;
@@ -110,7 +116,9 @@ export function ProductCard({
     return () => document.removeEventListener("pointerdown", onDown);
   }, [revealed]);
 
-  const meta = { vendor: p.vendor, productType: p.productType };
+  const meta = { vendor: p.vendor, productType: p.productType, surface, position };
+
+
 
   // Viewport impression — fire once per mount when ≥50% of the card is
   // visible for 600ms. Implicit signal: "shopper actually saw this card".
@@ -130,9 +138,9 @@ export function ProductCard({
             dwellTimer = setTimeout(() => {
               if (impressionFired.current) return;
               impressionFired.current = true;
-              track({ handle: p.handle, event: "impression", vendor: p.vendor, productType: p.productType });
+              track({ handle: p.handle, event: "impression", vendor: p.vendor, productType: p.productType, surface, position });
               if (hasScarcity) {
-                track({ handle: p.handle, event: "scarcity_view", vendor: p.vendor, productType: p.productType });
+                track({ handle: p.handle, event: "scarcity_view", vendor: p.vendor, productType: p.productType, surface, position });
               }
               observer.disconnect();
             }, 600);
@@ -149,7 +157,7 @@ export function ProductCard({
       if (dwellTimer) clearTimeout(dwellTimer);
       observer.disconnect();
     };
-  }, [p.handle, p.vendor, p.productType, track, hasScarcity]);
+  }, [p.handle, p.vendor, p.productType, track, hasScarcity, surface, position]);
 
   const onCardClick = (e: React.MouseEvent) => {
     // Mobile/touch: first tap reveals the CTA overlay; second tap navigates.
@@ -159,6 +167,9 @@ export function ProductCard({
       return;
     }
     track({ handle: p.handle, event: "click", ...meta });
+    if (surface) {
+      track({ handle: p.handle, event: "rail_tap", ...meta });
+    }
     if (hasScarcity) {
       track({ handle: p.handle, event: "scarcity_click", ...meta });
     }
