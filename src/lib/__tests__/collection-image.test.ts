@@ -48,7 +48,8 @@ const HANDLE_TO_FILE: Record<string, string> = {
   "mens-sneakers": "mens-sneakers.jpg",
   "mens-boots": "mens-boots.jpg",
   "mens-sandals-slides": "mens-sandals-slides.jpg",
-  "mens-bags-wallets": "mens-bags-wallets.jpg",
+  "mens-bags": "mens-bags.jpg",
+  "mens-wallets": "mens-wallets.jpg",
   "mens-belts": "mens-belts.jpg",
   "mens-watches-jewelry": "mens-watches-jewelry.jpg",
 };
