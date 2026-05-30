@@ -216,7 +216,7 @@ const CROSS_CATEGORIES: CrossEntry[] = [
   { handle: "wallets",            label: "Wallets",            women: { column: "Carry", order: 11 }, men: { column: "Accessories", order: 13 } },
   { handle: "scarves",            label: "Scarves",            women: { column: "Fine Accessories", order: 12 }, men: { column: "Accessories", order: 14 } },
   { handle: "sunglasses",         label: "Sunglasses",         women: { column: "Fine Accessories", order: 13 }, men: { column: "Accessories", order: 15 } },
-  { handle: "eyewear",            label: "Eyewear",            women: { column: "Fine Accessories", order: 14 }, men: { column: "Accessories", order: 16 } },
+  { handle: "sunglasses",         label: "Sunglasses",         women: { column: "Fine Accessories", order: 14 }, men: { column: "Accessories", order: 16 } },
   { handle: "cashmere",           label: "Cashmere",           women: { column: "Apparel", order: 30 }, men: { column: "Shirts & Knitwear", order: 30 } },
 ];
 
