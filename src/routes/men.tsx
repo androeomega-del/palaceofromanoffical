@@ -842,9 +842,9 @@ function TrendingEditorials() {
 /*  Hero Brands — Two more, by popular demand                          */
 /* ─────────────────────────────────────────────────────────────────── */
 
-const SPOTLIGHT_BRANDS_TWO: { label: string; vendor: string; handle: string; alt: string }[] = [
-  { label: "Gucci", vendor: "gucci", handle: "brand-gucci", alt: "Gucci menswear" },
-  { label: "Prada", vendor: "prada", handle: "brand-prada", alt: "Prada menswear" },
+const SPOTLIGHT_BRANDS_TWO: { label: string; vendor: string; handle: string; alt: string; src: string }[] = [
+  { label: "Gucci", vendor: "gucci", handle: "brand-gucci", alt: "Gucci menswear", src: brandGucci },
+  { label: "Prada", vendor: "prada", handle: "brand-prada", alt: "Prada menswear", src: brandPrada },
 ];
 
 function BrandSpotlightRailTwo() {
