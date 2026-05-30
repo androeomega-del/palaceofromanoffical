@@ -8,8 +8,11 @@ export type StorySlide = {
   /** Optional alt text override; falls back to caption. */
   alt?: string;
   caption: string;
+  /** Collection handle for `/collections/$handle`. Used when no productHandle is set. */
   shopHandle?: string;
   shopLabel?: string;
+  /** Product handle for `/product/$handle`. Takes precedence over `shopHandle`. */
+  productHandle?: string;
 };
 
 export type EditorialStoryProps = {
