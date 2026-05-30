@@ -72,7 +72,8 @@ function emptyCounts(buckets: ReadonlyArray<CategoryBucket>): Record<string, num
 export const fetchCollectionCategoryCounts = createServerFn({ method: "GET" })
   .inputValidator((d: unknown) => Input.parse(d))
   .handler(async ({ data }): Promise<CollectionCategoryCounts> => {
-    const counts = emptyCounts();
+    const buckets = bucketsForHandle(data.handle);
+    const counts = emptyCounts(buckets);
     let bucketed = 0;
     let walked = 0;
 
@@ -89,10 +90,13 @@ export const fetchCollectionCategoryCounts = createServerFn({ method: "GET" })
         if (!col) break;
         for (const { node } of col.products.edges) {
           walked += 1;
-          const bucket = bucketProduct({
-            title: node.title ?? "",
-            tags: Array.isArray(node.tags) ? node.tags : [],
-          });
+          const bucket = bucketProduct(
+            {
+              title: node.title ?? "",
+              tags: Array.isArray(node.tags) ? node.tags : [],
+            },
+            buckets,
+          );
           if (bucket) {
             counts[bucket] += 1;
             bucketed += 1;
