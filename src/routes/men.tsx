@@ -653,12 +653,12 @@ function CampaignTile({
           {cta}
         </span>
       </div>
-      <div className="relative h-[420px] md:h-auto overflow-hidden bg-muted">
+      <div className="overflow-hidden bg-muted md:min-h-[360px]">
         <img
           src={image}
           alt={alt}
           loading="lazy"
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-[1.04]"
+          className="block h-[420px] w-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-[1.04] md:h-full md:min-h-[360px]"
         />
       </div>
     </Link>
