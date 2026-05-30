@@ -120,7 +120,7 @@ export function DesktopMegamenu() {
   }, [liveCollections, liveHandles, menuSource]);
 
   const triggerKeys = useMemo(
-    () => [...departments.map((d) => d.key as string), "vacation", "brands"],
+    () => [...departments.map((d) => d.key as string), "vacation", "best-sellers", "brands"],
     [departments],
   );
 
@@ -226,6 +226,14 @@ export function DesktopMegamenu() {
         onCloseAndFocus={() => closeAndFocusTrigger("vacation")}
         onArrow={(e) => onTriggerArrow(e, "vacation")}
         registerTrigger={registerTrigger("vacation")}
+      />
+      <BestSellersTrigger
+        isOpen={openKey === "best-sellers"}
+        onOpen={() => openNow("best-sellers")}
+        onScheduleClose={scheduleClose}
+        onCloseAndFocus={() => closeAndFocusTrigger("best-sellers")}
+        onArrow={(e) => onTriggerArrow(e, "best-sellers")}
+        registerTrigger={registerTrigger("best-sellers")}
       />
       <BrandsTrigger
         isOpen={openKey === "brands"}
@@ -479,6 +487,115 @@ function useBrandIndex() {
     staleTime: 10 * 60_000,
     select: (rows) => buildBrandList(rows),
   });
+}
+
+// -----------------------------------------------------------------------------
+// Best Sellers megamenu — brand-led entry. Each brand link lands on the brand
+// page, which already defaults to sort=BEST_SELLING-false.
+// -----------------------------------------------------------------------------
+
+function BestSellersTrigger({
+  isOpen,
+  onOpen,
+  onScheduleClose,
+  onCloseAndFocus,
+  onArrow,
+  registerTrigger,
+}: {
+  isOpen: boolean;
+  onOpen: () => void;
+  onScheduleClose: () => void;
+  onCloseAndFocus: () => void;
+  onArrow: (e: React.KeyboardEvent) => void;
+  registerTrigger: (el: HTMLButtonElement | null) => void;
+}) {
+  const panelId = useId();
+  const { data: brands } = useBrandIndex();
+  const grouped = useMemo(() => groupBrandsForMenu(brands ?? []), [brands]);
+
+  const onKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (e.key === "Enter" || e.key === " " || e.key === "ArrowDown") {
+      e.preventDefault();
+      onOpen();
+      focusFirstLinkInPanel(panelId);
+      return;
+    }
+    if (e.key === "Escape" && isOpen) {
+      e.preventDefault();
+      onCloseAndFocus();
+      return;
+    }
+    onArrow(e);
+  };
+
+  return (
+    <div className="relative" onMouseEnter={onOpen} role="none">
+      <button
+        ref={registerTrigger}
+        type="button"
+        role="menuitem"
+        aria-haspopup="true"
+        aria-expanded={isOpen}
+        aria-controls={panelId}
+        onClick={() => (isOpen ? onCloseAndFocus() : onOpen())}
+        onKeyDown={onKeyDown}
+        onFocus={onOpen}
+        className={`${TRIGGER_CLASS} ${isOpen ? "text-bronze" : ""}`}
+      >
+        Best Sellers
+      </button>
+      <div
+        id={panelId}
+        role="region"
+        aria-label="Best sellers by house"
+        hidden={!isOpen}
+        onMouseEnter={onOpen}
+        onMouseLeave={onScheduleClose}
+        onKeyDown={(e) => onPanelKeyDown(e, panelId)}
+        className="fixed left-0 right-0 top-20 z-40 bg-canvas border-t border-ink/10 shadow-[0_40px_80px_-40px_rgba(0,0,0,0.12)]"
+      >
+        <div className="max-w-screen-2xl mx-auto px-12 py-14">
+          <div className="flex items-baseline justify-between mb-8 pb-4 border-b border-ink/10">
+            <p className="font-serif italic text-[15px] tracking-[0.04em] text-bronze">
+              Best sellers — by house
+            </p>
+            <p className="text-[11px] font-light italic text-ink/60 max-w-md text-right">
+              The pieces our clients return for, organised by maison.
+            </p>
+          </div>
+          {grouped.length === 0 ? (
+            <p className="text-[12px] font-light italic text-muted-foreground">Loading houses…</p>
+          ) : (
+            <div
+              className="grid gap-x-12 gap-y-2"
+              style={{ gridTemplateColumns: `repeat(${Math.max(grouped.length, 1)}, minmax(0, 1fr))` }}
+            >
+              {grouped.map((col) => (
+                <div key={col.heading} className="flex flex-col gap-3">
+                  <p className="text-[10px] uppercase tracking-[0.3em] text-ink/55 pb-2">
+                    {col.heading}
+                  </p>
+                  <ul className="flex flex-col gap-2">
+                    {col.items.map((b) => (
+                      <li key={b.vendor}>
+                        <Link
+                          to="/brand/$vendor"
+                          params={{ vendor: vendorSlug(b.vendor) }}
+                          className="text-[13px] font-light text-ink/80 hover:text-bronze transition-colors inline-block normal-case tracking-normal leading-relaxed"
+                        >
+                          {b.vendor}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function BrandsTrigger({
@@ -882,6 +999,37 @@ export function MobileMegamenu() {
       </MobileAccordion>
 
 
+
+      <MobileAccordion
+        label="Best Sellers"
+        isOpen={openKey === "best-sellers"}
+        onToggle={() => setOpenKey(openKey === "best-sellers" ? null : "best-sellers")}
+      >
+        <p className="text-[11px] font-light italic text-ink/60 mb-1">
+          The pieces our clients return for, organised by maison.
+        </p>
+        {brandGroups.length === 0 ? (
+          <p className="text-[12px] text-muted-foreground">Loading houses…</p>
+        ) : (
+          brandGroups.map((col) => (
+            <div key={col.heading} className="flex flex-col gap-1.5">
+              <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-1">
+                {col.heading}
+              </p>
+              {col.items.map((b) => (
+                <Link
+                  key={b.vendor}
+                  to="/brand/$vendor"
+                  params={{ vendor: vendorSlug(b.vendor) }}
+                  className="text-[14px] text-ink/85 hover:text-bronze py-1"
+                >
+                  {b.vendor}
+                </Link>
+              ))}
+            </div>
+          ))
+        )}
+      </MobileAccordion>
 
       <MobileAccordion
         label="Brands"
