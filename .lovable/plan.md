@@ -1,170 +1,88 @@
-# Palace of Roman × Farfetch Alignment Plan
-## Full Site Audit + SEO Tactics Analysis
+## Goal
 
----
+Read-only typography/spacing/contrast audit across the editorial surface + homepage rails. **No code changes.** Deliverable is a structured report that doubles as the draft type-scale for a follow-up tokenization task.
 
-## 1. Farfetch Site Audit — What They Do Well
+## Scope (in)
 
-### Navigation & Information Architecture
-- **Two-row header**: Department tabs (Women / Men / Kids) + centred wordmark + utility cluster (search, account, wishlist, bag). Row 2 is a category rail with inline search.
-- **Full-bleed megamenu**: Hover opens a panel with 3-column subcategory lists + an editorial feature tile. A complete alphabetical brand directory lives inside the Brands panel.
-- **Mobile drawer**: Hamburger replaces the entire desktop IA cleanly.
-- **Breadcrumb discipline**: Every deep page carries a minimal "Home / Category" trail.
+**Editorial (`src/components/`):**
+- `editorial-story.tsx`
+- `editors-edition.tsx`
+- `editorial-page-shell.tsx`
+- `editorial-hotspots.tsx`
+- `hero-focal-overlay.tsx`
+- `shop-the-story-strip.tsx`
+- `journal-shop-rail.tsx`
+- `campaign-video.tsx`
+- `themed-edit.tsx`
+- `craftsmanship-article.tsx`
+- `farfetch-edition-body.tsx`, `default-edition-body.tsx` (composition shells — audit any local type/spacing they apply, not children twice)
 
-### Homepage
-- **Gateway, not catalogue**: Three large editorial tiles (Women / Men / Kids) dominate the fold. Below that, category quick-links (New In, Clothing, Bags, Shoes, Accessories, Jewellery) use product imagery as wayfinding.
-- **No dense product grids above the fold**: The homepage curates entry points; it does not dump inventory.
-- **Seasonal campaign banner**: A single themed hero rotates (e.g. "Beach bound") with short editorial copy and a CTA.
+**Homepage rails (`src/components/sections/`):**
+- `product-rail.tsx` (canonical — most rail copy lives here)
+- `new-this-week-rail.tsx`, `best-sellers-rail.tsx`, `on-sale-rail.tsx`
+- `brands-of-the-moment.tsx`
+- `trending-now-strip.tsx`
 
-### PLP (Product Listing Page)
-- **Editorial hero banner at the top of every PLP**: Themed imagery + 1-2 sentences of editorial copy + "Shop Now" CTA. Example: "Manifest laid-back, sun-filled days with styles from Jacquemus, Eres, Burberry and more."
-- **Human headline**: "New in: handpicked daily from the world's best brands and boutiques" — editorial, not transactional.
-- **Product cards**: Brand name (bold) + literal product name + price. "New Season" badge used as a freshness signal.
-- **Clean grid**: 3-column on desktop, generous whitespace, minimal chrome.
+**Out of scope:** PDP, cart, header/footer, admin, product-card internals (image-crop task owns that).
 
-### PDP (Product Detail Page)
-- **Large image gallery**: 7+ images with thumbnail strip. Descriptive alt text: "Prada small leather bag | White | Image 1".
-- **Brand logo SVG**: Rendered inline above the product name.
-- **Minimal but complete**: Size selector, Add To Bag, one price. No information overload.
-- **Cross-sell rail**: "Complete the look" with 3-4 pieces.
+## Breakpoints
 
-### Copy / Voice
-- **Restrained, confident, editorial**: Short descriptive sentences. No urgency, no pressure, no hard sell.
-- **Product naming is literal**: "small leather bag", "button-up bomber jacket", "printed cowl-neck mini dress".
-- **Avoids promotional language**: Even sale banners are calm — "up to 50% off", not countdown timers or flash-sale pressure.
+375, 390, 768, 1280, 1440. Captured via `browser--set_viewport_size` against `/`, `/men`, `/women`, plus one representative editorial route (`/editorial.versace`) and one themed-edit route (`/edits.the-prada-effect`) to hit ThemedEdit + EditorialStory live.
 
----
+## Method
 
-## 2. Farfetch SEO Tactics Analysis
+For each component × breakpoint, read the source file and inspect the live render. Record for every typographic role present (eyebrow / headline / subhead / body / CTA-label) and every section-level spacing value:
 
-### Domain Authority & Reach (Semrush US data)
-- **102,290 organic keywords** ranking in the US
-- **~1.06M estimated monthly organic visits**
-- **Top traffic pages** (by traffic share):
-  1. Homepage — ranks #1 for "farfetch"
-  2. Brand + category combos — "hellstar hoodie", "essentials hoodie", "chrome hearts hat"
-  3. Designer landing pages — "vivienne westwood", "miu miu", "diesel"
-  4. Promotional content — "farfetch promo code" (voucher-codes page)
-  5. Broad category pages — "designer shirts", "designer clothes"
+```text
+component           | breakpoint | role     | property        | current                  | source            | proposed canonical
+editorial-story     | 390        | headline | font-size       | text-[34px]              | arbitrary         | 36px  (--text-display-sm)
+editorial-story     | 390        | headline | letter-spacing  | tracking-[-0.02em]       | arbitrary         | -0.04em
+editorial-story     | 390        | headline | line-height     | leading-tight (1.25)     | utility           | 1.05
+editorial-story     | 390        | section  | py              | py-16                    | utility           | py-20 (--space-section-md)
+...
+```
 
-### The 7 SEO Tactics Farfetch Uses
+Flag rules:
+- Any arbitrary `[Npx]` / `[N.Nrem]` / `[-N.NNem]` = **deviation**, must propose a canonical value.
+- Tailwind utilities = note as-is; only propose change if value clashes with the emerging scale.
+- Contrast: sample each text color against its actual rendered background using DPR-aware screenshot crop + manual oklch math against `--ink`, `--bronze-deep`, `--muted-foreground` on `--canvas` and `--canvas` on `.noir`. Flag <4.5:1 body, <3:1 ≥24px/≥19px-bold.
 
-1. **Brand + Category Long-Tail Pages**
-   - Creates a dedicated page for every designer + category combination.
-   - URL pattern: `/shopping/{gender}/designer-{brand}/{category}/items.aspx`
-   - Captures high-intent searches like "prada bags", "gucci sneakers", "versace sunglasses".
+## Display-type guidance (per user)
 
-2. **Designer Landing Pages**
-   - Every designer gets a standalone page that ranks for the brand name.
-   - These pages aggregate all categories for that brand, creating strong topical authority.
+Cormorant 400, never 700. Proposed canonical for display heads at mobile:
+- single-line display: `line-height: 1.0–1.05`, `letter-spacing: -0.04em to -0.05em`
+- two-line display: `line-height: 1.10–1.15`, `letter-spacing: -0.03em`
+- desktop scales up size only; tracking loosens to -0.02em at ≥1280
 
-3. **Promotional Content Marketing**
-   - A dedicated voucher-codes page captures "promo code" and "discount" searches.
-   - This is content marketing, not e-commerce — it drives massive top-of-funnel traffic.
+These are proposals the audit will validate against what each component is currently doing.
 
-4. **"New Season" Badge System**
-   - Visual freshness signal on product cards. Implies recency to users and reinforces crawl frequency for search engines.
+## Deliverable
 
-5. **Clean URL Hierarchy**
-   - Despite the `.aspx` extension, the path structure is logical: `/shopping/gender/category/`
-   - Gender, brand, and category are all explicit in the URL.
+A single markdown report written to `/mnt/documents/editorial-typography-audit.md` with three sections:
 
-6. **Massive Internal Linking via Brand Directory**
-   - The megamenu links to every designer page from every page on the site.
-   - This distributes link equity deeply across the catalogue.
+1. **Per-component table** (the rows above) — full deviation log, one component per subsection.
+2. **Proposed canonical scale** — grouped by role across all components, e.g.:
+   ```
+   --text-eyebrow:    11px / 0.18em / uppercase / Karla 500
+   --text-display-sm: 36px / -0.04em / 1.05 / Cormorant 400  (mobile hero)
+   --text-display-lg: 72px / -0.03em / 1.0  / Cormorant 400  (desktop hero)
+   --space-section-sm: 48px
+   --space-section-md: 80px
+   --space-section-lg: 120px
+   ```
+   Values derived from the most common / most considered usage observed, not invented.
+3. **Contrast failures** — list with component, role, measured ratio, proposed fix.
 
-7. **Image SEO**
-   - Alt text is descriptive and keyword-rich: brand + product type + colour + image number.
-   - Example: `Prada small leather bag | White | Image 1`
+Plus a short **follow-up task brief** at the bottom: "Define these tokens in `src/styles.css`, do find-replace against the deviation log, ship in one PR."
 
----
+## Out of scope for this task
 
-## 3. Palace of Roman Gap Analysis
+- Editing any component file.
+- Adding tokens to `styles.css`.
+- Font-weight changes (Cormorant stays 400 — confirmed).
+- ProductCard image-crop (separate task).
+- Rail analytics (separate task).
 
-| Area | Farfetch | Palace of Roman (Current) | Gap |
-|------|----------|---------------------------|-----|
-| **Homepage approach** | Clean 3-tile gateway + category links | Dense bento storefront + trust strip + quiz + trending + for-you + shop-the-story + featured brands + editorial split + category grid + best sellers + new arrivals + newsletter | **Severe over-density**. The homepage tries to be every page at once. |
-| **PLP editorial hero** | Themed banner + editorial copy on every PLP | Collection pages exist but need verification for editorial banners | **Missing or inconsistent** editorial lead-in on collection pages. |
-| **Brand + category pages** | Dedicated combinatorial pages for every designer + category | Brand pages (`/brand/$vendor`) and collections exist, but long-tail combos are thin | **Under-developed**. Missing pages like "Gucci bags", "Prada shoes" as standalone SEO targets. |
-| **Promo / voucher content** | Voucher-codes page is a top-3 traffic driver | No equivalent promotional content page | **Missing**. No top-of-funnel content for discount-intent searches. |
-| **"New Season" badge** | Universal badge on product cards | ProductCard component exists — badge system needs audit | **Needs verification**. May be missing season freshness signals. |
-| **PDP brand logo** | Inline SVG brand logo | `PdpBrandHeritage` component exists — implementation needs audit | **Needs verification**. |
-| **Image alt text** | Keyword-rich: brand + type + colour + index | Uses product images from Shopify — alt text depends on Shopify admin input | **Inconsistent**. Needs structured alt-text generation. |
-| **Internal linking** | Megamenu links to every designer from every page | Megamenu + brand directory exist and are well-built | **Strong**. This is already aligned. |
-| **Header architecture** | Two-row: tabs + logo + utility / category rail + search | Two-row header already implemented with dept tabs, category rail, megamenu | **Strong**. Already Farfetch-aligned. |
+## Verification
 
----
-
-## 4. Proposed Alignment Roadmap
-
-### Phase 1 — Homepage Simplification (Highest Impact)
-- Reduce the homepage from 10+ sections to a Farfetch-style gateway:
-  - **Hero**: Three editorial tiles (Women / Men / Accessories) with large imagery
-  - **Category quick-links**: 6 tiles (New In, Clothing, Shoes, Bags, Accessories, Jewellery) with product-led imagery
-  - **Single campaign banner**: Rotating seasonal editorial with copy + CTA
-  - **Remove**: bento grid, style quiz CTA, vacation stylist CTA, trending rail, for-you feed, shop-the-story rails, featured brands, editorial split, category grid, best sellers grid, new arrivals grid — **move these to their own dedicated pages or deeper in the browse flow**
-- Rationale: Farfetch's homepage is an invitation, not a catalogue. P OF R's density creates decision paralysis and dilutes the editorial voice.
-
-### Phase 2 — PLP Editorial Hero System
-- Add a themed editorial hero banner to every major collection page:
-  - Image + 1-2 sentences of editorial copy + "Shop the Edit" CTA
-  - Copy in Palace of Roman voice: curatorial, restrained, confident
-  - Examples: "The Amalfi linen edit — pieces that breathe." / "Evening bags that carry the room."
-- This aligns with Farfetch's practice of leading every PLP with storytelling.
-
-### Phase 3 — SEO-Long-Tail Pages (Brand + Category Combos)
-- Generate dedicated pages for high-value brand + category combinations:
-  - URL pattern: `/shop?brand={slug}&category={handle}` or dedicated routes like `/designers/{brand}/{category}`
-  - Target keywords: "gucci bags", "prada shoes", "versace sunglasses", "armani suits"
-  - Each page gets unique meta title, description, and a short editorial intro
-- Rationale: This is Farfetch's #1 SEO growth engine. P OF R has the brand and category data but is not surfacing combinatorial pages to search engines.
-
-### Phase 4 — Promotional Content Page
-- Create a dedicated "Promotions & Codes" page:
-  - Ranks for "palace of roman promo code", "palace of roman discount", "luxury fashion sale"
-  - Lists current offers, sale collections, and loyalty perks
-  - Updated seasonally
-- Rationale: Farfetch's voucher-codes page is a top-3 traffic driver. P OF R has no equivalent top-of-funnel content for deal-intent searches.
-
-### Phase 5 — Product Card & PDP Micro-Alignments
-- **Product Card**: Add "New Season" or "New Arrival" badge based on `createdAt` date. Ensure brand name is bold, product name is literal, price is clear.
-- **PDP**: Verify `PdpBrandHeritage` renders an inline brand logo or mark. Add structured alt text to image gallery: `{Brand} {product name} | {colour} | Image {n}`.
-- **Image SEO**: Implement alt-text template that pulls from product data automatically.
-
-### Phase 6 — Copy Voice Alignment
-- Audit all homepage, PLP, and PDP copy against Farfetch's restraint:
-  - Remove urgency language ("hurry", "limited time", "flash")
-  - Replace with curatorial language ("handpicked", "the edit", "arrived this week")
-  - Product descriptions should be literal and confident, not salesy
-  - Editorial banners should feel like magazine captions, not ad copy
-
----
-
-## 5. SEO Tactics to Adopt Immediately (No Code Changes)
-
-These can be implemented via Shopify Admin or content changes:
-
-1. **Alt-text template**: Update Shopify image alt texts to: `{Brand} {product name} | {colour} | Image {n}`
-2. **Collection descriptions**: Write 2-3 sentences of editorial copy for every collection in Shopify Admin. These feed meta descriptions and PLP intros.
-3. **Product descriptions**: Ensure every product has a literal, confident description (not just vendor-supplied boilerplate).
-4. **Blog/Journal cadence**: Farfetch's editorial content supports SEO. P OF R's Journal should publish 2-4 times monthly targeting seasonal keywords ("summer wedding guest dresses", "resort wear 2026").
-
----
-
-## 6. Technical Details
-
-**Dependencies**: No new packages required. All changes use existing components, Shopify Storefront API, and TanStack Start patterns.
-
-**SEO impact**: Phase 3 (long-tail pages) and Phase 4 (promo content) would have the highest search visibility impact. Phase 1 (homepage simplification) would improve engagement metrics (time on site, bounce rate) which indirectly improves rankings.
-
-**Effort estimate**:
-- Phase 1: Medium (restructuring homepage components)
-- Phase 2: Small (adding hero banner to collection template)
-- Phase 3: Medium (new route generation + SEO meta)
-- Phase 4: Small (new content page)
-- Phase 5: Small (badge logic + alt-text template)
-- Phase 6: Medium (copy audit across all routes)
-
----
-
-Approve this plan to proceed, or tell me which phases to prioritise or skip.
+After the report is written, re-screenshot 2 spot-check breakpoints (390 + 1280) to confirm the live values match what I recorded from source. Note any source-vs-render drift in the report.
