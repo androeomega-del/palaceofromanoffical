@@ -181,10 +181,15 @@ const BY_HANDLE: Record<string, Seo> = {
     description:
       "Discover men's designer sandals and slides at Palace of Roman — luxury logo slides, pool sandals and resort styles from top maisons.",
   },
-  "mens-bags-wallets": {
-    title: "Men's Designer Bags & Wallets",
+  "mens-bags": {
+    title: "Men's Designer Bags",
     description:
-      "Shop men's designer bags and wallets at Palace of Roman — luxury briefcases, backpacks, messenger bags and leather goods from top houses.",
+      "Shop men's designer bags at Palace of Roman — luxury briefcases, backpacks, messenger bags and totes from top houses. Worldwide tracked shipping.",
+  },
+  "mens-wallets": {
+    title: "Men's Designer Wallets & Small Leather Goods",
+    description:
+      "Discover men's designer wallets and card-holders at Palace of Roman — luxury bifolds, zip-around wallets and small leather goods from top maisons.",
   },
   "mens-belts": {
     title: "Men's Designer Belts — Luxury Leather",
