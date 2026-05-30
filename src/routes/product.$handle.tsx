@@ -569,7 +569,7 @@ function ProductView({
                           loading={i === 0 ? "eager" : "lazy"}
                           fetchPriority={i === 0 ? "high" : undefined}
                           decoding="async"
-                          className="w-full h-full object-cover transition-transform duration-[1400ms] hover:scale-[1.02]"
+                          className="w-full h-full object-cover transition-transform duration-[1400ms] motion-safe:hover:scale-[1.02]"
                         />
                       </button>
                     )}
@@ -935,8 +935,8 @@ function ProductView({
 
       {/* Sticky mobile Add-to-Bag — appears once inline ATC is scrolled past */}
       <div
-        className={`fixed inset-x-0 bottom-0 z-40 border-t border-[var(--studio-rule)] bg-[var(--studio-bg)]/95 backdrop-blur-md shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.18)] transition-transform duration-500 ${
-          showStickyBuy ? "translate-y-0" : "translate-y-full"
+        className={`fixed inset-x-0 bottom-0 z-40 border-t border-[var(--studio-rule)] bg-[var(--studio-bg)]/95 backdrop-blur-md shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.18)] motion-reduce:transition-none transition-[transform,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          showStickyBuy ? "translate-y-0 opacity-100" : "translate-y-full opacity-0 pointer-events-none"
         }`}
         style={{ paddingBottom: "max(env(safe-area-inset-bottom), 0.5rem)" }}
         aria-hidden={!showStickyBuy}
@@ -1162,8 +1162,8 @@ function VariantOption({
                 title={value + (unavailable ? " — sold out" : "")}
                 className={`relative h-10 w-10 rounded-full border transition-all ${
                   active
-                    ? "border-[var(--studio-ink)] ring-2 ring-offset-2 ring-[var(--studio-ink)]/20 ring-offset-[var(--studio-bg)]"
-                    : "border-[var(--studio-ink)]/20 hover:border-[var(--studio-ink)]/60"
+                    ? "por-tick border-[var(--studio-ink)] ring-2 ring-offset-2 ring-[var(--studio-ink)]/20 ring-offset-[var(--studio-bg)]"
+                    : "border-[var(--studio-ink)]/20 hover:border-[var(--studio-ink)]/60 motion-safe:hover:scale-[1.06]"
                 } ${unavailable ? "opacity-40" : ""}`}
                 style={{ background: swatchFor(value) }}
               >
@@ -1183,8 +1183,8 @@ function VariantOption({
               disabled={!candidate}
               className={`min-w-16 h-14 px-4 text-[11px] uppercase tracking-widest border transition-all duration-300 ${
                 active
-                  ? "border-[var(--studio-ink)] bg-[var(--studio-ink)] text-[var(--studio-bg)]"
-                  : "border-[var(--studio-ink)]/10 bg-white hover:border-[var(--studio-ink)]"
+                  ? "por-tick border-[var(--studio-ink)] bg-[var(--studio-ink)] text-[var(--studio-bg)]"
+                  : "border-[var(--studio-ink)]/10 bg-white hover:border-[var(--studio-ink)] motion-safe:hover:-translate-y-px"
               } ${unavailable ? "line-through opacity-50" : ""}`}
             >
               {value}
