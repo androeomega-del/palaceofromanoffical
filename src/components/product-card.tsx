@@ -394,13 +394,12 @@ export function ProductCard({
             />
           )}
 
-        {/* Badge priority: Sold Out → Scarcity (incl. lastMarkdown which already
-            blends sale + low-stock) → Luxury markdown label. Suppressible per
-            surface so a "Sale" rail doesn't badge every card with "Markdown",
-            and a "Final Reductions" rail doesn't repeat itself. */}
+        {/* Badge priority — Farfetch-style restraint:
+            Sold Out → Sale % off → New Season.
+            Scarcity / Markdown / New In chips removed per brand direction;
+            strikethrough price already signals reductions, and a single
+            "New Season" tag covers freshness without clutter. */}
         {(() => {
-          const hideMarkdown = suppressBadges.includes("markdown");
-          const hideScarcity = suppressBadges.includes("scarcity");
           if (soldOut) {
             return (
               <span className="absolute top-3 left-3 z-10 text-[10px] uppercase tracking-[0.25em] bg-ink/80 text-canvas px-2 py-1">
@@ -408,38 +407,33 @@ export function ProductCard({
               </span>
             );
           }
-          if (showScarcityBadge && !hideScarcity) {
-            // Single quiet label, no pulse, no counts. Top-tier luxury
-            // (NAP / MR PORTER / Farfetch) uses at most a discreet
-            // "Selling fast" / "Low stock" line — never countdown chips.
-            return (
-              <span
-                className="absolute top-3 left-3 z-10 text-[10px] uppercase tracking-[0.25em] bg-canvas/95 backdrop-blur-sm text-ink border border-ink/15 px-2 py-1 font-medium"
-                title={scarcity.rationale}
-              >
-                {scarcity.label}
-              </span>
-            );
-          }
-          // Markdown / % OFF chips removed — strikethrough price alone
-          // signals the reduction without screaming. Sale-rail surfaces
-          // can still suppress via `suppressBadges` if needed.
-          void hideMarkdown;
-          // "New In" — quietly badge pieces added in the last 14 days when
-          // nothing more urgent (sale / scarcity / sold out) applies.
-          // Gate behind `mounted` — `Date.now()` differs between SSR and
-          // client hydration, so rendering this on the server would cause a
-          // text-content mismatch (React #418).
-          if (mounted && p.createdAt) {
-            const ageDays = (Date.now() - new Date(p.createdAt).getTime()) / 86_400_000;
-            if (ageDays >= 0 && ageDays <= 14) {
+          const hideMarkdown = suppressBadges.includes("markdown");
+          if (onSale && !hideMarkdown && compareAt) {
+            const was = parseFloat(compareAt.amount);
+            const now = parseFloat(price.amount);
+            const pct = was > 0 ? Math.round(((was - now) / was) * 100) : 0;
+            if (pct > 0) {
               return (
                 <span
-                  className="absolute top-3 left-3 z-10 text-[10px] uppercase tracking-[0.25em] bg-canvas/95 backdrop-blur-sm text-ink border border-ink/15 px-2 py-1 font-medium inline-flex items-center gap-1"
-                  title="Added to the edit in the last 14 days"
+                  className="absolute top-3 left-3 z-10 text-[10px] uppercase tracking-[0.25em] bg-canvas/95 backdrop-blur-sm text-ink border border-ink/15 px-2 py-1 font-medium"
+                  title={`${pct}% off`}
                 >
-                  <Sparkles className="w-2.5 h-2.5 text-bronze" strokeWidth={2} />
-                  New In
+                  −{pct}%
+                </span>
+              );
+            }
+          }
+          // "New Season" — quietly badge pieces added in the last 30 days.
+          // Gate behind `mounted` to avoid SSR/client hydration mismatch (#418).
+          if (mounted && p.createdAt) {
+            const ageDays = (Date.now() - new Date(p.createdAt).getTime()) / 86_400_000;
+            if (ageDays >= 0 && ageDays <= 30) {
+              return (
+                <span
+                  className="absolute top-3 left-3 z-10 text-[10px] uppercase tracking-[0.25em] bg-canvas/95 backdrop-blur-sm text-ink border border-ink/15 px-2 py-1 font-medium"
+                  title="New season arrival"
+                >
+                  New Season
                 </span>
               );
             }
