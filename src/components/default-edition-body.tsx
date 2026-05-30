@@ -337,6 +337,30 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
                   Start the Quiz →
                 </span>
               </Link>
+              <Link
+                to="/vacation-stylist"
+                className="group relative mt-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 md:gap-10 border border-ink/10 hover:border-bronze/60 transition-colors px-6 md:px-10 py-8 md:py-9 bg-canvas-raised"
+              >
+                <div className="flex items-start gap-5 md:gap-6">
+                  <span className="hidden md:inline-flex shrink-0 items-center justify-center w-12 h-12 rounded-full border border-bronze/40 text-bronze">
+                    <Sparkles className="w-5 h-5" strokeWidth={1.25} />
+                  </span>
+                  <div>
+                    <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">
+                      New · Private Capsule
+                    </p>
+                    <h2 className="font-serif text-2xl md:text-3xl text-ink leading-tight">
+                      Going somewhere? Meet the Vacation Stylist
+                    </h2>
+                    <p className="mt-2 text-[12px] md:text-[13px] text-muted-foreground max-w-xl">
+                      Tell us the destination, the dates, the vibe. The boutique returns a chapter-by-chapter packing edit — drawn from the live collection.
+                    </p>
+                  </div>
+                </div>
+                <span className="inline-flex items-center gap-2 px-6 py-3.5 bg-ink text-canvas text-[11px] uppercase tracking-[0.25em] group-hover:bg-bronze transition-colors whitespace-nowrap">
+                  Compose My Capsule →
+                </span>
+              </Link>
             </div>
           </section>
         }
