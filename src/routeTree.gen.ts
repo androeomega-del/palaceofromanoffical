@@ -36,6 +36,7 @@ import { Route as CollectionsIndexRouteImport } from './routes/collections.index
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AccountIndexRouteImport } from './routes/account.index'
 import { Route as TrendsTomFordEssentialsRouteImport } from './routes/trends.tom-ford-essentials'
+import { Route as TrendsPucciEyewearRouteImport } from './routes/trends.pucci-eyewear'
 import { Route as TrendsDolceGabbanaIconsRouteImport } from './routes/trends.dolce-gabbana-icons'
 import { Route as SwimSizeGuideRouteImport } from './routes/swim.size-guide'
 import { Route as ProductHandleRouteImport } from './routes/product.$handle'
@@ -242,6 +243,11 @@ const AccountIndexRoute = AccountIndexRouteImport.update({
 const TrendsTomFordEssentialsRoute = TrendsTomFordEssentialsRouteImport.update({
   id: '/trends/tom-ford-essentials',
   path: '/trends/tom-ford-essentials',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrendsPucciEyewearRoute = TrendsPucciEyewearRouteImport.update({
+  id: '/trends/pucci-eyewear',
+  path: '/trends/pucci-eyewear',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TrendsDolceGabbanaIconsRoute = TrendsDolceGabbanaIconsRouteImport.update({
@@ -710,6 +716,7 @@ export interface FileRoutesByFullPath {
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/trends/dolce-gabbana-icons': typeof TrendsDolceGabbanaIconsRoute
+  '/trends/pucci-eyewear': typeof TrendsPucciEyewearRoute
   '/trends/tom-ford-essentials': typeof TrendsTomFordEssentialsRoute
   '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
@@ -809,6 +816,7 @@ export interface FileRoutesByTo {
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/trends/dolce-gabbana-icons': typeof TrendsDolceGabbanaIconsRoute
+  '/trends/pucci-eyewear': typeof TrendsPucciEyewearRoute
   '/trends/tom-ford-essentials': typeof TrendsTomFordEssentialsRoute
   '/account': typeof AccountIndexRoute
   '/admin': typeof AdminIndexRoute
@@ -911,6 +919,7 @@ export interface FileRoutesById {
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/trends/dolce-gabbana-icons': typeof TrendsDolceGabbanaIconsRoute
+  '/trends/pucci-eyewear': typeof TrendsPucciEyewearRoute
   '/trends/tom-ford-essentials': typeof TrendsTomFordEssentialsRoute
   '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
@@ -1014,6 +1023,7 @@ export interface FileRouteTypes {
     | '/product/$handle'
     | '/swim/size-guide'
     | '/trends/dolce-gabbana-icons'
+    | '/trends/pucci-eyewear'
     | '/trends/tom-ford-essentials'
     | '/account/'
     | '/admin/'
@@ -1113,6 +1123,7 @@ export interface FileRouteTypes {
     | '/product/$handle'
     | '/swim/size-guide'
     | '/trends/dolce-gabbana-icons'
+    | '/trends/pucci-eyewear'
     | '/trends/tom-ford-essentials'
     | '/account'
     | '/admin'
@@ -1214,6 +1225,7 @@ export interface FileRouteTypes {
     | '/product/$handle'
     | '/swim/size-guide'
     | '/trends/dolce-gabbana-icons'
+    | '/trends/pucci-eyewear'
     | '/trends/tom-ford-essentials'
     | '/account/'
     | '/admin/'
@@ -1312,6 +1324,7 @@ export interface RootRouteChildren {
   PreviewLookbookRoute: typeof PreviewLookbookRoute
   ProductHandleRoute: typeof ProductHandleRoute
   TrendsDolceGabbanaIconsRoute: typeof TrendsDolceGabbanaIconsRoute
+  TrendsPucciEyewearRoute: typeof TrendsPucciEyewearRoute
   TrendsTomFordEssentialsRoute: typeof TrendsTomFordEssentialsRoute
   AdminIndexRoute: typeof AdminIndexRoute
   CollectionsIndexRoute: typeof CollectionsIndexRoute
@@ -1518,6 +1531,13 @@ declare module '@tanstack/react-router' {
       path: '/trends/tom-ford-essentials'
       fullPath: '/trends/tom-ford-essentials'
       preLoaderRoute: typeof TrendsTomFordEssentialsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trends/pucci-eyewear': {
+      id: '/trends/pucci-eyewear'
+      path: '/trends/pucci-eyewear'
+      fullPath: '/trends/pucci-eyewear'
+      preLoaderRoute: typeof TrendsPucciEyewearRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/trends/dolce-gabbana-icons': {
@@ -2169,6 +2189,7 @@ const rootRouteChildren: RootRouteChildren = {
   PreviewLookbookRoute: PreviewLookbookRoute,
   ProductHandleRoute: ProductHandleRoute,
   TrendsDolceGabbanaIconsRoute: TrendsDolceGabbanaIconsRoute,
+  TrendsPucciEyewearRoute: TrendsPucciEyewearRoute,
   TrendsTomFordEssentialsRoute: TrendsTomFordEssentialsRoute,
   AdminIndexRoute: AdminIndexRoute,
   CollectionsIndexRoute: CollectionsIndexRoute,
