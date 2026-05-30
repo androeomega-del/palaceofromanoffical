@@ -27,7 +27,8 @@ const DEFS = [
   { handle: 'womens-skirts',      title: "Women's Skirts",      gender: 'Women', keyword: 'Skirts' },
 
   // Men
-  { handle: 'mens-bags-wallets',         title: "Men's Bags & Wallets",         gender: 'Men', keyword: 'Bags' },
+  { handle: 'mens-bags',                 title: "Men's Bags",                   gender: 'Men', keyword: 'Bags' },
+  { handle: 'mens-wallets',              title: "Men's Wallets",                gender: 'Men', keyword: 'Wallets' },
   { handle: 'mens-accessories',          title: "Men's Accessories",            gender: 'Men', keyword: 'Accessories' },
   { handle: 'mens-suits',                title: "Men's Suits",                  gender: 'Men', keyword: 'Suits' },
   { handle: 'mens-jackets-coats',        title: "Men's Jackets & Coats",        gender: 'Men', keyword: 'Coats' },
