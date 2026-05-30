@@ -38,11 +38,13 @@ export function FarfetchEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {})
   return (
     <>
       <DepartmentGateway />
-      <NewInRail />
+      <BestSellersRail />
       <SeasonalCampaignBanner />
+      <NewInRail />
       <CategoryQuickLinks />
       {aiBlocks}
       <DiscreteTrustStrip />
+      <BrandStatement />
     </>
   );
 }
@@ -137,7 +139,7 @@ function NewInRail() {
               New In
             </p>
             <h2 className="font-serif text-subhead-md md:text-subhead-lg text-ink">
-              Just landed at Palace of Roman
+              Just landed — and already low stock
             </h2>
           </div>
           <Link
@@ -147,6 +149,53 @@ function NewInRail() {
           >
             Shop all →
           </Link>
+        </div>
+        {isLoading ? (
+          <div className="flex gap-4 overflow-hidden">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="shrink-0 w-[46vw] sm:w-[30vw] lg:w-[19vw] xl:w-[15vw]">
+                <div className="aspect-[3/4] por-shimmer mb-3" />
+                <div className="h-2 w-20 por-shimmer mb-2" />
+                <div className="h-3 w-3/4 por-shimmer" />
+              </div>
+            ))}
+          </div>
+        ) : products.length > 0 ? (
+          <div className="flex gap-4 md:gap-5 overflow-x-auto pb-4 -mx-6 md:-mx-10 px-6 md:px-10 snap-x snap-mandatory scrollbar-hide">
+            {products.map((p) => (
+              <div key={p.node.id} className="shrink-0 w-[46vw] sm:w-[30vw] lg:w-[19vw] xl:w-[15vw] snap-start">
+                <ProductCard product={p} />
+              </div>
+            ))}
+          </div>
+        ) : null}
+      </div>
+    </section>
+  );
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/*  2b. Best Sellers — horizontal commerce rail                               */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+function BestSellersRail() {
+  const { data, isLoading } = useQuery({
+    queryKey: ["home", "best-sellers"],
+    queryFn: () => fetchProducts({ first: 12, sortKey: "BEST_SELLING" }),
+    staleTime: 10 * 60 * 1000,
+  });
+  const products = data ?? [];
+
+  return (
+    <section aria-label="Best sellers" className="bg-canvas pt-14 md:pt-20">
+      <div className="max-w-screen-2xl mx-auto px-6 md:px-10">
+        <div className="mb-7 md:mb-9">
+          <h2 className="font-serif text-subhead-md md:text-subhead-lg text-ink mb-2">
+            Releases you missed
+          </h2>
+          <p className="text-eyebrow uppercase text-bronze-deep">
+            STILL AVAILABLE — FOR NOW
+          </p>
         </div>
         {isLoading ? (
           <div className="flex gap-4 overflow-hidden">
@@ -241,6 +290,9 @@ function CategoryQuickLinks() {
   return (
     <section aria-label="Shop by category" className="bg-canvas pt-16 md:pt-24">
       <div className="max-w-screen-2xl mx-auto px-6 md:px-10">
+        <p className="text-eyebrow uppercase text-bronze-deep mb-5">
+          SHOP BY WHAT YOU ACTUALLY NEED
+        </p>
         <div className="flex items-baseline justify-between mb-8 md:mb-10">
           <h2 className="font-serif text-subhead-md md:text-subhead-lg text-ink">
             Shop by category
@@ -332,6 +384,22 @@ function DiscreteTrustStrip() {
             </div>
           ))}
         </div>
+      </div>
+    </section>
+  );
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/*  Brand statement                                                           */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+function BrandStatement() {
+  return (
+    <section className="bg-canvas pt-16 md:pt-24">
+      <div className="max-w-screen-2xl mx-auto px-6 md:px-10 text-center">
+        <p className="font-serif text-headline-sm md:text-headline-md text-ink max-w-3xl mx-auto">
+          While everyone else stocks everything, we stock the right things.
+        </p>
       </div>
     </section>
   );
