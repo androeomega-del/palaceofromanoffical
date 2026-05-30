@@ -14,6 +14,34 @@ import { PriceTag } from "@/components/price-tag";
 
 export type SuppressedBadge = "markdown" | "scarcity";
 
+/**
+ * "New Season" eligibility — derived from the season token written into the
+ * product description. We badge a piece only if its description names the
+ * CURRENT or UPCOMING season. Today (May 2026) that means:
+ *   - Current : SS26 / Spring-Summer 2026
+ *   - Upcoming: Pre-Fall 2026, FW26 / AW26 / Fall-Winter 2026, Resort/Cruise 2027
+ * Update this allow-list when the calendar rolls.
+ */
+const NEW_SEASON_PATTERNS: RegExp[] = [
+  // SS26 / S/S 26 / Spring-Summer 2026
+  /\bs[\s/.-]?s[\s/.-]?(?:20)?26\b/i,
+  /\bspring[\s/-]?summer\s*(?:20)?26\b/i,
+  // FW26 / AW26 / A/W 26 / Fall-Winter 2026 / Autumn-Winter 2026
+  /\b(?:f[\s/.-]?w|a[\s/.-]?w)[\s/.-]?(?:20)?26\b/i,
+  /\b(?:fall|autumn)[\s/-]?winter\s*(?:20)?26\b/i,
+  // Pre-Fall 2026
+  /\bpre[\s-]?fall\s*(?:20)?26\b/i,
+  // Resort / Cruise 2027
+  /\b(?:resort|cruise)\s*(?:20)?27\b/i,
+];
+
+function isCurrentOrUpcomingSeason(description?: string | null): boolean {
+  if (!description) return false;
+  // Strip HTML so tokens inside markup still match.
+  const text = description.replace(/<[^>]*>/g, " ");
+  return NEW_SEASON_PATTERNS.some((re) => re.test(text));
+}
+
 export function ProductCard({
   product,
   suppressBadges = [],
@@ -423,20 +451,20 @@ export function ProductCard({
               );
             }
           }
-          // "New Season" — quietly badge pieces added in the last 30 days.
-          // Gate behind `mounted` to avoid SSR/client hydration mismatch (#418).
-          if (mounted && p.createdAt) {
-            const ageDays = (Date.now() - new Date(p.createdAt).getTime()) / 86_400_000;
-            if (ageDays >= 0 && ageDays <= 30) {
-              return (
-                <span
-                  className="absolute top-3 left-3 z-10 text-[10px] uppercase tracking-[0.25em] bg-canvas/95 backdrop-blur-sm text-ink border border-ink/15 px-2 py-1 font-medium"
-                  title="New season arrival"
-                >
-                  New Season
-                </span>
-              );
-            }
+          // "New Season" — only pieces whose description names the current
+          // or upcoming season. Source of truth = the season token written
+          // into each product's description (e.g. "SS26", "Spring/Summer
+          // 2026", "FW26", "Fall/Winter 2026", "Resort 2027", "Pre-Fall
+          // 2026", "Cruise 2027"). No more time-based heuristic.
+          if (isCurrentOrUpcomingSeason(p.description)) {
+            return (
+              <span
+                className="absolute top-3 left-3 z-10 text-[10px] uppercase tracking-[0.25em] bg-canvas/95 backdrop-blur-sm text-ink border border-ink/15 px-2 py-1 font-medium"
+                title="New season arrival"
+              >
+                New Season
+              </span>
+            );
           }
           return null;
         })()}
