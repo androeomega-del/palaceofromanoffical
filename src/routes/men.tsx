@@ -17,7 +17,7 @@ import { ShieldCheck, Plane, RotateCcw, MessageCircle, ChevronLeft, ChevronRight
 import { Children, type ReactNode, useCallback, useEffect, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 
-import { fetchCollection } from "@/lib/shopify";
+import { fetchCollection, fetchProducts } from "@/lib/shopify";
 import { cdnImage } from "@/lib/cdn-image";
 import { ProductCard } from "@/components/product-card";
 
@@ -250,11 +250,17 @@ function HeroBanner() {
 
 function NewInThisWeek() {
   const { data } = useQuery({
-    queryKey: ["men", "new-arrivals"],
-    queryFn: () => fetchCollection("mens-new-arrivals", 16),
+    queryKey: ["men", "just-landed", "v2"],
+    queryFn: () =>
+      fetchProducts({
+        first: 16,
+        query: 'tag:Men AND tag:"New with tags"',
+        sortKey: "CREATED_AT",
+        reverse: true,
+      }),
     staleTime: 10 * 60 * 1000,
   });
-  const products = data?.products?.edges ?? [];
+  const products = data ?? [];
 
   return (
     <CarouselSection
@@ -264,8 +270,8 @@ function NewInThisWeek() {
       description="New arrivals from Versace, Dolce & Gabbana, Brunello Cucinelli and the names defining resort 2026."
       actions={
         <Link
-          to="/collections/$handle"
-          params={{ handle: "mens-new-arrivals" }}
+          to="/men"
+          hash="just-landed"
           className="inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.3em] text-ink border-b border-bronze/50 pb-1 hover:text-bronze hover:border-bronze transition-colors"
         >
           Explore New In →
@@ -705,24 +711,19 @@ function TrustStrip() {
 /* ─────────────────────────────────────────────────────────────────── */
 
 function SaleCarousel() {
-  // Try a dedicated sale collection, fall back to mens-new-arrivals filtered
-  // to anything with compareAtPrice. Surface raw products either way so the
-  // rail is never empty during the staged launch.
-  const sale = useQuery({
-    queryKey: ["men", "ss26-sale"],
-    queryFn: () => fetchCollection("mens-sale", 12),
+  // No live "mens-sale" collection yet — query products with a compare-at
+  // price tagged Men. Keeps the rail full during the staged launch.
+  const { data } = useQuery({
+    queryKey: ["men", "ss26-sale", "v2"],
+    queryFn: () =>
+      fetchProducts({
+        first: 16,
+        query: "tag:Men AND variants.compare_at_price:>0",
+        sortKey: "BEST_SELLING",
+      }),
     staleTime: 10 * 60 * 1000,
   });
-  const fallback = useQuery({
-    queryKey: ["men", "ss26-sale-fallback"],
-    queryFn: () => fetchCollection("sale", 12),
-    enabled: !!sale.data && (sale.data?.products?.edges?.length ?? 0) === 0,
-    staleTime: 10 * 60 * 1000,
-  });
-  const fromSale = sale.data?.products?.edges ?? [];
-  const fromFallback = fallback.data?.products?.edges ?? [];
-  const products = fromSale.length > 0 ? fromSale : fromFallback;
-  const sourceHandle = fromSale.length > 0 ? "mens-sale" : "sale";
+  const products = data ?? [];
 
   return (
     <CarouselSection
@@ -733,8 +734,8 @@ function SaleCarousel() {
       sectionClassName="bg-canvas-raised border-y border-bronze/30 mt-16 md:mt-24 py-14 md:py-20"
       actions={
         <Link
-          to="/collections/$handle"
-          params={{ handle: sourceHandle }}
+          to="/men"
+          hash="ss26-sale"
           className="inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.3em] text-ink border-b border-bronze pb-1 hover:text-bronze transition-colors"
         >
           Shop the Sale →
