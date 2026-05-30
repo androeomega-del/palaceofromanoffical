@@ -59,7 +59,7 @@ export function EditorialStory({
       <section className="max-w-screen-2xl mx-auto px-6 pt-16 md:pt-24 pb-10 md:pb-16">
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-4">
+            <p className="text-[10px] uppercase tracking-[0.4em] text-bronze-deep mb-4">
               Editorial — {issueNumber}
             </p>
             <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl leading-[0.95] tracking-tight text-balance">
@@ -151,7 +151,7 @@ export function EditorialStory({
 
       {/* Outro */}
       <section className="border-t border-ink/10 py-12 md:py-24 text-center px-6">
-        <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-4">End of issue</p>
+        <p className="text-[10px] uppercase tracking-[0.4em] text-bronze-deep mb-4">End of issue</p>
         <h2 className="font-serif text-3xl md:text-5xl mb-8">Shop the edit</h2>
         <div className="flex flex-wrap justify-center gap-3 md:gap-4">
           {outroCtas.map((c) => (
@@ -196,7 +196,7 @@ function Frame({ slide, aspect = "aspect-[4/5]" }: { slide: StorySlide; aspect?:
           <Link
             to="/product/$handle"
             params={{ handle: slide.productHandle }}
-            className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-bronze hover:text-ink transition-colors border-b border-bronze/40 hover:border-ink pb-1"
+            className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-bronze-deep hover:text-ink transition-colors border-b border-bronze/40 hover:border-ink pb-1"
           >
             {slide.shopLabel ?? "Shop the piece"} →
           </Link>
@@ -204,7 +204,7 @@ function Frame({ slide, aspect = "aspect-[4/5]" }: { slide: StorySlide; aspect?:
           <Link
             to="/collections/$handle"
             params={{ handle: slide.shopHandle }}
-            className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-bronze hover:text-ink transition-colors border-b border-bronze/40 hover:border-ink pb-1"
+            className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-bronze-deep hover:text-ink transition-colors border-b border-bronze/40 hover:border-ink pb-1"
           >
             {slide.shopLabel ?? "Shop"} →
           </Link>
