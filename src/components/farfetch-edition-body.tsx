@@ -87,26 +87,26 @@ function DepartmentGateway() {
       className="bg-canvas pt-6 md:pt-10"
     >
       <div className="max-w-screen-2xl mx-auto px-6 md:px-10">
-        <p className="text-center text-[10px] uppercase tracking-[0.4em] text-bronze mb-6 md:mb-8">
+        <p className="text-center text-[10px] uppercase tracking-[0.4em] text-bronze-deep mb-6 md:mb-8">
           The Edit — Resort 2026
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
-          {DEPARTMENTS.map((d) => (
+          {DEPARTMENTS.map((d, i) => (
             <a
               key={d.label}
               href={d.params ? `/collections/${d.params.handle}` : d.to}
-              className="group relative block aspect-[3/4] md:aspect-[3/4] overflow-hidden bg-muted"
+              className="group relative block aspect-[4/5] lg:aspect-[3/4] overflow-hidden bg-muted"
             >
               <img
                 src={d.image}
                 alt={d.alt}
-                loading="eager"
-                fetchPriority="high"
+                loading={i === 0 ? "eager" : "lazy"}
+                fetchPriority={i === 0 ? "high" : undefined}
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-[1.04]"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-ink/10 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-ink/45 via-ink/10 to-transparent" />
               <div className="absolute inset-x-0 bottom-0 p-6 md:p-8 flex items-end justify-center">
-                <span className="font-serif text-[1.6rem] sm:text-3xl lg:text-4xl text-canvas tracking-[0.02em] uppercase leading-none max-w-full px-1 text-center break-words">
+                <span className="font-serif text-[1.6rem] md:text-2xl lg:text-3xl xl:text-4xl text-canvas tracking-[0.02em] uppercase leading-none max-w-full px-1 text-center break-words">
                   {d.label}
                 </span>
               </div>
