@@ -1162,8 +1162,8 @@ function VariantOption({
                 title={value + (unavailable ? " — sold out" : "")}
                 className={`relative h-10 w-10 rounded-full border transition-all ${
                   active
-                    ? "border-[var(--studio-ink)] ring-2 ring-offset-2 ring-[var(--studio-ink)]/20 ring-offset-[var(--studio-bg)]"
-                    : "border-[var(--studio-ink)]/20 hover:border-[var(--studio-ink)]/60"
+                    ? "por-tick border-[var(--studio-ink)] ring-2 ring-offset-2 ring-[var(--studio-ink)]/20 ring-offset-[var(--studio-bg)]"
+                    : "border-[var(--studio-ink)]/20 hover:border-[var(--studio-ink)]/60 motion-safe:hover:scale-[1.06]"
                 } ${unavailable ? "opacity-40" : ""}`}
                 style={{ background: swatchFor(value) }}
               >
