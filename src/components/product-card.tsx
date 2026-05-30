@@ -116,7 +116,9 @@ export function ProductCard({
     return () => document.removeEventListener("pointerdown", onDown);
   }, [revealed]);
 
-  const meta = { vendor: p.vendor, productType: p.productType };
+  const meta = { vendor: p.vendor, productType: p.productType, surface, position };
+
+
 
   // Viewport impression — fire once per mount when ≥50% of the card is
   // visible for 600ms. Implicit signal: "shopper actually saw this card".
