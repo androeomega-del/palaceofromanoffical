@@ -486,8 +486,8 @@ function ProductView({
         </div>
       </div>
 
-      <div className="px-6 md:px-12 pt-12 pb-20">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
+      <div className="px-6 md:px-10 pt-10 pb-20">
+        <div className="max-w-screen-2xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
           {/* ===== Gallery — stacked editorial ===== */}
           <div className="lg:col-span-7">
             {/* Mobile: snap carousel */}
@@ -500,7 +500,7 @@ function ProductView({
                 }}
               >
                 {(images.length ? images : [{ url: "", altText: product.title }]).map((img, i) => (
-                  <div key={i} className="min-w-full snap-center aspect-[3/4] bg-white overflow-hidden">
+                  <div key={i} className="min-w-full snap-center aspect-[3/4] bg-secondary overflow-hidden">
                     {img.url && (
                       <button
                         type="button"
@@ -518,7 +518,7 @@ function ProductView({
                           loading={i === 0 ? "eager" : "lazy"}
                           fetchPriority={i === 0 ? "high" : undefined}
                           decoding="async"
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-contain p-5"
                         />
                       </button>
                     )}
@@ -548,7 +548,7 @@ function ProductView({
                 return (
                   <div
                     key={img.url || i}
-                    className={`bg-white overflow-hidden shadow-[0_1px_2px_rgba(26,26,26,0.04),0_24px_48px_-24px_rgba(26,26,26,0.08)] ${
+                    className={`bg-secondary overflow-hidden ${
                       oversized ? "aspect-[4/5]" : "aspect-[3/4]"
                     }`}
                   >
@@ -569,7 +569,7 @@ function ProductView({
                           loading={i === 0 ? "eager" : "lazy"}
                           fetchPriority={i === 0 ? "high" : undefined}
                           decoding="async"
-                          className="w-full h-full object-cover transition-transform duration-[1400ms] motion-safe:hover:scale-[1.02]"
+                            className="w-full h-full object-contain p-8 transition-transform duration-[1000ms] motion-safe:hover:scale-[1.015]"
                         />
                       </button>
                     )}
