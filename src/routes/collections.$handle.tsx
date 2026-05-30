@@ -242,6 +242,7 @@ function CollectionPage() {
 
   const [selections, setSelections] = useState<Selection[]>([]);
   const [priceRange, setPriceRange] = useState<{ min: number; max: number } | null>(null);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   // Active category chip (single-select, mutually exclusive).
   // For most collections, this is one of CATEGORY_BUCKETS labels (driven
@@ -642,9 +643,40 @@ function CollectionPage() {
           {/* Main column */}
           <div className="flex-1 min-w-0">
             {/* Sort dropdown — same menu on every catalog surface */}
-            <div className="mb-5 flex flex-wrap items-center justify-end gap-4">
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-ink/10 pb-4">
+              <button
+                type="button"
+                onClick={() => setMobileFiltersOpen(true)}
+                className="lg:hidden text-[11px] uppercase tracking-[0.25em] border-b border-ink/30 pb-1 hover:text-bronze hover:border-bronze transition-colors"
+              >
+                Filter
+              </button>
               <CatalogSort value={sort} onChange={setSort} />
             </div>
+
+            {mobileFiltersOpen && (
+              <div className="fixed inset-0 z-[70] lg:hidden" role="dialog" aria-modal="true" aria-label="Filter products">
+                <button
+                  type="button"
+                  aria-label="Close filters"
+                  onClick={() => setMobileFiltersOpen(false)}
+                  className="absolute inset-0 bg-ink/40"
+                />
+                <div className="absolute inset-y-0 left-0 w-[88%] max-w-sm bg-canvas px-6 py-6 overflow-y-auto shadow-2xl">
+                  <div className="mb-6 flex items-center justify-between border-b border-ink/10 pb-4">
+                    <p className="text-[11px] uppercase tracking-[0.25em] text-ink">Filter</p>
+                    <button
+                      type="button"
+                      onClick={() => setMobileFiltersOpen(false)}
+                      className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground hover:text-ink"
+                    >
+                      Close
+                    </button>
+                  </div>
+                  {sidebar}
+                </div>
+              </div>
+            )}
 
 
 
@@ -696,7 +728,7 @@ function CollectionPage() {
             />
 
             {q.isLoading ? (
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12">
+              <div className="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-x-5 md:gap-x-6 gap-y-12">
                 {Array.from({ length: 9 }).map((_, i) => (
                   <div key={i}>
                     <div className="w-full aspect-[4/5] por-shimmer mb-5" />
@@ -721,7 +753,7 @@ function CollectionPage() {
               </div>
             ) : (
               <>
-                <div className={`grid grid-cols-2 lg:grid-cols-3 ${gridGap}`}>
+                <div className={`grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 ${gridGap}`}>
                   {gridEdges.map((e) => (
                     <ProductCard key={e.node.id} product={e} suppressBadges={[...suppressedBadges]} />
                   ))}
