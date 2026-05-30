@@ -39,23 +39,25 @@ import brandVersace from "@/assets/brand-versace-women.jpg";
 export const Route = createFileRoute("/women")({
   head: () => ({
     meta: [
-      { title: "Womenswear — Resort 2026 | Palace of Roman" },
+      { title: "Designer Womenswear | Palace of Roman" },
       {
         name: "description",
         content:
-          "Womenswear Resort 2026 from Brunello Cucinelli, Prada, Dolce & Gabbana, Ferragamo and the maisons defining the season. Dresses, knitwear, bags, jewellery. Worldwide shipping, 100% authentic.",
+          "Shop curated womenswear from Tom Ford, Marine Serre, Prada and more. New arrivals weekly, handpicked by our editors.",
       },
-      { property: "og:title", content: "Womenswear — Resort 2026 | Palace of Roman" },
+      { property: "og:title", content: "Designer Womenswear | Palace of Roman" },
       {
         property: "og:description",
         content:
-          "Considered cashmere, architectural lines, Sicilian lace and the bags worth holding onto. Curated from the world's leading maisons.",
+          "Shop curated womenswear from Tom Ford, Marine Serre, Prada and more. New arrivals weekly, handpicked by our editors.",
       },
       { property: "og:url", content: "https://palaceofromanofficial.com/women" },
+      { property: "og:type", content: "website" },
       {
         property: "og:image",
         content: `https://palaceofromanofficial.com${womenHero}`,
       },
+      { name: "twitter:card", content: "summary_large_image" },
       {
         name: "twitter:image",
         content: `https://palaceofromanofficial.com${womenHero}`,
