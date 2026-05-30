@@ -381,7 +381,7 @@ function QuickShopBody({ product, onClose }: { product: ShopifyProduct["node"]; 
   return (
     <div className="grid md:grid-cols-2">
       <div className="aspect-[4/5] bg-canvas-raised">
-        {img && <img src={img.url} alt={img.altText ?? product.title} className="h-full w-full object-cover" />}
+        {img && <img src={img.url} alt={img.altText ?? product.title} className="h-full w-full object-contain p-6" />}
       </div>
       <div className="flex flex-col p-8 gap-5">
         <div>
