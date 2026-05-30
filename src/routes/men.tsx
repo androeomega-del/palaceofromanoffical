@@ -68,11 +68,14 @@ function MenHomePage() {
     <>
       <HeroBanner />
       <NewInThisWeek />
-      <TrendingCategories />
       <BrandSpotlightRail />
+      <SaleCarousel />
+      <TrendingEditorials />
+      <BrandSpotlightRailTwo />
+      <FeaturedProductRail />
+      <BrandsOfTheMoment />
       <EditorialSplit />
       <ShopByOccasion />
-      <FeaturedProductRail />
       <AccessoryCampaignBanner />
       <TrustStrip />
     </>
