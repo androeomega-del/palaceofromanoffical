@@ -12,20 +12,40 @@ import { ChevronDown, ChevronUp, X, Search } from "lucide-react";
 import type { ShopifyProduct } from "@/lib/shopify";
 import { cn } from "@/lib/utils";
 
+export type SaleFilter = "any" | "sale" | "full";
+
 export type ClientFacetState = {
   brands: Set<string>;
   sizes: Set<string>;
   colors: Set<string>;
   materials: Set<string>;
+  occasions: Set<string>;
+  sale: SaleFilter;
   price: { min: number; max: number } | null;
 };
 
 export function emptyClientFacetState(): ClientFacetState {
-  return { brands: new Set(), sizes: new Set(), colors: new Set(), materials: new Set(), price: null };
+  return {
+    brands: new Set(),
+    sizes: new Set(),
+    colors: new Set(),
+    materials: new Set(),
+    occasions: new Set(),
+    sale: "any",
+    price: null,
+  };
 }
 
 export function clientFacetCount(s: ClientFacetState): number {
-  return s.brands.size + s.sizes.size + s.colors.size + s.materials.size + (s.price ? 1 : 0);
+  return (
+    s.brands.size +
+    s.sizes.size +
+    s.colors.size +
+    s.materials.size +
+    s.occasions.size +
+    (s.sale !== "any" ? 1 : 0) +
+    (s.price ? 1 : 0)
+  );
 }
 
 // ── Derivation ──────────────────────────────────────────────────────────────
