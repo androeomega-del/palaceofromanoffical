@@ -591,8 +591,8 @@ function ProductView({
           )}
 
           {/* ===== Info column ===== */}
-          <div className="lg:col-span-5 lg:sticky lg:top-24 lg:self-start space-y-12">
-            <header className="space-y-5">
+          <div className="lg:col-span-5 lg:sticky lg:top-24 lg:self-start space-y-7 md:space-y-8">
+            <header className="space-y-4">
               <Link
                 to="/collections/$handle"
                 params={{ handle: vendorHandle }}
