@@ -62,6 +62,39 @@ const MATERIAL_KEYWORDS = [
   "shearling", "fur", "calfskin", "lambskin", "patent",
 ];
 
+// Heuristic occasion vocabulary — derived from product title/description
+// since Shopify tags are not exposed on the product node here. Each key is
+// the canonical label shown in the UI; values are case-insensitive substrings.
+const OCCASION_RULES: Array<{ label: string; needles: string[] }> = [
+  { label: "Beach", needles: ["beach", "swim", "bikini", "trunk", "kaftan", "sarong"] },
+  { label: "Yacht & Marina", needles: ["yacht", "marina", "sailing", "nautical", "boating", "regatta"] },
+  { label: "Resort Evening", needles: ["evening", "cocktail", "dinner", "soirée", "soiree", "gala"] },
+  { label: "Poolside", needles: ["pool", "poolside", "cabana", "sunbath"] },
+  { label: "Daywear", needles: ["day", "lunch", "brunch", "casual", "weekend"] },
+  { label: "Travel", needles: ["travel", "tote", "weekender", "carry", "trolley", "luggage"] },
+];
+
+function occasionsFor(node: ShopifyProduct["node"]): string[] {
+  const hay = `${node.title} ${node.description ?? ""} ${node.productType ?? ""}`.toLowerCase();
+  return OCCASION_RULES.filter((r) => r.needles.some((n) => hay.includes(n))).map((r) => r.label);
+}
+
+function bucketsFromOccasions(edges: ShopifyProduct[]): Bucket[] {
+  const counts = new Map<string, number>();
+  for (const e of edges) {
+    for (const o of occasionsFor(e.node)) counts.set(o, (counts.get(o) ?? 0) + 1);
+  }
+  return [...counts.entries()]
+    .map(([label, count]) => ({ label, count }))
+    .sort((a, b) => b.count - a.count);
+}
+
+function isOnSale(node: ShopifyProduct["node"]): boolean {
+  const c = Number(node.compareAtPriceRange?.minVariantPrice?.amount ?? 0);
+  const p = Number(node.priceRange.minVariantPrice.amount);
+  return Number.isFinite(c) && c > 0 && c > p;
+}
+
 type Bucket = { label: string; count: number };
 
 function bucketsFromOptions(
