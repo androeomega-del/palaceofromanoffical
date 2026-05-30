@@ -35,6 +35,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as CollectionsIndexRouteImport } from './routes/collections.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AccountIndexRouteImport } from './routes/account.index'
+import { Route as TrendsTomFordEssentialsRouteImport } from './routes/trends.tom-ford-essentials'
 import { Route as TrendsDolceGabbanaIconsRouteImport } from './routes/trends.dolce-gabbana-icons'
 import { Route as SwimSizeGuideRouteImport } from './routes/swim.size-guide'
 import { Route as ProductHandleRouteImport } from './routes/product.$handle'
@@ -237,6 +238,11 @@ const AccountIndexRoute = AccountIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AccountRoute,
+} as any)
+const TrendsTomFordEssentialsRoute = TrendsTomFordEssentialsRouteImport.update({
+  id: '/trends/tom-ford-essentials',
+  path: '/trends/tom-ford-essentials',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const TrendsDolceGabbanaIconsRoute = TrendsDolceGabbanaIconsRouteImport.update({
   id: '/trends/dolce-gabbana-icons',
@@ -704,6 +710,7 @@ export interface FileRoutesByFullPath {
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/trends/dolce-gabbana-icons': typeof TrendsDolceGabbanaIconsRoute
+  '/trends/tom-ford-essentials': typeof TrendsTomFordEssentialsRoute
   '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/collections/': typeof CollectionsIndexRoute
@@ -802,6 +809,7 @@ export interface FileRoutesByTo {
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/trends/dolce-gabbana-icons': typeof TrendsDolceGabbanaIconsRoute
+  '/trends/tom-ford-essentials': typeof TrendsTomFordEssentialsRoute
   '/account': typeof AccountIndexRoute
   '/admin': typeof AdminIndexRoute
   '/collections': typeof CollectionsIndexRoute
@@ -903,6 +911,7 @@ export interface FileRoutesById {
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/trends/dolce-gabbana-icons': typeof TrendsDolceGabbanaIconsRoute
+  '/trends/tom-ford-essentials': typeof TrendsTomFordEssentialsRoute
   '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/collections/': typeof CollectionsIndexRoute
@@ -1005,6 +1014,7 @@ export interface FileRouteTypes {
     | '/product/$handle'
     | '/swim/size-guide'
     | '/trends/dolce-gabbana-icons'
+    | '/trends/tom-ford-essentials'
     | '/account/'
     | '/admin/'
     | '/collections/'
@@ -1103,6 +1113,7 @@ export interface FileRouteTypes {
     | '/product/$handle'
     | '/swim/size-guide'
     | '/trends/dolce-gabbana-icons'
+    | '/trends/tom-ford-essentials'
     | '/account'
     | '/admin'
     | '/collections'
@@ -1203,6 +1214,7 @@ export interface FileRouteTypes {
     | '/product/$handle'
     | '/swim/size-guide'
     | '/trends/dolce-gabbana-icons'
+    | '/trends/tom-ford-essentials'
     | '/account/'
     | '/admin/'
     | '/collections/'
@@ -1300,6 +1312,7 @@ export interface RootRouteChildren {
   PreviewLookbookRoute: typeof PreviewLookbookRoute
   ProductHandleRoute: typeof ProductHandleRoute
   TrendsDolceGabbanaIconsRoute: typeof TrendsDolceGabbanaIconsRoute
+  TrendsTomFordEssentialsRoute: typeof TrendsTomFordEssentialsRoute
   AdminIndexRoute: typeof AdminIndexRoute
   CollectionsIndexRoute: typeof CollectionsIndexRoute
   ApiPublicSeoHealthRoute: typeof ApiPublicSeoHealthRoute
@@ -1499,6 +1512,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/account/'
       preLoaderRoute: typeof AccountIndexRouteImport
       parentRoute: typeof AccountRoute
+    }
+    '/trends/tom-ford-essentials': {
+      id: '/trends/tom-ford-essentials'
+      path: '/trends/tom-ford-essentials'
+      fullPath: '/trends/tom-ford-essentials'
+      preLoaderRoute: typeof TrendsTomFordEssentialsRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/trends/dolce-gabbana-icons': {
       id: '/trends/dolce-gabbana-icons'
@@ -2149,6 +2169,7 @@ const rootRouteChildren: RootRouteChildren = {
   PreviewLookbookRoute: PreviewLookbookRoute,
   ProductHandleRoute: ProductHandleRoute,
   TrendsDolceGabbanaIconsRoute: TrendsDolceGabbanaIconsRoute,
+  TrendsTomFordEssentialsRoute: TrendsTomFordEssentialsRoute,
   AdminIndexRoute: AdminIndexRoute,
   CollectionsIndexRoute: CollectionsIndexRoute,
   ApiPublicSeoHealthRoute: ApiPublicSeoHealthRoute,
