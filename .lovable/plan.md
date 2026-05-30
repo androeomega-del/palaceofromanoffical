@@ -1,84 +1,105 @@
-# Palace of Roman — Summer 2026 Swim Campaign
-## 5-Video Plan for QA (no generation yet)
+# Farfetch-style desktop redesign + trending landing pages
 
-Each video is 10s, 9:16, 1080p, silent (sound designed in post), with the mandatory gold-serif end card ("Palace of Roman Summer 2026", 3–5s) added in your editor. Every concept is keyed to a real in-stock catalog SKU (to be locked during QA), and every frame is filtered through the luxury compliance rules already ingrained in the brief app.
+Goal: port Farfetch's clean two-row IA to PoR's desktop header, then add a system for editorial landing pages keyed to trending topics. PoR voice throughout (serif logo, ink/canvas/bronze, restrained curatorial copy). AI sections stay — they get cleaner slots.
 
----
-
-### Video 1 — "Horsebit at Golden Hour" (IYKYK Luxury)
-- **Trend:** Elevated IYKYK — quiet signatures, no loud logos.
-- **Product candidate:** Gucci Horsebit-detail solid swim short (lock SKU during QA).
-- **Setting:** Stone infinity pool edge, Amalfi-style cliffside, last 20 minutes of golden hour.
-- **Narrative:** A man walks the pool edge, sits, the camera drifts to a slow macro of the Horsebit hardware catching the sun. No face hero — the hardware is the hero.
-- **Shotlist (10s):** 0–3s wide silhouette walking; 3–6s mid seated against sea; 6–10s macro on Horsebit + water reflections.
-- **Camera:** Handheld, slow, 35mm feel. Shallow DOF.
-- **Palette:** Bone, terracotta stone, deep Mediterranean blue, brushed gold.
-- **On-screen text:** none until end card.
-- **Caption draft:** "A quiet signature. Summer, edited."
+Scope is the **header + a reusable trend-landing template + 3 initial landing pages**. Homepage body, PLP, PDP unchanged this pass. Per staged-launches: nothing exposed in nav until its assets, copy, products and SEO are ready in the same batch.
 
 ---
 
-### Video 2 — "Contrast Line" (Architectural Minimalism)
-- **Trend:** Contrast piping / architectural cuts / moss + lagoon tones.
-- **Product candidate:** Tom Ford or Brunello Cucinelli swim short with contrast trim (lock during QA).
-- **Setting:** Travertine outdoor shower, white-on-white wall, single sharp shadow line.
-- **Narrative:** Static composition study. Water sheeting, slow turn, the contrast trim draws the eye like a pencil line on paper.
-- **Shotlist:** 0–4s water falling over shoulder; 4–7s quarter turn revealing trim seam; 7–10s pull back to full architectural frame.
-- **Camera:** Locked-off tripod, single dolly-in at 7s. Editorial stillness.
-- **Palette:** Bone, travertine cream, ink black piping, lagoon green towel accent.
-- **Caption draft:** "Cut, line, light."
+## 1. Desktop header — new shape
+
+Two rows, centered logo (Farfetch's structure), PoR tokens.
+
+```text
+┌──────────────────────────────────────────────────────────────────────┐
+│  announcement bar (existing, unchanged)                              │
+├──────────────────────────────────────────────────────────────────────┤
+│  WOMEN  MEN          PALACE OF ROMAN          USD ▾  ♡  ◌  🛍       │  ← row 1: dept tabs + serif logo + utility
+├──────────────────────────────────────────────────────────────────────┤
+│  Sale  New In  Vacation  Brands  Clothing  Shoes  Bags  Accessories  │
+│  Watches  Lifestyle          🔎  search the maisons…                 │  ← row 2: category rail + inline search (per active dept)
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+Behavior
+- **Row 1 left** — `Women` / `Men` tabs (active = ink, inactive = ink/45, underline indicator). Switching tabs swaps row 2's category list to that department's columns. Default: Women. Persists in `sessionStorage` so reloads keep the tab.
+- **Row 1 center** — serif "Palace of Roman" wordmark, links to `/`.
+- **Row 1 right** — DeliverTo, CurrencySwitcher, ReducedMotionToggle, Wishlist, Account, Cart. Unchanged behavior, just regrouped.
+- **Row 2 left** — flat category rail derived from the active department: `Sale` (bronze, only if a live sale handle exists), `New In`, `Vacation`, `Brands`, then the dept's column headings (Clothing, Shoes, Bags, Accessories, …) drawn from the Shopify-built `MegaDepartment.columns`. Hover any rail item → existing megamenu panel anchored under that item with its sub-collections + a single editorial feature tile. Brands panel = existing brand A–Z + 2 hero tiles.
+- **Row 2 right** — inline search input (replaces the search icon at desktop ≥ lg). Click/focus expands into the existing `SearchOverlay`; small viewports keep the icon-only behavior already in place.
+- **Hero brands (D&G + Emilio Pucci)** — surfaced as the 2 feature tiles inside the `Brands` megamenu panel only (not as their own rail items). When we add brand landing pages later, these tiles deep-link to them.
+
+Removals from the current header
+- `FLAT_LEFT` / `FLAT_RIGHT` arrays (Shop, Best Sellers, Collections, Style Quiz, Journal, Limited Finds, New Arrivals) — these stop being top-level rail items. Their entry points move to: Style Quiz → row 1 utility cluster (small text link to the right of cart), Journal → footer + inline within Trends landing pages, Best Sellers / New Arrivals / Collections → first rail items inside each dept ("New In" already covers New Arrivals). Limited Finds → bronze tile inside the "Sale" panel if active, else footer.
+
+Files
+- `src/components/site-header.tsx` — rewrite layout (two rows, dept tabs, inline search slot). Keep existing state (cart, search overlay, announcement dismiss).
+- `src/components/megamenu.tsx` — `DesktopMegamenu` refactored: accepts `activeDept` + `categoryHeading` and renders the panel anchored to whichever rail item is hovered. Brands panel gains 2 hero tile slots driven by a new `HERO_BRANDS` const.
+- `src/lib/nav-config.ts` — add `HERO_BRANDS = [{ vendor: "Dolce & Gabbana", … }, { vendor: "Emilio Pucci", … }]` with placeholder hero image refs that we wire in step 3.
 
 ---
 
-### Video 3 — "Surf Revival" (Y2K Sport Nostalgia)
-- **Trend:** Neoprene textures, zippers, sporty color-block, mid-2000s cool.
-- **Product candidate:** Versace or Fendi sport-trim swim short with technical detail (lock during QA).
-- **Setting:** Empty Atlantic beach, overcast-to-break-of-sun, wet sand reflections.
-- **Narrative:** Wetsuit-adjacent silhouette walks out of low surf carrying a board-shape towel; zipper pull and contrast stitch in macro mid-cut.
-- **Shotlist:** 0–3s low-angle approach through shallow water; 3–5s zipper macro; 5–10s walk-away into haze.
-- **Camera:** Handheld, slight motion blur, paparazzi-flash feel for one beat at 4s.
-- **Palette:** Storm grey, cold sand, neoprene black, single oxidised orange accent.
-- **Caption draft:** "Borrowed from the break."
+## 2. Trend-landing template (reusable)
+
+One file, configured per landing page. Mirrors Farfetch's "Beach bound" treatment: full-bleed hero, manifesto, then shoppable rails of real Shopify products.
+
+Template sections
+1. **Hero** — full-bleed brand-accurate image (per imagery-QA rules: fetched + verified), centered eyebrow + serif title + 1–2 line PoR manifesto + single CTA ("Shop the edit").
+2. **The Edit grid** — 8–12 verified catalog products (existing `ProductCard`), filtered via a Shopify query string passed in as prop. No products = section hidden, not faked.
+3. **AI styling slot** — `AiRecommendations` (existing) seeded with the page's tag/vendor context. Stays an AI section, just framed cleaner.
+4. **Story chapters** (optional 1–3) — `ThemedChapter` blocks with shoppable hotspots, per themed-edits + always-tag rules.
+5. **Outro CTAs** — 3–4 buttons to adjacent collections.
+6. **SEO** — full `routeHead` + Article JSON-LD, per SEO playbook.
+
+Files
+- `src/components/trend-landing.tsx` — reusable shell taking `{ slug, eyebrow, title, manifesto, hero, query, chapters?, outroCtas }`.
+- `src/routes/trends/$slug.tsx` — dynamic route that reads from a registry, OR per-slug routes if we want hand-tuned heads (recommend per-slug routes for SEO + share images).
 
 ---
 
-### Video 4 — "Beach to Bar" (Swim as Streetwear)
-- **Trend:** Swim styled as going-out wear; layered under tailoring.
-- **Product candidate:** Sculpted swim piece layered with an in-stock unbuttoned linen shirt or low-rise trouser (lock both SKUs during QA).
-- **Setting:** Match-cut from pool deck (day) to candle-lit terrace bar (dusk) — same model, same swim piece, restyled.
-- **Narrative:** Transition video. Same garment, two worlds. No words needed.
-- **Shotlist:** 0–4s pool deck, water still on skin; 4–5s whip-pan + match cut on garment detail; 5–10s seated at bar, linen layered open, swim visible beneath.
-- **Camera:** Two locked setups joined by motion match. Restrained.
-- **Palette:** Chlorine blue → candle amber. Skin tone constant.
-- **Caption draft:** "From the water, to the table."
+## 3. Three initial trending landing pages (Edits)
+
+Picked to leverage what's already in catalog + match current search trends.
+
+| Slug                         | Title                       | Query / source                                   | Hero focus                              |
+|------------------------------|-----------------------------|--------------------------------------------------|-----------------------------------------|
+| `/trends/quiet-luxury`       | Quiet Luxury                | `vendor:"Brunello Cucinelli" OR vendor:"Tom Ford" OR vendor:"Loro Piana"` filtered to muted neutrals | Cashmere + linen, palazzo light         |
+| `/trends/dolce-gabbana-icons`| Dolce & Gabbana Icons       | `vendor:"Dolce & Gabbana"`                       | Sicilian baroque, hero brand #1         |
+| `/trends/pucci-prints`       | Emilio Pucci Prints         | `vendor:"Emilio Pucci"`                          | Capri kaleidoscope silk, hero brand #2  |
+
+Pre-flight per page (per catalog-truth + product-imagery-QA rules):
+1. Verify the vendor query returns ≥ 6 live products before page exists.
+2. Pull 2–3 product CDN photos as references for `edit_image`.
+3. Generate hero with brand-accurate signatures (D&G: leopard / corsets / lace / DG hardware; Pucci: pucci print / chiffon / kaleidoscopic geometric).
+4. Post-gen visual QA: color, pattern, material, hardware, logo.
+
+Exposure
+- D&G + Pucci pages link from the Brands megamenu hero tiles.
+- Quiet Luxury links from the Vacation/Lifestyle rail panel.
+- All three appear in footer "Trends" column.
+- Nothing goes live in nav until its hero + grid + copy + SEO are committed in the same batch.
 
 ---
 
-### Video 5 — "Cliffside" (Founder Cameo, Cinematic Hero)
-- **Trend:** High-fashion swim cinema — dramatic location, narrative restraint.
-- **Featuring:** You (founder cameo, per your consent on file). Flattering ¾ profile, natural light only.
-- **Product candidate:** A signature catalog resort look (swim short + open linen shirt) — lock SKUs during QA.
-- **Setting:** Sun-bleached cliff path above open sea, late-afternoon backlight.
-- **Narrative:** A solitary walk along the cliff edge, pause to look out, slow reveal of full look against the horizon. No "founder" framing on screen — this reads as a campaign frame, not a personal post.
-- **Shotlist:** 0–4s wide back-of-head into landscape; 4–7s ¾ profile turn into light; 7–10s pull-out wide silhouette against sea.
-- **Camera:** Drone-static feel for the wide; handheld for the turn. Backlit, no fill.
-- **Palette:** Sun-bleached limestone, cobalt sea, ivory linen, gold rim-light.
-- **Caption draft:** "The edit, on location."
+## Approval gates (per-item, per working-mode memory)
+
+I'll stop and wait at each gate:
+
+1. ✅ Plan approved (this step).
+2. Header rewrite → I ship `site-header.tsx` + `megamenu.tsx` changes, you eyeball at desktop + mobile, then approve.
+3. `trend-landing.tsx` template + `/trends/quiet-luxury` (no D&G/Pucci yet → no brand-imagery risk) → approve.
+4. D&G page: I do the pre-flight (product count + CDN refs), generate hero, post-gen QA, show you before linking from nav.
+5. Pucci page: same.
+6. Footer "Trends" column + Brands hero tiles wired only after pages 3–5 ship.
+
+## Technical notes
+
+- Header rewrite preserves cart-store, cart-drawer, use-cart-sync, formatCheckoutUrl (per checkout lockdown).
+- Dept tab state lives in a tiny new Zustand store (`useDeptStore`) so megamenu + future PLP filters can read it.
+- Trend pages use `createFileRoute("/trends/$slug")` — dynamic param, validated against a registry; unknown slugs `throw notFound()`.
+- Each trend route sets its own `head()` (title, description, og:image = hero), per route-architecture rule.
+- No new BG imports, no fulfillment changes, no fabricated reviews. USD prices throughout.
 
 ---
 
-## Compliance pre-check (applies to all 5)
-- No brand logos overlaid, no slogans copied from any maison, no prices, no badges.
-- No urgency language, no emojis, no "official/authorized/endorsed" claims.
-- English-only end card, serif, white or gold, 3–5s, centered, unaltered.
-- One hero product per frame, natural light, generous negative space.
-- No fabricated reviews, ratings, press, or atelier/team scenes.
-
-## QA checkpoints I need from you before generating
-1. **SKU lock** — confirm or swap the product candidate for each of the 5 videos (I'll pull current in-stock options from your Shopify catalog the moment you approve the directions).
-2. **Founder cameo (Video 5)** — confirm go/no-go and which of your two reference photos I should use for likeness.
-3. **Caption drafts** — approve as-is or redirect tone.
-4. **Setting fidelity** — flag any setting that doesn't fit your brand world (e.g. swap cliffside for yacht, swap bar for villa, etc.).
-5. **Order & cadence** — confirm release order, or tell me which video is the hero post.
-
-Once you green-light the 5 directions and SKUs, I'll generate the videos one at a time, verify brand-accurate imagery before shipping each, and drop the MP4s plus a compliance-checked `CAPTIONS.md` into `/mnt/documents/tiktok-d/`.
+**Approve and I'll start with gate 2 (header rewrite).** If anything in the structure is wrong — different rail items, different dept tabs (e.g. add Kids later), different first trend topics — call it out now and I'll revise the plan before touching code.

@@ -1,58 +1,32 @@
+/**
+ * Site header — Farfetch-style two-row layout, Palace of Roman voice.
+ *
+ * Row 1 (h = 64px @ md+, 56px on small):
+ *   [WOMEN | MEN tabs]        [PALACE OF ROMAN wordmark]        [utility cluster]
+ *
+ * Row 2 (h = 48px, lg+ only):
+ *   [Sale · New In · Vacation · Brands · Clothing · Shoes · …]   [inline search]
+ *
+ * Below lg, the mobile menu button replaces row 1's department tabs and row 2
+ * collapses entirely — the mobile drawer (<MobileFarfetchMenu/>) carries the
+ * full IA.
+ */
 import { Link } from "@tanstack/react-router";
 import { Heart, Search, User, ShoppingBag, Menu, X } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useRef, useState } from "react";
 import { useCartStore } from "@/stores/cart-store";
 import { CartDrawer } from "@/components/cart-drawer";
 import { ReducedMotionToggle } from "@/components/reduced-motion-toggle";
-import { DesktopMegamenu } from "@/components/megamenu";
+import {
+  DesktopCategoryRail,
+  DepartmentTabs,
+} from "@/components/desktop-rail";
 import { MobileFarfetchMenu } from "@/components/mobile-farfetch-menu";
 import { SearchOverlay } from "@/components/search-overlay";
-import { fetchCollections } from "@/lib/shopify";
 import { DeliverToButton } from "@/components/deliver-to-button";
 import { useCustomerStore } from "@/stores/customer-store";
 import { useWishlistStore } from "@/stores/wishlist-store";
 import { CurrencySwitcher } from "@/components/currency-switcher";
-
-type FlatItem = {
-  label: string;
-  to: string;
-  params?: Record<string, string>;
-  accent?: boolean;
-};
-
-// Flat (non-megamenu) links. Department links (Women / Men) are rendered
-// separately by <DesktopMegamenu /> and <MobileMegamenu />.
-const FLAT_LEFT: FlatItem[] = [
-  { to: "/shop", label: "Shop" },
-  { to: "/collections/$handle", params: { handle: "new-arrivals" }, label: "New Arrivals" },
-  { to: "/limited-finds", label: "Limited Finds", accent: true },
-];
-const FLAT_RIGHT: FlatItem[] = [
-  { to: "/collections/$handle", params: { handle: "best-sellers" }, label: "Best Sellers" },
-  { to: "/collections", label: "Collections" },
-  { to: "/style-quiz", label: "Style Quiz", accent: true },
-  { to: "/journal", label: "Journal" },
-];
-
-function FlatLinks({ items }: { items: FlatItem[] }) {
-  return (
-    <>
-      {items.map((n) => (
-        <Link
-          key={n.label}
-          to={n.to as any}
-          params={n.params as any}
-          className={`hover:text-bronze transition-colors whitespace-nowrap py-2 ${
-            n.accent ? "text-bronze" : ""
-          }`}
-        >
-          {n.label}
-        </Link>
-      ))}
-    </>
-  );
-}
 
 function WishlistHeaderLink() {
   const count = useWishlistStore((s) => s.handles.length);
@@ -81,13 +55,10 @@ export function SiteHeader() {
   const setCartOpen = useCartStore((s) => s.setDrawerOpen);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  // Cart state is hydrated from localStorage on the client, so the SSR
-  // count (always 0) can disagree with the first client render. Defer to
-  // a mounted flag to avoid React #418 hydration text mismatch.
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   const totalItems = mounted ? totalItemsRaw : 0;
-  // Pop animation when items are added
+  // Cart badge pop animation.
   const prevCount = useRef(totalItems);
   const [popKey, setPopKey] = useState(0);
   useEffect(() => {
@@ -109,26 +80,7 @@ export function SiteHeader() {
     } catch {}
   };
 
-  // Live Shopify collection handles — used to hide flat links whose target
-  // collection no longer exists, so the header never shows broken links.
-  const { data: liveCollections } = useQuery({
-    queryKey: ["collections-all"],
-    queryFn: () => fetchCollections(500),
-    staleTime: 5 * 60_000,
-  });
-  const liveHandles = useMemo(
-    () => (liveCollections ? new Set(liveCollections.map((c) => c.handle)) : null),
-    [liveCollections],
-  );
-  const isLiveFlat = (n: FlatItem) =>
-    n.to !== "/collections/$handle" ||
-    !liveHandles ||
-    (!!n.params?.handle && liveHandles.has(n.params.handle));
-  const flatLeft = useMemo(() => FLAT_LEFT.filter(isLiveFlat), [liveHandles]);
-  const flatRight = useMemo(() => FLAT_RIGHT.filter(isLiveFlat), [liveHandles]);
-
-
-  // Lock body scroll when mobile drawer is open
+  // Lock body scroll when the mobile drawer is open.
   useEffect(() => {
     if (mobileOpen) {
       const prev = document.body.style.overflow;
@@ -161,24 +113,34 @@ export function SiteHeader() {
           </button>
         </div>
       )}
-      <header className="sticky top-0 z-50 bg-canvas/95 backdrop-blur-md border-b border-ink/10">
-        <div className="max-w-screen-2xl mx-auto px-6 md:px-10 h-20 grid grid-cols-[1fr_auto_1fr] items-center gap-6">
-          {/* Left nav (desktop) */}
-          <nav className="hidden lg:flex items-center gap-7 text-[11px] uppercase tracking-[0.25em] font-medium justify-self-end">
-            <FlatLinks items={flatLeft} />
-            <DesktopMegamenu />
-          </nav>
+      <header
+        className="sticky top-0 z-50 bg-canvas/95 backdrop-blur-md border-b border-ink/10"
+        style={
+          {
+            // Used by megamenu panels to anchor below the header.
+            "--header-row1": "64px",
+            "--header-row2": "48px",
+          } as React.CSSProperties
+        }
+      >
+        {/* ───── Row 1: tabs / logo / utility ───── */}
+        <div className="max-w-screen-2xl mx-auto px-5 md:px-10 h-16 grid grid-cols-[1fr_auto_1fr] items-center gap-6">
+          {/* Left: dept tabs (lg+) or mobile menu button */}
+          <div className="justify-self-start flex items-center">
+            <button
+              type="button"
+              aria-label="Open menu"
+              onClick={() => setMobileOpen(true)}
+              className="lg:hidden hover:text-bronze transition-colors inline-flex items-center justify-center w-9 h-9 -ml-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze focus-visible:ring-offset-2 focus-visible:ring-offset-canvas rounded-sm"
+            >
+              <Menu className="w-5 h-5" strokeWidth={1.25} />
+            </button>
+            <div className="hidden lg:flex">
+              <DepartmentTabs />
+            </div>
+          </div>
 
-          {/* Mobile menu trigger */}
-          <button
-            type="button"
-            aria-label="Open menu"
-            onClick={() => setMobileOpen(true)}
-            className="lg:hidden justify-self-start hover:text-bronze transition-colors inline-flex items-center justify-center w-9 h-9 -ml-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze focus-visible:ring-offset-2 focus-visible:ring-offset-canvas rounded-sm"
-          >
-            <Menu className="w-5 h-5" strokeWidth={1.25} />
-          </button>
-
+          {/* Center: serif wordmark */}
           <Link
             to="/"
             className="text-xl md:text-2xl font-serif tracking-[0.18em] uppercase whitespace-nowrap justify-self-center leading-none"
@@ -186,49 +148,68 @@ export function SiteHeader() {
             Palace of Roman
           </Link>
 
-          <div className="flex items-center gap-7 justify-self-end">
-            <nav className="hidden lg:flex items-center gap-7 text-[11px] uppercase tracking-[0.25em] font-medium">
-              <FlatLinks items={flatRight} />
-            </nav>
-            <div className="flex items-center gap-6">
-              <button
-                aria-label="Search"
-                onClick={() => setSearchOpen(true)}
-                className="hover:text-bronze transition-colors inline-flex items-center justify-center w-5 h-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze focus-visible:ring-offset-2 focus-visible:ring-offset-canvas rounded-sm"
-              >
-                <Search className="w-4 h-4" strokeWidth={1.25} />
-              </button>
-              <DeliverToButton />
-              <CurrencySwitcher />
-              <ReducedMotionToggle />
-              <WishlistHeaderLink />
-              <button
-                aria-label="Account"
-                onClick={() => {
-                  const token = useCustomerStore.getState().getValidToken();
-                  window.location.href = token ? "/account" : "/account/login";
-                }}
-                className="hover:text-bronze transition-colors hidden sm:inline-flex items-center justify-center w-5 h-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze focus-visible:ring-offset-2 focus-visible:ring-offset-canvas rounded-sm"
-              >
-                <User className="w-4 h-4" strokeWidth={1.25} />
-              </button>
-              <button
-                aria-label={`Cart (${totalItems})`}
-                onClick={() => setCartOpen(true)}
-                className="relative hover:text-bronze transition-colors inline-flex items-center justify-center w-5 h-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze focus-visible:ring-offset-2 focus-visible:ring-offset-canvas rounded-sm"
-              >
-                <ShoppingBag className="w-4 h-4" strokeWidth={1.25} />
-                {totalItems > 0 && (
-                  <span
-                    key={popKey}
-                    className="por-badge-pop absolute -top-1.5 -right-2 min-w-[16px] h-[16px] px-1 grid place-items-center bg-bronze text-canvas text-[9px] font-semibold tabular-nums leading-none rounded-full"
-                  >
-                    {totalItems > 99 ? "99+" : totalItems}
-                  </span>
-                )}
-              </button>
+          {/* Right: utility cluster */}
+          <div className="flex items-center gap-5 md:gap-6 justify-self-end">
+            <Link
+              to="/style-quiz"
+              className="hidden xl:inline text-[11px] uppercase tracking-[0.25em] text-bronze hover:text-ink transition-colors"
+            >
+              Style Quiz
+            </Link>
+            <DeliverToButton />
+            <CurrencySwitcher />
+            <ReducedMotionToggle />
+            <button
+              aria-label="Search"
+              onClick={() => setSearchOpen(true)}
+              className="lg:hidden hover:text-bronze transition-colors inline-flex items-center justify-center w-5 h-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze focus-visible:ring-offset-2 focus-visible:ring-offset-canvas rounded-sm"
+            >
+              <Search className="w-4 h-4" strokeWidth={1.25} />
+            </button>
+            <WishlistHeaderLink />
+            <button
+              aria-label="Account"
+              onClick={() => {
+                const token = useCustomerStore.getState().getValidToken();
+                window.location.href = token ? "/account" : "/account/login";
+              }}
+              className="hover:text-bronze transition-colors hidden sm:inline-flex items-center justify-center w-5 h-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze focus-visible:ring-offset-2 focus-visible:ring-offset-canvas rounded-sm"
+            >
+              <User className="w-4 h-4" strokeWidth={1.25} />
+            </button>
+            <button
+              aria-label={`Cart (${totalItems})`}
+              onClick={() => setCartOpen(true)}
+              className="relative hover:text-bronze transition-colors inline-flex items-center justify-center w-5 h-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze focus-visible:ring-offset-2 focus-visible:ring-offset-canvas rounded-sm"
+            >
+              <ShoppingBag className="w-4 h-4" strokeWidth={1.25} />
+              {totalItems > 0 && (
+                <span
+                  key={popKey}
+                  className="por-badge-pop absolute -top-1.5 -right-2 min-w-[16px] h-[16px] px-1 grid place-items-center bg-bronze text-canvas text-[9px] font-semibold tabular-nums leading-none rounded-full"
+                >
+                  {totalItems > 99 ? "99+" : totalItems}
+                </span>
+              )}
+            </button>
+          </div>
+        </div>
 
-            </div>
+        {/* ───── Row 2: category rail + inline search (lg+ only) ───── */}
+        <div className="hidden lg:block border-t border-ink/5">
+          <div className="max-w-screen-2xl mx-auto px-10 h-12 flex items-center justify-between gap-8">
+            <DesktopCategoryRail />
+            <button
+              type="button"
+              onClick={() => setSearchOpen(true)}
+              className="group flex items-center gap-2.5 text-[12px] text-ink/55 hover:text-ink transition-colors w-[260px] xl:w-[320px] h-9 px-3 border-b border-ink/15 hover:border-ink/40"
+              aria-label="Open search"
+            >
+              <Search className="w-3.5 h-3.5" strokeWidth={1.5} />
+              <span className="italic font-light tracking-[0.02em]">
+                Search the maisons…
+              </span>
+            </button>
           </div>
         </div>
       </header>

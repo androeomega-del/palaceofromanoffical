@@ -409,3 +409,33 @@ export function groupBrandsForMenu(brands: BrandEntry[]): { heading: string; ite
 export function vendorSlug(name: string): string {
   return name.toLowerCase().replace(/\s+/g, "-");
 }
+
+/**
+ * Hero brand tiles surfaced inside the Brands megamenu (and reused later
+ * inside the homepage and the Brand-directory page). Vendors must exist
+ * in the live catalog — verified by the megamenu component before render.
+ * The `to` path is a trend-landing route created in the trend-pages step;
+ * until then it deep-links to the brand directory entry.
+ */
+export type HeroBrand = {
+  vendor: string;
+  eyebrow: string;
+  title: string;
+  /** Final destination once the trend landing page ships. */
+  to: string;
+};
+
+export const HERO_BRANDS: HeroBrand[] = [
+  {
+    vendor: "Dolce & Gabbana",
+    eyebrow: "Sicilian Baroque",
+    title: "Dolce & Gabbana Icons",
+    to: "/brand/dolce-&-gabbana",
+  },
+  {
+    vendor: "Emilio Pucci",
+    eyebrow: "Capri Kaleidoscope",
+    title: "Pucci Prints",
+    to: "/brand/emilio-pucci",
+  },
+];
