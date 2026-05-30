@@ -87,26 +87,26 @@ function DepartmentGateway() {
       className="bg-canvas pt-6 md:pt-10"
     >
       <div className="max-w-screen-2xl mx-auto px-6 md:px-10">
-        <p className="text-center text-[10px] uppercase tracking-[0.4em] text-bronze mb-6 md:mb-8">
+        <p className="text-center text-[10px] uppercase tracking-[0.4em] text-bronze-deep mb-6 md:mb-8">
           The Edit — Resort 2026
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
-          {DEPARTMENTS.map((d) => (
+          {DEPARTMENTS.map((d, i) => (
             <a
               key={d.label}
               href={d.params ? `/collections/${d.params.handle}` : d.to}
-              className="group relative block aspect-[3/4] md:aspect-[3/4] overflow-hidden bg-muted"
+              className="group relative block aspect-[4/5] lg:aspect-[3/4] overflow-hidden bg-muted"
             >
               <img
                 src={d.image}
                 alt={d.alt}
-                loading="eager"
-                fetchPriority="high"
+                loading={i === 0 ? "eager" : "lazy"}
+                fetchPriority={i === 0 ? "high" : undefined}
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-[1.04]"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-ink/10 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-ink/45 via-ink/10 to-transparent" />
               <div className="absolute inset-x-0 bottom-0 p-6 md:p-8 flex items-end justify-center">
-                <span className="font-serif text-[1.6rem] sm:text-3xl lg:text-4xl text-canvas tracking-[0.02em] uppercase leading-none max-w-full px-1 text-center break-words">
+                <span className="font-serif text-[1.6rem] md:text-2xl lg:text-3xl xl:text-4xl text-canvas tracking-[0.02em] uppercase leading-none max-w-full px-1 text-center break-words">
                   {d.label}
                 </span>
               </div>
@@ -135,7 +135,7 @@ function NewInRail() {
       <div className="max-w-screen-2xl mx-auto px-6 md:px-10">
         <div className="flex items-end justify-between gap-6 mb-7 md:mb-9">
           <div>
-            <p className="text-[10px] uppercase tracking-[0.34em] text-bronze mb-2">
+            <p className="text-[10px] uppercase tracking-[0.3em] text-bronze-deep mb-2">
               New In
             </p>
             <h2 className="font-serif text-2xl md:text-3xl text-ink">
@@ -197,8 +197,8 @@ function SeasonalCampaignBanner() {
               className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-[1.04]"
             />
           </div>
-          <div className="flex flex-col justify-center px-8 md:px-14 py-8 md:py-16 order-2 md:order-1 bg-canvas">
-            <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-5">
+          <div className="flex flex-col justify-center px-6 md:px-10 lg:px-14 py-8 md:py-16 order-2 md:order-1 bg-canvas">
+            <p className="text-[10px] uppercase tracking-[0.4em] text-bronze-deep mb-5">
               The Resort Edit
             </p>
             <h2 className="font-serif text-3xl md:text-5xl leading-[1.05] text-ink mb-5 max-w-[18ch]">
@@ -254,7 +254,7 @@ function CategoryQuickLinks() {
             View all →
           </Link>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-5">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 md:gap-5">
           {CATEGORY_TILES.map((tile) => (
             <CategoryTile key={tile.handle} tile={tile} />
           ))}
@@ -297,7 +297,7 @@ function CategoryTile({ tile }: { tile: CategoryTile }) {
           <div className="absolute inset-0 por-shimmer" aria-hidden="true" />
         )}
       </div>
-      <p className="text-[12px] md:text-[13px] uppercase tracking-[0.2em] text-ink text-center group-hover:text-bronze transition-colors">
+      <p className="text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-ink text-center group-hover:text-bronze-deep transition-colors">
         {tile.label}
       </p>
     </Link>
@@ -324,7 +324,7 @@ function DiscreteTrustStrip() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-10">
           {items.map(({ Icon, label, caption }) => (
             <div key={label} className="flex flex-col items-center text-center">
-              <Icon className="w-5 h-5 text-bronze mb-3" strokeWidth={1.25} />
+              <Icon className="w-5 h-5 text-bronze-deep mb-3" strokeWidth={1.25} />
               <p className="text-[11px] uppercase tracking-[0.25em] text-ink mb-1.5">
                 {label}
               </p>

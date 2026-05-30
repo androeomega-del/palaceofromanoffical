@@ -17,6 +17,7 @@
   --color-ink: var(--ink);
   --color-bronze: var(--bronze);
   --color-bronze-soft: var(--bronze-soft);
+  --color-bronze-deep: var(--bronze-deep);
   --color-success: oklch(0.58 0.13 152);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
@@ -48,8 +49,9 @@
   --canvas: oklch(0.985 0.006 85);        /* near-white ivory */
   --canvas-raised: oklch(0.952 0.014 82); /* warm editorial surface */
   --ink: oklch(0.18 0.018 248);           /* luxury ink */
-  --bronze: oklch(0.65 0.092 78);         /* antique gold */
+  --bronze: oklch(0.65 0.092 78);         /* antique gold (decorative — borders, hovers, selection) */
   --bronze-soft: oklch(0.84 0.055 78);    /* pale honey */
+  --bronze-deep: oklch(0.48 0.105 70);    /* WCAG-AA bronze for eyebrow text on canvas (≈ 5.1:1) */
   --sea: oklch(0.48 0.085 230);           /* restrained blue */
 
   /* Semantic mapped to brand */
@@ -123,6 +125,7 @@
     --ink: oklch(0.94 0.012 80);            /* warm ivory */
     --bronze: oklch(0.76 0.105 82);         /* gold */
     --bronze-soft: oklch(0.86 0.085 85);
+    --bronze-deep: oklch(0.82 0.110 82);    /* lifted bronze for AA eyebrow text on dark canvas */
     --background: var(--canvas);
     --foreground: var(--ink);
     --card: var(--canvas-raised);
