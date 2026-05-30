@@ -87,43 +87,41 @@ function MenHomePage() {
 function HeroBanner() {
   return (
     <section aria-label="Menswear Resort 2026 hero" className="bg-canvas">
-      <div className="relative w-full aspect-[4/5] md:aspect-[16/9] overflow-hidden bg-muted">
-        <img
-          src={marketingMenResort}
-          alt="Menswear Resort 2026 — sun-bleached linens and sea-soaked silks photographed in late Mediterranean light"
-          loading="eager"
-          fetchPriority="high"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/20 to-transparent md:bg-gradient-to-r md:from-ink/65 md:via-ink/20 md:to-transparent" />
-        <div className="absolute inset-0 flex items-end md:items-center">
-          <div className="max-w-screen-2xl w-full mx-auto px-6 md:px-10 pb-10 md:pb-0">
-            <div className="max-w-xl text-canvas">
-              <p className="text-[10px] md:text-[11px] uppercase tracking-[0.4em] text-bronze mb-4 md:mb-5">
-                Menswear — Resort 2026
-              </p>
-              <h1 className="font-serif text-3xl md:text-6xl leading-[1.05] mb-5 md:mb-6">
-                Tailored for the long hours of summer.
-              </h1>
-              <p className="text-[14px] md:text-[15px] text-canvas/85 leading-relaxed mb-7 md:mb-8 max-w-md">
-                Sun-bleached linens, sea-soaked silks, and the houses that know
-                the difference between dressing for warmth and dressing for
-                light. Curated from Versace, Dolce &amp; Gabbana, Brunello
-                Cucinelli and the maisons defining the season.
-              </p>
-              <Link
-                to="/editorial/resort-2026"
-                className="inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.3em] text-canvas border-b border-bronze pb-1 hover:text-bronze transition-colors"
-              >
-                Explore the Edit →
-              </Link>
-            </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 min-h-[80vh] md:min-h-[78vh]">
+        {/* Left: white editorial panel, copy centered */}
+        <div className="order-2 md:order-1 flex items-center justify-center bg-canvas px-6 md:px-10 py-14 md:py-0">
+          <div className="max-w-md text-center">
+            <h1 className="font-serif text-[34px] md:text-[44px] leading-[1.1] text-ink mb-6 md:mb-8">
+              Tailored for the long hours of summer
+            </h1>
+            <p className="text-[14px] md:text-[15px] text-ink/80 leading-relaxed mb-8 md:mb-10">
+              Sun-bleached linens, sea-soaked silks, and the houses defining
+              resort 2026 — from Versace, Dolce &amp; Gabbana, Brunello
+              Cucinelli and more.
+            </p>
+            <Link
+              to="/editorial/resort-2026"
+              className="inline-flex items-center justify-center px-8 py-3 border border-ink text-[13px] text-ink hover:bg-ink hover:text-canvas transition-colors"
+            >
+              Shop Now
+            </Link>
           </div>
+        </div>
+        {/* Right: full-bleed editorial image */}
+        <div className="order-1 md:order-2 relative aspect-[4/5] md:aspect-auto bg-muted overflow-hidden">
+          <img
+            src={marketingMenResort}
+            alt="Menswear Resort 2026 — sun-bleached linens and sea-soaked silks photographed in late Mediterranean light"
+            loading="eager"
+            fetchPriority="high"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
         </div>
       </div>
     </section>
   );
 }
+
 
 /* ─────────────────────────────────────────────────────────────────── */
 /*  3. New In This Week                                                */
