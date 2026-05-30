@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ThemedEdit, type ThemedChapter } from "@/components/themed-edit";
-import { img } from "@/lib/editorial-library";
 import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
+import accessoriesHero from "@/assets/editorial-accessories-hero.jpg";
 
 const HERO_N = 87;
+const HERO_SRC = accessoriesHero;
 const CHAPTERS: ThemedChapter[] = [
   {
     n: 88,
@@ -50,7 +51,7 @@ export const Route = createFileRoute("/editorial/accessories")({
     const desc =
       "Eyewear, scarves, belts and small leather goods — the accessories edit, in stock and ready to ship. Zegna, Givenchy, Missoni, Versace and the maisons we carry.";
     const path = "/editorial/accessories";
-    const image = img(HERO_N);
+    const image = HERO_SRC;
     const rh = routeHead({ path, title, description: desc, image, type: "article" });
     return {
       meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
@@ -79,7 +80,8 @@ export const Route = createFileRoute("/editorial/accessories")({
       subtitle="Punctuation — In Stock"
       intro="Eyewear, scarves, belts, chains and small leather goods — the pieces that finish a look. The accessories edit, in stock and ready to ship."
       heroN={HERO_N}
-      heroAlt="Designer accessories editorial — eyewear, scarves, belts and leather"
+      heroSrc={HERO_SRC}
+      heroAlt="Palace gardens portrait — accessories edit: tortoise sunglasses, studded crossbody, tooled cognac belt"
       manifesto="Accessories are the punctuation. Without them, the sentence trails off."
       chapters={CHAPTERS}
       productQuery="tag:Accessories"
