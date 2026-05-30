@@ -23,6 +23,7 @@ export function NewThisWeekRail({
       title="New this week — handpicked from the maisons"
       ctaTo={ctaTo}
       ctaLabel="Shop New In"
+      surface="rail:new-this-week"
     />
   );
 }
