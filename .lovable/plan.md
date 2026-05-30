@@ -103,3 +103,12 @@ I'll stop and wait at each gate:
 ---
 
 **Approve and I'll start with gate 2 (header rewrite).** If anything in the structure is wrong — different rail items, different dept tabs (e.g. add Kids later), different first trend topics — call it out now and I'll revise the plan before touching code.
+---
+## Progress log
+
+- **Gate 2 (header rewrite)** — DONE. Two-row Farfetch-style desktop header with dept tabs, centered wordmark, utility cluster, rail row + inline search. Mobile uses the Farfetch-style drawer.
+- **Gate 3 (first trend page)** — IN PROGRESS.
+  - `/trends/dolce-gabbana-icons` shipped using existing `ThemedEdit` component (no new template needed). Uses live `vendor:"Dolce & Gabbana"` catalog query. Not yet linked in nav (per staged-launches).
+  - `/trends/pucci-prints` DEFERRED — catalog only carries 3 Pucci sunglasses; not enough for a themed edit. Will re-evaluate when inventory grows.
+  - `/trends/quiet-luxury` PIVOTED — Brunello/Loro Piana absent from catalog. Will rebuild as `/trends/tom-ford-essentials` (Tom Ford is the only matching maison in stock) on next turn if approved.
+  - Brand-accurate imagery TODO: chapters currently use generic editorial-library images. Pre-launch QA pass will swap to product CDN refs before linking from nav.
