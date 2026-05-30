@@ -17,7 +17,7 @@ export type Dept = "Women" | "Men";
 
 export const newThisWeekQueryOptions = (dept: Dept) =>
   queryOptions({
-    queryKey: ["rail", "new-this-week", dept] as const,
+    queryKey: ["rail-new-this-week", dept] as const,
     queryFn: () =>
       fetchProducts({
         first: 4,
@@ -30,7 +30,7 @@ export const newThisWeekQueryOptions = (dept: Dept) =>
 
 export const bestSellersQueryOptions = (dept: Dept) =>
   queryOptions({
-    queryKey: ["rail", "best-sellers", dept] as const,
+    queryKey: ["rail-best-sellers", dept] as const,
     queryFn: () =>
       fetchProducts({
         first: 4,
