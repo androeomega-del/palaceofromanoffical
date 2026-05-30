@@ -517,7 +517,7 @@ function EditorialTile({
       />
       <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/20 to-transparent" />
       <div className="absolute inset-x-0 bottom-0 p-8 md:p-10 text-canvas">
-        <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-3">
+        <p className="text-[10px] uppercase tracking-[0.4em] text-bronze-deep mb-3">
           {eyebrow}
         </p>
         <h3 className="font-serif text-2xl md:text-4xl leading-[1.05] mb-4">
