@@ -17,7 +17,7 @@
  * Only live Shopify handles are linked; rail items whose target/column is
  * empty for the active dept are skipped — never a broken link.
  */
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { fetchCollections, fetchVendorIndex, type ShopifyCollection } from "@/lib/shopify";
