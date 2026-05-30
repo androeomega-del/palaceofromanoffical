@@ -8,8 +8,11 @@ export type StorySlide = {
   /** Optional alt text override; falls back to caption. */
   alt?: string;
   caption: string;
+  /** Collection handle for `/collections/$handle`. Used when no productHandle is set. */
   shopHandle?: string;
   shopLabel?: string;
+  /** Product handle for `/product/$handle`. Takes precedence over `shopHandle`. */
+  productHandle?: string;
 };
 
 export type EditorialStoryProps = {
@@ -85,7 +88,15 @@ export function EditorialStory({
             <span className="font-serif italic text-white text-xl md:text-3xl">
               {hero.caption}
             </span>
-            {hero.shopHandle && (
+            {hero.productHandle ? (
+              <Link
+                to="/product/$handle"
+                params={{ handle: hero.productHandle }}
+                className="text-[10px] uppercase tracking-[0.3em] text-white border-b border-white/60 hover:border-white pb-1"
+              >
+                {hero.shopLabel ?? "Shop the piece"} →
+              </Link>
+            ) : hero.shopHandle ? (
               <Link
                 to="/collections/$handle"
                 params={{ handle: hero.shopHandle }}
@@ -93,7 +104,7 @@ export function EditorialStory({
               >
                 {hero.shopLabel ?? "Shop"} →
               </Link>
-            )}
+            ) : null}
           </div>
         </div>
       </section>
@@ -181,7 +192,15 @@ function Frame({ slide, aspect = "aspect-[4/5]" }: { slide: StorySlide; aspect?:
       </div>
       <figcaption className="mt-4 flex items-baseline justify-between gap-6">
         <span className="font-serif italic text-base md:text-lg text-ink">{slide.caption}</span>
-        {slide.shopHandle && (
+        {slide.productHandle ? (
+          <Link
+            to="/product/$handle"
+            params={{ handle: slide.productHandle }}
+            className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-bronze hover:text-ink transition-colors border-b border-bronze/40 hover:border-ink pb-1"
+          >
+            {slide.shopLabel ?? "Shop the piece"} →
+          </Link>
+        ) : slide.shopHandle ? (
           <Link
             to="/collections/$handle"
             params={{ handle: slide.shopHandle }}
@@ -189,7 +208,7 @@ function Frame({ slide, aspect = "aspect-[4/5]" }: { slide: StorySlide; aspect?:
           >
             {slide.shopLabel ?? "Shop"} →
           </Link>
-        )}
+        ) : null}
       </figcaption>
     </figure>
   );
