@@ -455,18 +455,18 @@ function BrandsPanel({
 export function DepartmentTabs() {
   const dept = useDeptStore((s) => s.dept);
   const setDept = useDeptStore((s) => s.setDept);
-  const TABS: { key: Dept; label: string }[] = [
-    { key: "women", label: "Women" },
-    { key: "men", label: "Men" },
+  const TABS: { key: Dept; label: string; to: string }[] = [
+    { key: "women", label: "Women", to: "/" },
+    { key: "men", label: "Men", to: "/men" },
   ];
   return (
     <div className="flex items-stretch gap-6">
       {TABS.map((t) => {
         const active = dept === t.key;
         return (
-          <button
+          <Link
             key={t.key}
-            type="button"
+            to={t.to}
             onClick={() => setDept(t.key)}
             className={`relative py-2 text-[11px] uppercase tracking-[0.3em] transition-colors ${
               active ? "text-ink" : "text-ink/45 hover:text-ink"
@@ -479,7 +479,7 @@ export function DepartmentTabs() {
                 className="absolute left-0 right-0 -bottom-[2px] h-px bg-ink"
               />
             )}
-          </button>
+          </Link>
         );
       })}
     </div>
