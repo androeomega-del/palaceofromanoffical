@@ -197,7 +197,7 @@ export function MobileFarfetchMenu({ onClose }: { onClose: () => void }) {
           {(["women", "men"] as Tab[]).map((t) => {
             const active = tab === t;
             return (
-              <button
+            <button
                 key={t}
                 type="button"
                 onClick={() => setTab(t)}
@@ -205,7 +205,7 @@ export function MobileFarfetchMenu({ onClose }: { onClose: () => void }) {
                   active ? "text-ink" : "text-ink/45"
                 }`}
               >
-                {t === "women" ? "The Women's Edit" : "The Men's Edit"}
+                {t === "women" ? "Women" : "Men"}
                 {active && (
                   <span
                     aria-hidden="true"
