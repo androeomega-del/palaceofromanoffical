@@ -180,7 +180,7 @@ const CATEGORY_TILES: CategoryTile[] = [
   { handle: "womens-shoes", label: "Shoes", fallbackAlt: "Designer shoes" },
   { handle: "italian-leather-handbags", label: "Bags", fallbackAlt: "Designer handbags" },
   { handle: "designer-sunglasses", label: "Eyewear", fallbackAlt: "Designer sunglasses" },
-  { handle: "silk-scarves", label: "Silk &amp; Scarves", fallbackAlt: "Silk scarves" },
+  { handle: "silk-scarves", label: "Silk & Scarves", fallbackAlt: "Silk scarves" },
 ];
 
 function CategoryQuickLinks() {
@@ -241,10 +241,9 @@ function CategoryTile({ tile }: { tile: CategoryTile }) {
           <div className="absolute inset-0 por-shimmer" aria-hidden="true" />
         )}
       </div>
-      <p
-        className="text-[12px] md:text-[13px] uppercase tracking-[0.2em] text-ink text-center group-hover:text-bronze transition-colors"
-        dangerouslySetInnerHTML={{ __html: tile.label }}
-      />
+      <p className="text-[12px] md:text-[13px] uppercase tracking-[0.2em] text-ink text-center group-hover:text-bronze transition-colors">
+        {tile.label}
+      </p>
     </Link>
   );
 }
