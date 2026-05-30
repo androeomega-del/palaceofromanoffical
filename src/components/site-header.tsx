@@ -66,7 +66,7 @@ export function SiteHeader() {
     prevCount.current = totalItems;
   }, [totalItems]);
 
-  const ANNOUNCE_KEY = "por-announce-dismissed-v1";
+  const ANNOUNCE_KEY = "por-announce-dismissed-v2";
   const [announceOpen, setAnnounceOpen] = useState(true);
   useEffect(() => {
     try {
