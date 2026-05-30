@@ -3,16 +3,22 @@
 // We pick a single canonical handle and redirect the rest so we never serve
 // duplicate landing pages — every category has exactly one URL.
 export const CANONICAL_COLLECTION_HANDLE: Record<string, string> = {
+  // Apparel/shoes — Storefront uses the `mens-`/`womens-` (with S) form.
   "women-clothing": "womens-clothing",
   "women-shoes": "womens-shoes",
-  "women-accessories": "womens-accessories",
   "men-clothing": "mens-clothing",
   "men-shoes": "mens-shoes",
-  "men-bags": "mens-bags",
-  "men-accessories": "mens-accessories",
+  // Bags/accessories — Storefront uses the bare `men-`/`women-` form for
+  // these (no `mens-bags`/`mens-accessories` collection exists).
+  "mens-bags": "men-bags",
+  "mens-accessories": "men-accessories",
+  "womens-accessories-alt": "women-accessories", // keep `womens-accessories` as-is (it exists)
+  // Sale-style aliases — no `high-discounts`/`sale` collection exists on
+  // Storefront, point to the curated best-sellers tile instead.
   "best-sellers": "best-selling-brands",
-  "sale": "high-discounts",
-  "on-sale": "high-discounts",
+  "sale": "best-selling-brands",
+  "on-sale": "best-selling-brands",
+  "high-discounts": "best-selling-brands",
   // Brand vendor slugs — Storefront exposes the bare vendor handle, our
   // legacy nav and tiles use a `brand-` prefix. Map to the live handle.
   "brand-bottega-veneta": "bottega-veneta",
