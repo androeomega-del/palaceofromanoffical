@@ -250,24 +250,55 @@ function HeroBanner() {
 
 function NewInThisWeek() {
   const { data } = useQuery({
-    queryKey: ["men", "just-landed", "v2"],
+    queryKey: ["men", "just-landed", "v3-look"],
     queryFn: () =>
       fetchProducts({
-        first: 16,
+        first: 60,
         query: 'tag:Men AND tag:"New with tags"',
         sortKey: "CREATED_AT",
         reverse: true,
       }),
     staleTime: 10 * 60 * 1000,
   });
+
+  // Farfetch-style "building a look" cadence:
+  // clothing → accessory → clothing → shoes, repeating.
+  // We over-fetch and bucket by productType, then interleave so each
+  // visible row scans as an outfit in the making rather than a flat dump.
   const products = data ?? [];
+  const SHOE = /shoe|sneaker|boot|loafer|driver|trainer|sandal|mule|espadrille/i;
+  const ACC = /bag|belt|wallet|card holder|sunglass|eyewear|hat|cap|scarf|tie|jewel|watch|pouch|backpack/i;
+  const shoes: typeof products = [];
+  const accs: typeof products = [];
+  const clothing: typeof products = [];
+  for (const p of products) {
+    const t = p.node.productType ?? "";
+    if (SHOE.test(t)) shoes.push(p);
+    else if (ACC.test(t)) accs.push(p);
+    else clothing.push(p);
+  }
+  const pattern: Array<"C" | "A" | "C" | "S"> = ["C", "A", "C", "S"];
+  const ordered: typeof products = [];
+  const seen = new Set<string>();
+  const take = (bucket: typeof products, fallback: typeof products) => {
+    const next = bucket.find((p) => !seen.has(p.node.id)) ?? fallback.find((p) => !seen.has(p.node.id));
+    if (next) { seen.add(next.node.id); ordered.push(next); }
+  };
+  const rest = products;
+  for (let i = 0; ordered.length < 16 && i < 40; i++) {
+    const slot = pattern[i % pattern.length];
+    if (slot === "A") take(accs, rest);
+    else if (slot === "S") take(shoes, rest);
+    else take(clothing, rest);
+  }
+  const display = ordered.length > 0 ? ordered : products.slice(0, 16);
 
   return (
     <CarouselSection
       ariaLabel="New in this week"
       eyebrow="New In This Week"
       title="Just Landed"
-      description="New arrivals from Versace, Dolce & Gabbana, Brunello Cucinelli and the names defining resort 2026."
+      description="New arrivals composed as a look — clothing, an accent, another piece, then the shoe to finish."
       actions={
         <Link
           to="/men"
@@ -278,8 +309,8 @@ function NewInThisWeek() {
         </Link>
       }
     >
-      {products.length > 0
-        ? products.map((p) => <ProductCard key={p.node.id} product={p} />)
+      {display.length > 0
+        ? display.map((p) => <ProductCard key={p.node.id} product={p} />)
         : Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="aspect-[3/4] por-shimmer bg-muted" />
           ))}
