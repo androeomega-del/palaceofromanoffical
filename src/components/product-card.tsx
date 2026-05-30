@@ -167,6 +167,9 @@ export function ProductCard({
       return;
     }
     track({ handle: p.handle, event: "click", ...meta });
+    if (surface) {
+      track({ handle: p.handle, event: "rail_tap", ...meta });
+    }
     if (hasScarcity) {
       track({ handle: p.handle, event: "scarcity_click", ...meta });
     }
