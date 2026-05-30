@@ -859,6 +859,31 @@ export function MobileMegamenu() {
       ))}
 
       <MobileAccordion
+        label="Vacation"
+        isOpen={openKey === "vacation"}
+        onToggle={() => setOpenKey(openKey === "vacation" ? null : "vacation")}
+      >
+        {VACATION_COLUMNS.map((col) => (
+          <div key={col.heading} className="flex flex-col gap-1.5">
+            <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-1">
+              {col.heading}
+            </p>
+            {col.items.map((it) => (
+              <a
+                key={it.label + it.to}
+                href={it.to}
+                className="text-[14px] text-ink/85 hover:text-bronze py-1"
+              >
+                {it.label}
+              </a>
+            ))}
+          </div>
+        ))}
+      </MobileAccordion>
+
+
+
+      <MobileAccordion
         label="Brands"
         isOpen={openKey === "brands"}
         onToggle={() => setOpenKey(openKey === "brands" ? null : "brands")}
