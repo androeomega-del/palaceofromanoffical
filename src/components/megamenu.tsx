@@ -31,10 +31,10 @@ const VACATION_COLUMNS: VacationColumn[] = [
   {
     heading: "Edits",
     items: [
+      { label: "Vacation Stylist", to: "/vacation-stylist" },
       { label: "Resort 2026", to: "/editorial/resort-2026" },
       { label: "Charter Capsule", to: "/edits/charter-capsule" },
       { label: "Summer Edit", to: "/editorial/summer-edit" },
-      { label: "Shoreline Perspective", to: "/editorial/shoreline-perspective" },
     ],
   },
   {
@@ -48,10 +48,10 @@ const VACATION_COLUMNS: VacationColumn[] = [
   },
 ];
 const VACATION_FEATURE = {
-  to: "/edits/yacht-edit",
-  eyebrow: "The Charter Edit",
-  title: "Pieces made for the way you travel.",
-  cta: "Step Aboard",
+  to: "/vacation-stylist",
+  eyebrow: "New · Private Capsule",
+  title: "Tell us where you're going. We'll pack the boutique.",
+  cta: "Open the Stylist",
   img: imgForKey("vacation-feature"),
 };
 
