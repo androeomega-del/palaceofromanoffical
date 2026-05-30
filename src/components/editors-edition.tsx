@@ -21,7 +21,10 @@ import { EditorialHotspots } from "@/components/editorial-hotspots";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { CampaignVideo } from "@/components/campaign-video";
-import { DefaultEditionBody } from "@/components/default-edition-body";
+// PHASE 1: FarfetchEditionBody replaces DefaultEditionBody as the homepage
+// body. To revert, swap this import back to:
+//   import { DefaultEditionBody } from "@/components/default-edition-body";
+import { FarfetchEditionBody } from "@/components/farfetch-edition-body";
 import { TrendingNowRail } from "@/components/trending-now";
 
 
@@ -94,7 +97,10 @@ export function EditionLayout() {
     <>
       <SiteHeader />
       <main className="flex-1">
-        <DefaultEditionBody
+        {/* PHASE 1 — Farfetch-style gateway homepage. The original dense
+            DefaultEditionBody is preserved (unused) so this is reversible by
+            swapping FarfetchEditionBody → DefaultEditionBody here. */}
+        <FarfetchEditionBody
           aiBlocks={
             hasAiLayout ? (
               <EditionBlocksBoundary>

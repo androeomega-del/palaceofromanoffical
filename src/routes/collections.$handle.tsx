@@ -20,14 +20,93 @@ import {
   type SortValue,
 } from "@/components/catalog-filters";
 
-// Curated handles that receive the Nordstrom-style editorial hero +
+// Curated handles that receive the Farfetch-style editorial hero +
 // featured-three row + roomier grid. Adding a handle here is the only
 // change needed to opt another collection in.
+//
+// PHASE 2 — Expanded the map so every major PLP carries an editorial
+// lead-in (Farfetch ships one on every collection page). Voice is
+// curatorial, restrained, never urgent.
 const EDITORIAL_HERO_COPY: Record<string, { eyebrow: string; tagline: string }> = {
   "best-sellers": {
     eyebrow: "Most-Loved at Palace of Roman",
     tagline:
       "The pieces our clients return for — runway-grade silhouettes from Gucci, Prada, Saint Laurent and the houses defining this season. Sourced through our authorised distributor network, shipped worldwide.",
+  },
+  "new-arrivals": {
+    eyebrow: "Just In",
+    tagline:
+      "Handpicked daily from the maisons defining the season. New silhouettes, fresh proportions, the pieces worth a long look — added as our buyers see them.",
+  },
+  "womens-clothing": {
+    eyebrow: "Womenswear — The Edit",
+    tagline:
+      "Tailoring, ready-to-wear, evening pieces and the houses that anchor a wardrobe — curated from Versace, Dolce & Gabbana, Brunello Cucinelli and the maisons defining contemporary luxury.",
+  },
+  "mens-clothing": {
+    eyebrow: "Menswear — The Edit",
+    tagline:
+      "Considered tailoring, soft knits, weekend essentials and resort staples — drawn from the houses that have spent decades getting the proportions right.",
+  },
+  "womens-shoes": {
+    eyebrow: "The Footwear Edit",
+    tagline:
+      "Heels with architecture, sandals with restraint, boots with intent. The pieces that finish the outfit — sourced from the houses that have always understood the role of the shoe.",
+  },
+  "mens-shoes": {
+    eyebrow: "The Footwear Edit",
+    tagline:
+      "Italian leather loafers, hand-finished sneakers, considered boots. The pieces that quietly hold a wardrobe together — from the houses that have spent generations perfecting the craft.",
+  },
+  "italian-leather-handbags": {
+    eyebrow: "The Italian Leather Atelier",
+    tagline:
+      "Hand-finished leathers, considered hardware, and the houses that built their reputations on a single perfect bag. Curated from the Italian maisons defining the category.",
+  },
+  "italian-leather-loafers": {
+    eyebrow: "The Italian Leather Atelier",
+    tagline:
+      "Pebble grain, polished calf, and the unhurried construction that separates a loafer from a slipper. The pieces a wardrobe leans on for years.",
+  },
+  "italian-leather-wallets": {
+    eyebrow: "The Italian Leather Atelier",
+    tagline:
+      "Bifolds, cardholders, zip-arounds — small leather goods finished by the same workshops that supply the major houses. Quiet pieces that carry a wardrobe's signature.",
+  },
+  "designer-sunglasses": {
+    eyebrow: "The Eyewear Edit",
+    tagline:
+      "Acetate, metal, oversized, restrained. The frames that define a face — drawn from Versace, Dolce & Gabbana, Tom Ford and the houses that treat eyewear as architecture.",
+  },
+  "designer-belts": {
+    eyebrow: "The Finishing Touch",
+    tagline:
+      "Hardware, leather, proportion — the belt that completes the silhouette. Curated from the houses that built their codes on the buckle.",
+  },
+  "designer-crossbody-bags": {
+    eyebrow: "The Crossbody Edit",
+    tagline:
+      "Hands-free architecture — the bags that move with the day. Considered straps, soft leathers, and the proportions that work from morning to dinner.",
+  },
+  "designer-mens-shirts": {
+    eyebrow: "The Shirt Edit",
+    tagline:
+      "Poplin, linen, silk-blends — the shirts that anchor everything else. Cut by the houses that understand the difference between a shirt and a piece of clothing.",
+  },
+  "luxury-sneakers": {
+    eyebrow: "The Sneaker Edit",
+    tagline:
+      "Italian construction, considered branding, and the silhouettes that have crossed from streetwear into the wardrobe proper. From the houses defining the category.",
+  },
+  "cashmere-sweaters": {
+    eyebrow: "Soft Architecture",
+    tagline:
+      "Hand-loomed cashmere, considered gauges, and the colours that hold up to daylight. The pieces a wardrobe gets quieter and better with.",
+  },
+  "silk-scarves": {
+    eyebrow: "The Silk Edit",
+    tagline:
+      "Hand-rolled hems, archive prints, and the squares that finish a coat, a handbag, a head. The accessory that has never gone out of fashion.",
   },
   "polo-shirts": {
     eyebrow: "The Polo, Properly Considered",
