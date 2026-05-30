@@ -49,13 +49,13 @@ function AuthenticationPage() {
   return (
     <EditorialPageShell
       eyebrow="Sourcing & Authenticity"
-      intro="Palace of Roman is an official BrandsGateway partner, authorised to resell pieces from Gucci, Versace, Balenciaga, Dior, Prada, Saint Laurent and the wider catalogue. Every piece is 100% authentic, sourced from the brands or their authorised distributors, and ships sealed from a brand-authorised warehouse."
+      intro="Palace of Roman partners with a network of authorised boutiques and distributors around the world to bring you pieces from Gucci, Versace, Balenciaga, Dior, Prada, Saint Laurent and the wider catalogue. Every piece is 100% authentic, sourced from the brands or their authorised distributors, and ships sealed in its original packaging."
       heroImage={img(38)}
       heroAlt="Original brand packaging on a studio surface"
     >
       <div className="not-prose grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-24">
         {[
-          { Icon: Building2, title: "Official partner", body: "Certified BrandsGateway partner, authorised to resell from a catalogue of more than ninety luxury houses." },
+          { Icon: Building2, title: "Global boutique network", body: "We partner with authorised boutiques and distributors around the world, drawing from more than ninety luxury houses." },
           { Icon: PackageCheck, title: "Sealed shipment", body: "Direct from the brand-authorised warehouse in original packaging — tags, dust bag and box intact." },
           { Icon: FileBadge, title: "Original documentation", body: "Each order arrives with the documentation the maison originally supplied with the piece." },
           { Icon: ShieldCheck, title: "Authenticity guarantee", body: "Ninety days to return for a full refund if a third-party authenticator ever challenges the piece." },
@@ -83,22 +83,15 @@ function AuthenticationPage() {
         </div>
 
         <div className="not-prose mt-16 p-8 md:p-10 bg-canvas-raised border border-ink/5">
-          <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-3">Verified partner</p>
-          <h2 className="font-serif text-2xl mb-4">Read our reseller certificate.</h2>
+          <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-3">A note on sourcing</p>
+          <h2 className="font-serif text-2xl mb-4">Verified channels, in plain language.</h2>
           <p className="text-sm text-ink/80 leading-relaxed mb-6">
-            Palace of Roman is certified by BrandsGateway (Gateway Holdings OÜ, Estonia) as an official partner,
-            authorised to resell luxury fashion goods that are 100% authentic and sourced from the brands or their
-            authorised distributors. The signed certificate is available below for your review.
+            Palace of Roman partners with a network of authorised boutiques and distributors around the world —
+            the same model used by leading multi-brand luxury platforms. Every piece is 100% authentic and
+            sourced from the brands or their authorised distributors. If you would like more detail on a specific
+            order, the concierge is one email away.
           </p>
           <div className="flex flex-wrap gap-4">
-            <a
-              href="/reseller-certificate.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block text-[11px] uppercase tracking-[0.25em] border-b border-ink pb-1 hover:text-bronze hover:border-bronze"
-            >
-              View reseller certificate (PDF) →
-            </a>
             <Link
               to="/contact"
               className="inline-block text-[11px] uppercase tracking-[0.25em] border-b border-ink/40 pb-1 hover:text-bronze hover:border-bronze"

@@ -88,7 +88,7 @@ export function PdpShippingSheet() {
           <Pillar
             icon={<ShieldCheck className="w-4 h-4" strokeWidth={1.4} />}
             title="100% Authentic"
-            sub="Sourced from the brands or their authorised distributors. Official BrandsGateway partner."
+            sub="Sourced through our network of authorised European boutiques and distributors."
           />
           <Pillar
             icon={<Package className="w-4 h-4" strokeWidth={1.4} />}

@@ -1,9 +1,8 @@
 import { ShieldCheck, Package, RotateCcw } from "lucide-react";
 
 /**
- * Defensible authenticity strip — claims only what the signed BrandsGateway
- * reseller certificate supports. No fabricated atelier / in-house QA language.
- * See mem://business/reseller-status.
+ * Defensible authenticity strip — claims only what our sourcing model
+ * supports. No fabricated atelier / in-house QA language.
  */
 export function PdpAuthenticityStrip() {
   return (
@@ -11,7 +10,7 @@ export function PdpAuthenticityStrip() {
       <Pillar
         icon={<ShieldCheck className="w-5 h-5" strokeWidth={1.4} />}
         title="100% Authentic"
-        sub="Sourced from the brands or their authorised distributors. Official BrandsGateway partner."
+        sub="Sourced through our network of authorised European boutiques and distributors."
       />
       <Pillar
         icon={<Package className="w-5 h-5" strokeWidth={1.4} />}

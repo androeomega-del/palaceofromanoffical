@@ -254,7 +254,7 @@ function CategoryTile({ tile }: { tile: CategoryTile }) {
 
 function DiscreteTrustStrip() {
   const items = [
-    { Icon: ShieldCheck, label: "100% Authentic", caption: "Official BrandsGateway partner" },
+    { Icon: ShieldCheck, label: "100% Authentic", caption: "Global boutique partners" },
     { Icon: Plane, label: "Ships from EU", caption: "Tracked worldwide" },
     { Icon: RotateCcw, label: "14-Day Returns", caption: "Hassle-free" },
     { Icon: MessageCircle, label: "Personal Concierge", caption: "Replies within 24h" },

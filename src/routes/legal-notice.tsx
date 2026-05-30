@@ -84,18 +84,10 @@ function LegalNoticePage() {
         <section>
           <SectionTitle kicker="05">Sourcing &amp; partnership</SectionTitle>
           <p>
-            Palace of Roman is an official partner of{" "}
-            <a
-              href="https://brandsgateway.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline decoration-bronze/60 underline-offset-4 hover:text-bronze"
-            >
-              BrandsGateway
-            </a>{" "}
-            (Gateway Holdings OÜ, Estonia), authorised to resell luxury fashion goods from the maisons listed on the site.
-            Every piece is certified as 100% authentic and sourced directly from the brands or their authorised distributors.
-            Our reseller certificate is available on the{" "}
+            Palace of Roman partners with a network of authorised boutiques and distributors around the world to
+            offer luxury fashion goods from the maisons listed on the site. Every piece is 100% authentic and
+            sourced directly from the brands or their authorised distributors. More detail on our sourcing model
+            is on the{" "}
             <Link to="/authentication" className="underline decoration-bronze/60 underline-offset-4 hover:text-bronze">
               authentication page
             </Link>

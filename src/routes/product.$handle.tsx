@@ -617,7 +617,7 @@ function ProductView({
               <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] uppercase tracking-[0.2em] text-[var(--studio-bronze)] font-semibold pt-1">
                 <span>100% Authentic</span>
                 <span className="opacity-30">·</span>
-                <span>Official BrandsGateway Partner</span>
+                <span>Global Boutique Partners</span>
                 <span className="opacity-30">·</span>
                 <span>Ships from Europe</span>
                 <span className="opacity-30">·</span>
@@ -824,8 +824,9 @@ function ProductView({
                 <AccordionContent>
                   <p className="text-sm leading-[1.85] text-[var(--studio-muted)]">
                     Every piece is 100% authentic, sourced from the brands or their authorised
-                    distributors as an official BrandsGateway partner. Returns are accepted within
-                    14 days of delivery — unworn, with original tags and packaging. See{" "}
+                    distributors through our network of partner boutiques around the world. Returns
+                    are accepted within 14 days of delivery — unworn, with original tags and
+                    packaging. See{" "}
                     <Link
                       to="/authentication"
                       className="underline underline-offset-4 hover:text-[var(--studio-ink)]"

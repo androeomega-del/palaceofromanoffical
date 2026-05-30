@@ -295,7 +295,7 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
           signalling authenticity + fast EU dispatch before the visitor scrolls. */}
       <section aria-label="Why shop Palace of Roman" className="border-y border-ink/10 bg-canvas">
         <div className="max-w-screen-2xl mx-auto px-6 py-3 md:py-4 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-[10px] md:text-[11px] uppercase tracking-[0.28em] text-ink/75">
-          <span className="inline-flex items-center gap-2"><ShieldCheck className="w-3.5 h-3.5 text-bronze" strokeWidth={1.5} /> Official BrandsGateway Partner</span>
+          <span className="inline-flex items-center gap-2"><ShieldCheck className="w-3.5 h-3.5 text-bronze" strokeWidth={1.5} /> Global Boutique Partners</span>
           <span className="hidden md:inline opacity-30">·</span>
           <span>100% Authentic</span>
           <span className="hidden md:inline opacity-30">·</span>
@@ -739,7 +739,7 @@ export function DefaultEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) 
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-10">
             {[
-              { Icon: ShieldCheck, title: "100% Authentic Guaranteed", body: "Official BrandsGateway partner — every piece authorised and sourced from the brands or their authorised distributors." },
+              { Icon: ShieldCheck, title: "100% Authentic Guaranteed", body: "Every piece sourced through our network of authorised European boutiques and distributors — arriving sealed, in original packaging." },
               { Icon: Plane, title: "Tracked Worldwide Shipping", body: "Complimentary DHL or FedEx tracked dispatch on orders above $250, with full traceability door to door." },
               { Icon: RotateCcw, title: "Considered Returns", body: "14-day returns on full-priced pieces from the day your parcel is delivered — quietly handled, no questions." },
               { Icon: Sparkles, title: "VIP Email Concierge", body: "A direct line for sourcing requests, sizing and styling — same-day reply from a member of the house." },

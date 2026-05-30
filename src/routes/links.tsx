@@ -113,7 +113,7 @@ function LinksPage() {
             Multi-brand luxury, curated.
           </h1>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            100% authentic — official BrandsGateway partner. Worldwide shipping, 14-day returns.
+            100% authentic — sourced through our global boutique network. Worldwide shipping, 14-day returns.
           </p>
         </div>
 
