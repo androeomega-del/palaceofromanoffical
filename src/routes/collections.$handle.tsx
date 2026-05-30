@@ -297,7 +297,7 @@ function CollectionPage() {
             title: "New Arrivals",
             handle: "new-arrivals",
             description: "",
-            image: null,
+            image: page.edges[0]?.node.images?.edges?.[0]?.node ?? null,
             updatedAt: new Date(0).toISOString(),
           },
           filters: [],
@@ -327,7 +327,7 @@ function CollectionPage() {
     queryFn: () => fetchTotal({ data: { handle } }),
     staleTime: 5 * 60_000,
   });
-  const total = totalQ.data?.total ?? null;
+  const total = handle === "new-arrivals" ? null : totalQ.data?.total ?? null;
 
   // True per-bucket counts via Admin-API walk of the entire collection.
   // Disabled for the bespoke layering-edit chip set (no aggregation
