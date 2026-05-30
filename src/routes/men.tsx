@@ -149,7 +149,7 @@ function CarouselSection({
         <div className="flex items-end justify-between mb-8 md:mb-10 gap-6">
           <div>
             {eyebrow ? (
-              <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-3">
+              <p className="text-[10px] uppercase tracking-[0.4em] text-bronze-deep mb-3">
                 {eyebrow}
               </p>
             ) : null}
@@ -687,7 +687,7 @@ function CampaignTile({
       </div>
       <div className="flex flex-1 flex-col justify-between px-6 md:px-8 py-8 md:py-10 bg-canvas">
         <div>
-          <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-4">
+          <p className="text-[10px] uppercase tracking-[0.4em] text-bronze-deep mb-4">
             {eyebrow}
           </p>
           <h3 className="font-serif text-2xl md:text-3xl leading-[1.1] text-ink mb-4 max-w-[18ch]">
@@ -854,7 +854,7 @@ function TrendingEditorials() {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/20 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 p-6 md:p-7 text-canvas">
-            <p className="text-[10px] uppercase tracking-[0.35em] text-bronze mb-3">
+            <p className="text-[10px] uppercase tracking-[0.35em] text-bronze-deep mb-3">
               {e.eyebrow}
             </p>
             <h3 className="font-serif text-xl md:text-2xl leading-[1.1] mb-3">
