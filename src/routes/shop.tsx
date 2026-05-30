@@ -50,6 +50,8 @@ const shopSearch = z.object({
   sizes: fallback(z.string(), "").default(""),
   colors: fallback(z.string(), "").default(""),
   materials: fallback(z.string(), "").default(""),
+  occasions: fallback(z.string(), "").default(""),
+  sale: fallback(z.enum(["any", "sale", "full"]), "any").default("any"),
 });
 
 function decodeSet(s: string): Set<string> {
