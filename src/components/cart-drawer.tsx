@@ -56,7 +56,10 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-md flex flex-col h-full bg-canvas border-l border-ink/10 p-0 gap-0">
+      <SheetContent
+        className="w-full sm:max-w-md flex flex-col h-full bg-canvas border-l border-ink/10 p-0 gap-0"
+        style={{ transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)" }}
+      >
         <SheetHeader className="px-6 py-6 border-b border-ink/10">
           <SheetTitle className="text-xs uppercase tracking-[0.3em] font-medium text-left">
             Shopping Bag {totalItems > 0 && <span className="text-muted-foreground">({totalItems})</span>}
