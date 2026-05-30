@@ -24,9 +24,9 @@ export function EditorialPageShell({ eyebrow, title, intro, heroImage, heroAlt, 
           <div className="absolute inset-0 bg-gradient-to-t from-ink/60 via-ink/15 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 max-w-screen-2xl mx-auto px-6 pb-10 md:pb-16 text-white">
             {/* text-bronze passes on dark hero gradient overlay (~4.5:1) — do not change to bronze-deep */}
-            <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-4">{eyebrow}</p>
+            <p className="text-eyebrow uppercase text-bronze mb-4">{eyebrow}</p>
             {title ? (
-              <h1 className="font-serif text-4xl md:text-6xl lg:text-7xl leading-[1.02] tracking-tight max-w-3xl text-balance">
+              <h1 className="font-serif text-headline-md md:text-display-md lg:text-display-lg max-w-3xl text-balance">
                 {title}
               </h1>
             ) : (
@@ -38,9 +38,9 @@ export function EditorialPageShell({ eyebrow, title, intro, heroImage, heroAlt, 
       ) : (
         <section className="px-6 pt-20 md:pt-28 pb-12 border-b border-ink/5">
           <div className="max-w-screen-2xl mx-auto">
-            <p className="text-[10px] uppercase tracking-[0.4em] text-bronze-deep mb-4">{eyebrow}</p>
+            <p className="text-eyebrow uppercase text-bronze-deep mb-4">{eyebrow}</p>
             {title ? (
-              <h1 className="font-serif text-5xl md:text-7xl tracking-tight leading-[1.02] text-balance max-w-3xl">
+              <h1 className="font-serif text-display-sm md:text-display-lg text-balance max-w-3xl">
                 {title}
               </h1>
             ) : (
@@ -58,7 +58,7 @@ export function EditorialPageShell({ eyebrow, title, intro, heroImage, heroAlt, 
 
 export function ProseColumn({ children }: { children: ReactNode }) {
   return (
-    <div className="max-w-[68ch] mx-auto space-y-8 text-[15px] md:text-base leading-[1.75] text-ink/85">
+    <div className="max-w-[68ch] mx-auto space-y-8 text-base leading-[1.75] text-ink/85">
       {children}
     </div>
   );
@@ -67,8 +67,8 @@ export function ProseColumn({ children }: { children: ReactNode }) {
 export function SectionTitle({ kicker, children }: { kicker?: string; children: ReactNode }) {
   return (
     <div className="mb-6">
-      {kicker && <p className="text-[10px] uppercase tracking-[0.3em] text-bronze-deep mb-3">{kicker}</p>}
-      <h2 className="font-serif text-2xl md:text-3xl tracking-tight text-balance">{children}</h2>
+      {kicker && <p className="text-eyebrow-tight uppercase text-bronze-deep mb-3">{kicker}</p>}
+      <h2 className="font-serif text-subhead-md md:text-subhead-lg text-balance">{children}</h2>
     </div>
   );
 }
