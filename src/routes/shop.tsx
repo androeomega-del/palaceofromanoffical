@@ -113,12 +113,14 @@ function ShopPage() {
       sizes: decodeSet(search.sizes),
       colors: decodeSet(search.colors),
       materials: decodeSet(search.materials),
+      occasions: decodeSet(search.occasions),
+      sale: search.sale,
       price:
         search.min != null && search.max != null
           ? { min: search.min, max: search.max }
           : null,
     }),
-    [search.brands, search.sizes, search.colors, search.materials, search.min, search.max],
+    [search.brands, search.sizes, search.colors, search.materials, search.occasions, search.sale, search.min, search.max],
   );
 
   // Reset facet selections whenever scope changes (gender/collection/q)
