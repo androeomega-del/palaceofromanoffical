@@ -237,102 +237,31 @@ function NewInThisWeek() {
     staleTime: 10 * 60 * 1000,
   });
   const products = data?.products?.edges ?? [];
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    align: "start",
-    containScroll: "trimSnaps",
-    dragFree: true,
-  });
-  const [canPrev, setCanPrev] = useState(false);
-  const [canNext, setCanNext] = useState(false);
-  const onSelect = useCallback(() => {
-    if (!emblaApi) return;
-    setCanPrev(emblaApi.canScrollPrev());
-    setCanNext(emblaApi.canScrollNext());
-  }, [emblaApi]);
-  useEffect(() => {
-    if (!emblaApi) return;
-    onSelect();
-    emblaApi.on("select", onSelect);
-    emblaApi.on("reInit", onSelect);
-  }, [emblaApi, onSelect]);
 
   return (
-    <section aria-label="New in this week" className="bg-canvas pt-16 md:pt-24">
-      <div className="max-w-screen-2xl mx-auto px-6 md:px-10">
-        <div className="flex items-end justify-between mb-8 md:mb-10 gap-6">
-          <div>
-            <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-3">
-              New In This Week
-            </p>
-            <h2 className="font-serif text-3xl md:text-4xl text-ink mb-4">
-              Just Landed
-            </h2>
-            <p className="text-[14px] md:text-[15px] text-muted-foreground max-w-lg leading-relaxed">
-              New arrivals from Versace, Dolce &amp; Gabbana, Brunello Cucinelli
-              and the names defining resort 2026.
-            </p>
-          </div>
-          <div className="hidden md:flex items-center gap-6 shrink-0">
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                aria-label="Previous"
-                onClick={() => emblaApi?.scrollPrev()}
-                disabled={!canPrev}
-                className="w-10 h-10 grid place-items-center border border-ink/15 hover:border-ink transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-              >
-                <ChevronLeft className="w-4 h-4" strokeWidth={1.5} />
-              </button>
-              <button
-                type="button"
-                aria-label="Next"
-                onClick={() => emblaApi?.scrollNext()}
-                disabled={!canNext}
-                className="w-10 h-10 grid place-items-center border border-ink/15 hover:border-ink transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-              >
-                <ChevronRight className="w-4 h-4" strokeWidth={1.5} />
-              </button>
-            </div>
-            <Link
-              to="/collections/$handle"
-              params={{ handle: "mens-new-arrivals" }}
-              className="inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.3em] text-ink border-b border-bronze/50 pb-1 hover:text-bronze hover:border-bronze transition-colors"
-            >
-              Explore New In →
-            </Link>
-          </div>
-        </div>
-        {products.length === 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="aspect-[3/4] por-shimmer bg-muted" />
-            ))}
-          </div>
+    <CarouselSection
+      ariaLabel="New in this week"
+      eyebrow="New In This Week"
+      title="Just Landed"
+      description="New arrivals from Versace, Dolce & Gabbana, Brunello Cucinelli and the names defining resort 2026."
+      actions={
+        <Link
+          to="/collections/$handle"
+          params={{ handle: "mens-new-arrivals" }}
+          className="inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.3em] text-ink border-b border-bronze/50 pb-1 hover:text-bronze hover:border-bronze transition-colors"
+        >
+          Explore New In →
+        </Link>
+      }
+    >
+      {(products.length > 0 ? products : Array.from({ length: 4 })).map((p, i) =>
+        "node" in p ? (
+          <ProductCard key={p.node.id} product={p} />
         ) : (
-          <div className="overflow-hidden -mx-2" ref={emblaRef}>
-            <div className="flex">
-              {products.map((p) => (
-                <div
-                  key={p.node.id}
-                  className="px-2 shrink-0 basis-[68%] sm:basis-[42%] md:basis-[32%] lg:basis-[24%]"
-                >
-                  <ProductCard product={p} />
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-        <div className="md:hidden mt-8 text-center">
-          <Link
-            to="/collections/$handle"
-            params={{ handle: "mens-new-arrivals" }}
-            className="inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.3em] text-ink border-b border-bronze/50 pb-1"
-          >
-            Explore New In →
-          </Link>
-        </div>
-      </div>
-    </section>
+          <div key={i} className="aspect-[3/4] por-shimmer bg-muted" />
+        ),
+      )}
+    </CarouselSection>
   );
 }
 
