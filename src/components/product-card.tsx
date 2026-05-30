@@ -62,7 +62,7 @@ export function ProductCard({
     priceUsd: parseFloat(price.amount),
     onSale: Boolean(onSale),
   });
-  const showScarcityBadge = !soldOut && scarcity.tier !== "none" && scarcity.tier !== "soldOut";
+  // Scarcity badge removed; `scarcity` still feeds analytics + halo lighting.
 
   const navigate = useNavigate();
   const addItem = useCartStore((s) => s.addItem);
