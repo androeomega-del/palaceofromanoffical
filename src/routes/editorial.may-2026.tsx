@@ -263,8 +263,11 @@ function EditorialMay2026() {
           <Link to="/collections/$handle" params={{ handle: "mens-sweaters-knitwear" }} className="px-6 py-3 border border-ink hover:bg-ink hover:text-canvas transition-colors text-[11px] uppercase tracking-[0.25em]">
             Men's Knitwear
           </Link>
-          <Link to="/collections/$handle" params={{ handle: "mens-bags-wallets" }} className="px-6 py-3 border border-ink hover:bg-ink hover:text-canvas transition-colors text-[11px] uppercase tracking-[0.25em]">
-            Men's Bags &amp; Wallets
+          <Link to="/collections/$handle" params={{ handle: "mens-bags" }} className="px-6 py-3 border border-ink hover:bg-ink hover:text-canvas transition-colors text-[11px] uppercase tracking-[0.25em]">
+            Men's Bags
+          </Link>
+          <Link to="/collections/$handle" params={{ handle: "mens-wallets" }} className="px-6 py-3 border border-ink hover:bg-ink hover:text-canvas transition-colors text-[11px] uppercase tracking-[0.25em]">
+            Men's Wallets
           </Link>
           <Link to="/collections/$handle" params={{ handle: "mens-sneakers" }} className="px-6 py-3 border border-ink hover:bg-ink hover:text-canvas transition-colors text-[11px] uppercase tracking-[0.25em]">
             Men's Sneakers
