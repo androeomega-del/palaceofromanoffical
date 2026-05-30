@@ -21,9 +21,6 @@ import { fetchCollection } from "@/lib/shopify";
 import { cdnImage } from "@/lib/cdn-image";
 import { ProductCard } from "@/components/product-card";
 
-import marketingMenResort from "@/assets/marketing-men-resort-summer.jpg";
-import marketingMen from "@/assets/marketing-men-summer.jpg";
-import marketingAccessories from "@/assets/marketing-accessories-summer.jpg";
 import editorialAsianMaleTailoring from "@/assets/editorial-asian-male-tailoring.jpg";
 import editorialLatinoMaleEvening from "@/assets/editorial-latino-male-evening.jpg";
 import editorialLinenSupermodel from "@/assets/editorial-linen-supermodel.jpg";
