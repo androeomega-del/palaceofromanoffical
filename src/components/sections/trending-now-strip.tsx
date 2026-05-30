@@ -8,12 +8,16 @@
  */
 import { Link } from "@tanstack/react-router";
 import { imgForKey } from "@/lib/editorial-library";
+import { useRailImpression } from "@/hooks/use-rail-impression";
+import { enqueueInteractionEvent } from "@/lib/interaction-flush";
 
 export type TrendingTile = {
   label: string;
   to: string;
   imageKey: string;
 };
+
+const SURFACE = "rail:trending-now";
 
 export function TrendingNowStrip({
   eyebrow = "Trending Now",
@@ -22,8 +26,13 @@ export function TrendingNowStrip({
   eyebrow?: string;
   tiles: TrendingTile[];
 }) {
+  const railRef = useRailImpression(SURFACE, tiles?.[0]?.imageKey);
   return (
-    <section className="py-section-sm md:py-16 bg-canvas">
+    <section
+      ref={railRef as React.RefObject<HTMLElement>}
+      data-rail-surface={SURFACE}
+      className="py-section-sm md:py-16 bg-canvas"
+    >
       <div className="max-w-screen-2xl mx-auto px-5 md:px-10">
         <div className="flex items-end justify-between mb-8">
           <h2 className="font-serif text-subhead-md md:text-subhead-lg tracking-subhead-open text-ink">
@@ -31,10 +40,18 @@ export function TrendingNowStrip({
           </h2>
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
-          {tiles.map((t) => (
+          {tiles.map((t, i) => (
             <Link
               key={t.to}
               to={t.to}
+              onClick={() =>
+                enqueueInteractionEvent({
+                  handle: t.imageKey,
+                  event_type: "rail_tap",
+                  surface: SURFACE,
+                  position: i,
+                })
+              }
               className="group relative block aspect-[3/4] overflow-hidden bg-ink/5"
             >
               <img
