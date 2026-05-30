@@ -24,6 +24,8 @@ type Pending = {
   session_id: string | null;
   page_path: string | null;
   user_agent: string | null;
+  surface: string | null;
+  position: number | null;
 };
 
 // Reuse the same anon session id minted by cart-analytics so a single
