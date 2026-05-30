@@ -8,7 +8,8 @@ import tfC3 from "@/assets/trends/tf-chapter-3.jpg";
 
 const CHAPTERS: ThemedChapter[] = [
   {
-    n: 12,
+    n: 0,
+    src: tfC1,
     eyebrow: "Chapter I",
     title: "Silk, Sleeveless",
     body:
@@ -19,7 +20,8 @@ const CHAPTERS: ThemedChapter[] = [
     ],
   },
   {
-    n: 38,
+    n: 0,
+    src: tfC2,
     eyebrow: "Chapter II",
     title: "The Leather Belt",
     body:
@@ -31,7 +33,8 @@ const CHAPTERS: ThemedChapter[] = [
     ],
   },
   {
-    n: 21,
+    n: 0,
+    src: tfC3,
     eyebrow: "Chapter III",
     title: "The Private Pieces",
     body:
@@ -49,7 +52,7 @@ export const Route = createFileRoute("/trends/tom-ford-essentials")({
     const desc =
       "Studied sensuality from Tom Ford — silk tanks, crystal-buckle belts, satin intimates. Authentic, in stock, ready to ship.";
     const path = "/trends/tom-ford-essentials";
-    const image = img(12);
+    const image = tfHero;
     const rh = routeHead({ path, title, description: desc, image, type: "article" });
     return {
       meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
@@ -82,7 +85,8 @@ function TomFordEssentialsPage() {
         title="Tom Ford, Essentials."
         subtitle="Silk · Leather · Intimates — In Stock Now"
         intro="The pieces Tom Ford has been refining since 2005 — silk tanks cut for movement, leather belts engineered as jewellery, intimates designed with tailoring precision."
-        heroN={12}
+        heroN={0}
+        heroSrc={tfHero}
         heroAlt="Tom Ford editorial — silk and skin in close detail."
         manifesto="Glamour is a discipline. Tom Ford built a house on the idea that getting dressed — slowly, deliberately — is itself a form of power."
         chapters={CHAPTERS}
