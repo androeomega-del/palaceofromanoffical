@@ -50,6 +50,8 @@ const shopSearch = z.object({
   sizes: fallback(z.string(), "").default(""),
   colors: fallback(z.string(), "").default(""),
   materials: fallback(z.string(), "").default(""),
+  occasions: fallback(z.string(), "").default(""),
+  sale: fallback(z.enum(["any", "sale", "full"]), "any").default("any"),
 });
 
 function decodeSet(s: string): Set<string> {
@@ -111,19 +113,21 @@ function ShopPage() {
       sizes: decodeSet(search.sizes),
       colors: decodeSet(search.colors),
       materials: decodeSet(search.materials),
+      occasions: decodeSet(search.occasions),
+      sale: search.sale,
       price:
         search.min != null && search.max != null
           ? { min: search.min, max: search.max }
           : null,
     }),
-    [search.brands, search.sizes, search.colors, search.materials, search.min, search.max],
+    [search.brands, search.sizes, search.colors, search.materials, search.occasions, search.sale, search.min, search.max],
   );
 
   // Reset facet selections whenever scope changes (gender/collection/q)
   useEffect(() => {
     setSelections([]);
     navigate({
-      search: (prev: Record<string, unknown>) => ({ ...prev, brands: "", sizes: "", colors: "", materials: "" }),
+      search: (prev: Record<string, unknown>) => ({ ...prev, brands: "", sizes: "", colors: "", materials: "", occasions: "", sale: "any" }),
       replace: true,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -211,6 +215,8 @@ function ShopPage() {
       sizes: encodeSet(next.sizes),
       colors: encodeSet(next.colors),
       materials: encodeSet(next.materials),
+      occasions: encodeSet(next.occasions),
+      sale: next.sale,
       min: next.price?.min,
       max: next.price?.max,
     });

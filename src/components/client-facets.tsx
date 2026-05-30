@@ -12,20 +12,40 @@ import { ChevronDown, ChevronUp, X, Search } from "lucide-react";
 import type { ShopifyProduct } from "@/lib/shopify";
 import { cn } from "@/lib/utils";
 
+export type SaleFilter = "any" | "sale" | "full";
+
 export type ClientFacetState = {
   brands: Set<string>;
   sizes: Set<string>;
   colors: Set<string>;
   materials: Set<string>;
+  occasions: Set<string>;
+  sale: SaleFilter;
   price: { min: number; max: number } | null;
 };
 
 export function emptyClientFacetState(): ClientFacetState {
-  return { brands: new Set(), sizes: new Set(), colors: new Set(), materials: new Set(), price: null };
+  return {
+    brands: new Set(),
+    sizes: new Set(),
+    colors: new Set(),
+    materials: new Set(),
+    occasions: new Set(),
+    sale: "any",
+    price: null,
+  };
 }
 
 export function clientFacetCount(s: ClientFacetState): number {
-  return s.brands.size + s.sizes.size + s.colors.size + s.materials.size + (s.price ? 1 : 0);
+  return (
+    s.brands.size +
+    s.sizes.size +
+    s.colors.size +
+    s.materials.size +
+    s.occasions.size +
+    (s.sale !== "any" ? 1 : 0) +
+    (s.price ? 1 : 0)
+  );
 }
 
 // ── Derivation ──────────────────────────────────────────────────────────────
@@ -41,6 +61,39 @@ const MATERIAL_KEYWORDS = [
   "denim", "velvet", "satin", "lace", "nylon", "polyester", "viscose",
   "shearling", "fur", "calfskin", "lambskin", "patent",
 ];
+
+// Heuristic occasion vocabulary — derived from product title/description
+// since Shopify tags are not exposed on the product node here. Each key is
+// the canonical label shown in the UI; values are case-insensitive substrings.
+const OCCASION_RULES: Array<{ label: string; needles: string[] }> = [
+  { label: "Beach", needles: ["beach", "swim", "bikini", "trunk", "kaftan", "sarong"] },
+  { label: "Yacht & Marina", needles: ["yacht", "marina", "sailing", "nautical", "boating", "regatta"] },
+  { label: "Resort Evening", needles: ["evening", "cocktail", "dinner", "soirée", "soiree", "gala"] },
+  { label: "Poolside", needles: ["pool", "poolside", "cabana", "sunbath"] },
+  { label: "Daywear", needles: ["day", "lunch", "brunch", "casual", "weekend"] },
+  { label: "Travel", needles: ["travel", "tote", "weekender", "carry", "trolley", "luggage"] },
+];
+
+function occasionsFor(node: ShopifyProduct["node"]): string[] {
+  const hay = `${node.title} ${node.description ?? ""} ${node.productType ?? ""}`.toLowerCase();
+  return OCCASION_RULES.filter((r) => r.needles.some((n) => hay.includes(n))).map((r) => r.label);
+}
+
+function bucketsFromOccasions(edges: ShopifyProduct[]): Bucket[] {
+  const counts = new Map<string, number>();
+  for (const e of edges) {
+    for (const o of occasionsFor(e.node)) counts.set(o, (counts.get(o) ?? 0) + 1);
+  }
+  return [...counts.entries()]
+    .map(([label, count]) => ({ label, count }))
+    .sort((a, b) => b.count - a.count);
+}
+
+function isOnSale(node: ShopifyProduct["node"]): boolean {
+  const c = Number(node.compareAtPriceRange?.minVariantPrice?.amount ?? 0);
+  const p = Number(node.priceRange.minVariantPrice.amount);
+  return Number.isFinite(c) && c > 0 && c > p;
+}
 
 type Bucket = { label: string; count: number };
 
@@ -150,6 +203,12 @@ export function applyClientFacets(
       );
       if (!ok) return false;
     }
+    if (state.occasions.size) {
+      const occs = occasionsFor(n);
+      if (!occs.some((o) => state.occasions.has(o))) return false;
+    }
+    if (state.sale === "sale" && !isOnSale(n)) return false;
+    if (state.sale === "full" && isOnSale(n)) return false;
     return true;
   });
 }
@@ -379,10 +438,12 @@ export function ClientFacets({
   const sizes = useMemo(() => bucketsFromOptions(edges, (n) => SIZE_OPTION_RE.test(n)), [edges]);
   const colors = useMemo(() => bucketsFromOptions(edges, (n) => COLOR_OPTION_RE.test(n)), [edges]);
   const materials = useMemo(() => bucketsFromMaterials(edges), [edges]);
+  const occasions = useMemo(() => bucketsFromOccasions(edges), [edges]);
+  const saleCount = useMemo(() => edges.filter((e) => isOnSale(e.node)).length, [edges]);
   const bounds = useMemo(() => priceBounds(edges), [edges]);
 
   const [open, setOpen] = useState<Record<string, boolean>>({
-    brand: true, price: true, size: true, color: true, material: false,
+    sale: true, occasion: true, brand: true, price: true, size: true, color: true, material: false,
   });
 
   const toggleSet = (key: keyof ClientFacetState, label: string) => {
@@ -396,6 +457,63 @@ export function ClientFacets({
 
   return (
     <div className="divide-y divide-ink/10">
+      {saleCount > 0 && (
+        <div>
+          <GroupHeader
+            label="Price Status"
+            open={open.sale}
+            onToggle={() => setOpen((s) => ({ ...s, sale: !s.sale }))}
+            count={state.sale !== "any" ? 1 : 0}
+          />
+          {open.sale && (
+            <div className="pb-3 flex flex-wrap gap-2">
+              {(
+                [
+                  { v: "any" as const, label: "All" },
+                  { v: "sale" as const, label: "On Sale" },
+                  { v: "full" as const, label: "Full Price" },
+                ]
+              ).map((opt) => {
+                const active = state.sale === opt.v;
+                return (
+                  <button
+                    key={opt.v}
+                    onClick={() => onChange({ ...state, sale: opt.v })}
+                    aria-pressed={active}
+                    className={cn(
+                      "px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] border transition-colors",
+                      active ? "bg-ink text-canvas border-ink" : "border-ink/20 hover:border-ink",
+                    )}
+                  >
+                    {opt.label}
+                    {opt.v === "sale" && (
+                      <span className="ml-2 text-bronze tabular-nums">{saleCount}</span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+      {occasions.length > 0 && (
+        <div>
+          <GroupHeader
+            label="Occasion"
+            open={open.occasion}
+            onToggle={() => setOpen((s) => ({ ...s, occasion: !s.occasion }))}
+            count={state.occasions.size}
+          />
+          {open.occasion && (
+            <CheckList
+              buckets={occasions}
+              selected={state.occasions}
+              onToggle={(l) => toggleSet("occasions", l)}
+              initiallyVisible={6}
+            />
+          )}
+        </div>
+      )}
       {brands.length > 1 && (
         <div>
           <GroupHeader label="Designer" open={open.brand} onToggle={() => setOpen((s) => ({ ...s, brand: !s.brand }))} count={state.brands.size} />
@@ -456,6 +574,8 @@ export function ClientFacetPills({
   for (const sz of state.sizes) items.push({ key: `sz:${sz}`, label: `Size ${sz}`, onClear: () => { const s = new Set(state.sizes); s.delete(sz); onChange({ ...state, sizes: s }); } });
   for (const c of state.colors) items.push({ key: `c:${c}`, label: c, onClear: () => { const s = new Set(state.colors); s.delete(c); onChange({ ...state, colors: s }); } });
   for (const m of state.materials) items.push({ key: `m:${m}`, label: m, onClear: () => { const s = new Set(state.materials); s.delete(m); onChange({ ...state, materials: s }); } });
+  for (const o of state.occasions) items.push({ key: `o:${o}`, label: o, onClear: () => { const s = new Set(state.occasions); s.delete(o); onChange({ ...state, occasions: s }); } });
+  if (state.sale !== "any") items.push({ key: "sale", label: state.sale === "sale" ? "On Sale" : "Full Price", onClear: () => onChange({ ...state, sale: "any" }) });
   if (state.price) items.push({ key: "price", label: `$${state.price.min}–$${state.price.max}`, onClear: () => onChange({ ...state, price: null }) });
 
   if (items.length === 0) return null;
