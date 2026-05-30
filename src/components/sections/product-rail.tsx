@@ -11,7 +11,10 @@
  * CTA target/label) is a prop. Anything that's the same on every rail
  * (spacing, typography scale, divider rhythm) stays inlined.
  */
-import { Link } from "@tanstack/react-router";
+// CTA renders as a plain anchor (not <Link/>) so callers can pass arbitrary
+// URLs with query strings (e.g. /shop?gender=Men&sort=BEST_SELLING-false)
+// without fighting TanStack Router's typed route paths. A full navigation
+// into /shop is preferable anyway — resets scroll, lands on a fresh grid.
 import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
 import { ProductCard } from "@/components/product-card";
 import type { ShopifyProduct } from "@/lib/shopify";
@@ -86,12 +89,12 @@ export function ProductRail({
         </div>
 
         <div className="mt-10 flex justify-center">
-          <Link
-            to={ctaTo}
+          <a
+            href={ctaTo}
             className="inline-flex items-center h-11 px-7 border border-ink text-ink text-[11px] uppercase tracking-[0.3em] hover:bg-ink hover:text-canvas transition-colors"
           >
             {ctaLabel}
-          </Link>
+          </a>
         </div>
       </div>
     </section>

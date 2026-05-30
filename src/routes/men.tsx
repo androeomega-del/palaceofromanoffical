@@ -20,6 +20,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import { fetchCollection, fetchProducts } from "@/lib/shopify";
 import { cdnImage } from "@/lib/cdn-image";
 import { ProductCard } from "@/components/product-card";
+import { BestSellersRail } from "@/components/sections/best-sellers-rail";
 
 import editorialAsianMaleTailoring from "@/assets/editorial-asian-male-tailoring.jpg";
 import editorialLatinoMaleEvening from "@/assets/editorial-latino-male-evening.jpg";
@@ -84,6 +85,7 @@ function MenHomePage() {
     <>
       <HeroBanner />
       <NewInThisWeek />
+      <BestSellersRail dept="Men" ctaTo="/shop?gender=Men&sort=BEST_SELLING-false" />
       <BrandSpotlightRail />
       <SaleCarousel />
       <TrendingEditorials />
