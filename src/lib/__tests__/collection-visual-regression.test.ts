@@ -53,7 +53,8 @@ const COLLECTION_HANDLES = [
   "mens-sneakers",
   "mens-boots",
   "mens-sandals-slides",
-  "mens-bags-wallets",
+  "mens-bags",
+  "mens-wallets",
   "mens-belts",
   "mens-watches-jewelry",
 ] as const;
