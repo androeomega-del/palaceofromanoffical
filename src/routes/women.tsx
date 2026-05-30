@@ -443,12 +443,12 @@ function WhatsResonating() {
 /* ─────────────────────────────────────────────────────────────────── */
 
 const MAISONS: { label: string; vendor: string; handle: string; alt: string; src: string }[] = [
-  { label: "Brunello Cucinelli", vendor: "brunello-cucinelli", handle: "brand-brunello-cucinelli", alt: "Brunello Cucinelli womenswear", src: brandBrunelloCucinelli },
-  { label: "Prada", vendor: "prada", handle: "brand-prada", alt: "Prada womenswear", src: brandPrada },
-  { label: "Dolce & Gabbana", vendor: "dolce-gabbana", handle: "brand-dolce-gabbana", alt: "Dolce & Gabbana womenswear", src: brandDolceGabbana },
-  { label: "Saint Laurent", vendor: "saint-laurent", handle: "brand-saint-laurent", alt: "Saint Laurent womenswear", src: brandSaintLaurent },
-  { label: "Tom Ford", vendor: "tom-ford", handle: "brand-tom-ford", alt: "Tom Ford womenswear", src: brandTomFord },
-  { label: "Bottega Veneta", vendor: "bottega-veneta", handle: "brand-bottega-veneta", alt: "Bottega Veneta womenswear", src: brandBottegaVeneta },
+  { label: "Saint Laurent", vendor: "saint-laurent", handle: "brand-saint-laurent", alt: "Saint Laurent womenswear — Le Smoking tuxedo tailoring", src: brandSaintLaurent },
+  { label: "Prada", vendor: "prada", handle: "brand-prada", alt: "Prada womenswear — minimalist sheath and triangle-logo top-handle bag", src: brandPrada },
+  { label: "Dolce & Gabbana", vendor: "dolce-gabbana", handle: "brand-dolce-gabbana", alt: "Dolce & Gabbana womenswear — Sicilian black lace corseted gown", src: brandDolceGabbana },
+  { label: "Bottega Veneta", vendor: "bottega-veneta", handle: "brand-bottega-veneta", alt: "Bottega Veneta womenswear — caramel leather trench and intrecciato shoulder bag", src: brandBottegaVeneta },
+  { label: "Gucci", vendor: "gucci", handle: "brand-gucci", alt: "Gucci womenswear — emerald silk pussy-bow blouse with horsebit loafers", src: brandGucci },
+  { label: "Versace", vendor: "versace", handle: "brand-versace", alt: "Versace womenswear — draped sapphire silk jersey gown with Medusa hardware", src: brandVersace },
 ];
 
 function MaisonsInFocus() {
