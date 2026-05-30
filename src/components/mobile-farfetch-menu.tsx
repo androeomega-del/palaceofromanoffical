@@ -223,7 +223,7 @@ export function MobileFarfetchMenu({ onClose }: { onClose: () => void }) {
         {activeDept && (
           <Row
             label={`${activeDept.label} homepage`}
-            to={tab === "men" ? "/men" : tab === "women" ? "/" : `/collections/${activeDept.rootHandle}`}
+            to={tab === "men" ? "/men" : tab === "women" ? "/women" : `/collections/${activeDept.rootHandle}`}
             onClose={closeAll}
             muted
           />
