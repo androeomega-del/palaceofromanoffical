@@ -37,7 +37,7 @@ export function EditorialPageShell({ eyebrow, title, intro, heroImage, heroAlt, 
       ) : (
         <section className="px-6 pt-20 md:pt-28 pb-12 border-b border-ink/5">
           <div className="max-w-screen-2xl mx-auto">
-            <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-4">{eyebrow}</p>
+            <p className="text-[10px] uppercase tracking-[0.4em] text-bronze-deep mb-4">{eyebrow}</p>
             {title ? (
               <h1 className="font-serif text-5xl md:text-7xl tracking-tight leading-[1.02] text-balance max-w-3xl">
                 {title}
@@ -66,7 +66,7 @@ export function ProseColumn({ children }: { children: ReactNode }) {
 export function SectionTitle({ kicker, children }: { kicker?: string; children: ReactNode }) {
   return (
     <div className="mb-6">
-      {kicker && <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-3">{kicker}</p>}
+      {kicker && <p className="text-[10px] uppercase tracking-[0.3em] text-bronze-deep mb-3">{kicker}</p>}
       <h2 className="font-serif text-2xl md:text-3xl tracking-tight text-balance">{children}</h2>
     </div>
   );

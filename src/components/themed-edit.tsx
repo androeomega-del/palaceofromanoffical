@@ -160,7 +160,7 @@ export function ThemedEdit({
       {/* MANIFESTO */}
       <section className="px-6 md:px-10 py-14 md:py-28 bg-canvas">
         <div className="max-w-3xl mx-auto text-center">
-          <span className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-6 block">
+          <span className="text-[10px] uppercase tracking-[0.4em] text-bronze-deep mb-6 block">
             The Manifesto
           </span>
           <p className="font-serif text-2xl md:text-4xl leading-[1.25] text-ink mb-8 text-balance">
@@ -245,7 +245,7 @@ export function ThemedEdit({
         <div className="max-w-screen-2xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-12">
             <div>
-              <span className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-3 block">
+              <span className="text-[10px] uppercase tracking-[0.3em] text-bronze-deep mb-3 block">
                 {shopEyebrow}
               </span>
               <h2 className="font-serif text-3xl md:text-5xl leading-[1.05]">
@@ -349,7 +349,7 @@ export function ThemedEdit({
 
       {/* OUTRO */}
       <section className="border-t border-ink/10 py-12 md:py-24 text-center px-6 bg-canvas">
-        <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-4">
+        <p className="text-[10px] uppercase tracking-[0.4em] text-bronze-deep mb-4">
           End of edit
         </p>
         <h2 className="font-serif text-3xl md:text-5xl mb-8">Continue exploring</h2>

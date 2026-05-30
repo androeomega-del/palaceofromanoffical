@@ -36,7 +36,7 @@ export function BrandsOfTheMoment({
           </h2>
           <Link
             to="/brands"
-            className="hidden md:inline text-[11px] uppercase tracking-[0.3em] text-bronze hover:text-ink transition-colors"
+            className="hidden md:inline text-[11px] uppercase tracking-[0.3em] text-bronze-deep hover:text-ink transition-colors"
           >
             All maisons →
           </Link>

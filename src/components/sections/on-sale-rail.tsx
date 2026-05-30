@@ -44,7 +44,7 @@ export function OnSaleRail({
     <section className="py-10 md:py-16 bg-ink/5">
       <div className="max-w-screen-2xl mx-auto px-5 md:px-10">
         <header className="mb-8">
-          <p className="text-[11px] uppercase tracking-[0.32em] text-bronze">
+          <p className="text-[11px] uppercase tracking-[0.32em] text-bronze-deep">
             The Markdowns
           </p>
           <h2 className="mt-2 font-serif text-2xl md:text-3xl tracking-[0.04em] text-ink">
