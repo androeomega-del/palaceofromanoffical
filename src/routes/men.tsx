@@ -45,23 +45,25 @@ import brandBottegaVeneta from "@/assets/brand-bottega-veneta.jpg";
 export const Route = createFileRoute("/men")({
   head: () => ({
     meta: [
-      { title: "Menswear — Resort 2026 | Palace of Roman" },
+      { title: "Designer Menswear | Palace of Roman" },
       {
         name: "description",
         content:
-          "Menswear Resort 2026 from Versace, Dolce & Gabbana, Brunello Cucinelli, Armani, Gucci and Prada. Tailored for the long hours of summer. Worldwide shipping, 100% authentic.",
+          "Shop curated menswear from Lemaire, Represent, Prada and more. New pieces added weekly, handpicked by our editors.",
       },
-      { property: "og:title", content: "Menswear — Resort 2026 | Palace of Roman" },
+      { property: "og:title", content: "Designer Menswear | Palace of Roman" },
       {
         property: "og:description",
         content:
-          "Sun-bleached linens, sea-soaked silks, and the houses defining resort 2026. Curated from the world's leading maisons.",
+          "Shop curated menswear from Lemaire, Represent, Prada and more. New pieces added weekly, handpicked by our editors.",
       },
       { property: "og:url", content: "https://palaceofromanofficial.com/men" },
+      { property: "og:type", content: "website" },
       {
         property: "og:image",
         content: `https://palaceofromanofficial.com${editorialHeroResort}`,
       },
+      { name: "twitter:card", content: "summary_large_image" },
       {
         name: "twitter:image",
         content: `https://palaceofromanofficial.com${editorialHeroResort}`,
