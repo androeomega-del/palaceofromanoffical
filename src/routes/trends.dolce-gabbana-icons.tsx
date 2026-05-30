@@ -1,11 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ThemedEdit, type ThemedChapter } from "@/components/themed-edit";
-import { img } from "@/lib/editorial-library";
 import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
+import dgHero from "@/assets/trends/dg-hero.jpg";
+import dgC1 from "@/assets/trends/dg-chapter-1.jpg";
+import dgC2 from "@/assets/trends/dg-chapter-2.jpg";
+import dgC3 from "@/assets/trends/dg-chapter-3.jpg";
 
 const CHAPTERS: ThemedChapter[] = [
   {
-    n: 31,
+    n: 0,
+    src: dgC1,
     eyebrow: "Chapter I",
     title: "The Sicilian Black Lace",
     body:
@@ -16,7 +20,8 @@ const CHAPTERS: ThemedChapter[] = [
     ],
   },
   {
-    n: 47,
+    n: 0,
+    src: dgC2,
     eyebrow: "Chapter II",
     title: "Baroque, Buttoned",
     body:
@@ -28,7 +33,8 @@ const CHAPTERS: ThemedChapter[] = [
     ],
   },
   {
-    n: 23,
+    n: 0,
+    src: dgC3,
     eyebrow: "Chapter III",
     title: "Crystal & Cocktail",
     body:
