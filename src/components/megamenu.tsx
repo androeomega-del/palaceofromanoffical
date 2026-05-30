@@ -12,6 +12,48 @@ import {
 } from "@/lib/nav-config";
 import { getShopifyMenu } from "@/lib/menu-source.functions";
 import { buildDepartmentsFromShopifyMenu } from "@/lib/megamenu-source";
+import { imgForKey } from "@/lib/editorial-library";
+
+// Vacation column — links only to routes that already exist in the build.
+// Per the staged-launch rule, do not add tiles that point to missing pages.
+type VacationItem = { label: string; to: string; params?: Record<string, string> };
+type VacationColumn = { heading: string; items: VacationItem[] };
+const VACATION_COLUMNS: VacationColumn[] = [
+  {
+    heading: "By Setting",
+    items: [
+      { label: "Beach Club", to: "/swim" },
+      { label: "Yacht & Marina", to: "/edits/yacht-edit" },
+      { label: "Resort Evening", to: "/editorial/the-new-evening" },
+      { label: "Poolside", to: "/editorial/shoreline-perspective" },
+    ],
+  },
+  {
+    heading: "Edits",
+    items: [
+      { label: "Resort 2026", to: "/editorial/resort-2026" },
+      { label: "Charter Capsule", to: "/edits/charter-capsule" },
+      { label: "Summer Edit", to: "/editorial/summer-edit" },
+      { label: "Shoreline Perspective", to: "/editorial/shoreline-perspective" },
+    ],
+  },
+  {
+    heading: "Essentials",
+    items: [
+      { label: "Swimwear", to: "/swim" },
+      { label: "Silk Scarves", to: "/collections/silk-scarves" },
+      { label: "Designer Sunglasses", to: "/collections/designer-sunglasses" },
+      { label: "Italian Leather Loafers", to: "/collections/italian-leather-loafers" },
+    ],
+  },
+];
+const VACATION_FEATURE = {
+  to: "/edits/yacht-edit",
+  eyebrow: "The Charter Edit",
+  title: "Pieces made for the way you travel.",
+  cta: "Step Aboard",
+  img: imgForKey("vacation-feature"),
+};
 
 /**
  * Desktop megamenu.
