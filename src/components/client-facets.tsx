@@ -203,6 +203,12 @@ export function applyClientFacets(
       );
       if (!ok) return false;
     }
+    if (state.occasions.size) {
+      const occs = occasionsFor(n);
+      if (!occs.some((o) => state.occasions.has(o))) return false;
+    }
+    if (state.sale === "sale" && !isOnSale(n)) return false;
+    if (state.sale === "full" && isOnSale(n)) return false;
     return true;
   });
 }
