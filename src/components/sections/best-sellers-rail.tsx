@@ -24,6 +24,7 @@ export function BestSellersRail({
       title="Best-sellers — the pieces our clients return for"
       ctaTo={ctaTo}
       ctaLabel="Shop Best-Sellers"
+      surface="rail:best-sellers"
     />
   );
 }
