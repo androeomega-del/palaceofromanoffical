@@ -28,7 +28,7 @@ import editorialLoaferSupermodel from "@/assets/editorial-loafer-supermodel.jpg"
 import editorialHeroResort from "@/assets/editorial-hero-resort.jpg";
 import editorialResortTailoring from "@/assets/editorial-resort-tailoring.jpg";
 import editorialEveningSupermodel from "@/assets/editorial-evening-supermodel.jpg";
-import editorialAccessoriesStilllife from "@/assets/editorial-accessories-stilllife.jpg";
+import editorialAccessoriesHero from "@/assets/editorial-accessories-hero.jpg";
 import editorialTravelSupermodel from "@/assets/editorial-travel-supermodel.jpg";
 import brandVersace from "@/assets/brand-versace.jpg";
 import brandDolceGabbana from "@/assets/brand-dolce-gabbana.jpg";
@@ -600,8 +600,8 @@ function AccessoryCampaignBanner() {
         body="The belt that holds the look together. The sunglasses that finish it."
         cta="Explore Accessories →"
         handle="mens-accessories"
-        image={editorialAccessoriesStilllife}
-        alt="The Accessory Edit — black leather belt with gold buckle, tortoiseshell aviator sunglasses and silk pocket square on travertine marble"
+        image={editorialAccessoriesHero}
+        alt="The Accessory Edit — male model in palace gardens with sunglasses, crossbody bag and cognac belt"
       />
       <CampaignTile
         eyebrow="Travel"
@@ -637,7 +637,7 @@ function CampaignTile({
     <Link
       to="/collections/$handle"
       params={{ handle }}
-      className="group grid grid-cols-1 md:grid-cols-2 items-stretch border border-ink/10 overflow-hidden bg-canvas h-full"
+      className="group flex h-full flex-col border border-ink/10 overflow-hidden bg-canvas md:grid md:grid-cols-2 md:items-stretch"
     >
       <div className="flex flex-col justify-center px-8 md:px-10 py-10 md:py-14 bg-canvas">
         <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-5">
@@ -653,7 +653,7 @@ function CampaignTile({
           {cta}
         </span>
       </div>
-      <div className="relative min-h-[420px] md:min-h-0 md:aspect-auto overflow-hidden bg-muted">
+      <div className="relative h-[420px] md:h-auto overflow-hidden bg-muted">
         <img
           src={image}
           alt={alt}
