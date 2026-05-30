@@ -37,7 +37,6 @@ export function SiteFooter() {
             <Link to="/shipping-returns" className="text-sm text-muted-foreground hover:text-ink transition-colors">Shipping &amp; Returns</Link>
             <Link to="/authentication" className="text-sm text-muted-foreground hover:text-ink transition-colors">Authentication</Link>
             <Link to="/account" className="text-sm text-muted-foreground hover:text-ink transition-colors">Order Tracking</Link>
-            <a href="mailto:support@palaceofromanofficial.com" className="text-sm text-muted-foreground hover:text-ink transition-colors normal-case tracking-normal">support@palaceofromanofficial.com</a>
           </div>
 
           <div className="flex flex-col gap-3">
