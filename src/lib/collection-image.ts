@@ -207,7 +207,7 @@ const FALLBACK_RULES: { test: RegExp; img: string }[] = [
   { test: /\bmen('?s)?\b.*(active|sport|gym)/, img: mensActivewear },
   { test: /\bmen('?s)?\b.*(underwear|lounge|pajama|sleep)/, img: mensUnderwear },
   { test: /\bmen('?s)?\b.*(watch|jewel)/, img: mensWatchesJewelry },
-  { test: /\bmen('?s)?\b.*(bag|wallet|brief)/, img: mensBagsWallets },
+  { test: /\bmen('?s)?\b.*(bag|wallet|brief)/, img: mensBags },
   { test: /\bmen('?s)?\b.*(belt)/, img: mensBelts },
   { test: /\bmen('?s)?\b.*(access)/, img: mensAccessories },
   { test: /\bmen('?s)?\b/, img: mensClothing },
