@@ -574,17 +574,17 @@ function ShopByOccasion() {
 /* ─────────────────────────────────────────────────────────────────── */
 
 function FeaturedProductRail() {
-  // Spec rule: source from mens-editor-picks; if empty, fall back to a
-  // secondary curated source (here: mens-tailoring) so the rail is never
-  // blank on the page.
+  // Buyer's Pick: source from mens-clothing (the deepest, most reliably
+  // stocked men's collection), with mens-shoes as a fallback so the rail
+  // is never empty.
   const picks = useQuery({
-    queryKey: ["men", "editor-picks"],
-    queryFn: () => fetchCollection("mens-editor-picks", 8),
+    queryKey: ["men", "buyers-pick", "v2"],
+    queryFn: () => fetchCollection("mens-clothing", 12),
     staleTime: 10 * 60 * 1000,
   });
   const fallback = useQuery({
-    queryKey: ["men", "editor-picks-fallback"],
-    queryFn: () => fetchCollection("mens-tailoring", 8),
+    queryKey: ["men", "buyers-pick-fallback", "v2"],
+    queryFn: () => fetchCollection("mens-shoes", 12),
     enabled: !!picks.data && (picks.data?.products?.edges?.length ?? 0) === 0,
     staleTime: 10 * 60 * 1000,
   });
@@ -592,7 +592,8 @@ function FeaturedProductRail() {
   const fromPicks = picks.data?.products?.edges ?? [];
   const fromFallback = fallback.data?.products?.edges ?? [];
   const products = fromPicks.length > 0 ? fromPicks : fromFallback;
-  const sourceHandle = fromPicks.length > 0 ? "mens-editor-picks" : "mens-tailoring";
+  const sourceHandle = fromPicks.length > 0 ? "mens-clothing" : "mens-shoes";
+
 
   return (
     <CarouselSection
