@@ -14,7 +14,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { ShieldCheck, Plane, RotateCcw, MessageCircle, ChevronLeft, ChevronRight } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { Children, type ReactNode, useCallback, useEffect, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 
 import { fetchCollection } from "@/lib/shopify";
@@ -77,6 +77,109 @@ function MenHomePage() {
       <HeritageBlock />
       <TrustStrip />
     </>
+  );
+}
+
+type CarouselSectionProps = {
+  ariaLabel: string;
+  eyebrow?: string;
+  title: string;
+  description?: string;
+  actions?: ReactNode;
+  children: ReactNode;
+  sectionClassName?: string;
+  itemClassName?: string;
+};
+
+function CarouselSection({
+  ariaLabel,
+  eyebrow,
+  title,
+  description,
+  actions,
+  children,
+  sectionClassName = "bg-canvas pt-16 md:pt-24",
+  itemClassName = "basis-[68%] sm:basis-[42%] md:basis-[32%] lg:basis-[24%]",
+}: CarouselSectionProps) {
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    align: "start",
+    containScroll: "trimSnaps",
+    dragFree: true,
+  });
+  const [canPrev, setCanPrev] = useState(false);
+  const [canNext, setCanNext] = useState(false);
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setCanPrev(emblaApi.canScrollPrev());
+    setCanNext(emblaApi.canScrollNext());
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    onSelect();
+    emblaApi.on("select", onSelect);
+    emblaApi.on("reInit", onSelect);
+    return () => {
+      emblaApi.off("select", onSelect);
+      emblaApi.off("reInit", onSelect);
+    };
+  }, [emblaApi, onSelect]);
+
+  return (
+    <section aria-label={ariaLabel} className={sectionClassName}>
+      <div className="max-w-screen-2xl mx-auto px-6 md:px-10">
+        <div className="flex items-end justify-between mb-8 md:mb-10 gap-6">
+          <div>
+            {eyebrow ? (
+              <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-3">
+                {eyebrow}
+              </p>
+            ) : null}
+            <h2 className="font-serif text-3xl md:text-4xl text-ink mb-3">
+              {title}
+            </h2>
+            {description ? (
+              <p className="text-[14px] md:text-[15px] text-muted-foreground max-w-lg leading-relaxed">
+                {description}
+              </p>
+            ) : null}
+          </div>
+          <div className="hidden md:flex items-center gap-6 shrink-0">
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                aria-label={`Previous ${ariaLabel}`}
+                onClick={() => emblaApi?.scrollPrev()}
+                disabled={!canPrev}
+                className="w-10 h-10 grid place-items-center border border-ink/15 hover:border-ink transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <ChevronLeft className="w-4 h-4" strokeWidth={1.5} />
+              </button>
+              <button
+                type="button"
+                aria-label={`Next ${ariaLabel}`}
+                onClick={() => emblaApi?.scrollNext()}
+                disabled={!canNext}
+                className="w-10 h-10 grid place-items-center border border-ink/15 hover:border-ink transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <ChevronRight className="w-4 h-4" strokeWidth={1.5} />
+              </button>
+            </div>
+            {actions}
+          </div>
+        </div>
+        <div className="overflow-hidden -mx-2" ref={emblaRef}>
+          <div className="flex">
+            {Children.toArray(children).map((child, index) => (
+              <div key={index} className={`px-2 shrink-0 ${itemClassName}`}>
+                {child}
+              </div>
+            ))}
+          </div>
+        </div>
+        {actions ? <div className="md:hidden mt-8 text-center">{actions}</div> : null}
+      </div>
+    </section>
   );
 }
 
