@@ -31,7 +31,8 @@ import mensUnderwear from "@/assets/collections/auto/mens-underwear-loungewear.j
 import mensSneakers from "@/assets/collections/auto/mens-sneakers.jpg";
 import mensBoots from "@/assets/collections/auto/mens-boots.jpg";
 import mensSandals from "@/assets/collections/auto/mens-sandals-slides.jpg";
-import mensBagsWallets from "@/assets/collections/auto/mens-bags-wallets.jpg";
+import mensBags from "@/assets/collections/auto/mens-bags.jpg";
+import mensWallets from "@/assets/collections/auto/mens-wallets.jpg";
 import mensBelts from "@/assets/collections/auto/mens-belts.jpg";
 import mensWatchesJewelry from "@/assets/collections/auto/mens-watches-jewelry.jpg";
 import womensClothing from "@/assets/collections/auto/womens-clothing.jpg";
