@@ -21,6 +21,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import { fetchCollection, fetchProducts } from "@/lib/shopify";
 import { cdnImage } from "@/lib/cdn-image";
 import { ProductCard } from "@/components/product-card";
+import { BestSellersRail } from "@/components/sections/best-sellers-rail";
 
 import womenHero from "@/assets/women/women-hero.jpg";
 import editCucinelliHero from "@/assets/women/edit-cucinelli-hero.jpg";
@@ -76,6 +77,7 @@ function WomenHomePage() {
     <>
       <HeroBanner />
       <JustLanded />
+      <BestSellersRail dept="Women" ctaTo="/shop?gender=Women&sort=BEST_SELLING-false" />
       <CuratedEditGrid />
       <WhatsResonating />
       <MaisonsInFocus />
