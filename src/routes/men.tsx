@@ -831,18 +831,16 @@ const SPOTLIGHT_BRANDS_TWO: { label: string; vendor: string; handle: string; alt
 
 function BrandSpotlightRailTwo() {
   return (
-    <CarouselSection
-      ariaLabel="Hero brands — by popular demand"
-      eyebrow="By Popular Demand"
-      title="Two more houses in focus."
-      description="The maisons our clients return to, season after season."
-      sectionClassName="bg-canvas-raised border-y border-ink/10 mt-16 md:mt-24 py-14 md:py-20"
-      itemClassName="basis-[84%] sm:basis-[58%] md:basis-[46%] lg:basis-[42%]"
+    <section
+      aria-label="Hero brands — by popular demand"
+      className="bg-canvas-raised border-y border-ink/10 mt-16 md:mt-24 py-14 md:py-20"
     >
-      {SPOTLIGHT_BRANDS_TWO.map((b) => (
-        <BrandSpotlightTile key={b.vendor} brand={b} />
-      ))}
-    </CarouselSection>
+      <div className="max-w-screen-md mx-auto px-5 md:px-10 flex flex-col gap-6 md:gap-10">
+        {SPOTLIGHT_BRANDS_TWO.map((b) => (
+          <BrandSpotlightTile key={b.vendor} brand={b} />
+        ))}
+      </div>
+    </section>
   );
 }
 
