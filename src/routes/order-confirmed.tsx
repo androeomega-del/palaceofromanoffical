@@ -46,17 +46,18 @@ function OrderConfirmedPage() {
           Palace of Roman
         </p>
         <h1 className="mt-6 font-serif text-4xl md:text-5xl text-ink">
-          Thank you for your order
+          Thank you. Your order is confirmed.
         </h1>
         <p className="mt-6 text-sm md:text-base text-muted-foreground leading-relaxed">
-          Your order has been received and is being prepared for dispatch.
+          Your pieces are being prepared and will travel insured to your door.
           {email ? (
             <>
-              {" "}A confirmation has been sent to{" "}
-              <span className="text-ink">{email}</span>.
+              {" "}A full confirmation has been sent to{" "}
+              <span className="text-ink">{email}</span> — please keep it for
+              your records.
             </>
           ) : (
-            <> A confirmation has been sent to your inbox.</>
+            <> A full confirmation has been sent to the inbox on file.</>
           )}
         </p>
 
@@ -67,35 +68,62 @@ function OrderConfirmedPage() {
           </p>
         )}
 
-        <div className="mt-12 border-t border-ink/10 pt-10 grid sm:grid-cols-2 gap-6 text-left">
+        <div className="mt-12 border-t border-ink/10 pt-10 grid sm:grid-cols-2 gap-x-10 gap-y-8 text-left">
           <div>
             <p className="text-[10px] uppercase tracking-[0.3em] text-bronze">
-              Dispatch
+              Insured Worldwide Delivery
             </p>
             <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-              Pieces ship within 3–5 business days from the maison or its
-              authorised distributor. Tracking is emailed as soon as your parcel
-              leaves the atelier.
+              Every order ships fully insured against loss or damage in transit,
+              with door-to-door tracking and signature on receipt for
+              high-value parcels. Tracking is emailed the moment your order
+              leaves for dispatch.
             </p>
           </div>
           <div>
             <p className="text-[10px] uppercase tracking-[0.3em] text-bronze">
-              Concierge
+              Discreet Outer Packaging
             </p>
             <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-              Questions about your order, fit, or delivery? Write to{" "}
+              Shipments arrive in unbranded outer packaging — no maison logos
+              on the box — so the contents stay private from doorstep to
+              doorman. Customs paperwork is kept minimal and discreet.
+            </p>
+          </div>
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.3em] text-bronze">
+              The Unboxing
+            </p>
+            <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+              Inside, each piece arrives in its original maison presentation —
+              the house's own box, dust bag, authenticity cards and tissue —
+              exactly as it would from a flagship boutique. Nothing repackaged,
+              nothing altered.
+            </p>
+          </div>
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.3em] text-bronze">
+              Private Concierge
+            </p>
+            <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+              For questions on tracking, sizing, returns or a future order,
+              write to{" "}
               <a
                 href="mailto:concierge@palaceofromanofficial.com"
                 className="text-ink underline-offset-4 hover:underline"
               >
                 concierge@palaceofromanofficial.com
               </a>
-              .
+              . We respond within one business day, often sooner.
             </p>
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col sm:flex-row gap-3 justify-center">
+        <p className="mt-12 text-[11px] uppercase tracking-[0.3em] text-ink/60">
+          100% Authentic · Sourced from the Brands or Their Authorised Distributors
+        </p>
+
+        <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
           <Button
             asChild
             className="bg-ink text-canvas hover:bg-ink/90 rounded-none h-12 px-8 text-[11px] uppercase tracking-[0.25em] font-medium"
