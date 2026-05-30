@@ -1,11 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ThemedEdit, type ThemedChapter } from "@/components/themed-edit";
-import { img } from "@/lib/editorial-library";
 import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
+import dgHero from "@/assets/trends/dg-hero.jpg";
+import dgC1 from "@/assets/trends/dg-chapter-1.jpg";
+import dgC2 from "@/assets/trends/dg-chapter-2.jpg";
+import dgC3 from "@/assets/trends/dg-chapter-3.jpg";
 
 const CHAPTERS: ThemedChapter[] = [
   {
-    n: 31,
+    n: 0,
+    src: dgC1,
     eyebrow: "Chapter I",
     title: "The Sicilian Black Lace",
     body:
@@ -16,7 +20,8 @@ const CHAPTERS: ThemedChapter[] = [
     ],
   },
   {
-    n: 47,
+    n: 0,
+    src: dgC2,
     eyebrow: "Chapter II",
     title: "Baroque, Buttoned",
     body:
@@ -28,7 +33,8 @@ const CHAPTERS: ThemedChapter[] = [
     ],
   },
   {
-    n: 23,
+    n: 0,
+    src: dgC3,
     eyebrow: "Chapter III",
     title: "Crystal & Cocktail",
     body:
@@ -46,7 +52,7 @@ export const Route = createFileRoute("/trends/dolce-gabbana-icons")({
     const desc =
       "The Dolce & Gabbana pieces that define the maison — Sicilian lace, baroque tailoring, crystal eveningwear. Authentic, in stock, ready to ship.";
     const path = "/trends/dolce-gabbana-icons";
-    const image = img(31);
+    const image = dgHero;
     const rh = routeHead({ path, title, description: desc, image, type: "article" });
     return {
       meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
@@ -79,7 +85,8 @@ function DolceGabbanaIconsPage() {
         title="Dolce & Gabbana, Iconic."
         subtitle="Sicily · Baroque · Crystal — In Stock Now"
         intro="The pieces that define Domenico and Stefano's house — pulled from the mainline collection, authenticated, ready to ship from the Palace of Roman atelier."
-        heroN={31}
+        heroN={0}
+        heroSrc={dgHero}
         heroAlt="Dolce & Gabbana editorial — Sicilian baroque in close detail."
         manifesto="Romance is a discipline. Dolce & Gabbana have spent forty years proving it — in lace, in print, in the weight of a single crystal sewn by hand."
         chapters={CHAPTERS}

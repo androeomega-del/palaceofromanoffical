@@ -107,8 +107,9 @@ I'll stop and wait at each gate:
 ## Progress log
 
 - **Gate 2 (header rewrite)** — DONE. Two-row Farfetch-style desktop header with dept tabs, centered wordmark, utility cluster, rail row + inline search. Mobile uses the Farfetch-style drawer.
-- **Gate 3 (first trend page)** — IN PROGRESS.
-  - `/trends/dolce-gabbana-icons` shipped using existing `ThemedEdit` component (no new template needed). Uses live `vendor:"Dolce & Gabbana"` catalog query. Not yet linked in nav (per staged-launches).
-  - `/trends/pucci-prints` DEFERRED — catalog only carries 3 Pucci sunglasses; not enough for a themed edit. Will re-evaluate when inventory grows.
-  - `/trends/quiet-luxury` PIVOTED — Brunello/Loro Piana absent from catalog. Will rebuild as `/trends/tom-ford-essentials` (Tom Ford is the only matching maison in stock) on next turn if approved.
-  - Brand-accurate imagery TODO: chapters currently use generic editorial-library images. Pre-launch QA pass will swap to product CDN refs before linking from nav.
+- **Gate 3 (first trend pages)** — DONE.
+  - `/trends/dolce-gabbana-icons` — 4 brand-accurate generated images (Sicilian lace gown hero + lace detail + baroque double-breasted suit + crystal Star sheath chapters). All match real catalog products.
+  - `/trends/tom-ford-essentials` — 4 brand-accurate generated images (70s-tone pink silk hero + silk tank detail + crystal-buckle belt + satin shorts still-life). Match real catalog (Pink Silk Tank, Black/White Crystal Belt, Pink Viscose Shorts).
+  - `/trends/pucci-prints` DEFERRED — only 3 sunglasses in catalog.
+  - Both pages still unlinked from nav per staged-launches. Ready for end-of-batch review.
+- **Gate 4 (next)** — wire Brands megamenu hero tiles to `/trends/dolce-gabbana-icons` (Pucci tile waits for inventory) + add footer "Trends" column. Will batch with any other approved trend page so launch happens in one move.
