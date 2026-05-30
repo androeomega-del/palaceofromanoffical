@@ -500,7 +500,7 @@ function ProductView({
                 }}
               >
                 {(images.length ? images : [{ url: "", altText: product.title }]).map((img, i) => (
-                  <div key={i} className="min-w-full snap-center aspect-[3/4] bg-secondary overflow-hidden">
+                  <div key={i} className="min-w-full snap-center aspect-square bg-secondary overflow-hidden">
                     {img.url && (
                       <button
                         type="button"
@@ -518,7 +518,7 @@ function ProductView({
                           loading={i === 0 ? "eager" : "lazy"}
                           fetchPriority={i === 0 ? "high" : undefined}
                           decoding="async"
-                          className="w-full h-full object-contain p-5"
+                          className="w-full h-full object-contain p-2"
                         />
                       </button>
                     )}
@@ -526,7 +526,7 @@ function ProductView({
                 ))}
               </div>
               {images.length > 1 && (
-                <div className="flex justify-center gap-1.5 mt-4">
+                <div className="flex justify-center gap-1.5 mt-2">
                   {images.map((_, i) => (
                     <span
                       key={i}
