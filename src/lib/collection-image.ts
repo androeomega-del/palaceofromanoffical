@@ -425,7 +425,8 @@ const ALT_BY_HANDLE: Record<string, string> = {
   "mens-sneakers": "Men's designer sneakers — luxury low- and high-top trainers",
   "mens-boots": "Men's designer boots — luxury Chelsea, lace-up and ankle boots",
   "mens-sandals-slides": "Men's designer sandals and slides",
-  "mens-bags-wallets": "Men's designer bags and wallets — briefcases, backpacks and leather goods",
+  "mens-bags": "Men's designer bags — luxury briefcases, backpacks, messenger bags and totes",
+  "mens-wallets": "Men's designer wallets and small leather goods — bifolds, card-holders and zip-around wallets",
   "mens-belts": "Men's designer belts in luxury leather",
   "mens-watches-jewelry": "Men's designer watches and jewelry",
 };
