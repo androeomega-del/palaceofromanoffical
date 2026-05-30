@@ -278,23 +278,16 @@ const TRENDING_TILES: { handle: string; label: string; alt: string }[] = [
 
 function TrendingCategories() {
   return (
-    <section aria-label="Dress the season" className="bg-canvas pt-16 md:pt-24">
-      <div className="max-w-screen-2xl mx-auto px-6 md:px-10">
-        <div className="text-center mb-10 md:mb-12">
-          <h2 className="font-serif text-3xl md:text-4xl text-ink mb-3">
-            Dress the Season
-          </h2>
-          <p className="text-[14px] text-muted-foreground">
-            The resort wardrobe, arranged.
-          </p>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-5">
-          {TRENDING_TILES.map((t) => (
-            <TrendingTile key={t.handle} tile={t} />
-          ))}
-        </div>
-      </div>
-    </section>
+    <CarouselSection
+      ariaLabel="Dress the season"
+      title="Dress the Season"
+      description="The resort wardrobe, arranged."
+      itemClassName="basis-[58%] sm:basis-[36%] md:basis-[24%] lg:basis-[16.666%]"
+    >
+      {TRENDING_TILES.map((t) => (
+        <TrendingTile key={t.handle} tile={t} />
+      ))}
+    </CarouselSection>
   );
 }
 
@@ -342,31 +335,22 @@ function TrendingTile({ tile }: { tile: { handle: string; label: string; alt: st
 const SPOTLIGHT_BRANDS: { label: string; vendor: string; handle: string; alt: string }[] = [
   { label: "Versace", vendor: "versace", handle: "brand-versace", alt: "Versace menswear" },
   { label: "Dolce & Gabbana", vendor: "dolce-gabbana", handle: "brand-dolce-gabbana", alt: "Dolce & Gabbana menswear" },
-  { label: "Brunello Cucinelli", vendor: "brunello-cucinelli", handle: "brand-brunello-cucinelli", alt: "Brunello Cucinelli menswear" },
-  { label: "Armani", vendor: "armani", handle: "brand-armani", alt: "Giorgio Armani menswear" },
-  { label: "Gucci", vendor: "gucci", handle: "brand-gucci", alt: "Gucci menswear" },
-  { label: "Prada", vendor: "prada", handle: "brand-prada", alt: "Prada menswear" },
 ];
 
 function BrandSpotlightRail() {
   return (
-    <section aria-label="The Houses" className="bg-canvas-raised border-y border-ink/10 mt-16 md:mt-24 py-14 md:py-20">
-      <div className="max-w-screen-2xl mx-auto px-6 md:px-10">
-        <div className="text-center mb-10 md:mb-12">
-          <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-3">
-            The Houses
-          </p>
-          <h2 className="font-serif text-3xl md:text-4xl text-ink">
-            Maisons defining the season
-          </h2>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-5">
-          {SPOTLIGHT_BRANDS.map((b) => (
-            <BrandSpotlightTile key={b.vendor} brand={b} />
-          ))}
-        </div>
-      </div>
-    </section>
+    <CarouselSection
+      ariaLabel="Hero brands"
+      eyebrow="The Houses"
+      title="Hero brands"
+      description="Two maisons leading the season at Palace of Roman."
+      sectionClassName="bg-canvas-raised border-y border-ink/10 mt-16 md:mt-24 py-14 md:py-20"
+      itemClassName="basis-[84%] sm:basis-[58%] md:basis-[46%] lg:basis-[42%]"
+    >
+      {SPOTLIGHT_BRANDS.map((b) => (
+        <BrandSpotlightTile key={b.vendor} brand={b} />
+      ))}
+    </CarouselSection>
   );
 }
 
