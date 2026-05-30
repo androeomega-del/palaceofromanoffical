@@ -674,29 +674,31 @@ function CampaignTile({
     <Link
       to="/collections/$handle"
       params={{ handle }}
-      className="group flex h-full flex-col border border-ink/10 overflow-hidden bg-canvas md:grid md:grid-cols-2 md:items-stretch"
+      className="group flex h-full flex-col border border-ink/10 overflow-hidden bg-canvas"
     >
-      <div className="flex flex-col justify-center px-8 md:px-10 py-10 md:py-14 bg-canvas">
-        <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-5">
-          {eyebrow}
-        </p>
-        <h3 className="font-serif text-3xl md:text-4xl leading-[1.05] text-ink mb-5 max-w-[16ch]">
-          {headline}
-        </h3>
-        <p className="text-[14px] md:text-[15px] text-muted-foreground leading-relaxed max-w-md mb-8">
-          {body}
-        </p>
-        <span className="inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.3em] text-ink border-b border-bronze/50 pb-1 self-start group-hover:text-bronze group-hover:border-bronze transition-colors">
-          {cta}
-        </span>
-      </div>
-      <div className="overflow-hidden bg-muted md:min-h-[360px]">
+      <div className="relative w-full aspect-[4/5] overflow-hidden bg-muted">
         <img
           src={image}
           alt={alt}
           loading="lazy"
-          className="block h-[420px] w-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-[1.04] md:h-full md:min-h-[360px]"
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-[1.04]"
         />
+      </div>
+      <div className="flex flex-1 flex-col justify-between px-6 md:px-8 py-8 md:py-10 bg-canvas">
+        <div>
+          <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-4">
+            {eyebrow}
+          </p>
+          <h3 className="font-serif text-2xl md:text-3xl leading-[1.1] text-ink mb-4 max-w-[18ch]">
+            {headline}
+          </h3>
+          <p className="text-[14px] md:text-[15px] text-muted-foreground leading-relaxed mb-6">
+            {body}
+          </p>
+        </div>
+        <span className="inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.3em] text-ink border-b border-bronze/50 pb-1 self-start group-hover:text-bronze group-hover:border-bronze transition-colors">
+          {cta}
+        </span>
       </div>
     </Link>
   );
