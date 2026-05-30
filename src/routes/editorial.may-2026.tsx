@@ -41,7 +41,7 @@ const SLIDES: Slide[] = [
   { n: 14, caption: "Surface and shadow.", shop: { kind: "collection", handle: "womens-accessories-1", label: "Shop Women's Accessories" } },
   { n: 15, caption: "Slow proportion.", shop: { kind: "collection", handle: "womens-clothing", label: "Shop Women's" } },
   { n: 16, caption: "Modern restraint.", shop: { kind: "collection", handle: "mens-accessories", label: "Shop Men's Accessories" } },
-  { n: 17, caption: "Patient craft.", shop: { kind: "collection", handle: "mens-bags-wallets", label: "Shop Men's Wallets" } },
+  { n: 17, caption: "Patient craft.", shop: { kind: "collection", handle: "mens-wallets", label: "Shop Men's Wallets" } },
   { n: 18, caption: "Soft tailoring.", shop: { kind: "collection", handle: "womens-bags", label: "Shop Women's Bags" } },
   { n: 19, caption: "Edited motion.", shop: { kind: "collection", handle: "mens-sneakers", label: "Shop Men's Sneakers" } },
   { n: 20, caption: "Inherited line.", shop: { kind: "collection", handle: "womens-accessories-1", label: "Shop Women's Accessories" } },
