@@ -6,12 +6,15 @@
  * fallback), and the site footer. The root layout's default chrome is
  * suppressed on `/` so there are never duplicate headers/footers.
  */
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouter, redirect } from "@tanstack/react-router";
 import { EditionLayout } from "@/components/editors-edition";
 import heroImage from "@/assets/home-hero.jpg";
 import summerHero from "@/assets/summer-bento-hero.jpg";
 
 export const Route = createFileRoute("/")({
+  beforeLoad: () => {
+    throw redirect({ to: "/men" });
+  },
   head: () => ({
     meta: [
       { title: "Palace of Roman — Curated Luxury Fashion" },
@@ -23,13 +26,14 @@ export const Route = createFileRoute("/")({
       { name: "twitter:image", content: `https://palaceofromanofficial.com${heroImage}` },
     ],
     links: [
-      { rel: "canonical", href: "https://palaceofromanofficial.com/" },
+      { rel: "canonical", href: "https://palaceofromanofficial.com/men" },
       { rel: "preload", as: "image", href: summerHero, fetchPriority: "high" } as any,
     ],
   }),
   component: HomePage,
   errorComponent: HomeErrorComponent,
 });
+
 
 function HomePage() {
   return <EditionLayout />;
