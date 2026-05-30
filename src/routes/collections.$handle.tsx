@@ -612,7 +612,7 @@ function CollectionPage() {
             <div className="absolute inset-0 bg-gradient-to-t from-canvas via-canvas/40 to-transparent" />
           </section>
 
-          <section className="px-6 pt-12 pb-8 border-b border-ink/5">
+          <section className="px-4 md:px-6 pt-8 md:pt-12 pb-6 md:pb-8">
             <div className="max-w-screen-2xl mx-auto">
               <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
                 <Link to="/" className="hover:text-ink transition-colors">Home</Link>
@@ -636,7 +636,7 @@ function CollectionPage() {
       )}
 
       {isEditorial && (featuredQ.data?.length ?? 0) > 0 && (
-        <section className="px-6 pt-16 pb-4">
+        <section className="px-4 md:px-6 pt-10 md:pt-16 pb-4">
           <div className="max-w-screen-2xl mx-auto">
             <div className="flex items-end justify-between mb-10">
               <div>
@@ -655,13 +655,13 @@ function CollectionPage() {
 
               ))}
             </div>
-            <div className="mt-16 border-t border-ink/10" />
+            
           </div>
         </section>
       )}
 
 
-      <section className="px-6 py-12">
+      <section className="px-4 md:px-6 py-8 md:py-12">
         <div className="max-w-screen-2xl mx-auto flex gap-10">
           {/* Desktop sidebar */}
           <div className="hidden lg:block">{sidebar}</div>
@@ -669,7 +669,7 @@ function CollectionPage() {
           {/* Main column */}
           <div className="flex-1 min-w-0">
             {/* Sort dropdown — same menu on every catalog surface */}
-            <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-ink/10 pb-4">
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-4 pb-2">
               <button
                 type="button"
                 onClick={() => setMobileFiltersOpen(true)}
@@ -711,7 +711,7 @@ function CollectionPage() {
                 Single-select; "All" clears. Hidden if only one chip
                 would render (nothing to choose between). */}
             {chips.length > 1 && (
-              <div className="mb-6 pt-5 border-t border-ink/5 flex flex-wrap items-center gap-2">
+              <div className="mb-6 flex flex-wrap items-center gap-2">
                 <span className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mr-2">
                   Category
                 </span>
