@@ -8,7 +8,7 @@ export const CANONICAL_COLLECTION_HANDLE: Record<string, string> = {
   "women-accessories": "womens-accessories",
   "men-clothing": "mens-clothing",
   "men-shoes": "mens-shoes",
-  "men-bags": "mens-bags-wallets",
+  "men-bags": "mens-bags",
   "men-accessories": "mens-accessories",
   "best-sellers": "best-selling-brands",
   "sale": "high-discounts",
