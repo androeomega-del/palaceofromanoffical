@@ -8,7 +8,7 @@ import { isAllowedLuxuryBrand } from "@/lib/nav-config";
 
 const BRANDS_TITLE = "Brands — Palace of Roman";
 const BRANDS_DESC =
-  "Browse the houses we carry at Palace of Roman — an A–Z directory of luxury designers stocked through our official BrandsGateway partnership, with worldwide tracked shipping.";
+  "Browse the houses we carry at Palace of Roman — an A–Z directory of luxury designers stocked through our network of authorised boutiques and distributors around the world, with worldwide tracked shipping.";
 
 export const Route = createFileRoute("/brands")({
   head: () => {
