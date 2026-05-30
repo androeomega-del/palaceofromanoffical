@@ -7,7 +7,6 @@ export type Gender = "Women" | "Men" | "Unisex";
 export const GENDERS: { value: Gender; label: string }[] = [
   { value: "Women", label: "Women" },
   { value: "Men", label: "Men" },
-  { value: "Unisex", label: "Unisex" },
 ];
 
 export type Category = {
@@ -49,10 +48,6 @@ export const CATEGORY_COLLECTIONS: Category[] = [
   { handle: "men-bags", label: "Bags", group: "Men" },
   { handle: "men-accessories", label: "Accessories", group: "Men" },
 
-  // Unisex
-  { handle: "sunglasses", label: "Sunglasses", group: "Unisex" },
-  { handle: "accessories", label: "Accessories", group: "Unisex" },
-  { handle: "bags", label: "Bags", group: "Unisex" },
 ];
 
 export function findCategory(handle?: string): Category | undefined {
