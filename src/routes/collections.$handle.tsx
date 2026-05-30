@@ -711,7 +711,7 @@ function CollectionPage() {
                 Single-select; "All" clears. Hidden if only one chip
                 would render (nothing to choose between). */}
             {chips.length > 1 && (
-              <div className="mb-6 pt-5 border-t border-ink/5 flex flex-wrap items-center gap-2">
+              <div className="mb-6 flex flex-wrap items-center gap-2">
                 <span className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mr-2">
                   Category
                 </span>
