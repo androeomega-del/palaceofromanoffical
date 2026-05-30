@@ -16,13 +16,14 @@ export const Route = createFileRoute("/order-confirmed")({
       {
         name: "description",
         content:
-          "Thank you for your order. A confirmation has been sent to your email and your pieces are being prepared for dispatch.",
+          "Your order is confirmed. Each piece ships insured, in discreet outer packaging, with the maison's original presentation box inside — a quiet, white-glove arrival.",
       },
       { name: "robots", content: "noindex, nofollow" },
       { property: "og:title", content: "Order Confirmed — Palace of Roman" },
       {
         property: "og:description",
-        content: "Thank you for your order with Palace of Roman.",
+        content:
+          "Insured worldwide delivery in discreet packaging — your Palace of Roman order is on its way.",
       },
     ],
   }),
