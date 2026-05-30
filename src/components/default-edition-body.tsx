@@ -28,7 +28,7 @@ import summerHero from "@/assets/summer-bento-hero.jpg";
 import editorialHero from "@/assets/editorial/may-2026/1.webp";
 import marketingWomen from "@/assets/marketing-women-summer.jpg";
 import marketingMen from "@/assets/marketing-men-summer.jpg";
-import marketingAccessories from "@/assets/marketing-accessories-summer.jpg";
+import marketingAccessories from "@/assets/editorial-accessories-hero.jpg";
 import marketingPoloShirts from "@/assets/marketing-polo-shirts.jpg";
 import marketingLongSleeveTees from "@/assets/marketing-long-sleeve-tees.jpg";
 import marketingHoodies from "@/assets/marketing-hoodies.jpg";
