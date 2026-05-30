@@ -486,8 +486,8 @@ function ProductView({
         </div>
       </div>
 
-      <div className="px-6 md:px-10 pt-10 pb-20">
-        <div className="max-w-screen-2xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+      <div className="px-6 md:px-10 pt-6 md:pt-8 pb-10 md:pb-14">
+        <div className="max-w-screen-2xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-10 lg:gap-12 items-start">
           {/* ===== Gallery — stacked editorial ===== */}
           <div className="lg:col-span-7">
             {/* Mobile: snap carousel */}
@@ -591,8 +591,8 @@ function ProductView({
           )}
 
           {/* ===== Info column ===== */}
-          <div className="lg:col-span-5 lg:sticky lg:top-24 lg:self-start space-y-12">
-            <header className="space-y-5">
+          <div className="lg:col-span-5 lg:sticky lg:top-24 lg:self-start space-y-7 md:space-y-8">
+            <header className="space-y-4">
               <Link
                 to="/collections/$handle"
                 params={{ handle: vendorHandle }}
@@ -629,7 +629,7 @@ function ProductView({
             <div
               id="buy"
               ref={buyRef}
-              className={`space-y-10 scroll-mt-28 rounded-md transition-shadow duration-700 ${
+              className={`space-y-6 md:space-y-7 scroll-mt-28 rounded-md transition-shadow duration-700 ${
                 flashBuy
                   ? "ring-2 ring-[var(--studio-bronze)] ring-offset-8 ring-offset-[var(--studio-bg)] shadow-[0_0_0_8px_color-mix(in_oklab,var(--studio-bronze)_15%,transparent)]"
                   : "ring-0"
@@ -739,7 +739,7 @@ function ProductView({
             >
               {product.description && (
                 <AccordionItem value="details" className="border-0">
-                  <AccordionTrigger className="text-[11px] uppercase tracking-[0.25em] font-bold hover:no-underline py-6 [&>svg]:text-[var(--studio-bronze)]">
+                  <AccordionTrigger className="text-[11px] uppercase tracking-[0.25em] font-bold hover:no-underline py-4 md:py-5 [&>svg]:text-[var(--studio-bronze)]">
                     The Narrative
                   </AccordionTrigger>
                   <AccordionContent>
@@ -754,7 +754,7 @@ function ProductView({
                 if (!hasCompositionInfo(c)) return null;
                 return (
                   <AccordionItem value="composition" className="border-0">
-                    <AccordionTrigger className="text-[11px] uppercase tracking-[0.25em] font-bold hover:no-underline py-6 [&>svg]:text-[var(--studio-bronze)]">
+                    <AccordionTrigger className="text-[11px] uppercase tracking-[0.25em] font-bold hover:no-underline py-4 md:py-5 [&>svg]:text-[var(--studio-bronze)]">
                       Composition & Care
                     </AccordionTrigger>
                     <AccordionContent>
@@ -789,7 +789,7 @@ function ProductView({
                 );
               })()}
               <AccordionItem value="sizing" id="sizing-accordion" className="border-0 scroll-mt-24">
-                <AccordionTrigger className="text-[11px] uppercase tracking-[0.25em] font-bold hover:no-underline py-6 [&>svg]:text-[var(--studio-bronze)]">
+                <AccordionTrigger className="text-[11px] uppercase tracking-[0.25em] font-bold hover:no-underline py-4 md:py-5 [&>svg]:text-[var(--studio-bronze)]">
                   Sizing & Fit
                 </AccordionTrigger>
                 <AccordionContent>
@@ -797,7 +797,7 @@ function ProductView({
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="shipping" className="border-0">
-                <AccordionTrigger className="text-[11px] uppercase tracking-[0.25em] font-bold hover:no-underline py-6 [&>svg]:text-[var(--studio-bronze)]">
+                <AccordionTrigger className="text-[11px] uppercase tracking-[0.25em] font-bold hover:no-underline py-4 md:py-5 [&>svg]:text-[var(--studio-bronze)]">
                   Shipping & Delivery
                 </AccordionTrigger>
                 <AccordionContent>
@@ -818,7 +818,7 @@ function ProductView({
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="auth" className="border-0">
-                <AccordionTrigger className="text-[11px] uppercase tracking-[0.25em] font-bold hover:no-underline py-6 [&>svg]:text-[var(--studio-bronze)]">
+                <AccordionTrigger className="text-[11px] uppercase tracking-[0.25em] font-bold hover:no-underline py-4 md:py-5 [&>svg]:text-[var(--studio-bronze)]">
                   Authenticity & Returns
                 </AccordionTrigger>
                 <AccordionContent>
@@ -850,8 +850,8 @@ function ProductView({
 
         {/* ===== Editorial notes (layering categories) ===== */}
         {editorial && (
-          <section className="max-w-5xl mx-auto mt-32 pt-20 border-t border-[var(--studio-rule)]">
-            <div className="text-center max-w-2xl mx-auto space-y-5 mb-20">
+          <section className="max-w-5xl mx-auto mt-16 md:mt-20 pt-10 md:pt-12 border-t border-[var(--studio-rule)]">
+            <div className="text-center max-w-2xl mx-auto space-y-4 mb-10 md:mb-12">
               <p className="text-[10px] tracking-[0.3em] uppercase text-[var(--studio-bronze)] font-semibold">
                 {editorial.eyebrow}
               </p>
@@ -881,8 +881,8 @@ function ProductView({
         {/* ===== More from vendor ===== */}
 
         {related.length > 0 && (
-          <section className="max-w-7xl mx-auto mt-32 pt-20 border-t border-[var(--studio-rule)]">
-            <div className="flex items-end justify-between mb-12">
+          <section className="max-w-7xl mx-auto mt-16 md:mt-20 pt-10 md:pt-12 border-t border-[var(--studio-rule)]">
+            <div className="flex items-end justify-between mb-6 md:mb-8">
               <div className="space-y-3">
                 <p className="text-[10px] tracking-[0.3em] uppercase text-[var(--studio-bronze)] font-semibold">
                   The Edit
@@ -925,7 +925,7 @@ function ProductView({
 
         {/* ===== Style It With — cross-house cross-sell rail ===== */}
         {styleItWith.length > 0 && (
-          <section className="max-w-7xl mx-auto mt-32 pt-20 border-t border-[var(--studio-rule)]">
+          <section className="max-w-7xl mx-auto mt-16 md:mt-20 pt-10 md:pt-12 border-t border-[var(--studio-rule)]">
             <StyleItWithRail items={styleItWith} />
           </section>
         )}
