@@ -455,14 +455,23 @@ function BrandsPanel({
 export function DepartmentTabs() {
   const dept = useDeptStore((s) => s.dept);
   const setDept = useDeptStore((s) => s.setDept);
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   const TABS: { key: Dept; label: string; to: string }[] = [
     { key: "women", label: "Women", to: "/women" },
     { key: "men", label: "Men", to: "/men" },
   ];
+  // Prefer URL as source of truth on dept landing pages so the underline
+  // is correct on first paint (the dept store hydrates in useEffect).
+  const urlDept: Dept | null = pathname.startsWith("/men")
+    ? "men"
+    : pathname.startsWith("/women")
+      ? "women"
+      : null;
+  const effective: Dept = urlDept ?? dept;
   return (
     <div className="flex items-stretch gap-6">
       {TABS.map((t) => {
-        const active = dept === t.key;
+        const active = effective === t.key;
         return (
           <Link
             key={t.key}
