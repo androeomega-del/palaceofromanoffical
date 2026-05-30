@@ -218,8 +218,6 @@ const CROSS_CATEGORIES: CrossEntry[] = [
   { handle: "sunglasses",         label: "Sunglasses",         women: { column: "Fine Accessories", order: 13 }, men: { column: "Accessories", order: 15 } },
   { handle: "eyewear",            label: "Eyewear",            women: { column: "Fine Accessories", order: 14 }, men: { column: "Accessories", order: 16 } },
   { handle: "cashmere",           label: "Cashmere",           women: { column: "Apparel", order: 30 }, men: { column: "Shirts & Knitwear", order: 30 } },
-
-  { handle: "unisex",         label: "Unisex",         women: { column: "More", order: 0 },              men: { column: "More", order: 0 } },
 ];
 
 function cleanTitle(title: string, prefixWord: "Women's" | "Men's"): string {

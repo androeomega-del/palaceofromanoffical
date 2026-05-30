@@ -455,7 +455,7 @@ export function TaxonomyFilters({
     for (const c of CATEGORY_COLLECTIONS) by[c.group].push(c);
     return by;
   }, []);
-  const visibleGroups: Gender[] = gender ? [gender] : ["Women", "Men", "Unisex"];
+  const visibleGroups: Gender[] = gender ? [gender] : ["Women", "Men"];
 
   return (
     <div className="divide-y divide-ink/10 mb-2">

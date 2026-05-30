@@ -115,7 +115,6 @@ function buildQuestions(answers: Answers): Question[] {
       options: [
         { label: "Women", image: marketingWomen, apply: (a) => ({ ...a, gender: "Women" }) },
         { label: "Men", image: marketingMen, apply: (a) => ({ ...a, gender: "Men" }) },
-        { label: "Unisex", image: accessoriesHero, apply: (a) => ({ ...a, gender: "Unisex" }) },
       ],
     },
     {
