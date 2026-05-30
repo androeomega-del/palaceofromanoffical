@@ -4,8 +4,8 @@
  * Editorial Farfetch-narrow 7-section gateway for womenswear, written in
  * Palace of Roman's curatorial voice. Mirrors men.tsx's component system but
  * with a tighter rhythm (one editorial story per beat, no duplicate brand
- * rails). Verified Shopify handles: women-clothing, women-shoes,
- * women-bags, women-accessories, women-accessories, women.
+ * rails). Verified Shopify handles: womens-clothing, womens-shoes,
+ * womens-bags, womens-accessories, womens-accessories, women.
  *
  * Staged launch: NOT linked from primary nav or home edition body yet. The
  * four "Curated Edit" tiles point to dedicated themed pages also shipping
@@ -295,7 +295,7 @@ function JustLanded() {
       actions={
         <Link
           to="/collections/$handle"
-          params={{ handle: "women-clothing" }}
+          params={{ handle: "womens-clothing" }}
           className="inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.3em] text-ink border-b border-bronze/50 pb-1 hover:text-bronze hover:border-bronze transition-colors"
         >
           Explore New In →
@@ -404,10 +404,10 @@ function CuratedEditGrid() {
 /* ─────────────────────────────────────────────────────────────────── */
 
 const RESONATING: { label: string; handle: string }[] = [
-  { label: "Cashmere Knits", handle: "women-clothing" },
-  { label: "Lace Dressing", handle: "women-clothing" },
-  { label: "The Heel", handle: "women-shoes" },
-  { label: "Gold Jewellery", handle: "women-accessories" },
+  { label: "Cashmere Knits", handle: "womens-clothing" },
+  { label: "Lace Dressing", handle: "womens-clothing" },
+  { label: "The Heel", handle: "womens-shoes" },
+  { label: "Gold Jewellery", handle: "womens-accessories" },
 ];
 
 function WhatsResonating() {
@@ -501,12 +501,12 @@ function MaisonTile({
 function BuyersPick() {
   const picks = useQuery({
     queryKey: ["women", "buyers-pick", "v1"],
-    queryFn: () => fetchCollection("women-clothing", 12),
+    queryFn: () => fetchCollection("womens-clothing", 12),
     staleTime: 10 * 60 * 1000,
   });
   const fallback = useQuery({
     queryKey: ["women", "buyers-pick-fallback", "v1"],
-    queryFn: () => fetchCollection("women-shoes", 12),
+    queryFn: () => fetchCollection("womens-shoes", 12),
     enabled: !!picks.data && (picks.data?.products?.edges?.length ?? 0) === 0,
     staleTime: 10 * 60 * 1000,
   });
@@ -514,7 +514,7 @@ function BuyersPick() {
   const fromPicks = picks.data?.products?.edges ?? [];
   const fromFallback = fallback.data?.products?.edges ?? [];
   const products = fromPicks.length > 0 ? fromPicks : fromFallback;
-  const sourceHandle = fromPicks.length > 0 ? "women-clothing" : "women-shoes";
+  const sourceHandle = fromPicks.length > 0 ? "womens-clothing" : "womens-shoes";
 
   return (
     <CarouselSection
@@ -559,7 +559,7 @@ function FinishingPieces() {
         headline="The bag, as the answer."
         body="Top-handle, crossbody, structured tote — pieces worth carrying through the decade."
         cta="Explore Bags →"
-        handle="women-bags"
+        handle="womens-bags"
         image={editBagsHero}
         alt="The Bag Edit — four designer handbags on a travertine surface in warm window light"
       />
@@ -568,7 +568,7 @@ function FinishingPieces() {
         headline="Gold, kept close."
         body="A single chain, a filigree drop, the brass cuff — small pieces that hold the whole look."
         cta="Explore Jewellery →"
-        handle="women-accessories"
+        handle="womens-accessories"
         image={editDgHero}
         alt="The Jewellery Edit — gold drop earrings worn with a black lace dress in Mediterranean light"
       />
