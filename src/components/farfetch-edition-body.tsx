@@ -144,7 +144,7 @@ function NewInRail() {
           </div>
           <Link
             to="/collections/$handle"
-            params={{ handle: "new-arrivals" }}
+            params={{ handle: "low-stock" }}
             className="hidden sm:inline-flex text-cta-md uppercase border-b border-ink/25 pb-1 hover:text-bronze hover:border-bronze transition-colors"
           >
             Shop all →
