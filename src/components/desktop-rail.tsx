@@ -456,8 +456,8 @@ export function DepartmentTabs() {
   const dept = useDeptStore((s) => s.dept);
   const setDept = useDeptStore((s) => s.setDept);
   const TABS: { key: Dept; label: string; to: string }[] = [
-    { key: "women", label: "The Women's Edit", to: "/women" },
-    { key: "men", label: "The Men's Edit", to: "/men" },
+    { key: "women", label: "Women", to: "/women" },
+    { key: "men", label: "Men", to: "/men" },
   ];
   return (
     <div className="flex items-stretch gap-6">
