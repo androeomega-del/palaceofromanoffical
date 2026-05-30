@@ -246,12 +246,25 @@ function buildDepartment(
   };
 
   // 1) "New Arrivals" sits at the top of Apparel for both departments.
-  if (byHandle.has("new-arrivals")) {
-    push(columnOrder[0], { handle: "new-arrivals", label: "New Arrivals", _order: 0 });
+  //    Prefer the dept-scoped smart collection (mens-new-arrivals /
+  //    womens-new-arrivals) when it exists; fall back to the generic
+  //    new-arrivals handle otherwise.
+  const deptNewArrivalsHandle =
+    genderKey === "women" ? "womens-new-arrivals" : "mens-new-arrivals";
+  let newArrivalsHandle: string | null = null;
+  if (byHandle.has(deptNewArrivalsHandle)) {
+    newArrivalsHandle = deptNewArrivalsHandle;
+  } else if (byHandle.has("new-arrivals")) {
+    newArrivalsHandle = "new-arrivals";
+  }
+  if (newArrivalsHandle) {
+    push(columnOrder[0], { handle: newArrivalsHandle, label: "New Arrivals", _order: 0 });
   }
 
   // 2) Cross-gender categories (unprefixed handles that still belong here).
-  const seen = new Set<string>(["new-arrivals"]);
+  const seen = new Set<string>(
+    newArrivalsHandle ? [newArrivalsHandle, "new-arrivals"] : ["new-arrivals"],
+  );
   for (const cx of CROSS_CATEGORIES) {
     const slot = cx[genderKey];
     if (!slot) continue;
