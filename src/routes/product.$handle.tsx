@@ -569,7 +569,7 @@ function ProductView({
                           loading={i === 0 ? "eager" : "lazy"}
                           fetchPriority={i === 0 ? "high" : undefined}
                           decoding="async"
-                          className="w-full h-full object-cover transition-transform duration-[1400ms] hover:scale-[1.02]"
+                          className="w-full h-full object-cover transition-transform duration-[1400ms] motion-safe:hover:scale-[1.02]"
                         />
                       </button>
                     )}
