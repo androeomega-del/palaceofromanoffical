@@ -27,9 +27,14 @@ exports[`visual regression — /collections cards > every collection card render
     "file": "mens.jpg",
     "focal": "50% 35%",
   },
-  "mens-bags-wallets": {
-    "alt": "Men's designer bags and wallets — briefcases, backpacks and leather goods",
+  "mens-bags": {
+    "alt": "Men's designer bags — luxury briefcases, backpacks, messenger bags and totes",
     "file": "mens-bags.jpg",
+    "focal": "50% 50%",
+  },
+  "mens-wallets": {
+    "alt": "Men's designer wallets and small leather goods — bifolds, card-holders and zip-around wallets",
+    "file": "mens-wallets.jpg",
     "focal": "50% 50%",
   },
   "mens-belts": {
