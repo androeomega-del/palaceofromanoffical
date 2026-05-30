@@ -30,7 +30,7 @@ export type SortValue =
 export const SORT_OPTIONS: { value: SortValue; label: string }[] = [
   { value: "MANUAL-false", label: "Featured" },
   { value: "BEST_SELLING-false", label: "Best Sellers" },
-  { value: "CREATED-true", label: "New Arrivals" },
+  { value: "CREATED-true", label: "Just In" },
   { value: "CREATED-false", label: "Oldest First" },
   { value: "PRICE-false", label: "Price: Low to High" },
   { value: "PRICE-true", label: "Price: High to Low" },
