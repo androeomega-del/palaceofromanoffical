@@ -311,36 +311,76 @@ function TrendingTile({ tile }: { tile: { handle: string; label: string; alt: st
 /*  5. Brand Spotlight Rail                                            */
 /* ─────────────────────────────────────────────────────────────────── */
 
-const SPOTLIGHT_BRANDS = [
-  { label: "Versace", vendor: "versace" },
-  { label: "Dolce & Gabbana", vendor: "dolce-gabbana" },
-  { label: "Brunello Cucinelli", vendor: "brunello-cucinelli" },
-  { label: "Armani", vendor: "armani" },
-  { label: "Gucci", vendor: "gucci" },
-  { label: "Prada", vendor: "prada" },
+const SPOTLIGHT_BRANDS: { label: string; vendor: string; handle: string; alt: string }[] = [
+  { label: "Versace", vendor: "versace", handle: "brand-versace", alt: "Versace menswear" },
+  { label: "Dolce & Gabbana", vendor: "dolce-gabbana", handle: "brand-dolce-gabbana", alt: "Dolce & Gabbana menswear" },
+  { label: "Brunello Cucinelli", vendor: "brunello-cucinelli", handle: "brand-brunello-cucinelli", alt: "Brunello Cucinelli menswear" },
+  { label: "Armani", vendor: "armani", handle: "brand-armani", alt: "Giorgio Armani menswear" },
+  { label: "Gucci", vendor: "gucci", handle: "brand-gucci", alt: "Gucci menswear" },
+  { label: "Prada", vendor: "prada", handle: "brand-prada", alt: "Prada menswear" },
 ];
 
 function BrandSpotlightRail() {
   return (
-    <section aria-label="Brand spotlight" className="bg-canvas-raised border-y border-ink/10 mt-16 md:mt-24 py-10 md:py-14">
+    <section aria-label="The Houses" className="bg-canvas-raised border-y border-ink/10 mt-16 md:mt-24 py-14 md:py-20">
       <div className="max-w-screen-2xl mx-auto px-6 md:px-10">
-        <p className="text-center text-[10px] uppercase tracking-[0.4em] text-bronze mb-6 md:mb-8">
-          The Houses
-        </p>
-        <div className="flex flex-wrap justify-center items-center gap-x-8 gap-y-4 md:gap-x-14">
+        <div className="text-center mb-10 md:mb-12">
+          <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-3">
+            The Houses
+          </p>
+          <h2 className="font-serif text-3xl md:text-4xl text-ink">
+            Maisons defining the season
+          </h2>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-5">
           {SPOTLIGHT_BRANDS.map((b) => (
-            <Link
-              key={b.vendor}
-              to="/brand/$vendor"
-              params={{ vendor: b.vendor }}
-              className="text-[11px] md:text-[12px] uppercase tracking-[0.3em] text-ink hover:text-bronze transition-colors"
-            >
-              {b.label}
-            </Link>
+            <BrandSpotlightTile key={b.vendor} brand={b} />
           ))}
         </div>
       </div>
     </section>
+  );
+}
+
+function BrandSpotlightTile({
+  brand,
+}: {
+  brand: { label: string; vendor: string; handle: string; alt: string };
+}) {
+  const { data } = useQuery({
+    queryKey: ["men", "brand-spotlight", brand.handle],
+    queryFn: () => fetchCollection(brand.handle, 1),
+    staleTime: 15 * 60 * 1000,
+  });
+  const imgUrl =
+    data?.image?.url ??
+    data?.products?.edges?.[0]?.node?.images?.edges?.[0]?.node?.url ??
+    null;
+  const alt = data?.image?.altText ?? brand.alt;
+
+  return (
+    <Link
+      to="/brand/$vendor"
+      params={{ vendor: brand.vendor }}
+      className="group block"
+    >
+      <div className="relative aspect-[3/4] bg-muted overflow-hidden mb-3">
+        {imgUrl ? (
+          <img
+            src={cdnImage(imgUrl, { width: 600 })}
+            alt={alt}
+            loading="lazy"
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.05]"
+          />
+        ) : (
+          <div className="absolute inset-0 por-shimmer" aria-hidden="true" />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-transparent to-transparent" />
+        <p className="absolute inset-x-0 bottom-4 text-center text-[11px] md:text-[12px] uppercase tracking-[0.3em] text-canvas">
+          {brand.label}
+        </p>
+      </div>
+    </Link>
   );
 }
 
