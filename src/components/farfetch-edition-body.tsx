@@ -297,7 +297,7 @@ function CategoryTile({ tile }: { tile: CategoryTile }) {
           <div className="absolute inset-0 por-shimmer" aria-hidden="true" />
         )}
       </div>
-      <p className="text-[12px] md:text-[13px] uppercase tracking-[0.2em] text-ink text-center group-hover:text-bronze transition-colors">
+      <p className="text-[12px] md:text-[13px] uppercase tracking-[0.25em] text-ink text-center group-hover:text-bronze-deep transition-colors">
         {tile.label}
       </p>
     </Link>
