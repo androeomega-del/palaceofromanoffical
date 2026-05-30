@@ -4,7 +4,7 @@ import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo, useState, useEffect, useRef, useCallback } from "react";
 import { useServerFn } from "@tanstack/react-start";
 
-import { fetchCollectionFiltered, fetchCollection, type StorefrontFilterValue } from "@/lib/shopify";
+import { fetchCollectionFiltered, fetchCollection, fetchProductsPage, type StorefrontFilterValue } from "@/lib/shopify";
 import { fetchCollectionTotal } from "@/lib/collection-count.functions";
 import { fetchCollectionCategoryCounts } from "@/lib/collection-category-counts.functions";
 import { CATEGORY_BUCKETS, bucketProduct, type CategoryBucketLabel } from "@/lib/category-buckets";
@@ -277,20 +277,44 @@ function CollectionPage() {
     return arr;
   }, [selections, priceRange]);
 
-  const [sortKey, reverseStr] = sort.split("-");
+  const effectiveSort = handle === "new-arrivals" && sort === "BEST_SELLING-false" ? "CREATED-true" : sort;
+  const [sortKey, reverseStr] = effectiveSort.split("-");
   const reverse = reverseStr === "true";
 
   const q = useInfiniteQuery({
     queryKey: ["collection-filtered", handle, filterInputs, sortKey, reverse],
     queryFn: async ({ pageParam }) => {
       return fetchCollectionFiltered({
-        handle,
-        first: 48,
-        after: pageParam as string | null,
-        filters: filterInputs,
-        sortKey,
-        reverse,
-      });
+        if (handle === "new-arrivals") {
+          const page = await fetchProductsPage({
+            first: 48,
+            after: pageParam as string | null,
+            sortKey: sortKey === "CREATED" ? "CREATED_AT" : sortKey,
+            reverse,
+          });
+          return {
+            collection: {
+              id: "virtual-new-arrivals",
+              title: "New Arrivals",
+              handle: "new-arrivals",
+              description: "",
+              image: null,
+              updatedAt: new Date(0).toISOString(),
+            },
+            filters: [],
+            edges: page.edges,
+            pageInfo: page.pageInfo,
+          };
+        }
+        return fetchCollectionFiltered({
+          handle,
+          first: 48,
+          after: pageParam as string | null,
+          filters: filterInputs,
+          sortKey,
+          reverse,
+        });
+      },
     },
     initialPageParam: null as string | null,
     getNextPageParam: (last) =>
