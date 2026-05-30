@@ -192,7 +192,15 @@ function Frame({ slide, aspect = "aspect-[4/5]" }: { slide: StorySlide; aspect?:
       </div>
       <figcaption className="mt-4 flex items-baseline justify-between gap-6">
         <span className="font-serif italic text-base md:text-lg text-ink">{slide.caption}</span>
-        {slide.shopHandle && (
+        {slide.productHandle ? (
+          <Link
+            to="/product/$handle"
+            params={{ handle: slide.productHandle }}
+            className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-bronze hover:text-ink transition-colors border-b border-bronze/40 hover:border-ink pb-1"
+          >
+            {slide.shopLabel ?? "Shop the piece"} →
+          </Link>
+        ) : slide.shopHandle ? (
           <Link
             to="/collections/$handle"
             params={{ handle: slide.shopHandle }}
@@ -200,7 +208,7 @@ function Frame({ slide, aspect = "aspect-[4/5]" }: { slide: StorySlide; aspect?:
           >
             {slide.shopLabel ?? "Shop"} →
           </Link>
-        )}
+        ) : null}
       </figcaption>
     </figure>
   );
