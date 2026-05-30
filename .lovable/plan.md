@@ -1,91 +1,76 @@
-# Plan — Catalog cleanup + men's edits + nav hygiene
 
-This is a large, irreversible Shopify + nav change. Approving this plan authorizes me to:
-- create live Shopify smart collections,
-- modify the main-menu structure (in code, since nav is driven by `buildDepartmentsFromShopifyMenu` + `nav-config`),
-- unpublish empty collections and rename `eyewear` → `sunglasses` across the storefront.
+# Auto-generate Shopify smart collections from product catalog
 
-Working mode is preserved: deep-research, smallest diff, per-step verification before moving on. I'll stop and report after each numbered step; nothing in step N+1 runs until you OK step N.
+Working mode preserved: deep-research, smallest diff, verify after each step. Nothing irreversible runs until you OK this plan.
 
----
+## Step 0 — Catalog scan (read-only)
 
-## Step 1 — Unified Shoes & Bags parents (gender-filterable)
+Authenticate via client credentials (`SHOPIFY_CLIENT_ID` / `SHOPIFY_CLIENT_SECRET` → Admin token, same flow used by `scripts/shopify/update-smart-collection-rules.mjs`).
 
-**Goal:** one `shoes` parent + one `bags` parent, each showing men's + women's items, with a gender filter on the collection page.
+Pull every product and aggregate:
+- distinct `product_type` values + count per type
+- distinct tags per type (so rules match real tags, not invented ones)
+- gender tag presence (`Men` / `Women`) per type
 
-**Approach (chosen — preferred):**
-1. Create/confirm two smart collections in Shopify:
-   - `shoes` — rule: `product_type` contains "Shoe" OR tag in (`mens-shoes`, `womens-shoes`, `sneakers`, `loafers`, `boots`, `heels`, `flats`, `sandals`, `oxford-shoes`, `dress-shoes`)
-   - `bags` — rule: `product_type` contains "Bag" OR tag in (`handbags`, `backpacks`, `weekenders`, `clutches`, `totes`, `crossbody`, `shoulder-bags`)
-2. Make sure every product in those parents carries either a `men` or `women` tag (most already do via dept tagging). I will run a verification pass and only re-tag the small set that's missing.
-3. Surface a **Gender** filter facet on `/collections/shoes` and `/collections/bags` — already supported by the existing facet system, just need to confirm `gender` is in the facet list for these handles.
+Output written to `/tmp/catalog-types.json` for review. No writes yet.
 
-**Files touched (code side):**
-- `src/lib/nav-config.ts` — point Shoes/Bags rail items to the unified handles where appropriate.
-- Whatever drives facets per collection (will locate before editing).
+## Step 1 — Generate collection spec
 
-**Verify:** open `/collections/shoes` and `/collections/bags`, confirm product count ≈ men+women sum, confirm gender filter toggles correctly.
+For each distinct `product_type` (e.g. "Sneakers", "Loafers", "Tote Bag", "Sunglasses", "Blazer", …):
 
----
+- Handle: slugified type (`sneakers`, `tote-bag`, …). Skip if already exists with matching rule — never duplicate.
+- Title: pluralized, title-cased product type.
+- Rules (ANY of, `disjunctive: true`):
+  - `product_type equals "<Type>"`
+  - `tag equals "<slug-of-type>"` (covers tag-only products)
+- Sort: `best-selling`. Published: `true`.
 
-## Step 2 — Create 4 men's smart collections live
+Special cases:
+- **Shoes** parent: one unified `shoes` smart collection — rule = `product_type contains "Shoe"` OR tag in shoe-family slugs found in the scan (sneakers, loafers, boots, heels, flats, sandals, oxford-shoes, dress-shoes). All products keep their existing `Men`/`Women` gender tag → gender facet on `/collections/shoes` filters in-page.
+- **Bags** parent: same pattern — one `bags` collection, rule = `product_type contains "Bag"` OR tag in bag-family slugs (handbags, backpacks, totes, crossbody, clutches, shoulder-bags, weekenders).
+- **Sunglasses only**: any `eyewear` type/tag/handle is treated as `sunglasses`. The `eyewear` collection is unpublished; nav/SEO/sitemap references swapped to `sunglasses`.
 
-Create these directly in Shopify (Admin API, using `SHOPIFY_ACCESS_TOKEN`) — **smart collections only, no new products**, rules match existing tagged catalog:
+Spec written to `/tmp/collection-spec.json`. I stop here and show you the spec **before** any write.
 
-| Handle | Title | Rules (ANY OF) |
-|---|---|---|
-| `mens-workwear` | Men's Workwear | tag ∈ {suits, blazers, dress-pants, dress-shirts, trench-coats, oxford-shoes} OR product_type contains "Suit"/"Blazer" — AND tag `men` |
-| `mens-weekend` | Men's Weekend | tag ∈ {cashmere, polo-shirts, casual-pants, denim-men, sneakers, loafers, sweaters-men, cardigans} AND tag `men` |
-| `mens-evening` | Men's Evening | tag ∈ {tuxedos, dress-shirts, silk, leather-jackets, dress-shoes, boots} OR product_type ∈ {Tuxedo, Dress Shoe} — AND tag `men` |
-| `mens-travel` | Men's Travel | tag ∈ {weekenders, backpacks, linen, sunglasses, bombers, cashmere, slip-on-loafers} OR product_type ∈ {Weekender, Backpack} — AND tag `men` |
+## Step 2 — Pre-flight count (read-only)
 
-**Pre-check:** for each collection I'll query the matching product count first. If any returns <8 products I'll loosen the rule (add adjacent tags) and re-check — never wire a tile to a thin collection.
+For each spec entry, run the matching Storefront query and count products.
+- ≥1 product → mark `populate`
+- 0 products → mark `hide` (will create with `published: false` OR skip + unpublish if it already exists)
 
-**Wire up:** update `OCCASIONS` in `src/routes/men.tsx` so each tile links to its new handle.
+## Step 3 — Write to Shopify (smart collections only)
 
-**Verify:** load `/men`, click each tile, confirm grid is full and on-theme.
+For each `populate` entry:
+- If handle exists → PUT new rules + `disjunctive: true`, ensure `published: true`.
+- Else → POST new smart collection.
 
----
+For each `hide` entry:
+- If exists → PUT `published: false`.
+- Else → skip (don't create empty).
 
-## Step 3 — Empty-collection sweep + kill `eyewear`
+Rate-limited at 2 req/s with 429 backoff (same pattern as existing scripts). All writes logged to `/tmp/collection-writes.log`.
 
-**3a. Eyewear → Sunglasses (global)**
-- Remove every `eyewear` reference from `nav-config.ts`, megamenu builders, route copy, SEO map, sitemap.
-- Use `sunglasses` only. If the Shopify `eyewear` collection has products, redirect/merge them into `sunglasses` (re-tag if needed) and unpublish `eyewear`.
+## Step 4 — Frontend hygiene
 
-**3b. Empty-collection sweep**
-From the prior audit, these are the known offenders:
+- Gender filter facet enabled on `/collections/shoes` and `/collections/bags` (uses existing facet system).
+- Global rename `eyewear` → `sunglasses` in `src/lib/nav-config.ts`, `src/lib/seo.ts`, sitemap route, megamenu source.
+- `DesktopCategoryRail` + mobile menu already filter to live handles — verify, no rewrite.
 
-- **17 empty:** `blazers`, `bombers`, `cardigans`, `eyewear` (handled above), `gloves`, `hoodies`, `leather-jackets`, `coats-men`, `jackets-men`, `midi-skirts`, `mini-skirts`, `parkas`, `scarves`, `trench-coats`, `turtlenecks`, `coats-women`, `jackets-women`
-- **4 missing collection entirely:** `best-sellers`, `shirts-men`, `dress-shirts`, `sandals-slides`
+## Step 5 — Deliverable
 
-**Action per handle:**
-1. Re-query products that *should* belong (by `product_type` / tags / vendor signals).
-2. If matches exist → create or repopulate the smart collection with a sensible rule, publish, keep in nav.
-3. If no matches exist → unpublish from storefront AND remove from `nav-config.ts` mega-menu so the rail never renders a broken/empty link.
+A single report with three lists exactly as you asked:
+1. **Created/updated** — handle, title, rules summary
+2. **Populated** — handle, product count
+3. **Hidden** — handle, reason ("0 matching products")
 
-**Verify:** run the existing `getShopifyCollectionDiff` (or equivalent storefront check) and confirm zero remaining empty handles linked from the menu.
-
----
-
-## Deliverable at the end
-
-A short report with two lists, exactly as you asked:
-- ✅ **Created/populated** (handle, title, product count)
-- 🚫 **Hidden** (handle, reason)
-
-Plus a one-line note on the eyewear→sunglasses merge.
-
----
+Plus a one-line `eyewear → sunglasses` confirmation.
 
 ## Out of scope (won't touch)
-- Cart, checkout, Zustand state, fulfillment/inventory locations, BG importers, product creation, fake reviews.
-- Homepage category-grid imagery (already done in earlier turn).
+Cart, checkout, Zustand, fulfillment locations, BG importers, product creation, fake reviews, homepage imagery.
 
----
+## Approval gates
+- **Gate A**: After Step 0, I show you the unique product types + counts. You OK the list (drop any junk types).
+- **Gate B**: After Step 1, I show you the full spec (handles + rules). You OK before any write.
+- **Gate C**: After Step 3, I show the deliverable report.
 
-## Questions before I start
-
-1. **Unified shoes/bags handles** — confirm `shoes` and `bags` as the parent handles (vs `all-shoes` / `all-bags`). The existing `mens-shoes`, `womens-shoes`, `italian-leather-handbags` etc. stay alive as child collections.
-2. **Gender filter UX** — OK to default the unified pages to "All" and let the user toggle Men/Women, or do you want it to auto-default based on the active department (women's dept → Women preselected)?
-3. **Confirm Step 2 handles** (`mens-workwear`, `mens-weekend`, `mens-evening`, `mens-travel`) — these will be live in Shopify and unhideable without manual cleanup.
+Reply "go" to start at Step 0 (read-only scan, safe).
