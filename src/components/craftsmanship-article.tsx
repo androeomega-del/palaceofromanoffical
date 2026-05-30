@@ -22,7 +22,7 @@ export function CraftsmanshipArticle({
     <main className="bg-canvas text-ink">
       <article className="mx-auto max-w-3xl px-6 py-10 md:py-20">
         <header className="mb-12 text-center border-b border-ink/10 pb-10">
-          <p className="text-[10px] uppercase tracking-[0.4em] text-bronze-deep mb-5">
+          <p className="text-eyebrow uppercase text-bronze-deep mb-5">
             {eyebrow} · {readingMinutes} min read
           </p>
           <h1 className="font-serif text-4xl md:text-6xl leading-[1.05]">{title}</h1>
@@ -37,7 +37,7 @@ export function CraftsmanshipArticle({
 
         {related.length > 0 ? (
           <aside className="mt-16 border-t border-ink/10 pt-10">
-            <p className="text-[10px] uppercase tracking-[0.4em] text-bronze-deep mb-4">
+            <p className="text-eyebrow uppercase text-bronze-deep mb-4">
               Shop the subject
             </p>
             <ul className="grid sm:grid-cols-2 gap-3">
