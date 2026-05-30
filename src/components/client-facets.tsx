@@ -438,10 +438,12 @@ export function ClientFacets({
   const sizes = useMemo(() => bucketsFromOptions(edges, (n) => SIZE_OPTION_RE.test(n)), [edges]);
   const colors = useMemo(() => bucketsFromOptions(edges, (n) => COLOR_OPTION_RE.test(n)), [edges]);
   const materials = useMemo(() => bucketsFromMaterials(edges), [edges]);
+  const occasions = useMemo(() => bucketsFromOccasions(edges), [edges]);
+  const saleCount = useMemo(() => edges.filter((e) => isOnSale(e.node)).length, [edges]);
   const bounds = useMemo(() => priceBounds(edges), [edges]);
 
   const [open, setOpen] = useState<Record<string, boolean>>({
-    brand: true, price: true, size: true, color: true, material: false,
+    sale: true, occasion: true, brand: true, price: true, size: true, color: true, material: false,
   });
 
   const toggleSet = (key: keyof ClientFacetState, label: string) => {
