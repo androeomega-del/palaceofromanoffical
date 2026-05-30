@@ -120,7 +120,7 @@ export function DesktopMegamenu() {
   }, [liveCollections, liveHandles, menuSource]);
 
   const triggerKeys = useMemo(
-    () => [...departments.map((d) => d.key as string), "vacation", "brands"],
+    () => [...departments.map((d) => d.key as string), "vacation", "best-sellers", "brands"],
     [departments],
   );
 
