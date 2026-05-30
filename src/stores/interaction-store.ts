@@ -67,6 +67,10 @@ interface InteractionStore {
     event: InteractionEvent;
     vendor?: string;
     productType?: string;
+    /** Rail surface id, e.g. `rail:best-sellers`. Forwarded to server log only. */
+    surface?: string;
+    /** 0-indexed slot within the rail. Forwarded to server log only. */
+    position?: number;
   }) => void;
   /** Top-N handles by weighted score, most recent ties win. */
   topHandles: (n?: number) => string[];
@@ -79,13 +83,20 @@ export const useInteractionStore = create<InteractionStore>()(
   persist(
     (set, get) => ({
       records: {},
-      track: ({ handle, event, vendor, productType }) => {
+      track: ({ handle, event, vendor, productType, surface, position }) => {
         if (!handle) return;
         const weight = WEIGHTS[event] ?? 0;
+        // Always mirror to the server-side append-only log (fire-and-forget)
+        // so weight-0 events (scarcity, rail) still reach analytics.
+        enqueueInteractionEvent({
+          handle,
+          event_type: event,
+          vendor,
+          productType,
+          surface,
+          position,
+        });
         if (weight === 0) return;
-        // Mirror the signal to the server-side append-only log so trending
-        // / aggregate analytics can read it cross-device. Fire-and-forget.
-        enqueueInteractionEvent({ handle, event_type: event, vendor, productType });
         set((state) => {
           const prev = state.records[handle];
           const next: InteractionRecord = {
