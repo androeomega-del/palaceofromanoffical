@@ -9,116 +9,103 @@ const COPYRIGHT_YEAR = new Date().getFullYear();
 export function SiteFooter() {
   const isAdmin = useIsAdmin();
   return (
-    <footer className="border-t border-ink/10 pt-32 pb-12 bg-canvas">
+    <footer className="border-t border-ink/10 pt-24 pb-10 bg-canvas">
       <div className="max-w-screen-2xl mx-auto px-6">
-        <div className="flex flex-col lg:flex-row justify-between gap-12 mb-32">
-          <div className="max-w-[40ch]">
-            <h4 className="text-xl font-serif mb-6">Palace of Roman</h4>
+        {/* ───── Newsletter band (Farfetch-style top) ───── */}
+        <div className="grid lg:grid-cols-[1fr_minmax(360px,420px)] gap-12 pb-16 mb-16 border-b border-ink/10 items-start">
+          <div className="max-w-[46ch]">
+            <h4 className="text-2xl font-serif mb-4">Palace of Roman</h4>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              The destination for refined multi-brand luxury. Curating the world's most significant designers
-              through a singular, architectural lens.
+              The destination for refined multi-brand luxury. Curating the world's most significant designers through a singular, architectural lens.
             </p>
           </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-12 md:gap-16">
-            <div className="flex flex-col gap-4">
-              <h5 className="text-[10px] uppercase tracking-[0.2em] font-semibold">Boutique</h5>
-              <Link to="/collections/$handle" params={{ handle: "new-arrivals" }} className="text-sm text-muted-foreground hover:text-ink transition-colors">New Arrivals</Link>
-              <Link to="/collections/$handle" params={{ handle: "womens-clothing" }} className="text-sm text-muted-foreground hover:text-ink transition-colors">Women's Clothing</Link>
-              <Link to="/collections/$handle" params={{ handle: "womens-shoes" }} className="text-sm text-muted-foreground hover:text-ink transition-colors">Women's Shoes</Link>
-              <Link to="/collections/$handle" params={{ handle: "mens-clothing" }} className="text-sm text-muted-foreground hover:text-ink transition-colors">Men's Clothing</Link>
-              <Link to="/collections/$handle" params={{ handle: "mens-shoes" }} className="text-sm text-muted-foreground hover:text-ink transition-colors">Men's Shoes</Link>
-              <Link to="/collections" className="text-sm text-muted-foreground hover:text-ink transition-colors">All Collections</Link>
-              <Link to="/brands" className="text-sm text-muted-foreground hover:text-ink transition-colors">Brands Index</Link>
-            </div>
-            <div className="flex flex-col gap-4">
-              <h5 className="text-[10px] uppercase tracking-[0.2em] font-semibold">Editorial Edits</h5>
-              <Link to="/collections/italian-leather-wallets" className="text-sm text-muted-foreground hover:text-ink transition-colors">Italian Leather Wallets</Link>
-              <Link to="/collections/italian-leather-loafers" className="text-sm text-muted-foreground hover:text-ink transition-colors">Italian Leather Loafers</Link>
-              <Link to="/collections/italian-leather-handbags" className="text-sm text-muted-foreground hover:text-ink transition-colors">Italian Leather Handbags</Link>
-              <Link to="/collections/designer-mens-shirts" className="text-sm text-muted-foreground hover:text-ink transition-colors">Designer Men's Shirts</Link>
-              <Link to="/journal/craftsmanship/spot-real-italian-leather" className="text-sm text-muted-foreground hover:text-ink transition-colors">Spot Real Italian Leather</Link>
-              <Link to="/journal/craftsmanship/made-in-italy-vs-designed-in-italy" className="text-sm text-muted-foreground hover:text-ink transition-colors">Made in Italy vs Designed in Italy</Link>
-              <Link to="/journal/craftsmanship/caring-for-fine-leather" className="text-sm text-muted-foreground hover:text-ink transition-colors">Caring for Fine Leather</Link>
-            </div>
-            <div className="flex flex-col gap-4">
-              <h5 className="text-[10px] uppercase tracking-[0.2em] font-semibold">Client Care</h5>
-              <Link to="/shipping-returns" className="text-sm text-muted-foreground hover:text-ink transition-colors">Shipping &amp; Returns</Link>
-              <Link to="/authentication" className="text-sm text-muted-foreground hover:text-ink transition-colors">Authentication</Link>
-              <Link to="/faq" className="text-sm text-muted-foreground hover:text-ink transition-colors">FAQ</Link>
-              <Link to="/contact" className="text-sm text-muted-foreground hover:text-ink transition-colors">Contact</Link>
-              <Link to="/about" className="text-sm text-muted-foreground hover:text-ink transition-colors">About</Link>
-              <Link to="/journal" className="text-sm text-muted-foreground hover:text-ink transition-colors">Journal</Link>
-              <Link to="/legal-notice" className="text-sm text-muted-foreground hover:text-ink transition-colors">Legal Notice</Link>
-            </div>
-            <div className="hidden md:flex flex-col gap-6">
-              <h5 className="text-[10px] uppercase tracking-[0.2em] font-semibold">In Correspondence</h5>
-              <NewsletterForm />
-              <p className="text-[10px] text-muted-foreground/70 leading-relaxed">
-                Quiet correspondence — new arrivals, editorials, private previews.
-              </p>
-            </div>
+          <div className="flex flex-col gap-4">
+            <h5 className="text-[10px] uppercase tracking-[0.25em] font-semibold">Sign up to our newsletter</h5>
+            <p className="text-[12px] text-muted-foreground leading-relaxed">
+              Be the first to know about new arrivals, editorials and private previews.
+            </p>
+            <NewsletterForm />
           </div>
         </div>
 
-        {/* Trust row — payments, security, contact */}
-        <div className="flex flex-col md:flex-row gap-6 md:gap-10 justify-between items-start md:items-center py-8 border-t border-ink/10">
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-            <span className="font-semibold text-ink/70">Secure Checkout</span>
-            <span className="opacity-30">·</span>
-            <span>Visa</span>
-            <span className="opacity-30">·</span>
-            <span>Mastercard</span>
-            <span className="opacity-30">·</span>
-            <span>Amex</span>
-            <span className="opacity-30">·</span>
-            <span>Apple Pay</span>
-            <span className="opacity-30">·</span>
-            <span>Shop Pay</span>
+        {/* ───── 4-column link grid (Farfetch IA) ───── */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-16 mb-20">
+          <div className="flex flex-col gap-3">
+            <h5 className="text-[10px] uppercase tracking-[0.25em] font-semibold mb-1">Customer Service</h5>
+            <Link to="/contact" className="text-sm text-muted-foreground hover:text-ink transition-colors">Contact Us</Link>
+            <Link to="/faq" className="text-sm text-muted-foreground hover:text-ink transition-colors">FAQs</Link>
+            <Link to="/shipping-returns" className="text-sm text-muted-foreground hover:text-ink transition-colors">Shipping &amp; Returns</Link>
+            <Link to="/authentication" className="text-sm text-muted-foreground hover:text-ink transition-colors">Authentication</Link>
+            <Link to="/account" className="text-sm text-muted-foreground hover:text-ink transition-colors">Order Tracking</Link>
+            <a href="mailto:support@palaceofromanofficial.com" className="text-sm text-muted-foreground hover:text-ink transition-colors normal-case tracking-normal">support@palaceofromanofficial.com</a>
           </div>
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-            <span>Free Express Shipping over $250</span>
-            <span className="opacity-30">·</span>
-            <span>14-Day Returns</span>
-            <span className="opacity-30">·</span>
-            <span>Concierge replies within 24h · Mon–Sat</span>
-            <span className="opacity-30">·</span>
-            <a href="mailto:support@palaceofromanofficial.com" className="hover:text-ink transition-colors normal-case tracking-normal">
-              support@palaceofromanofficial.com
-            </a>
+
+          <div className="flex flex-col gap-3">
+            <h5 className="text-[10px] uppercase tracking-[0.25em] font-semibold mb-1">About Palace of Roman</h5>
+            <Link to="/about" className="text-sm text-muted-foreground hover:text-ink transition-colors">About Us</Link>
+            <Link to="/journal" className="text-sm text-muted-foreground hover:text-ink transition-colors">The Journal</Link>
+            <Link to="/journal/craftsmanship/made-in-italy-vs-designed-in-italy" className="text-sm text-muted-foreground hover:text-ink transition-colors">Our Sourcing</Link>
+            <Link to="/legal-notice" className="text-sm text-muted-foreground hover:text-ink transition-colors">Legal Notice</Link>
+            <Link to="/privacy" className="text-sm text-muted-foreground hover:text-ink transition-colors">Privacy Policy</Link>
+            <Link to="/terms" className="text-sm text-muted-foreground hover:text-ink transition-colors">Terms &amp; Conditions</Link>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <h5 className="text-[10px] uppercase tracking-[0.25em] font-semibold mb-1">Shop</h5>
+            <Link to="/women" className="text-sm text-muted-foreground hover:text-ink transition-colors">Women</Link>
+            <Link to="/men" className="text-sm text-muted-foreground hover:text-ink transition-colors">Men</Link>
+            <Link to="/collections/$handle" params={{ handle: "new-arrivals" }} className="text-sm text-muted-foreground hover:text-ink transition-colors">New In</Link>
+            <Link to="/brands" className="text-sm text-muted-foreground hover:text-ink transition-colors">Designers A–Z</Link>
+            <Link to="/collections" className="text-sm text-muted-foreground hover:text-ink transition-colors">All Collections</Link>
+            <Link to="/style-quiz" className="text-sm text-muted-foreground hover:text-ink transition-colors">Style Quiz</Link>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <h5 className="text-[10px] uppercase tracking-[0.25em] font-semibold mb-1">Discover</h5>
+            <Link to="/edits/the-cucinelli-edit" className="text-sm text-muted-foreground hover:text-ink transition-colors">The Cucinelli Edit</Link>
+            <Link to="/edits/the-prada-effect" className="text-sm text-muted-foreground hover:text-ink transition-colors">The Prada Effect</Link>
+            <Link to="/edits/dolce-romana" className="text-sm text-muted-foreground hover:text-ink transition-colors">Dolce Romana</Link>
+            <Link to="/edits/the-bag-vault" className="text-sm text-muted-foreground hover:text-ink transition-colors">The Bag Vault</Link>
+            <Link to="/journal/craftsmanship/spot-real-italian-leather" className="text-sm text-muted-foreground hover:text-ink transition-colors">Spot Real Italian Leather</Link>
+            <Link to="/journal/craftsmanship/caring-for-fine-leather" className="text-sm text-muted-foreground hover:text-ink transition-colors">Caring for Fine Leather</Link>
           </div>
         </div>
 
+        {/* ───── Service strip (Farfetch's reassurance row) ───── */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-10 border-t border-ink/10 mb-2">
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.25em] font-semibold mb-2">Worldwide Express</p>
+            <p className="text-[12px] text-muted-foreground leading-relaxed">Complimentary express delivery on orders over $250, shipped from authorised boutiques worldwide.</p>
+          </div>
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.25em] font-semibold mb-2">14-Day Returns</p>
+            <p className="text-[12px] text-muted-foreground leading-relaxed">Easy returns within 14 days of delivery. Items must be unworn with original tags.</p>
+          </div>
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.25em] font-semibold mb-2">Concierge</p>
+            <p className="text-[12px] text-muted-foreground leading-relaxed">Personal styling and sourcing — replies within 24 hours, Monday through Saturday.</p>
+          </div>
+        </div>
+
+        {/* ───── Payments row ───── */}
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 py-6 border-t border-ink/10 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+          <span className="font-semibold text-ink/70">Secure Checkout</span>
+          <span className="opacity-30">·</span>
+          <span>Visa</span><span className="opacity-30">·</span>
+          <span>Mastercard</span><span className="opacity-30">·</span>
+          <span>Amex</span><span className="opacity-30">·</span>
+          <span>Apple Pay</span><span className="opacity-30">·</span>
+          <span>Shop Pay</span><span className="opacity-30">·</span>
+          <span>Klarna</span>
+        </div>
+
+        {/* ───── Legal / social bottom bar ───── */}
         <div className="flex flex-col md:flex-row gap-4 justify-between items-center pt-6 border-t border-ink/5 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
           <p>&copy; {COPYRIGHT_YEAR} Palace of Roman. All rights reserved.</p>
-          <div className="flex gap-8 items-center">
-            <a
-              href="https://www.instagram.com/palaceofroman/"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Palace of Roman on Instagram"
-              className="hover:text-ink transition-colors"
-            >
-              Instagram
-            </a>
-            <a
-              href="https://www.facebook.com/people/Palace-of-Roman/61581195176963/"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Palace of Roman on Facebook"
-              className="hover:text-ink transition-colors"
-            >
-              Facebook
-            </a>
-            <a
-              href="https://www.tiktok.com/@palaceofroman"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Palace of Roman on TikTok"
-              className="hover:text-ink transition-colors"
-            >
-              TikTok
-            </a>
+          <div className="flex gap-6 items-center flex-wrap justify-center">
+            <a href="https://www.instagram.com/palaceofroman/" target="_blank" rel="noopener noreferrer" aria-label="Palace of Roman on Instagram" className="hover:text-ink transition-colors">Instagram</a>
+            <a href="https://www.facebook.com/people/Palace-of-Roman/61581195176963/" target="_blank" rel="noopener noreferrer" aria-label="Palace of Roman on Facebook" className="hover:text-ink transition-colors">Facebook</a>
+            <a href="https://www.tiktok.com/@palaceofroman" target="_blank" rel="noopener noreferrer" aria-label="Palace of Roman on TikTok" className="hover:text-ink transition-colors">TikTok</a>
             <Link to="/privacy" className="hover:text-ink transition-colors">Privacy</Link>
             <Link to="/terms" className="hover:text-ink transition-colors">Terms</Link>
             {isAdmin ? (
