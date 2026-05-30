@@ -35,6 +35,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as CollectionsIndexRouteImport } from './routes/collections.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AccountIndexRouteImport } from './routes/account.index'
+import { Route as TrendsDolceGabbanaIconsRouteImport } from './routes/trends.dolce-gabbana-icons'
 import { Route as SwimSizeGuideRouteImport } from './routes/swim.size-guide'
 import { Route as ProductHandleRouteImport } from './routes/product.$handle'
 import { Route as PreviewLookbookRouteImport } from './routes/preview.lookbook'
@@ -236,6 +237,11 @@ const AccountIndexRoute = AccountIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AccountRoute,
+} as any)
+const TrendsDolceGabbanaIconsRoute = TrendsDolceGabbanaIconsRouteImport.update({
+  id: '/trends/dolce-gabbana-icons',
+  path: '/trends/dolce-gabbana-icons',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const SwimSizeGuideRoute = SwimSizeGuideRouteImport.update({
   id: '/size-guide',
@@ -697,6 +703,7 @@ export interface FileRoutesByFullPath {
   '/preview/lookbook': typeof PreviewLookbookRoute
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
+  '/trends/dolce-gabbana-icons': typeof TrendsDolceGabbanaIconsRoute
   '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/collections/': typeof CollectionsIndexRoute
@@ -794,6 +801,7 @@ export interface FileRoutesByTo {
   '/preview/lookbook': typeof PreviewLookbookRoute
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
+  '/trends/dolce-gabbana-icons': typeof TrendsDolceGabbanaIconsRoute
   '/account': typeof AccountIndexRoute
   '/admin': typeof AdminIndexRoute
   '/collections': typeof CollectionsIndexRoute
@@ -894,6 +902,7 @@ export interface FileRoutesById {
   '/preview/lookbook': typeof PreviewLookbookRoute
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
+  '/trends/dolce-gabbana-icons': typeof TrendsDolceGabbanaIconsRoute
   '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/collections/': typeof CollectionsIndexRoute
@@ -995,6 +1004,7 @@ export interface FileRouteTypes {
     | '/preview/lookbook'
     | '/product/$handle'
     | '/swim/size-guide'
+    | '/trends/dolce-gabbana-icons'
     | '/account/'
     | '/admin/'
     | '/collections/'
@@ -1092,6 +1102,7 @@ export interface FileRouteTypes {
     | '/preview/lookbook'
     | '/product/$handle'
     | '/swim/size-guide'
+    | '/trends/dolce-gabbana-icons'
     | '/account'
     | '/admin'
     | '/collections'
@@ -1191,6 +1202,7 @@ export interface FileRouteTypes {
     | '/preview/lookbook'
     | '/product/$handle'
     | '/swim/size-guide'
+    | '/trends/dolce-gabbana-icons'
     | '/account/'
     | '/admin/'
     | '/collections/'
@@ -1287,6 +1299,7 @@ export interface RootRouteChildren {
   EditsYachtEditRoute: typeof EditsYachtEditRouteWithChildren
   PreviewLookbookRoute: typeof PreviewLookbookRoute
   ProductHandleRoute: typeof ProductHandleRoute
+  TrendsDolceGabbanaIconsRoute: typeof TrendsDolceGabbanaIconsRoute
   AdminIndexRoute: typeof AdminIndexRoute
   CollectionsIndexRoute: typeof CollectionsIndexRoute
   ApiPublicSeoHealthRoute: typeof ApiPublicSeoHealthRoute
@@ -1486,6 +1499,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/account/'
       preLoaderRoute: typeof AccountIndexRouteImport
       parentRoute: typeof AccountRoute
+    }
+    '/trends/dolce-gabbana-icons': {
+      id: '/trends/dolce-gabbana-icons'
+      path: '/trends/dolce-gabbana-icons'
+      fullPath: '/trends/dolce-gabbana-icons'
+      preLoaderRoute: typeof TrendsDolceGabbanaIconsRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/swim/size-guide': {
       id: '/swim/size-guide'
@@ -2128,6 +2148,7 @@ const rootRouteChildren: RootRouteChildren = {
   EditsYachtEditRoute: EditsYachtEditRouteWithChildren,
   PreviewLookbookRoute: PreviewLookbookRoute,
   ProductHandleRoute: ProductHandleRoute,
+  TrendsDolceGabbanaIconsRoute: TrendsDolceGabbanaIconsRoute,
   AdminIndexRoute: AdminIndexRoute,
   CollectionsIndexRoute: CollectionsIndexRoute,
   ApiPublicSeoHealthRoute: ApiPublicSeoHealthRoute,
