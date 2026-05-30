@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WomenRouteImport } from './routes/women'
 import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as VacationStylistRouteImport } from './routes/vacation-stylist'
 import { Route as TermsRouteImport } from './routes/terms'
@@ -44,6 +45,10 @@ import { Route as SwimSizeGuideRouteImport } from './routes/swim.size-guide'
 import { Route as ProductHandleRouteImport } from './routes/product.$handle'
 import { Route as PreviewLookbookRouteImport } from './routes/preview.lookbook'
 import { Route as EditsYachtEditRouteImport } from './routes/edits.yacht-edit'
+import { Route as EditsThePradaEffectRouteImport } from './routes/edits.the-prada-effect'
+import { Route as EditsTheCucinelliEditRouteImport } from './routes/edits.the-cucinelli-edit'
+import { Route as EditsTheBagVaultRouteImport } from './routes/edits.the-bag-vault'
+import { Route as EditsDolceRomanaRouteImport } from './routes/edits.dolce-romana'
 import { Route as EditsCharterCapsuleRouteImport } from './routes/edits.charter-capsule'
 import { Route as EditorialWomensEditRouteImport } from './routes/editorial.womens-edit'
 import { Route as EditorialVersaceNowRouteImport } from './routes/editorial.versace-now'
@@ -112,6 +117,11 @@ import { Route as ApiPublicCronBackInStockNotifyRouteImport } from './routes/api
 import { Route as ApiPublicCronAbandonedCartRecoveryRouteImport } from './routes/api/public/cron/abandoned-cart-recovery'
 import { Route as ApiPublicAiRecommendationsRouteImport } from './routes/api/public/ai.recommendations'
 
+const WomenRoute = WomenRouteImport.update({
+  id: '/women',
+  path: '/women',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WishlistRoute = WishlistRouteImport.update({
   id: '/wishlist',
   path: '/wishlist',
@@ -285,6 +295,26 @@ const PreviewLookbookRoute = PreviewLookbookRouteImport.update({
 const EditsYachtEditRoute = EditsYachtEditRouteImport.update({
   id: '/edits/yacht-edit',
   path: '/edits/yacht-edit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EditsThePradaEffectRoute = EditsThePradaEffectRouteImport.update({
+  id: '/edits/the-prada-effect',
+  path: '/edits/the-prada-effect',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EditsTheCucinelliEditRoute = EditsTheCucinelliEditRouteImport.update({
+  id: '/edits/the-cucinelli-edit',
+  path: '/edits/the-cucinelli-edit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EditsTheBagVaultRoute = EditsTheBagVaultRouteImport.update({
+  id: '/edits/the-bag-vault',
+  path: '/edits/the-bag-vault',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EditsDolceRomanaRoute = EditsDolceRomanaRouteImport.update({
+  id: '/edits/dolce-romana',
+  path: '/edits/dolce-romana',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EditsCharterCapsuleRoute = EditsCharterCapsuleRouteImport.update({
@@ -678,6 +708,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/vacation-stylist': typeof VacationStylistRoute
   '/wishlist': typeof WishlistRoute
+  '/women': typeof WomenRoute
   '/account/login': typeof AccountLoginRoute
   '/account/recover': typeof AccountRecoverRoute
   '/account/register': typeof AccountRegisterRoute
@@ -724,6 +755,10 @@ export interface FileRoutesByFullPath {
   '/editorial/versace-now': typeof EditorialVersaceNowRoute
   '/editorial/womens-edit': typeof EditorialWomensEditRoute
   '/edits/charter-capsule': typeof EditsCharterCapsuleRoute
+  '/edits/dolce-romana': typeof EditsDolceRomanaRoute
+  '/edits/the-bag-vault': typeof EditsTheBagVaultRoute
+  '/edits/the-cucinelli-edit': typeof EditsTheCucinelliEditRoute
+  '/edits/the-prada-effect': typeof EditsThePradaEffectRoute
   '/edits/yacht-edit': typeof EditsYachtEditRouteWithChildren
   '/preview/lookbook': typeof PreviewLookbookRoute
   '/product/$handle': typeof ProductHandleRoute
@@ -781,6 +816,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/vacation-stylist': typeof VacationStylistRoute
   '/wishlist': typeof WishlistRoute
+  '/women': typeof WomenRoute
   '/account/login': typeof AccountLoginRoute
   '/account/recover': typeof AccountRecoverRoute
   '/account/register': typeof AccountRegisterRoute
@@ -827,6 +863,10 @@ export interface FileRoutesByTo {
   '/editorial/versace-now': typeof EditorialVersaceNowRoute
   '/editorial/womens-edit': typeof EditorialWomensEditRoute
   '/edits/charter-capsule': typeof EditsCharterCapsuleRoute
+  '/edits/dolce-romana': typeof EditsDolceRomanaRoute
+  '/edits/the-bag-vault': typeof EditsTheBagVaultRoute
+  '/edits/the-cucinelli-edit': typeof EditsTheCucinelliEditRoute
+  '/edits/the-prada-effect': typeof EditsThePradaEffectRoute
   '/preview/lookbook': typeof PreviewLookbookRoute
   '/product/$handle': typeof ProductHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
@@ -885,6 +925,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/vacation-stylist': typeof VacationStylistRoute
   '/wishlist': typeof WishlistRoute
+  '/women': typeof WomenRoute
   '/account/login': typeof AccountLoginRoute
   '/account/recover': typeof AccountRecoverRoute
   '/account/register': typeof AccountRegisterRoute
@@ -931,6 +972,10 @@ export interface FileRoutesById {
   '/editorial/versace-now': typeof EditorialVersaceNowRoute
   '/editorial/womens-edit': typeof EditorialWomensEditRoute
   '/edits/charter-capsule': typeof EditsCharterCapsuleRoute
+  '/edits/dolce-romana': typeof EditsDolceRomanaRoute
+  '/edits/the-bag-vault': typeof EditsTheBagVaultRoute
+  '/edits/the-cucinelli-edit': typeof EditsTheCucinelliEditRoute
+  '/edits/the-prada-effect': typeof EditsThePradaEffectRoute
   '/edits/yacht-edit': typeof EditsYachtEditRouteWithChildren
   '/preview/lookbook': typeof PreviewLookbookRoute
   '/product/$handle': typeof ProductHandleRoute
@@ -991,6 +1036,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/vacation-stylist'
     | '/wishlist'
+    | '/women'
     | '/account/login'
     | '/account/recover'
     | '/account/register'
@@ -1037,6 +1083,10 @@ export interface FileRouteTypes {
     | '/editorial/versace-now'
     | '/editorial/womens-edit'
     | '/edits/charter-capsule'
+    | '/edits/dolce-romana'
+    | '/edits/the-bag-vault'
+    | '/edits/the-cucinelli-edit'
+    | '/edits/the-prada-effect'
     | '/edits/yacht-edit'
     | '/preview/lookbook'
     | '/product/$handle'
@@ -1094,6 +1144,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/vacation-stylist'
     | '/wishlist'
+    | '/women'
     | '/account/login'
     | '/account/recover'
     | '/account/register'
@@ -1140,6 +1191,10 @@ export interface FileRouteTypes {
     | '/editorial/versace-now'
     | '/editorial/womens-edit'
     | '/edits/charter-capsule'
+    | '/edits/dolce-romana'
+    | '/edits/the-bag-vault'
+    | '/edits/the-cucinelli-edit'
+    | '/edits/the-prada-effect'
     | '/preview/lookbook'
     | '/product/$handle'
     | '/swim/size-guide'
@@ -1197,6 +1252,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/vacation-stylist'
     | '/wishlist'
+    | '/women'
     | '/account/login'
     | '/account/recover'
     | '/account/register'
@@ -1243,6 +1299,10 @@ export interface FileRouteTypes {
     | '/editorial/versace-now'
     | '/editorial/womens-edit'
     | '/edits/charter-capsule'
+    | '/edits/dolce-romana'
+    | '/edits/the-bag-vault'
+    | '/edits/the-cucinelli-edit'
+    | '/edits/the-prada-effect'
     | '/edits/yacht-edit'
     | '/preview/lookbook'
     | '/product/$handle'
@@ -1302,6 +1362,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   VacationStylistRoute: typeof VacationStylistRoute
   WishlistRoute: typeof WishlistRoute
+  WomenRoute: typeof WomenRoute
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminCollectionFocalRoute: typeof AdminCollectionFocalRoute
   AdminCollectionHeroRegressionRoute: typeof AdminCollectionHeroRegressionRoute
@@ -1345,6 +1406,10 @@ export interface RootRouteChildren {
   EditorialVersaceNowRoute: typeof EditorialVersaceNowRoute
   EditorialWomensEditRoute: typeof EditorialWomensEditRoute
   EditsCharterCapsuleRoute: typeof EditsCharterCapsuleRoute
+  EditsDolceRomanaRoute: typeof EditsDolceRomanaRoute
+  EditsTheBagVaultRoute: typeof EditsTheBagVaultRoute
+  EditsTheCucinelliEditRoute: typeof EditsTheCucinelliEditRoute
+  EditsThePradaEffectRoute: typeof EditsThePradaEffectRoute
   EditsYachtEditRoute: typeof EditsYachtEditRouteWithChildren
   PreviewLookbookRoute: typeof PreviewLookbookRoute
   ProductHandleRoute: typeof ProductHandleRoute
@@ -1370,6 +1435,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/women': {
+      id: '/women'
+      path: '/women'
+      fullPath: '/women'
+      preLoaderRoute: typeof WomenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/wishlist': {
       id: '/wishlist'
       path: '/wishlist'
@@ -1613,6 +1685,34 @@ declare module '@tanstack/react-router' {
       path: '/edits/yacht-edit'
       fullPath: '/edits/yacht-edit'
       preLoaderRoute: typeof EditsYachtEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/edits/the-prada-effect': {
+      id: '/edits/the-prada-effect'
+      path: '/edits/the-prada-effect'
+      fullPath: '/edits/the-prada-effect'
+      preLoaderRoute: typeof EditsThePradaEffectRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/edits/the-cucinelli-edit': {
+      id: '/edits/the-cucinelli-edit'
+      path: '/edits/the-cucinelli-edit'
+      fullPath: '/edits/the-cucinelli-edit'
+      preLoaderRoute: typeof EditsTheCucinelliEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/edits/the-bag-vault': {
+      id: '/edits/the-bag-vault'
+      path: '/edits/the-bag-vault'
+      fullPath: '/edits/the-bag-vault'
+      preLoaderRoute: typeof EditsTheBagVaultRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/edits/dolce-romana': {
+      id: '/edits/dolce-romana'
+      path: '/edits/dolce-romana'
+      fullPath: '/edits/dolce-romana'
+      preLoaderRoute: typeof EditsDolceRomanaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/edits/charter-capsule': {
@@ -2182,6 +2282,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   VacationStylistRoute: VacationStylistRoute,
   WishlistRoute: WishlistRoute,
+  WomenRoute: WomenRoute,
   AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminCollectionFocalRoute: AdminCollectionFocalRoute,
   AdminCollectionHeroRegressionRoute: AdminCollectionHeroRegressionRoute,
@@ -2226,6 +2327,10 @@ const rootRouteChildren: RootRouteChildren = {
   EditorialVersaceNowRoute: EditorialVersaceNowRoute,
   EditorialWomensEditRoute: EditorialWomensEditRoute,
   EditsCharterCapsuleRoute: EditsCharterCapsuleRoute,
+  EditsDolceRomanaRoute: EditsDolceRomanaRoute,
+  EditsTheBagVaultRoute: EditsTheBagVaultRoute,
+  EditsTheCucinelliEditRoute: EditsTheCucinelliEditRoute,
+  EditsThePradaEffectRoute: EditsThePradaEffectRoute,
   EditsYachtEditRoute: EditsYachtEditRouteWithChildren,
   PreviewLookbookRoute: PreviewLookbookRoute,
   ProductHandleRoute: ProductHandleRoute,
