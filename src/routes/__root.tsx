@@ -246,19 +246,20 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" },
     ],
     scripts: [
-      // --- Plausible Analytics (privacy-first, no cookie banner) ---
-      // Tracks pageviews + outbound clicks against the palaceofromanofficial.com
-      // dashboard at https://plausible.io. Add the domain in your Plausible
-      // account; no key/ID is required client-side.
+      // --- Plausible Analytics v2 (privacy-first, no cookie banner) ---
+      // New tracking script with init() call. Tracks pageviews + outbound
+      // link clicks against the palaceofromanofficial.com dashboard at
+      // https://plausible.io. No client-side key/ID required.
       {
         defer: true,
         "data-domain": "palaceofromanofficial.com",
-        src: "https://plausible.io/js/script.outbound-links.js",
+        src: "https://plausible.io/js/script.js",
       },
       {
         children:
-          "window.plausible=window.plausible||function(){(window.plausible.q=window.plausible.q||[]).push(arguments)}",
+          "window.plausible=window.plausible||function(){(window.plausible.q=window.plausible.q||[]).push(arguments)};plausible.init({outboundLinks:true})",
       },
+
       // --- Google Analytics 4 ---
       // TODO: replace G-XXXXXXXXXX with the Measurement ID from your GA4 property
       // (Admin → Data Streams → Web → Measurement ID). Until then GA4 will fail
