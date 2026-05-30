@@ -227,6 +227,14 @@ export function DesktopMegamenu() {
         onArrow={(e) => onTriggerArrow(e, "vacation")}
         registerTrigger={registerTrigger("vacation")}
       />
+      <BestSellersTrigger
+        isOpen={openKey === "best-sellers"}
+        onOpen={() => openNow("best-sellers")}
+        onScheduleClose={scheduleClose}
+        onCloseAndFocus={() => closeAndFocusTrigger("best-sellers")}
+        onArrow={(e) => onTriggerArrow(e, "best-sellers")}
+        registerTrigger={registerTrigger("best-sellers")}
+      />
       <BrandsTrigger
         isOpen={openKey === "brands"}
         onOpen={() => openNow("brands")}
