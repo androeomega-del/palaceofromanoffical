@@ -397,7 +397,7 @@ function BrandSpotlightTile({
       <div className="relative aspect-[3/4] bg-muted overflow-hidden mb-3">
         {imgUrl ? (
           <img
-            src={cdnImage(imgUrl, { width: 600 })}
+            src={brand.src ? brand.src : cdnImage(imgUrl, { width: 600 })}
             alt={alt}
             loading="lazy"
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.05]"
