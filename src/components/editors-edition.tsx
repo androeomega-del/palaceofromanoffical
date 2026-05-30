@@ -208,7 +208,7 @@ function EditionHero({ block }: { block: Extract<HomepageLayout["blocks"][number
         {block.cta && (
           <a
             href={block.cta.href}
-            className="mt-6 inline-flex items-center gap-2 px-6 py-3 bg-canvas text-ink text-[11px] uppercase tracking-[0.25em] hover:bg-bronze hover:text-canvas transition-colors"
+            className="mt-6 inline-flex items-center gap-2 px-6 py-3 bg-canvas text-ink text-cta-md uppercase hover:bg-bronze hover:text-canvas transition-colors"
           >
             {block.cta.label} →
           </a>
@@ -267,12 +267,12 @@ function RailHeader({ heading, subheading }: { heading?: string; subheading?: st
   return (
     <div className="mb-5 md:mb-6">
       {heading && (
-        <h3 className="font-serif text-2xl md:text-3xl text-ink leading-tight">
+        <h3 className="font-serif text-subhead-md md:text-subhead-lg text-ink">
           {heading}
         </h3>
       )}
       {subheading && (
-        <p className="mt-1.5 text-[13px] text-muted-foreground max-w-xl">
+        <p className="mt-tight text-body-sm text-muted-foreground max-w-xl">
           {subheading}
         </p>
       )}
@@ -303,12 +303,12 @@ function EditionBanner({ block }: { block: Extract<HomepageLayout["blocks"][numb
         <div className="mt-5 md:mt-6 flex flex-wrap items-end justify-between gap-4">
           <div>
             {block.heading && (
-              <h3 className="font-serif text-2xl md:text-3xl text-ink leading-tight">
+              <h3 className="font-serif text-subhead-md md:text-subhead-lg text-ink">
                 {block.heading}
               </h3>
             )}
             {block.subheading && (
-              <p className="mt-1.5 text-[13px] text-muted-foreground max-w-xl">
+              <p className="mt-tight text-body-sm text-muted-foreground max-w-xl">
                 {block.subheading}
               </p>
             )}
@@ -316,7 +316,7 @@ function EditionBanner({ block }: { block: Extract<HomepageLayout["blocks"][numb
           {block.cta && (
             <a
               href={block.cta.href}
-              className="text-[11px] uppercase tracking-[0.25em] text-ink border-b border-bronze/40 hover:text-bronze hover:border-bronze pb-0.5 transition-colors"
+              className="text-cta-md uppercase text-ink border-b border-bronze/40 hover:text-bronze hover:border-bronze pb-0.5 transition-colors"
             >
               {block.cta.label} →
             </a>

@@ -23,10 +23,10 @@ export function TrendingNowStrip({
   tiles: TrendingTile[];
 }) {
   return (
-    <section className="py-10 md:py-16 bg-canvas">
+    <section className="py-section-sm md:py-16 bg-canvas">
       <div className="max-w-screen-2xl mx-auto px-5 md:px-10">
         <div className="flex items-end justify-between mb-8">
-          <h2 className="font-serif text-2xl md:text-3xl tracking-[0.04em] text-ink">
+          <h2 className="font-serif text-subhead-md md:text-subhead-lg tracking-subhead-open text-ink">
             {eyebrow}
           </h2>
         </div>
@@ -45,10 +45,11 @@ export function TrendingNowStrip({
               />
               <div className="absolute inset-0 bg-gradient-to-t from-ink/60 via-ink/10 to-transparent" />
               <div className="absolute inset-x-0 bottom-0 p-5">
-                <p className="font-serif text-canvas text-lg md:text-xl tracking-[0.04em] leading-tight">
+                <p className="font-serif text-canvas text-lg md:text-xl tracking-subhead-open leading-tight">
                   {t.label}
                 </p>
-                <span className="mt-2 inline-block text-[10px] uppercase tracking-[0.3em] text-canvas/80 border-b border-bronze pb-0.5">
+                {/* text-bronze decorative border, not text — passes on dark */}
+                <span className="mt-2 inline-block text-cta-lg uppercase text-canvas/80 border-b border-bronze pb-0.5">
                   Explore
                 </span>
               </div>
