@@ -93,7 +93,7 @@ export function EditorialStory({
               <Link
                 to="/product/$handle"
                 params={{ handle: hero.productHandle }}
-                className="text-[10px] uppercase tracking-[0.3em] text-white border-b border-white/60 hover:border-white pb-1"
+                className="text-cta-lg uppercase text-white border-b border-white/60 hover:border-white pb-1"
               >
                 {hero.shopLabel ?? "Shop the piece"} →
               </Link>
@@ -101,7 +101,7 @@ export function EditorialStory({
               <Link
                 to="/collections/$handle"
                 params={{ handle: hero.shopHandle }}
-                className="text-[10px] uppercase tracking-[0.3em] text-white border-b border-white/60 hover:border-white pb-1"
+                className="text-cta-lg uppercase text-white border-b border-white/60 hover:border-white pb-1"
               >
                 {hero.shopLabel ?? "Shop"} →
               </Link>
@@ -160,7 +160,7 @@ export function EditorialStory({
               key={c.handle}
               to="/collections/$handle"
               params={{ handle: c.handle }}
-              className="px-6 py-3 border border-ink hover:bg-ink hover:text-canvas transition-colors text-[11px] uppercase tracking-[0.25em]"
+              className="px-6 py-3 border border-ink hover:bg-ink hover:text-canvas transition-colors text-cta-md uppercase"
             >
               {c.label}
             </Link>
@@ -169,7 +169,7 @@ export function EditorialStory({
         <div className="mt-12">
           <Link
             to="/journal"
-            className="text-[10px] uppercase tracking-[0.3em] border-b border-ink/30 pb-1 hover:border-ink"
+            className="text-cta-lg uppercase border-b border-ink/30 pb-1 hover:border-ink"
           >
             Return to the Journal →
           </Link>
