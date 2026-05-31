@@ -245,7 +245,17 @@ function titleizeHandle(handle: string) {
 function CollectionPage() {
   const { handle } = Route.useParams();
   const { sort } = Route.useSearch();
+  const { abBucket, title: rawTitle, description: rawDesc } = Route.useLoaderData();
   const navigate = useNavigate({ from: "/collections/$handle" });
+
+  // Meta A/B exposure + client-side variant patch. The base SEO copy is
+  // the SSR title/description for this collection — same input the head()
+  // uses — so client and server pick the same variant text.
+  const baseSeo = collectionSeo({ handle, title: rawTitle ?? handle, description: rawDesc ?? null });
+  useMetaAb(`collection:${handle}`, abBucket as MetaBucket, {
+    a: pickCollectionMeta(handle, 0, { title: baseSeo.title, description: baseSeo.description }),
+    b: pickCollectionMeta(handle, 1, { title: baseSeo.title, description: baseSeo.description }),
+  });
   // Surfaces whose own theme makes a card-level badge redundant. Sale-themed
   // pages: every card is on sale, so "House Markdown / Final Reductions"
   // labels would visually clutter the grid without adding information.
