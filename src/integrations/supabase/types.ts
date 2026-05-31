@@ -753,6 +753,75 @@ export type Database = {
         }
         Relationships: []
       }
+      meta_ab_conversions: {
+        Row: {
+          bucket: number
+          created_at: string
+          event_type: string
+          id: string
+          page_type: string
+          session_id: string | null
+          value_usd: number | null
+          variant: string
+        }
+        Insert: {
+          bucket: number
+          created_at?: string
+          event_type: string
+          id?: string
+          page_type: string
+          session_id?: string | null
+          value_usd?: number | null
+          variant: string
+        }
+        Update: {
+          bucket?: number
+          created_at?: string
+          event_type?: string
+          id?: string
+          page_type?: string
+          session_id?: string | null
+          value_usd?: number | null
+          variant?: string
+        }
+        Relationships: []
+      }
+      meta_ab_exposures: {
+        Row: {
+          bucket: number
+          created_at: string
+          id: string
+          is_bot: boolean
+          page_path: string | null
+          page_type: string
+          session_id: string | null
+          user_agent: string | null
+          variant: string
+        }
+        Insert: {
+          bucket: number
+          created_at?: string
+          id?: string
+          is_bot?: boolean
+          page_path?: string | null
+          page_type: string
+          session_id?: string | null
+          user_agent?: string | null
+          variant: string
+        }
+        Update: {
+          bucket?: number
+          created_at?: string
+          id?: string
+          is_bot?: boolean
+          page_path?: string | null
+          page_type?: string
+          session_id?: string | null
+          user_agent?: string | null
+          variant?: string
+        }
+        Relationships: []
+      }
       newsletter_subscribers: {
         Row: {
           created_at: string
