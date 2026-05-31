@@ -137,3 +137,28 @@ export function parseBucket(raw: string | undefined | null): MetaBucket {
 export function variantLabel(bucket: MetaBucket): "A" | "B" {
   return bucket === 1 ? "B" : "A";
 }
+
+/** Bucket 0 is the canonical-safe, indexable default. */
+export const DEFAULT_BUCKET: MetaBucket = 0;
+
+/**
+ * Returns the indexability rules for a given bucket.
+ *
+ * - Default variant (bucket 0): no robots tag, self-referencing canonical.
+ * - Non-default variants: robots `noindex,follow`, canonical points at the
+ *   default URL — so test variants never get indexed and never produce
+ *   duplicate-content signals.
+ *
+ * `pageUrl` is the absolute URL of the page itself. The canonical and the
+ * page URL are the same on the default variant.
+ */
+export function seoMetaForBucket(
+  bucket: MetaBucket,
+  pageUrl: string,
+): { canonical: string; robots: string | null } {
+  if (bucket === DEFAULT_BUCKET) {
+    return { canonical: pageUrl, robots: null };
+  }
+  return { canonical: pageUrl, robots: "noindex,follow" };
+}
+
