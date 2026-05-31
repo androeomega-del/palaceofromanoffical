@@ -131,15 +131,15 @@ function NewInRail() {
   const products = data?.products?.edges ?? [];
 
   return (
-    <section aria-label="New in" className="bg-canvas pt-14 md:pt-20">
+    <section aria-label="Best selling brands" className="bg-canvas pt-14 md:pt-20">
       <div className="max-w-screen-2xl mx-auto px-6 md:px-10">
         <div className="flex items-end justify-between gap-6 mb-7 md:mb-9">
           <div>
             <p className="text-cta-lg uppercase text-bronze-deep mb-2">
-              New In
+              Best Selling Brands
             </p>
             <h2 className="font-serif text-subhead-md md:text-subhead-lg text-ink">
-              Just landed — and already low stock
+              The pieces our clients keep coming back for
             </h2>
           </div>
           <Link
