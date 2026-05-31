@@ -24,11 +24,21 @@ import { ShieldCheck, Plane, RotateCcw, MessageCircle } from "lucide-react";
 import { fetchCollection, fetchProducts } from "@/lib/shopify";
 import { cdnImage } from "@/lib/cdn-image";
 import { ProductCard } from "@/components/product-card";
+import { vendorSlug } from "@/lib/nav-config";
 
 import marketingWomen from "@/assets/marketing-women-editorial.jpg";
 import marketingMen from "@/assets/marketing-men-editorial.jpg";
 
 import marketingMensResort from "@/assets/marketing-men-resort-summer.jpg";
+
+import brandGucci from "@/assets/brand-gucci.jpg";
+import brandPrada from "@/assets/brand-prada.jpg";
+import brandBottega from "@/assets/brand-bottega-veneta.jpg";
+import brandSaintLaurent from "@/assets/brand-saint-laurent.jpg";
+import brandTomFord from "@/assets/brand-tom-ford.jpg";
+import brandDolce from "@/assets/brand-dolce-gabbana.jpg";
+import brandVersace from "@/assets/brand-versace.jpg";
+
 
 /* ────────────────────────────────────────────────────────────────────────── */
 /*  Public component                                                          */
@@ -122,49 +132,59 @@ function DepartmentGateway() {
 /*  2. New In — horizontal commerce rail                                      */
 /* ────────────────────────────────────────────────────────────────────────── */
 
-function NewInRail() {
-  const { data, isLoading } = useQuery({
-    queryKey: ["home", "low-stock-rail"],
-    queryFn: () => fetchCollection("low-stock", 12),
-    staleTime: 10 * 60 * 1000,
-  });
-  const products = data?.products?.edges ?? [];
+const BRAND_TILES: ReadonlyArray<{ name: string; image: string }> = [
+  { name: "Gucci", image: brandGucci },
+  { name: "Prada", image: brandPrada },
+  { name: "Bottega Veneta", image: brandBottega },
+  { name: "Saint Laurent", image: brandSaintLaurent },
+  { name: "Tom Ford", image: brandTomFord },
+  { name: "Dolce & Gabbana", image: brandDolce },
+  { name: "Versace", image: brandVersace },
+];
 
+function NewInRail() {
   return (
     <section aria-label="Best selling brands" className="bg-canvas pt-14 md:pt-20">
       <div className="max-w-screen-2xl mx-auto px-6 md:px-10">
         <div className="flex items-end justify-end mb-7 md:mb-9">
           <Link
-            to="/collections/$handle"
-            params={{ handle: "low-stock" }}
+            to="/brands"
             className="hidden sm:inline-flex text-cta-md uppercase border-b border-ink/25 pb-1 hover:text-bronze hover:border-bronze transition-colors"
           >
-            Shop all →
+            All brands →
           </Link>
         </div>
-        {isLoading ? (
-          <div className="flex gap-4 overflow-hidden">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="shrink-0 w-[46vw] sm:w-[30vw] lg:w-[19vw] xl:w-[15vw]">
-                <div className="aspect-[3/4] por-shimmer mb-3" />
-                <div className="h-2 w-20 por-shimmer mb-2" />
-                <div className="h-3 w-3/4 por-shimmer" />
+        <div className="flex gap-4 md:gap-5 overflow-x-auto pb-4 -mx-6 md:-mx-10 px-6 md:px-10 snap-x snap-mandatory scrollbar-hide">
+          {BRAND_TILES.map((b) => (
+            <Link
+              key={b.name}
+              to="/brand/$vendor"
+              params={{ vendor: vendorSlug(b.name) }}
+              className="group shrink-0 w-[46vw] sm:w-[30vw] lg:w-[19vw] xl:w-[15vw] snap-start"
+              aria-label={`Shop ${b.name}`}
+            >
+              <div className="relative aspect-[3/4] overflow-hidden bg-ink/5">
+                <img
+                  src={b.image}
+                  alt={b.name}
+                  loading="lazy"
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/0 to-black/0" />
+                <div className="absolute inset-x-0 bottom-0 p-4 md:p-5">
+                  <h3 className="font-serif text-[22px] md:text-[26px] leading-none text-white tracking-tight">
+                    {b.name}
+                  </h3>
+                </div>
               </div>
-            ))}
-          </div>
-        ) : products.length > 0 ? (
-          <div className="flex gap-4 md:gap-5 overflow-x-auto pb-4 -mx-6 md:-mx-10 px-6 md:px-10 snap-x snap-mandatory scrollbar-hide">
-            {products.map((p) => (
-              <div key={p.node.id} className="shrink-0 w-[46vw] sm:w-[30vw] lg:w-[19vw] xl:w-[15vw] snap-start">
-                <ProductCard product={p} />
-              </div>
-            ))}
-          </div>
-        ) : null}
+            </Link>
+          ))}
+        </div>
       </div>
     </section>
   );
 }
+
 
 /* ────────────────────────────────────────────────────────────────────────── */
 /*  2b. Best Sellers — horizontal commerce rail                               */
