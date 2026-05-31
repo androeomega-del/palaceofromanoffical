@@ -9,6 +9,10 @@ import { fetchCollectionTotal } from "@/lib/collection-count.functions";
 import { fetchCollectionCategoryCounts } from "@/lib/collection-category-counts.functions";
 import { bucketsForHandle, bucketProduct } from "@/lib/category-buckets";
 import { ProductCard } from "@/components/product-card";
+import {
+  EditorialLinksRail,
+  editorialLinksForCollection,
+} from "@/components/editorial-links-rail";
 import { absoluteUrl, SITE_URL } from "@/lib/seo";
 import { collectionSeo } from "@/lib/collection-seo";
 import {
@@ -800,6 +804,15 @@ function CollectionPage() {
           </div>
         </div>
       </section>
+
+      {/* Editorial internal links — strengthens topical relevance and
+          shortens crawl path from PLPs into long-form editorial. */}
+      <EditorialLinksRail
+        links={editorialLinksForCollection(handle)}
+        eyebrow="Further reading"
+        heading="From the Editorial"
+        className="pb-20"
+      />
 
     </div>
   );
