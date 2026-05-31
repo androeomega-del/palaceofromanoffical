@@ -50,9 +50,30 @@ export const Route = createFileRoute("/api/public/cron/abandoned-cart-recovery")
         let failed = 0;
         let skipped = 0;
 
+        // Throttle: do not send more than one recovery email per recipient
+        // within a rolling 12h window (covers the case where the same shopper
+        // exists as both a local capture and a synced Shopify checkout row).
+        const THROTTLE_MS = 12 * HOUR_MS;
+        const throttleSince = new Date(now - THROTTLE_MS).toISOString();
+        const { data: recentSends } = await supabaseAdmin
+          .from("email_dispatch_log")
+          .select("recipient_email")
+          .like("template_name", "cart-recovery-%")
+          .eq("status", "sent")
+          .gte("created_at", throttleSince);
+        const recentlyEmailed = new Set(
+          (recentSends ?? []).map((r) =>
+            (r.recipient_email ?? "").toLowerCase(),
+          ),
+        );
+
         for (const cart of carts ?? []) {
           const count = cart.recovery_email_count ?? 0;
           if (count >= 3) {
+            skipped++;
+            continue;
+          }
+          if (recentlyEmailed.has(cart.email.toLowerCase())) {
             skipped++;
             continue;
           }
