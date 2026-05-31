@@ -91,6 +91,7 @@ function BrandPage() {
   const canonical = brandFromSlug(vendor);
   const name = canonical ?? unslug(vendor);
   const heritage = heritageFor(name);
+  const spotlight = spotlightFor(name);
 
   const [sortKey, reverseStr] = sort.split("-");
   const reverse = reverseStr === "true";
@@ -176,6 +177,12 @@ function BrandPage() {
           </div>
         </div>
       </section>
+
+      {spotlight && (
+        <BrandCategorySpotlight vendorSlug={vendor} spotlight={spotlight} />
+      )}
+
+
 
       <section className="px-6 py-6 border-b border-ink/5">
         <div className="max-w-screen-2xl mx-auto flex items-center justify-end">
