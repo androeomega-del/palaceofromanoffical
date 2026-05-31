@@ -94,8 +94,11 @@ export function DesktopMegamenu() {
     staleTime: 10 * 60_000,
   });
 
+  // Auto-prune: only treat a handle as "live" if the collection exists AND
+  // has at least one product. Empty collections and missing handles are both
+  // filtered out of the nav so we never link to a 404 or a blank PLP.
   const liveHandles = liveCollections
-    ? new Set(liveCollections.map((c) => c.handle))
+    ? new Set(liveCollections.filter((c) => (c.productCount ?? 0) > 0).map((c) => c.handle))
     : null;
 
   // Only show departments whose root collection actually exists in Shopify.
