@@ -35,6 +35,7 @@ import { Route as DesignersRouteImport } from './routes/designers'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BrandsRouteImport } from './routes/brands'
 import { Route as AuthenticationRouteImport } from './routes/authentication'
+import { Route as AssetsRouteImport } from './routes/assets'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
@@ -252,6 +253,11 @@ const BrandsRoute = BrandsRouteImport.update({
 const AuthenticationRoute = AuthenticationRouteImport.update({
   id: '/authentication',
   path: '/authentication',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AssetsRoute = AssetsRouteImport.update({
+  id: '/assets',
+  path: '/assets',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AccountRoute = AccountRouteImport.update({
@@ -725,6 +731,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/account': typeof AccountRouteWithChildren
+  '/assets': typeof AssetsRoute
   '/authentication': typeof AuthenticationRoute
   '/brands': typeof BrandsRoute
   '/contact': typeof ContactRoute
@@ -839,6 +846,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/assets': typeof AssetsRoute
   '/authentication': typeof AuthenticationRoute
   '/brands': typeof BrandsRoute
   '/contact': typeof ContactRoute
@@ -954,6 +962,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/account': typeof AccountRouteWithChildren
+  '/assets': typeof AssetsRoute
   '/authentication': typeof AuthenticationRoute
   '/brands': typeof BrandsRoute
   '/contact': typeof ContactRoute
@@ -1071,6 +1080,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/account'
+    | '/assets'
     | '/authentication'
     | '/brands'
     | '/contact'
@@ -1185,6 +1195,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/assets'
     | '/authentication'
     | '/brands'
     | '/contact'
@@ -1299,6 +1310,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/account'
+    | '/assets'
     | '/authentication'
     | '/brands'
     | '/contact'
@@ -1415,6 +1427,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AccountRoute: typeof AccountRouteWithChildren
+  AssetsRoute: typeof AssetsRoute
   AuthenticationRoute: typeof AuthenticationRoute
   BrandsRoute: typeof BrandsRoute
   ContactRoute: typeof ContactRoute
@@ -1695,6 +1708,13 @@ declare module '@tanstack/react-router' {
       path: '/authentication'
       fullPath: '/authentication'
       preLoaderRoute: typeof AuthenticationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/assets': {
+      id: '/assets'
+      path: '/assets'
+      fullPath: '/assets'
+      preLoaderRoute: typeof AssetsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/account': {
@@ -2383,6 +2403,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AccountRoute: AccountRouteWithChildren,
+  AssetsRoute: AssetsRoute,
   AuthenticationRoute: AuthenticationRoute,
   BrandsRoute: BrandsRoute,
   ContactRoute: ContactRoute,
