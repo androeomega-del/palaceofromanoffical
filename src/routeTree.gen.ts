@@ -17,6 +17,7 @@ import { Route as SwimRouteImport } from './routes/swim'
 import { Route as StyleQuizRouteImport } from './routes/style-quiz'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SitemapStaticDotxmlRouteImport } from './routes/sitemap-static[.]xml'
+import { Route as SitemapCollectionsDotxmlRouteImport } from './routes/sitemap-collections[.]xml'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ShippingReturnsRouteImport } from './routes/shipping-returns'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -158,6 +159,12 @@ const SitemapStaticDotxmlRoute = SitemapStaticDotxmlRouteImport.update({
   path: '/sitemap-static.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SitemapCollectionsDotxmlRoute =
+  SitemapCollectionsDotxmlRouteImport.update({
+    id: '/sitemap-collections.xml',
+    path: '/sitemap-collections.xml',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ShopRoute = ShopRouteImport.update({
   id: '/shop',
   path: '/shop',
@@ -708,6 +715,7 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
+  '/sitemap-collections.xml': typeof SitemapCollectionsDotxmlRoute
   '/sitemap-static.xml': typeof SitemapStaticDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/style-quiz': typeof StyleQuizRoute
@@ -817,6 +825,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
+  '/sitemap-collections.xml': typeof SitemapCollectionsDotxmlRoute
   '/sitemap-static.xml': typeof SitemapStaticDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/style-quiz': typeof StyleQuizRoute
@@ -927,6 +936,7 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
+  '/sitemap-collections.xml': typeof SitemapCollectionsDotxmlRoute
   '/sitemap-static.xml': typeof SitemapStaticDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/style-quiz': typeof StyleQuizRoute
@@ -1039,6 +1049,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/shipping-returns'
     | '/shop'
+    | '/sitemap-collections.xml'
     | '/sitemap-static.xml'
     | '/sitemap.xml'
     | '/style-quiz'
@@ -1148,6 +1159,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/shipping-returns'
     | '/shop'
+    | '/sitemap-collections.xml'
     | '/sitemap-static.xml'
     | '/sitemap.xml'
     | '/style-quiz'
@@ -1257,6 +1269,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/shipping-returns'
     | '/shop'
+    | '/sitemap-collections.xml'
     | '/sitemap-static.xml'
     | '/sitemap.xml'
     | '/style-quiz'
@@ -1368,6 +1381,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   ShippingReturnsRoute: typeof ShippingReturnsRoute
   ShopRoute: typeof ShopRoute
+  SitemapCollectionsDotxmlRoute: typeof SitemapCollectionsDotxmlRoute
   SitemapStaticDotxmlRoute: typeof SitemapStaticDotxmlRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StyleQuizRoute: typeof StyleQuizRoute
@@ -1502,6 +1516,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap-static.xml'
       fullPath: '/sitemap-static.xml'
       preLoaderRoute: typeof SitemapStaticDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap-collections.xml': {
+      id: '/sitemap-collections.xml'
+      path: '/sitemap-collections.xml'
+      fullPath: '/sitemap-collections.xml'
+      preLoaderRoute: typeof SitemapCollectionsDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/shop': {
@@ -2296,6 +2317,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   ShippingReturnsRoute: ShippingReturnsRoute,
   ShopRoute: ShopRoute,
+  SitemapCollectionsDotxmlRoute: SitemapCollectionsDotxmlRoute,
   SitemapStaticDotxmlRoute: SitemapStaticDotxmlRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StyleQuizRoute: StyleQuizRoute,
