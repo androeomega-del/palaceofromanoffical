@@ -82,6 +82,7 @@ import { Route as AdminShopifySyncRouteImport } from './routes/admin.shopify-syn
 import { Route as AdminSeoHealthRouteImport } from './routes/admin.seo-health'
 import { Route as AdminReviewsRouteImport } from './routes/admin.reviews'
 import { Route as AdminProductImagesRouteImport } from './routes/admin.product-images'
+import { Route as AdminMetaAbRouteImport } from './routes/admin.meta-ab'
 import { Route as AdminLookbookHotspotsRouteImport } from './routes/admin.lookbook-hotspots'
 import { Route as AdminLandingPagesRouteImport } from './routes/admin.landing-pages'
 import { Route as AdminInventorySyncRouteImport } from './routes/admin.inventory-sync'
@@ -497,6 +498,11 @@ const AdminProductImagesRoute = AdminProductImagesRouteImport.update({
   path: '/admin/product-images',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminMetaAbRoute = AdminMetaAbRouteImport.update({
+  id: '/admin/meta-ab',
+  path: '/admin/meta-ab',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminLookbookHotspotsRoute = AdminLookbookHotspotsRouteImport.update({
   id: '/admin/lookbook-hotspots',
   path: '/admin/lookbook-hotspots',
@@ -755,6 +761,7 @@ export interface FileRoutesByFullPath {
   '/admin/inventory-sync': typeof AdminInventorySyncRoute
   '/admin/landing-pages': typeof AdminLandingPagesRoute
   '/admin/lookbook-hotspots': typeof AdminLookbookHotspotsRoute
+  '/admin/meta-ab': typeof AdminMetaAbRoute
   '/admin/product-images': typeof AdminProductImagesRoute
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/seo-health': typeof AdminSeoHealthRoute
@@ -867,6 +874,7 @@ export interface FileRoutesByTo {
   '/admin/inventory-sync': typeof AdminInventorySyncRoute
   '/admin/landing-pages': typeof AdminLandingPagesRoute
   '/admin/lookbook-hotspots': typeof AdminLookbookHotspotsRoute
+  '/admin/meta-ab': typeof AdminMetaAbRoute
   '/admin/product-images': typeof AdminProductImagesRoute
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/seo-health': typeof AdminSeoHealthRoute
@@ -980,6 +988,7 @@ export interface FileRoutesById {
   '/admin/inventory-sync': typeof AdminInventorySyncRoute
   '/admin/landing-pages': typeof AdminLandingPagesRoute
   '/admin/lookbook-hotspots': typeof AdminLookbookHotspotsRoute
+  '/admin/meta-ab': typeof AdminMetaAbRoute
   '/admin/product-images': typeof AdminProductImagesRoute
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/seo-health': typeof AdminSeoHealthRoute
@@ -1095,6 +1104,7 @@ export interface FileRouteTypes {
     | '/admin/inventory-sync'
     | '/admin/landing-pages'
     | '/admin/lookbook-hotspots'
+    | '/admin/meta-ab'
     | '/admin/product-images'
     | '/admin/reviews'
     | '/admin/seo-health'
@@ -1207,6 +1217,7 @@ export interface FileRouteTypes {
     | '/admin/inventory-sync'
     | '/admin/landing-pages'
     | '/admin/lookbook-hotspots'
+    | '/admin/meta-ab'
     | '/admin/product-images'
     | '/admin/reviews'
     | '/admin/seo-health'
@@ -1319,6 +1330,7 @@ export interface FileRouteTypes {
     | '/admin/inventory-sync'
     | '/admin/landing-pages'
     | '/admin/lookbook-hotspots'
+    | '/admin/meta-ab'
     | '/admin/product-images'
     | '/admin/reviews'
     | '/admin/seo-health'
@@ -1430,6 +1442,7 @@ export interface RootRouteChildren {
   AdminInventorySyncRoute: typeof AdminInventorySyncRoute
   AdminLandingPagesRoute: typeof AdminLandingPagesRoute
   AdminLookbookHotspotsRoute: typeof AdminLookbookHotspotsRoute
+  AdminMetaAbRoute: typeof AdminMetaAbRoute
   AdminProductImagesRoute: typeof AdminProductImagesRoute
   AdminReviewsRoute: typeof AdminReviewsRoute
   AdminSeoHealthRoute: typeof AdminSeoHealthRoute
@@ -1999,6 +2012,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProductImagesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/meta-ab': {
+      id: '/admin/meta-ab'
+      path: '/admin/meta-ab'
+      fullPath: '/admin/meta-ab'
+      preLoaderRoute: typeof AdminMetaAbRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/lookbook-hotspots': {
       id: '/admin/lookbook-hotspots'
       path: '/admin/lookbook-hotspots'
@@ -2382,6 +2402,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminInventorySyncRoute: AdminInventorySyncRoute,
   AdminLandingPagesRoute: AdminLandingPagesRoute,
   AdminLookbookHotspotsRoute: AdminLookbookHotspotsRoute,
+  AdminMetaAbRoute: AdminMetaAbRoute,
   AdminProductImagesRoute: AdminProductImagesRoute,
   AdminReviewsRoute: AdminReviewsRoute,
   AdminSeoHealthRoute: AdminSeoHealthRoute,
