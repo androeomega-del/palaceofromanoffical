@@ -920,8 +920,9 @@ export function MobileMegamenu() {
     queryFn: () => getShopifyMenu(),
     staleTime: 10 * 60_000,
   });
+  // Same auto-prune as desktop: drop missing AND empty collections.
   const liveHandles = liveCollections
-    ? new Set(liveCollections.map((c) => c.handle))
+    ? new Set(liveCollections.filter((c) => (c.productCount ?? 0) > 0).map((c) => c.handle))
     : null;
   const departments = useMemo(() => {
     const built = buildDepartments(liveCollections ?? []);
