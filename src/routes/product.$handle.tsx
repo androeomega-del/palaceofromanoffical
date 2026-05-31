@@ -206,7 +206,7 @@ export const Route = createFileRoute("/product/$handle")({
     if (price) {
       meta.push({ property: "product:price:amount", content: price.amount });
       meta.push({ property: "product:price:currency", content: price.currencyCode });
-      meta.push({ property: "product:availability", content: anyAvailable ? "instock" : "oosfck" });
+      meta.push({ property: "product:availability", content: anyAvailable ? "instock" : "out of stock" });
     }
 
     return {
