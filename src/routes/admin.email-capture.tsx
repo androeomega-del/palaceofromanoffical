@@ -4,8 +4,10 @@ import { useState } from "react";
 import { adminBeforeLoad } from "@/lib/admin-route-guard";
 import { getEmailCaptureDashboard } from "@/lib/email-capture-dashboard.functions";
 import { exportNewsletterCsv } from "@/lib/newsletter-export.functions";
+import { syncShopifyAbandonedCheckouts } from "@/lib/shopify-abandoned-sync.functions";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import {
   ArrowLeft,
   RefreshCw,
@@ -16,6 +18,7 @@ import {
   AlertTriangle,
   CheckCircle2,
   Download,
+  CloudDownload,
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin/email-capture")({
@@ -108,6 +111,7 @@ function AdminEmailCapture() {
     staleTime: 30_000,
   });
   const [exporting, setExporting] = useState(false);
+  const [syncing, setSyncing] = useState(false);
 
   const handleExport = async () => {
     setExporting(true);
@@ -126,6 +130,28 @@ function AdminEmailCapture() {
       setExporting(false);
     }
   };
+
+  const handleSyncShopify = async () => {
+    setSyncing(true);
+    try {
+      const res = await syncShopifyAbandonedCheckouts({ data: { days: 30 } });
+      if (!res.ok) {
+        toast.error("Shopify sync failed", { description: res.error });
+      } else {
+        toast.success("Shopify abandoned checkouts synced", {
+          description: `${res.checked} checked · ${res.inserted} new · ${res.merged} merged · ${res.updated} updated · ${res.skipped} skipped`,
+        });
+        refetch();
+      }
+    } catch (e) {
+      toast.error("Shopify sync failed", {
+        description: e instanceof Error ? e.message : String(e),
+      });
+    } finally {
+      setSyncing(false);
+    }
+  };
+
 
   return (
     <main className="min-h-screen bg-canvas px-6 py-12 md:py-16">
@@ -146,7 +172,18 @@ function AdminEmailCapture() {
               dispatch status.
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleSyncShopify}
+              disabled={syncing}
+            >
+              <CloudDownload
+                className={`h-3 w-3 mr-2 ${syncing ? "animate-pulse" : ""}`}
+              />
+              {syncing ? "Syncing…" : "Sync Shopify checkouts"}
+            </Button>
             <Button
               variant="outline"
               size="sm"
