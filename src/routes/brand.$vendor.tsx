@@ -24,14 +24,22 @@ export const Route = createFileRoute("/brand/$vendor")({
     const name = canonical ?? unslug(params.vendor);
     const heritage = heritageFor(name);
     const path = `/brand/${params.vendor}`;
-    const title = `${name} — Authentic ${heritage.signatures[0] ?? "Luxury"} | ${SITE_NAME}`;
-    const desc = `Shop authentic ${name} at ${SITE_NAME}. ${heritage.tagline} 100% genuine, sourced from the brand or its authorised distributors, with worldwide tracked shipping.`;
+    const spotlight = spotlightFor(name);
+    const title = spotlight
+      ? `${spotlight.h2} — Authentic ${name} | ${SITE_NAME}`
+      : `${name} — Authentic ${heritage.signatures[0] ?? "Luxury"} | ${SITE_NAME}`;
+    const desc = spotlight
+      ? `Shop authentic ${spotlight.h2.toLowerCase()} at ${SITE_NAME}. ${spotlight.intro} 100% genuine, sourced from the brand or its authorised distributors.`
+      : `Shop authentic ${name} at ${SITE_NAME}. ${heritage.tagline} 100% genuine, sourced from the brand or its authorised distributors, with worldwide tracked shipping.`;
+    const keywords = spotlight
+      ? `${spotlight.keyword}, ${name}, ${heritage.signatures.join(", ")}, authentic ${name}, buy ${name} online`
+      : `${name}, ${heritage.signatures.join(", ")}, authentic ${name}, buy ${name} online`;
     const rh = routeHead({ path, title, description: desc });
     return {
       meta: [
         { title },
         { name: "description", content: desc },
-        { name: "keywords", content: `${name}, ${heritage.signatures.join(", ")}, authentic ${name}, buy ${name} online` },
+        { name: "keywords", content: keywords },
         ...rh.meta,
       ],
       links: rh.links,
