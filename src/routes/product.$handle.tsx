@@ -60,11 +60,136 @@ export const Route = createFileRoute("/product/$handle")({
       `Shop ${p.title} by ${p.vendor} at Palace of Roman. 100% authentic, worldwide shipping.`;
     const img = p.images?.edges?.[0]?.node?.url;
     const price = p.priceRange?.minVariantPrice;
+    const compareAt = p.compareAtPriceRange?.minVariantPrice;
     const vendorSlug = (p.vendor || "")
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "");
-    const anyAvailable = p.variants.edges.some((v) => v.node.availableForSale);
+    const variants = p.variants.edges.map((e) => e.node);
+    const anyAvailable = variants.some((v) => v.availableForSale);
+
+    /* ── High-quality image array for the JSON-LD `image` field ──
+       Google recommends 1200px+ images and accepts multiple URLs. We emit
+       each product image at 2400w + 1200w (jpg for crawler compatibility),
+       deduped, capped at the first 8 images. */
+    const baseImages = (p.images?.edges ?? [])
+      .map((e) => e.node.url)
+      .filter(Boolean)
+      .slice(0, 8);
+    const ldImages = Array.from(
+      new Set(
+        baseImages.flatMap((u) => [
+          cdnImage(u, { width: 2400, format: "jpg" }) || u,
+          cdnImage(u, { width: 1200, format: "jpg" }) || u,
+        ]),
+      ),
+    );
+    if (ldImages.length === 0 && img) ldImages.push(img);
+
+    const priceValidUntil = new Date(Date.now() + 1000 * 60 * 60 * 24 * 365)
+      .toISOString()
+      .slice(0, 10);
+    const currency = price?.currencyCode ?? "USD";
+
+    const shippingDetails = {
+      "@type": "OfferShippingDetails",
+      shippingRate: {
+        "@type": "MonetaryAmount",
+        value: Number(price?.amount ?? 0) >= 250 ? "0" : "45",
+        currency,
+      },
+      shippingDestination: {
+        "@type": "DefinedRegion",
+        geoTargetName: "Worldwide",
+      },
+      deliveryTime: {
+        "@type": "ShippingDeliveryTime",
+        handlingTime: { "@type": "QuantitativeValue", minValue: 1, maxValue: 2, unitCode: "DAY" },
+        transitTime: { "@type": "QuantitativeValue", minValue: 3, maxValue: 7, unitCode: "DAY" },
+      },
+    };
+    const returnPolicy = {
+      "@type": "MerchantReturnPolicy",
+      applicableCountry: "US",
+      returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+      merchantReturnDays: 14,
+      returnMethod: "https://schema.org/ReturnByMail",
+      returnFees: "https://schema.org/FreeReturn",
+    };
+    const seller = { "@type": "Organization", name: "Palace of Roman" };
+
+    /* ── Per-variant Offers ──
+       Each variant becomes its own Offer with explicit price, availability,
+       sku and the option values (size/color). When ≥2 variants, we wrap
+       them in an AggregateOffer with low/high price + offerCount so search
+       engines surface the price range correctly. */
+    const variantOffers = variants.map((v) => {
+      const offerName = v.selectedOptions
+        .map((o) => `${o.name}: ${o.value}`)
+        .join(" / ");
+      return {
+        "@type": "Offer",
+        url: url + (v.id ? `?variant=${encodeURIComponent(v.id.split("/").pop() || "")}` : ""),
+        sku: v.id,
+        name: offerName || v.title,
+        price: v.price.amount,
+        priceCurrency: v.price.currencyCode,
+        priceValidUntil,
+        availability: v.availableForSale
+          ? "https://schema.org/InStock"
+          : "https://schema.org/OutOfStock",
+        itemCondition: "https://schema.org/NewCondition",
+        seller,
+        shippingDetails,
+        hasMerchantReturnPolicy: returnPolicy,
+        ...(typeof v.quantityAvailable === "number" && v.quantityAvailable > 0
+          ? { inventoryLevel: { "@type": "QuantitativeValue", value: v.quantityAvailable } }
+          : {}),
+        ...(compareAt && Number(compareAt.amount) > Number(v.price.amount)
+          ? {
+              priceSpecification: {
+                "@type": "UnitPriceSpecification",
+                priceType: "https://schema.org/ListPrice",
+                price: compareAt.amount,
+                priceCurrency: compareAt.currencyCode,
+              },
+            }
+          : {}),
+      };
+    });
+
+    const prices = variants.map((v) => Number(v.price.amount)).filter((n) => Number.isFinite(n));
+    const lowPrice = prices.length ? Math.min(...prices).toFixed(2) : price?.amount ?? "0";
+    const highPrice = prices.length ? Math.max(...prices).toFixed(2) : price?.amount ?? "0";
+
+    const offers =
+      variantOffers.length > 1
+        ? {
+            "@type": "AggregateOffer",
+            url,
+            priceCurrency: currency,
+            lowPrice,
+            highPrice,
+            offerCount: variantOffers.length,
+            availability: anyAvailable
+              ? "https://schema.org/InStock"
+              : "https://schema.org/OutOfStock",
+            offers: variantOffers,
+          }
+        : variantOffers[0] ?? {
+            "@type": "Offer",
+            url,
+            priceCurrency: currency,
+            price: price?.amount ?? "0",
+            priceValidUntil,
+            availability: anyAvailable
+              ? "https://schema.org/InStock"
+              : "https://schema.org/OutOfStock",
+            itemCondition: "https://schema.org/NewCondition",
+            seller,
+            shippingDetails,
+            hasMerchantReturnPolicy: returnPolicy,
+          };
 
     const meta = [
       { title: pageTitle(titleMain) },
@@ -75,12 +200,13 @@ export const Route = createFileRoute("/product/$handle")({
       { property: "og:type", content: "product" },
     ];
     if (img) {
-      meta.push({ property: "og:image", content: img });
-      meta.push({ name: "twitter:image", content: img });
+      meta.push({ property: "og:image", content: cdnImage(img, { width: 1200, format: "jpg" }) || img });
+      meta.push({ name: "twitter:image", content: cdnImage(img, { width: 1200, format: "jpg" }) || img });
     }
     if (price) {
       meta.push({ property: "product:price:amount", content: price.amount });
       meta.push({ property: "product:price:currency", content: price.currencyCode });
+      meta.push({ property: "product:availability", content: anyAvailable ? "instock" : "out of stock" });
     }
 
     return {
@@ -92,62 +218,17 @@ export const Route = createFileRoute("/product/$handle")({
           children: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Product",
+            "@id": url + "#product",
             name: p.title,
             description: metaDescription(p.description, 5000),
-            sku: p.variants.edges[0]?.node?.id,
-            image: p.images.edges.map((e) => e.node.url),
+            sku: variants[0]?.id,
+            mpn: p.handle,
+            productID: p.id,
+            url,
+            image: ldImages,
             brand: p.vendor ? { "@type": "Brand", name: p.vendor } : undefined,
             category: p.productType || undefined,
-            offers: {
-              "@type": "Offer",
-              url,
-              priceCurrency: price?.currencyCode ?? "USD",
-              price: price?.amount ?? "0",
-              priceValidUntil: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365)
-                .toISOString()
-                .slice(0, 10),
-              availability: anyAvailable
-                ? "https://schema.org/InStock"
-                : "https://schema.org/OutOfStock",
-              itemCondition: "https://schema.org/NewCondition",
-              seller: { "@type": "Organization", name: "Palace of Roman" },
-              shippingDetails: {
-                "@type": "OfferShippingDetails",
-                shippingRate: {
-                  "@type": "MonetaryAmount",
-                  value: Number(price?.amount ?? 0) >= 250 ? "0" : "45",
-                  currency: price?.currencyCode ?? "USD",
-                },
-                shippingDestination: {
-                  "@type": "DefinedRegion",
-                  geoTargetName: "Worldwide",
-                },
-                deliveryTime: {
-                  "@type": "ShippingDeliveryTime",
-                  handlingTime: {
-                    "@type": "QuantitativeValue",
-                    minValue: 1,
-                    maxValue: 2,
-                    unitCode: "DAY",
-                  },
-                  transitTime: {
-                    "@type": "QuantitativeValue",
-                    minValue: 3,
-                    maxValue: 7,
-                    unitCode: "DAY",
-                  },
-                },
-              },
-              hasMerchantReturnPolicy: {
-                "@type": "MerchantReturnPolicy",
-                applicableCountry: "US",
-                returnPolicyCategory:
-                  "https://schema.org/MerchantReturnFiniteReturnWindow",
-                merchantReturnDays: 14,
-                returnMethod: "https://schema.org/ReturnByMail",
-                returnFees: "https://schema.org/FreeReturn",
-              },
-            },
+            offers,
           }),
         },
         {
