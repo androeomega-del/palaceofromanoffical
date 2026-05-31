@@ -14,7 +14,7 @@ import {
   editorialLinksForCollection,
 } from "@/components/editorial-links-rail";
 import { readMetaAbBucket } from "@/lib/meta-ab.functions";
-import { pickCollectionMeta, type MetaBucket } from "@/lib/meta-ab";
+import { pickCollectionMeta, seoMetaForBucket, type MetaBucket } from "@/lib/meta-ab";
 import { useMetaAb } from "@/hooks/use-meta-ab";
 import { absoluteUrl, SITE_URL } from "@/lib/seo";
 import { collectionSeo } from "@/lib/collection-seo";
@@ -190,7 +190,8 @@ export const Route = createFileRoute("/collections/$handle")({
       title: seo.title,
       description: seo.description,
     });
-    const meta = [
+    const { canonical, robots } = seoMetaForBucket(bucket, url);
+    const meta: Array<Record<string, string>> = [
       { title: ab.title },
       { name: "description", content: ab.description },
       { property: "og:title", content: ab.title },
@@ -198,13 +199,14 @@ export const Route = createFileRoute("/collections/$handle")({
       { property: "og:url", content: url },
       { property: "og:type", content: "website" },
     ];
+    if (robots) meta.push({ name: "robots", content: robots });
     if (loaderData?.image) {
       meta.push({ property: "og:image", content: loaderData.image });
       meta.push({ name: "twitter:image", content: loaderData.image });
     }
     return {
       meta,
-      links: [{ rel: "canonical", href: url }],
+      links: [{ rel: "canonical", href: canonical }],
       scripts: [
         {
           type: "application/ld+json",

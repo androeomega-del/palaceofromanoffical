@@ -1,27 +1,40 @@
 /**
  * Server-side bucket reader for the meta-tag A/B test.
  *
- * Reads the `por_meta_ab` cookie from the request and returns the assigned
- * bucket. Missing / unrecognised cookie → bucket 0 (variant A), which is
- * the canonical-safe default for bots and first-time visitors.
- *
- * No assignment happens here — that's done on the client (see
- * `useMetaAb`), so the SSR pass for crawlers is deterministic and the
- * indexed copy never drifts.
+ * - Reads `por_meta_ab` cookie for the visitor's persistent bucket.
+ * - Classifies the request via `classifyUserAgent`. Any bot/crawler is
+ *   **forced to bucket 0 (variant A)** so SSR for crawlers is
+ *   deterministic and the indexed copy never drifts.
+ * - Fail-safe: missing/invalid cookie or any error → bucket 0.
  */
 import { createServerFn } from "@tanstack/react-start";
-import { getCookie } from "@tanstack/react-start-server";
+import { getCookie, getRequestHeader } from "@tanstack/react-start-server";
 import { META_AB_COOKIE, parseBucket, type MetaBucket } from "@/lib/meta-ab";
+import { classifyUserAgent } from "@/lib/bot-detect";
+
+export interface MetaAbBucketResult {
+  bucket: MetaBucket;
+  isBot: boolean;
+  forced: boolean;
+}
 
 export const readMetaAbBucket = createServerFn({ method: "GET" }).handler(
-  async (): Promise<{ bucket: MetaBucket }> => {
+  async (): Promise<MetaAbBucketResult> => {
     try {
+      const ua = getRequestHeader("user-agent") ?? "";
+      const accept = getRequestHeader("accept") ?? null;
+      const acceptLanguage = getRequestHeader("accept-language") ?? null;
+
+      const { isBot } = classifyUserAgent(ua, { accept, acceptLanguage });
+      if (isBot) {
+        return { bucket: 0, isBot: true, forced: true };
+      }
+
       const raw = getCookie(META_AB_COOKIE);
-      return { bucket: parseBucket(raw) };
+      return { bucket: parseBucket(raw), isBot: false, forced: false };
     } catch {
-      // getCookie can throw if called outside a request context (rare —
-      // dev SSR edge cases). Fall back to the canonical-safe variant.
-      return { bucket: 0 };
+      // Fail-safe — serve canonical-safe default on any error.
+      return { bucket: 0, isBot: true, forced: true };
     }
   },
 );

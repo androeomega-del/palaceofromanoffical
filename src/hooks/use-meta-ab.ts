@@ -52,13 +52,19 @@ export function useMetaAb(
     }
 
     // 2. If the assigned bucket diverges from what SSR rendered, patch the
-    //    visible title + description tags in place.
+    //    visible title + description tags in place, and add/remove the
+    //    robots noindex tag to match the canonical-safety rules.
     if (bucket !== ssrBucket) {
       const v = bucket === 1 ? variants.b : variants.a;
       document.title = v.title;
       setMeta("description", v.description, "name");
       setMeta("og:title", v.title, "property");
       setMeta("og:description", v.description, "property");
+      if (bucket === 1) {
+        setMeta("robots", "noindex,follow", "name");
+      } else {
+        removeMeta("robots", "name");
+      }
     }
 
     // 3. Track exposure (no-op if Plausible script hasn't loaded yet —
@@ -69,6 +75,29 @@ export function useMetaAb(
       });
     } catch {
       // analytics must never break the page
+    }
+
+    // 4. Server-side exposure record (deduped per session+page).
+    const dedupeKey = `por_ab_exp_${pageKey}`;
+    try {
+      if (!sessionStorage.getItem(dedupeKey)) {
+        sessionStorage.setItem(dedupeKey, "1");
+        const page_type = pageKey.startsWith("collection") ? "collection" : "home";
+        // Fire via dynamic import so the server-fn client is lazy-loaded.
+        import("@/lib/meta-ab-track.functions").then(({ recordMetaAbExposure }) => {
+          recordMetaAbExposure({
+            data: {
+              page_type: page_type as "home" | "collection",
+              page_path: location.pathname,
+              bucket,
+              variant: variantLabel(bucket),
+              session_id: readCookie("por_sid") ?? null,
+            },
+          }).catch(() => {});
+        }).catch(() => {});
+      }
+    } catch {
+      // sessionStorage can throw in private mode — ignore
     }
   }, [pageKey, ssrBucket, variants.a.title, variants.a.description, variants.b.title, variants.b.description]);
 }
@@ -100,3 +129,9 @@ function setMeta(key: string, value: string, attr: "name" | "property") {
   }
   el.setAttribute("content", value);
 }
+
+function removeMeta(key: string, attr: "name" | "property") {
+  const el = document.head.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`);
+  if (el) el.remove();
+}
+
