@@ -13,6 +13,9 @@ import {
   EditorialLinksRail,
   editorialLinksForCollection,
 } from "@/components/editorial-links-rail";
+import { readMetaAbBucket } from "@/lib/meta-ab.functions";
+import { pickCollectionMeta, type MetaBucket } from "@/lib/meta-ab";
+import { useMetaAb } from "@/hooks/use-meta-ab";
 import { absoluteUrl, SITE_URL } from "@/lib/seo";
 import { collectionSeo } from "@/lib/collection-seo";
 import {
