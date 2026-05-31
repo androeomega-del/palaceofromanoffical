@@ -16,6 +16,10 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SwimRouteImport } from './routes/swim'
 import { Route as StyleQuizRouteImport } from './routes/style-quiz'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SitemapStaticDotxmlRouteImport } from './routes/sitemap-static[.]xml'
+import { Route as SitemapProductsDotxmlRouteImport } from './routes/sitemap-products[.]xml'
+import { Route as SitemapCollectionsDotxmlRouteImport } from './routes/sitemap-collections[.]xml'
+import { Route as SitemapBrandsDotxmlRouteImport } from './routes/sitemap-brands[.]xml'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ShippingReturnsRouteImport } from './routes/shipping-returns'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -150,6 +154,27 @@ const StyleQuizRoute = StyleQuizRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapStaticDotxmlRoute = SitemapStaticDotxmlRouteImport.update({
+  id: '/sitemap-static.xml',
+  path: '/sitemap-static.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapProductsDotxmlRoute = SitemapProductsDotxmlRouteImport.update({
+  id: '/sitemap-products.xml',
+  path: '/sitemap-products.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapCollectionsDotxmlRoute =
+  SitemapCollectionsDotxmlRouteImport.update({
+    id: '/sitemap-collections.xml',
+    path: '/sitemap-collections.xml',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const SitemapBrandsDotxmlRoute = SitemapBrandsDotxmlRouteImport.update({
+  id: '/sitemap-brands.xml',
+  path: '/sitemap-brands.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ShopRoute = ShopRouteImport.update({
@@ -702,6 +727,10 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
+  '/sitemap-brands.xml': typeof SitemapBrandsDotxmlRoute
+  '/sitemap-collections.xml': typeof SitemapCollectionsDotxmlRoute
+  '/sitemap-products.xml': typeof SitemapProductsDotxmlRoute
+  '/sitemap-static.xml': typeof SitemapStaticDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/style-quiz': typeof StyleQuizRoute
   '/swim': typeof SwimRouteWithChildren
@@ -810,6 +839,10 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
+  '/sitemap-brands.xml': typeof SitemapBrandsDotxmlRoute
+  '/sitemap-collections.xml': typeof SitemapCollectionsDotxmlRoute
+  '/sitemap-products.xml': typeof SitemapProductsDotxmlRoute
+  '/sitemap-static.xml': typeof SitemapStaticDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/style-quiz': typeof StyleQuizRoute
   '/swim': typeof SwimRouteWithChildren
@@ -919,6 +952,10 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
+  '/sitemap-brands.xml': typeof SitemapBrandsDotxmlRoute
+  '/sitemap-collections.xml': typeof SitemapCollectionsDotxmlRoute
+  '/sitemap-products.xml': typeof SitemapProductsDotxmlRoute
+  '/sitemap-static.xml': typeof SitemapStaticDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/style-quiz': typeof StyleQuizRoute
   '/swim': typeof SwimRouteWithChildren
@@ -1030,6 +1067,10 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/shipping-returns'
     | '/shop'
+    | '/sitemap-brands.xml'
+    | '/sitemap-collections.xml'
+    | '/sitemap-products.xml'
+    | '/sitemap-static.xml'
     | '/sitemap.xml'
     | '/style-quiz'
     | '/swim'
@@ -1138,6 +1179,10 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/shipping-returns'
     | '/shop'
+    | '/sitemap-brands.xml'
+    | '/sitemap-collections.xml'
+    | '/sitemap-products.xml'
+    | '/sitemap-static.xml'
     | '/sitemap.xml'
     | '/style-quiz'
     | '/swim'
@@ -1246,6 +1291,10 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/shipping-returns'
     | '/shop'
+    | '/sitemap-brands.xml'
+    | '/sitemap-collections.xml'
+    | '/sitemap-products.xml'
+    | '/sitemap-static.xml'
     | '/sitemap.xml'
     | '/style-quiz'
     | '/swim'
@@ -1356,6 +1405,10 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   ShippingReturnsRoute: typeof ShippingReturnsRoute
   ShopRoute: typeof ShopRoute
+  SitemapBrandsDotxmlRoute: typeof SitemapBrandsDotxmlRoute
+  SitemapCollectionsDotxmlRoute: typeof SitemapCollectionsDotxmlRoute
+  SitemapProductsDotxmlRoute: typeof SitemapProductsDotxmlRoute
+  SitemapStaticDotxmlRoute: typeof SitemapStaticDotxmlRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StyleQuizRoute: typeof StyleQuizRoute
   SwimRoute: typeof SwimRouteWithChildren
@@ -1482,6 +1535,34 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap-static.xml': {
+      id: '/sitemap-static.xml'
+      path: '/sitemap-static.xml'
+      fullPath: '/sitemap-static.xml'
+      preLoaderRoute: typeof SitemapStaticDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap-products.xml': {
+      id: '/sitemap-products.xml'
+      path: '/sitemap-products.xml'
+      fullPath: '/sitemap-products.xml'
+      preLoaderRoute: typeof SitemapProductsDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap-collections.xml': {
+      id: '/sitemap-collections.xml'
+      path: '/sitemap-collections.xml'
+      fullPath: '/sitemap-collections.xml'
+      preLoaderRoute: typeof SitemapCollectionsDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap-brands.xml': {
+      id: '/sitemap-brands.xml'
+      path: '/sitemap-brands.xml'
+      fullPath: '/sitemap-brands.xml'
+      preLoaderRoute: typeof SitemapBrandsDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/shop': {
@@ -2276,6 +2357,10 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   ShippingReturnsRoute: ShippingReturnsRoute,
   ShopRoute: ShopRoute,
+  SitemapBrandsDotxmlRoute: SitemapBrandsDotxmlRoute,
+  SitemapCollectionsDotxmlRoute: SitemapCollectionsDotxmlRoute,
+  SitemapProductsDotxmlRoute: SitemapProductsDotxmlRoute,
+  SitemapStaticDotxmlRoute: SitemapStaticDotxmlRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StyleQuizRoute: StyleQuizRoute,
   SwimRoute: SwimRouteWithChildren,
