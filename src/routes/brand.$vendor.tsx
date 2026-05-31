@@ -6,6 +6,8 @@ import { ProductCard } from "@/components/product-card";
 import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
 import { CatalogSort, SORT_OPTIONS, type SortValue } from "@/components/catalog-filters";
 import { brandFromSlug, heritageFor } from "@/lib/brand-heritage";
+import { spotlightFor } from "@/lib/brand-seo-categories";
+import { BrandCategorySpotlight } from "@/components/sections/brand-category-spotlight";
 import { cdnImage } from "@/lib/cdn-image";
 
 type SortKey = SortValue;
@@ -22,14 +24,22 @@ export const Route = createFileRoute("/brand/$vendor")({
     const name = canonical ?? unslug(params.vendor);
     const heritage = heritageFor(name);
     const path = `/brand/${params.vendor}`;
-    const title = `${name} — Authentic ${heritage.signatures[0] ?? "Luxury"} | ${SITE_NAME}`;
-    const desc = `Shop authentic ${name} at ${SITE_NAME}. ${heritage.tagline} 100% genuine, sourced from the brand or its authorised distributors, with worldwide tracked shipping.`;
+    const spotlight = spotlightFor(name);
+    const title = spotlight
+      ? `${spotlight.h2} — Authentic ${name} | ${SITE_NAME}`
+      : `${name} — Authentic ${heritage.signatures[0] ?? "Luxury"} | ${SITE_NAME}`;
+    const desc = spotlight
+      ? `Shop authentic ${spotlight.h2.toLowerCase()} at ${SITE_NAME}. ${spotlight.intro} 100% genuine, sourced from the brand or its authorised distributors.`
+      : `Shop authentic ${name} at ${SITE_NAME}. ${heritage.tagline} 100% genuine, sourced from the brand or its authorised distributors, with worldwide tracked shipping.`;
+    const keywords = spotlight
+      ? `${spotlight.keyword}, ${name}, ${heritage.signatures.join(", ")}, authentic ${name}, buy ${name} online`
+      : `${name}, ${heritage.signatures.join(", ")}, authentic ${name}, buy ${name} online`;
     const rh = routeHead({ path, title, description: desc });
     return {
       meta: [
         { title },
         { name: "description", content: desc },
-        { name: "keywords", content: `${name}, ${heritage.signatures.join(", ")}, authentic ${name}, buy ${name} online` },
+        { name: "keywords", content: keywords },
         ...rh.meta,
       ],
       links: rh.links,
@@ -81,6 +91,7 @@ function BrandPage() {
   const canonical = brandFromSlug(vendor);
   const name = canonical ?? unslug(vendor);
   const heritage = heritageFor(name);
+  const spotlight = spotlightFor(name);
 
   const [sortKey, reverseStr] = sort.split("-");
   const reverse = reverseStr === "true";
@@ -166,6 +177,12 @@ function BrandPage() {
           </div>
         </div>
       </section>
+
+      {spotlight && (
+        <BrandCategorySpotlight vendorSlug={vendor} spotlight={spotlight} />
+      )}
+
+
 
       <section className="px-6 py-6 border-b border-ink/5">
         <div className="max-w-screen-2xl mx-auto flex items-center justify-end">
