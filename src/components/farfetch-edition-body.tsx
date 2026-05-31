@@ -24,11 +24,21 @@ import { ShieldCheck, Plane, RotateCcw, MessageCircle } from "lucide-react";
 import { fetchCollection, fetchProducts } from "@/lib/shopify";
 import { cdnImage } from "@/lib/cdn-image";
 import { ProductCard } from "@/components/product-card";
+import { vendorSlug } from "@/lib/nav-config";
 
 import marketingWomen from "@/assets/marketing-women-editorial.jpg";
 import marketingMen from "@/assets/marketing-men-editorial.jpg";
 
 import marketingMensResort from "@/assets/marketing-men-resort-summer.jpg";
+
+import brandGucci from "@/assets/brand-gucci.jpg";
+import brandPrada from "@/assets/brand-prada.jpg";
+import brandBottega from "@/assets/brand-bottega-veneta.jpg";
+import brandSaintLaurent from "@/assets/brand-saint-laurent.jpg";
+import brandTomFord from "@/assets/brand-tom-ford.jpg";
+import brandDolce from "@/assets/brand-dolce-gabbana.jpg";
+import brandVersace from "@/assets/brand-versace.jpg";
+
 
 /* ────────────────────────────────────────────────────────────────────────── */
 /*  Public component                                                          */
