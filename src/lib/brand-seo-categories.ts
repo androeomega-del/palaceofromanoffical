@@ -35,10 +35,10 @@ export const BRAND_CATEGORY_SPOTLIGHTS: Record<string, BrandCategorySpotlight> =
   Moncler: {
     brand: "Moncler",
     keyword: "moncler men jacket",
-    eyebrow: "The Moncler Jacket",
+    eyebrow: "Alpine Heritage",
     h2: "Moncler Men's Jackets",
     intro:
-      "Down-filled outerwear born in the French Alps and finished in Italy — quilted silhouettes, lacquered nylons, and the signature tricolour seal.",
+      "A Moncler men's jacket is more than outerwear — it is a passport to city winters and mountain altitudes alike. Quilted down, lacquered nylon, and the tricolour seal: three details that signal you know the difference.",
     ctaLabel: "Shop Moncler Jackets",
     categoryQuery:
       '(product_type:"Jacket" OR product_type:"Jackets" OR product_type:"Coat" OR product_type:"Coats" OR tag:"jacket" OR tag:"outerwear")',
@@ -46,10 +46,10 @@ export const BRAND_CATEGORY_SPOTLIGHTS: Record<string, BrandCategorySpotlight> =
   Prada: {
     brand: "Prada",
     keyword: "prada men sneakers",
-    eyebrow: "The Prada Sneaker",
+    eyebrow: "Milanese Movement",
     h2: "Prada Men's Sneakers",
     intro:
-      "From the Milanese house's technical archive — re-nylon uppers, brushed leathers, and the lug-soled silhouettes that defined a decade of luxury sport.",
+      "Prada men's sneakers move between boardroom and boarding gate without missing a step. Re-nylon uppers, brushed calfskin, lug soles — the house's technical archive, rebuilt for the way you live now.",
     ctaLabel: "Shop Prada Sneakers",
     categoryQuery:
       '(product_type:"Sneakers" OR product_type:"Sneaker" OR product_type:"Trainers" OR tag:"sneakers" OR tag:"sneaker")',
@@ -57,10 +57,10 @@ export const BRAND_CATEGORY_SPOTLIGHTS: Record<string, BrandCategorySpotlight> =
   "Bottega Veneta": {
     brand: "Bottega Veneta",
     keyword: "bottega veneta men wallet",
-    eyebrow: "Intrecciato Leather",
+    eyebrow: "The Quiet Signal",
     h2: "Bottega Veneta Men's Wallets",
     intro:
-      "Hand-woven intrecciato in the Vicenza workshop — bifolds, cardholders, and zip-arounds in supple nappa, the house's quietest signature.",
+      "A Bottega Veneta men's wallet speaks before you do. Hand-woven intrecciato in Vicenza nappa — no logos, no noise, just the leather craft that discerning hands recognise instantly.",
     ctaLabel: "Shop Bottega Wallets",
     categoryQuery:
       '(product_type:"Wallet" OR product_type:"Wallets" OR product_type:"Cardholder" OR product_type:"Card Holder" OR tag:"wallet" OR tag:"wallets" OR tag:"cardholder")',
@@ -68,10 +68,10 @@ export const BRAND_CATEGORY_SPOTLIGHTS: Record<string, BrandCategorySpotlight> =
   Gucci: {
     brand: "Gucci",
     keyword: "gucci men loafers",
-    eyebrow: "The Gucci Loafer",
+    eyebrow: "The Original Icon",
     h2: "Gucci Men's Loafers",
     intro:
-      "The horsebit moccasin that entered the MoMA permanent collection — polished calfskin, leather soles, and the Florentine hardware that started it all in 1953.",
+      "Gucci men's loafers have earned their place in the permanent collection — and in your rotation. The 1953 horsebit, Florentine calfskin, a leather sole that ages like a signature. Some codes never expire.",
     ctaLabel: "Shop Gucci Loafers",
     categoryQuery:
       '(product_type:"Loafers" OR product_type:"Loafer" OR product_type:"Moccasin" OR product_type:"Moccasins" OR tag:"loafers" OR tag:"loafer")',
@@ -79,10 +79,10 @@ export const BRAND_CATEGORY_SPOTLIGHTS: Record<string, BrandCategorySpotlight> =
   "Tom Ford": {
     brand: "Tom Ford",
     keyword: "tom ford men suit",
-    eyebrow: "Tailoring",
+    eyebrow: "Cinematic Cut",
     h2: "Tom Ford Men's Suits",
     intro:
-      "The cinematic silhouette — peak lapels, sculpted shoulders, and the wool-mohair cloths that built the Tom Ford reputation for modern eveningwear.",
+      "The Tom Ford men's suit is cut for the moment the room goes quiet. Peak lapels, sculpted shoulders, wool-mohair cloth that catches light like a camera lens. This is not tailoring. This is presence.",
     ctaLabel: "Shop Tom Ford Suits",
     categoryQuery:
       '(product_type:"Suit" OR product_type:"Suits" OR product_type:"Blazer" OR product_type:"Blazers" OR tag:"suit" OR tag:"suiting" OR tag:"tailoring")',
