@@ -8,7 +8,7 @@
  * - Fail-safe: missing/invalid cookie or any error → bucket 0.
  */
 import { createServerFn } from "@tanstack/react-start";
-import { getCookie, getHeaders } from "@tanstack/react-start-server";
+import { getCookie, getRequestHeader } from "@tanstack/react-start-server";
 import { META_AB_COOKIE, parseBucket, type MetaBucket } from "@/lib/meta-ab";
 import { classifyUserAgent } from "@/lib/bot-detect";
 
@@ -21,19 +21,9 @@ export interface MetaAbBucketResult {
 export const readMetaAbBucket = createServerFn({ method: "GET" }).handler(
   async (): Promise<MetaAbBucketResult> => {
     try {
-      const headers = getHeaders() ?? {};
-      const ua =
-        (headers["user-agent"] as string | undefined) ??
-        (headers["User-Agent"] as string | undefined) ??
-        "";
-      const accept =
-        (headers["accept"] as string | undefined) ??
-        (headers["Accept"] as string | undefined) ??
-        null;
-      const acceptLanguage =
-        (headers["accept-language"] as string | undefined) ??
-        (headers["Accept-Language"] as string | undefined) ??
-        null;
+      const ua = getRequestHeader("user-agent") ?? "";
+      const accept = getRequestHeader("accept") ?? null;
+      const acceptLanguage = getRequestHeader("accept-language") ?? null;
 
       const { isBot } = classifyUserAgent(ua, { accept, acceptLanguage });
       if (isBot) {
