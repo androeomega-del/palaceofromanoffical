@@ -4,8 +4,10 @@ import { useState } from "react";
 import { adminBeforeLoad } from "@/lib/admin-route-guard";
 import { getEmailCaptureDashboard } from "@/lib/email-capture-dashboard.functions";
 import { exportNewsletterCsv } from "@/lib/newsletter-export.functions";
+import { syncShopifyAbandonedCheckouts } from "@/lib/shopify-abandoned-sync.functions";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import {
   ArrowLeft,
   RefreshCw,
@@ -16,6 +18,7 @@ import {
   AlertTriangle,
   CheckCircle2,
   Download,
+  CloudDownload,
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin/email-capture")({
