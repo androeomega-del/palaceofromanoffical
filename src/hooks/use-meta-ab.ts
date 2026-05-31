@@ -83,7 +83,6 @@ export function useMetaAb(
       if (!sessionStorage.getItem(dedupeKey)) {
         sessionStorage.setItem(dedupeKey, "1");
         const page_type = pageKey.startsWith("collection") ? "collection" : "home";
-        void fetch("/_serverFn/recordMetaAbExposure", { method: "POST" }).catch(() => {});
         // Fire via dynamic import so the server-fn client is lazy-loaded.
         import("@/lib/meta-ab-track.functions").then(({ recordMetaAbExposure }) => {
           recordMetaAbExposure({
