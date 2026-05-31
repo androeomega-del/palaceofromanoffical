@@ -13,6 +13,9 @@ import {
   EditorialLinksRail,
   editorialLinksForCollection,
 } from "@/components/editorial-links-rail";
+import { readMetaAbBucket } from "@/lib/meta-ab.functions";
+import { pickCollectionMeta, type MetaBucket } from "@/lib/meta-ab";
+import { useMetaAb } from "@/hooks/use-meta-ab";
 import { absoluteUrl, SITE_URL } from "@/lib/seo";
 import { collectionSeo } from "@/lib/collection-seo";
 import {
@@ -159,16 +162,16 @@ export const Route = createFileRoute("/collections/$handle")({
     return { sort };
   },
   loader: async ({ params }) => {
-    try {
-      const c = await fetchCollection(params.handle, 1);
-      return {
-        title: c?.title ?? titleizeHandle(params.handle),
-        description: c?.description ?? "",
-        image: c?.image?.url ?? null,
-      };
-    } catch {
-      return { title: titleizeHandle(params.handle), description: "", image: null };
-    }
+    const [collectionRes, abRes] = await Promise.all([
+      fetchCollection(params.handle, 1).catch(() => null),
+      readMetaAbBucket().catch(() => ({ bucket: 0 as MetaBucket })),
+    ]);
+    return {
+      title: collectionRes?.title ?? titleizeHandle(params.handle),
+      description: collectionRes?.description ?? "",
+      image: collectionRes?.image?.url ?? null,
+      abBucket: abRes.bucket,
+    };
   },
   head: ({ params, loaderData }) => {
     const title = loaderData?.title ?? titleizeHandle(params.handle);
@@ -179,11 +182,19 @@ export const Route = createFileRoute("/collections/$handle")({
     });
     const path = `/collections/${params.handle}`;
     const url = absoluteUrl(path);
+    // Meta A/B: pick the variant for this handle based on the SSR-resolved
+    // bucket. Canonical URL is identical across variants so the test does
+    // not produce duplicate-content signals.
+    const bucket = (loaderData?.abBucket ?? 0) as MetaBucket;
+    const ab = pickCollectionMeta(params.handle, bucket, {
+      title: seo.title,
+      description: seo.description,
+    });
     const meta = [
-      { title: seo.title },
-      { name: "description", content: seo.description },
-      { property: "og:title", content: seo.title },
-      { property: "og:description", content: seo.description },
+      { title: ab.title },
+      { name: "description", content: ab.description },
+      { property: "og:title", content: ab.title },
+      { property: "og:description", content: ab.description },
       { property: "og:url", content: url },
       { property: "og:type", content: "website" },
     ];
@@ -234,7 +245,17 @@ function titleizeHandle(handle: string) {
 function CollectionPage() {
   const { handle } = Route.useParams();
   const { sort } = Route.useSearch();
+  const { abBucket, title: rawTitle, description: rawDesc } = Route.useLoaderData();
   const navigate = useNavigate({ from: "/collections/$handle" });
+
+  // Meta A/B exposure + client-side variant patch. The base SEO copy is
+  // the SSR title/description for this collection — same input the head()
+  // uses — so client and server pick the same variant text.
+  const baseSeo = collectionSeo({ handle, title: rawTitle ?? handle, description: rawDesc ?? null });
+  useMetaAb(`collection:${handle}`, abBucket as MetaBucket, {
+    a: pickCollectionMeta(handle, 0, { title: baseSeo.title, description: baseSeo.description }),
+    b: pickCollectionMeta(handle, 1, { title: baseSeo.title, description: baseSeo.description }),
+  });
   // Surfaces whose own theme makes a card-level badge redundant. Sale-themed
   // pages: every card is on sale, so "House Markdown / Final Reductions"
   // labels would visually clutter the grid without adding information.

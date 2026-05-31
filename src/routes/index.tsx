@@ -10,31 +10,51 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { EditionLayout } from "@/components/editors-edition";
 import heroImage from "@/assets/home-hero.jpg";
 import summerHero from "@/assets/summer-bento-hero.jpg";
+import { readMetaAbBucket } from "@/lib/meta-ab.functions";
+import { pickHomeMeta, type MetaBucket } from "@/lib/meta-ab";
+import { useMetaAb } from "@/hooks/use-meta-ab";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Palace of Roman | Curated Luxury Menswear & Womenswear" },
-      { name: "description", content: "Discover handpicked designer pieces from the world's leading maisons. New arrivals weekly. Express delivery and free returns." },
-      { property: "og:title", content: "Palace of Roman | Curated Luxury Menswear & Womenswear" },
-      { property: "og:description", content: "Discover handpicked designer pieces from the world's leading maisons. New arrivals weekly. Express delivery and free returns." },
-      { property: "og:url", content: "https://palaceofromanofficial.com/" },
-      { property: "og:type", content: "website" },
-      { property: "og:image", content: `https://palaceofromanofficial.com${heroImage}` },
-      { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:image", content: `https://palaceofromanofficial.com${heroImage}` },
-    ],
-    links: [
-      { rel: "canonical", href: "https://palaceofromanofficial.com/" },
-      { rel: "preload", as: "image", href: summerHero, fetchPriority: "high" } as any,
-    ],
-  }),
+  // Meta A/B: bucket is read server-side from the `por_meta_ab` cookie.
+  // Bots / first visits get bucket 0 (canonical-safe variant A); returning
+  // users get their persistent assignment so SSR matches what the hook will
+  // render after hydration.
+  loader: async (): Promise<{ abBucket: MetaBucket }> => {
+    const { bucket } = await readMetaAbBucket();
+    return { abBucket: bucket };
+  },
+  head: ({ loaderData }) => {
+    const bucket = (loaderData?.abBucket ?? 0) as MetaBucket;
+    const v = pickHomeMeta(bucket);
+    return {
+      meta: [
+        { title: v.title },
+        { name: "description", content: v.description },
+        { property: "og:title", content: v.title },
+        { property: "og:description", content: v.description },
+        { property: "og:url", content: "https://palaceofromanofficial.com/" },
+        { property: "og:type", content: "website" },
+        { property: "og:image", content: `https://palaceofromanofficial.com${heroImage}` },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:image", content: `https://palaceofromanofficial.com${heroImage}` },
+      ],
+      links: [
+        // Canonical is bucket-independent — both variants resolve to the
+        // same indexed URL. Keeps A/B test compliant with Google's
+        // duplicate-content guidance.
+        { rel: "canonical", href: "https://palaceofromanofficial.com/" },
+        { rel: "preload", as: "image", href: summerHero, fetchPriority: "high" } as any,
+      ],
+    };
+  },
   component: HomePage,
   errorComponent: HomeErrorComponent,
 });
 
 
 function HomePage() {
+  const { abBucket } = Route.useLoaderData();
+  useMetaAb("home", abBucket, { a: pickHomeMeta(0), b: pickHomeMeta(1) });
   return <EditionLayout />;
 }
 
