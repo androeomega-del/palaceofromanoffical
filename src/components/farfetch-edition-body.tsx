@@ -57,6 +57,11 @@ export function FarfetchEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {})
       <NewInRail />
       <CategoryQuickLinks />
       {aiBlocks}
+      <EditorialLinksRail
+        links={HOMEPAGE_EDITORIAL_LINKS}
+        eyebrow="From the Editorial"
+        heading="Read, then shop"
+      />
       <DiscreteTrustStrip />
       <BrandStatement />
     </>
