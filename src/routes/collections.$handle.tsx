@@ -805,6 +805,15 @@ function CollectionPage() {
         </div>
       </section>
 
+      {/* Editorial internal links — strengthens topical relevance and
+          shortens crawl path from PLPs into long-form editorial. */}
+      <EditorialLinksRail
+        links={editorialLinksForCollection(handle)}
+        eyebrow="Further reading"
+        heading="From the Editorial"
+        className="pb-20"
+      />
+
     </div>
   );
 }
