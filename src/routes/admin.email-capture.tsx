@@ -172,7 +172,18 @@ function AdminEmailCapture() {
               dispatch status.
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleSyncShopify}
+              disabled={syncing}
+            >
+              <CloudDownload
+                className={`h-3 w-3 mr-2 ${syncing ? "animate-pulse" : ""}`}
+              />
+              {syncing ? "Syncing…" : "Sync Shopify checkouts"}
+            </Button>
             <Button
               variant="outline"
               size="sm"
