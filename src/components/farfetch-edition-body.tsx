@@ -25,6 +25,10 @@ import { fetchCollection, fetchProducts } from "@/lib/shopify";
 import { cdnImage } from "@/lib/cdn-image";
 import { ProductCard } from "@/components/product-card";
 import { vendorSlug } from "@/lib/nav-config";
+import {
+  EditorialLinksRail,
+  HOMEPAGE_EDITORIAL_LINKS,
+} from "@/components/editorial-links-rail";
 
 import marketingWomen from "@/assets/marketing-women-editorial.jpg";
 import marketingMen from "@/assets/marketing-men-editorial.jpg";
