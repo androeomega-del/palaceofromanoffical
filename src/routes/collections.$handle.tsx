@@ -9,6 +9,10 @@ import { fetchCollectionTotal } from "@/lib/collection-count.functions";
 import { fetchCollectionCategoryCounts } from "@/lib/collection-category-counts.functions";
 import { bucketsForHandle, bucketProduct } from "@/lib/category-buckets";
 import { ProductCard } from "@/components/product-card";
+import {
+  EditorialLinksRail,
+  editorialLinksForCollection,
+} from "@/components/editorial-links-rail";
 import { absoluteUrl, SITE_URL } from "@/lib/seo";
 import { collectionSeo } from "@/lib/collection-seo";
 import {
