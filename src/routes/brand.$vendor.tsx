@@ -6,6 +6,8 @@ import { ProductCard } from "@/components/product-card";
 import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
 import { CatalogSort, SORT_OPTIONS, type SortValue } from "@/components/catalog-filters";
 import { brandFromSlug, heritageFor } from "@/lib/brand-heritage";
+import { spotlightFor } from "@/lib/brand-seo-categories";
+import { BrandCategorySpotlight } from "@/components/sections/brand-category-spotlight";
 import { cdnImage } from "@/lib/cdn-image";
 
 type SortKey = SortValue;
