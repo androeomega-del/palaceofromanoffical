@@ -111,6 +111,7 @@ function AdminEmailCapture() {
     staleTime: 30_000,
   });
   const [exporting, setExporting] = useState(false);
+  const [syncing, setSyncing] = useState(false);
 
   const handleExport = async () => {
     setExporting(true);
@@ -129,6 +130,28 @@ function AdminEmailCapture() {
       setExporting(false);
     }
   };
+
+  const handleSyncShopify = async () => {
+    setSyncing(true);
+    try {
+      const res = await syncShopifyAbandonedCheckouts({ data: { days: 30 } });
+      if (!res.ok) {
+        toast.error("Shopify sync failed", { description: res.error });
+      } else {
+        toast.success("Shopify abandoned checkouts synced", {
+          description: `${res.checked} checked · ${res.inserted} new · ${res.merged} merged · ${res.updated} updated · ${res.skipped} skipped`,
+        });
+        refetch();
+      }
+    } catch (e) {
+      toast.error("Shopify sync failed", {
+        description: e instanceof Error ? e.message : String(e),
+      });
+    } finally {
+      setSyncing(false);
+    }
+  };
+
 
   return (
     <main className="min-h-screen bg-canvas px-6 py-12 md:py-16">
