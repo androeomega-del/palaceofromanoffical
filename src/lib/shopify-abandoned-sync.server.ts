@@ -63,7 +63,7 @@ async function fetchAbandonedCheckouts(
   const out: ShopifyCheckout[] = [];
   let safety = 10; // up to 2 500 checkouts
   while (url && safety-- > 0) {
-    const res = await fetch(url, {
+    const res: Response = await fetch(url, {
       headers: {
         "X-Shopify-Access-Token": token,
         "Content-Type": "application/json",
@@ -77,9 +77,14 @@ async function fetchAbandonedCheckouts(
     }
     const json = (await res.json()) as { checkouts?: ShopifyCheckout[] };
     out.push(...(json.checkouts ?? []));
-    const link = res.headers.get("link") || res.headers.get("Link");
-    const next = link?.split(",").find((p) => p.includes('rel="next"'));
-    const match = next?.match(/<([^>]+)>/);
+    const link: string | null =
+      res.headers.get("link") || res.headers.get("Link");
+    const next: string | undefined = link
+      ? link.split(",").find((p: string) => p.includes('rel="next"'))
+      : undefined;
+    const match: RegExpMatchArray | null = next
+      ? next.match(/<([^>]+)>/)
+      : null;
     url = match ? match[1] : null;
   }
   return out;
