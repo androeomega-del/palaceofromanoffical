@@ -11,14 +11,10 @@ import { EditionLayout } from "@/components/editors-edition";
 import heroImage from "@/assets/home-hero.jpg";
 import summerHero from "@/assets/summer-bento-hero.jpg";
 import { readMetaAbBucket } from "@/lib/meta-ab.functions";
-import { pickHomeMeta, type MetaBucket } from "@/lib/meta-ab";
+import { pickHomeMeta, seoMetaForBucket, type MetaBucket } from "@/lib/meta-ab";
 import { useMetaAb } from "@/hooks/use-meta-ab";
 
 export const Route = createFileRoute("/")({
-  // Meta A/B: bucket is read server-side from the `por_meta_ab` cookie.
-  // Bots / first visits get bucket 0 (canonical-safe variant A); returning
-  // users get their persistent assignment so SSR matches what the hook will
-  // render after hydration.
   loader: async (): Promise<{ abBucket: MetaBucket }> => {
     const { bucket } = await readMetaAbBucket();
     return { abBucket: bucket };
@@ -26,23 +22,24 @@ export const Route = createFileRoute("/")({
   head: ({ loaderData }) => {
     const bucket = (loaderData?.abBucket ?? 0) as MetaBucket;
     const v = pickHomeMeta(bucket);
+    const pageUrl = "https://palaceofromanofficial.com/";
+    const { canonical, robots } = seoMetaForBucket(bucket, pageUrl);
+    const meta: Array<Record<string, string>> = [
+      { title: v.title },
+      { name: "description", content: v.description },
+      { property: "og:title", content: v.title },
+      { property: "og:description", content: v.description },
+      { property: "og:url", content: pageUrl },
+      { property: "og:type", content: "website" },
+      { property: "og:image", content: `https://palaceofromanofficial.com${heroImage}` },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: `https://palaceofromanofficial.com${heroImage}` },
+    ];
+    if (robots) meta.push({ name: "robots", content: robots });
     return {
-      meta: [
-        { title: v.title },
-        { name: "description", content: v.description },
-        { property: "og:title", content: v.title },
-        { property: "og:description", content: v.description },
-        { property: "og:url", content: "https://palaceofromanofficial.com/" },
-        { property: "og:type", content: "website" },
-        { property: "og:image", content: `https://palaceofromanofficial.com${heroImage}` },
-        { name: "twitter:card", content: "summary_large_image" },
-        { name: "twitter:image", content: `https://palaceofromanofficial.com${heroImage}` },
-      ],
+      meta,
       links: [
-        // Canonical is bucket-independent — both variants resolve to the
-        // same indexed URL. Keeps A/B test compliant with Google's
-        // duplicate-content guidance.
-        { rel: "canonical", href: "https://palaceofromanofficial.com/" },
+        { rel: "canonical", href: canonical },
         { rel: "preload", as: "image", href: summerHero, fetchPriority: "high" } as any,
       ],
     };
