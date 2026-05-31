@@ -212,8 +212,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:title", content: "Palace of Roman — Curated Luxury Fashion" },
       { name: "twitter:description", content: "Curated luxury fashion from Gucci, Prada, Saint Laurent, Armani and 500+ designer houses. 100% authentic, shipped worldwide." },
       { property: "og:image", content: "https://palaceofromanofficial.com/og-image.jpg" },
-      { property: "og:image:width", content: "1920" },
-      { property: "og:image:height", content: "1008" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
       { property: "og:image:alt", content: "Palace of Roman — The Maison · Curated Luxury" },
       { name: "twitter:image", content: "https://palaceofromanofficial.com/og-image.jpg" },
     ],
@@ -240,10 +240,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "sitemap", type: "application/xml", href: "/sitemap.xml", title: "Sitemap" },
       // Favicons & app icons (PR monogram on onyx + antique gold)
       { rel: "icon", href: "/favicon.ico", sizes: "any" },
+      { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16.png" },
       { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32.png" },
       { rel: "icon", type: "image/png", sizes: "192x192", href: "/favicon-192.png" },
       { rel: "icon", type: "image/png", sizes: "512x512", href: "/favicon-512.png" },
       { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" },
+      { rel: "manifest", href: "/site.webmanifest" },
     ],
     scripts: [
       // --- Plausible Analytics v2 (privacy-first, no cookie banner) ---
