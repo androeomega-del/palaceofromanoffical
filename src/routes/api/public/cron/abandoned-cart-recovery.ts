@@ -130,7 +130,7 @@ export const Route = createFileRoute("/api/public/cron/abandoned-cart-recovery")
               cart_id: cart.id,
               metadata: { variant, item_count: cart.item_count, total_usd: cart.total_usd },
             });
-
+            recentlyEmailed.add(cart.email.toLowerCase());
             sent++;
           } catch (e) {
             const msg = e instanceof Error ? e.message : String(e);
