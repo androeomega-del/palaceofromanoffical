@@ -26,6 +26,7 @@ import {
   Flame,
   CalendarClock,
   Repeat,
+  BarChart3,
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin/daily-tasks")({
