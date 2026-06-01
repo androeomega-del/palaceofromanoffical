@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { adminBeforeLoad } from "@/lib/admin-route-guard";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -21,9 +21,11 @@ import {
   Plus,
   Trash2,
   CheckCircle2,
-  Circle,
   Loader2,
   RefreshCw,
+  Flame,
+  CalendarClock,
+  Repeat,
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin/daily-tasks")({
@@ -38,6 +40,8 @@ export const Route = createFileRoute("/admin/daily-tasks")({
   }),
 });
 
+type Recurrence = "none" | "daily" | "weekly" | "monthly";
+
 type DailyTask = {
   id: string;
   title: string;
@@ -48,9 +52,19 @@ type DailyTask = {
   status: "todo" | "in_progress" | "done";
   notes: string | null;
   due_date: string | null;
+  recurrence: Recurrence;
+  recurrence_day: number | null;
+  last_rolled_over_on: string | null;
   completed_at: string | null;
   created_at: string;
   updated_at: string;
+};
+
+type Completion = {
+  id: string;
+  task_id: string;
+  completed_at: string;
+  completed_on: string;
 };
 
 const PRIORITY_ORDER: Record<DailyTask["priority"], number> = {
@@ -78,10 +92,27 @@ const CATEGORIES = [
   "general",
 ];
 
+const todayISO = () => new Date().toISOString().slice(0, 10);
+const daysAgoISO = (n: number) => {
+  const d = new Date();
+  d.setUTCDate(d.getUTCDate() - n);
+  return d.toISOString().slice(0, 10);
+};
+
 function DailyTasksPage() {
   const qc = useQueryClient();
-  const [filter, setFilter] = useState<"all" | "open" | "done">("open");
+  const [filter, setFilter] = useState<"all" | "open" | "done" | "today" | "overdue">("open");
   const [showNew, setShowNew] = useState(false);
+
+  // Auto-rollover on mount
+  useEffect(() => {
+    (async () => {
+      const { error } = await supabase.rpc("rollover_recurring_daily_tasks");
+      if (!error) {
+        qc.invalidateQueries({ queryKey: ["admin", "daily-tasks"] });
+      }
+    })();
+  }, [qc]);
 
   const { data: tasks, isLoading, isFetching, refetch } = useQuery({
     queryKey: ["admin", "daily-tasks"],
@@ -97,16 +128,31 @@ function DailyTasksPage() {
     refetchInterval: 60_000,
   });
 
+  const { data: completions } = useQuery({
+    queryKey: ["admin", "daily-task-completions"],
+    queryFn: async () => {
+      const since = daysAgoISO(60);
+      const { data, error } = await supabase
+        .from("daily_task_completions")
+        .select("id, task_id, completed_at, completed_on")
+        .gte("completed_on", since)
+        .order("completed_at", { ascending: false });
+      if (error) throw error;
+      return (data ?? []) as Completion[];
+    },
+    refetchInterval: 60_000,
+  });
+
   const updateTask = useMutation({
     mutationFn: async (patch: Partial<DailyTask> & { id: string }) => {
       const { id, ...rest } = patch;
-      const { error } = await supabase
-        .from("daily_tasks")
-        .update(rest)
-        .eq("id", id);
+      const { error } = await supabase.from("daily_tasks").update(rest).eq("id", id);
       if (error) throw error;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "daily-tasks"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin", "daily-tasks"] });
+      qc.invalidateQueries({ queryKey: ["admin", "daily-task-completions"] });
+    },
     onError: (e: Error) => toast.error("Update failed", { description: e.message }),
   });
 
@@ -128,6 +174,8 @@ function DailyTasksPage() {
       description: string;
       category: string;
       priority: DailyTask["priority"];
+      recurrence: Recurrence;
+      due_date: string | null;
     }) => {
       const maxSort = Math.max(0, ...(tasks ?? []).map((t) => t.sort_order));
       const { error } = await supabase.from("daily_tasks").insert({
@@ -135,6 +183,8 @@ function DailyTasksPage() {
         description: input.description || null,
         category: input.category,
         priority: input.priority,
+        recurrence: input.recurrence,
+        due_date: input.due_date,
         sort_order: maxSort + 10,
       });
       if (error) throw error;
@@ -147,26 +197,99 @@ function DailyTasksPage() {
     onError: (e: Error) => toast.error("Create failed", { description: e.message }),
   });
 
+  const rollover = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase.rpc("rollover_recurring_daily_tasks");
+      if (error) throw error;
+      return data as number;
+    },
+    onSuccess: (n) => {
+      toast.success(`Rolled over ${n ?? 0} task${n === 1 ? "" : "s"}`);
+      qc.invalidateQueries({ queryKey: ["admin", "daily-tasks"] });
+    },
+    onError: (e: Error) => toast.error("Rollover failed", { description: e.message }),
+  });
+
+  const today = todayISO();
+
   const filtered = (tasks ?? [])
     .filter((t) => {
       if (filter === "open") return t.status !== "done";
       if (filter === "done") return t.status === "done";
+      if (filter === "today") return t.due_date === today;
+      if (filter === "overdue")
+        return t.status !== "done" && t.due_date != null && t.due_date < today;
       return true;
     })
     .sort((a, b) => {
       if (a.status === "done" && b.status !== "done") return 1;
       if (b.status === "done" && a.status !== "done") return -1;
+      // overdue first
+      const aOver = a.due_date && a.due_date < today && a.status !== "done";
+      const bOver = b.due_date && b.due_date < today && b.status !== "done";
+      if (aOver && !bOver) return -1;
+      if (bOver && !aOver) return 1;
       const p = PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority];
       if (p !== 0) return p;
       return a.sort_order - b.sort_order;
     });
 
-  const stats = {
-    total: tasks?.length ?? 0,
-    done: tasks?.filter((t) => t.status === "done").length ?? 0,
-    inProgress: tasks?.filter((t) => t.status === "in_progress").length ?? 0,
-    critical: tasks?.filter((t) => t.status !== "done" && t.priority === "critical").length ?? 0,
-  };
+  // Summary metrics
+  const summary = useMemo(() => {
+    const all = tasks ?? [];
+    const comps = completions ?? [];
+    const open = all.filter((t) => t.status !== "done").length;
+    const done = all.filter((t) => t.status === "done").length;
+    const total = all.length;
+    const completionRate = total === 0 ? 0 : Math.round((done / total) * 100);
+
+    const dueToday = all.filter((t) => t.due_date === today);
+    const dueTodayDone = dueToday.filter((t) => t.status === "done").length;
+    const todayCompletions = comps.filter((c) => c.completed_on === today).length;
+
+    const completedSet = new Set(comps.map((c) => c.completed_on));
+
+    // Streak: consecutive days ending today (or yesterday) with at least 1 completion
+    let streak = 0;
+    const cursor = new Date();
+    // If nothing done today, start counting from yesterday
+    if (!completedSet.has(cursor.toISOString().slice(0, 10))) {
+      cursor.setUTCDate(cursor.getUTCDate() - 1);
+    }
+    while (completedSet.has(cursor.toISOString().slice(0, 10))) {
+      streak += 1;
+      cursor.setUTCDate(cursor.getUTCDate() - 1);
+    }
+
+    // 7-day / 30-day buckets
+    const buildSeries = (days: number) => {
+      const out: { date: string; count: number }[] = [];
+      for (let i = days - 1; i >= 0; i--) {
+        const d = daysAgoISO(i);
+        out.push({ date: d, count: comps.filter((c) => c.completed_on === d).length });
+      }
+      return out;
+    };
+    const series7 = buildSeries(7);
+    const series30 = buildSeries(30);
+    const active7 = series7.filter((d) => d.count > 0).length;
+    const active30 = series30.filter((d) => d.count > 0).length;
+
+    return {
+      total,
+      open,
+      done,
+      completionRate,
+      dueTodayCount: dueToday.length,
+      dueTodayDone,
+      todayCompletions,
+      streak,
+      series7,
+      series30,
+      active7,
+      active30,
+    };
+  }, [tasks, completions, today]);
 
   return (
     <main className="min-h-screen bg-canvas px-6 py-12 md:py-16">
@@ -181,10 +304,19 @@ function DailyTasksPage() {
             </Link>
             <h1 className="mt-3 font-serif text-3xl md:text-4xl">Daily Tasks</h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              Persistent checklist. Progress is saved to the database.
+              Persistent checklist. Recurring tasks auto-roll over each period.
             </p>
           </div>
           <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => rollover.mutate()}
+              disabled={rollover.isPending}
+            >
+              <Repeat className={`h-3 w-3 mr-2 ${rollover.isPending ? "animate-spin" : ""}`} />
+              Roll over now
+            </Button>
             <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isFetching}>
               <RefreshCw className={`h-3 w-3 mr-2 ${isFetching ? "animate-spin" : ""}`} />
               Refresh
@@ -195,16 +327,8 @@ function DailyTasksPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-          <StatCard label="Total" value={stats.total} />
-          <StatCard label="In progress" value={stats.inProgress} />
-          <StatCard label="Critical open" value={stats.critical} tone="warn" />
-          <StatCard
-            label="Completed"
-            value={`${stats.done}/${stats.total}`}
-            tone="good"
-          />
-        </div>
+        {/* Summary panel */}
+        <SummaryPanel summary={summary} />
 
         {showNew && (
           <NewTaskForm
@@ -214,8 +338,8 @@ function DailyTasksPage() {
           />
         )}
 
-        <div className="mb-4 flex items-center gap-1">
-          {(["open", "all", "done"] as const).map((f) => (
+        <div className="mb-4 flex items-center gap-1 flex-wrap">
+          {(["open", "today", "overdue", "all", "done"] as const).map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}
@@ -244,6 +368,7 @@ function DailyTasksPage() {
               <TaskRow
                 key={t.id}
                 task={t}
+                today={today}
                 onToggle={() =>
                   updateTask.mutate({
                     id: t.id,
@@ -252,6 +377,10 @@ function DailyTasksPage() {
                 }
                 onStatusChange={(status) => updateTask.mutate({ id: t.id, status })}
                 onNotesChange={(notes) => updateTask.mutate({ id: t.id, notes })}
+                onDueDateChange={(due_date) => updateTask.mutate({ id: t.id, due_date })}
+                onRecurrenceChange={(recurrence) =>
+                  updateTask.mutate({ id: t.id, recurrence })
+                }
                 onDelete={() => {
                   if (confirm(`Delete "${t.title}"?`)) deleteTask.mutate(t.id);
                 }}
@@ -264,13 +393,116 @@ function DailyTasksPage() {
   );
 }
 
+function SummaryPanel({
+  summary,
+}: {
+  summary: {
+    total: number;
+    open: number;
+    completionRate: number;
+    dueTodayCount: number;
+    dueTodayDone: number;
+    todayCompletions: number;
+    streak: number;
+    series7: { date: string; count: number }[];
+    series30: { date: string; count: number }[];
+    active7: number;
+    active30: number;
+  };
+}) {
+  return (
+    <div className="mb-6 space-y-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <StatCard
+          label="Completion rate"
+          value={`${summary.completionRate}%`}
+          sub={`${summary.total - summary.open}/${summary.total} done`}
+        />
+        <StatCard
+          label="Today"
+          value={`${summary.dueTodayDone}/${summary.dueTodayCount || 0}`}
+          sub={`${summary.todayCompletions} completed today`}
+          tone={
+            summary.dueTodayCount > 0 && summary.dueTodayDone === summary.dueTodayCount
+              ? "good"
+              : undefined
+          }
+        />
+        <StatCard
+          label="Streak"
+          value={
+            <span className="inline-flex items-center gap-1">
+              <Flame className="h-5 w-5 text-orange-500" />
+              {summary.streak}d
+            </span>
+          }
+          sub={summary.streak === 0 ? "Start a streak today" : "consecutive days"}
+        />
+        <StatCard
+          label="Active days"
+          value={`${summary.active7}/7`}
+          sub={`${summary.active30}/30 in last 30d`}
+        />
+      </div>
+
+      <Card className="p-4">
+        <div className="flex items-center justify-between mb-3">
+          <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+            Completion history
+          </div>
+          <div className="flex items-center gap-4 text-[10px] uppercase tracking-wider text-muted-foreground">
+            <span>Last 7d</span>
+            <span>Last 30d</span>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Sparkline data={summary.series7} />
+          <Sparkline data={summary.series30} />
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+function Sparkline({ data }: { data: { date: string; count: number }[] }) {
+  const max = Math.max(1, ...data.map((d) => d.count));
+  return (
+    <div className="flex items-end gap-[2px] h-16">
+      {data.map((d) => {
+        const h = (d.count / max) * 100;
+        const isToday = d.date === todayISO();
+        return (
+          <div
+            key={d.date}
+            className="flex-1 flex flex-col justify-end"
+            title={`${d.date}: ${d.count} completion${d.count === 1 ? "" : "s"}`}
+          >
+            <div
+              className={`w-full rounded-sm ${
+                d.count === 0
+                  ? "bg-slate-100"
+                  : isToday
+                    ? "bg-orange-500"
+                    : "bg-emerald-500"
+              }`}
+              style={{ height: `${Math.max(d.count === 0 ? 4 : 8, h)}%` }}
+            />
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function StatCard({
   label,
   value,
+  sub,
   tone,
 }: {
   label: string;
-  value: string | number;
+  value: React.ReactNode;
+  sub?: string;
   tone?: "warn" | "good";
 }) {
   const cls =
@@ -281,6 +513,11 @@ function StatCard({
         {label}
       </div>
       <div className={`mt-2 font-serif text-2xl tabular-nums ${cls}`}>{value}</div>
+      {sub && (
+        <div className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground">
+          {sub}
+        </div>
+      )}
     </Card>
   );
 }
@@ -295,6 +532,8 @@ function NewTaskForm({
     description: string;
     category: string;
     priority: DailyTask["priority"];
+    recurrence: Recurrence;
+    due_date: string | null;
   }) => void;
   onCancel: () => void;
   submitting: boolean;
@@ -303,6 +542,8 @@ function NewTaskForm({
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("general");
   const [priority, setPriority] = useState<DailyTask["priority"]>("medium");
+  const [recurrence, setRecurrence] = useState<Recurrence>("none");
+  const [dueDate, setDueDate] = useState<string>("");
 
   return (
     <Card className="p-4 mb-4 space-y-3">
@@ -319,7 +560,7 @@ function NewTaskForm({
       />
       <div className="flex flex-wrap gap-2">
         <Select value={category} onValueChange={setCategory}>
-          <SelectTrigger className="w-40">
+          <SelectTrigger className="w-36">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -334,7 +575,7 @@ function NewTaskForm({
           value={priority}
           onValueChange={(v) => setPriority(v as DailyTask["priority"])}
         >
-          <SelectTrigger className="w-40">
+          <SelectTrigger className="w-32">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -344,6 +585,23 @@ function NewTaskForm({
             <SelectItem value="low">Low</SelectItem>
           </SelectContent>
         </Select>
+        <Select value={recurrence} onValueChange={(v) => setRecurrence(v as Recurrence)}>
+          <SelectTrigger className="w-36">
+            <SelectValue placeholder="Recurrence" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="none">One-off</SelectItem>
+            <SelectItem value="daily">Daily</SelectItem>
+            <SelectItem value="weekly">Weekly</SelectItem>
+            <SelectItem value="monthly">Monthly</SelectItem>
+          </SelectContent>
+        </Select>
+        <Input
+          type="date"
+          value={dueDate}
+          onChange={(e) => setDueDate(e.target.value)}
+          className="w-40"
+        />
         <div className="flex-1" />
         <Button variant="ghost" size="sm" onClick={onCancel}>
           Cancel
@@ -352,7 +610,14 @@ function NewTaskForm({
           size="sm"
           disabled={!title.trim() || submitting}
           onClick={() =>
-            onSubmit({ title: title.trim(), description: description.trim(), category, priority })
+            onSubmit({
+              title: title.trim(),
+              description: description.trim(),
+              category,
+              priority,
+              recurrence,
+              due_date: dueDate || null,
+            })
           }
         >
           {submitting ? <Loader2 className="h-3 w-3 animate-spin" /> : "Add"}
@@ -364,43 +629,61 @@ function NewTaskForm({
 
 function TaskRow({
   task,
+  today,
   onToggle,
   onStatusChange,
   onNotesChange,
+  onDueDateChange,
+  onRecurrenceChange,
   onDelete,
 }: {
   task: DailyTask;
+  today: string;
   onToggle: () => void;
   onStatusChange: (s: DailyTask["status"]) => void;
   onNotesChange: (n: string) => void;
+  onDueDateChange: (d: string | null) => void;
+  onRecurrenceChange: (r: Recurrence) => void;
   onDelete: () => void;
 }) {
   const [expanded, setExpanded] = useState(false);
   const [notesDraft, setNotesDraft] = useState(task.notes ?? "");
   const done = task.status === "done";
+  const overdue = !done && task.due_date != null && task.due_date < today;
+  const dueToday = task.due_date === today;
 
   return (
-    <Card className={`p-4 ${done ? "opacity-60" : ""}`}>
+    <Card className={`p-4 ${done ? "opacity-60" : ""} ${overdue ? "border-red-300" : ""}`}>
       <div className="flex items-start gap-3">
-        <Checkbox
-          checked={done}
-          onCheckedChange={onToggle}
-          className="mt-1"
-        />
+        <Checkbox checked={done} onCheckedChange={onToggle} className="mt-1" />
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-3 flex-wrap">
             <button
               onClick={() => setExpanded((v) => !v)}
               className="text-left flex-1 min-w-0"
             >
-              <div className={`font-medium ${done ? "line-through" : ""}`}>
-                {task.title}
-              </div>
+              <div className={`font-medium ${done ? "line-through" : ""}`}>{task.title}</div>
               {task.description && (
-                <div className="text-xs text-muted-foreground mt-1">
-                  {task.description}
-                </div>
+                <div className="text-xs text-muted-foreground mt-1">{task.description}</div>
               )}
+              <div className="mt-1.5 flex items-center gap-2 flex-wrap text-[10px] uppercase tracking-wider text-muted-foreground">
+                {task.due_date && (
+                  <span
+                    className={`inline-flex items-center gap-1 ${
+                      overdue ? "text-red-700" : dueToday ? "text-orange-700" : ""
+                    }`}
+                  >
+                    <CalendarClock className="h-3 w-3" />
+                    {overdue ? "Overdue " : dueToday ? "Due today" : `Due ${task.due_date}`}
+                    {overdue && task.due_date}
+                  </span>
+                )}
+                {task.recurrence !== "none" && (
+                  <span className="inline-flex items-center gap-1 text-blue-700">
+                    <Repeat className="h-3 w-3" /> {task.recurrence}
+                  </span>
+                )}
+              </div>
             </button>
             <div className="flex items-center gap-2 flex-shrink-0">
               <span
@@ -436,7 +719,35 @@ function TaskRow({
           </div>
 
           {expanded && (
-            <div className="mt-3 space-y-2">
+            <div className="mt-3 space-y-3">
+              <div className="flex flex-wrap gap-2 items-center">
+                <label className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                  Due
+                </label>
+                <Input
+                  type="date"
+                  value={task.due_date ?? ""}
+                  onChange={(e) => onDueDateChange(e.target.value || null)}
+                  className="w-40 h-8 text-xs"
+                />
+                <label className="text-[10px] uppercase tracking-wider text-muted-foreground ml-3">
+                  Recurrence
+                </label>
+                <Select
+                  value={task.recurrence}
+                  onValueChange={(v) => onRecurrenceChange(v as Recurrence)}
+                >
+                  <SelectTrigger className="w-36 h-8 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">One-off</SelectItem>
+                    <SelectItem value="daily">Daily</SelectItem>
+                    <SelectItem value="weekly">Weekly</SelectItem>
+                    <SelectItem value="monthly">Monthly</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <Textarea
                 placeholder="Notes…"
                 value={notesDraft}
@@ -446,12 +757,15 @@ function TaskRow({
                 }}
                 rows={3}
               />
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground flex items-center gap-3">
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground flex items-center gap-3 flex-wrap">
                 {task.completed_at && (
                   <span className="inline-flex items-center gap-1 text-emerald-700">
                     <CheckCircle2 className="h-3 w-3" />
                     Completed {new Date(task.completed_at).toLocaleString()}
                   </span>
+                )}
+                {task.last_rolled_over_on && (
+                  <span>Last rolled over {task.last_rolled_over_on}</span>
                 )}
                 <span>Updated {new Date(task.updated_at).toLocaleString()}</span>
               </div>
