@@ -101,6 +101,9 @@ function DepartmentGateway() {
       className="bg-canvas pt-6 md:pt-10"
     >
       <div className="max-w-screen-2xl mx-auto md:px-10">
+        <h1 className="text-center font-serif text-headline-sm md:text-headline-md text-ink mb-3 px-6 md:px-0">
+          Palace of Roman — The Maisons Defining the Seasons
+        </h1>
         <p className="text-center text-eyebrow uppercase text-bronze-deep mb-6 md:mb-8 px-6 md:px-0">
           The Edit — Resort 2026
         </p>
@@ -183,7 +186,7 @@ function NewInRail() {
               <div className="relative aspect-[3/4] overflow-hidden bg-ink/5">
                 <img
                   src={b.image}
-                  alt={b.name}
+                  alt={`Shop ${b.name} at Palace of Roman`}
                   loading="lazy"
                   className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                 />
