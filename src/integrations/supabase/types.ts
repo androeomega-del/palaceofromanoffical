@@ -441,6 +441,7 @@ export type Database = {
           priority: string
           recurrence: string
           recurrence_day: number | null
+          reminder_sent_for: string | null
           sort_order: number
           status: string
           title: string
@@ -460,6 +461,7 @@ export type Database = {
           priority?: string
           recurrence?: string
           recurrence_day?: number | null
+          reminder_sent_for?: string | null
           sort_order?: number
           status?: string
           title: string
@@ -479,6 +481,7 @@ export type Database = {
           priority?: string
           recurrence?: string
           recurrence_day?: number | null
+          reminder_sent_for?: string | null
           sort_order?: number
           status?: string
           title?: string
