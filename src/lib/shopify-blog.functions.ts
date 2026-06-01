@@ -3,7 +3,39 @@
 // so the Journal page renders whatever the team publishes in Shopify Admin.
 
 import { createServerFn } from "@tanstack/react-start";
+import sanitizeHtml from "sanitize-html";
 import { storefrontApiRequest } from "@/lib/shopify";
+
+/**
+ * Sanitize Shopify-authored article HTML before sending it to the browser.
+ * Defends against a compromised Shopify admin or supply-chain injection.
+ * Allowlist mirrors the editorial markup actually used in Journal posts.
+ */
+function sanitizeArticleHtml(html: string | null | undefined): string {
+  if (!html) return "";
+  return sanitizeHtml(html, {
+    allowedTags: [
+      "p", "h2", "h3", "h4", "h5", "h6",
+      "ul", "ol", "li",
+      "strong", "em", "b", "i", "u", "s", "small", "sub", "sup",
+      "a", "br", "hr",
+      "blockquote", "cite", "q",
+      "img", "figure", "figcaption", "picture", "source",
+      "table", "thead", "tbody", "tr", "td", "th",
+      "span", "div",
+    ],
+    allowedAttributes: {
+      a: ["href", "name", "target", "rel", "title"],
+      img: ["src", "srcset", "alt", "width", "height", "loading", "sizes"],
+      source: ["src", "srcset", "type", "media", "sizes"],
+      "*": ["class", "id"],
+    },
+    allowedSchemes: ["http", "https", "mailto", "tel"],
+    transformTags: {
+      a: sanitizeHtml.simpleTransform("a", { rel: "noopener noreferrer" }, true),
+    },
+  });
+}
 
 export type ShopifyArticle = {
   id: string;
