@@ -113,13 +113,23 @@ function SitemapPanel() {
 
 // ─── Thresholds ─────────────────────────────────────────────────────────────
 const GROUPS = ["product", "legacy-products", "collection", "brand", "journal", "home", "other"];
-const EMPTY = {
-  scope_type: "page_group" as const,
-  scope_value: "product" as string | null,
+const EMPTY: {
+  scope_type: "global" | "page_group";
+  scope_value: string | null;
+  impressions_drop_pct: number;
+  clicks_drop_pct: number;
+  sitemap_error_min: number;
+  position_warn_above: number | null;
+  min_impressions_floor: number;
+  min_clicks_floor: number;
+  active: boolean;
+} = {
+  scope_type: "page_group",
+  scope_value: "product",
   impressions_drop_pct: 40,
   clicks_drop_pct: 50,
   sitemap_error_min: 1,
-  position_warn_above: null as number | null,
+  position_warn_above: null,
   min_impressions_floor: 20,
   min_clicks_floor: 5,
   active: true,
