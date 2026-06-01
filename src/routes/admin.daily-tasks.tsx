@@ -415,6 +415,20 @@ function DailyTasksPage() {
         {/* Summary panel */}
         <SummaryPanel summary={summary} />
 
+        {/* Weekly & Monthly roll-ups */}
+        <div className="mb-6 grid grid-cols-1 lg:grid-cols-2 gap-3">
+          <PeriodSummaryPanel
+            label="This week"
+            period={summary.week}
+            comps={completions ?? []}
+          />
+          <PeriodSummaryPanel
+            label="This month"
+            period={summary.month}
+            comps={completions ?? []}
+          />
+        </div>
+
         {showNew && (
           <NewTaskForm
             onCancel={() => setShowNew(false)}
