@@ -549,6 +549,85 @@ function SummaryPanel({
   );
 }
 
+function PeriodSummaryPanel({
+  label,
+  period,
+  comps,
+}: {
+  label: string;
+  period: {
+    label: string;
+    start: string;
+    end: string;
+    rate: number;
+    done: number;
+    due: number;
+    activeDays: number;
+    series: { date: string; count: number }[];
+  };
+  comps: Completion[];
+}) {
+  // Longest streak within period
+  const periodSet = new Set(comps.map((c) => c.completed_on));
+  let periodStreak = 0;
+  let currentStreak = 0;
+  for (const { date } of period.series) {
+    if (periodSet.has(date)) {
+      currentStreak++;
+      periodStreak = Math.max(periodStreak, currentStreak);
+    } else {
+      currentStreak = 0;
+    }
+  }
+
+  return (
+    <Card className="p-4">
+      <div className="flex items-center justify-between mb-3">
+        <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+          {label}
+          <span className="ml-2 text-[10px] normal-case tracking-normal text-muted-foreground/70">
+            {period.label}
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          {periodStreak > 0 && (
+            <span className="inline-flex items-center gap-1 text-[10px] text-orange-600">
+              <Flame className="h-3 w-3" /> {periodStreak}d streak
+            </span>
+          )}
+          <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+            {period.activeDays} active day{period.activeDays === 1 ? "" : "s"}
+          </span>
+        </div>
+      </div>
+      <div className="grid grid-cols-3 gap-3 mb-4">
+        <StatCard
+          label="Completion rate"
+          value={`${period.rate}%`}
+          sub={`${period.due > 0 ? period.done + "/" + period.due + " done" : period.done + " done"}`}
+          tone={period.rate >= 80 ? "good" : period.rate < 40 ? "warn" : undefined}
+        />
+        <StatCard
+          label="Tasks done"
+          value={period.done}
+          sub={`in this ${label.toLowerCase().replace(" this", "")}`}
+        />
+        <StatCard
+          label="Longest streak"
+          value={
+            <span className="inline-flex items-center gap-1">
+              <Flame className="h-4 w-4 text-orange-500" />
+              {periodStreak}d
+            </span>
+          }
+          sub={periodStreak === 0 ? "No streak yet" : "best run"}
+        />
+      </div>
+      <Sparkline data={period.series} />
+    </Card>
+  );
+}
+
 function Sparkline({ data }: { data: { date: string; count: number }[] }) {
   const max = Math.max(1, ...data.map((d) => d.count));
   return (
