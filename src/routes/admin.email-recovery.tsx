@@ -1,12 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { adminBeforeLoad } from "@/lib/admin-route-guard";
 import { getEmailRecoveryDashboard } from "@/lib/email-recovery-dashboard.functions";
 import { callAdminServerFn } from "@/lib/admin-server-call";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, RefreshCw, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, RefreshCw, AlertTriangle, CheckCircle2, Download } from "lucide-react";
 
 export const Route = createFileRoute("/admin/email-recovery")({
   ssr: false,
@@ -103,6 +103,119 @@ type CartDetail = {
   }>;
 };
 
+const GAP_FIELDS: Array<{ key: keyof CartDetail; label: string }> = [
+  { key: "created_at", label: "created" },
+  { key: "first_add_at", label: "first add" },
+  { key: "reached_checkout_at", label: "checkout reached" },
+  { key: "recovery_email_sent_at", label: "email sent" },
+];
+
+function detectGaps(c: CartDetail): string[] {
+  const gaps: string[] = [];
+  for (const f of GAP_FIELDS) {
+    if (!c[f.key]) gaps.push(f.label);
+  }
+  // Logical inconsistencies
+  if (c.first_add_at && c.item_count === 0) gaps.push("items empty after add");
+  if (c.recovered_at && !c.recovery_email_sent_at) gaps.push("recovered w/o email");
+  if (c.checkout_started_at && !c.first_add_at) gaps.push("checkout w/o add");
+  return gaps;
+}
+
+function CartSparkline({ cart: c }: { cart: CartDetail }) {
+  // Build timeline points: created, each add_to_cart, checkout_started, reached_checkout, email sent, recovered
+  const start = new Date(c.created_at).getTime();
+  const endCandidates = [
+    c.last_activity_at,
+    c.recovered_at,
+    c.recovery_email_sent_at,
+    c.reached_checkout_at,
+    c.last_add_at,
+  ]
+    .filter(Boolean)
+    .map((s) => new Date(s as string).getTime());
+  const end = Math.max(start + 60_000, ...endCandidates);
+  const span = Math.max(1, end - start);
+  const W = 160;
+  const H = 28;
+  const x = (iso: string | null) => {
+    if (!iso) return null;
+    const t = new Date(iso).getTime();
+    return Math.max(0, Math.min(W, ((t - start) / span) * W));
+  };
+  const addEvents = c.events.filter((e) => e.event_type === "add_to_cart");
+  const points: Array<{ x: number; color: string; title: string }> = [];
+  points.push({ x: 0, color: "#9ca3af", title: `created ${c.created_at}` });
+  for (const e of addEvents) {
+    const px = x(e.created_at);
+    if (px != null) points.push({ x: px, color: "#0d9488", title: `add_to_cart ${e.created_at}` });
+  }
+  const cs = x(c.checkout_started_at);
+  if (cs != null) points.push({ x: cs, color: "#2563eb", title: `checkout_started` });
+  const rc = x(c.reached_checkout_at);
+  if (rc != null) points.push({ x: rc, color: "#1d4ed8", title: `reached_checkout` });
+  const es = x(c.recovery_email_sent_at);
+  if (es != null) points.push({ x: es, color: "#a16207", title: `email_sent` });
+  const rv = x(c.recovered_at);
+  if (rv != null) points.push({ x: rv, color: "#059669", title: `recovered` });
+  return (
+    <svg width={W} height={H} className="block">
+      <line x1={0} x2={W} y1={H / 2} y2={H / 2} stroke="currentColor" strokeOpacity={0.15} />
+      {points.map((p, i) => (
+        <circle key={i} cx={p.x} cy={H / 2} r={3.5} fill={p.color}>
+          <title>{p.title}</title>
+        </circle>
+      ))}
+    </svg>
+  );
+}
+
+function csvEscape(v: unknown): string {
+  if (v == null) return "";
+  const s = String(v);
+  return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+
+function exportCartsCsv(carts: CartDetail[]) {
+  const header = [
+    "cart_id","email","customer_name","session_id","items","total_usd","item_count",
+    "created_at","first_add_at","last_add_at","checkout_started_at","reached_checkout_at",
+    "last_activity_at","recovery_email_sent_at","recovery_email_count","recovered_at",
+    "event_count","data_gaps","page_path","checkout_url","event_type","event_time",
+    "event_product_handle","event_product_title","event_variant","event_quantity","event_price_usd",
+  ];
+  const rows: string[] = [header.join(",")];
+  for (const c of carts) {
+    const gaps = detectGaps(c).join("|");
+    const base = [
+      c.id, c.email, c.customer_name ?? "", c.session_id ?? "", c.item_count, c.total_usd, c.item_count,
+      c.created_at, c.first_add_at ?? "", c.last_add_at ?? "", c.checkout_started_at ?? "",
+      c.reached_checkout_at ?? "", c.last_activity_at, c.recovery_email_sent_at ?? "",
+      c.recovery_email_count, c.recovered_at ?? "", c.event_count, gaps,
+      c.page_path ?? "", c.checkout_url ?? "",
+    ];
+    if (c.events.length === 0) {
+      rows.push([...base, "", "", "", "", "", "", ""].map(csvEscape).join(","));
+    } else {
+      for (const e of c.events) {
+        rows.push(
+          [...base, e.event_type, e.created_at, e.product_handle ?? "", e.product_title ?? "",
+           e.variant_title ?? "", e.quantity, e.price_usd ?? ""].map(csvEscape).join(",")
+        );
+      }
+    }
+  }
+  const blob = new Blob([rows.join("\n")], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `abandoned-carts-${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
 function CartDetailRow({ cart: c }: { cart: CartDetail }) {
   const [open, setOpen] = useState(false);
   return (
@@ -147,10 +260,27 @@ function CartDetailRow({ cart: c }: { cart: CartDetail }) {
           )}
         </td>
         <td className="p-3 text-right tabular-nums">{c.event_count}</td>
+        <td className="p-3"><CartSparkline cart={c} /></td>
+        <td className="p-3">
+          {(() => {
+            const gaps = detectGaps(c);
+            if (gaps.length === 0)
+              return <span className="text-emerald-700 text-[10px]">complete</span>;
+            return (
+              <span
+                className="inline-flex items-center gap-1 text-[10px] text-amber-700"
+                title={`Missing: ${gaps.join(", ")}`}
+              >
+                <AlertTriangle className="h-3 w-3" />
+                {gaps.length} gap{gaps.length > 1 ? "s" : ""}
+              </span>
+            );
+          })()}
+        </td>
       </tr>
       {open ? (
         <tr className="bg-muted/20">
-          <td colSpan={11} className="p-4">
+          <td colSpan={13} className="p-4">
             <div className="grid md:grid-cols-2 gap-6">
               <div>
                 <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">
@@ -212,6 +342,10 @@ function CartDetailRow({ cart: c }: { cart: CartDetail }) {
   );
 }
 
+function toLocalDateInput(d: Date) {
+  return d.toISOString().slice(0, 10);
+}
+
 function AdminEmailRecovery() {
   const { data, isLoading, isFetching, error, refetch } = useQuery({
     queryKey: ["admin", "email-recovery"],
@@ -219,6 +353,54 @@ function AdminEmailRecovery() {
     refetchInterval: 60_000,
     staleTime: 30_000,
   });
+
+  const today = useMemo(() => new Date(), []);
+  const defaultFrom = useMemo(
+    () => toLocalDateInput(new Date(today.getTime() - 30 * 86400_000)),
+    [today]
+  );
+  const defaultTo = useMemo(() => toLocalDateInput(today), [today]);
+  const [fromDate, setFromDate] = useState(defaultFrom);
+  const [toDate, setToDate] = useState(defaultTo);
+
+  const cartsDetail = (data?.cartsDetail ?? []) as CartDetail[];
+  const filteredCarts = useMemo(() => {
+    const fromT = fromDate ? new Date(fromDate + "T00:00:00").getTime() : -Infinity;
+    const toT = toDate ? new Date(toDate + "T23:59:59").getTime() : Infinity;
+    return cartsDetail.filter((c) => {
+      const t = new Date(c.created_at).getTime();
+      return t >= fromT && t <= toT;
+    });
+  }, [cartsDetail, fromDate, toDate]);
+
+  const filteredCohort = useMemo(() => {
+    const mins = (a: string | null, b: string | null) =>
+      a && b ? Math.max(0, (new Date(b).getTime() - new Date(a).getTime()) / 60000) : null;
+    const med = (arr: number[]) => {
+      if (!arr.length) return 0;
+      const s = [...arr].sort((a, b) => a - b);
+      const m = Math.floor(s.length / 2);
+      return Math.round(s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2);
+    };
+    const ages: number[] = [], emails: number[] = [], recs: number[] = [];
+    let withCheckout = 0, withReached = 0, gappy = 0;
+    for (const c of filteredCarts) {
+      const a = mins(c.created_at, c.last_activity_at); if (a !== null) ages.push(a);
+      const e = mins(c.created_at, c.recovery_email_sent_at); if (e !== null) emails.push(e);
+      const r = mins(c.recovery_email_sent_at, c.recovered_at); if (r !== null) recs.push(r);
+      if (c.checkout_started_at) withCheckout++;
+      if (c.reached_checkout_at) withReached++;
+      if (detectGaps(c).length > 0) gappy++;
+    }
+    return {
+      medianAgeMin: med(ages),
+      medianTimeToFirstEmailMin: med(emails),
+      medianTimeToRecoverMin: med(recs),
+      withCheckoutStarted: withCheckout,
+      withReachedCheckout: withReached,
+      gappy,
+    };
+  }, [filteredCarts]);
 
   return (
     <main className="min-h-screen bg-canvas px-6 py-12 md:py-16">
@@ -281,46 +463,118 @@ function AdminEmailRecovery() {
               </div>
             </section>
 
-            {/* Behavioral cohort timing */}
+            {/* Date range filter — applies to Behavioral Timing + Cart Detail */}
+            <section>
+              <Card className="p-4 flex flex-wrap items-end gap-4">
+                <div>
+                  <label className="block text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+                    From
+                  </label>
+                  <input
+                    type="date"
+                    value={fromDate}
+                    max={toDate}
+                    onChange={(e) => setFromDate(e.target.value)}
+                    className="border border-ink/20 rounded px-2 py-1 text-sm bg-background"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+                    To
+                  </label>
+                  <input
+                    type="date"
+                    value={toDate}
+                    min={fromDate}
+                    onChange={(e) => setToDate(e.target.value)}
+                    className="border border-ink/20 rounded px-2 py-1 text-sm bg-background"
+                  />
+                </div>
+                <div className="flex gap-2">
+                  {[
+                    { label: "7d", days: 7 },
+                    { label: "30d", days: 30 },
+                    { label: "All", days: 365 },
+                  ].map((p) => (
+                    <Button
+                      key={p.label}
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setFromDate(toLocalDateInput(new Date(Date.now() - p.days * 86400_000)));
+                        setToDate(toLocalDateInput(new Date()));
+                      }}
+                    >
+                      {p.label}
+                    </Button>
+                  ))}
+                </div>
+                <div className="ml-auto text-xs text-muted-foreground">
+                  {filteredCarts.length} cart{filteredCarts.length === 1 ? "" : "s"} in range
+                </div>
+              </Card>
+            </section>
+
+            {/* Behavioral cohort timing (filtered) */}
             <section>
               <h2 className="font-serif text-2xl mb-4">Behavioral Timing</h2>
               <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
                 <Stat
                   label="Median cart age"
-                  value={fmtDuration(data.cohort.medianAgeMin)}
+                  value={fmtDuration(filteredCohort.medianAgeMin)}
                   hint="Created → last activity"
                 />
                 <Stat
                   label="Median time → 1st email"
-                  value={fmtDuration(data.cohort.medianTimeToFirstEmailMin)}
+                  value={fmtDuration(filteredCohort.medianTimeToFirstEmailMin)}
                   hint="Cart created → recovery sent"
                 />
                 <Stat
                   label="Median time → recovery"
-                  value={fmtDuration(data.cohort.medianTimeToRecoverMin)}
+                  value={fmtDuration(filteredCohort.medianTimeToRecoverMin)}
                   hint="Email sent → purchase"
                   tone="good"
                 />
                 <Stat
                   label="Reached checkout step"
-                  value={fmt(data.cohort.withCheckoutStarted)}
-                  hint="Of latest 100 carts"
+                  value={fmt(filteredCohort.withCheckoutStarted)}
+                  hint={`Of ${filteredCarts.length} carts in range`}
                 />
                 <Stat
                   label="Reached Shopify checkout"
-                  value={fmt(data.cohort.withReachedCheckout)}
-                  hint="Of latest 100 carts"
+                  value={fmt(filteredCohort.withReachedCheckout)}
+                  hint={`Of ${filteredCarts.length} carts in range`}
                 />
               </div>
+              {filteredCohort.gappy > 0 ? (
+                <p className="mt-3 text-xs text-amber-700 flex items-center gap-1.5">
+                  <AlertTriangle className="h-3.5 w-3.5" />
+                  {filteredCohort.gappy} of {filteredCarts.length} carts have missing
+                  timestamps (created · first add · checkout reached · email sent). Open a row
+                  to see which fields are missing.
+                </p>
+              ) : null}
             </section>
 
             {/* Detailed cart log — every timestamp */}
             <section>
-              <div className="flex items-baseline justify-between mb-4">
+              <div className="flex items-baseline justify-between mb-4 gap-4 flex-wrap">
                 <h2 className="font-serif text-2xl">Abandoned Cart Detail</h2>
-                <span className="text-xs text-muted-foreground">
-                  Latest {data.cartsDetail.length} · full timeline per cart
-                </span>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-muted-foreground">
+                    {filteredCarts.length} cart{filteredCarts.length === 1 ? "" : "s"} ·
+                    sparkline shows created → adds → checkout
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={filteredCarts.length === 0}
+                    onClick={() => exportCartsCsv(filteredCarts)}
+                  >
+                    <Download className="h-4 w-4 mr-1.5" /> CSV
+                  </Button>
+                </div>
               </div>
               <Card className="p-0 overflow-hidden">
                 <div className="overflow-x-auto">
@@ -338,16 +592,18 @@ function AdminEmailRecovery() {
                         <th className="text-left p-3">Email sent</th>
                         <th className="text-left p-3">Recovered</th>
                         <th className="text-right p-3">Events</th>
+                        <th className="text-left p-3">Timeline</th>
+                        <th className="text-left p-3">Gaps</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {data.cartsDetail.map((c) => (
+                      {filteredCarts.map((c) => (
                         <CartDetailRow key={c.id} cart={c} />
                       ))}
-                      {data.cartsDetail.length === 0 ? (
+                      {filteredCarts.length === 0 ? (
                         <tr>
-                          <td colSpan={11} className="p-6 text-center text-muted-foreground">
-                            No abandoned carts in the last 30 days.
+                          <td colSpan={13} className="p-6 text-center text-muted-foreground">
+                            No abandoned carts in selected range.
                           </td>
                         </tr>
                       ) : null}
@@ -356,6 +612,7 @@ function AdminEmailRecovery() {
                 </div>
               </Card>
             </section>
+
 
 
             {/* Dispatch health */}
