@@ -224,6 +224,8 @@ function AdminGscMonitor() {
           </table>
         </Card>
       </section>
+
+      <GscExtrasTabs />
     </div>
   );
 }
