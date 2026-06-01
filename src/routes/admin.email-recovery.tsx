@@ -127,6 +127,83 @@ function AdminEmailRecovery() {
               </div>
             </section>
 
+            {/* Behavioral cohort timing */}
+            <section>
+              <h2 className="font-serif text-2xl mb-4">Behavioral Timing</h2>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                <Stat
+                  label="Median cart age"
+                  value={fmtDuration(data.cohort.medianAgeMin)}
+                  hint="Created → last activity"
+                />
+                <Stat
+                  label="Median time → 1st email"
+                  value={fmtDuration(data.cohort.medianTimeToFirstEmailMin)}
+                  hint="Cart created → recovery sent"
+                />
+                <Stat
+                  label="Median time → recovery"
+                  value={fmtDuration(data.cohort.medianTimeToRecoverMin)}
+                  hint="Email sent → purchase"
+                  tone="good"
+                />
+                <Stat
+                  label="Reached checkout step"
+                  value={fmt(data.cohort.withCheckoutStarted)}
+                  hint="Of latest 100 carts"
+                />
+                <Stat
+                  label="Reached Shopify checkout"
+                  value={fmt(data.cohort.withReachedCheckout)}
+                  hint="Of latest 100 carts"
+                />
+              </div>
+            </section>
+
+            {/* Detailed cart log — every timestamp */}
+            <section>
+              <div className="flex items-baseline justify-between mb-4">
+                <h2 className="font-serif text-2xl">Abandoned Cart Detail</h2>
+                <span className="text-xs text-muted-foreground">
+                  Latest {data.cartsDetail.length} · full timeline per cart
+                </span>
+              </div>
+              <Card className="p-0 overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs">
+                    <thead className="bg-muted/40 text-[10px] uppercase tracking-wider text-muted-foreground">
+                      <tr>
+                        <th className="text-left p-3">Email</th>
+                        <th className="text-right p-3">Items</th>
+                        <th className="text-right p-3">Total</th>
+                        <th className="text-left p-3">Created</th>
+                        <th className="text-left p-3">First add</th>
+                        <th className="text-left p-3">Last add</th>
+                        <th className="text-left p-3">Checkout</th>
+                        <th className="text-left p-3">Last activity</th>
+                        <th className="text-left p-3">Email sent</th>
+                        <th className="text-left p-3">Recovered</th>
+                        <th className="text-right p-3">Events</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {data.cartsDetail.map((c) => (
+                        <CartDetailRow key={c.id} cart={c} />
+                      ))}
+                      {data.cartsDetail.length === 0 ? (
+                        <tr>
+                          <td colSpan={11} className="p-6 text-center text-muted-foreground">
+                            No abandoned carts in the last 30 days.
+                          </td>
+                        </tr>
+                      ) : null}
+                    </tbody>
+                  </table>
+                </div>
+              </Card>
+            </section>
+
+
             {/* Dispatch health */}
             <section>
               <h2 className="font-serif text-2xl mb-4">Dispatch Health</h2>
