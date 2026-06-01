@@ -346,6 +346,214 @@ function toLocalDateInput(d: Date) {
   return d.toISOString().slice(0, 10);
 }
 
+type TrendBucket = {
+  key: string;
+  label: string;
+  start: number;
+  created: number;
+  withAdd: number;
+  withCheckout: number;
+  withReached: number;
+  recovered: number;
+};
+
+function buildTrendBuckets(
+  carts: CartDetail[],
+  fromT: number,
+  toT: number,
+): { buckets: TrendBucket[]; granularity: "day" | "week" } {
+  const spanDays = Math.max(1, Math.ceil((toT - fromT) / 86400_000));
+  const granularity: "day" | "week" = spanDays > 45 ? "week" : "day";
+  const bucketMs = granularity === "week" ? 7 * 86400_000 : 86400_000;
+  const startDate = new Date(fromT);
+  startDate.setUTCHours(0, 0, 0, 0);
+  if (granularity === "week") {
+    const dow = startDate.getUTCDay();
+    const offset = (dow + 6) % 7;
+    startDate.setUTCDate(startDate.getUTCDate() - offset);
+  }
+  const startMs = startDate.getTime();
+  const count = Math.max(1, Math.ceil((toT - startMs) / bucketMs));
+  const buckets: TrendBucket[] = Array.from({ length: count }, (_, i) => {
+    const s = startMs + i * bucketMs;
+    const d = new Date(s);
+    const label = d.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      timeZone: "UTC",
+    });
+    return {
+      key: String(s),
+      label,
+      start: s,
+      created: 0,
+      withAdd: 0,
+      withCheckout: 0,
+      withReached: 0,
+      recovered: 0,
+    };
+  });
+  for (const c of carts) {
+    const t = new Date(c.created_at).getTime();
+    const idx = Math.floor((t - startMs) / bucketMs);
+    if (idx < 0 || idx >= buckets.length) continue;
+    const b = buckets[idx];
+    b.created++;
+    if (c.first_add_at) b.withAdd++;
+    if (c.checkout_started_at) b.withCheckout++;
+    if (c.reached_checkout_at) b.withReached++;
+    if (c.recovered_at) b.recovered++;
+  }
+  return { buckets, granularity };
+}
+
+function BehavioralTrendChart({
+  buckets,
+  granularity,
+}: {
+  buckets: TrendBucket[];
+  granularity: "day" | "week";
+}) {
+  const W = 760;
+  const H = 240;
+  const padL = 36;
+  const padR = 12;
+  const padT = 12;
+  const padB = 36;
+  const innerW = W - padL - padR;
+  const innerH = H - padT - padB;
+  const maxY = Math.max(1, ...buckets.map((b) => b.created));
+  const n = buckets.length;
+  const bandW = innerW / Math.max(1, n);
+  const barW = Math.max(2, bandW * 0.65);
+
+  const series: Array<{ key: keyof TrendBucket; label: string; color: string }> = [
+    { key: "withAdd", label: "Added to cart", color: "#0d9488" },
+    { key: "withCheckout", label: "Started checkout", color: "#2563eb" },
+    { key: "withReached", label: "Reached Shopify", color: "#1d4ed8" },
+    { key: "recovered", label: "Recovered", color: "#059669" },
+  ];
+
+  const yTicks = 4;
+  const tickStep = Math.max(1, Math.ceil(maxY / yTicks));
+  const ticks = Array.from({ length: yTicks + 1 }, (_, i) => i * tickStep);
+
+  const linePath = (key: keyof TrendBucket, color: string) => {
+    const d = buckets
+      .map((b, i) => {
+        const v = Number(b[key] ?? 0);
+        const x = padL + i * bandW + bandW / 2;
+        const y = padT + innerH - (v / Math.max(1, maxY)) * innerH;
+        return `${i === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`;
+      })
+      .join(" ");
+    return <path d={d} fill="none" stroke={color} strokeWidth={1.75} />;
+  };
+
+  const labelEvery = Math.max(1, Math.ceil(n / 10));
+
+  return (
+    <Card className="p-4">
+      <div className="flex items-baseline justify-between mb-3 flex-wrap gap-3">
+        <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+          Funnel trend · {granularity === "week" ? "weekly" : "daily"}
+        </div>
+        <div className="flex flex-wrap gap-3 text-[11px]">
+          <span className="inline-flex items-center gap-1.5">
+            <span className="inline-block w-3 h-2 bg-muted-foreground/40 rounded-sm" />
+            Created
+          </span>
+          {series.map((s) => (
+            <span key={String(s.key)} className="inline-flex items-center gap-1.5">
+              <span
+                className="inline-block w-3 h-0.5"
+                style={{ backgroundColor: s.color }}
+              />
+              {s.label}
+            </span>
+          ))}
+        </div>
+      </div>
+      <div className="overflow-x-auto">
+        <svg width={W} height={H} className="block min-w-full">
+          {ticks.map((t) => {
+            const y = padT + innerH - (t / Math.max(1, maxY)) * innerH;
+            return (
+              <g key={t}>
+                <line
+                  x1={padL}
+                  x2={W - padR}
+                  y1={y}
+                  y2={y}
+                  stroke="currentColor"
+                  strokeOpacity={0.08}
+                />
+                <text
+                  x={padL - 6}
+                  y={y + 3}
+                  textAnchor="end"
+                  fontSize={10}
+                  fill="currentColor"
+                  opacity={0.55}
+                >
+                  {t}
+                </text>
+              </g>
+            );
+          })}
+          {buckets.map((b, i) => {
+            const h = (b.created / Math.max(1, maxY)) * innerH;
+            const x = padL + i * bandW + (bandW - barW) / 2;
+            const y = padT + innerH - h;
+            return (
+              <rect
+                key={b.key}
+                x={x}
+                y={y}
+                width={barW}
+                height={h}
+                fill="currentColor"
+                opacity={0.18}
+              >
+                <title>
+                  {b.label}: {b.created} created · {b.withAdd} add ·{" "}
+                  {b.withCheckout} checkout · {b.withReached} reached ·{" "}
+                  {b.recovered} recovered
+                </title>
+              </rect>
+            );
+          })}
+          {series.map((s) => (
+            <g key={String(s.key)}>{linePath(s.key, s.color)}</g>
+          ))}
+          {buckets.map((b, i) => {
+            if (i % labelEvery !== 0 && i !== n - 1) return null;
+            const x = padL + i * bandW + bandW / 2;
+            return (
+              <text
+                key={b.key}
+                x={x}
+                y={H - padB / 2 + 4}
+                textAnchor="middle"
+                fontSize={10}
+                fill="currentColor"
+                opacity={0.55}
+              >
+                {b.label}
+              </text>
+            );
+          })}
+        </svg>
+      </div>
+      {buckets.every((b) => b.created === 0) ? (
+        <p className="mt-2 text-xs text-muted-foreground">
+          No carts created in this range.
+        </p>
+      ) : null}
+    </Card>
+  );
+}
+
 function AdminEmailRecovery() {
   const { data, isLoading, isFetching, error, refetch } = useQuery({
     queryKey: ["admin", "email-recovery"],
@@ -401,6 +609,13 @@ function AdminEmailRecovery() {
       gappy,
     };
   }, [filteredCarts]);
+
+  const trend = useMemo(() => {
+    const fromT = fromDate ? new Date(fromDate + "T00:00:00").getTime() : Date.now() - 30 * 86400_000;
+    const toT = toDate ? new Date(toDate + "T23:59:59").getTime() : Date.now();
+    return buildTrendBuckets(filteredCarts, fromT, toT);
+  }, [filteredCarts, fromDate, toDate]);
+
 
   return (
     <main className="min-h-screen bg-canvas px-6 py-12 md:py-16">
@@ -555,6 +770,17 @@ function AdminEmailRecovery() {
                   to see which fields are missing.
                 </p>
               ) : null}
+            </section>
+
+            {/* Funnel trend over time (filtered) */}
+            <section>
+              <div className="flex items-baseline justify-between mb-4 gap-4 flex-wrap">
+                <h2 className="font-serif text-2xl">Funnel Trend</h2>
+                <span className="text-xs text-muted-foreground">
+                  Created → add_to_cart → checkout · {trend.granularity === "week" ? "weekly buckets" : "daily buckets"}
+                </span>
+              </div>
+              <BehavioralTrendChart buckets={trend.buckets} granularity={trend.granularity} />
             </section>
 
             {/* Detailed cart log — every timestamp */}
