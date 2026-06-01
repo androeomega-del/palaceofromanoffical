@@ -40,6 +40,7 @@ import { parseComposition, hasCompositionInfo } from "@/lib/product-composition"
 export const Route = createFileRoute("/product/$handle")({
   loader: async ({ params }) => {
     const p = await fetchProductByHandle(params.handle);
+    if (!p) throw notFound();
     return { product: p };
   },
   head: ({ params, loaderData }) => {
@@ -48,11 +49,16 @@ export const Route = createFileRoute("/product/$handle")({
     const url = absoluteUrl(path);
 
     if (!p) {
+      // Should not normally reach here (loader throws notFound), but keep a safe fallback.
       return {
-        meta: [{ title: pageTitle(humanize(params.handle)) }],
+        meta: [
+          { title: pageTitle("Product not found") },
+          { name: "robots", content: "noindex, nofollow" },
+        ],
         links: [{ rel: "canonical", href: url }],
       };
     }
+
 
     const titleMain = p.vendor ? `${p.title} | ${p.vendor}` : p.title;
     const desc =
@@ -264,11 +270,32 @@ export const Route = createFileRoute("/product/$handle")({
     };
   },
   component: ProductPage,
+  notFoundComponent: () => {
+    const { handle } = Route.useParams();
+    return (
+      <div className="mx-auto max-w-2xl px-6 py-32 text-center">
+        <h1 className="font-serif text-3xl text-[var(--studio-ink)]">This piece is no longer available</h1>
+        <p className="mt-4 text-sm text-[var(--studio-ink)]/70">
+          The product <span className="font-mono">{handle}</span> has been retired from the boutique.
+        </p>
+        <Link to="/shop" className="mt-8 inline-block underline underline-offset-4">
+          Explore the current edit
+        </Link>
+      </div>
+    );
+  },
+  errorComponent: ({ reset }) => {
+    return (
+      <div className="mx-auto max-w-2xl px-6 py-32 text-center">
+        <h1 className="font-serif text-3xl text-[var(--studio-ink)]">Something went wrong</h1>
+        <p className="mt-4 text-sm text-[var(--studio-ink)]/70">We couldn't load this product right now.</p>
+        <button onClick={reset} className="mt-8 underline underline-offset-4">Try again</button>
+      </div>
+    );
+  },
 });
 
-function humanize(h: string) {
-  return h.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
-}
+
 
 function ProductPage() {
   const { handle } = Route.useParams();
