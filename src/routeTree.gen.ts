@@ -121,6 +121,7 @@ import { Route as ApiPublicCronWinBackEmailsRouteImport } from './routes/api/pub
 import { Route as ApiPublicCronSyncShopifyAbandonedRouteImport } from './routes/api/public/cron/sync-shopify-abandoned'
 import { Route as ApiPublicCronRefreshHomepageLayoutRouteImport } from './routes/api/public/cron/refresh-homepage-layout'
 import { Route as ApiPublicCronDrainGrowthJobsRouteImport } from './routes/api/public/cron/drain-growth-jobs'
+import { Route as ApiPublicCronDailyTaskRemindersRouteImport } from './routes/api/public/cron/daily-task-reminders'
 import { Route as ApiPublicCronBackInStockNotifyRouteImport } from './routes/api/public/cron/back-in-stock-notify'
 import { Route as ApiPublicCronAbandonedCartRecoveryRouteImport } from './routes/api/public/cron/abandoned-cart-recovery'
 import { Route as ApiPublicAiRecommendationsRouteImport } from './routes/api/public/ai.recommendations'
@@ -714,6 +715,12 @@ const ApiPublicCronDrainGrowthJobsRoute =
     path: '/api/public/cron/drain-growth-jobs',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicCronDailyTaskRemindersRoute =
+  ApiPublicCronDailyTaskRemindersRouteImport.update({
+    id: '/api/public/cron/daily-task-reminders',
+    path: '/api/public/cron/daily-task-reminders',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicCronBackInStockNotifyRoute =
   ApiPublicCronBackInStockNotifyRouteImport.update({
     id: '/api/public/cron/back-in-stock-notify',
@@ -840,6 +847,7 @@ export interface FileRoutesByFullPath {
   '/api/public/ai/recommendations': typeof ApiPublicAiRecommendationsRoute
   '/api/public/cron/abandoned-cart-recovery': typeof ApiPublicCronAbandonedCartRecoveryRoute
   '/api/public/cron/back-in-stock-notify': typeof ApiPublicCronBackInStockNotifyRoute
+  '/api/public/cron/daily-task-reminders': typeof ApiPublicCronDailyTaskRemindersRoute
   '/api/public/cron/drain-growth-jobs': typeof ApiPublicCronDrainGrowthJobsRoute
   '/api/public/cron/refresh-homepage-layout': typeof ApiPublicCronRefreshHomepageLayoutRoute
   '/api/public/cron/sync-shopify-abandoned': typeof ApiPublicCronSyncShopifyAbandonedRoute
@@ -955,6 +963,7 @@ export interface FileRoutesByTo {
   '/api/public/ai/recommendations': typeof ApiPublicAiRecommendationsRoute
   '/api/public/cron/abandoned-cart-recovery': typeof ApiPublicCronAbandonedCartRecoveryRoute
   '/api/public/cron/back-in-stock-notify': typeof ApiPublicCronBackInStockNotifyRoute
+  '/api/public/cron/daily-task-reminders': typeof ApiPublicCronDailyTaskRemindersRoute
   '/api/public/cron/drain-growth-jobs': typeof ApiPublicCronDrainGrowthJobsRoute
   '/api/public/cron/refresh-homepage-layout': typeof ApiPublicCronRefreshHomepageLayoutRoute
   '/api/public/cron/sync-shopify-abandoned': typeof ApiPublicCronSyncShopifyAbandonedRoute
@@ -1073,6 +1082,7 @@ export interface FileRoutesById {
   '/api/public/ai/recommendations': typeof ApiPublicAiRecommendationsRoute
   '/api/public/cron/abandoned-cart-recovery': typeof ApiPublicCronAbandonedCartRecoveryRoute
   '/api/public/cron/back-in-stock-notify': typeof ApiPublicCronBackInStockNotifyRoute
+  '/api/public/cron/daily-task-reminders': typeof ApiPublicCronDailyTaskRemindersRoute
   '/api/public/cron/drain-growth-jobs': typeof ApiPublicCronDrainGrowthJobsRoute
   '/api/public/cron/refresh-homepage-layout': typeof ApiPublicCronRefreshHomepageLayoutRoute
   '/api/public/cron/sync-shopify-abandoned': typeof ApiPublicCronSyncShopifyAbandonedRoute
@@ -1192,6 +1202,7 @@ export interface FileRouteTypes {
     | '/api/public/ai/recommendations'
     | '/api/public/cron/abandoned-cart-recovery'
     | '/api/public/cron/back-in-stock-notify'
+    | '/api/public/cron/daily-task-reminders'
     | '/api/public/cron/drain-growth-jobs'
     | '/api/public/cron/refresh-homepage-layout'
     | '/api/public/cron/sync-shopify-abandoned'
@@ -1307,6 +1318,7 @@ export interface FileRouteTypes {
     | '/api/public/ai/recommendations'
     | '/api/public/cron/abandoned-cart-recovery'
     | '/api/public/cron/back-in-stock-notify'
+    | '/api/public/cron/daily-task-reminders'
     | '/api/public/cron/drain-growth-jobs'
     | '/api/public/cron/refresh-homepage-layout'
     | '/api/public/cron/sync-shopify-abandoned'
@@ -1424,6 +1436,7 @@ export interface FileRouteTypes {
     | '/api/public/ai/recommendations'
     | '/api/public/cron/abandoned-cart-recovery'
     | '/api/public/cron/back-in-stock-notify'
+    | '/api/public/cron/daily-task-reminders'
     | '/api/public/cron/drain-growth-jobs'
     | '/api/public/cron/refresh-homepage-layout'
     | '/api/public/cron/sync-shopify-abandoned'
@@ -1528,6 +1541,7 @@ export interface RootRouteChildren {
   ApiPublicAiRecommendationsRoute: typeof ApiPublicAiRecommendationsRoute
   ApiPublicCronAbandonedCartRecoveryRoute: typeof ApiPublicCronAbandonedCartRecoveryRoute
   ApiPublicCronBackInStockNotifyRoute: typeof ApiPublicCronBackInStockNotifyRoute
+  ApiPublicCronDailyTaskRemindersRoute: typeof ApiPublicCronDailyTaskRemindersRoute
   ApiPublicCronDrainGrowthJobsRoute: typeof ApiPublicCronDrainGrowthJobsRoute
   ApiPublicCronRefreshHomepageLayoutRoute: typeof ApiPublicCronRefreshHomepageLayoutRoute
   ApiPublicCronSyncShopifyAbandonedRoute: typeof ApiPublicCronSyncShopifyAbandonedRoute
@@ -2325,6 +2339,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicCronDrainGrowthJobsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/cron/daily-task-reminders': {
+      id: '/api/public/cron/daily-task-reminders'
+      path: '/api/public/cron/daily-task-reminders'
+      fullPath: '/api/public/cron/daily-task-reminders'
+      preLoaderRoute: typeof ApiPublicCronDailyTaskRemindersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/cron/back-in-stock-notify': {
       id: '/api/public/cron/back-in-stock-notify'
       path: '/api/public/cron/back-in-stock-notify'
@@ -2514,6 +2535,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicCronAbandonedCartRecoveryRoute:
     ApiPublicCronAbandonedCartRecoveryRoute,
   ApiPublicCronBackInStockNotifyRoute: ApiPublicCronBackInStockNotifyRoute,
+  ApiPublicCronDailyTaskRemindersRoute: ApiPublicCronDailyTaskRemindersRoute,
   ApiPublicCronDrainGrowthJobsRoute: ApiPublicCronDrainGrowthJobsRoute,
   ApiPublicCronRefreshHomepageLayoutRoute:
     ApiPublicCronRefreshHomepageLayoutRoute,
