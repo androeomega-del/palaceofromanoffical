@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, stripSearchParams } from "@tanstack/react-router";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
@@ -64,6 +64,9 @@ function encodeSet(set: Set<string>): string {
 
 export const Route = createFileRoute("/shop")({
   validateSearch: zodValidator(shopSearch),
+  // SEO: keep bare /shop canonical — don't 307 to ?q=&title=&…&sort=…&inStock=true.
+  // `true` strips any param matching its Zod default so the URL stays minimal.
+  search: { middlewares: [stripSearchParams(true)] },
   head: () => {
     const title = "Shop All — Palace of Roman";
     const desc =

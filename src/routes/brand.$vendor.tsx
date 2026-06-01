@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, stripSearchParams } from "@tanstack/react-router";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { fetchProductsPage } from "@/lib/shopify";
@@ -12,12 +12,16 @@ import { cdnImage } from "@/lib/cdn-image";
 
 type SortKey = SortValue;
 const SORT_KEYS: SortKey[] = SORT_OPTIONS.map((o) => o.value);
+const DEFAULT_BRAND_SEARCH = { sort: "BEST_SELLING-false" as SortKey };
 
 export const Route = createFileRoute("/brand/$vendor")({
   validateSearch: (search: Record<string, unknown>): { sort: SortKey } => {
     const raw = typeof search.sort === "string" ? (search.sort as SortKey) : "BEST_SELLING-false";
     return { sort: SORT_KEYS.includes(raw) ? raw : "BEST_SELLING-false" };
   },
+  // SEO: strip default sort from the URL so bare /brand/<vendor> doesn't 307
+  // redirect to /brand/<vendor>?sort=BEST_SELLING-false (wasted crawl budget).
+  search: { middlewares: [stripSearchParams(DEFAULT_BRAND_SEARCH)] },
   head: ({ params }) => {
     // Prefer the canonical brand name from the curated 100; fall back to slug.
     const canonical = brandFromSlug(params.vendor);
