@@ -603,6 +603,51 @@ export type Database = {
         }
         Relationships: []
       }
+      gsc_alert_thresholds: {
+        Row: {
+          active: boolean
+          clicks_drop_pct: number
+          created_at: string
+          id: string
+          impressions_drop_pct: number
+          min_clicks_floor: number
+          min_impressions_floor: number
+          position_warn_above: number | null
+          scope_type: string
+          scope_value: string | null
+          sitemap_error_min: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          clicks_drop_pct?: number
+          created_at?: string
+          id?: string
+          impressions_drop_pct?: number
+          min_clicks_floor?: number
+          min_impressions_floor?: number
+          position_warn_above?: number | null
+          scope_type?: string
+          scope_value?: string | null
+          sitemap_error_min?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          clicks_drop_pct?: number
+          created_at?: string
+          id?: string
+          impressions_drop_pct?: number
+          min_clicks_floor?: number
+          min_impressions_floor?: number
+          position_warn_above?: number | null
+          scope_type?: string
+          scope_value?: string | null
+          sitemap_error_min?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       gsc_alerts: {
         Row: {
           alert_type: string
@@ -681,6 +726,129 @@ export type Database = {
           snapshot_date?: string
           top_pages?: Json
           top_queries?: Json
+        }
+        Relationships: []
+      }
+      gsc_monitored_urls: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          last_synced_at: string
+          locale: string | null
+          page_group: string
+          source: string
+          url: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          last_synced_at?: string
+          locale?: string | null
+          page_group?: string
+          source?: string
+          url: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          last_synced_at?: string
+          locale?: string | null
+          page_group?: string
+          source?: string
+          url?: string
+        }
+        Relationships: []
+      }
+      gsc_redirect_audits: {
+        Row: {
+          by_locale: Json
+          id: string
+          notes: string | null
+          results: Json
+          run_at: string
+          status_200: number
+          status_301: number
+          status_404: number
+          status_other: number
+          total: number
+        }
+        Insert: {
+          by_locale?: Json
+          id?: string
+          notes?: string | null
+          results?: Json
+          run_at?: string
+          status_200?: number
+          status_301?: number
+          status_404?: number
+          status_other?: number
+          total?: number
+        }
+        Update: {
+          by_locale?: Json
+          id?: string
+          notes?: string | null
+          results?: Json
+          run_at?: string
+          status_200?: number
+          status_301?: number
+          status_404?: number
+          status_other?: number
+          total?: number
+        }
+        Relationships: []
+      }
+      gsc_url_inspections: {
+        Row: {
+          capture_source: string
+          captured_at: string
+          captured_by: string | null
+          coverage_state: string | null
+          created_at: string
+          id: string
+          indexing_state: string | null
+          inspection_result: Json
+          last_crawl_time: string | null
+          notes: string | null
+          page_fetch_state: string | null
+          robots_txt_state: string | null
+          url: string
+          verdict: string | null
+        }
+        Insert: {
+          capture_source?: string
+          captured_at?: string
+          captured_by?: string | null
+          coverage_state?: string | null
+          created_at?: string
+          id?: string
+          indexing_state?: string | null
+          inspection_result?: Json
+          last_crawl_time?: string | null
+          notes?: string | null
+          page_fetch_state?: string | null
+          robots_txt_state?: string | null
+          url: string
+          verdict?: string | null
+        }
+        Update: {
+          capture_source?: string
+          captured_at?: string
+          captured_by?: string | null
+          coverage_state?: string | null
+          created_at?: string
+          id?: string
+          indexing_state?: string | null
+          inspection_result?: Json
+          last_crawl_time?: string | null
+          notes?: string | null
+          page_fetch_state?: string | null
+          robots_txt_state?: string | null
+          url?: string
+          verdict?: string | null
         }
         Relationships: []
       }
