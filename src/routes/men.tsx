@@ -402,7 +402,7 @@ function BrandSpotlightRail() {
       aria-label="Hero brands"
       className="bg-canvas-raised border-y border-ink/10 mt-16 md:mt-24 py-14 md:py-16"
     >
-      <div className="max-w-screen-md mx-auto px-5 md:px-10 flex flex-col gap-6 md:gap-10">
+      <div className="max-w-screen-md mx-auto px-5 md:px-10 grid grid-cols-2 gap-4 md:gap-10">
         {SPOTLIGHT_BRANDS.map((b) => (
           <BrandSpotlightTile key={b.vendor} brand={b} />
         ))}
