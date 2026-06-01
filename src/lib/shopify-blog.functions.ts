@@ -120,7 +120,7 @@ export const getJournalArticles = createServerFn({ method: "GET" }).handler(
           handle: a.node.handle,
           title: a.node.title,
           excerpt: a.node.excerpt,
-          contentHtml: a.node.contentHtml,
+          contentHtml: sanitizeArticleHtml(a.node.contentHtml),
           publishedAt: a.node.publishedAt,
           authorName: a.node.authorV2?.name ?? null,
           image: a.node.image,
