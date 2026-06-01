@@ -498,6 +498,43 @@ function DailyTasksPage() {
           />
         )}
 
+        {/* Reminder banner */}
+        {!reminderDismissed && (overdueCount > 0 || dueTodayOpenCount > 0) && (
+          <Card className="p-3 mb-4 border-amber-300 bg-amber-50">
+            <div className="flex items-center gap-3 flex-wrap">
+              <AlertTriangle className="h-4 w-4 text-amber-700 flex-shrink-0" />
+              <div className="text-xs text-amber-900 flex-1 min-w-0">
+                <span className="font-medium">Reminder:</span>{" "}
+                {overdueCount > 0 && (
+                  <button
+                    onClick={() => setFilter("overdue")}
+                    className="underline hover:no-underline"
+                  >
+                    {overdueCount} overdue
+                  </button>
+                )}
+                {overdueCount > 0 && dueTodayOpenCount > 0 && " · "}
+                {dueTodayOpenCount > 0 && (
+                  <button
+                    onClick={() => setFilter("today")}
+                    className="underline hover:no-underline"
+                  >
+                    {dueTodayOpenCount} due today
+                  </button>
+                )}
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 text-xs"
+                onClick={() => setReminderDismissed(true)}
+              >
+                Dismiss
+              </Button>
+            </div>
+          </Card>
+        )}
+
         <div className="mb-4 flex items-center gap-1 flex-wrap">
           {(["open", "today", "overdue", "all", "done"] as const).map((f) => (
             <button
@@ -512,7 +549,56 @@ function DailyTasksPage() {
               {f}
             </button>
           ))}
+          <div className="flex-1" />
+          <Button
+            variant={bulkMode ? "default" : "outline"}
+            size="sm"
+            onClick={() => {
+              setBulkMode((v) => !v);
+              setSelected(new Set());
+            }}
+          >
+            {bulkMode ? "Exit bulk" : "Bulk mode"}
+          </Button>
         </div>
+
+        {bulkMode && (
+          <Card className="p-3 mb-3 flex items-center gap-3 flex-wrap bg-slate-50">
+            <div className="text-xs">
+              <span className="font-medium">{selected.size}</span> selected
+            </div>
+            <button
+              type="button"
+              className="text-xs underline text-muted-foreground hover:text-foreground"
+              onClick={() => {
+                const openIds = filtered.filter((t) => t.status !== "done").map((t) => t.id);
+                setSelected(new Set(openIds));
+              }}
+            >
+              Select all open (visible)
+            </button>
+            <button
+              type="button"
+              className="text-xs underline text-muted-foreground hover:text-foreground"
+              onClick={() => setSelected(new Set())}
+            >
+              Clear
+            </button>
+            <div className="flex-1" />
+            <Button
+              size="sm"
+              disabled={selected.size === 0 || bulkComplete.isPending}
+              onClick={() => bulkComplete.mutate(Array.from(selected))}
+            >
+              {bulkComplete.isPending ? (
+                <Loader2 className="h-3 w-3 animate-spin mr-2" />
+              ) : (
+                <CheckCircle2 className="h-3 w-3 mr-2" />
+              )}
+              Mark {selected.size || ""} done
+            </Button>
+          </Card>
+        )}
 
         {isLoading ? (
           <Card className="p-12 text-center text-sm text-muted-foreground">
@@ -529,6 +615,16 @@ function DailyTasksPage() {
                 key={t.id}
                 task={t}
                 today={today}
+                bulkMode={bulkMode}
+                selected={selected.has(t.id)}
+                onSelectToggle={() => {
+                  setSelected((prev) => {
+                    const next = new Set(prev);
+                    if (next.has(t.id)) next.delete(t.id);
+                    else next.add(t.id);
+                    return next;
+                  });
+                }}
                 onToggle={() =>
                   updateTask.mutate({
                     id: t.id,
@@ -540,6 +636,9 @@ function DailyTasksPage() {
                 onDueDateChange={(due_date) => updateTask.mutate({ id: t.id, due_date })}
                 onRecurrenceChange={(recurrence) =>
                   updateTask.mutate({ id: t.id, recurrence })
+                }
+                onActionChange={(action_url, action_label) =>
+                  updateTask.mutate({ id: t.id, action_url, action_label })
                 }
                 onDelete={() => {
                   if (confirm(`Delete "${t.title}"?`)) deleteTask.mutate(t.id);
