@@ -27,7 +27,19 @@ import {
   CalendarClock,
   Repeat,
   BarChart3,
+  ExternalLink,
+  AlertTriangle,
+  ListPlus,
 } from "lucide-react";
+import { resolveTaskAction, getTemplatesFor } from "@/lib/daily-task-helpers";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
 export const Route = createFileRoute("/admin/daily-tasks")({
   ssr: false,
