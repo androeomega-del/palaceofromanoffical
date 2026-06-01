@@ -211,15 +211,6 @@ function CartDetailRow({ cart: c }: { cart: CartDetail }) {
   );
 }
 
-  const d = new Date(iso);
-  return d.toLocaleString("en-US", {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}
-
 function AdminEmailRecovery() {
   const { data, isLoading, isFetching, error, refetch } = useQuery({
     queryKey: ["admin", "email-recovery"],
