@@ -161,7 +161,7 @@ function NewInRail() {
               The Euphoria Edit
             </h2>
             <p className="text-eyebrow uppercase text-bronze-deep">
-              The maisons defining the season
+              The maisons defining the seasons
             </p>
           </div>
           <Link
