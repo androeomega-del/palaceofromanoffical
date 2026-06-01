@@ -1047,6 +1047,25 @@ function TaskRow({
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
                 {task.category}
               </span>
+              {action && (
+                <Button
+                  asChild
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-xs"
+                  title={action.label}
+                >
+                  <a
+                    href={action.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <ExternalLink className="h-3 w-3 mr-1" />
+                    Open
+                  </a>
+                </Button>
+              )}
               <Select
                 value={task.status}
                 onValueChange={(v) => onStatusChange(v as DailyTask["status"])}
@@ -1101,6 +1120,67 @@ function TaskRow({
                   </SelectContent>
                 </Select>
               </div>
+
+              {/* Custom deep-link override */}
+              <div className="flex flex-wrap gap-2 items-center">
+                <label className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                  Action link
+                </label>
+                <Input
+                  placeholder="/admin/… or https://…"
+                  value={task.action_url ?? ""}
+                  onChange={(e) =>
+                    onActionChange(e.target.value || null, task.action_label)
+                  }
+                  className="w-56 h-8 text-xs"
+                />
+                <Input
+                  placeholder="Button label"
+                  value={task.action_label ?? ""}
+                  onChange={(e) =>
+                    onActionChange(task.action_url, e.target.value || null)
+                  }
+                  className="w-40 h-8 text-xs"
+                />
+                {!task.action_url && action && (
+                  <span className="text-[10px] text-muted-foreground">
+                    Default: {action.url}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex items-center justify-between gap-2">
+                <label className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                  Notes / outcome
+                </label>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" className="h-7 text-xs">
+                      <ListPlus className="h-3 w-3 mr-1" />
+                      Insert template
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuLabel className="text-[10px] uppercase tracking-wider">
+                      {task.category} templates
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    {templates.map((tpl) => (
+                      <DropdownMenuItem
+                        key={tpl.id}
+                        onClick={() => {
+                          const prefix = notesDraft.trim() ? notesDraft.trim() + "\n\n" : "";
+                          const next = prefix + tpl.body;
+                          setNotesDraft(next);
+                          onNotesChange(next);
+                        }}
+                      >
+                        {tpl.label}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
               <Textarea
                 placeholder="Notes…"
                 value={notesDraft}
@@ -1108,8 +1188,10 @@ function TaskRow({
                 onBlur={() => {
                   if (notesDraft !== (task.notes ?? "")) onNotesChange(notesDraft);
                 }}
-                rows={3}
+                rows={6}
+                className="font-mono text-xs"
               />
+
               <div className="text-[10px] uppercase tracking-wider text-muted-foreground flex items-center gap-3 flex-wrap">
                 {task.completed_at && (
                   <span className="inline-flex items-center gap-1 text-emerald-700">
