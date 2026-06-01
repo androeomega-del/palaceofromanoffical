@@ -1,6 +1,6 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Minus, Plus, X, Loader2, ShoppingBag, ArrowRight } from "lucide-react";
+import { Minus, Plus, X, Loader2, ShoppingBag, ArrowRight, ShieldCheck, RotateCcw, Lock } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useCartStore } from "@/stores/cart-store";
@@ -180,6 +180,33 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
               >
                 {isLoading || isSyncing ? <Loader2 className="w-4 h-4 animate-spin" /> : "Proceed to Checkout"}
               </Button>
+
+              {/* Trust micro-strip — luxury buyer reassurance at point of decision */}
+              <ul className="grid grid-cols-3 gap-2 pt-1 text-[9px] uppercase tracking-[0.15em] text-muted-foreground">
+                <li className="flex flex-col items-center gap-1.5 text-center">
+                  <Lock className="w-3.5 h-3.5" strokeWidth={1.5} />
+                  <span>Secure<br/>Checkout</span>
+                </li>
+                <li className="flex flex-col items-center gap-1.5 text-center">
+                  <ShieldCheck className="w-3.5 h-3.5" strokeWidth={1.5} />
+                  <span>Authenticity<br/>Guaranteed</span>
+                </li>
+                <li className="flex flex-col items-center gap-1.5 text-center">
+                  <RotateCcw className="w-3.5 h-3.5" strokeWidth={1.5} />
+                  <span>14-Day<br/>Returns</span>
+                </li>
+              </ul>
+
+              <p className="text-[10px] text-center text-muted-foreground pt-1">
+                Questions before you order?{" "}
+                <Link
+                  to="/contact"
+                  onClick={() => onOpenChange(false)}
+                  className="underline underline-offset-2 hover:text-ink transition-colors"
+                >
+                  Concierge replies in 24h
+                </Link>
+              </p>
             </div>
           </>
         )}
