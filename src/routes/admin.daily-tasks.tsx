@@ -253,7 +253,51 @@ function DailyTasksPage() {
     onError: (e: Error) => toast.error("Rollover failed", { description: e.message }),
   });
 
+  const bulkComplete = useMutation({
+    mutationFn: async (ids: string[]) => {
+      const { error } = await supabase
+        .from("daily_tasks")
+        .update({ status: "done" })
+        .in("id", ids);
+      if (error) throw error;
+      return ids.length;
+    },
+    onSuccess: (n) => {
+      toast.success(`Marked ${n} task${n === 1 ? "" : "s"} done`);
+      setSelected(new Set());
+      setBulkMode(false);
+      qc.invalidateQueries({ queryKey: ["admin", "daily-tasks"] });
+      qc.invalidateQueries({ queryKey: ["admin", "daily-task-completions"] });
+    },
+    onError: (e: Error) => toast.error("Bulk update failed", { description: e.message }),
+  });
+
   const today = todayISO();
+
+  // Reminder: one-shot toast on mount if there are overdue or due-today open tasks
+  const overdueCount = (tasks ?? []).filter(
+    (t) => t.status !== "done" && t.due_date != null && t.due_date < today
+  ).length;
+  const dueTodayOpenCount = (tasks ?? []).filter(
+    (t) => t.status !== "done" && t.due_date === today
+  ).length;
+
+  useEffect(() => {
+    if (!tasks) return;
+    if (overdueCount === 0 && dueTodayOpenCount === 0) return;
+    const key = `dt-reminder-${today}`;
+    if (typeof window === "undefined") return;
+    if (sessionStorage.getItem(key)) return;
+    sessionStorage.setItem(key, "1");
+    const parts: string[] = [];
+    if (overdueCount > 0) parts.push(`${overdueCount} overdue`);
+    if (dueTodayOpenCount > 0) parts.push(`${dueTodayOpenCount} due today`);
+    toast.warning("Daily tasks need attention", {
+      description: parts.join(" · "),
+      duration: 8000,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tasks?.length]);
 
   const filtered = (tasks ?? [])
     .filter((t) => {
