@@ -115,12 +115,18 @@ export function DesktopMegamenu() {
               : { ...d, feature: { ...d.feature, handle: d.rootHandle } },
           )
       : built;
-    // Prefer the Shopify-curated tree when it produces a valid women+men shape.
+    // Prefer the Shopify-curated tree ONLY when it yields at least as many
+    // total leaf items as the catalog-built tree. Otherwise the auto-built
+    // (richer) menu wins — so a sparse / unmaintained Shopify main-menu can
+    // never strip categories out of the nav.
     const shopify = menuSource?.tree
       ? buildDepartmentsFromShopifyMenu(menuSource.tree, filtered, liveHandles)
       : null;
-    return shopify ?? filtered;
+    const countItems = (deps: typeof filtered) =>
+      deps.reduce((n, d) => n + d.columns.reduce((m, c) => m + c.items.length, 0), 0);
+    return shopify && countItems(shopify) >= countItems(filtered) ? shopify : filtered;
   }, [liveCollections, liveHandles, menuSource]);
+
 
   const triggerKeys = useMemo(
     () => [...departments.map((d) => d.key as string), "vacation", "best-sellers", "brands"],
@@ -932,7 +938,9 @@ export function MobileMegamenu() {
     const shopify = menuSource?.tree
       ? buildDepartmentsFromShopifyMenu(menuSource.tree, filtered, liveHandles)
       : null;
-    return shopify ?? filtered;
+    const countItems = (deps: typeof filtered) =>
+      deps.reduce((n, d) => n + d.columns.reduce((m, c) => m + c.items.length, 0), 0);
+    return shopify && countItems(shopify) >= countItems(filtered) ? shopify : filtered;
   }, [liveCollections, liveHandles, menuSource]);
   const { data: brands } = useBrandIndex();
   const brandGroups = useMemo(() => groupBrandsForMenu(brands ?? []), [brands]);
