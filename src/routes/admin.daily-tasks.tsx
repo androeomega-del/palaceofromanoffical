@@ -143,6 +143,9 @@ function DailyTasksPage() {
   const qc = useQueryClient();
   const [filter, setFilter] = useState<"all" | "open" | "done" | "today" | "overdue">("open");
   const [showNew, setShowNew] = useState(false);
+  const [bulkMode, setBulkMode] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [reminderDismissed, setReminderDismissed] = useState(false);
 
   // Auto-rollover on mount
   useEffect(() => {
