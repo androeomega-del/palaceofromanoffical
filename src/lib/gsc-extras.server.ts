@@ -473,7 +473,7 @@ export async function captureUrlInspection(
     .from("gsc_url_inspections")
     .insert({
       url: input.url,
-      inspection_result: result ?? {},
+      inspection_result: (result ?? {}) as unknown as import("@/integrations/supabase/types").Json,
       verdict,
       coverage_state,
       indexing_state,
