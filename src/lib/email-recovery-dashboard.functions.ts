@@ -178,6 +178,8 @@ export const getEmailRecoveryDashboard = createServerFn({ method: "POST" })
         recoveredValueUsd: Number(recoveredValue.toFixed(2)),
         recoveryRate: Number(recoveryRate.toFixed(1)),
       },
+      cohort,
+      cartsDetail,
       dispatch: {
         sentCount,
         failedCount,
