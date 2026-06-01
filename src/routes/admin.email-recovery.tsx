@@ -260,10 +260,27 @@ function CartDetailRow({ cart: c }: { cart: CartDetail }) {
           )}
         </td>
         <td className="p-3 text-right tabular-nums">{c.event_count}</td>
+        <td className="p-3"><CartSparkline cart={c} /></td>
+        <td className="p-3">
+          {(() => {
+            const gaps = detectGaps(c);
+            if (gaps.length === 0)
+              return <span className="text-emerald-700 text-[10px]">complete</span>;
+            return (
+              <span
+                className="inline-flex items-center gap-1 text-[10px] text-amber-700"
+                title={`Missing: ${gaps.join(", ")}`}
+              >
+                <AlertTriangle className="h-3 w-3" />
+                {gaps.length} gap{gaps.length > 1 ? "s" : ""}
+              </span>
+            );
+          })()}
+        </td>
       </tr>
       {open ? (
         <tr className="bg-muted/20">
-          <td colSpan={11} className="p-4">
+          <td colSpan={13} className="p-4">
             <div className="grid md:grid-cols-2 gap-6">
               <div>
                 <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">
