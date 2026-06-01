@@ -394,6 +394,38 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_task_completions: {
+        Row: {
+          completed_at: string
+          completed_by: string | null
+          completed_on: string
+          id: string
+          task_id: string
+        }
+        Insert: {
+          completed_at?: string
+          completed_by?: string | null
+          completed_on?: string
+          id?: string
+          task_id: string
+        }
+        Update: {
+          completed_at?: string
+          completed_by?: string | null
+          completed_on?: string
+          id?: string
+          task_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_task_completions_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "daily_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       daily_tasks: {
         Row: {
           category: string
@@ -404,8 +436,11 @@ export type Database = {
           description: string | null
           due_date: string | null
           id: string
+          last_rolled_over_on: string | null
           notes: string | null
           priority: string
+          recurrence: string
+          recurrence_day: number | null
           sort_order: number
           status: string
           title: string
@@ -420,8 +455,11 @@ export type Database = {
           description?: string | null
           due_date?: string | null
           id?: string
+          last_rolled_over_on?: string | null
           notes?: string | null
           priority?: string
+          recurrence?: string
+          recurrence_day?: number | null
           sort_order?: number
           status?: string
           title: string
@@ -436,8 +474,11 @@ export type Database = {
           description?: string | null
           due_date?: string | null
           id?: string
+          last_rolled_over_on?: string | null
           notes?: string | null
           priority?: string
+          recurrence?: string
+          recurrence_day?: number | null
           sort_order?: number
           status?: string
           title?: string
@@ -1397,6 +1438,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      rollover_recurring_daily_tasks: { Args: never; Returns: number }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
       validate_lookbook_hotspots: {
