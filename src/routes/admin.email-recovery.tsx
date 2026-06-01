@@ -342,6 +342,10 @@ function CartDetailRow({ cart: c }: { cart: CartDetail }) {
   );
 }
 
+function toLocalDateInput(d: Date) {
+  return d.toISOString().slice(0, 10);
+}
+
 function AdminEmailRecovery() {
   const { data, isLoading, isFetching, error, refetch } = useQuery({
     queryKey: ["admin", "email-recovery"],
@@ -349,6 +353,54 @@ function AdminEmailRecovery() {
     refetchInterval: 60_000,
     staleTime: 30_000,
   });
+
+  const today = useMemo(() => new Date(), []);
+  const defaultFrom = useMemo(
+    () => toLocalDateInput(new Date(today.getTime() - 30 * 86400_000)),
+    [today]
+  );
+  const defaultTo = useMemo(() => toLocalDateInput(today), [today]);
+  const [fromDate, setFromDate] = useState(defaultFrom);
+  const [toDate, setToDate] = useState(defaultTo);
+
+  const cartsDetail = (data?.cartsDetail ?? []) as CartDetail[];
+  const filteredCarts = useMemo(() => {
+    const fromT = fromDate ? new Date(fromDate + "T00:00:00").getTime() : -Infinity;
+    const toT = toDate ? new Date(toDate + "T23:59:59").getTime() : Infinity;
+    return cartsDetail.filter((c) => {
+      const t = new Date(c.created_at).getTime();
+      return t >= fromT && t <= toT;
+    });
+  }, [cartsDetail, fromDate, toDate]);
+
+  const filteredCohort = useMemo(() => {
+    const mins = (a: string | null, b: string | null) =>
+      a && b ? Math.max(0, (new Date(b).getTime() - new Date(a).getTime()) / 60000) : null;
+    const med = (arr: number[]) => {
+      if (!arr.length) return 0;
+      const s = [...arr].sort((a, b) => a - b);
+      const m = Math.floor(s.length / 2);
+      return Math.round(s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2);
+    };
+    const ages: number[] = [], emails: number[] = [], recs: number[] = [];
+    let withCheckout = 0, withReached = 0, gappy = 0;
+    for (const c of filteredCarts) {
+      const a = mins(c.created_at, c.last_activity_at); if (a !== null) ages.push(a);
+      const e = mins(c.created_at, c.recovery_email_sent_at); if (e !== null) emails.push(e);
+      const r = mins(c.recovery_email_sent_at, c.recovered_at); if (r !== null) recs.push(r);
+      if (c.checkout_started_at) withCheckout++;
+      if (c.reached_checkout_at) withReached++;
+      if (detectGaps(c).length > 0) gappy++;
+    }
+    return {
+      medianAgeMin: med(ages),
+      medianTimeToFirstEmailMin: med(emails),
+      medianTimeToRecoverMin: med(recs),
+      withCheckoutStarted: withCheckout,
+      withReachedCheckout: withReached,
+      gappy,
+    };
+  }, [filteredCarts]);
 
   return (
     <main className="min-h-screen bg-canvas px-6 py-12 md:py-16">
