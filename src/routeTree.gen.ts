@@ -117,6 +117,8 @@ import { Route as LocaleProductsHandleRouteImport } from './routes/$locale.produ
 import { Route as ApiPublicStockAlertsSubscribeRouteImport } from './routes/api/public/stock-alerts/subscribe'
 import { Route as ApiPublicHooksSyncCollectionImagesRouteImport } from './routes/api/public/hooks/sync-collection-images'
 import { Route as ApiPublicHooksShopifyOrderCreatedRouteImport } from './routes/api/public/hooks/shopify-order-created'
+import { Route as ApiPublicHooksGscWeeklyReviewRouteImport } from './routes/api/public/hooks/gsc-weekly-review'
+import { Route as ApiPublicHooksGscDailyMonitorRouteImport } from './routes/api/public/hooks/gsc-daily-monitor'
 import { Route as ApiPublicHooksExpireShopifyTagsRouteImport } from './routes/api/public/hooks/expire-shopify-tags'
 import { Route as ApiPublicHooksDispatchCartRecoveryRouteImport } from './routes/api/public/hooks/dispatch-cart-recovery'
 import { Route as ApiPublicCronWinBackEmailsRouteImport } from './routes/api/public/cron/win-back-emails'
@@ -691,6 +693,18 @@ const ApiPublicHooksShopifyOrderCreatedRoute =
     path: '/api/public/hooks/shopify-order-created',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksGscWeeklyReviewRoute =
+  ApiPublicHooksGscWeeklyReviewRouteImport.update({
+    id: '/api/public/hooks/gsc-weekly-review',
+    path: '/api/public/hooks/gsc-weekly-review',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicHooksGscDailyMonitorRoute =
+  ApiPublicHooksGscDailyMonitorRouteImport.update({
+    id: '/api/public/hooks/gsc-daily-monitor',
+    path: '/api/public/hooks/gsc-daily-monitor',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksExpireShopifyTagsRoute =
   ApiPublicHooksExpireShopifyTagsRouteImport.update({
     id: '/api/public/hooks/expire-shopify-tags',
@@ -868,6 +882,8 @@ export interface FileRoutesByFullPath {
   '/api/public/cron/win-back-emails': typeof ApiPublicCronWinBackEmailsRoute
   '/api/public/hooks/dispatch-cart-recovery': typeof ApiPublicHooksDispatchCartRecoveryRoute
   '/api/public/hooks/expire-shopify-tags': typeof ApiPublicHooksExpireShopifyTagsRoute
+  '/api/public/hooks/gsc-daily-monitor': typeof ApiPublicHooksGscDailyMonitorRoute
+  '/api/public/hooks/gsc-weekly-review': typeof ApiPublicHooksGscWeeklyReviewRoute
   '/api/public/hooks/shopify-order-created': typeof ApiPublicHooksShopifyOrderCreatedRoute
   '/api/public/hooks/sync-collection-images': typeof ApiPublicHooksSyncCollectionImagesRoute
   '/api/public/stock-alerts/subscribe': typeof ApiPublicStockAlertsSubscribeRoute
@@ -986,6 +1002,8 @@ export interface FileRoutesByTo {
   '/api/public/cron/win-back-emails': typeof ApiPublicCronWinBackEmailsRoute
   '/api/public/hooks/dispatch-cart-recovery': typeof ApiPublicHooksDispatchCartRecoveryRoute
   '/api/public/hooks/expire-shopify-tags': typeof ApiPublicHooksExpireShopifyTagsRoute
+  '/api/public/hooks/gsc-daily-monitor': typeof ApiPublicHooksGscDailyMonitorRoute
+  '/api/public/hooks/gsc-weekly-review': typeof ApiPublicHooksGscWeeklyReviewRoute
   '/api/public/hooks/shopify-order-created': typeof ApiPublicHooksShopifyOrderCreatedRoute
   '/api/public/hooks/sync-collection-images': typeof ApiPublicHooksSyncCollectionImagesRoute
   '/api/public/stock-alerts/subscribe': typeof ApiPublicStockAlertsSubscribeRoute
@@ -1107,6 +1125,8 @@ export interface FileRoutesById {
   '/api/public/cron/win-back-emails': typeof ApiPublicCronWinBackEmailsRoute
   '/api/public/hooks/dispatch-cart-recovery': typeof ApiPublicHooksDispatchCartRecoveryRoute
   '/api/public/hooks/expire-shopify-tags': typeof ApiPublicHooksExpireShopifyTagsRoute
+  '/api/public/hooks/gsc-daily-monitor': typeof ApiPublicHooksGscDailyMonitorRoute
+  '/api/public/hooks/gsc-weekly-review': typeof ApiPublicHooksGscWeeklyReviewRoute
   '/api/public/hooks/shopify-order-created': typeof ApiPublicHooksShopifyOrderCreatedRoute
   '/api/public/hooks/sync-collection-images': typeof ApiPublicHooksSyncCollectionImagesRoute
   '/api/public/stock-alerts/subscribe': typeof ApiPublicStockAlertsSubscribeRoute
@@ -1229,6 +1249,8 @@ export interface FileRouteTypes {
     | '/api/public/cron/win-back-emails'
     | '/api/public/hooks/dispatch-cart-recovery'
     | '/api/public/hooks/expire-shopify-tags'
+    | '/api/public/hooks/gsc-daily-monitor'
+    | '/api/public/hooks/gsc-weekly-review'
     | '/api/public/hooks/shopify-order-created'
     | '/api/public/hooks/sync-collection-images'
     | '/api/public/stock-alerts/subscribe'
@@ -1347,6 +1369,8 @@ export interface FileRouteTypes {
     | '/api/public/cron/win-back-emails'
     | '/api/public/hooks/dispatch-cart-recovery'
     | '/api/public/hooks/expire-shopify-tags'
+    | '/api/public/hooks/gsc-daily-monitor'
+    | '/api/public/hooks/gsc-weekly-review'
     | '/api/public/hooks/shopify-order-created'
     | '/api/public/hooks/sync-collection-images'
     | '/api/public/stock-alerts/subscribe'
@@ -1467,6 +1491,8 @@ export interface FileRouteTypes {
     | '/api/public/cron/win-back-emails'
     | '/api/public/hooks/dispatch-cart-recovery'
     | '/api/public/hooks/expire-shopify-tags'
+    | '/api/public/hooks/gsc-daily-monitor'
+    | '/api/public/hooks/gsc-weekly-review'
     | '/api/public/hooks/shopify-order-created'
     | '/api/public/hooks/sync-collection-images'
     | '/api/public/stock-alerts/subscribe'
@@ -1574,6 +1600,8 @@ export interface RootRouteChildren {
   ApiPublicCronWinBackEmailsRoute: typeof ApiPublicCronWinBackEmailsRoute
   ApiPublicHooksDispatchCartRecoveryRoute: typeof ApiPublicHooksDispatchCartRecoveryRoute
   ApiPublicHooksExpireShopifyTagsRoute: typeof ApiPublicHooksExpireShopifyTagsRoute
+  ApiPublicHooksGscDailyMonitorRoute: typeof ApiPublicHooksGscDailyMonitorRoute
+  ApiPublicHooksGscWeeklyReviewRoute: typeof ApiPublicHooksGscWeeklyReviewRoute
   ApiPublicHooksShopifyOrderCreatedRoute: typeof ApiPublicHooksShopifyOrderCreatedRoute
   ApiPublicHooksSyncCollectionImagesRoute: typeof ApiPublicHooksSyncCollectionImagesRoute
   ApiPublicStockAlertsSubscribeRoute: typeof ApiPublicStockAlertsSubscribeRoute
@@ -2337,6 +2365,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksShopifyOrderCreatedRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/gsc-weekly-review': {
+      id: '/api/public/hooks/gsc-weekly-review'
+      path: '/api/public/hooks/gsc-weekly-review'
+      fullPath: '/api/public/hooks/gsc-weekly-review'
+      preLoaderRoute: typeof ApiPublicHooksGscWeeklyReviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/gsc-daily-monitor': {
+      id: '/api/public/hooks/gsc-daily-monitor'
+      path: '/api/public/hooks/gsc-daily-monitor'
+      fullPath: '/api/public/hooks/gsc-daily-monitor'
+      preLoaderRoute: typeof ApiPublicHooksGscDailyMonitorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/expire-shopify-tags': {
       id: '/api/public/hooks/expire-shopify-tags'
       path: '/api/public/hooks/expire-shopify-tags'
@@ -2587,6 +2629,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicHooksDispatchCartRecoveryRoute:
     ApiPublicHooksDispatchCartRecoveryRoute,
   ApiPublicHooksExpireShopifyTagsRoute: ApiPublicHooksExpireShopifyTagsRoute,
+  ApiPublicHooksGscDailyMonitorRoute: ApiPublicHooksGscDailyMonitorRoute,
+  ApiPublicHooksGscWeeklyReviewRoute: ApiPublicHooksGscWeeklyReviewRoute,
   ApiPublicHooksShopifyOrderCreatedRoute:
     ApiPublicHooksShopifyOrderCreatedRoute,
   ApiPublicHooksSyncCollectionImagesRoute:

@@ -183,13 +183,15 @@ export async function runDailyMonitor(): Promise<DailyMonitorResult> {
     .order("snapshot_date", { ascending: false })
     .limit(7);
 
-  const alerts: Array<{
+  type AlertInsert = {
     alert_type: string;
     severity: "info" | "warning" | "critical";
     title: string;
     message: string;
-    metric_data: Record<string, unknown>;
-  }> = [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    metric_data: any;
+  };
+  const alerts: AlertInsert[] = [];
 
   if (trailing && trailing.length >= 3) {
     const avgImpr =

@@ -6,41 +6,46 @@ import { requireAdmin } from "@/lib/admin-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { runDailyMonitor, runWeeklyReview } from "@/lib/gsc-monitor.server";
 
+export type GscSnapshot = {
+  snapshot_date: string;
+  clicks: number;
+  impressions: number;
+  ctr: number;
+  position: number;
+  sitemap_errors: number;
+  sitemap_warnings: number;
+};
+export type GscAlert = {
+  id: string;
+  alert_type: string;
+  severity: string;
+  title: string;
+  message: string;
+  emailed: boolean;
+  resolved_at: string | null;
+  created_at: string;
+};
+export type GscWeeklyReview = {
+  id: string;
+  week_start: string;
+  clicks: number;
+  impressions: number;
+  ctr: number;
+  position: number;
+  clicks_wow_pct: number | null;
+  impressions_wow_pct: number | null;
+  action_items: string[];
+  summary: string | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  top_queries: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  top_pages: any;
+  created_at: string;
+};
 export interface GscDashboardData {
-  snapshots: Array<{
-    snapshot_date: string;
-    clicks: number;
-    impressions: number;
-    ctr: number;
-    position: number;
-    sitemap_errors: number;
-    sitemap_warnings: number;
-  }>;
-  alerts: Array<{
-    id: string;
-    alert_type: string;
-    severity: string;
-    title: string;
-    message: string;
-    emailed: boolean;
-    resolved_at: string | null;
-    created_at: string;
-  }>;
-  weeklyReviews: Array<{
-    id: string;
-    week_start: string;
-    clicks: number;
-    impressions: number;
-    ctr: number;
-    position: number;
-    clicks_wow_pct: number | null;
-    impressions_wow_pct: number | null;
-    action_items: string[];
-    summary: string | null;
-    top_queries: unknown;
-    top_pages: unknown;
-    created_at: string;
-  }>;
+  snapshots: GscSnapshot[];
+  alerts: GscAlert[];
+  weeklyReviews: GscWeeklyReview[];
 }
 
 export const getGscDashboardData = createServerFn({ method: "GET" })
