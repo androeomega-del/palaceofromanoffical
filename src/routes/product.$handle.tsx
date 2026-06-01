@@ -40,6 +40,7 @@ import { parseComposition, hasCompositionInfo } from "@/lib/product-composition"
 export const Route = createFileRoute("/product/$handle")({
   loader: async ({ params }) => {
     const p = await fetchProductByHandle(params.handle);
+    if (!p) throw notFound();
     return { product: p };
   },
   head: ({ params, loaderData }) => {
@@ -48,11 +49,16 @@ export const Route = createFileRoute("/product/$handle")({
     const url = absoluteUrl(path);
 
     if (!p) {
+      // Should not normally reach here (loader throws notFound), but keep a safe fallback.
       return {
-        meta: [{ title: pageTitle(humanize(params.handle)) }],
+        meta: [
+          { title: pageTitle("Product not found") },
+          { name: "robots", content: "noindex, nofollow" },
+        ],
         links: [{ rel: "canonical", href: url }],
       };
     }
+
 
     const titleMain = p.vendor ? `${p.title} | ${p.vendor}` : p.title;
     const desc =
