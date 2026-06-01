@@ -85,8 +85,8 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
           </div>
         ) : (
           <>
-            <div className="flex-1 overflow-y-auto px-6 py-6">
-              <ul className="space-y-8">
+            <div className="flex-1 overflow-y-auto">
+              <ul className="space-y-8 px-6 py-6">
                 {items.map((item) => {
                   const img = item.product.node.images?.edges?.[0]?.node;
                   return (
@@ -135,22 +135,27 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
                   );
                 })}
               </ul>
+
+              {/* Extras moved into the scroll area so the sticky checkout footer stays compact */}
+              <CartFbt productType={fbtProductType} excludeHandles={fbtExclude} />
+              <GiftWrapOption />
+              <div className="px-6 pt-4 pb-2">
+                <CartEmailCapture />
+              </div>
             </div>
 
-            <CartFbt productType={fbtProductType} excludeHandles={fbtExclude} />
-            <GiftWrapOption />
-
-            <div className="border-t border-ink/10 px-6 py-6 space-y-4">
-              <CartEmailCapture />
-
-
+            {/* Sticky checkout footer — always above the fold on mobile */}
+            <div
+              className="border-t border-ink/10 px-6 pt-4 space-y-3 bg-canvas shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.08)]"
+              style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}
+            >
               {(() => {
                 const THRESHOLD = 250;
                 const remaining = Math.max(0, THRESHOLD - totalAmount);
                 const pct = Math.min(100, (totalAmount / THRESHOLD) * 100);
                 const qualifies = remaining === 0;
                 return (
-                  <div className="space-y-2">
+                  <div className="space-y-1.5">
                     <p className="text-[10px] uppercase tracking-[0.2em] text-ink/80">
                       {qualifies
                         ? "You've unlocked Free Express Shipping!"
@@ -166,13 +171,30 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
                   </div>
                 );
               })()}
+
               <div className="flex justify-between items-baseline" aria-live="polite">
                 <span className="text-xs uppercase tracking-[0.2em]">Subtotal</span>
                 <span className="text-lg font-serif tabular-nums">
                   {formatPrice({ amount: totalAmount.toFixed(2), currencyCode: currency })}
                 </span>
               </div>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Taxes and shipping calculated at checkout</p>
+
+              {/* Trust micro-strip — placed ABOVE the CTA so it's always visible alongside the button */}
+              <ul className="grid grid-cols-3 gap-2 text-[9px] uppercase tracking-[0.15em] text-muted-foreground border-y border-ink/10 py-2.5">
+                <li className="flex items-center justify-center gap-1.5 text-center">
+                  <Lock className="w-3 h-3 shrink-0" strokeWidth={1.5} />
+                  <span>Secure</span>
+                </li>
+                <li className="flex items-center justify-center gap-1.5 text-center">
+                  <ShieldCheck className="w-3 h-3 shrink-0" strokeWidth={1.5} />
+                  <span>Authentic</span>
+                </li>
+                <li className="flex items-center justify-center gap-1.5 text-center">
+                  <RotateCcw className="w-3 h-3 shrink-0" strokeWidth={1.5} />
+                  <span>14-Day Returns</span>
+                </li>
+              </ul>
+
               <Button
                 onClick={handleCheckout}
                 disabled={isLoading || isSyncing}
@@ -181,24 +203,8 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
                 {isLoading || isSyncing ? <Loader2 className="w-4 h-4 animate-spin" /> : "Proceed to Checkout"}
               </Button>
 
-              {/* Trust micro-strip — luxury buyer reassurance at point of decision */}
-              <ul className="grid grid-cols-3 gap-2 pt-1 text-[9px] uppercase tracking-[0.15em] text-muted-foreground">
-                <li className="flex flex-col items-center gap-1.5 text-center">
-                  <Lock className="w-3.5 h-3.5" strokeWidth={1.5} />
-                  <span>Secure<br/>Checkout</span>
-                </li>
-                <li className="flex flex-col items-center gap-1.5 text-center">
-                  <ShieldCheck className="w-3.5 h-3.5" strokeWidth={1.5} />
-                  <span>Authenticity<br/>Guaranteed</span>
-                </li>
-                <li className="flex flex-col items-center gap-1.5 text-center">
-                  <RotateCcw className="w-3.5 h-3.5" strokeWidth={1.5} />
-                  <span>14-Day<br/>Returns</span>
-                </li>
-              </ul>
-
-              <p className="text-[10px] text-center text-muted-foreground pt-1">
-                Questions before you order?{" "}
+              <p className="text-[10px] text-center text-muted-foreground">
+                Taxes & shipping at checkout ·{" "}
                 <Link
                   to="/contact"
                   onClick={() => onOpenChange(false)}
