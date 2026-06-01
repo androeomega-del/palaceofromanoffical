@@ -41,14 +41,14 @@ export type MetaBucket = 0 | 1;
 /** Homepage variants. A is the existing canonical copy. */
 const HOME: [MetaVariant, MetaVariant] = [
   {
-    title: "Palace of Roman | Curated Luxury Menswear & Womenswear",
+    title: "Palace of Roman | The Maisons Defining the Seasons",
     description:
-      "Discover handpicked designer pieces from the world's leading maisons. New arrivals weekly. Express delivery and free returns.",
+      "The maisons defining the seasons — curated luxury menswear and womenswear from the world's leading designer houses. Authenticated. Express delivery.",
   },
   {
-    title: "Palace of Roman — Designer Fashion, Edited",
+    title: "The Maisons Defining the Seasons | Palace of Roman",
     description:
-      "A curated edit of luxury menswear and womenswear from Prada, Gucci, Bottega Veneta, Saint Laurent and more. Authenticated. Worldwide shipping.",
+      "A curated edit of luxury fashion from the maisons defining the seasons. Prada, Gucci, Bottega Veneta, Saint Laurent and more. Authenticated. Worldwide shipping.",
   },
 ];
 
