@@ -603,6 +603,135 @@ export type Database = {
         }
         Relationships: []
       }
+      gsc_alerts: {
+        Row: {
+          alert_type: string
+          created_at: string
+          emailed: boolean
+          id: string
+          message: string
+          metric_data: Json
+          resolved_at: string | null
+          severity: string
+          title: string
+        }
+        Insert: {
+          alert_type: string
+          created_at?: string
+          emailed?: boolean
+          id?: string
+          message: string
+          metric_data?: Json
+          resolved_at?: string | null
+          severity: string
+          title: string
+        }
+        Update: {
+          alert_type?: string
+          created_at?: string
+          emailed?: boolean
+          id?: string
+          message?: string
+          metric_data?: Json
+          resolved_at?: string | null
+          severity?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      gsc_daily_snapshots: {
+        Row: {
+          clicks: number
+          created_at: string
+          ctr: number
+          impressions: number
+          indexed_count: number | null
+          position: number
+          raw: Json | null
+          sitemap_errors: number
+          sitemap_warnings: number
+          snapshot_date: string
+          top_pages: Json
+          top_queries: Json
+        }
+        Insert: {
+          clicks?: number
+          created_at?: string
+          ctr?: number
+          impressions?: number
+          indexed_count?: number | null
+          position?: number
+          raw?: Json | null
+          sitemap_errors?: number
+          sitemap_warnings?: number
+          snapshot_date: string
+          top_pages?: Json
+          top_queries?: Json
+        }
+        Update: {
+          clicks?: number
+          created_at?: string
+          ctr?: number
+          impressions?: number
+          indexed_count?: number | null
+          position?: number
+          raw?: Json | null
+          sitemap_errors?: number
+          sitemap_warnings?: number
+          snapshot_date?: string
+          top_pages?: Json
+          top_queries?: Json
+        }
+        Relationships: []
+      }
+      gsc_weekly_reviews: {
+        Row: {
+          action_items: Json
+          clicks: number
+          clicks_wow_pct: number | null
+          created_at: string
+          ctr: number
+          id: string
+          impressions: number
+          impressions_wow_pct: number | null
+          position: number
+          summary: string | null
+          top_pages: Json
+          top_queries: Json
+          week_start: string
+        }
+        Insert: {
+          action_items?: Json
+          clicks?: number
+          clicks_wow_pct?: number | null
+          created_at?: string
+          ctr?: number
+          id?: string
+          impressions?: number
+          impressions_wow_pct?: number | null
+          position?: number
+          summary?: string | null
+          top_pages?: Json
+          top_queries?: Json
+          week_start: string
+        }
+        Update: {
+          action_items?: Json
+          clicks?: number
+          clicks_wow_pct?: number | null
+          created_at?: string
+          ctr?: number
+          id?: string
+          impressions?: number
+          impressions_wow_pct?: number | null
+          position?: number
+          summary?: string | null
+          top_pages?: Json
+          top_queries?: Json
+          week_start?: string
+        }
+        Relationships: []
+      }
       homepage_daily_layout: {
         Row: {
           created_at: string
