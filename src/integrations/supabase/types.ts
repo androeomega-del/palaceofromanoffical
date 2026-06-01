@@ -428,6 +428,8 @@ export type Database = {
       }
       daily_tasks: {
         Row: {
+          action_label: string | null
+          action_url: string | null
           category: string
           completed_at: string | null
           completed_by: string | null
@@ -448,6 +450,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          action_label?: string | null
+          action_url?: string | null
           category?: string
           completed_at?: string | null
           completed_by?: string | null
@@ -468,6 +472,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          action_label?: string | null
+          action_url?: string | null
           category?: string
           completed_at?: string | null
           completed_by?: string | null
