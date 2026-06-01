@@ -12,6 +12,7 @@ import {
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, RefreshCw, AlertTriangle, CheckCircle2, Calendar } from "lucide-react";
+import { GscExtrasTabs } from "@/components/admin/GscExtrasTabs";
 
 export const Route = createFileRoute("/admin/gsc-monitor")({
   ssr: false,
