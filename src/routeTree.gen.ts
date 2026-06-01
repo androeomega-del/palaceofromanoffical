@@ -90,6 +90,7 @@ import { Route as AdminLandingPagesRouteImport } from './routes/admin.landing-pa
 import { Route as AdminInventorySyncRouteImport } from './routes/admin.inventory-sync'
 import { Route as AdminInboxRouteImport } from './routes/admin.inbox'
 import { Route as AdminHomepageCurationRouteImport } from './routes/admin.homepage-curation'
+import { Route as AdminGscMonitorRouteImport } from './routes/admin.gsc-monitor'
 import { Route as AdminGrowthOsRouteImport } from './routes/admin.growth-os'
 import { Route as AdminEmailRecoveryRouteImport } from './routes/admin.email-recovery'
 import { Route as AdminEmailCaptureRouteImport } from './routes/admin.email-capture'
@@ -546,6 +547,11 @@ const AdminHomepageCurationRoute = AdminHomepageCurationRouteImport.update({
   path: '/admin/homepage-curation',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminGscMonitorRoute = AdminGscMonitorRouteImport.update({
+  id: '/admin/gsc-monitor',
+  path: '/admin/gsc-monitor',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminGrowthOsRoute = AdminGrowthOsRouteImport.update({
   id: '/admin/growth-os',
   path: '/admin/growth-os',
@@ -810,6 +816,7 @@ export interface FileRoutesByFullPath {
   '/admin/email-capture': typeof AdminEmailCaptureRoute
   '/admin/email-recovery': typeof AdminEmailRecoveryRoute
   '/admin/growth-os': typeof AdminGrowthOsRoute
+  '/admin/gsc-monitor': typeof AdminGscMonitorRoute
   '/admin/homepage-curation': typeof AdminHomepageCurationRoute
   '/admin/inbox': typeof AdminInboxRoute
   '/admin/inventory-sync': typeof AdminInventorySyncRoute
@@ -931,6 +938,7 @@ export interface FileRoutesByTo {
   '/admin/email-capture': typeof AdminEmailCaptureRoute
   '/admin/email-recovery': typeof AdminEmailRecoveryRoute
   '/admin/growth-os': typeof AdminGrowthOsRoute
+  '/admin/gsc-monitor': typeof AdminGscMonitorRoute
   '/admin/homepage-curation': typeof AdminHomepageCurationRoute
   '/admin/inbox': typeof AdminInboxRoute
   '/admin/inventory-sync': typeof AdminInventorySyncRoute
@@ -1053,6 +1061,7 @@ export interface FileRoutesById {
   '/admin/email-capture': typeof AdminEmailCaptureRoute
   '/admin/email-recovery': typeof AdminEmailRecoveryRoute
   '/admin/growth-os': typeof AdminGrowthOsRoute
+  '/admin/gsc-monitor': typeof AdminGscMonitorRoute
   '/admin/homepage-curation': typeof AdminHomepageCurationRoute
   '/admin/inbox': typeof AdminInboxRoute
   '/admin/inventory-sync': typeof AdminInventorySyncRoute
@@ -1177,6 +1186,7 @@ export interface FileRouteTypes {
     | '/admin/email-capture'
     | '/admin/email-recovery'
     | '/admin/growth-os'
+    | '/admin/gsc-monitor'
     | '/admin/homepage-curation'
     | '/admin/inbox'
     | '/admin/inventory-sync'
@@ -1298,6 +1308,7 @@ export interface FileRouteTypes {
     | '/admin/email-capture'
     | '/admin/email-recovery'
     | '/admin/growth-os'
+    | '/admin/gsc-monitor'
     | '/admin/homepage-curation'
     | '/admin/inbox'
     | '/admin/inventory-sync'
@@ -1419,6 +1430,7 @@ export interface FileRouteTypes {
     | '/admin/email-capture'
     | '/admin/email-recovery'
     | '/admin/growth-os'
+    | '/admin/gsc-monitor'
     | '/admin/homepage-curation'
     | '/admin/inbox'
     | '/admin/inventory-sync'
@@ -1539,6 +1551,7 @@ export interface RootRouteChildren {
   AdminEmailCaptureRoute: typeof AdminEmailCaptureRoute
   AdminEmailRecoveryRoute: typeof AdminEmailRecoveryRoute
   AdminGrowthOsRoute: typeof AdminGrowthOsRoute
+  AdminGscMonitorRoute: typeof AdminGscMonitorRoute
   AdminHomepageCurationRoute: typeof AdminHomepageCurationRoute
   AdminInboxRoute: typeof AdminInboxRoute
   AdminInventorySyncRoute: typeof AdminInventorySyncRoute
@@ -2176,6 +2189,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminHomepageCurationRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/gsc-monitor': {
+      id: '/admin/gsc-monitor'
+      path: '/admin/gsc-monitor'
+      fullPath: '/admin/gsc-monitor'
+      preLoaderRoute: typeof AdminGscMonitorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/growth-os': {
       id: '/admin/growth-os'
       path: '/admin/growth-os'
@@ -2563,6 +2583,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminEmailCaptureRoute: AdminEmailCaptureRoute,
   AdminEmailRecoveryRoute: AdminEmailRecoveryRoute,
   AdminGrowthOsRoute: AdminGrowthOsRoute,
+  AdminGscMonitorRoute: AdminGscMonitorRoute,
   AdminHomepageCurationRoute: AdminHomepageCurationRoute,
   AdminInboxRoute: AdminInboxRoute,
   AdminInventorySyncRoute: AdminInventorySyncRoute,
