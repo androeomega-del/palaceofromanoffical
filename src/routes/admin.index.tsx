@@ -16,6 +16,7 @@ import {
   TrendingUp,
   Star,
   Inbox,
+  ListChecks,
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin/")({
@@ -35,6 +36,12 @@ type Tile = {
 };
 
 const TILES: Tile[] = [
+  {
+    to: "/admin/daily-tasks",
+    label: "Daily Tasks",
+    desc: "Persistent checklist with completion tracking",
+    icon: ListChecks,
+  },
   {
     to: "/admin/homepage-curation",
     label: "Homepage Curation",
