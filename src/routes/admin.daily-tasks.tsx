@@ -71,6 +71,8 @@ type DailyTask = {
   completed_at: string | null;
   created_at: string;
   updated_at: string;
+  action_url: string | null;
+  action_label: string | null;
 };
 
 type Completion = {
