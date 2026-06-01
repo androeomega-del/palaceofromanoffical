@@ -301,6 +301,45 @@ function DailyTasksPage() {
     const active7 = series7.filter((d) => d.count > 0).length;
     const active30 = series30.filter((d) => d.count > 0).length;
 
+    // Weekly metrics (Mon–Sun)
+    const ws = getWeekStart();
+    const we = getWeekEnd();
+    const tasksDueWeek = all.filter(
+      (t) => t.due_date != null && t.due_date >= ws && t.due_date <= we
+    );
+    const weekComps = comps.filter((c) => c.completed_on >= ws && c.completed_on <= we);
+    const weekDone = weekComps.length;
+    const weekDueCount = tasksDueWeek.length;
+    const weekRate = weekDueCount === 0 ? 0 : Math.round((tasksDueWeek.filter((t) => t.status === "done").length / weekDueCount) * 100);
+    const weekActiveDays = new Set(weekComps.map((c) => c.completed_on)).size;
+    const weekSeries: { date: string; count: number }[] = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(ws + "T00:00:00Z");
+      d.setUTCDate(d.getUTCDate() + i);
+      const ds = d.toISOString().slice(0, 10);
+      weekSeries.push({ date: ds, count: comps.filter((c) => c.completed_on === ds).length });
+    }
+
+    // Monthly metrics (1st–end)
+    const ms = getMonthStart();
+    const me = getMonthEnd();
+    const tasksDueMonth = all.filter(
+      (t) => t.due_date != null && t.due_date >= ms && t.due_date <= me
+    );
+    const monthComps = comps.filter((c) => c.completed_on >= ms && c.completed_on <= me);
+    const monthDone = monthComps.length;
+    const monthDueCount = tasksDueMonth.length;
+    const monthRate = monthDueCount === 0 ? 0 : Math.round((tasksDueMonth.filter((t) => t.status === "done").length / monthDueCount) * 100);
+    const monthActiveDays = new Set(monthComps.map((c) => c.completed_on)).size;
+    const monthDays = new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth() + 1, 0)).getUTCDate();
+    const monthSeries: { date: string; count: number }[] = [];
+    for (let i = 0; i < monthDays; i++) {
+      const d = new Date(ms + "T00:00:00Z");
+      d.setUTCDate(d.getUTCDate() + i);
+      const ds = d.toISOString().slice(0, 10);
+      monthSeries.push({ date: ds, count: comps.filter((c) => c.completed_on === ds).length });
+    }
+
     return {
       total,
       open,
@@ -314,6 +353,26 @@ function DailyTasksPage() {
       series30,
       active7,
       active30,
+      week: {
+        label: `${ws.slice(5)} – ${we.slice(5)}`,
+        start: ws,
+        end: we,
+        rate: weekRate,
+        done: weekDone,
+        due: weekDueCount,
+        activeDays: weekActiveDays,
+        series: weekSeries,
+      },
+      month: {
+        label: `${ms.slice(0, 7)}`,
+        start: ms,
+        end: me,
+        rate: monthRate,
+        done: monthDone,
+        due: monthDueCount,
+        activeDays: monthActiveDays,
+        series: monthSeries,
+      },
     };
   }, [tasks, completions, today]);
 
