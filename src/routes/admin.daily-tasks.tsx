@@ -27,7 +27,19 @@ import {
   CalendarClock,
   Repeat,
   BarChart3,
+  ExternalLink,
+  AlertTriangle,
+  ListPlus,
 } from "lucide-react";
+import { resolveTaskAction, getTemplatesFor } from "@/lib/daily-task-helpers";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
 export const Route = createFileRoute("/admin/daily-tasks")({
   ssr: false,
@@ -59,6 +71,8 @@ type DailyTask = {
   completed_at: string | null;
   created_at: string;
   updated_at: string;
+  action_url: string | null;
+  action_label: string | null;
 };
 
 type Completion = {
@@ -129,6 +143,9 @@ function DailyTasksPage() {
   const qc = useQueryClient();
   const [filter, setFilter] = useState<"all" | "open" | "done" | "today" | "overdue">("open");
   const [showNew, setShowNew] = useState(false);
+  const [bulkMode, setBulkMode] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [reminderDismissed, setReminderDismissed] = useState(false);
 
   // Auto-rollover on mount
   useEffect(() => {
@@ -236,7 +253,51 @@ function DailyTasksPage() {
     onError: (e: Error) => toast.error("Rollover failed", { description: e.message }),
   });
 
+  const bulkComplete = useMutation({
+    mutationFn: async (ids: string[]) => {
+      const { error } = await supabase
+        .from("daily_tasks")
+        .update({ status: "done" })
+        .in("id", ids);
+      if (error) throw error;
+      return ids.length;
+    },
+    onSuccess: (n) => {
+      toast.success(`Marked ${n} task${n === 1 ? "" : "s"} done`);
+      setSelected(new Set());
+      setBulkMode(false);
+      qc.invalidateQueries({ queryKey: ["admin", "daily-tasks"] });
+      qc.invalidateQueries({ queryKey: ["admin", "daily-task-completions"] });
+    },
+    onError: (e: Error) => toast.error("Bulk update failed", { description: e.message }),
+  });
+
   const today = todayISO();
+
+  // Reminder: one-shot toast on mount if there are overdue or due-today open tasks
+  const overdueCount = (tasks ?? []).filter(
+    (t) => t.status !== "done" && t.due_date != null && t.due_date < today
+  ).length;
+  const dueTodayOpenCount = (tasks ?? []).filter(
+    (t) => t.status !== "done" && t.due_date === today
+  ).length;
+
+  useEffect(() => {
+    if (!tasks) return;
+    if (overdueCount === 0 && dueTodayOpenCount === 0) return;
+    const key = `dt-reminder-${today}`;
+    if (typeof window === "undefined") return;
+    if (sessionStorage.getItem(key)) return;
+    sessionStorage.setItem(key, "1");
+    const parts: string[] = [];
+    if (overdueCount > 0) parts.push(`${overdueCount} overdue`);
+    if (dueTodayOpenCount > 0) parts.push(`${dueTodayOpenCount} due today`);
+    toast.warning("Daily tasks need attention", {
+      description: parts.join(" · "),
+      duration: 8000,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tasks?.length]);
 
   const filtered = (tasks ?? [])
     .filter((t) => {
@@ -437,6 +498,43 @@ function DailyTasksPage() {
           />
         )}
 
+        {/* Reminder banner */}
+        {!reminderDismissed && (overdueCount > 0 || dueTodayOpenCount > 0) && (
+          <Card className="p-3 mb-4 border-amber-300 bg-amber-50">
+            <div className="flex items-center gap-3 flex-wrap">
+              <AlertTriangle className="h-4 w-4 text-amber-700 flex-shrink-0" />
+              <div className="text-xs text-amber-900 flex-1 min-w-0">
+                <span className="font-medium">Reminder:</span>{" "}
+                {overdueCount > 0 && (
+                  <button
+                    onClick={() => setFilter("overdue")}
+                    className="underline hover:no-underline"
+                  >
+                    {overdueCount} overdue
+                  </button>
+                )}
+                {overdueCount > 0 && dueTodayOpenCount > 0 && " · "}
+                {dueTodayOpenCount > 0 && (
+                  <button
+                    onClick={() => setFilter("today")}
+                    className="underline hover:no-underline"
+                  >
+                    {dueTodayOpenCount} due today
+                  </button>
+                )}
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 text-xs"
+                onClick={() => setReminderDismissed(true)}
+              >
+                Dismiss
+              </Button>
+            </div>
+          </Card>
+        )}
+
         <div className="mb-4 flex items-center gap-1 flex-wrap">
           {(["open", "today", "overdue", "all", "done"] as const).map((f) => (
             <button
@@ -451,7 +549,56 @@ function DailyTasksPage() {
               {f}
             </button>
           ))}
+          <div className="flex-1" />
+          <Button
+            variant={bulkMode ? "default" : "outline"}
+            size="sm"
+            onClick={() => {
+              setBulkMode((v) => !v);
+              setSelected(new Set());
+            }}
+          >
+            {bulkMode ? "Exit bulk" : "Bulk mode"}
+          </Button>
         </div>
+
+        {bulkMode && (
+          <Card className="p-3 mb-3 flex items-center gap-3 flex-wrap bg-slate-50">
+            <div className="text-xs">
+              <span className="font-medium">{selected.size}</span> selected
+            </div>
+            <button
+              type="button"
+              className="text-xs underline text-muted-foreground hover:text-foreground"
+              onClick={() => {
+                const openIds = filtered.filter((t) => t.status !== "done").map((t) => t.id);
+                setSelected(new Set(openIds));
+              }}
+            >
+              Select all open (visible)
+            </button>
+            <button
+              type="button"
+              className="text-xs underline text-muted-foreground hover:text-foreground"
+              onClick={() => setSelected(new Set())}
+            >
+              Clear
+            </button>
+            <div className="flex-1" />
+            <Button
+              size="sm"
+              disabled={selected.size === 0 || bulkComplete.isPending}
+              onClick={() => bulkComplete.mutate(Array.from(selected))}
+            >
+              {bulkComplete.isPending ? (
+                <Loader2 className="h-3 w-3 animate-spin mr-2" />
+              ) : (
+                <CheckCircle2 className="h-3 w-3 mr-2" />
+              )}
+              Mark {selected.size || ""} done
+            </Button>
+          </Card>
+        )}
 
         {isLoading ? (
           <Card className="p-12 text-center text-sm text-muted-foreground">
@@ -468,6 +615,16 @@ function DailyTasksPage() {
                 key={t.id}
                 task={t}
                 today={today}
+                bulkMode={bulkMode}
+                selected={selected.has(t.id)}
+                onSelectToggle={() => {
+                  setSelected((prev) => {
+                    const next = new Set(prev);
+                    if (next.has(t.id)) next.delete(t.id);
+                    else next.add(t.id);
+                    return next;
+                  });
+                }}
                 onToggle={() =>
                   updateTask.mutate({
                     id: t.id,
@@ -479,6 +636,9 @@ function DailyTasksPage() {
                 onDueDateChange={(due_date) => updateTask.mutate({ id: t.id, due_date })}
                 onRecurrenceChange={(recurrence) =>
                   updateTask.mutate({ id: t.id, recurrence })
+                }
+                onActionChange={(action_url, action_label) =>
+                  updateTask.mutate({ id: t.id, action_url, action_label })
                 }
                 onDelete={() => {
                   if (confirm(`Delete "${t.title}"?`)) deleteTask.mutate(t.id);
@@ -808,20 +968,28 @@ function NewTaskForm({
 function TaskRow({
   task,
   today,
+  bulkMode,
+  selected,
+  onSelectToggle,
   onToggle,
   onStatusChange,
   onNotesChange,
   onDueDateChange,
   onRecurrenceChange,
+  onActionChange,
   onDelete,
 }: {
   task: DailyTask;
   today: string;
+  bulkMode: boolean;
+  selected: boolean;
+  onSelectToggle: () => void;
   onToggle: () => void;
   onStatusChange: (s: DailyTask["status"]) => void;
   onNotesChange: (n: string) => void;
   onDueDateChange: (d: string | null) => void;
   onRecurrenceChange: (r: Recurrence) => void;
+  onActionChange: (url: string | null, label: string | null) => void;
   onDelete: () => void;
 }) {
   const [expanded, setExpanded] = useState(false);
@@ -829,11 +997,18 @@ function TaskRow({
   const done = task.status === "done";
   const overdue = !done && task.due_date != null && task.due_date < today;
   const dueToday = task.due_date === today;
+  const action = resolveTaskAction(task);
+  const templates = getTemplatesFor(task.category);
 
   return (
-    <Card className={`p-4 ${done ? "opacity-60" : ""} ${overdue ? "border-red-300" : ""}`}>
+    <Card className={`p-4 ${done ? "opacity-60" : ""} ${overdue ? "border-red-300" : ""} ${selected ? "ring-2 ring-foreground" : ""}`}>
       <div className="flex items-start gap-3">
-        <Checkbox checked={done} onCheckedChange={onToggle} className="mt-1" />
+        <Checkbox
+          checked={bulkMode ? selected : done}
+          onCheckedChange={bulkMode ? onSelectToggle : onToggle}
+          className="mt-1"
+        />
+
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-3 flex-wrap">
             <button
@@ -872,6 +1047,25 @@ function TaskRow({
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
                 {task.category}
               </span>
+              {action && (
+                <Button
+                  asChild
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-xs"
+                  title={action.label}
+                >
+                  <a
+                    href={action.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <ExternalLink className="h-3 w-3 mr-1" />
+                    Open
+                  </a>
+                </Button>
+              )}
               <Select
                 value={task.status}
                 onValueChange={(v) => onStatusChange(v as DailyTask["status"])}
@@ -926,6 +1120,67 @@ function TaskRow({
                   </SelectContent>
                 </Select>
               </div>
+
+              {/* Custom deep-link override */}
+              <div className="flex flex-wrap gap-2 items-center">
+                <label className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                  Action link
+                </label>
+                <Input
+                  placeholder="/admin/… or https://…"
+                  value={task.action_url ?? ""}
+                  onChange={(e) =>
+                    onActionChange(e.target.value || null, task.action_label)
+                  }
+                  className="w-56 h-8 text-xs"
+                />
+                <Input
+                  placeholder="Button label"
+                  value={task.action_label ?? ""}
+                  onChange={(e) =>
+                    onActionChange(task.action_url, e.target.value || null)
+                  }
+                  className="w-40 h-8 text-xs"
+                />
+                {!task.action_url && action && (
+                  <span className="text-[10px] text-muted-foreground">
+                    Default: {action.url}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex items-center justify-between gap-2">
+                <label className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                  Notes / outcome
+                </label>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" className="h-7 text-xs">
+                      <ListPlus className="h-3 w-3 mr-1" />
+                      Insert template
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuLabel className="text-[10px] uppercase tracking-wider">
+                      {task.category} templates
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    {templates.map((tpl) => (
+                      <DropdownMenuItem
+                        key={tpl.id}
+                        onClick={() => {
+                          const prefix = notesDraft.trim() ? notesDraft.trim() + "\n\n" : "";
+                          const next = prefix + tpl.body;
+                          setNotesDraft(next);
+                          onNotesChange(next);
+                        }}
+                      >
+                        {tpl.label}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
               <Textarea
                 placeholder="Notes…"
                 value={notesDraft}
@@ -933,8 +1188,10 @@ function TaskRow({
                 onBlur={() => {
                   if (notesDraft !== (task.notes ?? "")) onNotesChange(notesDraft);
                 }}
-                rows={3}
+                rows={6}
+                className="font-mono text-xs"
               />
+
               <div className="text-[10px] uppercase tracking-wider text-muted-foreground flex items-center gap-3 flex-wrap">
                 {task.completed_at && (
                   <span className="inline-flex items-center gap-1 text-emerald-700">
