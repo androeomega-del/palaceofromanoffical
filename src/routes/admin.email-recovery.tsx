@@ -610,6 +610,13 @@ function AdminEmailRecovery() {
     };
   }, [filteredCarts]);
 
+  const trend = useMemo(() => {
+    const fromT = fromDate ? new Date(fromDate + "T00:00:00").getTime() : Date.now() - 30 * 86400_000;
+    const toT = toDate ? new Date(toDate + "T23:59:59").getTime() : Date.now();
+    return buildTrendBuckets(filteredCarts, fromT, toT);
+  }, [filteredCarts, fromDate, toDate]);
+
+
   return (
     <main className="min-h-screen bg-canvas px-6 py-12 md:py-16">
       <div className="max-w-6xl mx-auto">
