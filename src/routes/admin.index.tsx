@@ -103,6 +103,12 @@ const TILES: Tile[] = [
     icon: Search,
   },
   {
+    to: "/admin/gsc-monitor",
+    label: "GSC Monitor",
+    desc: "Daily snapshots, spike alerts, weekly review",
+    icon: Search,
+  },
+  {
     to: "/admin/shopify-sync",
     label: "Shopify Sync",
     desc: "Variant map and tag sync runs",
