@@ -386,7 +386,7 @@ export async function getLatestRedirectAudit(): Promise<{
   status_404: number;
   status_200: number;
   status_other: number;
-  by_locale: Record<string, unknown>;
+  by_locale: RedirectAuditResult["by_locale"];
   results: Array<{ url: string; status: number; location: string | null; locale: string | null }>;
 } | null> {
   const { data, error } = await supabaseAdmin
