@@ -153,12 +153,12 @@ const BRAND_TILES: ReadonlyArray<{ name: string; image: string }> = [
 
 function NewInRail() {
   return (
-    <section aria-label="Featured Brands" className="bg-canvas pt-14 md:pt-20">
+    <section aria-label="The Euphoria Edit" className="bg-canvas pt-14 md:pt-20">
       <div className="max-w-screen-2xl mx-auto px-6 md:px-10">
         <div className="flex items-end justify-between gap-6 mb-7 md:mb-9">
           <div>
             <h2 className="font-serif text-subhead-md md:text-subhead-lg text-ink mb-2">
-              Featured Brands
+              The Euphoria Edit
             </h2>
             <p className="text-eyebrow uppercase text-bronze-deep">
               The maisons defining the season
