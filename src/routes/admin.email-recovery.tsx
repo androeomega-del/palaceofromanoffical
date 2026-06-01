@@ -48,7 +48,169 @@ function Stat({
   );
 }
 
-function formatWhen(iso: string): string {
+function formatWhen(iso: string | null): string {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  return d.toLocaleString("en-US", {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+function fmtDuration(min: number): string {
+  if (!min || min <= 0) return "—";
+  if (min < 60) return `${Math.round(min)}m`;
+  const h = min / 60;
+  if (h < 48) return `${h.toFixed(1)}h`;
+  return `${(h / 24).toFixed(1)}d`;
+}
+
+type CartDetail = {
+  id: string;
+  email: string;
+  customer_name: string | null;
+  session_id: string | null;
+  total_usd: number;
+  item_count: number;
+  items: unknown;
+  page_path: string | null;
+  user_agent: string | null;
+  checkout_url: string | null;
+  created_at: string;
+  last_activity_at: string;
+  updated_at: string;
+  first_add_at: string | null;
+  last_add_at: string | null;
+  checkout_started_at: string | null;
+  reached_checkout_at: string | null;
+  recovery_email_sent_at: string | null;
+  recovery_email_count: number;
+  recovered_at: string | null;
+  event_count: number;
+  events: Array<{
+    id: string;
+    event_type: string;
+    product_handle: string | null;
+    product_title: string | null;
+    variant_title: string | null;
+    quantity: number;
+    price_usd: number | null;
+    page_path: string | null;
+    created_at: string;
+  }>;
+};
+
+function CartDetailRow({ cart: c }: { cart: CartDetail }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <tr className="border-t border-ink/10 hover:bg-muted/30 cursor-pointer" onClick={() => setOpen((v) => !v)}>
+        <td className="p-3 font-mono truncate max-w-[220px]" title={c.email}>
+          {c.email}
+          {c.customer_name ? (
+            <div className="text-[10px] text-muted-foreground">{c.customer_name}</div>
+          ) : null}
+        </td>
+        <td className="p-3 text-right tabular-nums">{c.item_count}</td>
+        <td className="p-3 text-right tabular-nums">{usd(c.total_usd)}</td>
+        <td className="p-3 whitespace-nowrap">{formatWhen(c.created_at)}</td>
+        <td className="p-3 whitespace-nowrap">{formatWhen(c.first_add_at)}</td>
+        <td className="p-3 whitespace-nowrap">{formatWhen(c.last_add_at)}</td>
+        <td className="p-3 whitespace-nowrap">
+          {c.reached_checkout_at
+            ? formatWhen(c.reached_checkout_at)
+            : c.checkout_started_at
+              ? formatWhen(c.checkout_started_at)
+              : "—"}
+        </td>
+        <td className="p-3 whitespace-nowrap">{formatWhen(c.last_activity_at)}</td>
+        <td className="p-3 whitespace-nowrap">
+          {c.recovery_email_sent_at ? (
+            <span>
+              {formatWhen(c.recovery_email_sent_at)}
+              {c.recovery_email_count > 1 ? (
+                <span className="ml-1 text-muted-foreground">×{c.recovery_email_count}</span>
+              ) : null}
+            </span>
+          ) : (
+            "—"
+          )}
+        </td>
+        <td className="p-3 whitespace-nowrap">
+          {c.recovered_at ? (
+            <span className="text-emerald-700">{formatWhen(c.recovered_at)}</span>
+          ) : (
+            "—"
+          )}
+        </td>
+        <td className="p-3 text-right tabular-nums">{c.event_count}</td>
+      </tr>
+      {open ? (
+        <tr className="bg-muted/20">
+          <td colSpan={11} className="p-4">
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">
+                  Session context
+                </div>
+                <dl className="text-xs space-y-1">
+                  <div className="flex gap-2"><dt className="text-muted-foreground w-24">Session</dt><dd className="font-mono break-all">{c.session_id ?? "—"}</dd></div>
+                  <div className="flex gap-2"><dt className="text-muted-foreground w-24">Page</dt><dd className="break-all">{c.page_path ?? "—"}</dd></div>
+                  <div className="flex gap-2"><dt className="text-muted-foreground w-24">User agent</dt><dd className="break-all">{c.user_agent ?? "—"}</dd></div>
+                  <div className="flex gap-2"><dt className="text-muted-foreground w-24">Updated</dt><dd>{formatWhen(c.updated_at)}</dd></div>
+                  {c.checkout_url ? (
+                    <div className="flex gap-2">
+                      <dt className="text-muted-foreground w-24">Checkout</dt>
+                      <dd className="break-all">
+                        <a className="underline" href={c.checkout_url} target="_blank" rel="noreferrer">
+                          Open
+                        </a>
+                      </dd>
+                    </div>
+                  ) : null}
+                </dl>
+              </div>
+              <div>
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">
+                  Event timeline ({c.events.length} of {c.event_count})
+                </div>
+                {c.events.length === 0 ? (
+                  <p className="text-xs text-muted-foreground">
+                    No granular cart_events for this session.
+                  </p>
+                ) : (
+                  <ul className="text-xs space-y-1 max-h-72 overflow-auto">
+                    {c.events.map((e) => (
+                      <li key={e.id} className="flex gap-3 border-b border-ink/5 pb-1">
+                        <span className="text-muted-foreground whitespace-nowrap w-32">
+                          {formatWhen(e.created_at)}
+                        </span>
+                        <span className="uppercase tracking-wider text-[10px] w-28">
+                          {e.event_type}
+                        </span>
+                        <span className="flex-1 truncate">
+                          {e.product_title ?? e.product_handle ?? "—"}
+                          {e.variant_title ? ` · ${e.variant_title}` : ""}
+                          {e.quantity && e.quantity > 1 ? ` ×${e.quantity}` : ""}
+                        </span>
+                        <span className="tabular-nums text-muted-foreground">
+                          {e.price_usd != null ? usd(Number(e.price_usd)) : ""}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          </td>
+        </tr>
+      ) : null}
+    </>
+  );
+}
+
   const d = new Date(iso);
   return d.toLocaleString("en-US", {
     month: "short",
