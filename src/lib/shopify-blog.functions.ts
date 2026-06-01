@@ -139,7 +139,7 @@ export const getJournalArticleByHandle = createServerFn({ method: "GET" })
       handle: a.handle,
       title: a.title,
       excerpt: a.excerpt,
-      contentHtml: a.contentHtml,
+      contentHtml: sanitizeArticleHtml(a.contentHtml),
       publishedAt: a.publishedAt,
       authorName: a.authorV2?.name ?? null,
       image: a.image,
