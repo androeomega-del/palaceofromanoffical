@@ -463,46 +463,118 @@ function AdminEmailRecovery() {
               </div>
             </section>
 
-            {/* Behavioral cohort timing */}
+            {/* Date range filter — applies to Behavioral Timing + Cart Detail */}
+            <section>
+              <Card className="p-4 flex flex-wrap items-end gap-4">
+                <div>
+                  <label className="block text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+                    From
+                  </label>
+                  <input
+                    type="date"
+                    value={fromDate}
+                    max={toDate}
+                    onChange={(e) => setFromDate(e.target.value)}
+                    className="border border-ink/20 rounded px-2 py-1 text-sm bg-background"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+                    To
+                  </label>
+                  <input
+                    type="date"
+                    value={toDate}
+                    min={fromDate}
+                    onChange={(e) => setToDate(e.target.value)}
+                    className="border border-ink/20 rounded px-2 py-1 text-sm bg-background"
+                  />
+                </div>
+                <div className="flex gap-2">
+                  {[
+                    { label: "7d", days: 7 },
+                    { label: "30d", days: 30 },
+                    { label: "All", days: 365 },
+                  ].map((p) => (
+                    <Button
+                      key={p.label}
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setFromDate(toLocalDateInput(new Date(Date.now() - p.days * 86400_000)));
+                        setToDate(toLocalDateInput(new Date()));
+                      }}
+                    >
+                      {p.label}
+                    </Button>
+                  ))}
+                </div>
+                <div className="ml-auto text-xs text-muted-foreground">
+                  {filteredCarts.length} cart{filteredCarts.length === 1 ? "" : "s"} in range
+                </div>
+              </Card>
+            </section>
+
+            {/* Behavioral cohort timing (filtered) */}
             <section>
               <h2 className="font-serif text-2xl mb-4">Behavioral Timing</h2>
               <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
                 <Stat
                   label="Median cart age"
-                  value={fmtDuration(data.cohort.medianAgeMin)}
+                  value={fmtDuration(filteredCohort.medianAgeMin)}
                   hint="Created → last activity"
                 />
                 <Stat
                   label="Median time → 1st email"
-                  value={fmtDuration(data.cohort.medianTimeToFirstEmailMin)}
+                  value={fmtDuration(filteredCohort.medianTimeToFirstEmailMin)}
                   hint="Cart created → recovery sent"
                 />
                 <Stat
                   label="Median time → recovery"
-                  value={fmtDuration(data.cohort.medianTimeToRecoverMin)}
+                  value={fmtDuration(filteredCohort.medianTimeToRecoverMin)}
                   hint="Email sent → purchase"
                   tone="good"
                 />
                 <Stat
                   label="Reached checkout step"
-                  value={fmt(data.cohort.withCheckoutStarted)}
-                  hint="Of latest 100 carts"
+                  value={fmt(filteredCohort.withCheckoutStarted)}
+                  hint={`Of ${filteredCarts.length} carts in range`}
                 />
                 <Stat
                   label="Reached Shopify checkout"
-                  value={fmt(data.cohort.withReachedCheckout)}
-                  hint="Of latest 100 carts"
+                  value={fmt(filteredCohort.withReachedCheckout)}
+                  hint={`Of ${filteredCarts.length} carts in range`}
                 />
               </div>
+              {filteredCohort.gappy > 0 ? (
+                <p className="mt-3 text-xs text-amber-700 flex items-center gap-1.5">
+                  <AlertTriangle className="h-3.5 w-3.5" />
+                  {filteredCohort.gappy} of {filteredCarts.length} carts have missing
+                  timestamps (created · first add · checkout reached · email sent). Open a row
+                  to see which fields are missing.
+                </p>
+              ) : null}
             </section>
 
             {/* Detailed cart log — every timestamp */}
             <section>
-              <div className="flex items-baseline justify-between mb-4">
+              <div className="flex items-baseline justify-between mb-4 gap-4 flex-wrap">
                 <h2 className="font-serif text-2xl">Abandoned Cart Detail</h2>
-                <span className="text-xs text-muted-foreground">
-                  Latest {data.cartsDetail.length} · full timeline per cart
-                </span>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-muted-foreground">
+                    {filteredCarts.length} cart{filteredCarts.length === 1 ? "" : "s"} ·
+                    sparkline shows created → adds → checkout
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={filteredCarts.length === 0}
+                    onClick={() => exportCartsCsv(filteredCarts)}
+                  >
+                    <Download className="h-4 w-4 mr-1.5" /> CSV
+                  </Button>
+                </div>
               </div>
               <Card className="p-0 overflow-hidden">
                 <div className="overflow-x-auto">
@@ -520,16 +592,18 @@ function AdminEmailRecovery() {
                         <th className="text-left p-3">Email sent</th>
                         <th className="text-left p-3">Recovered</th>
                         <th className="text-right p-3">Events</th>
+                        <th className="text-left p-3">Timeline</th>
+                        <th className="text-left p-3">Gaps</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {data.cartsDetail.map((c) => (
+                      {filteredCarts.map((c) => (
                         <CartDetailRow key={c.id} cart={c} />
                       ))}
-                      {data.cartsDetail.length === 0 ? (
+                      {filteredCarts.length === 0 ? (
                         <tr>
-                          <td colSpan={11} className="p-6 text-center text-muted-foreground">
-                            No abandoned carts in the last 30 days.
+                          <td colSpan={13} className="p-6 text-center text-muted-foreground">
+                            No abandoned carts in selected range.
                           </td>
                         </tr>
                       ) : null}
@@ -538,6 +612,7 @@ function AdminEmailRecovery() {
                 </div>
               </Card>
             </section>
+
 
 
             {/* Dispatch health */}
