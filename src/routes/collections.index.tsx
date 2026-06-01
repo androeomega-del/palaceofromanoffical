@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, stripSearchParams } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { fetchCollections, type ShopifyCollection } from "@/lib/shopify";
@@ -75,6 +75,8 @@ export const Route = createFileRoute("/collections/")({
       sort: SORT_KEYS.includes(rawSort) ? rawSort : "popular",
     };
   },
+  // SEO: keep bare /collections canonical — don't 307 to ?filter=all&sort=popular.
+  search: { middlewares: [stripSearchParams({ filter: "all" as FilterKey, sort: "popular" as SortKey })] },
   head: () => {
     const title = "All Collections — Palace of Roman";
     const desc = "Browse every curated collection at Palace of Roman — women's, men's, designer edits and seasonal capsules.";

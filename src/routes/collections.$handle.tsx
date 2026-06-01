@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, redirect, stripSearchParams } from "@tanstack/react-router";
 import { canonicalCollectionHandle } from "@/lib/collection-canonical";
 import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo, useState, useEffect, useRef, useCallback } from "react";
@@ -161,6 +161,8 @@ export const Route = createFileRoute("/collections/$handle")({
     else sort = "BEST_SELLING-false";
     return { sort };
   },
+  // SEO: keep bare /collections/<handle> canonical — don't 307 to ?sort=…default.
+  search: { middlewares: [stripSearchParams({ sort: "BEST_SELLING-false" as SortValue })] },
   loader: async ({ params }) => {
     const [collectionRes, abRes] = await Promise.all([
       fetchCollection(params.handle, 1).catch(() => null),
