@@ -103,6 +103,119 @@ type CartDetail = {
   }>;
 };
 
+const GAP_FIELDS: Array<{ key: keyof CartDetail; label: string }> = [
+  { key: "created_at", label: "created" },
+  { key: "first_add_at", label: "first add" },
+  { key: "reached_checkout_at", label: "checkout reached" },
+  { key: "recovery_email_sent_at", label: "email sent" },
+];
+
+function detectGaps(c: CartDetail): string[] {
+  const gaps: string[] = [];
+  for (const f of GAP_FIELDS) {
+    if (!c[f.key]) gaps.push(f.label);
+  }
+  // Logical inconsistencies
+  if (c.first_add_at && c.item_count === 0) gaps.push("items empty after add");
+  if (c.recovered_at && !c.recovery_email_sent_at) gaps.push("recovered w/o email");
+  if (c.checkout_started_at && !c.first_add_at) gaps.push("checkout w/o add");
+  return gaps;
+}
+
+function CartSparkline({ cart: c }: { cart: CartDetail }) {
+  // Build timeline points: created, each add_to_cart, checkout_started, reached_checkout, email sent, recovered
+  const start = new Date(c.created_at).getTime();
+  const endCandidates = [
+    c.last_activity_at,
+    c.recovered_at,
+    c.recovery_email_sent_at,
+    c.reached_checkout_at,
+    c.last_add_at,
+  ]
+    .filter(Boolean)
+    .map((s) => new Date(s as string).getTime());
+  const end = Math.max(start + 60_000, ...endCandidates);
+  const span = Math.max(1, end - start);
+  const W = 160;
+  const H = 28;
+  const x = (iso: string | null) => {
+    if (!iso) return null;
+    const t = new Date(iso).getTime();
+    return Math.max(0, Math.min(W, ((t - start) / span) * W));
+  };
+  const addEvents = c.events.filter((e) => e.event_type === "add_to_cart");
+  const points: Array<{ x: number; color: string; title: string }> = [];
+  points.push({ x: 0, color: "#9ca3af", title: `created ${c.created_at}` });
+  for (const e of addEvents) {
+    const px = x(e.created_at);
+    if (px != null) points.push({ x: px, color: "#0d9488", title: `add_to_cart ${e.created_at}` });
+  }
+  const cs = x(c.checkout_started_at);
+  if (cs != null) points.push({ x: cs, color: "#2563eb", title: `checkout_started` });
+  const rc = x(c.reached_checkout_at);
+  if (rc != null) points.push({ x: rc, color: "#1d4ed8", title: `reached_checkout` });
+  const es = x(c.recovery_email_sent_at);
+  if (es != null) points.push({ x: es, color: "#a16207", title: `email_sent` });
+  const rv = x(c.recovered_at);
+  if (rv != null) points.push({ x: rv, color: "#059669", title: `recovered` });
+  return (
+    <svg width={W} height={H} className="block">
+      <line x1={0} x2={W} y1={H / 2} y2={H / 2} stroke="currentColor" strokeOpacity={0.15} />
+      {points.map((p, i) => (
+        <circle key={i} cx={p.x} cy={H / 2} r={3.5} fill={p.color}>
+          <title>{p.title}</title>
+        </circle>
+      ))}
+    </svg>
+  );
+}
+
+function csvEscape(v: unknown): string {
+  if (v == null) return "";
+  const s = String(v);
+  return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+
+function exportCartsCsv(carts: CartDetail[]) {
+  const header = [
+    "cart_id","email","customer_name","session_id","items","total_usd","item_count",
+    "created_at","first_add_at","last_add_at","checkout_started_at","reached_checkout_at",
+    "last_activity_at","recovery_email_sent_at","recovery_email_count","recovered_at",
+    "event_count","data_gaps","page_path","checkout_url","event_type","event_time",
+    "event_product_handle","event_product_title","event_variant","event_quantity","event_price_usd",
+  ];
+  const rows: string[] = [header.join(",")];
+  for (const c of carts) {
+    const gaps = detectGaps(c).join("|");
+    const base = [
+      c.id, c.email, c.customer_name ?? "", c.session_id ?? "", c.item_count, c.total_usd, c.item_count,
+      c.created_at, c.first_add_at ?? "", c.last_add_at ?? "", c.checkout_started_at ?? "",
+      c.reached_checkout_at ?? "", c.last_activity_at, c.recovery_email_sent_at ?? "",
+      c.recovery_email_count, c.recovered_at ?? "", c.event_count, gaps,
+      c.page_path ?? "", c.checkout_url ?? "",
+    ];
+    if (c.events.length === 0) {
+      rows.push([...base, "", "", "", "", "", "", ""].map(csvEscape).join(","));
+    } else {
+      for (const e of c.events) {
+        rows.push(
+          [...base, e.event_type, e.created_at, e.product_handle ?? "", e.product_title ?? "",
+           e.variant_title ?? "", e.quantity, e.price_usd ?? ""].map(csvEscape).join(",")
+        );
+      }
+    }
+  }
+  const blob = new Blob([rows.join("\n")], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `abandoned-carts-${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
 function CartDetailRow({ cart: c }: { cart: CartDetail }) {
   const [open, setOpen] = useState(false);
   return (
