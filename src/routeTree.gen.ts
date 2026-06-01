@@ -47,6 +47,7 @@ import { Route as TrendsSectionSamplesRouteImport } from './routes/trends.sectio
 import { Route as TrendsPucciEyewearRouteImport } from './routes/trends.pucci-eyewear'
 import { Route as TrendsDolceGabbanaIconsRouteImport } from './routes/trends.dolce-gabbana-icons'
 import { Route as SwimSizeGuideRouteImport } from './routes/swim.size-guide'
+import { Route as ProductsHandleRouteImport } from './routes/products.$handle'
 import { Route as ProductHandleRouteImport } from './routes/product.$handle'
 import { Route as PreviewLookbookRouteImport } from './routes/preview.lookbook'
 import { Route as EditsYachtEditRouteImport } from './routes/edits.yacht-edit'
@@ -112,6 +113,7 @@ import { Route as JournalCraftsmanshipCaringForFineLeatherRouteImport } from './
 import { Route as JournalBlogHandleArticleHandleRouteImport } from './routes/journal.$blogHandle.$articleHandle'
 import { Route as EditsYachtEditChapterRouteImport } from './routes/edits.yacht-edit.$chapter'
 import { Route as ApiPublicSeoHealthRouteImport } from './routes/api/public/seo-health'
+import { Route as LocaleProductsHandleRouteImport } from './routes/$locale.products.$handle'
 import { Route as ApiPublicStockAlertsSubscribeRouteImport } from './routes/api/public/stock-alerts/subscribe'
 import { Route as ApiPublicHooksSyncCollectionImagesRouteImport } from './routes/api/public/hooks/sync-collection-images'
 import { Route as ApiPublicHooksShopifyOrderCreatedRouteImport } from './routes/api/public/hooks/shopify-order-created'
@@ -316,6 +318,11 @@ const SwimSizeGuideRoute = SwimSizeGuideRouteImport.update({
   id: '/size-guide',
   path: '/size-guide',
   getParentRoute: () => SwimRoute,
+} as any)
+const ProductsHandleRoute = ProductsHandleRouteImport.update({
+  id: '/products/$handle',
+  path: '/products/$handle',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ProductHandleRoute = ProductHandleRouteImport.update({
   id: '/product/$handle',
@@ -661,6 +668,11 @@ const ApiPublicSeoHealthRoute = ApiPublicSeoHealthRouteImport.update({
   path: '/api/public/seo-health',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LocaleProductsHandleRoute = LocaleProductsHandleRouteImport.update({
+  id: '/$locale/products/$handle',
+  path: '/$locale/products/$handle',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicStockAlertsSubscribeRoute =
   ApiPublicStockAlertsSubscribeRouteImport.update({
     id: '/api/public/stock-alerts/subscribe',
@@ -826,6 +838,7 @@ export interface FileRoutesByFullPath {
   '/edits/yacht-edit': typeof EditsYachtEditRouteWithChildren
   '/preview/lookbook': typeof PreviewLookbookRoute
   '/product/$handle': typeof ProductHandleRoute
+  '/products/$handle': typeof ProductsHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/trends/dolce-gabbana-icons': typeof TrendsDolceGabbanaIconsRoute
   '/trends/pucci-eyewear': typeof TrendsPucciEyewearRoute
@@ -834,6 +847,7 @@ export interface FileRoutesByFullPath {
   '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/collections/': typeof CollectionsIndexRoute
+  '/$locale/products/$handle': typeof LocaleProductsHandleRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
   '/edits/yacht-edit/$chapter': typeof EditsYachtEditChapterRoute
   '/journal/$blogHandle/$articleHandle': typeof JournalBlogHandleArticleHandleRoute
@@ -942,6 +956,7 @@ export interface FileRoutesByTo {
   '/edits/the-prada-effect': typeof EditsThePradaEffectRoute
   '/preview/lookbook': typeof PreviewLookbookRoute
   '/product/$handle': typeof ProductHandleRoute
+  '/products/$handle': typeof ProductsHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/trends/dolce-gabbana-icons': typeof TrendsDolceGabbanaIconsRoute
   '/trends/pucci-eyewear': typeof TrendsPucciEyewearRoute
@@ -950,6 +965,7 @@ export interface FileRoutesByTo {
   '/account': typeof AccountIndexRoute
   '/admin': typeof AdminIndexRoute
   '/collections': typeof CollectionsIndexRoute
+  '/$locale/products/$handle': typeof LocaleProductsHandleRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
   '/edits/yacht-edit/$chapter': typeof EditsYachtEditChapterRoute
   '/journal/$blogHandle/$articleHandle': typeof JournalBlogHandleArticleHandleRoute
@@ -1061,6 +1077,7 @@ export interface FileRoutesById {
   '/edits/yacht-edit': typeof EditsYachtEditRouteWithChildren
   '/preview/lookbook': typeof PreviewLookbookRoute
   '/product/$handle': typeof ProductHandleRoute
+  '/products/$handle': typeof ProductsHandleRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/trends/dolce-gabbana-icons': typeof TrendsDolceGabbanaIconsRoute
   '/trends/pucci-eyewear': typeof TrendsPucciEyewearRoute
@@ -1069,6 +1086,7 @@ export interface FileRoutesById {
   '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/collections/': typeof CollectionsIndexRoute
+  '/$locale/products/$handle': typeof LocaleProductsHandleRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
   '/edits/yacht-edit/$chapter': typeof EditsYachtEditChapterRoute
   '/journal/$blogHandle/$articleHandle': typeof JournalBlogHandleArticleHandleRoute
@@ -1181,6 +1199,7 @@ export interface FileRouteTypes {
     | '/edits/yacht-edit'
     | '/preview/lookbook'
     | '/product/$handle'
+    | '/products/$handle'
     | '/swim/size-guide'
     | '/trends/dolce-gabbana-icons'
     | '/trends/pucci-eyewear'
@@ -1189,6 +1208,7 @@ export interface FileRouteTypes {
     | '/account/'
     | '/admin/'
     | '/collections/'
+    | '/$locale/products/$handle'
     | '/api/public/seo-health'
     | '/edits/yacht-edit/$chapter'
     | '/journal/$blogHandle/$articleHandle'
@@ -1297,6 +1317,7 @@ export interface FileRouteTypes {
     | '/edits/the-prada-effect'
     | '/preview/lookbook'
     | '/product/$handle'
+    | '/products/$handle'
     | '/swim/size-guide'
     | '/trends/dolce-gabbana-icons'
     | '/trends/pucci-eyewear'
@@ -1305,6 +1326,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/admin'
     | '/collections'
+    | '/$locale/products/$handle'
     | '/api/public/seo-health'
     | '/edits/yacht-edit/$chapter'
     | '/journal/$blogHandle/$articleHandle'
@@ -1415,6 +1437,7 @@ export interface FileRouteTypes {
     | '/edits/yacht-edit'
     | '/preview/lookbook'
     | '/product/$handle'
+    | '/products/$handle'
     | '/swim/size-guide'
     | '/trends/dolce-gabbana-icons'
     | '/trends/pucci-eyewear'
@@ -1423,6 +1446,7 @@ export interface FileRouteTypes {
     | '/account/'
     | '/admin/'
     | '/collections/'
+    | '/$locale/products/$handle'
     | '/api/public/seo-health'
     | '/edits/yacht-edit/$chapter'
     | '/journal/$blogHandle/$articleHandle'
@@ -1531,12 +1555,14 @@ export interface RootRouteChildren {
   EditsYachtEditRoute: typeof EditsYachtEditRouteWithChildren
   PreviewLookbookRoute: typeof PreviewLookbookRoute
   ProductHandleRoute: typeof ProductHandleRoute
+  ProductsHandleRoute: typeof ProductsHandleRoute
   TrendsDolceGabbanaIconsRoute: typeof TrendsDolceGabbanaIconsRoute
   TrendsPucciEyewearRoute: typeof TrendsPucciEyewearRoute
   TrendsSectionSamplesRoute: typeof TrendsSectionSamplesRoute
   TrendsTomFordEssentialsRoute: typeof TrendsTomFordEssentialsRoute
   AdminIndexRoute: typeof AdminIndexRoute
   CollectionsIndexRoute: typeof CollectionsIndexRoute
+  LocaleProductsHandleRoute: typeof LocaleProductsHandleRoute
   ApiPublicSeoHealthRoute: typeof ApiPublicSeoHealthRoute
   ApiPublicAiRecommendationsRoute: typeof ApiPublicAiRecommendationsRoute
   ApiPublicCronAbandonedCartRecoveryRoute: typeof ApiPublicCronAbandonedCartRecoveryRoute
@@ -1820,6 +1846,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/swim/size-guide'
       preLoaderRoute: typeof SwimSizeGuideRouteImport
       parentRoute: typeof SwimRoute
+    }
+    '/products/$handle': {
+      id: '/products/$handle'
+      path: '/products/$handle'
+      fullPath: '/products/$handle'
+      preLoaderRoute: typeof ProductsHandleRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/product/$handle': {
       id: '/product/$handle'
@@ -2276,6 +2309,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicSeoHealthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$locale/products/$handle': {
+      id: '/$locale/products/$handle'
+      path: '/$locale/products/$handle'
+      fullPath: '/$locale/products/$handle'
+      preLoaderRoute: typeof LocaleProductsHandleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/stock-alerts/subscribe': {
       id: '/api/public/stock-alerts/subscribe'
       path: '/api/public/stock-alerts/subscribe'
@@ -2524,12 +2564,14 @@ const rootRouteChildren: RootRouteChildren = {
   EditsYachtEditRoute: EditsYachtEditRouteWithChildren,
   PreviewLookbookRoute: PreviewLookbookRoute,
   ProductHandleRoute: ProductHandleRoute,
+  ProductsHandleRoute: ProductsHandleRoute,
   TrendsDolceGabbanaIconsRoute: TrendsDolceGabbanaIconsRoute,
   TrendsPucciEyewearRoute: TrendsPucciEyewearRoute,
   TrendsSectionSamplesRoute: TrendsSectionSamplesRoute,
   TrendsTomFordEssentialsRoute: TrendsTomFordEssentialsRoute,
   AdminIndexRoute: AdminIndexRoute,
   CollectionsIndexRoute: CollectionsIndexRoute,
+  LocaleProductsHandleRoute: LocaleProductsHandleRoute,
   ApiPublicSeoHealthRoute: ApiPublicSeoHealthRoute,
   ApiPublicAiRecommendationsRoute: ApiPublicAiRecommendationsRoute,
   ApiPublicCronAbandonedCartRecoveryRoute:
