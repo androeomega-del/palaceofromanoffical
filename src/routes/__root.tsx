@@ -214,8 +214,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:image", content: "https://palaceofromanofficial.com/og-image.jpg" },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
-      { property: "og:image:alt", content: "Palace of Roman — The Maison · Curated Luxury" },
+      { property: "og:image:alt", content: "Palace of Roman — The Maisons Defining the Seasons" },
       { name: "twitter:image", content: "https://palaceofromanofficial.com/og-image.jpg" },
+      { name: "twitter:image:alt", content: "Palace of Roman — The Maisons Defining the Seasons" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
