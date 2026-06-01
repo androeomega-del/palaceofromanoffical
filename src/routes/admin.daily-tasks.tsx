@@ -968,20 +968,28 @@ function NewTaskForm({
 function TaskRow({
   task,
   today,
+  bulkMode,
+  selected,
+  onSelectToggle,
   onToggle,
   onStatusChange,
   onNotesChange,
   onDueDateChange,
   onRecurrenceChange,
+  onActionChange,
   onDelete,
 }: {
   task: DailyTask;
   today: string;
+  bulkMode: boolean;
+  selected: boolean;
+  onSelectToggle: () => void;
   onToggle: () => void;
   onStatusChange: (s: DailyTask["status"]) => void;
   onNotesChange: (n: string) => void;
   onDueDateChange: (d: string | null) => void;
   onRecurrenceChange: (r: Recurrence) => void;
+  onActionChange: (url: string | null, label: string | null) => void;
   onDelete: () => void;
 }) {
   const [expanded, setExpanded] = useState(false);
@@ -989,11 +997,18 @@ function TaskRow({
   const done = task.status === "done";
   const overdue = !done && task.due_date != null && task.due_date < today;
   const dueToday = task.due_date === today;
+  const action = resolveTaskAction(task);
+  const templates = getTemplatesFor(task.category);
 
   return (
-    <Card className={`p-4 ${done ? "opacity-60" : ""} ${overdue ? "border-red-300" : ""}`}>
+    <Card className={`p-4 ${done ? "opacity-60" : ""} ${overdue ? "border-red-300" : ""} ${selected ? "ring-2 ring-foreground" : ""}`}>
       <div className="flex items-start gap-3">
-        <Checkbox checked={done} onCheckedChange={onToggle} className="mt-1" />
+        <Checkbox
+          checked={bulkMode ? selected : done}
+          onCheckedChange={bulkMode ? onSelectToggle : onToggle}
+          className="mt-1"
+        />
+
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-3 flex-wrap">
             <button
