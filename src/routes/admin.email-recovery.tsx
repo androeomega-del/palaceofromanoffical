@@ -772,6 +772,17 @@ function AdminEmailRecovery() {
               ) : null}
             </section>
 
+            {/* Funnel trend over time (filtered) */}
+            <section>
+              <div className="flex items-baseline justify-between mb-4 gap-4 flex-wrap">
+                <h2 className="font-serif text-2xl">Funnel Trend</h2>
+                <span className="text-xs text-muted-foreground">
+                  Created → add_to_cart → checkout · {trend.granularity === "week" ? "weekly buckets" : "daily buckets"}
+                </span>
+              </div>
+              <BehavioralTrendChart buckets={trend.buckets} granularity={trend.granularity} />
+            </section>
+
             {/* Detailed cart log — every timestamp */}
             <section>
               <div className="flex items-baseline justify-between mb-4 gap-4 flex-wrap">
