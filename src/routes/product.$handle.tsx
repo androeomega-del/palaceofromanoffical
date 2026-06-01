@@ -198,6 +198,10 @@ export const Route = createFileRoute("/product/$handle")({
       { property: "og:description", content: desc },
       { property: "og:url", content: url },
       { property: "og:type", content: "product" },
+      // Override root twitter:* so PDPs don't share the homepage card copy.
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: pageTitle(titleMain) },
+      { name: "twitter:description", content: desc },
     ];
     if (img) {
       meta.push({ property: "og:image", content: cdnImage(img, { width: 1200, format: "jpg" }) || img });
