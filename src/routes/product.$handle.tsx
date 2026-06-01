@@ -296,9 +296,6 @@ export const Route = createFileRoute("/product/$handle")({
 });
 
 
-function humanize(h: string) {
-  return h.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
-}
 
 function ProductPage() {
   const { handle } = Route.useParams();
