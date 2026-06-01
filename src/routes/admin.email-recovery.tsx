@@ -1,12 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { adminBeforeLoad } from "@/lib/admin-route-guard";
 import { getEmailRecoveryDashboard } from "@/lib/email-recovery-dashboard.functions";
 import { callAdminServerFn } from "@/lib/admin-server-call";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, RefreshCw, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, RefreshCw, AlertTriangle, CheckCircle2, Download } from "lucide-react";
 
 export const Route = createFileRoute("/admin/email-recovery")({
   ssr: false,
