@@ -100,6 +100,31 @@ const daysAgoISO = (n: number) => {
   return d.toISOString().slice(0, 10);
 };
 
+function getWeekStart(d = new Date()) {
+  const date = new Date(d);
+  const day = date.getUTCDay();
+  const diff = (day === 0 ? -6 : 1) - day; // Monday start
+  date.setUTCDate(date.getUTCDate() + diff);
+  return date.toISOString().slice(0, 10);
+}
+function getWeekEnd(d = new Date()) {
+  const date = new Date(d);
+  const day = date.getUTCDay();
+  const diff = 7 - (day === 0 ? 7 : day); // to Sunday
+  date.setUTCDate(date.getUTCDate() + diff);
+  return date.toISOString().slice(0, 10);
+}
+function getMonthStart(d = new Date()) {
+  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1))
+    .toISOString()
+    .slice(0, 10);
+}
+function getMonthEnd(d = new Date()) {
+  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0))
+    .toISOString()
+    .slice(0, 10);
+}
+
 function DailyTasksPage() {
   const qc = useQueryClient();
   const [filter, setFilter] = useState<"all" | "open" | "done" | "today" | "overdue">("open");
