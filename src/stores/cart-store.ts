@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { storefrontApiRequest, type ShopifyProduct, type Money } from "@/lib/shopify";
+import { SHOPIFY_STORE_PERMANENT_DOMAIN, storefrontApiRequest, type ShopifyProduct, type Money } from "@/lib/shopify";
 import { trackCartEvent } from "@/lib/cart-analytics";
 import { scheduleAbandonedCartSync } from "@/lib/abandoned-cart-capture";
 
@@ -94,6 +94,9 @@ function formatCheckoutUrl(checkoutUrl: string): string {
     const url = new URL(checkoutUrl);
     // Preserve Shopify's returned checkout host. Forcing a custom checkout
     // subdomain breaks checkout while that subdomain's SSL is still pending.
+    if (url.host === "checkout.palaceofromanofficial.com") {
+      url.host = SHOPIFY_STORE_PERMANENT_DOMAIN;
+    }
     url.protocol = "https:";
     url.searchParams.set("channel", "online_store");
     return url.toString();
