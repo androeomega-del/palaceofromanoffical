@@ -55,7 +55,7 @@ interface ShopifyCheckout {
 async function fetchAbandonedCheckouts(
   sinceIso: string,
 ): Promise<ShopifyCheckout[]> {
-  const token = adminToken();
+  const token = await adminToken();
   const base = `https://${SHOPIFY_STORE_PERMANENT_DOMAIN}/admin/api/${SHOPIFY_API_VERSION}/checkouts.json`;
   let url: string | null = `${base}?limit=250&status=open&created_at_min=${encodeURIComponent(sinceIso)}`;
   const out: ShopifyCheckout[] = [];
