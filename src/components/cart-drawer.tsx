@@ -156,12 +156,10 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
                 })}
               </ul>
 
-              {/* Extras moved into the scroll area so the sticky checkout footer stays compact */}
+              {/* Extras in the scroll area; email capture lives in the sticky footer */}
               <CartFbt productType={fbtProductType} excludeHandles={fbtExclude} />
               <GiftWrapOption />
-              <div className="px-6 pt-4 pb-2">
-                <CartEmailCapture />
-              </div>
+              <div className="h-2" />
             </div>
 
             {/* Sticky checkout footer — always above the fold on mobile */}
