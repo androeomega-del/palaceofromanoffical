@@ -61,8 +61,8 @@ export function NewsletterForm() {
         </p>
         <p className="text-sm text-ink leading-relaxed">
           We've sent a confirmation email. Please click the link inside to
-          activate your subscription — exclusive promotions and member-only
-          offers will follow once your email is verified.
+          activate your subscription — promo codes and occasional offers will
+          land in your inbox once your email is verified.
         </p>
       </div>
     );
