@@ -83,8 +83,8 @@ function ShippingReturnsPage() {
           </ul>
           <p className="text-sm text-muted-foreground">
             Warehouses dispatch within 24–48 hours of order confirmation. Delivery is by UPS, FedEx or DHL with an
-            active tracking number, sent to you the moment the parcel leaves the warehouse. Couriers and warehouses do
-            not operate on weekends or local public holidays.
+            active tracking number, sent to you the moment the parcel leaves the warehouse. Every shipment is fully
+            insured at no additional cost. Couriers and warehouses do not operate on weekends or local public holidays.
           </p>
 
           <div className="not-prose mt-8 overflow-x-auto -mx-2">
