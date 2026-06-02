@@ -36,6 +36,7 @@ const CART_QUERY = `
   query cart($id: ID!) {
     cart(id: $id) {
       id
+      checkoutUrl
       totalQuantity
       lines(first: 100) {
         edges {
@@ -106,6 +107,7 @@ function formatCheckoutUrl(checkoutUrl: string): string {
       url.host = "checkout.palaceofromanofficial.com";
     }
     url.protocol = "https:";
+    url.searchParams.set("_fd", "0");
     url.searchParams.set("channel", "online_store");
     return url.toString();
   } catch {
@@ -355,7 +357,10 @@ export const useCartStore = create<CartStore>()(
             });
           if (changed) {
             if (next.length === 0) clearCart();
-            else set({ items: next });
+            else set({ items: next, checkoutUrl: cart.checkoutUrl ? formatCheckoutUrl(cart.checkoutUrl) : get().checkoutUrl });
+          } else if (cart.checkoutUrl) {
+            const refreshedCheckoutUrl = formatCheckoutUrl(cart.checkoutUrl);
+            if (refreshedCheckoutUrl !== get().checkoutUrl) set({ checkoutUrl: refreshedCheckoutUrl });
           }
         } catch (e) {
           console.error("syncCart failed", e);
