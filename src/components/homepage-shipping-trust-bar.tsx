@@ -27,24 +27,24 @@ export function HomepageShippingTrustBar() {
     >
       <div className="max-w-screen-2xl mx-auto px-6 md:px-10 py-4 md:py-3">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-6 text-[12px] md:text-[11px]">
-          {/* Shipping — Farfetch-style phrasing */}
+          {/* Shipping — actual policy */}
           <div className="flex items-start md:items-center gap-2.5 text-ink/80">
             <Truck className="w-4 h-4 text-bronze-deep shrink-0 mt-0.5 md:mt-0" strokeWidth={1.5} />
             <p className="leading-snug">
-              <span className="font-medium text-ink">Express delivery worldwide</span>{" "}
-              <span className="text-muted-foreground">— sent within 2 business days from our partner boutiques via</span>{" "}
+              <span className="font-medium text-ink">Dispatched in 24–48h</span>{" "}
+              <span className="text-muted-foreground">— 3 business days within the EU, 5–7 business days worldwide via</span>{" "}
               <span className="font-medium text-ink">DHL Express · FedEx · UPS</span>
             </p>
           </div>
 
-          {/* Returns — Farfetch-style phrasing */}
+          {/* Returns */}
           <Link
             to="/shipping-returns"
             className="flex items-start md:items-center gap-2.5 text-ink/80 hover:text-ink transition-colors"
           >
             <RotateCcw className="w-4 h-4 text-bronze-deep shrink-0 mt-0.5 md:mt-0" strokeWidth={1.5} />
             <p className="leading-snug">
-              <span className="font-medium">Free returns within 14 days</span>{" "}
+              <span className="font-medium">14-day returns</span>{" "}
               <span className="text-muted-foreground">on unworn items with original tags</span>
             </p>
           </Link>
