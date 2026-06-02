@@ -116,7 +116,7 @@ export const CartEmailCapture = forwardRef<CartEmailCaptureHandle>((_, ref) => {
           </p>
         )}
         <p className="mt-1.5 text-[9px] text-ink/55 leading-relaxed">
-          Begin your order — we'll hold your selection and send your order confirmation here.
+          Reserve your selection, receive private order updates, and unlock 10% off your first purchase — exclusive to you.
         </p>
       </form>
     </div>
