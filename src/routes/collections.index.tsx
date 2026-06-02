@@ -84,6 +84,13 @@ export const Route = createFileRoute("/collections/")({
     return {
       meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
       links: rh.links,
+      scripts: [{
+        type: "application/ld+json",
+        children: JSON.stringify(breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Collections", path: "/collections" },
+        ])),
+      }],
     };
   },
   component: CollectionsIndexPage,
