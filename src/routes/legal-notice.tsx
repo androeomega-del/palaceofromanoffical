@@ -73,9 +73,6 @@ function LegalNoticePage() {
           <p className="text-sm text-ink/70">
             <span className="text-muted-foreground">Business registration:</span> Tax identification details are held on file and disclosed to authorities, payment processors and wholesale partners on request.
           </p>
-          <p className="mt-2 text-sm text-ink/70">
-            Tax identification details are held on file and disclosed to authorities, payment processors and wholesale partners on request.
-          </p>
         </section>
 
         <section>
