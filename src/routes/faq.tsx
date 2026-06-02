@@ -76,10 +76,14 @@ const SECTIONS: { title: string; items: QA[] }[] = [
         a: (
           <>
             Palace of Roman partners with a network of authorised boutiques and distributors around the world,
-            offering more than ninety luxury houses — Gucci, Versace, Balenciaga, Dior, Prada, Saint Laurent,
-            Alexander McQueen, Armani and others. Stock is held with partner boutiques across Italy
-            (Milan, Florence, Modena, Como, Rome and more), Sweden, Spain, Austria, Northern Ireland and the United
-            States, and shipped sealed from the location holding the piece.
+            offering more than ninety luxury houses — explore the full roster on the{" "}
+            <Link to="/brands" className="underline decoration-bronze/60 underline-offset-4">Brands</Link>{" "}
+            and{" "}
+            <Link to="/designers" className="underline decoration-bronze/60 underline-offset-4">Designers</Link>{" "}
+            indexes, including Gucci, Versace, Balenciaga, Dior, Prada, Saint Laurent, Alexander McQueen
+            and Armani. Stock is held with partner boutiques across Italy (Milan, Florence, Modena, Como,
+            Rome and more), Sweden, Spain, Austria, Northern Ireland and the United States, and shipped
+            sealed from the location holding the piece.
           </>
         ),
       },
