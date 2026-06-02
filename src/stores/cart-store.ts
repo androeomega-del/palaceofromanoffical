@@ -92,11 +92,10 @@ const CART_LINES_REMOVE_MUTATION = `
 function formatCheckoutUrl(checkoutUrl: string): string {
   try {
     const url = new URL(checkoutUrl);
-    // Shopify primary domain is checkout.palaceofromanofficial.com, so
-    // checkoutUrl is already branded. We just ensure https + the
-    // channel=online_store flag required for password-free checkout.
-    // Legacy persisted carts may still carry the old myshopify host —
-    // rewrite those to the branded checkout subdomain.
+    // CHECKOUT LOCKDOWN: this is the only approved host rewrite for Shopify
+    // checkout URLs. Do not change cart mutations, checkout URL generation,
+    // persisted cart shape, or checkout opening behavior unless checkout is
+    // being intentionally tested end-to-end immediately after the change.
     if (url.host === "mwuwqi-vy.myshopify.com" || url.host === "palaceofroman.com" || url.host === "palaceofromanofficial.com" || url.host === "www.palaceofromanofficial.com") {
       url.host = "checkout.palaceofromanofficial.com";
     }
@@ -107,7 +106,6 @@ function formatCheckoutUrl(checkoutUrl: string): string {
     return checkoutUrl;
   }
 }
-
 
 function isCartNotFoundError(errs: Array<{ field: string[] | null; message: string }>) {
   return errs.some((e) => {
