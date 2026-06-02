@@ -92,10 +92,20 @@ const CART_LINES_REMOVE_MUTATION = `
 function formatCheckoutUrl(checkoutUrl: string): string {
   try {
     const url = new URL(checkoutUrl);
-    // Preserve Shopify's returned checkout host. Forcing a custom checkout
-    // subdomain breaks checkout while that subdomain's SSL is still pending.
-    if (url.host === "checkout.palaceofromanofficial.com") {
+    // Shopify may return a custom-domain cart handoff. While that domain is
+    // pointed at Lovable / SSL is pending, send buyers through the permanent
+    // Shopify checkout host instead.
+    const unsafeCheckoutHosts = new Set([
+      "checkout.palaceofromanofficial.com",
+      "palaceofromanofficial.com",
+      "www.palaceofromanofficial.com",
+      "palaceofroman.com",
+    ]);
+    if (unsafeCheckoutHosts.has(url.host)) {
       url.host = SHOPIFY_STORE_PERMANENT_DOMAIN;
+    }
+    if (url.pathname.startsWith("/cart/c/")) {
+      url.pathname = url.pathname.replace(/^\/cart\/c\//, "/checkouts/cn/");
     }
     url.protocol = "https:";
     url.searchParams.set("channel", "online_store");
