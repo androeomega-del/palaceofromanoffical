@@ -44,8 +44,8 @@ export const CartEmailCapture = forwardRef<CartEmailCaptureHandle>((_, ref) => {
     return (
       <div className="border border-bronze/30 bg-bronze/[0.04] px-3 py-2 flex items-center gap-2">
         <Check className="w-3.5 h-3.5 text-bronze shrink-0" strokeWidth={1.5} />
-        <p className="text-[10px] text-ink/70 leading-snug">
-          We'll hold your selection — and write if you don't make it to checkout.
+        <p className="text-[10px] text-ink/75 leading-snug">
+          Your seat is reserved — proceed to secure checkout below.
         </p>
       </div>
     );
@@ -80,8 +80,8 @@ export const CartEmailCapture = forwardRef<CartEmailCaptureHandle>((_, ref) => {
           : "border-ink/10 bg-ink/[0.02]"
       }`}
     >
-      <p className="text-[10px] uppercase tracking-[0.25em] text-ink/60 mb-1.5 inline-flex items-center gap-1.5">
-        <Mail className="w-3 h-3" strokeWidth={1.5} /> Hold This Selection
+      <p className="text-[10px] uppercase tracking-[0.25em] text-ink/70 mb-1.5 inline-flex items-center gap-1.5">
+        <Mail className="w-3 h-3" strokeWidth={1.5} /> Add Your Email To Begin Your Order
       </p>
       <form className="relative" onSubmit={onSubmit} noValidate>
         <label htmlFor="cart-email-capture" className="sr-only">
@@ -115,8 +115,8 @@ export const CartEmailCapture = forwardRef<CartEmailCaptureHandle>((_, ref) => {
             {error}
           </p>
         )}
-        <p className="mt-1.5 text-[9px] text-ink/45 leading-relaxed">
-          Optional — for a single reminder if you don't finish checkout.
+        <p className="mt-1.5 text-[9px] text-ink/55 leading-relaxed">
+          Begin your order — we'll hold your selection and send your order confirmation here.
         </p>
       </form>
     </div>
