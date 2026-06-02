@@ -197,34 +197,6 @@ function ContactPage() {
             </div>
           </div>
 
-          {/* Business identity block — visible transparency for Google Merchant
-              Center reviewers, payment processors, and customers. Mirrors the
-              record on file at Merchant Center and the legal-notice page. */}
-          <div className="mt-10 pt-8 border-t border-ink/10 max-w-lg">
-            <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-3">Business information</p>
-            <dl className="grid grid-cols-[120px_1fr] gap-y-2 text-[13px] leading-relaxed">
-              <dt className="text-muted-foreground">Legal name</dt>
-              <dd className="text-ink/85">Palace of Roman</dd>
-              <dt className="text-muted-foreground">Address</dt>
-              <dd className="text-ink/85">8605 Santa Monica Blvd PMB 610211<br/>West Hollywood, CA 90069-4109, US</dd>
-              <dt className="text-muted-foreground">Support</dt>
-              <dd className="text-ink/85">
-                <a href="mailto:support@palaceofromanofficial.com" className="underline decoration-ink/20 underline-offset-4 hover:text-bronze hover:decoration-bronze">
-                  support@palaceofromanofficial.com
-                </a>
-              </dd>
-              <dt className="text-muted-foreground">Hours</dt>
-              <dd className="text-ink/85">Monday–Saturday, replies within 24 hours</dd>
-              <dt className="text-muted-foreground">Operations</dt>
-              <dd className="text-ink/85">Online only — no showroom or in-person fitting</dd>
-            </dl>
-            <p className="mt-5 text-[11px] text-muted-foreground leading-relaxed">
-              See our <Link to="/legal-notice" className="underline decoration-ink/20 underline-offset-4 hover:text-bronze">Legal Notice</Link>,{" "}
-              <Link to="/shipping-returns" className="underline decoration-ink/20 underline-offset-4 hover:text-bronze">Shipping &amp; Returns</Link>,{" "}
-              <Link to="/privacy" className="underline decoration-ink/20 underline-offset-4 hover:text-bronze">Privacy Policy</Link> and{" "}
-              <Link to="/terms" className="underline decoration-ink/20 underline-offset-4 hover:text-bronze">Terms &amp; Conditions</Link> for full disclosures.
-            </p>
-          </div>
         </div>
       </section>
     </main>
