@@ -17,6 +17,7 @@ import {
   SHOPIFY_API_VERSION,
   SHOPIFY_STORE_PERMANENT_DOMAIN,
 } from "@/lib/shopify";
+import { getAdminAccessToken } from "@/lib/shopify-admin.server";
 
 const EUR_TO_USD = 1.08;
 const HOUR_MS = 60 * 60 * 1000;
