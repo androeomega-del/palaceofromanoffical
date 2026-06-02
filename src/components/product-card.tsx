@@ -423,22 +423,6 @@ export function ProductCard({
               </span>
             );
           }
-          const hideMarkdown = suppressBadges.includes("markdown");
-          if (onSale && !hideMarkdown && compareAt) {
-            const was = parseFloat(compareAt.amount);
-            const now = parseFloat(price.amount);
-            const pct = was > 0 ? Math.round(((was - now) / was) * 100) : 0;
-            if (pct > 0) {
-              return (
-                <span
-                  className="absolute top-3 left-3 z-10 text-[10px] uppercase tracking-[0.25em] bg-canvas/95 backdrop-blur-sm text-ink border border-ink/15 px-2 py-1 font-medium"
-                  title={`${pct}% off`}
-                >
-                  −{pct}%
-                </span>
-              );
-            }
-          }
           // "New Season" — only pieces whose description names the current
           // or upcoming season. Source of truth = the season token written
           // into each product's description (e.g. "SS26", "Spring/Summer
@@ -665,7 +649,6 @@ export function ProductCard({
       <h3 className="text-[13px] md:text-sm font-medium leading-snug line-clamp-2 text-balance group-hover:underline underline-offset-4 decoration-ink/30">{p.title}</h3>
       <div className="flex items-baseline gap-2.5 mt-2">
         <PriceTag money={price} className="text-sm" />
-        {onSale && <PriceTag money={compareAt} strike className="text-xs text-muted-foreground" />}
       </div>
 
     </Link>
