@@ -43,6 +43,7 @@ export function SiteFooter() {
           <div className="flex flex-col gap-3">
             <h5 className="text-[10px] uppercase tracking-[0.25em] font-semibold mb-1">About Palace of Roman</h5>
             <Link to="/about" className="text-sm text-muted-foreground hover:text-ink transition-colors">About Us</Link>
+            <Link to="/maison" className="text-sm text-muted-foreground hover:text-ink transition-colors">Maisons</Link>
             <Link to="/journal" className="text-sm text-muted-foreground hover:text-ink transition-colors">The Journal</Link>
             <Link to="/journal/craftsmanship/made-in-italy-vs-designed-in-italy" className="text-sm text-muted-foreground hover:text-ink transition-colors">Our Sourcing</Link>
             <Link to="/compare" className="text-sm text-muted-foreground hover:text-ink transition-colors">Compare</Link>
