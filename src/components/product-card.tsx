@@ -206,6 +206,9 @@ export function ProductCard({
   };
 
   const altBase = p.vendor ? `${p.title} — ${p.vendor}` : p.title;
+  const totalImages = p.images?.edges?.length ?? 0;
+  const alt1 = buildProductAlt(p, { index: 0, total: totalImages, shopifyAlt: img?.altText });
+  const alt2 = buildProductAlt(p, { index: 1, total: totalImages, shopifyAlt: img2?.altText });
 
   const onAdd = async (e: React.MouseEvent) => {
     e.preventDefault();
