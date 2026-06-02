@@ -71,11 +71,10 @@ export function NewsletterForm() {
   return (
     <div>
       <p className="text-[10px] uppercase tracking-[0.32em] text-bronze mb-3 inline-flex items-center gap-2">
-        <Sparkles className="w-3 h-3" /> Exclusive Access
+        <Sparkles className="w-3 h-3" /> Our Newsletter
       </p>
       <p className="text-sm text-ink/80 leading-relaxed mb-5 max-w-sm">
-        Join for early access to seasonal promotions, private discounts and member-only offers
-        before they reach the boutique.
+        Sign up for our newsletter — you might receive promo codes here and there.
       </p>
       <form className="relative" onSubmit={onSubmit} noValidate>
         <label htmlFor="newsletter-email" className="sr-only">
