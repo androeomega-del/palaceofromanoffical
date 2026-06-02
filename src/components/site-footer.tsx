@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
 import { NewsletterForm } from "@/components/newsletter-form";
-import { YelpTrustBadge } from "@/components/yelp-trust-badge";
 import { useIsAdmin } from "@/hooks/use-is-admin";
 
 // Frozen at module load so the copyright year is identical on server and
