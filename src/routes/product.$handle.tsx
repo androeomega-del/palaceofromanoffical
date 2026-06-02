@@ -720,7 +720,7 @@ function ProductView({
                           src={cdnImage(img.url, { width: wide ? 1600 : 1000 })}
                           srcSet={cdnSrcSet(img.url, wide ? [800, 1200, 1600, 2000] : [500, 800, 1100])}
                           sizes={wide ? "(min-width: 1280px) 58vw, 100vw" : "(min-width: 1280px) 29vw, 50vw"}
-                          alt={img.altText ?? product.title}
+                          alt={buildProductAlt({ ...product, selectedOptions: selectedVariant?.selectedOptions }, { index: i, total: images.length, shopifyAlt: img.altText })}
                           width={wide ? 1600 : 1000}
                           height={wide ? 2000 : 1333}
                           loading={i === 0 ? "eager" : "lazy"}
