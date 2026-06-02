@@ -30,6 +30,7 @@ import { Route as LinksRouteImport } from './routes/links'
 import { Route as LimitedFindsRouteImport } from './routes/limited-finds'
 import { Route as LegalNoticeRouteImport } from './routes/legal-notice'
 import { Route as JournalRouteImport } from './routes/journal'
+import { Route as InRomeRouteImport } from './routes/in-rome'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as DesignersRouteImport } from './routes/designers'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -237,6 +238,11 @@ const LegalNoticeRoute = LegalNoticeRouteImport.update({
 const JournalRoute = JournalRouteImport.update({
   id: '/journal',
   path: '/journal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InRomeRoute = InRomeRouteImport.update({
+  id: '/in-rome',
+  path: '/in-rome',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FaqRoute = FaqRouteImport.update({
@@ -794,6 +800,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/designers': typeof DesignersRoute
   '/faq': typeof FaqRoute
+  '/in-rome': typeof InRomeRoute
   '/journal': typeof JournalRouteWithChildren
   '/legal-notice': typeof LegalNoticeRoute
   '/limited-finds': typeof LimitedFindsRoute
@@ -918,6 +925,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/designers': typeof DesignersRoute
   '/faq': typeof FaqRoute
+  '/in-rome': typeof InRomeRoute
   '/journal': typeof JournalRouteWithChildren
   '/legal-notice': typeof LegalNoticeRoute
   '/limited-finds': typeof LimitedFindsRoute
@@ -1043,6 +1051,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/designers': typeof DesignersRoute
   '/faq': typeof FaqRoute
+  '/in-rome': typeof InRomeRoute
   '/journal': typeof JournalRouteWithChildren
   '/legal-notice': typeof LegalNoticeRoute
   '/limited-finds': typeof LimitedFindsRoute
@@ -1170,6 +1179,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/designers'
     | '/faq'
+    | '/in-rome'
     | '/journal'
     | '/legal-notice'
     | '/limited-finds'
@@ -1294,6 +1304,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/designers'
     | '/faq'
+    | '/in-rome'
     | '/journal'
     | '/legal-notice'
     | '/limited-finds'
@@ -1418,6 +1429,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/designers'
     | '/faq'
+    | '/in-rome'
     | '/journal'
     | '/legal-notice'
     | '/limited-finds'
@@ -1544,6 +1556,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   DesignersRoute: typeof DesignersRoute
   FaqRoute: typeof FaqRoute
+  InRomeRoute: typeof InRomeRoute
   JournalRoute: typeof JournalRouteWithChildren
   LegalNoticeRoute: typeof LegalNoticeRoute
   LimitedFindsRoute: typeof LimitedFindsRoute
@@ -1792,6 +1805,13 @@ declare module '@tanstack/react-router' {
       path: '/journal'
       fullPath: '/journal'
       preLoaderRoute: typeof JournalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/in-rome': {
+      id: '/in-rome'
+      path: '/in-rome'
+      fullPath: '/in-rome'
+      preLoaderRoute: typeof InRomeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/faq': {
@@ -2603,6 +2623,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   DesignersRoute: DesignersRoute,
   FaqRoute: FaqRoute,
+  InRomeRoute: InRomeRoute,
   JournalRoute: JournalRouteWithChildren,
   LegalNoticeRoute: LegalNoticeRoute,
   LimitedFindsRoute: LimitedFindsRoute,
