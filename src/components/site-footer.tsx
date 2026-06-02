@@ -98,13 +98,27 @@ export function SiteFooter() {
           <span>Klarna</span>
         </div>
 
+        {/* ───── Business identity (Google Merchant transparency) ───── */}
+        <div className="pt-6 border-t border-ink/10 text-[11px] text-muted-foreground leading-relaxed">
+          <p>
+            <span className="font-medium text-ink/70">Palace of Roman</span> — Sole proprietorship registered in California, United States.
+            Registered address: 8605 Santa Monica Blvd PMB 610211, West Hollywood, CA 90069-4109, US.
+            Customer support:{" "}
+            <a href="mailto:support@palaceofromanofficial.com" className="underline decoration-ink/30 underline-offset-2 hover:text-ink">
+              support@palaceofromanofficial.com
+            </a>
+            . Replies within 24 hours, Monday through Saturday.
+          </p>
+        </div>
+
         {/* ───── Legal / social bottom bar ───── */}
-        <div className="flex flex-col md:flex-row gap-4 justify-between items-center pt-6 border-t border-ink/5 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+        <div className="flex flex-col md:flex-row gap-4 justify-between items-center pt-6 mt-2 border-t border-ink/5 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
           <p>&copy; {COPYRIGHT_YEAR} Palace of Roman. All rights reserved.</p>
           <div className="flex gap-6 items-center flex-wrap justify-center">
             <a href="https://www.instagram.com/palaceofroman/" target="_blank" rel="noopener noreferrer" aria-label="Palace of Roman on Instagram" className="hover:text-ink transition-colors">Instagram</a>
             <a href="https://www.facebook.com/people/Palace-of-Roman/61581195176963/" target="_blank" rel="noopener noreferrer" aria-label="Palace of Roman on Facebook" className="hover:text-ink transition-colors">Facebook</a>
             <a href="https://www.tiktok.com/@palaceofroman" target="_blank" rel="noopener noreferrer" aria-label="Palace of Roman on TikTok" className="hover:text-ink transition-colors">TikTok</a>
+            <Link to="/legal-notice" className="hover:text-ink transition-colors">Legal</Link>
             <Link to="/privacy" className="hover:text-ink transition-colors">Privacy</Link>
             <Link to="/terms" className="hover:text-ink transition-colors">Terms</Link>
             {isAdmin ? (
