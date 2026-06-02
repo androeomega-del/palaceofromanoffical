@@ -57,7 +57,7 @@ function ShippingReturnsPage() {
         <div className="bg-canvas p-8 text-center">
           <p className="font-serif text-5xl md:text-6xl tracking-tight text-ink leading-none">3–5</p>
           <p className="mt-3 text-[10px] uppercase tracking-[0.3em] text-bronze font-semibold">Day Express</p>
-          <p className="mt-2 text-xs text-muted-foreground leading-relaxed">Tracked worldwide delivery</p>
+          <p className="mt-2 text-xs text-muted-foreground leading-relaxed">Insured, tracked worldwide delivery</p>
         </div>
         <div className="bg-canvas p-8 text-center">
           <p className="font-serif text-5xl md:text-6xl tracking-tight text-ink leading-none">100%</p>
