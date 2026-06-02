@@ -16,13 +16,31 @@ export const CATEGORY_DEFAULT_ACTION: Record<
   general: undefined,
 };
 
+// Keyword-driven action overrides — when a task's title/description matches one
+// of these patterns, the action button deep-links to the right purpose-built
+// admin tool, ignoring the generic category default. Explicit action_url on
+// the task row still wins over everything.
+const KEYWORD_ACTIONS: { test: RegExp; url: string; label: string }[] = [
+  {
+    test: /\b(structured\s*data|rich\s*results|json[-\s]?ld|schema\.org)\b/i,
+    url: "/admin/structured-data-test",
+    label: "Open Structured Data Test",
+  },
+];
+
 export function resolveTaskAction(task: {
   action_url: string | null;
   action_label: string | null;
   category: string;
+  title?: string | null;
+  description?: string | null;
 }): { url: string; label: string } | null {
   if (task.action_url) {
     return { url: task.action_url, label: task.action_label || "Open tool" };
+  }
+  const hay = `${task.title ?? ""} ${task.description ?? ""}`;
+  for (const k of KEYWORD_ACTIONS) {
+    if (k.test.test(hay)) return { url: k.url, label: k.label };
   }
   return CATEGORY_DEFAULT_ACTION[task.category] ?? null;
 }
