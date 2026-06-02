@@ -116,7 +116,7 @@ export const CartEmailCapture = forwardRef<CartEmailCaptureHandle>((_, ref) => {
           </p>
         )}
         <p className="mt-1.5 text-[9px] text-ink/55 leading-relaxed">
-          This piece is held for you. Enter your email to reserve it beyond this session, receive private order tracking, and unlock insider access to new arrivals before they reach the public floor — plus 10% off your first purchase, reserved for members only.
+          This piece is held for you. Enter your email to reserve it beyond this session and gain entry to our private circle — members receive confidential promotions, reserved sales, and first notice of limited pieces. Plus 10% off your first purchase, for members only.
         </p>
       </form>
     </div>
