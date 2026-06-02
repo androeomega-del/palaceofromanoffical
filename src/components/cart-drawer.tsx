@@ -2,11 +2,9 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, X, Loader2, ShoppingBag, ArrowRight, ShieldCheck, RotateCcw, Lock } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useCartStore } from "@/stores/cart-store";
 import { formatPrice } from "@/lib/shopify";
-import type { CartEmailCaptureHandle } from "@/components/atelier/cart-email-capture";
-import { getCustomerEmail } from "@/lib/abandoned-cart-capture";
 import { trackCartEvent } from "@/lib/cart-analytics";
 import { CartFbt } from "@/components/cart-fbt";
 import { CartEmailCapture } from "@/components/atelier/cart-email-capture";
@@ -15,7 +13,6 @@ import { GiftWrapOption } from "@/components/gift-wrap-option";
 export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
   // 1. Add mount state to prevent hydration errors
   const [isMounted, setIsMounted] = useState(false);
-  const emailCaptureRef = useRef<CartEmailCaptureHandle | null>(null);
   
   const { items, isLoading, isSyncing, updateQuantity, removeItem, getCheckoutUrl, syncCart } = useCartStore();
   const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
@@ -36,23 +33,6 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
   const handleCheckout = () => {
     const url = getCheckoutUrl();
     if (!url) return;
-
-    // Gentle prompt: if no email captured, focus + pulse the input and
-    // skip opening checkout on the first click so the shopper has a
-    // chance to enter one. A second click proceeds regardless.
-    const hasEmail = Boolean(getCustomerEmail());
-    if (!hasEmail && emailCaptureRef.current) {
-      const ok = emailCaptureRef.current.promptIfMissing();
-      if (!ok) {
-        // Track intent so we still measure checkout attempts.
-        trackCartEvent({
-          event_type: "checkout_started",
-          quantity: totalItems,
-          price_usd: totalAmount,
-        });
-        return;
-      }
-    }
 
     trackCartEvent({
       event_type: "checkout_started",
@@ -217,7 +197,7 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
                 </li>
               </ul>
 
-              <CartEmailCapture ref={emailCaptureRef} />
+              <CartEmailCapture />
 
 
               <Button
