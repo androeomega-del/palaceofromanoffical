@@ -15,6 +15,7 @@ import { GiftWrapOption } from "@/components/gift-wrap-option";
 export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
   // 1. Add mount state to prevent hydration errors
   const [isMounted, setIsMounted] = useState(false);
+  const emailCaptureRef = useRef<CartEmailCaptureHandle | null>(null);
   
   const { items, isLoading, isSyncing, updateQuantity, removeItem, getCheckoutUrl, syncCart } = useCartStore();
   const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
