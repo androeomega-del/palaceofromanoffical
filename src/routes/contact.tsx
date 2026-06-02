@@ -11,16 +11,21 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { submitContactMessage } from "@/lib/contact.functions";
 import { img } from "@/lib/editorial-library";
-import { routeHead } from "@/lib/seo";
+import { routeHead, breadcrumbJsonLd } from "@/lib/seo";
 
 export const Route = createFileRoute("/contact")({
   head: () => {
     const title = "Concierge — Palace of Roman";
     const desc = "Write to the Palace of Roman concierge for sourcing requests, sizing, styling or after-care. Same-day reply by email.";
     const rh = routeHead({ path: "/contact", title, description: desc, image: img(8) });
+    const breadcrumb = breadcrumbJsonLd([
+      { name: "Home", path: "/" },
+      { name: "Concierge", path: "/contact" },
+    ]);
     return {
       meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
       links: rh.links,
+      scripts: [{ type: "application/ld+json", children: JSON.stringify(breadcrumb) }],
     };
   },
   component: ContactPage,

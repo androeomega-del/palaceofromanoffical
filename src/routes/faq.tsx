@@ -8,7 +8,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { img } from "@/lib/editorial-library";
-import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
+import { routeHead, absoluteUrl, SITE_NAME, breadcrumbJsonLd } from "@/lib/seo";
 
 /** Flatten a ReactNode tree into plain text for JSON-LD answer bodies. */
 function nodeToText(node: ReactNode): string {
@@ -43,11 +43,16 @@ export const Route = createFileRoute("/faq")({
         })),
       ),
     };
+    const breadcrumb = breadcrumbJsonLd([
+      { name: "Home", path: "/" },
+      { name: "FAQ", path: "/faq" },
+    ]);
     return {
       meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
       links: rh.links,
       scripts: [
         { type: "application/ld+json", children: JSON.stringify(faqJsonLd) },
+        { type: "application/ld+json", children: JSON.stringify(breadcrumb) },
       ],
     };
   },
