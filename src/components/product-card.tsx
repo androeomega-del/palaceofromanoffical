@@ -11,6 +11,7 @@ import { useWishlistStore } from "@/stores/wishlist-store";
 import { useInteractionStore } from "@/stores/interaction-store";
 import { QuickViewSheet } from "@/components/quick-view-sheet";
 import { PriceTag } from "@/components/price-tag";
+import { buildProductAlt } from "@/lib/product-alt";
 
 
 export type SuppressedBadge = "markdown" | "scarcity";
