@@ -326,7 +326,7 @@ export function ProductCard({
             src={cdnImage(img.url, { width: 700 })}
             srcSet={cdnSrcSet(img.url, [400, 700, 1000, 1400])}
             sizes="(min-width: 1280px) 22vw, (min-width: 768px) 30vw, 50vw"
-            alt={img.altText ?? altBase}
+            alt={alt1}
             width={700}
             height={875}
             loading="lazy"
