@@ -173,13 +173,16 @@ export function WelcomeDispatchModal() {
           </p>
 
           {status === "ok" ? (
-            <p
+            <div
               role="status"
               aria-live="polite"
               className="text-sm text-ink leading-relaxed py-4"
             >
-              Thank you — you are on the list.
-              <br />
+              <p className="mb-2 font-medium">Check your inbox.</p>
+              <p className="text-ink/70">
+                We've sent a confirmation link to verify your email. Click it to
+                complete your subscription.
+              </p>
               <button
                 type="button"
                 onClick={dismiss}
@@ -187,7 +190,7 @@ export function WelcomeDispatchModal() {
               >
                 Continue browsing
               </button>
-            </p>
+            </div>
           ) : (
             <form onSubmit={onSubmit} noValidate className="space-y-4">
               <div className="relative">
