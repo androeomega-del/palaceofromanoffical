@@ -122,9 +122,9 @@ function TermsPage() {
         <section>
           <SectionTitle kicker="10">Governing law</SectionTitle>
           <p>
-            These terms are governed by the laws of the State of New York and any dispute is subject to the exclusive
-            jurisdiction of the courts of New York County, unless mandatory consumer protection law in your country of
-            residence provides otherwise.
+            These terms are governed by the laws of the State of California, United States, and any dispute is subject
+            to the exclusive jurisdiction of the courts of Los Angeles County, California, unless mandatory consumer
+            protection law in your country of residence provides otherwise.
           </p>
         </section>
       </ProseColumn>
