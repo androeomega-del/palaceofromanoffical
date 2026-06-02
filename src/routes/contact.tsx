@@ -177,7 +177,7 @@ function ContactPage() {
             </Form>
           )}
 
-          <div className="mt-16 pt-10 border-t border-ink/10 grid sm:grid-cols-3 gap-8 max-w-lg text-sm">
+          <div className="mt-16 pt-10 border-t border-ink/10 grid sm:grid-cols-2 md:grid-cols-4 gap-8 max-w-lg text-sm">
             <div>
               <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">Email</p>
               <a
@@ -194,6 +194,13 @@ function ContactPage() {
             <div>
               <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">Returns</p>
               <p className="text-ink/80">14 days from<br/>delivery</p>
+            </div>
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">Registered address</p>
+              <p className="text-ink/80 text-xs leading-relaxed">
+                8605 Santa Monica Blvd PMB 610211<br/>
+                West Hollywood, CA 90069-4109, US
+              </p>
             </div>
           </div>
 
