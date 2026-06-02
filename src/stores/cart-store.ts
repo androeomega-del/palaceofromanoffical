@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { storefrontApiRequest, type ShopifyProduct, type Money } from "@/lib/shopify";
-import { formatCheckoutUrl } from "@/lib/checkout-url";
 import { trackCartEvent } from "@/lib/cart-analytics";
 import { scheduleAbandonedCartSync } from "@/lib/abandoned-cart-capture";
 
@@ -89,6 +88,24 @@ const CART_LINES_REMOVE_MUTATION = `
     cartLinesRemove(cartId: $cartId, lineIds: $lineIds) { cart { id } userErrors { field message } }
   }
 `;
+
+function formatCheckoutUrl(checkoutUrl: string): string {
+  try {
+    const url = new URL(checkoutUrl);
+    // CHECKOUT LOCKDOWN: this is the only approved host rewrite for Shopify
+    // checkout URLs. Do not change cart mutations, checkout URL generation,
+    // persisted cart shape, or checkout opening behavior unless checkout is
+    // being intentionally tested end-to-end immediately after the change.
+    if (url.host === "mwuwqi-vy.myshopify.com" || url.host === "palaceofroman.com" || url.host === "palaceofromanofficial.com" || url.host === "www.palaceofromanofficial.com") {
+      url.host = "checkout.palaceofromanofficial.com";
+    }
+    url.protocol = "https:";
+    url.searchParams.set("channel", "online_store");
+    return url.toString();
+  } catch {
+    return checkoutUrl;
+  }
+}
 
 function isCartNotFoundError(errs: Array<{ field: string[] | null; message: string }>) {
   return errs.some((e) => {
