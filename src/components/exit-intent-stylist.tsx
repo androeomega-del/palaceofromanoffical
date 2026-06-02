@@ -154,16 +154,16 @@ function AtelierListInline({ onSubscribed }: { onSubscribed: () => void }) {
     setStatus("sending");
     setError(null);
     try {
-      const { error: insertError } = await supabase
-        .from("newsletter_subscribers")
-        .insert({
+      const result = await subscribe({
+        data: {
           email: value,
           source: "exit_intent",
-          user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
-          marketing_consent: true,
-        });
-      if (insertError && insertError.code !== "23505") {
-        throw new Error(insertError.message);
+          userAgent: typeof navigator !== "undefined" ? navigator.userAgent : undefined,
+          marketingConsent: true,
+        },
+      });
+      if (!result.ok) {
+        throw new Error(result.error ?? "subscribe failed");
       }
       try {
         localStorage.setItem(SUBSCRIBED_KEY, "1");
