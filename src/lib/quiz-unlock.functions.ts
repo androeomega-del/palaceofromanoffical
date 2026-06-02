@@ -2,9 +2,20 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { sendGmail } from "./gmail-send";
-import { renderWelcomeEmail } from "./welcome-email-template";
+import { renderConfirmationEmail } from "./confirmation-email-template";
 import { renderLookbookUnlockEmail } from "./lookbook-unlock-email-template";
 import { issueQuizToken, verifyQuizToken } from "./quiz-token.server";
+
+const SITE = "https://palaceofromanofficial.com";
+
+function newConfirmationToken(): string {
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  return btoa(String.fromCharCode(...bytes))
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
+}
 
 
 const AnswersSchema = z.object({
