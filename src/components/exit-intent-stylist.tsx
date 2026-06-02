@@ -115,6 +115,7 @@ export function ExitIntentStylist() {
 function AtelierListInline({ onSubscribed }: { onSubscribed: () => void }) {
   const alreadySubscribed =
     typeof window !== "undefined" && localStorage.getItem(SUBSCRIBED_KEY) === "1";
+  const subscribe = useServerFn(subscribeNewsletter);
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "ok" | "error">(
     alreadySubscribed ? "ok" : "idle",
@@ -131,10 +132,11 @@ function AtelierListInline({ onSubscribed }: { onSubscribed: () => void }) {
         <Check className="w-4 h-4 text-bronze mt-0.5 shrink-0" strokeWidth={1.5} />
         <div>
           <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-1">
-            You're on the Atelier List
+            Check your inbox
           </p>
           <p className="text-sm text-ink leading-relaxed">
-            Watch your inbox for the next private edit.
+            We've sent a confirmation link — click it to activate your
+            subscription to the Atelier List.
           </p>
         </div>
       </div>
