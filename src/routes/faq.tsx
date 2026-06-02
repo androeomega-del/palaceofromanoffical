@@ -203,7 +203,21 @@ const SECTIONS: { title: string; items: QA[] }[] = [
     items: [
       {
         q: "Which sizing system do you use?",
-        a: <>Each product page lists sizing in its original brand system (IT, FR, UK, US) with a conversion note where helpful. Italian sizing runs slightly smaller than the equivalent US size for ready-to-wear; if in doubt, write to the concierge.</>,
+        a: (
+          <>
+            Each product page lists sizing in its original brand system (IT, FR, UK, US) with a conversion note
+            where helpful. Italian sizing runs slightly smaller than the equivalent US size for ready-to-wear.
+            Start with the{" "}
+            <Link to="/women" className="underline decoration-bronze/60 underline-offset-4">Women</Link> or{" "}
+            <Link to="/men" className="underline decoration-bronze/60 underline-offset-4">Men</Link> edit, or
+            jump straight to{" "}
+            <Link to="/collections/luxury-sneakers" className="underline decoration-bronze/60 underline-offset-4">sneakers</Link>,{" "}
+            <Link to="/collections/italian-leather-loafers" className="underline decoration-bronze/60 underline-offset-4">loafers</Link>{" "}
+            or{" "}
+            <Link to="/collections/designer-mens-shirts" className="underline decoration-bronze/60 underline-offset-4">shirts</Link>{" "}
+            for category-specific notes — and if in doubt, write to the concierge.
+          </>
+        ),
       },
       {
         q: "Can the concierge advise on fit?",
@@ -217,7 +231,17 @@ const SECTIONS: { title: string; items: QA[] }[] = [
       },
       {
         q: "How should I care for my pieces?",
-        a: <>Follow the brand care label sewn into the garment. Leather pieces benefit from a soft, dry storage bag and an annual conditioning. Knitwear should be folded, not hung.</>,
+        a: (
+          <>
+            Follow the brand care label sewn into the garment.{" "}
+            <Link to="/collections/italian-leather-handbags" className="underline decoration-bronze/60 underline-offset-4">Leather pieces</Link>{" "}
+            benefit from a soft, dry storage bag and an annual conditioning.{" "}
+            <Link to="/collections/cashmere-sweaters" className="underline decoration-bronze/60 underline-offset-4">Knitwear</Link>{" "}
+            should be folded, not hung.{" "}
+            <Link to="/collections/silk-scarves" className="underline decoration-bronze/60 underline-offset-4">Silk</Link>{" "}
+            is best rolled and kept out of direct light.
+          </>
+        ),
       },
     ],
   },
