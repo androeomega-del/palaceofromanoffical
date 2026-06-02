@@ -159,17 +159,16 @@ export function WelcomeDispatchModal() {
         </button>
         <div className="px-8 py-10 sm:px-10 sm:py-12 text-center">
           <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-5">
-            The Palace Dispatch
+            Our Newsletter
           </p>
           <h2
             id="welcome-dispatch-title"
             className="font-serif text-3xl sm:text-4xl leading-[1.1] mb-4"
           >
-            Step inside the Palace.
+            Sign up for our newsletter.
           </h2>
           <p className="text-sm text-ink/70 leading-relaxed mb-7 max-w-sm mx-auto">
-            Private access to new arrivals, seasonal editorials and quiet
-            edits — delivered before they reach the boutique.
+            You might receive promo codes here and there.
           </p>
 
           {status === "ok" ? (
