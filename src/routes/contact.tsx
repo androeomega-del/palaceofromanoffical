@@ -205,7 +205,7 @@ function ContactPage() {
             <dl className="grid grid-cols-[120px_1fr] gap-y-2 text-[13px] leading-relaxed">
               <dt className="text-muted-foreground">Legal name</dt>
               <dd className="text-ink/85">Palace of Roman</dd>
-              <dt className="text-muted-foreground">Entity</dt>
+              <dt className="text-muted-foreground">Type of business</dt>
               <dd className="text-ink/85">Sole proprietorship, California, United States</dd>
               <dt className="text-muted-foreground">Address</dt>
               <dd className="text-ink/85">8605 Santa Monica Blvd PMB 610211<br/>West Hollywood, CA 90069-4109, US</dd>
