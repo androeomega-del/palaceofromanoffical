@@ -4,24 +4,19 @@ import { useState } from "react";
 import { Loader2, MapPin, Calendar, Sparkles } from "lucide-react";
 import { buildVacationCapsule, type StylistResult } from "@/lib/vacation-stylist.functions";
 import { ProductCard } from "@/components/product-card";
+import { routeHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/vacation-stylist")({
-  head: () => ({
-    meta: [
-      { title: "Vacation Stylist — Palace of Roman" },
-      {
-        name: "description",
-        content:
-          "Tell us your destination, dates, and vibe. The boutique returns a curated capsule of designer pieces drawn from the live collection.",
-      },
-      { property: "og:title", content: "Vacation Stylist — Palace of Roman" },
-      {
-        property: "og:description",
-        content:
-          "A private packing edit for your next escape — destination, dates, vibe in, a designer capsule out.",
-      },
-    ],
-  }),
+  head: () => {
+    const title = "Vacation Stylist — Palace of Roman";
+    const description =
+      "Tell us your destination, dates, and vibe. The boutique returns a curated capsule of designer pieces drawn from the live collection.";
+    const rh = routeHead({ path: "/vacation-stylist", title, description });
+    return {
+      meta: [{ title }, { name: "description", content: description }, ...rh.meta],
+      links: rh.links,
+    };
+  },
   component: VacationStylistPage,
 });
 
