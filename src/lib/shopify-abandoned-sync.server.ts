@@ -17,17 +17,15 @@ import {
   SHOPIFY_API_VERSION,
   SHOPIFY_STORE_PERMANENT_DOMAIN,
 } from "@/lib/shopify";
+import { getAdminAccessToken } from "@/lib/shopify-admin.server";
 
 const EUR_TO_USD = 1.08;
 const HOUR_MS = 60 * 60 * 1000;
 
-function adminToken(): string {
-  const t =
-    typeof process !== "undefined"
-      ? process.env?.SHOPIFY_ACCESS_TOKEN
-      : undefined;
-  if (!t) throw new Error("SHOPIFY_ACCESS_TOKEN missing");
-  return t;
+async function adminToken(): Promise<string> {
+  // Use Client Credentials Grant — the custom app token has read_all_orders,
+  // while the static SHOPIFY_ACCESS_TOKEN does not.
+  return getAdminAccessToken();
 }
 
 interface ShopifyCheckout {
@@ -57,7 +55,7 @@ interface ShopifyCheckout {
 async function fetchAbandonedCheckouts(
   sinceIso: string,
 ): Promise<ShopifyCheckout[]> {
-  const token = adminToken();
+  const token = await adminToken();
   const base = `https://${SHOPIFY_STORE_PERMANENT_DOMAIN}/admin/api/${SHOPIFY_API_VERSION}/checkouts.json`;
   let url: string | null = `${base}?limit=250&status=open&created_at_min=${encodeURIComponent(sinceIso)}`;
   const out: ShopifyCheckout[] = [];
