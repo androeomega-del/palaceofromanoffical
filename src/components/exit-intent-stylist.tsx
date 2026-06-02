@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useRouterState } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { AiSearchBar } from "@/components/ai-search-bar";
 import { Sparkles, Check } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { subscribeNewsletter } from "@/lib/newsletter.functions";
 
 const SESSION_KEY = "por_exit_intent_shown_v1";
 const SUBSCRIBED_KEY = "por_atelier_subscribed_v1";
@@ -114,6 +115,7 @@ export function ExitIntentStylist() {
 function AtelierListInline({ onSubscribed }: { onSubscribed: () => void }) {
   const alreadySubscribed =
     typeof window !== "undefined" && localStorage.getItem(SUBSCRIBED_KEY) === "1";
+  const subscribe = useServerFn(subscribeNewsletter);
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "ok" | "error">(
     alreadySubscribed ? "ok" : "idle",
@@ -130,10 +132,11 @@ function AtelierListInline({ onSubscribed }: { onSubscribed: () => void }) {
         <Check className="w-4 h-4 text-bronze mt-0.5 shrink-0" strokeWidth={1.5} />
         <div>
           <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-1">
-            You're on the Atelier List
+            Check your inbox
           </p>
           <p className="text-sm text-ink leading-relaxed">
-            Watch your inbox for the next private edit.
+            We've sent a confirmation link — click it to activate your
+            subscription to the Atelier List.
           </p>
         </div>
       </div>
@@ -151,16 +154,16 @@ function AtelierListInline({ onSubscribed }: { onSubscribed: () => void }) {
     setStatus("sending");
     setError(null);
     try {
-      const { error: insertError } = await supabase
-        .from("newsletter_subscribers")
-        .insert({
+      const result = await subscribe({
+        data: {
           email: value,
           source: "exit_intent",
-          user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
-          marketing_consent: true,
-        });
-      if (insertError && insertError.code !== "23505") {
-        throw new Error(insertError.message);
+          userAgent: typeof navigator !== "undefined" ? navigator.userAgent : undefined,
+          marketingConsent: true,
+        },
+      });
+      if (!result.ok) {
+        throw new Error(result.error ?? "subscribe failed");
       }
       try {
         localStorage.setItem(SUBSCRIBED_KEY, "1");
