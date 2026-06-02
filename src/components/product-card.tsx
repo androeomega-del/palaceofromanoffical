@@ -11,6 +11,7 @@ import { useWishlistStore } from "@/stores/wishlist-store";
 import { useInteractionStore } from "@/stores/interaction-store";
 import { QuickViewSheet } from "@/components/quick-view-sheet";
 import { PriceTag } from "@/components/price-tag";
+import { buildProductAlt } from "@/lib/product-alt";
 
 
 export type SuppressedBadge = "markdown" | "scarcity";
@@ -205,6 +206,9 @@ export function ProductCard({
   };
 
   const altBase = p.vendor ? `${p.title} — ${p.vendor}` : p.title;
+  const totalImages = p.images?.edges?.length ?? 0;
+  const alt1 = buildProductAlt(p, { index: 0, total: totalImages, shopifyAlt: img?.altText });
+  const alt2 = buildProductAlt(p, { index: 1, total: totalImages, shopifyAlt: img2?.altText });
 
   const onAdd = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -322,7 +326,7 @@ export function ProductCard({
             src={cdnImage(img.url, { width: 700 })}
             srcSet={cdnSrcSet(img.url, [400, 700, 1000, 1400])}
             sizes="(min-width: 1280px) 22vw, (min-width: 768px) 30vw, 50vw"
-            alt={img.altText ?? altBase}
+            alt={alt1}
             width={700}
             height={875}
             loading="lazy"
@@ -350,7 +354,7 @@ export function ProductCard({
             src={cdnImage(img2.url, { width: 700 })}
             srcSet={cdnSrcSet(img2.url, [400, 700, 1000, 1400])}
             sizes="(min-width: 1280px) 22vw, (min-width: 768px) 30vw, 50vw"
-            alt={img2.altText ?? altBase}
+            alt={alt2}
             width={700}
             height={875}
             loading="lazy"

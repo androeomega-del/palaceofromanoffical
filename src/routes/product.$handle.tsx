@@ -40,6 +40,7 @@ import { parseComposition, hasCompositionInfo } from "@/lib/product-composition"
 import { buildPdpFaq } from "@/lib/pdp-faq";
 import { PdpFaq } from "@/components/pdp-faq";
 import { ROME_BRAND_SLUGS } from "@/lib/rome-brands";
+import { buildProductAlt } from "@/lib/product-alt";
 
 export const Route = createFileRoute("/product/$handle")({
   loader: async ({ params }) => {
@@ -665,7 +666,7 @@ function ProductView({
                           src={cdnImage(img.url, { width: 900 })}
                           srcSet={cdnSrcSet(img.url, [600, 900, 1200])}
                           sizes="100vw"
-                          alt={img.altText ?? product.title}
+                          alt={buildProductAlt({ ...product, selectedOptions: selectedVariant?.selectedOptions }, { index: i, total: images.length, shopifyAlt: img.altText })}
                           width={900}
                           height={1125}
                           loading={i === 0 ? "eager" : "lazy"}
@@ -719,7 +720,7 @@ function ProductView({
                           src={cdnImage(img.url, { width: wide ? 1600 : 1000 })}
                           srcSet={cdnSrcSet(img.url, wide ? [800, 1200, 1600, 2000] : [500, 800, 1100])}
                           sizes={wide ? "(min-width: 1280px) 58vw, 100vw" : "(min-width: 1280px) 29vw, 50vw"}
-                          alt={img.altText ?? product.title}
+                          alt={buildProductAlt({ ...product, selectedOptions: selectedVariant?.selectedOptions }, { index: i, total: images.length, shopifyAlt: img.altText })}
                           width={wide ? 1600 : 1000}
                           height={wide ? 2000 : 1333}
                           loading={i === 0 ? "eager" : "lazy"}
