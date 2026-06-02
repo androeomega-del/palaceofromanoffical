@@ -133,3 +133,22 @@ export function articleJsonLd(opts: {
       : {}),
   };
 }
+
+/**
+ * Build a schema.org BreadcrumbList JSON-LD object for a route.
+ * Pass the full crumb trail (including Home as the first item).
+ */
+export function breadcrumbJsonLd(
+  crumbs: { name: string; path: string }[],
+) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: crumbs.map((c, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: c.name,
+      item: absoluteUrl(c.path),
+    })),
+  };
+}
