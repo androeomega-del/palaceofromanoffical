@@ -64,15 +64,21 @@ export const Route = createFileRoute("/product/$handle")({
     }
 
 
+    // SEO-optimized title: "{Vendor} {Title} — Authentic {Type}" (pageTitle appends " — Palace of Roman")
+    // Keeps the high-intent keywords (brand + product + authentic) at the front, under 60 chars total.
     const titleMain = p.vendor
-      ? `${p.title} — ${p.vendor} | Authentic at Palace of Roman`
-      : `${p.title} | Palace of Roman`;
+      ? `${p.vendor} ${p.title}${p.productType ? ` — Authentic ${p.productType}` : " — Authentic"}`
+      : `${p.title}${p.productType ? ` — Authentic ${p.productType}` : ""}`;
     const parsedComp = parseComposition(p.description || "");
+    // SEO-optimized description: brand + product + material + trust + shipping + offer.
+    // Front-loaded with the buyer's search query, closed with conversion levers.
     const descPieces: string[] = [];
-    descPieces.push(`Shop authentic ${p.vendor ? `${p.vendor} ` : ""}${p.title} at Palace of Roman.`);
-    if (p.productType) descPieces.push(`${p.productType}${parsedComp.composition ? ` in ${parsedComp.composition}` : ""}.`);
-    descPieces.push("Worldwide shipping, 90-day authenticity guarantee.");
-    const desc = metaDescription(p.description) || descPieces.join(" ");
+    descPieces.push(
+      `Shop the authentic ${p.vendor ? `${p.vendor} ` : ""}${p.title}${p.productType ? ` ${p.productType.toLowerCase()}` : ""}${parsedComp.composition ? ` in ${parsedComp.composition.toLowerCase()}` : ""} at Palace of Roman.`
+    );
+    descPieces.push("Sourced through our authorised European boutique network — guaranteed authentic, with dust bag and original packaging.");
+    descPieces.push("Free worldwide shipping over $250, 14-day returns. Members unlock 10% off.");
+    const desc = metaDescription(descPieces.join(" "));
     const img = p.images?.edges?.[0]?.node?.url;
     const price = p.priceRange?.minVariantPrice;
     const compareAt = p.compareAtPriceRange?.minVariantPrice;
