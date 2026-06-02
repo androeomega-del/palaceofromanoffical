@@ -2,16 +2,72 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { EditorialPageShell, ProseColumn, SectionTitle } from "@/components/editorial-page-shell";
 import { Building2, PackageCheck, FileBadge, ShieldCheck } from "lucide-react";
 import { img } from "@/lib/editorial-library";
-import { routeHead } from "@/lib/seo";
+import { routeHead, breadcrumbJsonLd } from "@/lib/seo";
 
 export const Route = createFileRoute("/authentication")({
   head: () => {
     const title = "Sourcing & Authenticity — Palace of Roman";
     const desc = "How Palace of Roman sources its edit: an authorised European distribution partner, sealed shipments from brand-authorised warehouses, and an unconditional authenticity guarantee.";
     const rh = routeHead({ path: "/authentication", title, description: desc, image: img(38) });
+    const faqJsonLd = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: "Is Palace of Roman authentic?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Yes. Every piece sold by Palace of Roman is 100% authentic. We source through a network of authorised boutiques and distributors that buy directly from the maisons and their official wholesale channels. We never buy from unverified marketplaces, resellers or private sellers. If an independent authenticator ever challenges a piece purchased from us, return it within ninety days for a full refund.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Where do Palace of Roman's pieces come from?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Stock is held at brand-authorised warehouses across Italy (Milan, Florence, Modena, Como, Rome and more), Sweden, Spain, Austria, Northern Ireland and the United States. Each order ships sealed, directly from the partner warehouse holding the piece — Palace of Roman does not open, repackage or relabel inventory.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "How does Palace of Roman guarantee authenticity?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Authenticity is guaranteed through the chain of custody: pieces are sourced via authorised distribution, stored at brand-authorised warehouses, and shipped sealed in their original packaging with tags, dust bag and any maison-supplied documentation (authenticity card, serial or date code, care booklet). Every order is covered by a 90-day independent-authentication refund guarantee.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Is Palace of Roman an official boutique of the brands it carries?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Palace of Roman is an independent multi-brand boutique. We are not a directly appointed flagship of any single house — pieces reach us through the brands' own authorised distribution channels, the same multi-brand sourcing model used by leading luxury platforms.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "What documentation comes with each order?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Each order arrives in its original brand packaging with the documentation the maison originally supplied — any authenticity card, serial or date code, and care booklet provided with that piece.",
+          },
+        },
+      ],
+    };
     return {
       meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
       links: rh.links,
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(breadcrumbJsonLd([
+            { name: "Home", path: "/" },
+            { name: "Sourcing & Authenticity", path: "/authentication" },
+          ])),
+        },
+        { type: "application/ld+json", children: JSON.stringify(faqJsonLd) },
+      ],
     };
   },
   component: AuthenticationPage,
