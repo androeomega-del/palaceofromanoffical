@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useRouterState } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { AiSearchBar } from "@/components/ai-search-bar";
 import { Sparkles, Check } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { subscribeNewsletter } from "@/lib/newsletter.functions";
 
 const SESSION_KEY = "por_exit_intent_shown_v1";
 const SUBSCRIBED_KEY = "por_atelier_subscribed_v1";
