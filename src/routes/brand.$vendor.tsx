@@ -7,6 +7,7 @@ import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
 import { CatalogSort, SORT_OPTIONS, type SortValue } from "@/components/catalog-filters";
 import { brandFromSlug, heritageFor } from "@/lib/brand-heritage";
 import { spotlightFor } from "@/lib/brand-seo-categories";
+import { buildBrandFaq } from "@/lib/brand-faq";
 import { BrandCategorySpotlight } from "@/components/sections/brand-category-spotlight";
 import { cdnImage } from "@/lib/cdn-image";
 
@@ -76,6 +77,18 @@ export const Route = createFileRoute("/brand/$vendor")({
               { "@type": "ListItem", position: 2, name: "Brands", item: absoluteUrl("/brands") },
               { "@type": "ListItem", position: 3, name, item: absoluteUrl(path) },
             ],
+          }),
+        },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: buildBrandFaq(name).map((qa) => ({
+              "@type": "Question",
+              name: qa.q,
+              acceptedAnswer: { "@type": "Answer", text: qa.a },
+            })),
           }),
         },
       ],

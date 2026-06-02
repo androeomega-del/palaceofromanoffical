@@ -5,6 +5,7 @@ import { fetchProductsPage } from "@/lib/shopify";
 import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
 import { img } from "@/lib/editorial-library";
 import { isAllowedLuxuryBrand } from "@/lib/nav-config";
+import { ALL_LUXURY_BRANDS } from "@/lib/luxury-brands";
 
 const BRANDS_TITLE = "Brands — Palace of Roman";
 const BRANDS_DESC =
@@ -31,6 +32,25 @@ export const Route = createFileRoute("/brands")({
             description: BRANDS_DESC,
             url: absoluteUrl("/brands"),
             isPartOf: { "@type": "WebSite", name: SITE_NAME, url: absoluteUrl("/") },
+          }),
+        },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            name: "Designer brands at Palace of Roman",
+            itemListOrder: "https://schema.org/ItemListOrderAscending",
+            numberOfItems: ALL_LUXURY_BRANDS.length,
+            itemListElement: ALL_LUXURY_BRANDS.map((b, i) => ({
+              "@type": "ListItem",
+              position: i + 1,
+              item: {
+                "@type": "Brand",
+                name: b.name,
+                url: absoluteUrl(`/brand/${b.slug}`),
+              },
+            })),
           }),
         },
       ],

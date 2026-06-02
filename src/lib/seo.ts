@@ -131,6 +131,10 @@ export function articleJsonLd(opts: {
           })),
         }
       : {}),
+    speakable: {
+      "@type": "SpeakableSpecification",
+      cssSelector: ["h1", ".prose p:first-of-type", ".prose h2"],
+    },
   };
 }
 

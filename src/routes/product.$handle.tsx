@@ -37,6 +37,8 @@ import { NotifyMeForm } from "@/components/atelier/notify-me-form";
 import { RecentlyViewedRail } from "@/components/recently-viewed-rail";
 import { ImageLightbox } from "@/components/product/image-lightbox";
 import { parseComposition, hasCompositionInfo } from "@/lib/product-composition";
+import { buildPdpFaq } from "@/lib/pdp-faq";
+import { PdpFaq } from "@/components/pdp-faq";
 import { ROME_BRAND_SLUGS } from "@/lib/rome-brands";
 
 export const Route = createFileRoute("/product/$handle")({
@@ -62,10 +64,15 @@ export const Route = createFileRoute("/product/$handle")({
     }
 
 
-    const titleMain = p.vendor ? `${p.title} | ${p.vendor}` : p.title;
-    const desc =
-      metaDescription(p.description) ||
-      `Shop ${p.title} by ${p.vendor} at Palace of Roman. 100% authentic, worldwide shipping.`;
+    const titleMain = p.vendor
+      ? `${p.title} — ${p.vendor} | Authentic at Palace of Roman`
+      : `${p.title} | Palace of Roman`;
+    const parsedComp = parseComposition(p.description || "");
+    const descPieces: string[] = [];
+    descPieces.push(`Shop authentic ${p.vendor ? `${p.vendor} ` : ""}${p.title} at Palace of Roman.`);
+    if (p.productType) descPieces.push(`${p.productType}${parsedComp.composition ? ` in ${parsedComp.composition}` : ""}.`);
+    descPieces.push("Worldwide shipping, 90-day authenticity guarantee.");
+    const desc = metaDescription(p.description) || descPieces.join(" ");
     const img = p.images?.edges?.[0]?.node?.url;
     const price = p.priceRange?.minVariantPrice;
     const compareAt = p.compareAtPriceRange?.minVariantPrice;
@@ -240,7 +247,32 @@ export const Route = createFileRoute("/product/$handle")({
             image: ldImages,
             brand: p.vendor ? { "@type": "Brand", name: p.vendor } : undefined,
             category: p.productType || undefined,
+            material: parsedComp.composition || undefined,
+            countryOfOrigin: parsedComp.madeIn
+              ? { "@type": "Country", name: parsedComp.madeIn.replace(/^Made in /, "") }
+              : { "@type": "Country", name: "Italy" },
             offers,
+          }),
+        },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: buildPdpFaq({
+              title: p.title,
+              vendor: p.vendor || "",
+              productType: p.productType || "",
+              description: p.description || "",
+            }).map((qa) => ({
+              "@type": "Question",
+              name: qa.q,
+              acceptedAnswer: { "@type": "Answer", text: qa.a },
+            })),
+            speakable: {
+              "@type": "SpeakableSpecification",
+              cssSelector: [".pdp-faq"],
+            },
           }),
         },
         {
@@ -1041,6 +1073,14 @@ function ProductView({
 
         {/* ===== Reviews (first-party, admin-moderated) ===== */}
         <ProductReviews handle={product.handle} productTitle={product.title} />
+
+        {/* ===== "On this piece" FAQ — visible + FAQPage JSON-LD ===== */}
+        <PdpFaq
+          title={product.title}
+          vendor={product.vendor}
+          productType={product.productType}
+          description={product.description}
+        />
 
         {/* ===== AI Recommendations (server-assisted) ===== */}
         <AIRecommendations product={product} />
