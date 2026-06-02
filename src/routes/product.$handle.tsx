@@ -245,7 +245,32 @@ export const Route = createFileRoute("/product/$handle")({
             image: ldImages,
             brand: p.vendor ? { "@type": "Brand", name: p.vendor } : undefined,
             category: p.productType || undefined,
+            material: parsedComp.composition || undefined,
+            countryOfOrigin: parsedComp.madeIn
+              ? { "@type": "Country", name: parsedComp.madeIn.replace(/^Made in /, "") }
+              : { "@type": "Country", name: "Italy" },
             offers,
+          }),
+        },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: buildPdpFaq({
+              title: p.title,
+              vendor: p.vendor || "",
+              productType: p.productType || "",
+              description: p.description || "",
+            }).map((qa) => ({
+              "@type": "Question",
+              name: qa.q,
+              acceptedAnswer: { "@type": "Answer", text: qa.a },
+            })),
+            speakable: {
+              "@type": "SpeakableSpecification",
+              cssSelector: [".pdp-faq"],
+            },
           }),
         },
         {
