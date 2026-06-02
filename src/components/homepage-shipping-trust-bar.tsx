@@ -31,7 +31,7 @@ export function HomepageShippingTrustBar() {
             <Truck className="w-4 h-4 text-bronze-deep shrink-0 mt-0.5 md:mt-0" strokeWidth={1.5} />
             <p className="leading-snug">
               <span className="font-medium text-ink">Dispatched in 24–48h</span>{" "}
-              <span className="text-muted-foreground">— 3 business days within the EU, 5–7 business days worldwide via</span>{" "}
+              <span className="text-muted-foreground">— fully insured, 3 business days within the EU, 5–7 business days worldwide via</span>{" "}
               <span className="font-medium text-ink">DHL Express · FedEx · UPS</span>
             </p>
           </div>

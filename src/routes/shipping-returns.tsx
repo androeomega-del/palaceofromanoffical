@@ -57,7 +57,7 @@ function ShippingReturnsPage() {
         <div className="bg-canvas p-8 text-center">
           <p className="font-serif text-5xl md:text-6xl tracking-tight text-ink leading-none">3–5</p>
           <p className="mt-3 text-[10px] uppercase tracking-[0.3em] text-bronze font-semibold">Day Express</p>
-          <p className="mt-2 text-xs text-muted-foreground leading-relaxed">Tracked worldwide delivery</p>
+          <p className="mt-2 text-xs text-muted-foreground leading-relaxed">Insured, tracked worldwide delivery</p>
         </div>
         <div className="bg-canvas p-8 text-center">
           <p className="font-serif text-5xl md:text-6xl tracking-tight text-ink leading-none">100%</p>
@@ -83,8 +83,8 @@ function ShippingReturnsPage() {
           </ul>
           <p className="text-sm text-muted-foreground">
             Warehouses dispatch within 24–48 hours of order confirmation. Delivery is by UPS, FedEx or DHL with an
-            active tracking number, sent to you the moment the parcel leaves the warehouse. Couriers and warehouses do
-            not operate on weekends or local public holidays.
+            active tracking number, sent to you the moment the parcel leaves the warehouse. Every shipment is fully
+            insured at no additional cost. Couriers and warehouses do not operate on weekends or local public holidays.
           </p>
 
           <div className="not-prose mt-8 overflow-x-auto -mx-2">

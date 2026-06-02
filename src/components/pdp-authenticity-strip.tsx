@@ -14,8 +14,8 @@ export function PdpAuthenticityStrip() {
       />
       <Pillar
         icon={<Package className="w-5 h-5" strokeWidth={1.4} />}
-        title="Sealed Dispatch"
-        sub="Shipped factory-sealed from a brand-authorised European or US warehouse within 24–48 hours."
+        title="Insured Shipping"
+        sub="Shipped factory-sealed within 24–48 hours. Fully insured via UPS, FedEx or DHL at no extra cost."
       />
       <Pillar
         icon={<RotateCcw className="w-5 h-5" strokeWidth={1.4} />}
