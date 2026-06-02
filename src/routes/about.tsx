@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { EditorialPageShell } from "@/components/editorial-page-shell";
 import { img } from "@/lib/editorial-library";
 import founderPortrait from "@/assets/founder-portrait-la.jpg";
-import { routeHead } from "@/lib/seo";
+import { routeHead, breadcrumbJsonLd } from "@/lib/seo";
 
 const ABOUT_TITLE = "House Notes — Palace of Roman";
 const ABOUT_DESC = "The story of Palace of Roman — a curated multi-brand boutique for luxury fashion, considered and authenticated.";
@@ -10,9 +10,14 @@ const ABOUT_DESC = "The story of Palace of Roman — a curated multi-brand bouti
 export const Route = createFileRoute("/about")({
   head: () => {
     const rh = routeHead({ path: "/about", title: ABOUT_TITLE, description: ABOUT_DESC, image: img(7) });
+    const breadcrumb = breadcrumbJsonLd([
+      { name: "Home", path: "/" },
+      { name: "House Notes", path: "/about" },
+    ]);
     return {
       meta: [{ title: ABOUT_TITLE }, { name: "description", content: ABOUT_DESC }, ...rh.meta],
       links: rh.links,
+      scripts: [{ type: "application/ld+json", children: JSON.stringify(breadcrumb) }],
     };
   },
   component: AboutPage,
