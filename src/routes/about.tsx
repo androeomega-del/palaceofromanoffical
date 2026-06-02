@@ -14,10 +14,43 @@ export const Route = createFileRoute("/about")({
       { name: "Home", path: "/" },
       { name: "House Notes", path: "/about" },
     ]);
+    const organization = {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: "Palace of Roman",
+      url: "https://palaceofromanofficial.com",
+      logo: "https://palaceofromanofficial.com/favicon.ico",
+      email: "support@palaceofromanofficial.com",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "8605 Santa Monica Blvd PMB 610211",
+        addressLocality: "West Hollywood",
+        addressRegion: "CA",
+        postalCode: "90069-4109",
+        addressCountry: "US",
+      },
+      contactPoint: {
+        "@type": "ContactPoint",
+        contactType: "customer support",
+        email: "support@palaceofromanofficial.com",
+        availableLanguage: ["English"],
+        areaServed: "Worldwide",
+        hoursAvailable: "Mo-Sa 09:00-18:00",
+      },
+      sameAs: [
+        "https://www.instagram.com/palaceofroman/",
+        "https://www.facebook.com/people/Palace-of-Roman/61581195176963/",
+        "https://www.tiktok.com/@palaceofroman",
+        "https://www.yelp.com/biz/palace-of-roman",
+      ],
+    };
     return {
       meta: [{ title: ABOUT_TITLE }, { name: "description", content: ABOUT_DESC }, ...rh.meta],
       links: rh.links,
-      scripts: [{ type: "application/ld+json", children: JSON.stringify(breadcrumb) }],
+      scripts: [
+        { type: "application/ld+json", children: JSON.stringify(breadcrumb) },
+        { type: "application/ld+json", children: JSON.stringify(organization) },
+      ],
     };
   },
   component: AboutPage,
