@@ -303,8 +303,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
             areaServed: "Worldwide",
           }],
           foundingDate: "2026",
+          slogan: "Authentic luxury fashion, sourced through a global network of authorised boutiques.",
+          areaServed: { "@type": "Place", name: "Worldwide" },
           paymentAccepted: ["Visa", "Mastercard", "American Express", "Apple Pay", "Shop Pay", "Klarna"],
           currenciesAccepted: "USD",
+          knowsAbout: [
+            "Gucci", "Prada", "Louis Vuitton", "Chanel", "Hermès", "Dior", "Saint Laurent",
+            "Bottega Veneta", "Fendi", "Valentino", "Versace", "Balenciaga", "Loewe", "Givenchy",
+            "Burberry", "Off-White", "Moncler", "Stone Island", "Brunello Cucinelli", "Loro Piana",
+            "Tom Ford", "Maison Margiela", "Jacquemus", "Ami", "Acne Studios",
+          ],
           sameAs: [
             "https://www.instagram.com/palaceofroman/",
             "https://www.facebook.com/people/Palace-of-Roman/61581195176963/",
