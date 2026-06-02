@@ -80,6 +80,7 @@ import { Route as CollectionsHandleRouteImport } from './routes/collections.$han
 import { Route as CampaignMensSwimRouteImport } from './routes/campaign.mens-swim'
 import { Route as BrandVendorRouteImport } from './routes/brand.$vendor'
 import { Route as AdminTrendingBrandsRouteImport } from './routes/admin.trending-brands'
+import { Route as AdminStructuredDataTestRouteImport } from './routes/admin.structured-data-test'
 import { Route as AdminShopifySyncRouteImport } from './routes/admin.shopify-sync'
 import { Route as AdminSeoHealthRouteImport } from './routes/admin.seo-health'
 import { Route as AdminReviewsRouteImport } from './routes/admin.reviews'
@@ -497,6 +498,11 @@ const AdminTrendingBrandsRoute = AdminTrendingBrandsRouteImport.update({
   path: '/admin/trending-brands',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminStructuredDataTestRoute = AdminStructuredDataTestRouteImport.update({
+  id: '/admin/structured-data-test',
+  path: '/admin/structured-data-test',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminShopifySyncRoute = AdminShopifySyncRouteImport.update({
   id: '/admin/shopify-sync',
   path: '/admin/shopify-sync',
@@ -827,6 +833,7 @@ export interface FileRoutesByFullPath {
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/seo-health': typeof AdminSeoHealthRoute
   '/admin/shopify-sync': typeof AdminShopifySyncRoute
+  '/admin/structured-data-test': typeof AdminStructuredDataTestRoute
   '/admin/trending-brands': typeof AdminTrendingBrandsRoute
   '/brand/$vendor': typeof BrandVendorRoute
   '/campaign/mens-swim': typeof CampaignMensSwimRoute
@@ -949,6 +956,7 @@ export interface FileRoutesByTo {
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/seo-health': typeof AdminSeoHealthRoute
   '/admin/shopify-sync': typeof AdminShopifySyncRoute
+  '/admin/structured-data-test': typeof AdminStructuredDataTestRoute
   '/admin/trending-brands': typeof AdminTrendingBrandsRoute
   '/brand/$vendor': typeof BrandVendorRoute
   '/campaign/mens-swim': typeof CampaignMensSwimRoute
@@ -1072,6 +1080,7 @@ export interface FileRoutesById {
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/seo-health': typeof AdminSeoHealthRoute
   '/admin/shopify-sync': typeof AdminShopifySyncRoute
+  '/admin/structured-data-test': typeof AdminStructuredDataTestRoute
   '/admin/trending-brands': typeof AdminTrendingBrandsRoute
   '/brand/$vendor': typeof BrandVendorRoute
   '/campaign/mens-swim': typeof CampaignMensSwimRoute
@@ -1197,6 +1206,7 @@ export interface FileRouteTypes {
     | '/admin/reviews'
     | '/admin/seo-health'
     | '/admin/shopify-sync'
+    | '/admin/structured-data-test'
     | '/admin/trending-brands'
     | '/brand/$vendor'
     | '/campaign/mens-swim'
@@ -1319,6 +1329,7 @@ export interface FileRouteTypes {
     | '/admin/reviews'
     | '/admin/seo-health'
     | '/admin/shopify-sync'
+    | '/admin/structured-data-test'
     | '/admin/trending-brands'
     | '/brand/$vendor'
     | '/campaign/mens-swim'
@@ -1441,6 +1452,7 @@ export interface FileRouteTypes {
     | '/admin/reviews'
     | '/admin/seo-health'
     | '/admin/shopify-sync'
+    | '/admin/structured-data-test'
     | '/admin/trending-brands'
     | '/brand/$vendor'
     | '/campaign/mens-swim'
@@ -1562,6 +1574,7 @@ export interface RootRouteChildren {
   AdminReviewsRoute: typeof AdminReviewsRoute
   AdminSeoHealthRoute: typeof AdminSeoHealthRoute
   AdminShopifySyncRoute: typeof AdminShopifySyncRoute
+  AdminStructuredDataTestRoute: typeof AdminStructuredDataTestRoute
   AdminTrendingBrandsRoute: typeof AdminTrendingBrandsRoute
   BrandVendorRoute: typeof BrandVendorRoute
   CampaignMensSwimRoute: typeof CampaignMensSwimRoute
@@ -2119,6 +2132,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminTrendingBrandsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/structured-data-test': {
+      id: '/admin/structured-data-test'
+      path: '/admin/structured-data-test'
+      fullPath: '/admin/structured-data-test'
+      preLoaderRoute: typeof AdminStructuredDataTestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/shopify-sync': {
       id: '/admin/shopify-sync'
       path: '/admin/shopify-sync'
@@ -2594,6 +2614,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminReviewsRoute: AdminReviewsRoute,
   AdminSeoHealthRoute: AdminSeoHealthRoute,
   AdminShopifySyncRoute: AdminShopifySyncRoute,
+  AdminStructuredDataTestRoute: AdminStructuredDataTestRoute,
   AdminTrendingBrandsRoute: AdminTrendingBrandsRoute,
   BrandVendorRoute: BrandVendorRoute,
   CampaignMensSwimRoute: CampaignMensSwimRoute,
