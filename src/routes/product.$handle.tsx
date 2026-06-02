@@ -666,7 +666,7 @@ function ProductView({
                           src={cdnImage(img.url, { width: 900 })}
                           srcSet={cdnSrcSet(img.url, [600, 900, 1200])}
                           sizes="100vw"
-                          alt={img.altText ?? product.title}
+                          alt={buildProductAlt(product, { index: i, total: images.length, shopifyAlt: img.altText, selectedOptions: selectedVariant?.selectedOptions })}
                           width={900}
                           height={1125}
                           loading={i === 0 ? "eager" : "lazy"}
