@@ -192,7 +192,9 @@ export const unlockQuizLookbook = createServerFn({ method: "POST" })
     // opt-in action), but honour an explicit false from the client.
     const consent = data.marketingConsent !== false;
 
-    // 1) Newsletter signup — dedupe via unique index on lower(email).
+    // 1) Newsletter signup — pending (double opt-in), dedupe via unique index on lower(email).
+    const confirmationToken = newConfirmationToken();
+    const nowIso = new Date().toISOString();
     const { data: subInserted, error: subErr } = await supabaseAdmin
       .from("newsletter_subscribers")
       .insert({
@@ -200,6 +202,9 @@ export const unlockQuizLookbook = createServerFn({ method: "POST" })
         source,
         user_agent: data.userAgent ?? null,
         marketing_consent: consent,
+        status: "pending",
+        confirmation_token: confirmationToken,
+        confirmation_sent_at: nowIso,
       })
       .select("id")
       .maybeSingle();
@@ -231,19 +236,21 @@ export const unlockQuizLookbook = createServerFn({ method: "POST" })
       };
     }
 
-    // 3) Welcome email — only for genuinely new subscribers, and only if
-    //    consent + frequency cap allow it. The cap is a defensive backstop;
-    //    the newsletter unique-index check above is the primary gate.
-    if (isNewSubscriber) {
-      const welcome = renderWelcomeEmail();
+    // 3) Confirmation email (double opt-in) — only for genuinely new
+    //    subscribers, and only if consent + frequency cap allow it. The
+    //    lookbook unlock itself is delivered regardless via step 4 below.
+    if (isNewSubscriber && consent) {
+      const confirmUrl = `${SITE}/newsletter/confirm?token=${encodeURIComponent(confirmationToken)}`;
+      const conf = renderConfirmationEmail(confirmUrl);
       await sendGatedEmail(
         email,
         TEMPLATE_WELCOME,
-        welcome.subject,
-        welcome.html,
-        welcome.text,
+        conf.subject,
+        conf.html,
+        conf.text,
       );
     }
+
 
     // 4) Lookbook unlock confirmation — capped to once per 7 days per email,
     //    so repeat quiz takers don't get spammed with the same edit recap.
