@@ -95,13 +95,9 @@ export function SiteHeader() {
     <>
       {announceOpen && (
         <div className="relative w-full bg-ink text-canvas text-[10px] py-2.5 uppercase tracking-[0.28em] text-center border-b border-ink/10">
-          <Link
-            to="/account/login"
-            className="inline-flex items-center gap-2 hover:text-bronze transition-colors"
-          >
-            <span>Members receive new arrivals 24 hours early — sign in</span>
-            <span aria-hidden="true">›</span>
-          </Link>
+          <span className="inline-flex items-center gap-2">
+            Sign up for our newsletter for a surprise offer
+          </span>
           <button
             type="button"
             aria-label="Dismiss announcement"
