@@ -2,12 +2,12 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, X, Loader2, ShoppingBag, ArrowRight, ShieldCheck, RotateCcw, Lock } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useCartStore } from "@/stores/cart-store";
 import { formatPrice } from "@/lib/shopify";
 import { trackCartEvent } from "@/lib/cart-analytics";
 import { CartFbt } from "@/components/cart-fbt";
-import { CartEmailCapture } from "@/components/atelier/cart-email-capture";
+import { CartEmailCapture, type CartEmailCaptureHandle } from "@/components/atelier/cart-email-capture";
 import { GiftWrapOption } from "@/components/gift-wrap-option";
 
 export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
@@ -30,9 +30,24 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
     if (open) syncCart(); 
   }, [open, syncCart]);
 
+  const emailCaptureRef = useRef<CartEmailCaptureHandle | null>(null);
+  const [skipEmail, setSkipEmail] = useState(false);
+
+  // Reset the "skip email" state whenever the drawer closes
+  useEffect(() => {
+    if (!open) setSkipEmail(false);
+  }, [open]);
+
   const handleCheckout = () => {
     const url = getCheckoutUrl();
     if (!url) return;
+
+    // First click without a saved email → prompt and let them either fill it or click again to skip.
+    const hasEmail = emailCaptureRef.current?.promptIfMissing() ?? true;
+    if (!hasEmail && !skipEmail) {
+      setSkipEmail(true);
+      return;
+    }
 
     trackCartEvent({
       event_type: "checkout_started",
@@ -197,7 +212,7 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
                 </li>
               </ul>
 
-              <CartEmailCapture />
+              <CartEmailCapture ref={emailCaptureRef} />
 
 
               <Button
@@ -205,7 +220,11 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
                 disabled={isLoading || isSyncing}
                 className="w-full bg-ink text-canvas hover:bg-ink/90 rounded-none h-12 text-[11px] uppercase tracking-[0.25em] font-medium"
               >
-                {isLoading || isSyncing ? <Loader2 className="w-4 h-4 animate-spin" /> : "Proceed to Checkout"}
+                {isLoading || isSyncing
+                  ? <Loader2 className="w-4 h-4 animate-spin" />
+                  : skipEmail
+                    ? "Skip & Checkout"
+                    : "Proceed to Checkout"}
               </Button>
 
               <p className="text-[10px] text-center text-muted-foreground">
