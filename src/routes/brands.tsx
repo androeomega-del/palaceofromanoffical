@@ -5,6 +5,7 @@ import { fetchProductsPage } from "@/lib/shopify";
 import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
 import { img } from "@/lib/editorial-library";
 import { isAllowedLuxuryBrand } from "@/lib/nav-config";
+import { ALL_LUXURY_BRANDS } from "@/lib/luxury-brands";
 
 const BRANDS_TITLE = "Brands — Palace of Roman";
 const BRANDS_DESC =
