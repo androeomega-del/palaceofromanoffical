@@ -111,8 +111,8 @@ function LegalNoticePage() {
         <section>
           <SectionTitle kicker="07">Governing law</SectionTitle>
           <p>
-            These disclosures and the operation of this boutique are governed by the laws of the State of New York.
-            Any dispute is subject to the exclusive jurisdiction of the courts of New York County, unless mandatory
+            These disclosures and the operation of this boutique are governed by the laws of the State of California, United States.
+            Any dispute is subject to the exclusive jurisdiction of the courts of Los Angeles County, California, unless mandatory
             consumer protection law in your country of residence provides otherwise.
           </p>
         </section>
