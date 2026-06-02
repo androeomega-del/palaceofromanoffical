@@ -105,6 +105,11 @@ function ShippingReturnsPage() {
             days. Shipping is quoted per order at checkout and based on the courier rate plus a per-item handling
             charge that varies by category.
           </p>
+
+          <p className="mt-4 text-sm text-ink/80 border-l-2 border-bronze-deep/60 pl-4 italic">
+            We provide worldwide delivery using DHL, FedEx or UPS. Please note that at the current time we are unable
+            to deliver to Russia, Belarus or Ukraine due to the ongoing conflict.
+          </p>
         </section>
       </ProseColumn>
 
