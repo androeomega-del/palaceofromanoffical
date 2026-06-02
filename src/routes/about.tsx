@@ -192,7 +192,7 @@ function AboutPage() {
           <div className="grid grid-cols-[140px_1fr] gap-y-2 text-[13px] leading-relaxed">
             <span className="text-muted-foreground">Legal name</span>
             <span className="text-ink/85">Palace of Roman</span>
-            <span className="text-muted-foreground">Entity</span>
+            <span className="text-muted-foreground">Type of business</span>
             <span className="text-ink/85">Sole proprietorship, California, US</span>
             <span className="text-muted-foreground">Founded</span>
             <span className="text-ink/85">Independent boutique, founder-led</span>
