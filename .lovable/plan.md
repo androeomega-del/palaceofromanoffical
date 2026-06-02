@@ -1,62 +1,120 @@
 ## Goal
-Make the homepage + collection meta A/B test fully SEO-safe, bot-aware, tracked, and regression-tested. Stack is TanStack Start (React 19, Vite, Cloudflare Worker SSR) with Lovable Cloud (Supabase) — so detection runs in the SSR server function layer, meta injection runs in route `head()`, and the dashboard is a Supabase-backed admin page.
 
-## 1. Bot detection (server-side, fail-safe)
+Capture bottom-funnel buyers Googling "Farfetch alternative", "is Mytheresa worth it", "SSENSE vs ...", "Net-a-Porter alternative". These shoppers already trust the category — they're just choosing where to spend. Honest comparison pages convert at multiples of generic SEO traffic.
 
-Create `src/lib/bot-detect.ts` with `classifyUserAgent(ua, headers)`:
-- Known-bot UA regex list (Googlebot, Bingbot, GPTBot, ClaudeBot, PerplexityBot, Applebot, FacebookExternalHit, Twitterbot, LinkedInBot, Slackbot, DuckDuckBot, YandexBot, Baidu, headless Chrome, curl/wget/python-requests, etc.). Easy to extend — single exported array.
-- Heuristics: missing `accept`/`accept-language`, `accept` lacks `text/html`, suspicious UA tokens (`bot|spider|crawler|crawling|preview|fetch|http-client`).
-- Returns `{ isBot: boolean, reason: string }`. Fail-safe: any error / uncertainty → `isBot: true` so the default variant ships.
+## Scope (v1)
 
-Update `src/lib/meta-ab.functions.ts` `readMetaAbBucket`:
-- Read `user-agent` + headers via `getHeaders()`.
-- If `isBot` → always return `{ bucket: 0, isBot: true, forced: true }`.
-- Otherwise return the cookie bucket (+ `isBot: false`).
+Four comparison pages, one per major competitor:
 
-Reverse-DNS verification is intentionally skipped (Workers can't do PTR lookups reliably and UA+heuristics already catch 99%+; called out in code comments).
+```
+/compare/farfetch         — Palace of Roman vs Farfetch
+/compare/mytheresa        — Palace of Roman vs Mytheresa
+/compare/ssense           — Palace of Roman vs SSENSE
+/compare/net-a-porter     — Palace of Roman vs Net-a-Porter
+```
 
-## 2. Indexability rules (canonical-safe)
+Plus one hub:
 
-Update `src/routes/index.tsx` and `src/routes/collections.$handle.tsx` `head()`:
-- Variant A (bucket 0, default) → normal title/description + self-referencing canonical, no robots tag (indexable).
-- Variant B (bucket 1) → variant title/description **but** `<meta name="robots" content="noindex,follow">` and the same canonical pointing at the default URL.
-- Bot requests are forced to bucket 0 in step 1, so crawlers literally never see noindex or variant copy.
+```
+/compare                  — index of all comparisons
+```
 
-Update `useMetaAb` hook to also patch the `robots` meta tag client-side when the client-assigned bucket differs from SSR (e.g. a first-visit user rolled into bucket B mid-session) — keeps user-facing behavior consistent with SSR for returning visits.
+Why these four: highest search volume in "luxury multi-brand boutique alternative" queries, and each has a distinct angle we can honestly differentiate against (see angles below).
 
-## 3. Conversion tracking + dashboard
+## Route files
 
-**Migration** — new tables:
-- `meta_ab_exposures(id, page_type, page_path, bucket, variant, session_id, created_at)`
-- `meta_ab_conversions(id, page_type, bucket, variant, event_type, session_id, value_usd, created_at)`
-- Both: `anon+authenticated INSERT` with input validation (length/range checks); `admin SELECT` only. Indices on `(page_type, variant, created_at)`.
+```
+src/routes/compare.tsx                    (hub layout + Outlet)
+src/routes/compare.index.tsx              (/compare hub)
+src/routes/compare.farfetch.tsx
+src/routes/compare.mytheresa.tsx
+src/routes/compare.ssense.tsx
+src/routes/compare.net-a-porter.tsx
+```
 
-**Client tracking** — new `src/lib/meta-ab-track.functions.ts` server fns: `recordExposure`, `recordConversion`. Wire:
-- `useMetaAb` already fires Plausible — add a server-fn call to `recordExposure` (once per session per page_type, deduped via sessionStorage key).
-- `src/stores/cart-store.ts` (or `use-cart-sync`) → on add-to-cart, call `recordConversion({ event_type: 'add_to_cart', value_usd })` reading bucket from cookie.
-- `formatCheckoutUrl` site / cart-drawer checkout button → `recordConversion({ event_type: 'checkout_started' })`. Memory says don't modify checkout protocol — only ADD a fire-and-forget tracking call alongside, no changes to URL generation, mutations, or state shape.
+Shared data lives in `src/lib/comparisons.ts` — one object per competitor with: name, tagline, our-angle, their-angle, comparison rows, FAQ entries, and the 3–5 product handles we feature as "see what we carry that they don't" / "same brands, our terms".
 
-**Dashboard** — new `src/routes/admin.meta-ab.tsx` (admin-guarded like other admin routes):
-- Server fn `getMetaAbReport({ days })` aggregates: per `page_type × variant` → impressions, conversions (by event_type), conversion rate, lift vs variant A.
-- Basic significance: two-proportion z-test, surface `z`, `p`, and a label (`Not enough data` < 100 exposures/arm; `Trending`; `Significant @ 95%`; `Significant @ 99%`).
-- Table UI with sample sizes, CR%, lift%, confidence label per page type.
+## Page structure (per comparison)
 
-## 4. Tests (Vitest)
+1. **Hero** — H1: `Palace of Roman vs {Competitor} — An Honest Comparison`. Subhead names the specific tradeoffs.
+2. **The honest take** (200–300 words) — what each does best, plainly. No trash-talk; that destroys trust with luxury buyers. Frame ourselves as the curated, boutique-network alternative to their scale.
+3. **Comparison table** — 10–12 rows: shipping origin, duties handling, return policy, authentication guarantee, brand breadth, price positioning, customer-service style, exclusives, payment options, loyalty program, sustainability disclosure, founding model. Two columns: them vs us. Honest entries — when they win on something (e.g. Farfetch on sheer brand count), say so.
+4. **When to choose them / when to choose us** — explicit decision guide. Builds enormous trust.
+5. **Shoppable strip** — 6–8 real products from our catalog using verified handles (satisfies the "always tag catalog products" rule). Pulled live via `fetchProductsPage` with a curated query (e.g. `vendor:"Gucci" OR vendor:"Prada"`).
+6. **FAQ** — 5–6 Q&As, each targeting a long-tail query ("Is Palace of Roman cheaper than {them}?", "Does Palace of Roman ship to the US?", "Are Palace of Roman items authentic?"). Wired as JSON-LD `FAQPage`.
+7. **CTA strip** — link to `/brands`, `/in-rome`, and the most relevant editorial.
 
-New `src/lib/__tests__/meta-ab-seo.test.ts`:
-- Default variant → canonical = page URL, no robots noindex.
-- Variant B → canonical = default URL, robots includes `noindex`.
-- Bot UAs (Googlebot, GPTBot, ClaudeBot, PerplexityBot, plain `curl/7.x`) → `classifyUserAgent` returns `isBot: true`.
-- Real Chrome/Safari UAs → `isBot: false`.
-- Snapshot-style: head output for both routes × both buckets is internally consistent (title present, description ≤160, canonical absolute, og:url matches canonical).
-- Regression: adding a new collection recipe still passes the canonical-safety invariants.
+## Honest angles (per competitor)
 
-## Technical files
+- **vs Farfetch** — Farfetch wins on sheer breadth (3000+ boutiques). We win on curation, single shipping origin (Italy), no surprise duties on EU/US orders, and one editorial voice instead of 3000.
+- **vs Mytheresa** — Mytheresa wins on exclusives and brand partnerships. We win on price (no markup over RRP on most pieces), faster EU shipping, and a tighter Italian-house focus.
+- **vs SSENSE** — SSENSE wins on contemporary/streetwear breadth and editorial photography. We win on classic Italian luxury depth and tracked Italy-origin shipping.
+- **vs Net-a-Porter** — NAP wins on white-glove packaging and same-day London. We win on price (no platform premium), founder-curated edit instead of buying-team-by-committee.
 
-- new: `src/lib/bot-detect.ts`, `src/lib/meta-ab-track.functions.ts`, `src/lib/meta-ab-report.functions.ts`, `src/routes/admin.meta-ab.tsx`, `src/lib/__tests__/meta-ab-seo.test.ts`, `src/lib/__tests__/bot-detect.test.ts`
-- edit: `src/lib/meta-ab.functions.ts` (bot-aware), `src/lib/meta-ab.ts` (export helpers + canonical default URL per page), `src/hooks/use-meta-ab.ts` (record exposure server-side, patch robots), `src/routes/index.tsx` + `src/routes/collections.$handle.tsx` (noindex/canonical rules), one cart hook (add-to-cart conversion), nav link to dashboard
-- migration: two `meta_ab_*` tables + grants + RLS + indices
-- untouched: cart-store, cart-drawer, use-cart-sync internals, formatCheckoutUrl, Shopify integration
+## SEO
 
-## Open question
-Plan confirms the stack (TanStack Start + Cloudflare Worker SSR + Supabase). Ready to implement on approval.
+Per route `head()` using `routeHead()`:
+
+- `title`: `Palace of Roman vs Farfetch — Honest Comparison (2026)` (under 60 chars)
+- `description`: One sentence naming the top 2 tradeoffs + ship-from-Italy hook (under 158 chars)
+- `keywords`: `farfetch alternative, farfetch vs, is farfetch worth it, buy designer online, luxury boutique alternative`
+- Canonical on leaf only (per head-meta rules)
+- JSON-LD: `FAQPage` + `BreadcrumbList`
+- No `og:image` on root; per-page OG image is the comparison-table thumbnail (use an existing editorial library asset for v1; can upgrade later)
+
+## Internal linking
+
+- New `/compare` link added to footer ONLY in v1 (not main nav) — preserves the staged-launch rule until we measure engagement
+- Each comparison page links to its 3 sibling comparison pages at the bottom
+- `/brands` hub gets a single "Compare us to other boutiques →" link below the H1
+- Sitemap: add `/compare` and the 4 leaves to `sitemap-static.xml.ts`
+
+## Constraints honored
+
+- **Real copy only** — I'll write all 4 pages in Palace of Roman voice; no Lorem
+- **No BG mention** — sourcing framed as "global boutique network"
+- **No fabricated team** — "we" voice, no "our buying team in Milan"
+- **Tag catalog products** — every page includes a 6–8 product strip from live Shopify
+- **Staged launch** — footer-only exposure in v1; promote to main nav after 2 weeks of GSC data
+- **No fabricated reviews** — comparison claims are factual (shipping origin, return windows) not testimonial-based
+
+## Out of scope (v1)
+
+- Comparisons vs Saks / Bergdorf / Matches / 24S — can add as v2 once v1 indexes
+- A/B variations of headlines
+- Submitting URLs via IndexNow (separate decision pending)
+
+## Technical notes
+
+- `src/lib/comparisons.ts` exports `COMPARISONS: Record<slug, Comparison>` so the hub page can iterate without hardcoding
+- Each leaf route uses the same `<ComparisonPage>` component (in `src/components/comparison-page.tsx`) driven by data — keeps copy in one file, layout in another
+- Product strip uses existing `fetchProductsPage` with `BEST_SELLING` sort; graceful empty-state if 0 results
+- Reuse existing `ProductCard` component
+
+## Files created
+
+```
+src/lib/comparisons.ts                          (data + types, ~400 lines of real copy)
+src/components/comparison-page.tsx              (shared layout component)
+src/routes/compare.tsx                          (layout wrapper with <Outlet />)
+src/routes/compare.index.tsx                    (hub)
+src/routes/compare.farfetch.tsx
+src/routes/compare.mytheresa.tsx
+src/routes/compare.ssense.tsx
+src/routes/compare.net-a-porter.tsx
+```
+
+## Files edited
+
+```
+src/routes/sitemap-static[.]xml.ts              (add 5 new URLs)
+src/components/site-footer.tsx (or equivalent)  (add "Compare" link)
+```
+
+## Verification after build
+
+- Visit all 5 routes, confirm tables render and product strips populate
+- View source on one leaf: confirm canonical, FAQPage JSON-LD, BreadcrumbList present
+- `/compare` hub lists all 4 with working links
+- Footer shows "Compare" link; main nav unchanged
+- Sitemap includes new routes
