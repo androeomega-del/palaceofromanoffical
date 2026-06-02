@@ -2,12 +2,12 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, X, Loader2, ShoppingBag, ArrowRight, ShieldCheck, RotateCcw, Lock } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useCartStore } from "@/stores/cart-store";
 import { formatPrice } from "@/lib/shopify";
 import { trackCartEvent } from "@/lib/cart-analytics";
 import { CartFbt } from "@/components/cart-fbt";
-import { CartEmailCapture } from "@/components/atelier/cart-email-capture";
+import { CartEmailCapture, type CartEmailCaptureHandle } from "@/components/atelier/cart-email-capture";
 import { GiftWrapOption } from "@/components/gift-wrap-option";
 
 export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
