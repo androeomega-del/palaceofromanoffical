@@ -231,6 +231,14 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
               <p className="text-[10px] text-center text-muted-foreground">
                 Shipping is fully insured at no extra cost · Taxes calculated at checkout ·{" "}
                 <Link
+                  to="/shipping-returns"
+                  onClick={() => onOpenChange(false)}
+                  className="underline underline-offset-2 hover:text-ink transition-colors"
+                >
+                  Shipping policy
+                </Link>
+                ·{" "}
+                <Link
                   to="/contact"
                   onClick={() => onOpenChange(false)}
                   className="underline underline-offset-2 hover:text-ink transition-colors"

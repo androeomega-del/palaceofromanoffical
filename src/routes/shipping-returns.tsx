@@ -47,8 +47,8 @@ function ShippingReturnsPage() {
       heroImage={img(72)}
       heroAlt="Considered packaging"
     >
-      {/* At-a-glance callout — the three numbers that matter */}
-      <div className="max-w-5xl mx-auto -mt-6 mb-16 grid grid-cols-1 sm:grid-cols-3 gap-px bg-ink/10 border border-ink/10">
+      {/* At-a-glance callout — the four numbers that matter */}
+      <div className="max-w-5xl mx-auto -mt-6 mb-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-ink/10 border border-ink/10">
         <div className="bg-canvas p-8 text-center">
           <p className="font-serif text-5xl md:text-6xl tracking-tight text-ink leading-none">14</p>
           <p className="mt-3 text-[10px] uppercase tracking-[0.3em] text-bronze font-semibold">Days to Return</p>
@@ -63,6 +63,11 @@ function ShippingReturnsPage() {
           <p className="font-serif text-5xl md:text-6xl tracking-tight text-ink leading-none">100%</p>
           <p className="mt-3 text-[10px] uppercase tracking-[0.3em] text-bronze font-semibold">Authentic</p>
           <p className="mt-2 text-xs text-muted-foreground leading-relaxed">Sealed from a brand-authorised partner</p>
+        </div>
+        <div className="bg-canvas p-8 text-center">
+          <p className="font-serif text-5xl md:text-6xl tracking-tight text-ink leading-none">$0</p>
+          <p className="mt-3 text-[10px] uppercase tracking-[0.3em] text-bronze font-semibold">Extra for Insurance</p>
+          <p className="mt-2 text-xs text-muted-foreground leading-relaxed">Every shipment is fully insured at no additional cost</p>
         </div>
       </div>
 
@@ -83,8 +88,10 @@ function ShippingReturnsPage() {
           </ul>
           <p className="text-sm text-muted-foreground">
             Warehouses dispatch within 24–48 hours of order confirmation. Delivery is by UPS, FedEx or DHL with an
-            active tracking number, sent to you the moment the parcel leaves the warehouse. Every shipment is fully
-            insured at no additional cost. Couriers and warehouses do not operate on weekends or local public holidays.
+            active tracking number, sent to you the moment the parcel leaves the warehouse.{" "}
+            <strong className="text-ink font-medium">Every shipment is fully insured at no additional cost</strong>{" "}
+            — this is included in your shipping rate, not an optional add-on. Couriers and warehouses do not operate
+            on weekends or local public holidays.
           </p>
 
           <div className="not-prose mt-8 overflow-x-auto -mx-2">
