@@ -41,6 +41,7 @@ import { Route as AssetsRouteImport } from './routes/assets'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MaisonIndexRouteImport } from './routes/maison.index'
 import { Route as CompareIndexRouteImport } from './routes/compare.index'
 import { Route as CollectionsIndexRouteImport } from './routes/collections.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
@@ -53,6 +54,7 @@ import { Route as SwimSizeGuideRouteImport } from './routes/swim.size-guide'
 import { Route as ProductsHandleRouteImport } from './routes/products.$handle'
 import { Route as ProductHandleRouteImport } from './routes/product.$handle'
 import { Route as PreviewLookbookRouteImport } from './routes/preview.lookbook'
+import { Route as MaisonSlugRouteImport } from './routes/maison.$slug'
 import { Route as EditsYachtEditRouteImport } from './routes/edits.yacht-edit'
 import { Route as EditsThePradaEffectRouteImport } from './routes/edits.the-prada-effect'
 import { Route as EditsTheCucinelliEditRouteImport } from './routes/edits.the-cucinelli-edit'
@@ -299,6 +301,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MaisonIndexRoute = MaisonIndexRouteImport.update({
+  id: '/maison/',
+  path: '/maison/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CompareIndexRoute = CompareIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -357,6 +364,11 @@ const ProductHandleRoute = ProductHandleRouteImport.update({
 const PreviewLookbookRoute = PreviewLookbookRouteImport.update({
   id: '/preview/lookbook',
   path: '/preview/lookbook',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MaisonSlugRoute = MaisonSlugRouteImport.update({
+  id: '/maison/$slug',
+  path: '/maison/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EditsYachtEditRoute = EditsYachtEditRouteImport.update({
@@ -903,6 +915,7 @@ export interface FileRoutesByFullPath {
   '/edits/the-cucinelli-edit': typeof EditsTheCucinelliEditRoute
   '/edits/the-prada-effect': typeof EditsThePradaEffectRoute
   '/edits/yacht-edit': typeof EditsYachtEditRouteWithChildren
+  '/maison/$slug': typeof MaisonSlugRoute
   '/preview/lookbook': typeof PreviewLookbookRoute
   '/product/$handle': typeof ProductHandleRoute
   '/products/$handle': typeof ProductsHandleRoute
@@ -915,6 +928,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/collections/': typeof CollectionsIndexRoute
   '/compare/': typeof CompareIndexRoute
+  '/maison/': typeof MaisonIndexRoute
   '/$locale/products/$handle': typeof LocaleProductsHandleRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
   '/brand/$vendor/in-rome': typeof BrandVendorInRomeRoute
@@ -1030,6 +1044,7 @@ export interface FileRoutesByTo {
   '/edits/the-bag-vault': typeof EditsTheBagVaultRoute
   '/edits/the-cucinelli-edit': typeof EditsTheCucinelliEditRoute
   '/edits/the-prada-effect': typeof EditsThePradaEffectRoute
+  '/maison/$slug': typeof MaisonSlugRoute
   '/preview/lookbook': typeof PreviewLookbookRoute
   '/product/$handle': typeof ProductHandleRoute
   '/products/$handle': typeof ProductsHandleRoute
@@ -1042,6 +1057,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/collections': typeof CollectionsIndexRoute
   '/compare': typeof CompareIndexRoute
+  '/maison': typeof MaisonIndexRoute
   '/$locale/products/$handle': typeof LocaleProductsHandleRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
   '/brand/$vendor/in-rome': typeof BrandVendorInRomeRoute
@@ -1161,6 +1177,7 @@ export interface FileRoutesById {
   '/edits/the-cucinelli-edit': typeof EditsTheCucinelliEditRoute
   '/edits/the-prada-effect': typeof EditsThePradaEffectRoute
   '/edits/yacht-edit': typeof EditsYachtEditRouteWithChildren
+  '/maison/$slug': typeof MaisonSlugRoute
   '/preview/lookbook': typeof PreviewLookbookRoute
   '/product/$handle': typeof ProductHandleRoute
   '/products/$handle': typeof ProductsHandleRoute
@@ -1173,6 +1190,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/collections/': typeof CollectionsIndexRoute
   '/compare/': typeof CompareIndexRoute
+  '/maison/': typeof MaisonIndexRoute
   '/$locale/products/$handle': typeof LocaleProductsHandleRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
   '/brand/$vendor/in-rome': typeof BrandVendorInRomeRoute
@@ -1293,6 +1311,7 @@ export interface FileRouteTypes {
     | '/edits/the-cucinelli-edit'
     | '/edits/the-prada-effect'
     | '/edits/yacht-edit'
+    | '/maison/$slug'
     | '/preview/lookbook'
     | '/product/$handle'
     | '/products/$handle'
@@ -1305,6 +1324,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/collections/'
     | '/compare/'
+    | '/maison/'
     | '/$locale/products/$handle'
     | '/api/public/seo-health'
     | '/brand/$vendor/in-rome'
@@ -1420,6 +1440,7 @@ export interface FileRouteTypes {
     | '/edits/the-bag-vault'
     | '/edits/the-cucinelli-edit'
     | '/edits/the-prada-effect'
+    | '/maison/$slug'
     | '/preview/lookbook'
     | '/product/$handle'
     | '/products/$handle'
@@ -1432,6 +1453,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/collections'
     | '/compare'
+    | '/maison'
     | '/$locale/products/$handle'
     | '/api/public/seo-health'
     | '/brand/$vendor/in-rome'
@@ -1550,6 +1572,7 @@ export interface FileRouteTypes {
     | '/edits/the-cucinelli-edit'
     | '/edits/the-prada-effect'
     | '/edits/yacht-edit'
+    | '/maison/$slug'
     | '/preview/lookbook'
     | '/product/$handle'
     | '/products/$handle'
@@ -1562,6 +1585,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/collections/'
     | '/compare/'
+    | '/maison/'
     | '/$locale/products/$handle'
     | '/api/public/seo-health'
     | '/brand/$vendor/in-rome'
@@ -1677,6 +1701,7 @@ export interface RootRouteChildren {
   EditsTheCucinelliEditRoute: typeof EditsTheCucinelliEditRoute
   EditsThePradaEffectRoute: typeof EditsThePradaEffectRoute
   EditsYachtEditRoute: typeof EditsYachtEditRouteWithChildren
+  MaisonSlugRoute: typeof MaisonSlugRoute
   PreviewLookbookRoute: typeof PreviewLookbookRoute
   ProductHandleRoute: typeof ProductHandleRoute
   ProductsHandleRoute: typeof ProductsHandleRoute
@@ -1686,6 +1711,7 @@ export interface RootRouteChildren {
   TrendsTomFordEssentialsRoute: typeof TrendsTomFordEssentialsRoute
   AdminIndexRoute: typeof AdminIndexRoute
   CollectionsIndexRoute: typeof CollectionsIndexRoute
+  MaisonIndexRoute: typeof MaisonIndexRoute
   LocaleProductsHandleRoute: typeof LocaleProductsHandleRoute
   ApiPublicSeoHealthRoute: typeof ApiPublicSeoHealthRoute
   ApiPublicAiRecommendationsRoute: typeof ApiPublicAiRecommendationsRoute
@@ -1932,6 +1958,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/maison/': {
+      id: '/maison/'
+      path: '/maison'
+      fullPath: '/maison/'
+      preLoaderRoute: typeof MaisonIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/compare/': {
       id: '/compare/'
       path: '/'
@@ -2014,6 +2047,13 @@ declare module '@tanstack/react-router' {
       path: '/preview/lookbook'
       fullPath: '/preview/lookbook'
       preLoaderRoute: typeof PreviewLookbookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/maison/$slug': {
+      id: '/maison/$slug'
+      path: '/maison/$slug'
+      fullPath: '/maison/$slug'
+      preLoaderRoute: typeof MaisonSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/edits/yacht-edit': {
@@ -2788,6 +2828,7 @@ const rootRouteChildren: RootRouteChildren = {
   EditsTheCucinelliEditRoute: EditsTheCucinelliEditRoute,
   EditsThePradaEffectRoute: EditsThePradaEffectRoute,
   EditsYachtEditRoute: EditsYachtEditRouteWithChildren,
+  MaisonSlugRoute: MaisonSlugRoute,
   PreviewLookbookRoute: PreviewLookbookRoute,
   ProductHandleRoute: ProductHandleRoute,
   ProductsHandleRoute: ProductsHandleRoute,
@@ -2797,6 +2838,7 @@ const rootRouteChildren: RootRouteChildren = {
   TrendsTomFordEssentialsRoute: TrendsTomFordEssentialsRoute,
   AdminIndexRoute: AdminIndexRoute,
   CollectionsIndexRoute: CollectionsIndexRoute,
+  MaisonIndexRoute: MaisonIndexRoute,
   LocaleProductsHandleRoute: LocaleProductsHandleRoute,
   ApiPublicSeoHealthRoute: ApiPublicSeoHealthRoute,
   ApiPublicAiRecommendationsRoute: ApiPublicAiRecommendationsRoute,
