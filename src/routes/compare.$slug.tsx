@@ -26,7 +26,7 @@ export const Route = createFileRoute("/compare/$slug")({
     const path = `/compare/${params.slug}`;
     const title = pageTitle(`Palace of Roman vs ${data.competitor}`);
     const description = data.metaDescription;
-    const base = routeHead({ path, title, description, type: "article" });
+    const base = routeHead({ path, title, description, image: OG_BY_SLUG[data.slug], type: "article" });
     return {
       meta: [
         { title },
