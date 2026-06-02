@@ -122,6 +122,7 @@ import { Route as JournalCraftsmanshipMadeInItalyVsDesignedInItalyRouteImport } 
 import { Route as JournalCraftsmanshipCaringForFineLeatherRouteImport } from './routes/journal.craftsmanship.caring-for-fine-leather'
 import { Route as JournalBlogHandleArticleHandleRouteImport } from './routes/journal.$blogHandle.$articleHandle'
 import { Route as EditsYachtEditChapterRouteImport } from './routes/edits.yacht-edit.$chapter'
+import { Route as CartCCartIdRouteImport } from './routes/cart.c.$cartId'
 import { Route as BrandVendorInRomeRouteImport } from './routes/brand.$vendor.in-rome'
 import { Route as ApiPublicSeoHealthRouteImport } from './routes/api/public/seo-health'
 import { Route as LocaleProductsHandleRouteImport } from './routes/$locale.products.$handle'
@@ -727,6 +728,11 @@ const EditsYachtEditChapterRoute = EditsYachtEditChapterRouteImport.update({
   path: '/$chapter',
   getParentRoute: () => EditsYachtEditRoute,
 } as any)
+const CartCCartIdRoute = CartCCartIdRouteImport.update({
+  id: '/cart/c/$cartId',
+  path: '/cart/c/$cartId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BrandVendorInRomeRoute = BrandVendorInRomeRouteImport.update({
   id: '/in-rome',
   path: '/in-rome',
@@ -946,6 +952,7 @@ export interface FileRoutesByFullPath {
   '/$locale/products/$handle': typeof LocaleProductsHandleRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
   '/brand/$vendor/in-rome': typeof BrandVendorInRomeRoute
+  '/cart/c/$cartId': typeof CartCCartIdRoute
   '/edits/yacht-edit/$chapter': typeof EditsYachtEditChapterRoute
   '/journal/$blogHandle/$articleHandle': typeof JournalBlogHandleArticleHandleRoute
   '/journal/craftsmanship/caring-for-fine-leather': typeof JournalCraftsmanshipCaringForFineLeatherRoute
@@ -1077,6 +1084,7 @@ export interface FileRoutesByTo {
   '/$locale/products/$handle': typeof LocaleProductsHandleRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
   '/brand/$vendor/in-rome': typeof BrandVendorInRomeRoute
+  '/cart/c/$cartId': typeof CartCCartIdRoute
   '/edits/yacht-edit/$chapter': typeof EditsYachtEditChapterRoute
   '/journal/$blogHandle/$articleHandle': typeof JournalBlogHandleArticleHandleRoute
   '/journal/craftsmanship/caring-for-fine-leather': typeof JournalCraftsmanshipCaringForFineLeatherRoute
@@ -1212,6 +1220,7 @@ export interface FileRoutesById {
   '/$locale/products/$handle': typeof LocaleProductsHandleRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
   '/brand/$vendor/in-rome': typeof BrandVendorInRomeRoute
+  '/cart/c/$cartId': typeof CartCCartIdRoute
   '/edits/yacht-edit/$chapter': typeof EditsYachtEditChapterRoute
   '/journal/$blogHandle/$articleHandle': typeof JournalBlogHandleArticleHandleRoute
   '/journal/craftsmanship/caring-for-fine-leather': typeof JournalCraftsmanshipCaringForFineLeatherRoute
@@ -1348,6 +1357,7 @@ export interface FileRouteTypes {
     | '/$locale/products/$handle'
     | '/api/public/seo-health'
     | '/brand/$vendor/in-rome'
+    | '/cart/c/$cartId'
     | '/edits/yacht-edit/$chapter'
     | '/journal/$blogHandle/$articleHandle'
     | '/journal/craftsmanship/caring-for-fine-leather'
@@ -1479,6 +1489,7 @@ export interface FileRouteTypes {
     | '/$locale/products/$handle'
     | '/api/public/seo-health'
     | '/brand/$vendor/in-rome'
+    | '/cart/c/$cartId'
     | '/edits/yacht-edit/$chapter'
     | '/journal/$blogHandle/$articleHandle'
     | '/journal/craftsmanship/caring-for-fine-leather'
@@ -1613,6 +1624,7 @@ export interface FileRouteTypes {
     | '/$locale/products/$handle'
     | '/api/public/seo-health'
     | '/brand/$vendor/in-rome'
+    | '/cart/c/$cartId'
     | '/edits/yacht-edit/$chapter'
     | '/journal/$blogHandle/$articleHandle'
     | '/journal/craftsmanship/caring-for-fine-leather'
@@ -1740,6 +1752,7 @@ export interface RootRouteChildren {
   MaisonIndexRoute: typeof MaisonIndexRoute
   LocaleProductsHandleRoute: typeof LocaleProductsHandleRoute
   ApiPublicSeoHealthRoute: typeof ApiPublicSeoHealthRoute
+  CartCCartIdRoute: typeof CartCCartIdRoute
   ApiPublicAiRecommendationsRoute: typeof ApiPublicAiRecommendationsRoute
   ApiPublicCronAbandonedCartRecoveryRoute: typeof ApiPublicCronAbandonedCartRecoveryRoute
   ApiPublicCronBackInStockNotifyRoute: typeof ApiPublicCronBackInStockNotifyRoute
@@ -2551,6 +2564,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EditsYachtEditChapterRouteImport
       parentRoute: typeof EditsYachtEditRoute
     }
+    '/cart/c/$cartId': {
+      id: '/cart/c/$cartId'
+      path: '/cart/c/$cartId'
+      fullPath: '/cart/c/$cartId'
+      preLoaderRoute: typeof CartCCartIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/brand/$vendor/in-rome': {
       id: '/brand/$vendor/in-rome'
       path: '/in-rome'
@@ -2883,6 +2903,7 @@ const rootRouteChildren: RootRouteChildren = {
   MaisonIndexRoute: MaisonIndexRoute,
   LocaleProductsHandleRoute: LocaleProductsHandleRoute,
   ApiPublicSeoHealthRoute: ApiPublicSeoHealthRoute,
+  CartCCartIdRoute: CartCCartIdRoute,
   ApiPublicAiRecommendationsRoute: ApiPublicAiRecommendationsRoute,
   ApiPublicCronAbandonedCartRecoveryRoute:
     ApiPublicCronAbandonedCartRecoveryRoute,
