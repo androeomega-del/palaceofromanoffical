@@ -124,6 +124,7 @@ import { Route as JournalBlogHandleArticleHandleRouteImport } from './routes/jou
 import { Route as EditsYachtEditChapterRouteImport } from './routes/edits.yacht-edit.$chapter'
 import { Route as BrandVendorInRomeRouteImport } from './routes/brand.$vendor.in-rome'
 import { Route as ApiPublicSeoHealthRouteImport } from './routes/api/public/seo-health'
+import { Route as ApiPublicCheckoutHealthRouteImport } from './routes/api/public/checkout-health'
 import { Route as LocaleProductsHandleRouteImport } from './routes/$locale.products.$handle'
 import { Route as ApiPublicStockAlertsSubscribeRouteImport } from './routes/api/public/stock-alerts/subscribe'
 import { Route as ApiPublicIndexnowSubmitRouteImport } from './routes/api/public/indexnow.submit'
@@ -737,6 +738,11 @@ const ApiPublicSeoHealthRoute = ApiPublicSeoHealthRouteImport.update({
   path: '/api/public/seo-health',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicCheckoutHealthRoute = ApiPublicCheckoutHealthRouteImport.update({
+  id: '/api/public/checkout-health',
+  path: '/api/public/checkout-health',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LocaleProductsHandleRoute = LocaleProductsHandleRouteImport.update({
   id: '/$locale/products/$handle',
   path: '/$locale/products/$handle',
@@ -944,6 +950,7 @@ export interface FileRoutesByFullPath {
   '/compare/': typeof CompareIndexRoute
   '/maison/': typeof MaisonIndexRoute
   '/$locale/products/$handle': typeof LocaleProductsHandleRoute
+  '/api/public/checkout-health': typeof ApiPublicCheckoutHealthRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
   '/brand/$vendor/in-rome': typeof BrandVendorInRomeRoute
   '/edits/yacht-edit/$chapter': typeof EditsYachtEditChapterRoute
@@ -1075,6 +1082,7 @@ export interface FileRoutesByTo {
   '/compare': typeof CompareIndexRoute
   '/maison': typeof MaisonIndexRoute
   '/$locale/products/$handle': typeof LocaleProductsHandleRoute
+  '/api/public/checkout-health': typeof ApiPublicCheckoutHealthRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
   '/brand/$vendor/in-rome': typeof BrandVendorInRomeRoute
   '/edits/yacht-edit/$chapter': typeof EditsYachtEditChapterRoute
@@ -1210,6 +1218,7 @@ export interface FileRoutesById {
   '/compare/': typeof CompareIndexRoute
   '/maison/': typeof MaisonIndexRoute
   '/$locale/products/$handle': typeof LocaleProductsHandleRoute
+  '/api/public/checkout-health': typeof ApiPublicCheckoutHealthRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
   '/brand/$vendor/in-rome': typeof BrandVendorInRomeRoute
   '/edits/yacht-edit/$chapter': typeof EditsYachtEditChapterRoute
@@ -1346,6 +1355,7 @@ export interface FileRouteTypes {
     | '/compare/'
     | '/maison/'
     | '/$locale/products/$handle'
+    | '/api/public/checkout-health'
     | '/api/public/seo-health'
     | '/brand/$vendor/in-rome'
     | '/edits/yacht-edit/$chapter'
@@ -1477,6 +1487,7 @@ export interface FileRouteTypes {
     | '/compare'
     | '/maison'
     | '/$locale/products/$handle'
+    | '/api/public/checkout-health'
     | '/api/public/seo-health'
     | '/brand/$vendor/in-rome'
     | '/edits/yacht-edit/$chapter'
@@ -1611,6 +1622,7 @@ export interface FileRouteTypes {
     | '/compare/'
     | '/maison/'
     | '/$locale/products/$handle'
+    | '/api/public/checkout-health'
     | '/api/public/seo-health'
     | '/brand/$vendor/in-rome'
     | '/edits/yacht-edit/$chapter'
@@ -1739,6 +1751,7 @@ export interface RootRouteChildren {
   CollectionsIndexRoute: typeof CollectionsIndexRoute
   MaisonIndexRoute: typeof MaisonIndexRoute
   LocaleProductsHandleRoute: typeof LocaleProductsHandleRoute
+  ApiPublicCheckoutHealthRoute: typeof ApiPublicCheckoutHealthRoute
   ApiPublicSeoHealthRoute: typeof ApiPublicSeoHealthRoute
   ApiPublicAiRecommendationsRoute: typeof ApiPublicAiRecommendationsRoute
   ApiPublicCronAbandonedCartRecoveryRoute: typeof ApiPublicCronAbandonedCartRecoveryRoute
@@ -2565,6 +2578,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicSeoHealthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/checkout-health': {
+      id: '/api/public/checkout-health'
+      path: '/api/public/checkout-health'
+      fullPath: '/api/public/checkout-health'
+      preLoaderRoute: typeof ApiPublicCheckoutHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/$locale/products/$handle': {
       id: '/$locale/products/$handle'
       path: '/$locale/products/$handle'
@@ -2882,6 +2902,7 @@ const rootRouteChildren: RootRouteChildren = {
   CollectionsIndexRoute: CollectionsIndexRoute,
   MaisonIndexRoute: MaisonIndexRoute,
   LocaleProductsHandleRoute: LocaleProductsHandleRoute,
+  ApiPublicCheckoutHealthRoute: ApiPublicCheckoutHealthRoute,
   ApiPublicSeoHealthRoute: ApiPublicSeoHealthRoute,
   ApiPublicAiRecommendationsRoute: ApiPublicAiRecommendationsRoute,
   ApiPublicCronAbandonedCartRecoveryRoute:
