@@ -1,6 +1,5 @@
 import { Truck, RotateCcw, Headset } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import { YelpTrustBadge } from "@/components/yelp-trust-badge";
 
 /**
  * Above-the-fold transparency bar (homepage).
@@ -60,11 +59,6 @@ export function HomepageShippingTrustBar() {
               <span className="text-muted-foreground">— replies within 24h, Mon–Sat</span>
             </p>
           </a>
-
-          {/* Yelp validation */}
-          <div className="md:border-l md:border-ink/10 md:pl-6">
-            <YelpTrustBadge />
-          </div>
         </div>
       </div>
     </section>

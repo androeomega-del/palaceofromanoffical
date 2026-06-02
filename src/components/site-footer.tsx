@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { NewsletterForm } from "@/components/newsletter-form";
+import { YelpTrustBadge } from "@/components/yelp-trust-badge";
 import { useIsAdmin } from "@/hooks/use-is-admin";
 
 // Frozen at module load so the copyright year is identical on server and
@@ -109,6 +110,9 @@ export function SiteFooter() {
             </a>
             . Replies within 24 hours, Monday through Saturday.
           </p>
+          <div className="mt-3">
+            <YelpTrustBadge />
+          </div>
         </div>
 
         {/* ───── Legal / social bottom bar ───── */}
