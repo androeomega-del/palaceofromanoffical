@@ -128,7 +128,8 @@ export function PdpShippingSheet() {
             <p className="mt-3 text-[11.5px] leading-[1.6] text-[var(--studio-muted)]">
               Orders sourced from more than one warehouse dispatch separately
               and may arrive on different days. Couriers do not operate on
-              weekends or local public holidays.
+              weekends or local public holidays. We cannot currently deliver
+              to Russia, Belarus or Ukraine due to the ongoing conflict.
             </p>
           </div>
 
