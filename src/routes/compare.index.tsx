@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { COMPARISONS } from "@/lib/comparisons";
 import { routeHead, pageTitle } from "@/lib/seo";
+import ogHub from "@/assets/og/compare-hub.jpg";
 
 const ITEMS = Object.values(COMPARISONS);
 
