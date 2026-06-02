@@ -35,22 +35,39 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
 
   const handleCheckout = () => {
     const url = getCheckoutUrl();
-    if (url) {
-      trackCartEvent({
-        event_type: "checkout_started",
-        quantity: totalItems,
-        price_usd: totalAmount,
-      });
+    if (!url) return;
 
-      const win = window.open(url, "_blank", "noopener,noreferrer");
-      if (win) {
+    // Gentle prompt: if no email captured, focus + pulse the input and
+    // skip opening checkout on the first click so the shopper has a
+    // chance to enter one. A second click proceeds regardless.
+    const hasEmail = Boolean(getCustomerEmail());
+    if (!hasEmail && emailCaptureRef.current) {
+      const ok = emailCaptureRef.current.promptIfMissing();
+      if (!ok) {
+        // Track intent so we still measure checkout attempts.
         trackCartEvent({
-          event_type: "reached_checkout",
+          event_type: "checkout_started",
           quantity: totalItems,
           price_usd: totalAmount,
         });
-        onOpenChange(false);
+        return;
       }
+    }
+
+    trackCartEvent({
+      event_type: "checkout_started",
+      quantity: totalItems,
+      price_usd: totalAmount,
+    });
+
+    const win = window.open(url, "_blank", "noopener,noreferrer");
+    if (win) {
+      trackCartEvent({
+        event_type: "reached_checkout",
+        quantity: totalItems,
+        price_usd: totalAmount,
+      });
+      onOpenChange(false);
     }
   };
 
