@@ -22,13 +22,10 @@ import { getAdminAccessToken } from "@/lib/shopify-admin.server";
 const EUR_TO_USD = 1.08;
 const HOUR_MS = 60 * 60 * 1000;
 
-function adminToken(): string {
-  const t =
-    typeof process !== "undefined"
-      ? process.env?.SHOPIFY_ACCESS_TOKEN
-      : undefined;
-  if (!t) throw new Error("SHOPIFY_ACCESS_TOKEN missing");
-  return t;
+async function adminToken(): Promise<string> {
+  // Use Client Credentials Grant — the custom app token has read_all_orders,
+  // while the static SHOPIFY_ACCESS_TOKEN does not.
+  return getAdminAccessToken();
 }
 
 interface ShopifyCheckout {
