@@ -649,7 +649,6 @@ export function ProductCard({
       <h3 className="text-[13px] md:text-sm font-medium leading-snug line-clamp-2 text-balance group-hover:underline underline-offset-4 decoration-ink/30">{p.title}</h3>
       <div className="flex items-baseline gap-2.5 mt-2">
         <PriceTag money={price} className="text-sm" />
-        {onSale && <PriceTag money={compareAt} strike className="text-xs text-muted-foreground" />}
       </div>
 
     </Link>
