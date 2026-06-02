@@ -105,8 +105,7 @@ export function SiteFooter() {
         {/* ───── Business identity (Google Merchant transparency) ───── */}
         <div className="pt-6 border-t border-ink/10 text-[11px] text-muted-foreground leading-relaxed">
           <p>
-            <span className="font-medium text-ink/70">Palace of Roman</span> — Sole proprietorship registered in California, United States.
-            Registered address: 8605 Santa Monica Blvd PMB 610211, West Hollywood, CA 90069-4109, US.
+            <span className="font-medium text-ink/70">Palace of Roman</span>. Registered address: 8605 Santa Monica Blvd PMB 610211, West Hollywood, CA 90069-4109, US.
             Customer support:{" "}
             <a href="mailto:support@palaceofromanofficial.com" className="underline decoration-ink/30 underline-offset-2 hover:text-ink">
               support@palaceofromanofficial.com
