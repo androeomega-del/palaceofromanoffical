@@ -183,39 +183,6 @@ function AboutPage() {
         </div>
       </section>
 
-      {/* Business identity — transparency block aligned with Google Merchant
-          Center policy: legal name, entity, address, contact and operating
-          model in one place so reviewers and customers can verify quickly. */}
-      <section className="mt-32 pt-12 border-t border-ink/10">
-        <p className="text-[10px] uppercase tracking-[0.35em] text-bronze mb-6">Business information</p>
-        <div className="grid md:grid-cols-2 gap-x-16 gap-y-3 max-w-3xl">
-          <div className="grid grid-cols-[140px_1fr] gap-y-2 text-[13px] leading-relaxed">
-            <span className="text-muted-foreground">Legal name</span>
-            <span className="text-ink/85">Palace of Roman</span>
-            <span className="text-muted-foreground">Founded</span>
-            <span className="text-ink/85">Independent boutique, founder-led</span>
-          </div>
-          <div className="grid grid-cols-[140px_1fr] gap-y-2 text-[13px] leading-relaxed">
-            <span className="text-muted-foreground">Address</span>
-            <span className="text-ink/85">8605 Santa Monica Blvd PMB 610211<br/>West Hollywood, CA 90069-4109, US</span>
-            <span className="text-muted-foreground">Support</span>
-            <span className="text-ink/85">
-              <a href="mailto:support@palaceofromanofficial.com" className="underline decoration-ink/20 underline-offset-4 hover:text-bronze">
-                support@palaceofromanofficial.com
-              </a>
-            </span>
-            <span className="text-muted-foreground">Hours</span>
-            <span className="text-ink/85">Mon–Sat · reply within 24 hours</span>
-          </div>
-        </div>
-        <p className="mt-8 text-[12px] text-muted-foreground leading-relaxed max-w-3xl">
-          Palace of Roman operates online only. For full disclosures, see our{" "}
-          <Link to="/legal-notice" className="underline decoration-ink/20 underline-offset-4 hover:text-bronze">Legal Notice</Link>,{" "}
-          <Link to="/shipping-returns" className="underline decoration-ink/20 underline-offset-4 hover:text-bronze">Shipping &amp; Returns</Link>,{" "}
-          <Link to="/privacy" className="underline decoration-ink/20 underline-offset-4 hover:text-bronze">Privacy Policy</Link>, and{" "}
-          <Link to="/terms" className="underline decoration-ink/20 underline-offset-4 hover:text-bronze">Terms &amp; Conditions</Link>.
-        </p>
-      </section>
     </EditorialPageShell>
   );
 }
