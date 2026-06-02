@@ -30,9 +30,24 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
     if (open) syncCart(); 
   }, [open, syncCart]);
 
+  const emailCaptureRef = useRef<CartEmailCaptureHandle | null>(null);
+  const [skipEmail, setSkipEmail] = useState(false);
+
+  // Reset the "skip email" state whenever the drawer closes
+  useEffect(() => {
+    if (!open) setSkipEmail(false);
+  }, [open]);
+
   const handleCheckout = () => {
     const url = getCheckoutUrl();
     if (!url) return;
+
+    // First click without a saved email → prompt and let them either fill it or click again to skip.
+    const hasEmail = emailCaptureRef.current?.promptIfMissing() ?? true;
+    if (!hasEmail && !skipEmail) {
+      setSkipEmail(true);
+      return;
+    }
 
     trackCartEvent({
       event_type: "checkout_started",
