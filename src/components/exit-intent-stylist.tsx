@@ -204,7 +204,7 @@ function AtelierListInline({ onSubscribed }: { onSubscribed: () => void }) {
         disabled={status === "sending"}
         className="absolute right-0 top-1/2 -translate-y-1/2 text-[10px] uppercase tracking-[0.25em] bg-ink text-canvas px-4 py-2.5 hover:bg-bronze transition-colors disabled:opacity-50"
       >
-        {status === "sending" ? "Joining…" : "Reserve Place"}
+        {status === "sending" ? "Signing up…" : "Sign Up"}
       </button>
       {error && (
         <p role="alert" className="mt-2 text-[10px] uppercase tracking-widest text-destructive">
@@ -212,7 +212,7 @@ function AtelierListInline({ onSubscribed }: { onSubscribed: () => void }) {
         </p>
       )}
       <p className="mt-3 text-[10px] text-ink/45 leading-relaxed">
-        Drop alerts and the occasional editorial. Unsubscribe anytime.
+        You might receive promo codes here and there. Unsubscribe anytime.
       </p>
     </form>
   );
