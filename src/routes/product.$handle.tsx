@@ -40,6 +40,7 @@ import { parseComposition, hasCompositionInfo } from "@/lib/product-composition"
 import { buildPdpFaq } from "@/lib/pdp-faq";
 import { PdpFaq } from "@/components/pdp-faq";
 import { ROME_BRAND_SLUGS } from "@/lib/rome-brands";
+import { buildProductAlt } from "@/lib/product-alt";
 
 export const Route = createFileRoute("/product/$handle")({
   loader: async ({ params }) => {
