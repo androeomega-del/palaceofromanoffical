@@ -839,6 +839,40 @@ function CollectionPage() {
         className="pb-20"
       />
 
+      {/* FAQ deep-links — route shoppers from a PLP into the structured
+          answers most relevant to a category purchase decision. */}
+      <section aria-labelledby="plp-faq" className="border-t border-ink/10 py-16 px-6 md:px-10 lg:px-14">
+        <div className="max-w-6xl mx-auto">
+          <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-3">Common questions</p>
+          <h2 id="plp-faq" className="font-serif text-2xl md:text-3xl tracking-tight mb-8">
+            Before you order.
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-10 gap-y-6 text-[14px]">
+            <Link to="/faq" hash="sourcing-authenticity" className="block group">
+              <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-1">Sourcing</p>
+              <p className="font-serif text-base group-hover:text-bronze">Where do these pieces come from? →</p>
+            </Link>
+            <Link to="/faq" hash="shipping" className="block group">
+              <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-1">Shipping</p>
+              <p className="font-serif text-base group-hover:text-bronze">How long will my order take to arrive? →</p>
+            </Link>
+            <Link to="/faq" hash="returns-exchanges" className="block group">
+              <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-1">Returns</p>
+              <p className="font-serif text-base group-hover:text-bronze">What is your return window? →</p>
+            </Link>
+            <Link to="/faq" hash="sizing-care" className="block group">
+              <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-1">Sizing &amp; care</p>
+              <p className="font-serif text-base group-hover:text-bronze">Which sizing system do you use? →</p>
+            </Link>
+          </div>
+          <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-[11px] uppercase tracking-[0.25em]">
+            <Link to="/faq" className="border-b border-ink/40 pb-1 hover:text-bronze hover:border-bronze">All FAQs →</Link>
+            <Link to="/authentication" className="border-b border-ink/40 pb-1 hover:text-bronze hover:border-bronze">Sourcing &amp; authenticity →</Link>
+            <Link to="/shipping-returns" className="border-b border-ink/40 pb-1 hover:text-bronze hover:border-bronze">Shipping &amp; returns →</Link>
+          </div>
+        </div>
+      </section>
+
     </div>
   );
 }
