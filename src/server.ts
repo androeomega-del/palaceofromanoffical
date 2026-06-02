@@ -88,10 +88,32 @@ function legacyBlogRedirect(request: Request): Response | null {
   return Response.redirect(target.toString(), 301);
 }
 
+// Canonical host redirect: consolidate palaceofroman.com (+ www variants) onto
+// palaceofromanofficial.com to match Google Merchant Center business
+// information and eliminate duplicate-content / misrepresentation signals.
+// Preserves path, query, and hash. 301 = permanent.
+const CANONICAL_HOST = "palaceofromanofficial.com";
+const REDIRECT_HOSTS = new Set([
+  "palaceofroman.com",
+  "www.palaceofroman.com",
+  "www.palaceofromanofficial.com",
+]);
+function canonicalHostRedirect(request: Request): Response | null {
+  const url = new URL(request.url);
+  if (!REDIRECT_HOSTS.has(url.hostname.toLowerCase())) return null;
+  url.hostname = CANONICAL_HOST;
+  url.protocol = "https:";
+  url.port = "";
+  return Response.redirect(url.toString(), 301);
+}
+
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
-      const redirect = legacyLocaleRedirect(request) ?? legacyBlogRedirect(request);
+      const redirect =
+        canonicalHostRedirect(request) ??
+        legacyLocaleRedirect(request) ??
+        legacyBlogRedirect(request);
       if (redirect) return redirect;
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
