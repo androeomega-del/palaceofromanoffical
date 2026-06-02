@@ -70,11 +70,8 @@ const STATIC_ROUTES: UrlEntry[] = [
   { path: "/collections/cashmere-sweaters", changefreq: "weekly", priority: "0.8" },
   { path: "/collections/silk-scarves", changefreq: "weekly", priority: "0.8" },
   { path: "/collections/designer-crossbody-bags", changefreq: "weekly", priority: "0.8" },
-  { path: "/compare", changefreq: "monthly", priority: "0.7" },
-  { path: "/compare/farfetch", changefreq: "monthly", priority: "0.8" },
-  { path: "/compare/mytheresa", changefreq: "monthly", priority: "0.8" },
-  { path: "/compare/ssense", changefreq: "monthly", priority: "0.8" },
-  { path: "/compare/net-a-porter", changefreq: "monthly", priority: "0.8" },
+  // /compare and /compare/* archived — 301 to /in-rome. Removed from sitemap
+  // so Google deindexes faster.
   { path: "/maison", changefreq: "monthly", priority: "0.7" },
   { path: "/maison/brunello-cucinelli", changefreq: "monthly", priority: "0.8" },
   { path: "/maison/prada", changefreq: "monthly", priority: "0.8" },
