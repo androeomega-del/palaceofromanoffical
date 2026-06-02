@@ -42,6 +42,18 @@ export const Route = createFileRoute("/")({
         { rel: "canonical", href: canonical },
         { rel: "preload", as: "image", href: summerHero, fetchPriority: "high" } as any,
       ],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: "https://palaceofromanofficial.com/" },
+            ],
+          }),
+        },
+      ],
     };
   },
   component: HomePage,
