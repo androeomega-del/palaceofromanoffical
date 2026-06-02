@@ -29,7 +29,7 @@ export function NewsletterForm() {
         .from("newsletter_subscribers")
         .insert({
           email: value,
-          source: typeof window !== "undefined" ? `vip-drop-registry:${window.location.pathname}` : "vip-drop-registry",
+          source: typeof window !== "undefined" ? `exclusive-access:${window.location.pathname}` : "exclusive-access",
           user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
           marketing_consent: true,
         }));
@@ -54,10 +54,10 @@ export function NewsletterForm() {
     return (
       <div className="border border-bronze/40 bg-bronze/5 p-5" role="status" aria-live="polite">
         <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2 inline-flex items-center gap-2">
-          <Sparkles className="w-3 h-3" /> You're on the registry
+          <Sparkles className="w-3 h-3" /> You're subscribed
         </p>
         <p className="text-sm text-ink leading-relaxed">
-          Welcome. The next limited-edition drop arrives in your inbox first.
+          Welcome. Exclusive promotions and member-only offers will arrive in your inbox first.
         </p>
       </div>
     );
@@ -66,11 +66,11 @@ export function NewsletterForm() {
   return (
     <div>
       <p className="text-[10px] uppercase tracking-[0.32em] text-bronze mb-3 inline-flex items-center gap-2">
-        <Sparkles className="w-3 h-3" /> VIP Drop Registry
+        <Sparkles className="w-3 h-3" /> Exclusive Access
       </p>
       <p className="text-sm text-ink/80 leading-relaxed mb-5 max-w-sm">
-        Join the inner circle for first access to weekly limited-edition drops, private sales,
-        and pieces released to registry members before they reach the boutique.
+        Join for early access to seasonal promotions, private discounts and member-only offers
+        before they reach the boutique.
       </p>
       <form className="relative" onSubmit={onSubmit} noValidate>
         <label htmlFor="newsletter-email" className="sr-only">
@@ -97,7 +97,7 @@ export function NewsletterForm() {
           disabled={status === "sending"}
           className="absolute right-0 top-1/2 -translate-y-1/2 text-[10px] uppercase tracking-[0.28em] bg-ink text-canvas px-4 py-2.5 hover:bg-bronze transition-colors disabled:opacity-50"
         >
-          {status === "sending" ? "Joining…" : "Request Access"}
+          {status === "sending" ? "Subscribing…" : "Subscribe"}
         </button>
         {error && (
           <p
@@ -109,8 +109,8 @@ export function NewsletterForm() {
           </p>
         )}
         <p className="mt-4 text-[10px] text-ink/50 leading-relaxed">
-          By joining, you consent to receiving marketing communications, including drop alerts and
-          recovery reminders.{" "}
+          By subscribing, you consent to receiving marketing communications, including promotions and
+          discount alerts.{" "}
           <a href="/privacy" className="underline decoration-bronze/40 hover:text-bronze transition-colors">
             Privacy Notice
           </a>.
