@@ -21,7 +21,8 @@ export function YelpTrustBadge({
 }) {
   if (YELP_REVIEW_COUNT < 1) return null;
 
-  const label = `${YELP_REVIEW_COUNT} verified review${YELP_REVIEW_COUNT === 1 ? "" : "s"} on Yelp`;
+  const count: number = YELP_REVIEW_COUNT;
+  const label = `${count} verified review${count === 1 ? "" : "s"} on Yelp`;
 
   if (variant === "stacked") {
     return (
