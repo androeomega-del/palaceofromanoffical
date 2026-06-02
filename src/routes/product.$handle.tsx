@@ -563,6 +563,7 @@ function ProductView({
     // Never disable the button — validate on click instead.
     if (!selectedVariant) {
       triggerSizeError();
+      toast.error("Please select a size first.");
       return;
     }
     if (!selectedVariant.availableForSale) {
