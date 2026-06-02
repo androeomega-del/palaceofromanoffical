@@ -92,13 +92,8 @@ const CART_LINES_REMOVE_MUTATION = `
 function formatCheckoutUrl(checkoutUrl: string): string {
   try {
     const url = new URL(checkoutUrl);
-    // CHECKOUT LOCKDOWN: this is the only approved host rewrite for Shopify
-    // checkout URLs. Do not change cart mutations, checkout URL generation,
-    // persisted cart shape, or checkout opening behavior unless checkout is
-    // being intentionally tested end-to-end immediately after the change.
-    if (url.host === "mwuwqi-vy.myshopify.com" || url.host === "palaceofroman.com" || url.host === "palaceofromanofficial.com" || url.host === "www.palaceofromanofficial.com") {
-      url.host = "checkout.palaceofromanofficial.com";
-    }
+    // Preserve Shopify's returned checkout host. Forcing a custom checkout
+    // subdomain breaks checkout while that subdomain's SSL is still pending.
     url.protocol = "https:";
     url.searchParams.set("channel", "online_store");
     return url.toString();
