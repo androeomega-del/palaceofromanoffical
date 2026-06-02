@@ -274,7 +274,7 @@ function SeasonalCampaignBanner() {
               src={marketingMensResort}
               alt="Resort 2026 — sun-bleached linens, sea-soaked silks, the Mediterranean rendered in cloth"
               loading="lazy"
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-[1.04]"
+              className="absolute inset-0 w-full h-full object-contain object-center transition-transform duration-[1400ms] ease-out group-hover:scale-[1.02]"
             />
           </div>
           <div className="flex flex-col justify-center px-6 md:px-10 lg:px-14 py-8 md:py-16 order-2 md:order-1 bg-canvas">
