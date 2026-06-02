@@ -289,6 +289,35 @@ function FaqPage() {
           </section>
         ))}
 
+        <aside aria-labelledby="faq-related" className="border-t border-ink/10 pt-12">
+          <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-3">Related reading</p>
+          <h2 id="faq-related" className="font-serif text-2xl md:text-3xl tracking-tight mb-6">
+            Continue into the edit.
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-6 text-[14px]">
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-2">Shop the catalogue</p>
+              <ul className="space-y-1.5">
+                <li><Link to="/collections/italian-leather-handbags" className="hover:text-bronze">Italian leather handbags →</Link></li>
+                <li><Link to="/collections/luxury-sneakers" className="hover:text-bronze">Luxury sneakers →</Link></li>
+                <li><Link to="/collections/italian-leather-loafers" className="hover:text-bronze">Italian leather loafers →</Link></li>
+                <li><Link to="/collections/designer-sunglasses" className="hover:text-bronze">Designer sunglasses →</Link></li>
+                <li><Link to="/collections/cashmere-sweaters" className="hover:text-bronze">Cashmere sweaters →</Link></li>
+              </ul>
+            </div>
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-2">From the editorial</p>
+              <ul className="space-y-1.5">
+                <li><Link to="/authentication" className="hover:text-bronze">Sourcing &amp; authenticity →</Link></li>
+                <li><Link to="/shipping-returns" className="hover:text-bronze">Shipping &amp; returns →</Link></li>
+                <li><Link to="/brands" className="hover:text-bronze">Brands index →</Link></li>
+                <li><Link to="/designers" className="hover:text-bronze">Designers index →</Link></li>
+                <li><Link to="/in-rome" className="hover:text-bronze">In Rome →</Link></li>
+              </ul>
+            </div>
+          </div>
+        </aside>
+
         <div className="border-t border-ink/10 pt-12 text-center">
           <p className="text-sm text-muted-foreground mb-4">Still have a question?</p>
           <Link
