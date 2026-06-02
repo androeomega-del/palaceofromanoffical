@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { EditorialPageShell, ProseColumn, SectionTitle } from "@/components/editorial-page-shell";
 import { img } from "@/lib/editorial-library";
-import { routeHead } from "@/lib/seo";
+import { routeHead, breadcrumbJsonLd } from "@/lib/seo";
 
 export const Route = createFileRoute("/legal-notice")({
   head: () => {
@@ -11,6 +11,14 @@ export const Route = createFileRoute("/legal-notice")({
     return {
       meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
       links: rh.links,
+      scripts: [{
+        type: "application/ld+json",
+        children: JSON.stringify(breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "House Notes", path: "/about" },
+          { name: "Legal Notice", path: "/legal-notice" },
+        ])),
+      }],
     };
   },
   component: LegalNoticePage,
