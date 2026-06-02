@@ -423,22 +423,6 @@ export function ProductCard({
               </span>
             );
           }
-          const hideMarkdown = suppressBadges.includes("markdown");
-          if (onSale && !hideMarkdown && compareAt) {
-            const was = parseFloat(compareAt.amount);
-            const now = parseFloat(price.amount);
-            const pct = was > 0 ? Math.round(((was - now) / was) * 100) : 0;
-            if (pct > 0) {
-              return (
-                <span
-                  className="absolute top-3 left-3 z-10 text-[10px] uppercase tracking-[0.25em] bg-canvas/95 backdrop-blur-sm text-ink border border-ink/15 px-2 py-1 font-medium"
-                  title={`${pct}% off`}
-                >
-                  −{pct}%
-                </span>
-              );
-            }
-          }
           // "New Season" — only pieces whose description names the current
           // or upcoming season. Source of truth = the season token written
           // into each product's description (e.g. "SS26", "Spring/Summer
