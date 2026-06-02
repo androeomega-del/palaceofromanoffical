@@ -73,20 +73,24 @@ export function SiteFooter() {
           </div>
         </div>
 
-        {/* ───── Service strip (Farfetch's reassurance row) ───── */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-10 border-t border-ink/10 mb-2">
-          <div>
-            <p className="text-[10px] uppercase tracking-[0.25em] font-semibold mb-2">Worldwide Express</p>
-            <p className="text-[12px] text-muted-foreground leading-relaxed">Complimentary express delivery on orders over $250, shipped from authorised boutiques worldwide.</p>
-          </div>
-          <div>
-            <p className="text-[10px] uppercase tracking-[0.25em] font-semibold mb-2">14-Day Returns</p>
-            <p className="text-[12px] text-muted-foreground leading-relaxed">Easy returns within 14 days of delivery. Items must be unworn with original tags.</p>
-          </div>
-          <div>
-            <p className="text-[10px] uppercase tracking-[0.25em] font-semibold mb-2">Concierge</p>
-            <p className="text-[12px] text-muted-foreground leading-relaxed">Personal styling and sourcing — replies within 24 hours, Monday through Saturday.</p>
-          </div>
+        {/* ───── Trust & support bar ───── */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 py-12 border-t border-ink/10">
+          <Link to="/shipping-returns" className="group flex flex-col gap-2 hover:text-ink transition-colors">
+            <span className="text-[10px] uppercase tracking-[0.25em] font-semibold">Express Shipping</span>
+            <span className="text-sm text-muted-foreground group-hover:text-ink/80 transition-colors leading-relaxed">Complimentary worldwide express delivery on orders over $250.</span>
+          </Link>
+          <Link to="/shipping-returns" className="group flex flex-col gap-2 hover:text-ink transition-colors">
+            <span className="text-[10px] uppercase tracking-[0.25em] font-semibold">14-Day Returns</span>
+            <span className="text-sm text-muted-foreground group-hover:text-ink/80 transition-colors leading-relaxed">Easy returns within 14 days of delivery. Unworn, tags attached.</span>
+          </Link>
+          <Link to="/authentication" className="group flex flex-col gap-2 hover:text-ink transition-colors">
+            <span className="text-[10px] uppercase tracking-[0.25em] font-semibold">Authenticity Guaranteed</span>
+            <span className="text-sm text-muted-foreground group-hover:text-ink/80 transition-colors leading-relaxed">Every piece is new, sealed and sourced from authorised partners.</span>
+          </Link>
+          <Link to="/contact" className="group flex flex-col gap-2 hover:text-ink transition-colors">
+            <span className="text-[10px] uppercase tracking-[0.25em] font-semibold">Concierge</span>
+            <span className="text-sm text-muted-foreground group-hover:text-ink/80 transition-colors leading-relaxed">Personal styling and sourcing — replies within 24 hours, Mon–Sat.</span>
+          </Link>
         </div>
 
         {/* ───── Payments row ───── */}
