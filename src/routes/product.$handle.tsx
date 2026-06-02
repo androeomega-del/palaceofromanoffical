@@ -62,10 +62,15 @@ export const Route = createFileRoute("/product/$handle")({
     }
 
 
-    const titleMain = p.vendor ? `${p.title} | ${p.vendor}` : p.title;
-    const desc =
-      metaDescription(p.description) ||
-      `Shop ${p.title} by ${p.vendor} at Palace of Roman. 100% authentic, worldwide shipping.`;
+    const titleMain = p.vendor
+      ? `${p.title} — ${p.vendor} | Authentic at Palace of Roman`
+      : `${p.title} | Palace of Roman`;
+    const parsedComp = parseComposition(p.description || "");
+    const descPieces: string[] = [];
+    descPieces.push(`Shop authentic ${p.vendor ? `${p.vendor} ` : ""}${p.title} at Palace of Roman.`);
+    if (p.productType) descPieces.push(`${p.productType}${parsedComp.composition ? ` in ${parsedComp.composition}` : ""}.`);
+    descPieces.push("Worldwide shipping, 90-day authenticity guarantee.");
+    const desc = metaDescription(p.description) || descPieces.join(" ");
     const img = p.images?.edges?.[0]?.node?.url;
     const price = p.priceRange?.minVariantPrice;
     const compareAt = p.compareAtPriceRange?.minVariantPrice;
