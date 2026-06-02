@@ -6,10 +6,8 @@ import { COMPARISONS, type Comparison } from "@/lib/comparisons";
 
 const COMPETITORS = Object.values(COMPARISONS);
 
-function EdgeDot({ edge }: { edge?: Comparison["rows"][number]["edge"] }) {
-  if (!edge || edge === "even") return null;
-  const color = edge === "us" ? "bg-bronze" : "bg-ink/40";
-  return <span className={`inline-block w-1.5 h-1.5 rounded-full mr-2 align-middle ${color}`} />;
+function WinDot() {
+  return <span className="inline-block w-1.5 h-1.5 rounded-full mr-2 align-middle bg-bronze" />;
 }
 
 export function ComparisonPage({ data }: { data: Comparison }) {
@@ -89,11 +87,11 @@ export function ComparisonPage({ data }: { data: Comparison }) {
                       {row.label}
                     </td>
                     <td className="py-4 px-4 text-ink/80 leading-relaxed">
-                      <EdgeDot edge={row.edge === "them" ? "us" /* shown on their side as bronze if they win */ : undefined} />
+                      {row.edge === "them" ? <WinDot /> : null}
                       {row.them}
                     </td>
                     <td className="py-4 pl-4 text-ink leading-relaxed">
-                      <EdgeDot edge={row.edge === "us" ? "us" : undefined} />
+                      {row.edge === "us" ? <WinDot /> : null}
                       {row.us}
                     </td>
                   </tr>
