@@ -1222,27 +1222,39 @@ export type Database = {
       }
       newsletter_subscribers: {
         Row: {
+          confirmation_sent_at: string | null
+          confirmation_token: string | null
+          confirmed_at: string | null
           created_at: string
           email: string
           id: string
           marketing_consent: boolean
           source: string | null
+          status: string
           user_agent: string | null
         }
         Insert: {
+          confirmation_sent_at?: string | null
+          confirmation_token?: string | null
+          confirmed_at?: string | null
           created_at?: string
           email: string
           id?: string
           marketing_consent?: boolean
           source?: string | null
+          status?: string
           user_agent?: string | null
         }
         Update: {
+          confirmation_sent_at?: string | null
+          confirmation_token?: string | null
+          confirmed_at?: string | null
           created_at?: string
           email?: string
           id?: string
           marketing_consent?: boolean
           source?: string | null
+          status?: string
           user_agent?: string | null
         }
         Relationships: []
