@@ -31,8 +31,8 @@ export function HomepageShippingTrustBar() {
           <div className="flex items-start md:items-center gap-2.5 text-ink/80">
             <Truck className="w-4 h-4 text-bronze-deep shrink-0 mt-0.5 md:mt-0" strokeWidth={1.5} />
             <p className="leading-snug">
-              <span className="font-medium text-ink">Order before 2:00 PM EST</span>{" "}
-              <span className="text-muted-foreground">— ships same business day via</span>{" "}
+              <span className="font-medium text-ink">Order before 8:00 AM CDT</span>{" "}
+              <span className="text-muted-foreground">— ships same business day from our EU partner boutiques via</span>{" "}
               <span className="font-medium text-ink">DHL Express · FedEx · UPS</span>
             </p>
           </div>
