@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { fetchCollections, type ShopifyCollection } from "@/lib/shopify";
 import { collectionImage } from "@/lib/collection-image";
-import { routeHead } from "@/lib/seo";
+import { routeHead, breadcrumbJsonLd } from "@/lib/seo";
 import { canonicalCollectionHandle as canonicalHandle } from "@/lib/collection-canonical";
 
 type FilterKey = "all" | "women" | "men" | "clothing" | "shoes" | "luxury";
@@ -84,6 +84,13 @@ export const Route = createFileRoute("/collections/")({
     return {
       meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
       links: rh.links,
+      scripts: [{
+        type: "application/ld+json",
+        children: JSON.stringify(breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Collections", path: "/collections" },
+        ])),
+      }],
     };
   },
   component: CollectionsIndexPage,

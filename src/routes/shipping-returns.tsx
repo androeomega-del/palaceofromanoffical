@@ -7,7 +7,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { img } from "@/lib/editorial-library";
-import { routeHead } from "@/lib/seo";
+import { routeHead, breadcrumbJsonLd } from "@/lib/seo";
 
 export const Route = createFileRoute("/shipping-returns")({
   head: () => {
@@ -17,6 +17,14 @@ export const Route = createFileRoute("/shipping-returns")({
     return {
       meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
       links: rh.links,
+      scripts: [{
+        type: "application/ld+json",
+        children: JSON.stringify(breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "House Notes", path: "/about" },
+          { name: "Shipping & Returns", path: "/shipping-returns" },
+        ])),
+      }],
     };
   },
   component: ShippingReturnsPage,
