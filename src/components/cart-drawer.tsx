@@ -213,6 +213,9 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
                 </li>
               </ul>
 
+              <CartEmailCapture ref={emailCaptureRef} />
+
+
               <Button
                 onClick={handleCheckout}
                 disabled={isLoading || isSyncing}
