@@ -10,7 +10,7 @@ export const Route = createFileRoute("/compare/")({
     const title = pageTitle("Compare Palace of Roman — Honest Comparisons");
     const description =
       "Palace of Roman compared, honestly, to Farfetch, Mytheresa, SSENSE and Net-a-Porter. Where each one wins, and where we do.";
-    const base = routeHead({ path: "/compare", title, description });
+    const base = routeHead({ path: "/compare", title, description, image: ogHub });
     return {
       meta: [
         { title },
