@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { Sparkles } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
+import { subscribeNewsletter } from "@/lib/newsletter.functions";
 
 /**
- * VIP Drop Registry — premium-styled newsletter signup.
- * Stores the email in the Lovable Cloud `newsletter_subscribers` table;
- * duplicates are silently treated as success.
+ * Exclusive Access — premium-styled newsletter signup with double opt-in.
+ * Inserts the email as `pending` and sends a confirmation email; the
+ * subscriber is only added to the active list once they click the link.
  */
 export function NewsletterForm() {
+  const subscribe = useServerFn(subscribeNewsletter);
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "ok" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
@@ -23,24 +25,25 @@ export function NewsletterForm() {
     setStatus("sending");
     setError(null);
 
-    let insertError: { code?: string } | null = null;
     try {
-      ({ error: insertError } = await supabase
-        .from("newsletter_subscribers")
-        .insert({
+      const result = await subscribe({
+        data: {
           email: value,
-          source: typeof window !== "undefined" ? `exclusive-access:${window.location.pathname}` : "exclusive-access",
-          user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
-          marketing_consent: true,
-        }));
-    } catch (error) {
-      console.debug("[newsletter] Registry unavailable.", error);
-      setStatus("error");
-      setError("Something went wrong. Please try again.");
-      return;
-    }
-
-    if (insertError && insertError.code !== "23505") {
+          source:
+            typeof window !== "undefined"
+              ? `exclusive-access:${window.location.pathname}`
+              : "exclusive-access",
+          userAgent: typeof navigator !== "undefined" ? navigator.userAgent : undefined,
+          marketingConsent: true,
+        },
+      });
+      if (!result.ok) {
+        setStatus("error");
+        setError(result.error ?? "Something went wrong. Please try again.");
+        return;
+      }
+    } catch (err) {
+      console.debug("[newsletter] subscribe failed.", err);
       setStatus("error");
       setError("Something went wrong. Please try again.");
       return;
@@ -54,10 +57,12 @@ export function NewsletterForm() {
     return (
       <div className="border border-bronze/40 bg-bronze/5 p-5" role="status" aria-live="polite">
         <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2 inline-flex items-center gap-2">
-          <Sparkles className="w-3 h-3" /> You're subscribed
+          <Sparkles className="w-3 h-3" /> Check your inbox
         </p>
         <p className="text-sm text-ink leading-relaxed">
-          Welcome. Exclusive promotions and member-only offers will arrive in your inbox first.
+          We've sent a confirmation email. Please click the link inside to
+          activate your subscription — exclusive promotions and member-only
+          offers will follow once your email is verified.
         </p>
       </div>
     );
@@ -110,7 +115,7 @@ export function NewsletterForm() {
         )}
         <p className="mt-4 text-[10px] text-ink/50 leading-relaxed">
           By subscribing, you consent to receiving marketing communications, including promotions and
-          discount alerts.{" "}
+          discount alerts. We'll send a one-time confirmation email to verify your address.{" "}
           <a href="/privacy" className="underline decoration-bronze/40 hover:text-bronze transition-colors">
             Privacy Notice
           </a>.

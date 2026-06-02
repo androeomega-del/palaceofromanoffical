@@ -54,6 +54,7 @@ import { Route as SwimSizeGuideRouteImport } from './routes/swim.size-guide'
 import { Route as ProductsHandleRouteImport } from './routes/products.$handle'
 import { Route as ProductHandleRouteImport } from './routes/product.$handle'
 import { Route as PreviewLookbookRouteImport } from './routes/preview.lookbook'
+import { Route as NewsletterConfirmRouteImport } from './routes/newsletter.confirm'
 import { Route as MaisonSlugRouteImport } from './routes/maison.$slug'
 import { Route as EditsYachtEditRouteImport } from './routes/edits.yacht-edit'
 import { Route as EditsThePradaEffectRouteImport } from './routes/edits.the-prada-effect'
@@ -364,6 +365,11 @@ const ProductHandleRoute = ProductHandleRouteImport.update({
 const PreviewLookbookRoute = PreviewLookbookRouteImport.update({
   id: '/preview/lookbook',
   path: '/preview/lookbook',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsletterConfirmRoute = NewsletterConfirmRouteImport.update({
+  id: '/newsletter/confirm',
+  path: '/newsletter/confirm',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MaisonSlugRoute = MaisonSlugRouteImport.update({
@@ -916,6 +922,7 @@ export interface FileRoutesByFullPath {
   '/edits/the-prada-effect': typeof EditsThePradaEffectRoute
   '/edits/yacht-edit': typeof EditsYachtEditRouteWithChildren
   '/maison/$slug': typeof MaisonSlugRoute
+  '/newsletter/confirm': typeof NewsletterConfirmRoute
   '/preview/lookbook': typeof PreviewLookbookRoute
   '/product/$handle': typeof ProductHandleRoute
   '/products/$handle': typeof ProductsHandleRoute
@@ -1045,6 +1052,7 @@ export interface FileRoutesByTo {
   '/edits/the-cucinelli-edit': typeof EditsTheCucinelliEditRoute
   '/edits/the-prada-effect': typeof EditsThePradaEffectRoute
   '/maison/$slug': typeof MaisonSlugRoute
+  '/newsletter/confirm': typeof NewsletterConfirmRoute
   '/preview/lookbook': typeof PreviewLookbookRoute
   '/product/$handle': typeof ProductHandleRoute
   '/products/$handle': typeof ProductsHandleRoute
@@ -1178,6 +1186,7 @@ export interface FileRoutesById {
   '/edits/the-prada-effect': typeof EditsThePradaEffectRoute
   '/edits/yacht-edit': typeof EditsYachtEditRouteWithChildren
   '/maison/$slug': typeof MaisonSlugRoute
+  '/newsletter/confirm': typeof NewsletterConfirmRoute
   '/preview/lookbook': typeof PreviewLookbookRoute
   '/product/$handle': typeof ProductHandleRoute
   '/products/$handle': typeof ProductsHandleRoute
@@ -1312,6 +1321,7 @@ export interface FileRouteTypes {
     | '/edits/the-prada-effect'
     | '/edits/yacht-edit'
     | '/maison/$slug'
+    | '/newsletter/confirm'
     | '/preview/lookbook'
     | '/product/$handle'
     | '/products/$handle'
@@ -1441,6 +1451,7 @@ export interface FileRouteTypes {
     | '/edits/the-cucinelli-edit'
     | '/edits/the-prada-effect'
     | '/maison/$slug'
+    | '/newsletter/confirm'
     | '/preview/lookbook'
     | '/product/$handle'
     | '/products/$handle'
@@ -1573,6 +1584,7 @@ export interface FileRouteTypes {
     | '/edits/the-prada-effect'
     | '/edits/yacht-edit'
     | '/maison/$slug'
+    | '/newsletter/confirm'
     | '/preview/lookbook'
     | '/product/$handle'
     | '/products/$handle'
@@ -1702,6 +1714,7 @@ export interface RootRouteChildren {
   EditsThePradaEffectRoute: typeof EditsThePradaEffectRoute
   EditsYachtEditRoute: typeof EditsYachtEditRouteWithChildren
   MaisonSlugRoute: typeof MaisonSlugRoute
+  NewsletterConfirmRoute: typeof NewsletterConfirmRoute
   PreviewLookbookRoute: typeof PreviewLookbookRoute
   ProductHandleRoute: typeof ProductHandleRoute
   ProductsHandleRoute: typeof ProductsHandleRoute
@@ -2047,6 +2060,13 @@ declare module '@tanstack/react-router' {
       path: '/preview/lookbook'
       fullPath: '/preview/lookbook'
       preLoaderRoute: typeof PreviewLookbookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/newsletter/confirm': {
+      id: '/newsletter/confirm'
+      path: '/newsletter/confirm'
+      fullPath: '/newsletter/confirm'
+      preLoaderRoute: typeof NewsletterConfirmRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/maison/$slug': {
@@ -2829,6 +2849,7 @@ const rootRouteChildren: RootRouteChildren = {
   EditsThePradaEffectRoute: EditsThePradaEffectRoute,
   EditsYachtEditRoute: EditsYachtEditRouteWithChildren,
   MaisonSlugRoute: MaisonSlugRoute,
+  NewsletterConfirmRoute: NewsletterConfirmRoute,
   PreviewLookbookRoute: PreviewLookbookRoute,
   ProductHandleRoute: ProductHandleRoute,
   ProductsHandleRoute: ProductsHandleRoute,
