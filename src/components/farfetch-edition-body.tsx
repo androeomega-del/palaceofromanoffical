@@ -320,6 +320,7 @@ import shoesImg from "@/assets/home-categories/shoes.jpg";
 import bagsImg from "@/assets/home-categories/bags.jpg";
 import sunglassesImg from "@/assets/home-categories/sunglasses.jpg";
 import accessoriesImg from "@/assets/home-categories/accessories.jpg";
+import { HomepageShippingTrustBar } from "@/components/homepage-shipping-trust-bar";
 
 const CATEGORY_TILES: CategoryTile[] = [
   { handle: "new-arrivals", label: "New In",      fallbackAlt: "New arrivals — fresh pieces this week",          image: newArrivalsImg },
