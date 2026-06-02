@@ -54,10 +54,10 @@ export function NewsletterForm() {
     return (
       <div className="border border-bronze/40 bg-bronze/5 p-5" role="status" aria-live="polite">
         <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2 inline-flex items-center gap-2">
-          <Sparkles className="w-3 h-3" /> You're on the registry
+          <Sparkles className="w-3 h-3" /> You're subscribed
         </p>
         <p className="text-sm text-ink leading-relaxed">
-          Welcome. The next limited-edition drop arrives in your inbox first.
+          Welcome. Exclusive promotions and member-only offers will arrive in your inbox first.
         </p>
       </div>
     );
