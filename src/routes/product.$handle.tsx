@@ -1074,6 +1074,14 @@ function ProductView({
         {/* ===== Reviews (first-party, admin-moderated) ===== */}
         <ProductReviews handle={product.handle} productTitle={product.title} />
 
+        {/* ===== "On this piece" FAQ — visible + FAQPage JSON-LD ===== */}
+        <PdpFaq
+          title={product.title}
+          vendor={product.vendor}
+          productType={product.productType}
+          description={product.description}
+        />
+
         {/* ===== AI Recommendations (server-assisted) ===== */}
         <AIRecommendations product={product} />
 
