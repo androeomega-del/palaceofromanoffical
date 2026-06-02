@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { fetchCollections, type ShopifyCollection } from "@/lib/shopify";
 import { collectionImage } from "@/lib/collection-image";
-import { routeHead } from "@/lib/seo";
+import { routeHead, breadcrumbJsonLd } from "@/lib/seo";
 import { canonicalCollectionHandle as canonicalHandle } from "@/lib/collection-canonical";
 
 type FilterKey = "all" | "women" | "men" | "clothing" | "shoes" | "luxury";
