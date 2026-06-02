@@ -77,6 +77,12 @@ const STATIC_ROUTES: UrlEntry[] = [
   { path: "/compare/net-a-porter", changefreq: "monthly", priority: "0.8" },
   { path: "/maison", changefreq: "monthly", priority: "0.7" },
   { path: "/maison/brunello-cucinelli", changefreq: "monthly", priority: "0.8" },
+  { path: "/maison/prada", changefreq: "monthly", priority: "0.8" },
+  { path: "/maison/gucci", changefreq: "monthly", priority: "0.8" },
+  { path: "/maison/bottega-veneta", changefreq: "monthly", priority: "0.8" },
+  { path: "/maison/tom-ford", changefreq: "monthly", priority: "0.8" },
+  { path: "/maison/dolce-gabbana", changefreq: "monthly", priority: "0.8" },
+  { path: "/maison/ferragamo", changefreq: "monthly", priority: "0.8" },
 ];
 
 export const Route = createFileRoute("/sitemap-static.xml")({
