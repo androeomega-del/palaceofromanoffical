@@ -37,6 +37,8 @@ import { NotifyMeForm } from "@/components/atelier/notify-me-form";
 import { RecentlyViewedRail } from "@/components/recently-viewed-rail";
 import { ImageLightbox } from "@/components/product/image-lightbox";
 import { parseComposition, hasCompositionInfo } from "@/lib/product-composition";
+import { buildPdpFaq } from "@/lib/pdp-faq";
+import { PdpFaq } from "@/components/pdp-faq";
 import { ROME_BRAND_SLUGS } from "@/lib/rome-brands";
 
 export const Route = createFileRoute("/product/$handle")({
