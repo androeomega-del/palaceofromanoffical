@@ -34,6 +34,25 @@ export const Route = createFileRoute("/brands")({
             isPartOf: { "@type": "WebSite", name: SITE_NAME, url: absoluteUrl("/") },
           }),
         },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            name: "Designer brands at Palace of Roman",
+            itemListOrder: "https://schema.org/ItemListOrderAscending",
+            numberOfItems: ALL_LUXURY_BRANDS.length,
+            itemListElement: ALL_LUXURY_BRANDS.map((b, i) => ({
+              "@type": "ListItem",
+              position: i + 1,
+              item: {
+                "@type": "Brand",
+                name: b.name,
+                url: absoluteUrl(`/brand/${b.slug}`),
+              },
+            })),
+          }),
+        },
       ],
     };
   },
