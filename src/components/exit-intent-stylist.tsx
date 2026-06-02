@@ -88,11 +88,10 @@ export function ExitIntentStylist() {
             </span>
           </div>
           <DialogTitle className="font-serif text-3xl md:text-4xl leading-tight text-ink mb-4 text-balance">
-            Reserve your place on the Atelier List
+            Sign up for our newsletter
           </DialogTitle>
           <DialogDescription className="text-sm text-ink/70 leading-relaxed mb-6">
-            First access to new arrivals, private edits, and the pieces our
-            curators set aside for members before they reach the boutique.
+            You might receive promo codes here and there.
           </DialogDescription>
 
           <AtelierListInline onSubscribed={() => undefined} />
