@@ -109,6 +109,7 @@ import { Route as AdminCollectionImagePreviewRouteImport } from './routes/admin.
 import { Route as AdminCollectionHeroRegressionRouteImport } from './routes/admin.collection-hero-regression'
 import { Route as AdminCollectionFocalRouteImport } from './routes/admin.collection-focal'
 import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
+import { Route as AdminAcquiredLeadsRouteImport } from './routes/admin.acquired-leads'
 import { Route as AccountRegisterRouteImport } from './routes/account.register'
 import { Route as AccountRecoverRouteImport } from './routes/account.recover'
 import { Route as AccountLoginRouteImport } from './routes/account.login'
@@ -654,6 +655,11 @@ const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
   path: '/admin/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminAcquiredLeadsRoute = AdminAcquiredLeadsRouteImport.update({
+  id: '/admin/acquired-leads',
+  path: '/admin/acquired-leads',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AccountRegisterRoute = AccountRegisterRouteImport.update({
   id: '/register',
   path: '/register',
@@ -868,6 +874,7 @@ export interface FileRoutesByFullPath {
   '/account/login': typeof AccountLoginRoute
   '/account/recover': typeof AccountRecoverRoute
   '/account/register': typeof AccountRegisterRoute
+  '/admin/acquired-leads': typeof AdminAcquiredLeadsRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/collection-focal': typeof AdminCollectionFocalRoute
   '/admin/collection-hero-regression': typeof AdminCollectionHeroRegressionRoute
@@ -999,6 +1006,7 @@ export interface FileRoutesByTo {
   '/account/login': typeof AccountLoginRoute
   '/account/recover': typeof AccountRecoverRoute
   '/account/register': typeof AccountRegisterRoute
+  '/admin/acquired-leads': typeof AdminAcquiredLeadsRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/collection-focal': typeof AdminCollectionFocalRoute
   '/admin/collection-hero-regression': typeof AdminCollectionHeroRegressionRoute
@@ -1132,6 +1140,7 @@ export interface FileRoutesById {
   '/account/login': typeof AccountLoginRoute
   '/account/recover': typeof AccountRecoverRoute
   '/account/register': typeof AccountRegisterRoute
+  '/admin/acquired-leads': typeof AdminAcquiredLeadsRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/collection-focal': typeof AdminCollectionFocalRoute
   '/admin/collection-hero-regression': typeof AdminCollectionHeroRegressionRoute
@@ -1267,6 +1276,7 @@ export interface FileRouteTypes {
     | '/account/login'
     | '/account/recover'
     | '/account/register'
+    | '/admin/acquired-leads'
     | '/admin/analytics'
     | '/admin/collection-focal'
     | '/admin/collection-hero-regression'
@@ -1398,6 +1408,7 @@ export interface FileRouteTypes {
     | '/account/login'
     | '/account/recover'
     | '/account/register'
+    | '/admin/acquired-leads'
     | '/admin/analytics'
     | '/admin/collection-focal'
     | '/admin/collection-hero-regression'
@@ -1530,6 +1541,7 @@ export interface FileRouteTypes {
     | '/account/login'
     | '/account/recover'
     | '/account/register'
+    | '/admin/acquired-leads'
     | '/admin/analytics'
     | '/admin/collection-focal'
     | '/admin/collection-hero-regression'
@@ -1661,6 +1673,7 @@ export interface RootRouteChildren {
   VacationStylistRoute: typeof VacationStylistRoute
   WishlistRoute: typeof WishlistRoute
   WomenRoute: typeof WomenRoute
+  AdminAcquiredLeadsRoute: typeof AdminAcquiredLeadsRoute
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminCollectionFocalRoute: typeof AdminCollectionFocalRoute
   AdminCollectionHeroRegressionRoute: typeof AdminCollectionHeroRegressionRoute
@@ -2447,6 +2460,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/acquired-leads': {
+      id: '/admin/acquired-leads'
+      path: '/admin/acquired-leads'
+      fullPath: '/admin/acquired-leads'
+      preLoaderRoute: typeof AdminAcquiredLeadsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/account/register': {
       id: '/account/register'
       path: '/register'
@@ -2795,6 +2815,7 @@ const rootRouteChildren: RootRouteChildren = {
   VacationStylistRoute: VacationStylistRoute,
   WishlistRoute: WishlistRoute,
   WomenRoute: WomenRoute,
+  AdminAcquiredLeadsRoute: AdminAcquiredLeadsRoute,
   AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminCollectionFocalRoute: AdminCollectionFocalRoute,
   AdminCollectionHeroRegressionRoute: AdminCollectionHeroRegressionRoute,
@@ -2888,13 +2909,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

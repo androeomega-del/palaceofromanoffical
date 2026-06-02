@@ -97,6 +97,12 @@ const TILES: Tile[] = [
     icon: Mail,
   },
   {
+    to: "/admin/acquired-leads",
+    label: "Acquired Leads",
+    desc: "Import acquired lists, dedupe, hold for re-permission",
+    icon: Mail,
+  },
+  {
     to: "/admin/seo-health",
     label: "SEO Health",
     desc: "Indexing, sitemap, metadata checks",

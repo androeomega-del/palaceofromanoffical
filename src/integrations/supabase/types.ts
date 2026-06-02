@@ -71,6 +71,63 @@ export type Database = {
         }
         Relationships: []
       }
+      acquired_leads: {
+        Row: {
+          city: string | null
+          created_at: string
+          email: string
+          first_name: string | null
+          id: string
+          import_batch_id: string | null
+          last_name: string | null
+          notes: string | null
+          opted_in_at: string | null
+          re_permission_sent_at: string | null
+          segment: string | null
+          source: string
+          state: string | null
+          status: string
+          suppressed_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          city?: string | null
+          created_at?: string
+          email: string
+          first_name?: string | null
+          id?: string
+          import_batch_id?: string | null
+          last_name?: string | null
+          notes?: string | null
+          opted_in_at?: string | null
+          re_permission_sent_at?: string | null
+          segment?: string | null
+          source?: string
+          state?: string | null
+          status?: string
+          suppressed_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          city?: string | null
+          created_at?: string
+          email?: string
+          first_name?: string | null
+          id?: string
+          import_batch_id?: string | null
+          last_name?: string | null
+          notes?: string | null
+          opted_in_at?: string | null
+          re_permission_sent_at?: string | null
+          segment?: string | null
+          source?: string
+          state?: string | null
+          status?: string
+          suppressed_at?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ai_usage_ledger: {
         Row: {
           cost_cents: number
