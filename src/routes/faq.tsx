@@ -32,6 +32,10 @@ export const Route = createFileRoute("/faq")({
       "@type": "FAQPage",
       url: absoluteUrl("/faq"),
       isPartOf: { "@type": "WebSite", name: SITE_NAME, url: absoluteUrl("/") },
+      speakable: {
+        "@type": "SpeakableSpecification",
+        cssSelector: [".accordion-trigger", ".accordion-content"],
+      },
       mainEntity: SECTIONS.flatMap((section) =>
         section.items.map((item) => ({
           "@type": "Question",

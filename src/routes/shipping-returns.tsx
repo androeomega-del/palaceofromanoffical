@@ -14,17 +14,74 @@ export const Route = createFileRoute("/shipping-returns")({
     const title = "Shipping & Returns — Palace of Roman";
     const desc = "Worldwide shipping from our brand-authorised European and US partner warehouses, with a 14-day return window from the day your parcel is delivered.";
     const rh = routeHead({ path: "/shipping-returns", title, description: desc, image: img(22) });
+    const faqJsonLd = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: "How long does shipping take?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Warehouses dispatch within 24–48 hours of order confirmation. Typical transit is 2–3 business days within the EU, 3–5 business days to the UK, Switzerland and Norway, 4–7 business days to the United States and Canada, and 5–10 business days to the rest of the world. Every shipment travels with UPS, FedEx or DHL, fully tracked and insured.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Does Palace of Roman ship worldwide?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Yes. We ship worldwide via DHL, FedEx and UPS from partner warehouses across Italy, Sweden, Spain, Austria, Northern Ireland and the United States. We currently cannot deliver to Russia, Belarus or Ukraine due to the ongoing conflict.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "What is the return window?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Returns are accepted within fourteen days of the day your parcel is delivered. Pieces must be unworn, with all original tags attached and in their original packaging. Returns must travel with UPS, FedEx or DHL with live tracking — regular postal services are declined.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "How do I exchange a piece for a different size?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Place a new order for the replacement size and open a return on the original order. The original piece is refunded as soon as it is received and inspected at the warehouse — this secures your replacement immediately rather than waiting for the return to clear.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Will I pay duties or import taxes?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Orders within the European Union ship intra-EU with no further duties. Orders to the United Kingdom, the United States, Canada and other destinations may attract import duties and local taxes on arrival, charged by the courier on behalf of local customs.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "What if my piece arrives damaged or incorrect?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Write to us within fourteen days of delivery with photographs of the piece, the brand tag and the visible defect. Once confirmed, we provide a prepaid return label and arrange a full refund or replacement at no cost.",
+          },
+        },
+      ],
+    };
     return {
       meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
       links: rh.links,
-      scripts: [{
-        type: "application/ld+json",
-        children: JSON.stringify(breadcrumbJsonLd([
-          { name: "Home", path: "/" },
-          { name: "House Notes", path: "/about" },
-          { name: "Shipping & Returns", path: "/shipping-returns" },
-        ])),
-      }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(breadcrumbJsonLd([
+            { name: "Home", path: "/" },
+            { name: "House Notes", path: "/about" },
+            { name: "Shipping & Returns", path: "/shipping-returns" },
+          ])),
+        },
+        { type: "application/ld+json", children: JSON.stringify(faqJsonLd) },
+      ],
     };
   },
   component: ShippingReturnsPage,
