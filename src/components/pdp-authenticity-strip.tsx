@@ -10,7 +10,7 @@ export function PdpAuthenticityStrip() {
       <Pillar
         icon={<ShieldCheck className="w-5 h-5" strokeWidth={1.4} />}
         title="100% Authentic"
-        sub="Sourced through our network of authorised European boutiques and distributors."
+        sub="New & sealed from a brand-authorised partner. Sourced through our network of authorised European boutiques and distributors."
       />
       <Pillar
         icon={<Package className="w-5 h-5" strokeWidth={1.4} />}
