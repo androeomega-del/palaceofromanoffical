@@ -8,7 +8,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { img } from "@/lib/editorial-library";
-import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
+import { routeHead, absoluteUrl, SITE_NAME, breadcrumbJsonLd } from "@/lib/seo";
 
 /** Flatten a ReactNode tree into plain text for JSON-LD answer bodies. */
 function nodeToText(node: ReactNode): string {
