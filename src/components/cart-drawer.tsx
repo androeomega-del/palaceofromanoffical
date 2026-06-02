@@ -198,7 +198,11 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
               </div>
 
               {/* Trust micro-strip — placed ABOVE the CTA so it's always visible alongside the button */}
-              <ul className="grid grid-cols-3 gap-2 text-[9px] uppercase tracking-[0.15em] text-muted-foreground border-y border-ink/10 py-2.5">
+              <ul className="grid grid-cols-4 gap-2 text-[9px] uppercase tracking-[0.15em] text-muted-foreground border-y border-ink/10 py-2.5">
+                <li className="flex items-center justify-center gap-1.5 text-center">
+                  <ShieldCheck className="w-3 h-3 shrink-0" strokeWidth={1.5} />
+                  <span>Insured</span>
+                </li>
                 <li className="flex items-center justify-center gap-1.5 text-center">
                   <Lock className="w-3 h-3 shrink-0" strokeWidth={1.5} />
                   <span>Secure</span>
@@ -225,7 +229,7 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
               </Button>
 
               <p className="text-[10px] text-center text-muted-foreground">
-                Taxes & shipping at checkout ·{" "}
+                Shipping is fully insured at no extra cost · Taxes calculated at checkout ·{" "}
                 <Link
                   to="/contact"
                   onClick={() => onOpenChange(false)}
