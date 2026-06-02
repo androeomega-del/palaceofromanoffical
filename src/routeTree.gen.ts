@@ -30,6 +30,7 @@ import { Route as LinksRouteImport } from './routes/links'
 import { Route as LimitedFindsRouteImport } from './routes/limited-finds'
 import { Route as LegalNoticeRouteImport } from './routes/legal-notice'
 import { Route as JournalRouteImport } from './routes/journal'
+import { Route as InRomeRouteImport } from './routes/in-rome'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as DesignersRouteImport } from './routes/designers'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -114,6 +115,7 @@ import { Route as JournalCraftsmanshipMadeInItalyVsDesignedInItalyRouteImport } 
 import { Route as JournalCraftsmanshipCaringForFineLeatherRouteImport } from './routes/journal.craftsmanship.caring-for-fine-leather'
 import { Route as JournalBlogHandleArticleHandleRouteImport } from './routes/journal.$blogHandle.$articleHandle'
 import { Route as EditsYachtEditChapterRouteImport } from './routes/edits.yacht-edit.$chapter'
+import { Route as BrandVendorInRomeRouteImport } from './routes/brand.$vendor.in-rome'
 import { Route as ApiPublicSeoHealthRouteImport } from './routes/api/public/seo-health'
 import { Route as LocaleProductsHandleRouteImport } from './routes/$locale.products.$handle'
 import { Route as ApiPublicStockAlertsSubscribeRouteImport } from './routes/api/public/stock-alerts/subscribe'
@@ -236,6 +238,11 @@ const LegalNoticeRoute = LegalNoticeRouteImport.update({
 const JournalRoute = JournalRouteImport.update({
   id: '/journal',
   path: '/journal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InRomeRoute = InRomeRouteImport.update({
+  id: '/in-rome',
+  path: '/in-rome',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FaqRoute = FaqRouteImport.update({
@@ -677,6 +684,11 @@ const EditsYachtEditChapterRoute = EditsYachtEditChapterRouteImport.update({
   path: '/$chapter',
   getParentRoute: () => EditsYachtEditRoute,
 } as any)
+const BrandVendorInRomeRoute = BrandVendorInRomeRouteImport.update({
+  id: '/in-rome',
+  path: '/in-rome',
+  getParentRoute: () => BrandVendorRoute,
+} as any)
 const ApiPublicSeoHealthRoute = ApiPublicSeoHealthRouteImport.update({
   id: '/api/public/seo-health',
   path: '/api/public/seo-health',
@@ -788,6 +800,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/designers': typeof DesignersRoute
   '/faq': typeof FaqRoute
+  '/in-rome': typeof InRomeRoute
   '/journal': typeof JournalRouteWithChildren
   '/legal-notice': typeof LegalNoticeRoute
   '/limited-finds': typeof LimitedFindsRoute
@@ -835,7 +848,7 @@ export interface FileRoutesByFullPath {
   '/admin/shopify-sync': typeof AdminShopifySyncRoute
   '/admin/structured-data-test': typeof AdminStructuredDataTestRoute
   '/admin/trending-brands': typeof AdminTrendingBrandsRoute
-  '/brand/$vendor': typeof BrandVendorRoute
+  '/brand/$vendor': typeof BrandVendorRouteWithChildren
   '/campaign/mens-swim': typeof CampaignMensSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
   '/collections/cashmere-sweaters': typeof CollectionsCashmereSweatersRoute
@@ -877,6 +890,7 @@ export interface FileRoutesByFullPath {
   '/collections/': typeof CollectionsIndexRoute
   '/$locale/products/$handle': typeof LocaleProductsHandleRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
+  '/brand/$vendor/in-rome': typeof BrandVendorInRomeRoute
   '/edits/yacht-edit/$chapter': typeof EditsYachtEditChapterRoute
   '/journal/$blogHandle/$articleHandle': typeof JournalBlogHandleArticleHandleRoute
   '/journal/craftsmanship/caring-for-fine-leather': typeof JournalCraftsmanshipCaringForFineLeatherRoute
@@ -911,6 +925,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/designers': typeof DesignersRoute
   '/faq': typeof FaqRoute
+  '/in-rome': typeof InRomeRoute
   '/journal': typeof JournalRouteWithChildren
   '/legal-notice': typeof LegalNoticeRoute
   '/limited-finds': typeof LimitedFindsRoute
@@ -958,7 +973,7 @@ export interface FileRoutesByTo {
   '/admin/shopify-sync': typeof AdminShopifySyncRoute
   '/admin/structured-data-test': typeof AdminStructuredDataTestRoute
   '/admin/trending-brands': typeof AdminTrendingBrandsRoute
-  '/brand/$vendor': typeof BrandVendorRoute
+  '/brand/$vendor': typeof BrandVendorRouteWithChildren
   '/campaign/mens-swim': typeof CampaignMensSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
   '/collections/cashmere-sweaters': typeof CollectionsCashmereSweatersRoute
@@ -999,6 +1014,7 @@ export interface FileRoutesByTo {
   '/collections': typeof CollectionsIndexRoute
   '/$locale/products/$handle': typeof LocaleProductsHandleRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
+  '/brand/$vendor/in-rome': typeof BrandVendorInRomeRoute
   '/edits/yacht-edit/$chapter': typeof EditsYachtEditChapterRoute
   '/journal/$blogHandle/$articleHandle': typeof JournalBlogHandleArticleHandleRoute
   '/journal/craftsmanship/caring-for-fine-leather': typeof JournalCraftsmanshipCaringForFineLeatherRoute
@@ -1035,6 +1051,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/designers': typeof DesignersRoute
   '/faq': typeof FaqRoute
+  '/in-rome': typeof InRomeRoute
   '/journal': typeof JournalRouteWithChildren
   '/legal-notice': typeof LegalNoticeRoute
   '/limited-finds': typeof LimitedFindsRoute
@@ -1082,7 +1099,7 @@ export interface FileRoutesById {
   '/admin/shopify-sync': typeof AdminShopifySyncRoute
   '/admin/structured-data-test': typeof AdminStructuredDataTestRoute
   '/admin/trending-brands': typeof AdminTrendingBrandsRoute
-  '/brand/$vendor': typeof BrandVendorRoute
+  '/brand/$vendor': typeof BrandVendorRouteWithChildren
   '/campaign/mens-swim': typeof CampaignMensSwimRoute
   '/collections/$handle': typeof CollectionsHandleRoute
   '/collections/cashmere-sweaters': typeof CollectionsCashmereSweatersRoute
@@ -1124,6 +1141,7 @@ export interface FileRoutesById {
   '/collections/': typeof CollectionsIndexRoute
   '/$locale/products/$handle': typeof LocaleProductsHandleRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
+  '/brand/$vendor/in-rome': typeof BrandVendorInRomeRoute
   '/edits/yacht-edit/$chapter': typeof EditsYachtEditChapterRoute
   '/journal/$blogHandle/$articleHandle': typeof JournalBlogHandleArticleHandleRoute
   '/journal/craftsmanship/caring-for-fine-leather': typeof JournalCraftsmanshipCaringForFineLeatherRoute
@@ -1161,6 +1179,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/designers'
     | '/faq'
+    | '/in-rome'
     | '/journal'
     | '/legal-notice'
     | '/limited-finds'
@@ -1250,6 +1269,7 @@ export interface FileRouteTypes {
     | '/collections/'
     | '/$locale/products/$handle'
     | '/api/public/seo-health'
+    | '/brand/$vendor/in-rome'
     | '/edits/yacht-edit/$chapter'
     | '/journal/$blogHandle/$articleHandle'
     | '/journal/craftsmanship/caring-for-fine-leather'
@@ -1284,6 +1304,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/designers'
     | '/faq'
+    | '/in-rome'
     | '/journal'
     | '/legal-notice'
     | '/limited-finds'
@@ -1372,6 +1393,7 @@ export interface FileRouteTypes {
     | '/collections'
     | '/$locale/products/$handle'
     | '/api/public/seo-health'
+    | '/brand/$vendor/in-rome'
     | '/edits/yacht-edit/$chapter'
     | '/journal/$blogHandle/$articleHandle'
     | '/journal/craftsmanship/caring-for-fine-leather'
@@ -1407,6 +1429,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/designers'
     | '/faq'
+    | '/in-rome'
     | '/journal'
     | '/legal-notice'
     | '/limited-finds'
@@ -1496,6 +1519,7 @@ export interface FileRouteTypes {
     | '/collections/'
     | '/$locale/products/$handle'
     | '/api/public/seo-health'
+    | '/brand/$vendor/in-rome'
     | '/edits/yacht-edit/$chapter'
     | '/journal/$blogHandle/$articleHandle'
     | '/journal/craftsmanship/caring-for-fine-leather'
@@ -1532,6 +1556,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   DesignersRoute: typeof DesignersRoute
   FaqRoute: typeof FaqRoute
+  InRomeRoute: typeof InRomeRoute
   JournalRoute: typeof JournalRouteWithChildren
   LegalNoticeRoute: typeof LegalNoticeRoute
   LimitedFindsRoute: typeof LimitedFindsRoute
@@ -1576,7 +1601,7 @@ export interface RootRouteChildren {
   AdminShopifySyncRoute: typeof AdminShopifySyncRoute
   AdminStructuredDataTestRoute: typeof AdminStructuredDataTestRoute
   AdminTrendingBrandsRoute: typeof AdminTrendingBrandsRoute
-  BrandVendorRoute: typeof BrandVendorRoute
+  BrandVendorRoute: typeof BrandVendorRouteWithChildren
   CampaignMensSwimRoute: typeof CampaignMensSwimRoute
   CollectionsHandleRoute: typeof CollectionsHandleRoute
   CollectionsCashmereSweatersRoute: typeof CollectionsCashmereSweatersRoute
@@ -1780,6 +1805,13 @@ declare module '@tanstack/react-router' {
       path: '/journal'
       fullPath: '/journal'
       preLoaderRoute: typeof JournalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/in-rome': {
+      id: '/in-rome'
+      path: '/in-rome'
+      fullPath: '/in-rome'
+      preLoaderRoute: typeof InRomeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/faq': {
@@ -2370,6 +2402,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EditsYachtEditChapterRouteImport
       parentRoute: typeof EditsYachtEditRoute
     }
+    '/brand/$vendor/in-rome': {
+      id: '/brand/$vendor/in-rome'
+      path: '/in-rome'
+      fullPath: '/brand/$vendor/in-rome'
+      preLoaderRoute: typeof BrandVendorInRomeRouteImport
+      parentRoute: typeof BrandVendorRoute
+    }
     '/api/public/seo-health': {
       id: '/api/public/seo-health'
       path: '/api/public/seo-health'
@@ -2548,6 +2587,18 @@ const SwimRouteChildren: SwimRouteChildren = {
 
 const SwimRouteWithChildren = SwimRoute._addFileChildren(SwimRouteChildren)
 
+interface BrandVendorRouteChildren {
+  BrandVendorInRomeRoute: typeof BrandVendorInRomeRoute
+}
+
+const BrandVendorRouteChildren: BrandVendorRouteChildren = {
+  BrandVendorInRomeRoute: BrandVendorInRomeRoute,
+}
+
+const BrandVendorRouteWithChildren = BrandVendorRoute._addFileChildren(
+  BrandVendorRouteChildren,
+)
+
 interface EditsYachtEditRouteChildren {
   EditsYachtEditChapterRoute: typeof EditsYachtEditChapterRoute
   EditsYachtEditIndexRoute: typeof EditsYachtEditIndexRoute
@@ -2572,6 +2623,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   DesignersRoute: DesignersRoute,
   FaqRoute: FaqRoute,
+  InRomeRoute: InRomeRoute,
   JournalRoute: JournalRouteWithChildren,
   LegalNoticeRoute: LegalNoticeRoute,
   LimitedFindsRoute: LimitedFindsRoute,
@@ -2616,7 +2668,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminShopifySyncRoute: AdminShopifySyncRoute,
   AdminStructuredDataTestRoute: AdminStructuredDataTestRoute,
   AdminTrendingBrandsRoute: AdminTrendingBrandsRoute,
-  BrandVendorRoute: BrandVendorRoute,
+  BrandVendorRoute: BrandVendorRouteWithChildren,
   CampaignMensSwimRoute: CampaignMensSwimRoute,
   CollectionsHandleRoute: CollectionsHandleRoute,
   CollectionsCashmereSweatersRoute: CollectionsCashmereSweatersRoute,
@@ -2682,13 +2734,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
