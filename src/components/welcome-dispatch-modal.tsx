@@ -218,7 +218,7 @@ export function WelcomeDispatchModal() {
                 disabled={status === "sending"}
                 className="w-full bg-ink text-canvas py-3 text-[11px] uppercase tracking-[0.3em] hover:bg-bronze transition-colors disabled:opacity-50"
               >
-                {status === "sending" ? "Joining…" : "Receive the Dispatch"}
+                {status === "sending" ? "Signing up…" : "Sign Up"}
               </button>
               {error && (
                 <p
