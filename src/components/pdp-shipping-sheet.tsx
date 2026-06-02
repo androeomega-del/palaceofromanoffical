@@ -80,7 +80,7 @@ export function PdpShippingSheet() {
           </SheetTitle>
           <SheetDescription className="text-[13px] leading-[1.65] text-[var(--studio-muted)]">
             Dispatched factory-sealed from a brand-authorised European or US
-            partner warehouse within 24–48 hours. Fully tracked, fully insured.
+            partner warehouse within 24–48 hours. Fully tracked, fully insured — at no extra cost.
           </SheetDescription>
         </SheetHeader>
 
@@ -92,8 +92,8 @@ export function PdpShippingSheet() {
           />
           <Pillar
             icon={<Package className="w-4 h-4" strokeWidth={1.4} />}
-            title="Sealed Dispatch"
-            sub="Ships within 24–48 hours via UPS, FedEx or DHL with a live tracking link sent the moment the parcel leaves the warehouse."
+            title="Insured Shipping"
+            sub="Ships within 24–48 hours via UPS, FedEx or DHL with a live tracking link sent the moment the parcel leaves the warehouse. Every shipment is fully insured at no extra cost."
           />
 
           <div>
