@@ -97,7 +97,7 @@ function formatCheckoutUrl(checkoutUrl: string): string {
     // channel=online_store flag required for password-free checkout.
     // Legacy persisted carts may still carry the old myshopify host —
     // rewrite those to the branded checkout subdomain.
-    if (url.host === "mwuwqi-vy.myshopify.com" || url.host === "palaceofroman.com" || url.host === "palaceofromanofficial.com") {
+    if (url.host === "mwuwqi-vy.myshopify.com" || url.host === "palaceofroman.com" || url.host === "palaceofromanofficial.com" || url.host === "www.palaceofromanofficial.com") {
       url.host = "checkout.palaceofromanofficial.com";
     }
     url.protocol = "https:";
