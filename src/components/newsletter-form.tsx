@@ -29,7 +29,7 @@ export function NewsletterForm() {
         .from("newsletter_subscribers")
         .insert({
           email: value,
-          source: typeof window !== "undefined" ? `vip-drop-registry:${window.location.pathname}` : "vip-drop-registry",
+          source: typeof window !== "undefined" ? `exclusive-access:${window.location.pathname}` : "exclusive-access",
           user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
           marketing_consent: true,
         }));
