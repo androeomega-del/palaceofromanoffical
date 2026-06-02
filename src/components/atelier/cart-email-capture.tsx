@@ -116,7 +116,7 @@ export const CartEmailCapture = forwardRef<CartEmailCaptureHandle>((_, ref) => {
           </p>
         )}
         <p className="mt-1.5 text-[9px] text-ink/55 leading-relaxed">
-          Reserve your selection, receive private order updates, and unlock 10% off your first purchase — exclusive to you.
+          This piece is held for you. Enter your email to reserve it beyond this session, receive private order tracking, and unlock insider access to new arrivals before they reach the public floor — plus 10% off your first purchase, reserved for members only.
         </p>
       </form>
     </div>
