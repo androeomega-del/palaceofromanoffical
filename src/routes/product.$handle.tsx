@@ -37,6 +37,7 @@ import { NotifyMeForm } from "@/components/atelier/notify-me-form";
 import { RecentlyViewedRail } from "@/components/recently-viewed-rail";
 import { ImageLightbox } from "@/components/product/image-lightbox";
 import { parseComposition, hasCompositionInfo } from "@/lib/product-composition";
+import { ROME_BRAND_SLUGS } from "@/lib/rome-brands";
 
 export const Route = createFileRoute("/product/$handle")({
   loader: async ({ params }) => {
@@ -1009,6 +1010,15 @@ function ProductView({
                   The Edit
                 </p>
                 <h2 className="font-serif text-3xl md:text-4xl">More from {product.vendor}</h2>
+                {ROME_BRAND_SLUGS.has(vendorHandle) && (
+                  <Link
+                    to="/brand/$vendor/in-rome"
+                    params={{ vendor: vendorHandle }}
+                    className="inline-block text-[10px] uppercase tracking-[0.25em] text-[var(--studio-bronze)] border-b border-[var(--studio-bronze)]/40 hover:border-[var(--studio-bronze)] pb-1"
+                  >
+                    Discover {product.vendor} in Rome →
+                  </Link>
+                )}
               </div>
               <Link
                 to="/collections/$handle"

@@ -119,6 +119,7 @@ import { Route as BrandVendorInRomeRouteImport } from './routes/brand.$vendor.in
 import { Route as ApiPublicSeoHealthRouteImport } from './routes/api/public/seo-health'
 import { Route as LocaleProductsHandleRouteImport } from './routes/$locale.products.$handle'
 import { Route as ApiPublicStockAlertsSubscribeRouteImport } from './routes/api/public/stock-alerts/subscribe'
+import { Route as ApiPublicIndexnowSubmitRouteImport } from './routes/api/public/indexnow.submit'
 import { Route as ApiPublicHooksSyncCollectionImagesRouteImport } from './routes/api/public/hooks/sync-collection-images'
 import { Route as ApiPublicHooksShopifyOrderCreatedRouteImport } from './routes/api/public/hooks/shopify-order-created'
 import { Route as ApiPublicHooksGscWeeklyReviewRouteImport } from './routes/api/public/hooks/gsc-weekly-review'
@@ -705,6 +706,11 @@ const ApiPublicStockAlertsSubscribeRoute =
     path: '/api/public/stock-alerts/subscribe',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicIndexnowSubmitRoute = ApiPublicIndexnowSubmitRouteImport.update({
+  id: '/api/public/indexnow/submit',
+  path: '/api/public/indexnow/submit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksSyncCollectionImagesRoute =
   ApiPublicHooksSyncCollectionImagesRouteImport.update({
     id: '/api/public/hooks/sync-collection-images',
@@ -914,6 +920,7 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/gsc-weekly-review': typeof ApiPublicHooksGscWeeklyReviewRoute
   '/api/public/hooks/shopify-order-created': typeof ApiPublicHooksShopifyOrderCreatedRoute
   '/api/public/hooks/sync-collection-images': typeof ApiPublicHooksSyncCollectionImagesRoute
+  '/api/public/indexnow/submit': typeof ApiPublicIndexnowSubmitRoute
   '/api/public/stock-alerts/subscribe': typeof ApiPublicStockAlertsSubscribeRoute
 }
 export interface FileRoutesByTo {
@@ -1038,6 +1045,7 @@ export interface FileRoutesByTo {
   '/api/public/hooks/gsc-weekly-review': typeof ApiPublicHooksGscWeeklyReviewRoute
   '/api/public/hooks/shopify-order-created': typeof ApiPublicHooksShopifyOrderCreatedRoute
   '/api/public/hooks/sync-collection-images': typeof ApiPublicHooksSyncCollectionImagesRoute
+  '/api/public/indexnow/submit': typeof ApiPublicIndexnowSubmitRoute
   '/api/public/stock-alerts/subscribe': typeof ApiPublicStockAlertsSubscribeRoute
 }
 export interface FileRoutesById {
@@ -1165,6 +1173,7 @@ export interface FileRoutesById {
   '/api/public/hooks/gsc-weekly-review': typeof ApiPublicHooksGscWeeklyReviewRoute
   '/api/public/hooks/shopify-order-created': typeof ApiPublicHooksShopifyOrderCreatedRoute
   '/api/public/hooks/sync-collection-images': typeof ApiPublicHooksSyncCollectionImagesRoute
+  '/api/public/indexnow/submit': typeof ApiPublicIndexnowSubmitRoute
   '/api/public/stock-alerts/subscribe': typeof ApiPublicStockAlertsSubscribeRoute
 }
 export interface FileRouteTypes {
@@ -1293,6 +1302,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/gsc-weekly-review'
     | '/api/public/hooks/shopify-order-created'
     | '/api/public/hooks/sync-collection-images'
+    | '/api/public/indexnow/submit'
     | '/api/public/stock-alerts/subscribe'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -1417,6 +1427,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/gsc-weekly-review'
     | '/api/public/hooks/shopify-order-created'
     | '/api/public/hooks/sync-collection-images'
+    | '/api/public/indexnow/submit'
     | '/api/public/stock-alerts/subscribe'
   id:
     | '__root__'
@@ -1543,6 +1554,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/gsc-weekly-review'
     | '/api/public/hooks/shopify-order-created'
     | '/api/public/hooks/sync-collection-images'
+    | '/api/public/indexnow/submit'
     | '/api/public/stock-alerts/subscribe'
   fileRoutesById: FileRoutesById
 }
@@ -1655,6 +1667,7 @@ export interface RootRouteChildren {
   ApiPublicHooksGscWeeklyReviewRoute: typeof ApiPublicHooksGscWeeklyReviewRoute
   ApiPublicHooksShopifyOrderCreatedRoute: typeof ApiPublicHooksShopifyOrderCreatedRoute
   ApiPublicHooksSyncCollectionImagesRoute: typeof ApiPublicHooksSyncCollectionImagesRoute
+  ApiPublicIndexnowSubmitRoute: typeof ApiPublicIndexnowSubmitRoute
   ApiPublicStockAlertsSubscribeRoute: typeof ApiPublicStockAlertsSubscribeRoute
 }
 
@@ -2430,6 +2443,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicStockAlertsSubscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/indexnow/submit': {
+      id: '/api/public/indexnow/submit'
+      path: '/api/public/indexnow/submit'
+      fullPath: '/api/public/indexnow/submit'
+      preLoaderRoute: typeof ApiPublicIndexnowSubmitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/sync-collection-images': {
       id: '/api/public/hooks/sync-collection-images'
       path: '/api/public/hooks/sync-collection-images'
@@ -2729,6 +2749,7 @@ const rootRouteChildren: RootRouteChildren = {
     ApiPublicHooksShopifyOrderCreatedRoute,
   ApiPublicHooksSyncCollectionImagesRoute:
     ApiPublicHooksSyncCollectionImagesRoute,
+  ApiPublicIndexnowSubmitRoute: ApiPublicIndexnowSubmitRoute,
   ApiPublicStockAlertsSubscribeRoute: ApiPublicStockAlertsSubscribeRoute,
 }
 export const routeTree = rootRouteImport
