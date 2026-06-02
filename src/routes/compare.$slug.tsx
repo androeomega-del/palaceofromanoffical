@@ -2,6 +2,17 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ComparisonPage } from "@/components/comparison-page";
 import { COMPARISONS, type Comparison } from "@/lib/comparisons";
 import { routeHead, pageTitle, absoluteUrl, SITE_NAME } from "@/lib/seo";
+import ogFarfetch from "@/assets/og/compare-farfetch.jpg";
+import ogMytheresa from "@/assets/og/compare-mytheresa.jpg";
+import ogSsense from "@/assets/og/compare-ssense.jpg";
+import ogNap from "@/assets/og/compare-net-a-porter.jpg";
+
+const OG_BY_SLUG: Record<Comparison["slug"], string> = {
+  farfetch: ogFarfetch,
+  mytheresa: ogMytheresa,
+  ssense: ogSsense,
+  "net-a-porter": ogNap,
+};
 
 export const Route = createFileRoute("/compare/$slug")({
   loader: ({ params }) => {
