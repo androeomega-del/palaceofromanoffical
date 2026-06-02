@@ -109,10 +109,10 @@ function OrderConfirmedPage() {
               For questions on tracking, sizing, returns or a future order,
               write to{" "}
               <a
-                href="mailto:concierge@palaceofromanofficial.com"
+                href="mailto:support@palaceofromanofficial.com"
                 className="text-ink underline-offset-4 hover:underline"
               >
-                concierge@palaceofromanofficial.com
+                support@palaceofromanofficial.com
               </a>
               . We respond within one business day, often sooner.
             </p>
