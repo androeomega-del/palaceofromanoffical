@@ -1,95 +1,73 @@
-
 ## Goal
 
-Push the store's organic + AI-answer visibility on the surfaces that actually convert luxury intent:
-**PDP (product) → Brand page → Heritage / journal → Reputation signals.**
+Stop traffic from landing on `checkout.palaceofromanofficial.com` instead of the storefront, and recover the lost views to the apex `palaceofromanofficial.com`.
 
-Built on what already exists (`brand-heritage.ts`, `collection-seo.ts`, `seo.ts`, `product.$handle.tsx` Product JSON-LD, FAQ + Authentication FAQPage schema). No new pages added to nav until each phase is fully wired (staged-launch rule). Zero fabricated reviews / ratings / testimonials.
+Two surfaces need fixing:
+- **A. Shopify admin** (you click — I can't reach it; I'll give exact paths)
+- **B. Code/SEO signals on the storefront** (I do — small, surgical diffs)
 
----
+## A. Shopify admin — settings to fix (you click)
 
-## Phase 1 — Product (PDP) SEO + AEO — highest revenue impact
+Do these in order. Each is one screen.
 
-Files: `src/routes/product.$handle.tsx`, `src/lib/product-composition.ts`, new `src/lib/pdp-faq.ts`, new `src/components/pdp-faq.tsx`.
+1. **Settings → Domains**
+   - `palaceofromanofficial.com` = **Primary domain** ✅
+   - `palaceofroman.com` and `www.palaceofromanofficial.com` (if present) = set to **Redirect to primary**
+   - `checkout.palaceofromanofficial.com` = leave as the checkout subdomain only; do **not** mark it as a storefront domain.
 
-1. **Rewrite the PDP title + description template** (`seo.ts` helpers stay; template changes only).
-   - Title: `{Product} — {Vendor} | Authentic at Palace of Roman`
-   - Meta: `Shop authentic {Vendor} {Product} at Palace of Roman. {Category} in {Material/Color}. Worldwide shipping, 90-day authenticity guarantee.` — fall back to Shopify body when richer.
-2. **Enrich Product JSON-LD** in the existing `head()`:
-   - Add `material`, `color`, `gtin`/`mpn` when present on variant, `category` (Google Product Taxonomy mapped from collection bucket), `audience` (Men/Women from tags), `countryOfOrigin` (Italy default via `shipping-origin.ts`), `aggregateRating` **omitted entirely** unless real reviews exist (per memory).
-   - Add `hasMerchantReturnPolicy` + `shippingDetails` referencing `/shipping-returns`.
-3. **Per-PDP FAQPage JSON-LD + visible accordion** ("On this piece"):
-   - 4 Q&As generated from product data: *"Is this {Product} authentic?"*, *"Where does it ship from?"*, *"What's the return window?"*, *"How does {Vendor} sizing run?"* (sizing copy keyed off category bucket).
-   - Visible accordion uses existing `Accordion` primitive — answers double as AEO content + on-page text.
-4. **Speakable spec** on the PDP description + FAQ block (CSS selectors `.pdp-aeo-summary`, `.pdp-faq`).
-5. **Internal-link rail (already partly built — `PdpJournalLinks`)**: extend mapping so every category surfaces 2 relevant `/journal/...` heritage articles + the matching `/collections/...` PLP.
+2. **Settings → Checkout → Checkout domain**
+   - Confirm "Checkout domain" is `checkout.palaceofromanofficial.com`. Don't change it.
 
----
+3. **Online Store → Preferences**
+   - Scroll to "Password protection" — confirm **off** for the storefront (so checkout works without password).
+   - Scroll to "Search engine listing preview" — confirm the storefront has title + description (this is for the Shopify-served pages; harmless even though our storefront is Lovable).
 
-## Phase 2 — Brand pages SEO + AEO
+4. **Online Store → Navigation → URL redirects** — add these 5 redirects so any traffic landing on the checkout host gets bounced to the storefront:
+   | From (on `checkout.palaceofromanofficial.com`) | To |
+   |---|---|
+   | `/` | `https://palaceofromanofficial.com/` |
+   | `/products/*` | `https://palaceofromanofficial.com/products/*` |
+   | `/collections/*` | `https://palaceofromanofficial.com/collections/*` |
+   | `/pages/*` | `https://palaceofromanofficial.com/pages/*` |
+   | `/blogs/*` | `https://palaceofromanofficial.com/blogs/*` |
+   
+   Shopify keeps `/checkouts/*`, `/cart`, `/account`, `/policies/*`, `/cdn/*` on the checkout host automatically — don't redirect those.
 
-Files: `src/routes/brand.$vendor.tsx`, `src/lib/brand-heritage.ts`, new `src/lib/brand-faq.ts`.
+5. **Google Search Console**
+   - If `checkout.palaceofromanofficial.com` is verified as its own property, open it → **Indexing → Removals → New request → Temporary removal** → `https://checkout.palaceofromanofficial.com/` with "Remove all URLs with this prefix".
+   - Then **delete the property** so Google stops treating it as a separate site.
+   - On the apex property, submit `https://palaceofromanofficial.com/sitemap.xml` under **Sitemaps**.
 
-1. **Expand `brand-heritage.ts`** signals already feeding `CollectionPage > about > Brand`:
-   - Add `slogan`, `iconicMaterials`, `headquarters` to the type; populate for the top 25 maisons by traffic (Gucci, Versace, Prada, Dior, Balenciaga, Saint Laurent, Bottega Veneta, Loewe, Fendi, Valentino, Givenchy, Burberry, Off-White, Moncler, Stone Island, Brunello Cucinelli, Loro Piana, Tom Ford, Maison Margiela, Jacquemus, Ami, Acne, Isabel Marant, Marni, Etro).
-   - Wire new fields into the existing `Brand` JSON-LD.
-2. **Add `WebPage > mainEntity > FAQPage`** to each brand route: 4 generated Q&As ("Is {Brand} authentic at Palace of Roman?", "Where does {Brand} ship from?", "What's the return window on {Brand}?", "How does {Brand} sizing run?") using brand-specific copy from `brand-heritage`.
-3. **Visible heritage block already exists** — extend with a small "Signature codes" chip strip from `signatures[]` linking to the matching `/collections/...` filter URL when one exists (sneakers, loafers, handbags, sunglasses, scarves, belts, wallets, knitwear).
-4. **`/brands` index**: emit `ItemList` JSON-LD enumerating each brand with `url` + `image` so Google's Knowledge graph + AI engines can map maison → boutique.
+## B. Code/SEO — what I'll change (one focused pass)
 
----
+All edits are small and stay inside the checkout-protocol lockdown (no cart, mutation, or `formatCheckoutUrl` behavior changes).
 
-## Phase 3 — Heritage / Journal authority
+1. **`public/robots.txt`** — confirm it allows crawling of the apex and references the sitemap. Add a one-line `Sitemap:` directive if missing.
+2. **`public/llms.txt`** — confirm every URL is on the canonical apex (no `checkout.*`, no `palaceofroman.com`).
+3. **Spot-audit canonicals** on these route files (read-only first, edit only on mismatch):
+   - `src/routes/index.tsx`
+   - `src/routes/__root.tsx` (must NOT carry a `<link rel="canonical">`)
+   - `src/routes/product.$handle.tsx`
+   - `src/routes/brand.$vendor.tsx`
+   - `src/routes/collections.$handle.tsx`
+   - `src/routes/faq.tsx`
+   
+   Every leaf `head()` must return `canonical` and `og:url` on `https://palaceofromanofficial.com/...`. Fix any that drift.
+4. **Sitemap** — confirm `src/lib/sitemap-xml.ts` (and the route that serves it) uses `https://palaceofromanofficial.com` as the only base URL.
+5. **One-line safety** in `src/stores/cart-store.ts`: add `www.palaceofromanofficial.com` to the existing host-rewrite allow-list inside `formatCheckoutUrl`. No other change to that file.
+6. **Mark related SEO findings fixed** in the SEO panel after the canonical/robots audit passes.
 
-Files: `src/routes/journal*.tsx`, `src/components/craftsmanship-article.tsx`, new `src/lib/article-faq.ts`.
+## Out of scope (will NOT touch)
+- Cart store mutations, Zustand shape, `cart-drawer`, `use-cart-sync`, or the rewrite logic of `formatCheckoutUrl` beyond the single allow-list addition.
+- Routing cart to Amazon or any non-Shopify checkout.
+- Shopify products, inventory, fulfillment locations, or any BG importer.
+- Custom-domain changes in Lovable settings (apex stays on Lovable, checkout stays on Shopify — no DNS edits).
 
-1. **Add `Article` + `FAQPage` JSON-LD** to every existing craftsmanship + style article (6 routes today). Currently only `head()` meta + breadcrumbs.
-2. **`speakable` spec** on each article's intro + first H2 — these are the AEO-quotable blocks for "is italian leather…", "how to care for cashmere…", "how to spot real…".
-3. **Author = Palace of Roman** (Organization, not a Person — solo-founder constraint, no fabricated bylines).
-4. **Cross-link**: each article gets a "Shop the edit" rail to the matching collection + 3 PDPs (component already exists; expand mapping).
+## Verification after changes
+- Visit `https://checkout.palaceofromanofficial.com/` in an incognito tab → should 301 to `https://palaceofromanofficial.com/`.
+- Visit `https://checkout.palaceofromanofficial.com/products/some-handle` → should 301 to the apex product page.
+- Add to cart on apex → checkout button still opens `https://checkout.palaceofromanofficial.com/checkouts/...?channel=online_store`.
+- Re-run the SEO scan from the SEO & AI search tab; canonical/host findings should clear.
 
----
-
-## Phase 4 — Reputation / E-E-A-T signals
-
-Files: `src/routes/__root.tsx` (Organization JSON-LD already in `seo.ts`), `src/routes/authentication.tsx`, `public/llms.txt`.
-
-1. **Enrich the sitewide Organization JSON-LD**:
-   - Add `sameAs` (Instagram, TikTok, Pinterest, Yelp — only ones the founder actually controls; ask before adding).
-   - Add `slogan`, `knowsAbout` (the 25 top maisons), `areaServed: Worldwide`, `paymentAccepted`, `currenciesAccepted: USD`.
-2. **First-party reviews surface (already built — `ProductReviews`)**: confirm it renders "No reviews yet" copy until real submissions arrive — **do not emit `aggregateRating` until ≥3 verified reviews exist** (Shopify reviews policy + memory rule).
-3. **`/authentication` page**: add `Service` JSON-LD ("90-day authenticity guarantee") + repeat speakable.
-4. **`llms.txt`**: expand with the boutique-network framing + top 25 maisons + return/authenticity policy summary so ChatGPT / Perplexity / Claude can quote the store correctly.
-
----
-
-## Technical notes
-
-- All JSON-LD lives in route `head().scripts` (TanStack head). No client-side injection.
-- Canonical / og:url stay on leaf routes only (dedupe caveat already respected in `seo.ts > routeHead`).
-- Schema-only changes are SSR-safe and ship with the next build — no runtime cost on PDPs (we already serialise the product).
-- Speakable selectors must match real DOM classes I add in the same edit batch (avoid stale CSS targets).
-- Brand FAQ + PDP FAQ tables stay in `src/lib/` (no DB, no migrations needed).
-- Nothing in Phase 1–4 touches checkout, cart-store, Shopify fulfillment, or BG imports (locked-down per memory).
-
----
-
-## Out of scope (call out before doing)
-
-- Generating new editorial articles, new collection landing pages, or any homepage tile changes (staged-launch rule — separate request).
-- Fetching real reviews, importing third-party review widgets, or anything that fabricates social proof.
-- Off-page SEO (link-building, PR outreach, Google Business Profile setup).
-- Multi-currency / hreflang (USD-only per memory).
-
----
-
-## Suggested execution order
-
-If you approve, I'd ship in this order (each phase independently verifiable in the SEO panel):
-
-1. Phase 1 — PDP (biggest revenue lift, every product page benefits)
-2. Phase 2 — Brand pages (long-tail "{brand} {product}" intent)
-3. Phase 4 — Org + llms.txt (low effort, sitewide AEO lift)
-4. Phase 3 — Journal Article + FAQPage schema
-
-Tell me **"ship phase N"** and I'll implement that phase only.
+## What I need from you to start
+Reply **"build it"** (or click Implement) and I'll execute section B end-to-end and report back. Section A you do yourself in Shopify admin — tell me when each step is done and I'll re-verify with a fetch.
