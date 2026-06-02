@@ -45,6 +45,7 @@ export function SiteFooter() {
             <Link to="/about" className="text-sm text-muted-foreground hover:text-ink transition-colors">About Us</Link>
             <Link to="/journal" className="text-sm text-muted-foreground hover:text-ink transition-colors">The Journal</Link>
             <Link to="/journal/craftsmanship/made-in-italy-vs-designed-in-italy" className="text-sm text-muted-foreground hover:text-ink transition-colors">Our Sourcing</Link>
+            <Link to="/compare" className="text-sm text-muted-foreground hover:text-ink transition-colors">Compare</Link>
             <Link to="/legal-notice" className="text-sm text-muted-foreground hover:text-ink transition-colors">Legal Notice</Link>
             <Link to="/privacy" className="text-sm text-muted-foreground hover:text-ink transition-colors">Privacy Policy</Link>
             <Link to="/terms" className="text-sm text-muted-foreground hover:text-ink transition-colors">Terms &amp; Conditions</Link>

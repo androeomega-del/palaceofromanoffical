@@ -34,12 +34,14 @@ import { Route as InRomeRouteImport } from './routes/in-rome'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as DesignersRouteImport } from './routes/designers'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as CompareRouteImport } from './routes/compare'
 import { Route as BrandsRouteImport } from './routes/brands'
 import { Route as AuthenticationRouteImport } from './routes/authentication'
 import { Route as AssetsRouteImport } from './routes/assets'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CompareIndexRouteImport } from './routes/compare.index'
 import { Route as CollectionsIndexRouteImport } from './routes/collections.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AccountIndexRouteImport } from './routes/account.index'
@@ -67,6 +69,7 @@ import { Route as EditorialResort2026RouteImport } from './routes/editorial.reso
 import { Route as EditorialMensEditRouteImport } from './routes/editorial.mens-edit'
 import { Route as EditorialMay2026RouteImport } from './routes/editorial.may-2026'
 import { Route as EditorialAccessoriesRouteImport } from './routes/editorial.accessories'
+import { Route as CompareSlugRouteImport } from './routes/compare.$slug'
 import { Route as CollectionsSilkScarvesRouteImport } from './routes/collections.silk-scarves'
 import { Route as CollectionsLuxurySneakersRouteImport } from './routes/collections.luxury-sneakers'
 import { Route as CollectionsItalianLeatherWalletsRouteImport } from './routes/collections.italian-leather-wallets'
@@ -261,6 +264,11 @@ const ContactRoute = ContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CompareRoute = CompareRouteImport.update({
+  id: '/compare',
+  path: '/compare',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BrandsRoute = BrandsRouteImport.update({
   id: '/brands',
   path: '/brands',
@@ -290,6 +298,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const CompareIndexRoute = CompareIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => CompareRoute,
 } as any)
 const CollectionsIndexRoute = CollectionsIndexRouteImport.update({
   id: '/collections/',
@@ -426,6 +439,11 @@ const EditorialAccessoriesRoute = EditorialAccessoriesRouteImport.update({
   id: '/editorial/accessories',
   path: '/editorial/accessories',
   getParentRoute: () => rootRouteImport,
+} as any)
+const CompareSlugRoute = CompareSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => CompareRoute,
 } as any)
 const CollectionsSilkScarvesRoute = CollectionsSilkScarvesRouteImport.update({
   id: '/collections/silk-scarves',
@@ -803,6 +821,7 @@ export interface FileRoutesByFullPath {
   '/assets': typeof AssetsRoute
   '/authentication': typeof AuthenticationRoute
   '/brands': typeof BrandsRoute
+  '/compare': typeof CompareRouteWithChildren
   '/contact': typeof ContactRoute
   '/designers': typeof DesignersRoute
   '/faq': typeof FaqRoute
@@ -867,6 +886,7 @@ export interface FileRoutesByFullPath {
   '/collections/italian-leather-wallets': typeof CollectionsItalianLeatherWalletsRoute
   '/collections/luxury-sneakers': typeof CollectionsLuxurySneakersRoute
   '/collections/silk-scarves': typeof CollectionsSilkScarvesRoute
+  '/compare/$slug': typeof CompareSlugRoute
   '/editorial/accessories': typeof EditorialAccessoriesRoute
   '/editorial/may-2026': typeof EditorialMay2026Route
   '/editorial/mens-edit': typeof EditorialMensEditRoute
@@ -894,6 +914,7 @@ export interface FileRoutesByFullPath {
   '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/collections/': typeof CollectionsIndexRoute
+  '/compare/': typeof CompareIndexRoute
   '/$locale/products/$handle': typeof LocaleProductsHandleRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
   '/brand/$vendor/in-rome': typeof BrandVendorInRomeRoute
@@ -993,6 +1014,7 @@ export interface FileRoutesByTo {
   '/collections/italian-leather-wallets': typeof CollectionsItalianLeatherWalletsRoute
   '/collections/luxury-sneakers': typeof CollectionsLuxurySneakersRoute
   '/collections/silk-scarves': typeof CollectionsSilkScarvesRoute
+  '/compare/$slug': typeof CompareSlugRoute
   '/editorial/accessories': typeof EditorialAccessoriesRoute
   '/editorial/may-2026': typeof EditorialMay2026Route
   '/editorial/mens-edit': typeof EditorialMensEditRoute
@@ -1019,6 +1041,7 @@ export interface FileRoutesByTo {
   '/account': typeof AccountIndexRoute
   '/admin': typeof AdminIndexRoute
   '/collections': typeof CollectionsIndexRoute
+  '/compare': typeof CompareIndexRoute
   '/$locale/products/$handle': typeof LocaleProductsHandleRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
   '/brand/$vendor/in-rome': typeof BrandVendorInRomeRoute
@@ -1056,6 +1079,7 @@ export interface FileRoutesById {
   '/assets': typeof AssetsRoute
   '/authentication': typeof AuthenticationRoute
   '/brands': typeof BrandsRoute
+  '/compare': typeof CompareRouteWithChildren
   '/contact': typeof ContactRoute
   '/designers': typeof DesignersRoute
   '/faq': typeof FaqRoute
@@ -1120,6 +1144,7 @@ export interface FileRoutesById {
   '/collections/italian-leather-wallets': typeof CollectionsItalianLeatherWalletsRoute
   '/collections/luxury-sneakers': typeof CollectionsLuxurySneakersRoute
   '/collections/silk-scarves': typeof CollectionsSilkScarvesRoute
+  '/compare/$slug': typeof CompareSlugRoute
   '/editorial/accessories': typeof EditorialAccessoriesRoute
   '/editorial/may-2026': typeof EditorialMay2026Route
   '/editorial/mens-edit': typeof EditorialMensEditRoute
@@ -1147,6 +1172,7 @@ export interface FileRoutesById {
   '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/collections/': typeof CollectionsIndexRoute
+  '/compare/': typeof CompareIndexRoute
   '/$locale/products/$handle': typeof LocaleProductsHandleRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
   '/brand/$vendor/in-rome': typeof BrandVendorInRomeRoute
@@ -1185,6 +1211,7 @@ export interface FileRouteTypes {
     | '/assets'
     | '/authentication'
     | '/brands'
+    | '/compare'
     | '/contact'
     | '/designers'
     | '/faq'
@@ -1249,6 +1276,7 @@ export interface FileRouteTypes {
     | '/collections/italian-leather-wallets'
     | '/collections/luxury-sneakers'
     | '/collections/silk-scarves'
+    | '/compare/$slug'
     | '/editorial/accessories'
     | '/editorial/may-2026'
     | '/editorial/mens-edit'
@@ -1276,6 +1304,7 @@ export interface FileRouteTypes {
     | '/account/'
     | '/admin/'
     | '/collections/'
+    | '/compare/'
     | '/$locale/products/$handle'
     | '/api/public/seo-health'
     | '/brand/$vendor/in-rome'
@@ -1375,6 +1404,7 @@ export interface FileRouteTypes {
     | '/collections/italian-leather-wallets'
     | '/collections/luxury-sneakers'
     | '/collections/silk-scarves'
+    | '/compare/$slug'
     | '/editorial/accessories'
     | '/editorial/may-2026'
     | '/editorial/mens-edit'
@@ -1401,6 +1431,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/admin'
     | '/collections'
+    | '/compare'
     | '/$locale/products/$handle'
     | '/api/public/seo-health'
     | '/brand/$vendor/in-rome'
@@ -1437,6 +1468,7 @@ export interface FileRouteTypes {
     | '/assets'
     | '/authentication'
     | '/brands'
+    | '/compare'
     | '/contact'
     | '/designers'
     | '/faq'
@@ -1501,6 +1533,7 @@ export interface FileRouteTypes {
     | '/collections/italian-leather-wallets'
     | '/collections/luxury-sneakers'
     | '/collections/silk-scarves'
+    | '/compare/$slug'
     | '/editorial/accessories'
     | '/editorial/may-2026'
     | '/editorial/mens-edit'
@@ -1528,6 +1561,7 @@ export interface FileRouteTypes {
     | '/account/'
     | '/admin/'
     | '/collections/'
+    | '/compare/'
     | '/$locale/products/$handle'
     | '/api/public/seo-health'
     | '/brand/$vendor/in-rome'
@@ -1565,6 +1599,7 @@ export interface RootRouteChildren {
   AssetsRoute: typeof AssetsRoute
   AuthenticationRoute: typeof AuthenticationRoute
   BrandsRoute: typeof BrandsRoute
+  CompareRoute: typeof CompareRouteWithChildren
   ContactRoute: typeof ContactRoute
   DesignersRoute: typeof DesignersRoute
   FaqRoute: typeof FaqRoute
@@ -1848,6 +1883,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/compare': {
+      id: '/compare'
+      path: '/compare'
+      fullPath: '/compare'
+      preLoaderRoute: typeof CompareRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/brands': {
       id: '/brands'
       path: '/brands'
@@ -1889,6 +1931,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/compare/': {
+      id: '/compare/'
+      path: '/'
+      fullPath: '/compare/'
+      preLoaderRoute: typeof CompareIndexRouteImport
+      parentRoute: typeof CompareRoute
     }
     '/collections/': {
       id: '/collections/'
@@ -2078,6 +2127,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/editorial/accessories'
       preLoaderRoute: typeof EditorialAccessoriesRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/compare/$slug': {
+      id: '/compare/$slug'
+      path: '/$slug'
+      fullPath: '/compare/$slug'
+      preLoaderRoute: typeof CompareSlugRouteImport
+      parentRoute: typeof CompareRoute
     }
     '/collections/silk-scarves': {
       id: '/collections/silk-scarves'
@@ -2568,6 +2624,19 @@ const AccountRouteChildren: AccountRouteChildren = {
 const AccountRouteWithChildren =
   AccountRoute._addFileChildren(AccountRouteChildren)
 
+interface CompareRouteChildren {
+  CompareSlugRoute: typeof CompareSlugRoute
+  CompareIndexRoute: typeof CompareIndexRoute
+}
+
+const CompareRouteChildren: CompareRouteChildren = {
+  CompareSlugRoute: CompareSlugRoute,
+  CompareIndexRoute: CompareIndexRoute,
+}
+
+const CompareRouteWithChildren =
+  CompareRoute._addFileChildren(CompareRouteChildren)
+
 interface JournalRouteChildren {
   JournalBlogHandleArticleHandleRoute: typeof JournalBlogHandleArticleHandleRoute
   JournalCraftsmanshipCaringForFineLeatherRoute: typeof JournalCraftsmanshipCaringForFineLeatherRoute
@@ -2640,6 +2709,7 @@ const rootRouteChildren: RootRouteChildren = {
   AssetsRoute: AssetsRoute,
   AuthenticationRoute: AuthenticationRoute,
   BrandsRoute: BrandsRoute,
+  CompareRoute: CompareRouteWithChildren,
   ContactRoute: ContactRoute,
   DesignersRoute: DesignersRoute,
   FaqRoute: FaqRoute,
@@ -2755,13 +2825,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
