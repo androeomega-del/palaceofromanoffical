@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { COMPARISONS } from "@/lib/comparisons";
 import { routeHead, pageTitle } from "@/lib/seo";
+import ogHub from "@/assets/og/compare-hub.jpg";
 
 const ITEMS = Object.values(COMPARISONS);
 
@@ -9,7 +10,7 @@ export const Route = createFileRoute("/compare/")({
     const title = pageTitle("Compare Palace of Roman — Honest Comparisons");
     const description =
       "Palace of Roman compared, honestly, to Farfetch, Mytheresa, SSENSE and Net-a-Porter. Where each one wins, and where we do.";
-    const base = routeHead({ path: "/compare", title, description });
+    const base = routeHead({ path: "/compare", title, description, image: ogHub });
     return {
       meta: [
         { title },
