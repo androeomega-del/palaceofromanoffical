@@ -43,11 +43,16 @@ export const Route = createFileRoute("/faq")({
         })),
       ),
     };
+    const breadcrumb = breadcrumbJsonLd([
+      { name: "Home", path: "/" },
+      { name: "FAQ", path: "/faq" },
+    ]);
     return {
       meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
       links: rh.links,
       scripts: [
         { type: "application/ld+json", children: JSON.stringify(faqJsonLd) },
+        { type: "application/ld+json", children: JSON.stringify(breadcrumb) },
       ],
     };
   },
