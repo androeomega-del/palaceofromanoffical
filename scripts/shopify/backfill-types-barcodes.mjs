@@ -348,6 +348,7 @@ async function main() {
   }
   log(`DONE. seen=${state.totalSeen} typeUpd=${state.productsTypeUpdated} varBarcoded=${state.variantsBarcoded} errors=${state.errors}`);
   await pushStatus("done", true);
+  await notify("done");
 }
 
 main().catch(async (e) => {
@@ -355,5 +356,6 @@ main().catch(async (e) => {
   state.lastError = msg.slice(0, 2000);
   log("FATAL: " + msg);
   await pushStatus("error", true);
+  await notify("fatal");
   process.exit(1);
 });
