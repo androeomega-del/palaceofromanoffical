@@ -3,8 +3,20 @@
 // so the Journal page renders whatever the team publishes in Shopify Admin.
 
 import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
 import sanitizeHtml from "sanitize-html";
 import { storefrontApiRequest } from "@/lib/shopify";
+
+const handleSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .max(255)
+  .regex(/^[a-z0-9-]+$/i);
+const articleInputSchema = z.object({
+  blogHandle: handleSchema,
+  articleHandle: handleSchema,
+});
 
 /**
  * Sanitize Shopify-authored article HTML before sending it to the browser.
