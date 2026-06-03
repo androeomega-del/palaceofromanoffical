@@ -6,7 +6,7 @@
  * two-proportion z-test significance label.
  */
 import { createServerFn } from "@tanstack/react-start";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireAdmin } from "@/lib/admin-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { z } from "zod";
 
@@ -62,7 +62,7 @@ const EVENT_TYPES: EventType[] = [
 ];
 
 export const getMetaAbReport = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAdmin])
   .inputValidator((input) => inputSchema.parse(input ?? {}))
   .handler(async ({ data }): Promise<MetaAbReport> => {
     const days = data.days ?? 30;

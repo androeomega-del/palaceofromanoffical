@@ -2,6 +2,7 @@
  * Admin server functions for the GSC monitor dashboard.
  */
 import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
 import { requireAdmin } from "@/lib/admin-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { runDailyMonitor, runWeeklyReview } from "@/lib/gsc-monitor.server";
@@ -95,7 +96,7 @@ export const runGscWeeklyReviewNow = createServerFn({ method: "POST" })
 
 export const resolveGscAlert = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
-  .inputValidator((data: { id: string }) => data)
+  .inputValidator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
   .handler(async ({ data }) => {
     await supabaseAdmin
       .from("gsc_alerts")

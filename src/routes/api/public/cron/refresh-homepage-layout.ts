@@ -8,6 +8,7 @@ import {
 import { callLlmJson } from "@/lib/llm.server";
 import { PALACE_BRAND_VOICE } from "@/lib/brand-voice";
 import { logHomepageAudit } from "@/lib/homepage-audit.server";
+import { checkWebhookSecret } from "@/lib/webhook-secret";
 
 /**
  * /api/public/cron/refresh-homepage-layout
@@ -545,6 +546,9 @@ export const Route = createFileRoute("/api/public/cron/refresh-homepage-layout")
   server: {
     handlers: {
       POST: async ({ request }) => {
+        const unauthorized = checkWebhookSecret(request);
+        if (unauthorized) return unauthorized;
+
         const now = new Date();
         const url = new URL(request.url);
         const previewMode = url.searchParams.get("preview") === "true";

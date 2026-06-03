@@ -47,7 +47,7 @@ export const getHomepageCuration = createServerFn({ method: "GET" })
 
 export const getHomepageEditionById = createServerFn({ method: "GET" })
   .middleware([requireAdmin])
-  .inputValidator((d: { id: string }) => d)
+  .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data }) => {
     const { data: row, error } = await supabaseAdmin
       .from("homepage_daily_layout")
@@ -79,7 +79,7 @@ export const updateHomepageLayoutJson = createServerFn({ method: "POST" })
 
 export const activateHomepageLayout = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
-  .inputValidator((d: { id: string }) => d)
+  .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     const { error: deErr } = await supabaseAdmin
       .from("homepage_daily_layout")
@@ -160,9 +160,13 @@ export const forceRefreshHomepage = createServerFn({ method: "POST" })
     let status = 0;
     let body: any = {};
     try {
+      const cronSecret = process.env.SYNC_WEBHOOK_SECRET || process.env.SUPABASE_PUBLISHABLE_KEY || "";
+      const cronHeaders: Record<string, string> = { "Content-Type": "application/json" };
+      if (process.env.SYNC_WEBHOOK_SECRET) cronHeaders["x-webhook-secret"] = cronSecret;
+      else if (cronSecret) cronHeaders["apikey"] = cronSecret;
       const res = await fetch(`${base}/api/public/cron/refresh-homepage-layout?force=true`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: cronHeaders,
       });
       status = res.status;
       body = await res.json().catch(() => ({}));
@@ -196,9 +200,13 @@ export const generateHomepagePreview = createServerFn({ method: "POST" })
       process.env.SITE_URL ||
       process.env.VITE_SITE_URL ||
       "https://palaceofromanofficial.com";
+    const cronSecret = process.env.SYNC_WEBHOOK_SECRET || process.env.SUPABASE_PUBLISHABLE_KEY || "";
+    const cronHeaders: Record<string, string> = { "Content-Type": "application/json" };
+    if (process.env.SYNC_WEBHOOK_SECRET) cronHeaders["x-webhook-secret"] = cronSecret;
+    else if (cronSecret) cronHeaders["apikey"] = cronSecret;
     const res = await fetch(
       `${base}/api/public/cron/refresh-homepage-layout?preview=true`,
-      { method: "POST", headers: { "Content-Type": "application/json" } },
+      { method: "POST", headers: cronHeaders },
     );
     const body = await res.json().catch(() => ({}));
     return { status: res.status, body };
@@ -392,7 +400,7 @@ export const updateLandingPageStatus = createServerFn({ method: "POST" })
 
 export const deleteLandingPage = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
-  .inputValidator((d: { id: string }) => d)
+  .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data }) => {
     const { error } = await supabaseAdmin
       .from("dynamic_landing_pages")
@@ -455,7 +463,7 @@ export const upsertTrendingBrand = createServerFn({ method: "POST" })
 
 export const deleteTrendingBrand = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
-  .inputValidator((d: { id: string }) => d)
+  .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data }) => {
     const { error } = await supabaseAdmin
       .from("trending_brands")
@@ -506,7 +514,7 @@ export const setReviewStatus = createServerFn({ method: "POST" })
 
 export const deleteReview = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
-  .inputValidator((d: { id: string }) => d)
+  .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data }) => {
     const { error } = await supabaseAdmin
       .from("product_reviews")
