@@ -11,12 +11,19 @@ function b64url(s: string): string {
     .replace(/=+$/, "");
 }
 
+function sanitizeHeader(v: string): string {
+  // Strip CR/LF to prevent RFC 2822 header injection.
+  return v.replace(/[\r\n]+/g, " ").trim();
+}
+
 function buildRfc2822(to: string, subject: string, html: string, text: string): string {
+  const safeTo = sanitizeHeader(to);
+  const safeSubject = sanitizeHeader(subject);
   const boundary = `por_${Date.now().toString(36)}`;
   return [
     `From: ${FROM}`,
-    `To: ${to}`,
-    `Subject: ${subject}`,
+    `To: ${safeTo}`,
+    `Subject: ${safeSubject}`,
     `MIME-Version: 1.0`,
     `Content-Type: multipart/alternative; boundary="${boundary}"`,
     ``,
