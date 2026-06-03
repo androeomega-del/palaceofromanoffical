@@ -9,7 +9,6 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as WomenRouteImport } from './routes/women'
 import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as VacationStylistRouteImport } from './routes/vacation-stylist'
 import { Route as TermsRouteImport } from './routes/terms'
@@ -24,7 +23,6 @@ import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ShippingReturnsRouteImport } from './routes/shipping-returns'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as OrderConfirmedRouteImport } from './routes/order-confirmed'
-import { Route as MenRouteImport } from './routes/men'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LinksRouteImport } from './routes/links'
 import { Route as LimitedFindsRouteImport } from './routes/limited-finds'
@@ -41,6 +39,8 @@ import { Route as AssetsRouteImport } from './routes/assets'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as WomenIndexRouteImport } from './routes/women.index'
+import { Route as MenIndexRouteImport } from './routes/men.index'
 import { Route as MaisonIndexRouteImport } from './routes/maison.index'
 import { Route as CompareIndexRouteImport } from './routes/compare.index'
 import { Route as CollectionsIndexRouteImport } from './routes/collections.index'
@@ -146,11 +146,6 @@ import { Route as ApiPublicCronBackInStockNotifyRouteImport } from './routes/api
 import { Route as ApiPublicCronAbandonedCartRecoveryRouteImport } from './routes/api/public/cron/abandoned-cart-recovery'
 import { Route as ApiPublicAiRecommendationsRouteImport } from './routes/api/public/ai.recommendations'
 
-const WomenRoute = WomenRouteImport.update({
-  id: '/women',
-  path: '/women',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const WishlistRoute = WishlistRouteImport.update({
   id: '/wishlist',
   path: '/wishlist',
@@ -220,11 +215,6 @@ const PrivacyRoute = PrivacyRouteImport.update({
 const OrderConfirmedRoute = OrderConfirmedRouteImport.update({
   id: '/order-confirmed',
   path: '/order-confirmed',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MenRoute = MenRouteImport.update({
-  id: '/men',
-  path: '/men',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -307,6 +297,16 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WomenIndexRoute = WomenIndexRouteImport.update({
+  id: '/women/',
+  path: '/women/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MenIndexRoute = MenIndexRouteImport.update({
+  id: '/men/',
+  path: '/men/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MaisonIndexRoute = MaisonIndexRouteImport.update({
   id: '/maison/',
   path: '/maison/',
@@ -333,9 +333,9 @@ const AccountIndexRoute = AccountIndexRouteImport.update({
   getParentRoute: () => AccountRoute,
 } as any)
 const WomenSs26Route = WomenSs26RouteImport.update({
-  id: '/ss26',
-  path: '/ss26',
-  getParentRoute: () => WomenRoute,
+  id: '/women/ss26',
+  path: '/women/ss26',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const TrendsTomFordEssentialsRoute = TrendsTomFordEssentialsRouteImport.update({
   id: '/trends/tom-ford-essentials',
@@ -383,9 +383,9 @@ const NewsletterConfirmRoute = NewsletterConfirmRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const MenSs26Route = MenSs26RouteImport.update({
-  id: '/ss26',
-  path: '/ss26',
-  getParentRoute: () => MenRoute,
+  id: '/men/ss26',
+  path: '/men/ss26',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const MaisonSlugRoute = MaisonSlugRouteImport.update({
   id: '/maison/$slug',
@@ -879,7 +879,6 @@ export interface FileRoutesByFullPath {
   '/limited-finds': typeof LimitedFindsRoute
   '/links': typeof LinksRoute
   '/login': typeof LoginRoute
-  '/men': typeof MenRouteWithChildren
   '/order-confirmed': typeof OrderConfirmedRoute
   '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
@@ -894,7 +893,6 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/vacation-stylist': typeof VacationStylistRoute
   '/wishlist': typeof WishlistRoute
-  '/women': typeof WomenRouteWithChildren
   '/account/login': typeof AccountLoginRoute
   '/account/recover': typeof AccountRecoverRoute
   '/account/register': typeof AccountRegisterRoute
@@ -970,6 +968,8 @@ export interface FileRoutesByFullPath {
   '/collections/': typeof CollectionsIndexRoute
   '/compare/': typeof CompareIndexRoute
   '/maison/': typeof MaisonIndexRoute
+  '/men/': typeof MenIndexRoute
+  '/women/': typeof WomenIndexRoute
   '/$locale/products/$handle': typeof LocaleProductsHandleRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
   '/brand/$vendor/in-rome': typeof BrandVendorInRomeRoute
@@ -1015,7 +1015,6 @@ export interface FileRoutesByTo {
   '/limited-finds': typeof LimitedFindsRoute
   '/links': typeof LinksRoute
   '/login': typeof LoginRoute
-  '/men': typeof MenRouteWithChildren
   '/order-confirmed': typeof OrderConfirmedRoute
   '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
@@ -1030,7 +1029,6 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/vacation-stylist': typeof VacationStylistRoute
   '/wishlist': typeof WishlistRoute
-  '/women': typeof WomenRouteWithChildren
   '/account/login': typeof AccountLoginRoute
   '/account/recover': typeof AccountRecoverRoute
   '/account/register': typeof AccountRegisterRoute
@@ -1105,6 +1103,8 @@ export interface FileRoutesByTo {
   '/collections': typeof CollectionsIndexRoute
   '/compare': typeof CompareIndexRoute
   '/maison': typeof MaisonIndexRoute
+  '/men': typeof MenIndexRoute
+  '/women': typeof WomenIndexRoute
   '/$locale/products/$handle': typeof LocaleProductsHandleRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
   '/brand/$vendor/in-rome': typeof BrandVendorInRomeRoute
@@ -1153,7 +1153,6 @@ export interface FileRoutesById {
   '/limited-finds': typeof LimitedFindsRoute
   '/links': typeof LinksRoute
   '/login': typeof LoginRoute
-  '/men': typeof MenRouteWithChildren
   '/order-confirmed': typeof OrderConfirmedRoute
   '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
@@ -1168,7 +1167,6 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/vacation-stylist': typeof VacationStylistRoute
   '/wishlist': typeof WishlistRoute
-  '/women': typeof WomenRouteWithChildren
   '/account/login': typeof AccountLoginRoute
   '/account/recover': typeof AccountRecoverRoute
   '/account/register': typeof AccountRegisterRoute
@@ -1244,6 +1242,8 @@ export interface FileRoutesById {
   '/collections/': typeof CollectionsIndexRoute
   '/compare/': typeof CompareIndexRoute
   '/maison/': typeof MaisonIndexRoute
+  '/men/': typeof MenIndexRoute
+  '/women/': typeof WomenIndexRoute
   '/$locale/products/$handle': typeof LocaleProductsHandleRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
   '/brand/$vendor/in-rome': typeof BrandVendorInRomeRoute
@@ -1293,7 +1293,6 @@ export interface FileRouteTypes {
     | '/limited-finds'
     | '/links'
     | '/login'
-    | '/men'
     | '/order-confirmed'
     | '/privacy'
     | '/shipping-returns'
@@ -1308,7 +1307,6 @@ export interface FileRouteTypes {
     | '/terms'
     | '/vacation-stylist'
     | '/wishlist'
-    | '/women'
     | '/account/login'
     | '/account/recover'
     | '/account/register'
@@ -1384,6 +1382,8 @@ export interface FileRouteTypes {
     | '/collections/'
     | '/compare/'
     | '/maison/'
+    | '/men/'
+    | '/women/'
     | '/$locale/products/$handle'
     | '/api/public/seo-health'
     | '/brand/$vendor/in-rome'
@@ -1429,7 +1429,6 @@ export interface FileRouteTypes {
     | '/limited-finds'
     | '/links'
     | '/login'
-    | '/men'
     | '/order-confirmed'
     | '/privacy'
     | '/shipping-returns'
@@ -1444,7 +1443,6 @@ export interface FileRouteTypes {
     | '/terms'
     | '/vacation-stylist'
     | '/wishlist'
-    | '/women'
     | '/account/login'
     | '/account/recover'
     | '/account/register'
@@ -1519,6 +1517,8 @@ export interface FileRouteTypes {
     | '/collections'
     | '/compare'
     | '/maison'
+    | '/men'
+    | '/women'
     | '/$locale/products/$handle'
     | '/api/public/seo-health'
     | '/brand/$vendor/in-rome'
@@ -1566,7 +1566,6 @@ export interface FileRouteTypes {
     | '/limited-finds'
     | '/links'
     | '/login'
-    | '/men'
     | '/order-confirmed'
     | '/privacy'
     | '/shipping-returns'
@@ -1581,7 +1580,6 @@ export interface FileRouteTypes {
     | '/terms'
     | '/vacation-stylist'
     | '/wishlist'
-    | '/women'
     | '/account/login'
     | '/account/recover'
     | '/account/register'
@@ -1657,6 +1655,8 @@ export interface FileRouteTypes {
     | '/collections/'
     | '/compare/'
     | '/maison/'
+    | '/men/'
+    | '/women/'
     | '/$locale/products/$handle'
     | '/api/public/seo-health'
     | '/brand/$vendor/in-rome'
@@ -1705,7 +1705,6 @@ export interface RootRouteChildren {
   LimitedFindsRoute: typeof LimitedFindsRoute
   LinksRoute: typeof LinksRoute
   LoginRoute: typeof LoginRoute
-  MenRoute: typeof MenRouteWithChildren
   OrderConfirmedRoute: typeof OrderConfirmedRoute
   PrivacyRoute: typeof PrivacyRoute
   ShippingReturnsRoute: typeof ShippingReturnsRoute
@@ -1720,7 +1719,6 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   VacationStylistRoute: typeof VacationStylistRoute
   WishlistRoute: typeof WishlistRoute
-  WomenRoute: typeof WomenRouteWithChildren
   AdminAcquiredLeadsRoute: typeof AdminAcquiredLeadsRoute
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminBackfillStatusRoute: typeof AdminBackfillStatusRoute
@@ -1776,6 +1774,7 @@ export interface RootRouteChildren {
   EditsThePradaEffectRoute: typeof EditsThePradaEffectRoute
   EditsYachtEditRoute: typeof EditsYachtEditRouteWithChildren
   MaisonSlugRoute: typeof MaisonSlugRoute
+  MenSs26Route: typeof MenSs26Route
   NewsletterConfirmRoute: typeof NewsletterConfirmRoute
   PreviewLookbookRoute: typeof PreviewLookbookRoute
   ProductHandleRoute: typeof ProductHandleRoute
@@ -1784,9 +1783,12 @@ export interface RootRouteChildren {
   TrendsPucciEyewearRoute: typeof TrendsPucciEyewearRoute
   TrendsSectionSamplesRoute: typeof TrendsSectionSamplesRoute
   TrendsTomFordEssentialsRoute: typeof TrendsTomFordEssentialsRoute
+  WomenSs26Route: typeof WomenSs26Route
   AdminIndexRoute: typeof AdminIndexRoute
   CollectionsIndexRoute: typeof CollectionsIndexRoute
   MaisonIndexRoute: typeof MaisonIndexRoute
+  MenIndexRoute: typeof MenIndexRoute
+  WomenIndexRoute: typeof WomenIndexRoute
   LocaleProductsHandleRoute: typeof LocaleProductsHandleRoute
   ApiPublicSeoHealthRoute: typeof ApiPublicSeoHealthRoute
   CartCCartIdRoute: typeof CartCCartIdRoute
@@ -1810,13 +1812,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/women': {
-      id: '/women'
-      path: '/women'
-      fullPath: '/women'
-      preLoaderRoute: typeof WomenRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/wishlist': {
       id: '/wishlist'
       path: '/wishlist'
@@ -1913,13 +1908,6 @@ declare module '@tanstack/react-router' {
       path: '/order-confirmed'
       fullPath: '/order-confirmed'
       preLoaderRoute: typeof OrderConfirmedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/men': {
-      id: '/men'
-      path: '/men'
-      fullPath: '/men'
-      preLoaderRoute: typeof MenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -2034,6 +2022,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/women/': {
+      id: '/women/'
+      path: '/women'
+      fullPath: '/women/'
+      preLoaderRoute: typeof WomenIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/men/': {
+      id: '/men/'
+      path: '/men'
+      fullPath: '/men/'
+      preLoaderRoute: typeof MenIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/maison/': {
       id: '/maison/'
       path: '/maison'
@@ -2071,10 +2073,10 @@ declare module '@tanstack/react-router' {
     }
     '/women/ss26': {
       id: '/women/ss26'
-      path: '/ss26'
+      path: '/women/ss26'
       fullPath: '/women/ss26'
       preLoaderRoute: typeof WomenSs26RouteImport
-      parentRoute: typeof WomenRoute
+      parentRoute: typeof rootRouteImport
     }
     '/trends/tom-ford-essentials': {
       id: '/trends/tom-ford-essentials'
@@ -2141,10 +2143,10 @@ declare module '@tanstack/react-router' {
     }
     '/men/ss26': {
       id: '/men/ss26'
-      path: '/ss26'
+      path: '/men/ss26'
       fullPath: '/men/ss26'
       preLoaderRoute: typeof MenSs26RouteImport
-      parentRoute: typeof MenRoute
+      parentRoute: typeof rootRouteImport
     }
     '/maison/$slug': {
       id: '/maison/$slug'
@@ -2824,16 +2826,6 @@ const JournalRouteChildren: JournalRouteChildren = {
 const JournalRouteWithChildren =
   JournalRoute._addFileChildren(JournalRouteChildren)
 
-interface MenRouteChildren {
-  MenSs26Route: typeof MenSs26Route
-}
-
-const MenRouteChildren: MenRouteChildren = {
-  MenSs26Route: MenSs26Route,
-}
-
-const MenRouteWithChildren = MenRoute._addFileChildren(MenRouteChildren)
-
 interface SwimRouteChildren {
   SwimSizeGuideRoute: typeof SwimSizeGuideRoute
 }
@@ -2843,16 +2835,6 @@ const SwimRouteChildren: SwimRouteChildren = {
 }
 
 const SwimRouteWithChildren = SwimRoute._addFileChildren(SwimRouteChildren)
-
-interface WomenRouteChildren {
-  WomenSs26Route: typeof WomenSs26Route
-}
-
-const WomenRouteChildren: WomenRouteChildren = {
-  WomenSs26Route: WomenSs26Route,
-}
-
-const WomenRouteWithChildren = WomenRoute._addFileChildren(WomenRouteChildren)
 
 interface BrandVendorRouteChildren {
   BrandVendorInRomeRoute: typeof BrandVendorInRomeRoute
@@ -2897,7 +2879,6 @@ const rootRouteChildren: RootRouteChildren = {
   LimitedFindsRoute: LimitedFindsRoute,
   LinksRoute: LinksRoute,
   LoginRoute: LoginRoute,
-  MenRoute: MenRouteWithChildren,
   OrderConfirmedRoute: OrderConfirmedRoute,
   PrivacyRoute: PrivacyRoute,
   ShippingReturnsRoute: ShippingReturnsRoute,
@@ -2912,7 +2893,6 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   VacationStylistRoute: VacationStylistRoute,
   WishlistRoute: WishlistRoute,
-  WomenRoute: WomenRouteWithChildren,
   AdminAcquiredLeadsRoute: AdminAcquiredLeadsRoute,
   AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminBackfillStatusRoute: AdminBackfillStatusRoute,
@@ -2969,6 +2949,7 @@ const rootRouteChildren: RootRouteChildren = {
   EditsThePradaEffectRoute: EditsThePradaEffectRoute,
   EditsYachtEditRoute: EditsYachtEditRouteWithChildren,
   MaisonSlugRoute: MaisonSlugRoute,
+  MenSs26Route: MenSs26Route,
   NewsletterConfirmRoute: NewsletterConfirmRoute,
   PreviewLookbookRoute: PreviewLookbookRoute,
   ProductHandleRoute: ProductHandleRoute,
@@ -2977,9 +2958,12 @@ const rootRouteChildren: RootRouteChildren = {
   TrendsPucciEyewearRoute: TrendsPucciEyewearRoute,
   TrendsSectionSamplesRoute: TrendsSectionSamplesRoute,
   TrendsTomFordEssentialsRoute: TrendsTomFordEssentialsRoute,
+  WomenSs26Route: WomenSs26Route,
   AdminIndexRoute: AdminIndexRoute,
   CollectionsIndexRoute: CollectionsIndexRoute,
   MaisonIndexRoute: MaisonIndexRoute,
+  MenIndexRoute: MenIndexRoute,
+  WomenIndexRoute: WomenIndexRoute,
   LocaleProductsHandleRoute: LocaleProductsHandleRoute,
   ApiPublicSeoHealthRoute: ApiPublicSeoHealthRoute,
   CartCCartIdRoute: CartCCartIdRoute,
@@ -3009,3 +2993,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
