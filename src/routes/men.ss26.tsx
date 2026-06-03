@@ -1,56 +1,17 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { ThemedEdit, type ThemedChapter } from "@/components/themed-edit";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
+import { fetchProducts } from "@/lib/shopify";
+import { ProductCard } from "@/components/product-card";
+import { isCurrentOrUpcomingSeason } from "@/lib/season-badge";
 import { routeHead } from "@/lib/seo";
 import heroSrc from "@/assets/editorial/ss26/m-hero.jpg";
-import swimSrc from "@/assets/editorial/ss26/m-swim.jpg";
-import linenSrc from "@/assets/editorial/ss26/m-linen.jpg";
-import loaferSrc from "@/assets/editorial/ss26/m-loafer.jpg";
-
-const CHAPTERS: ThemedChapter[] = [
-  {
-    n: 1,
-    src: swimSrc,
-    eyebrow: "Chapter I — Poolside Trunks",
-    title: "Bicolor, short cut, snap and zip.",
-    body:
-      "Tom Ford's polyester swim short — close-fitting silhouette, two-tone construction, the snap-hook-zip fastening that signals it's a piece, not a costume.",
-    alt: "Tom Ford bicolor polyester swim shorts at the edge of a turquoise Tuscan pool",
-    spots: [
-      { x: 50, y: 60, label: "The Trunks", match: /swim|trunk|short.*polyester|bicolor/i },
-    ],
-  },
-  {
-    n: 2,
-    src: linenSrc,
-    eyebrow: "Chapter II — Mediterranean Linen",
-    title: "Cotton-linen stripes, bone shirt, espresso.",
-    body:
-      "The Dolce & Gabbana striped cotton-linen short worn with an open bone-white linen shirt. Built for cobblestones in Palermo and the table after.",
-    alt: "Dolce and Gabbana white and black striped cotton-linen shorts with bone linen shirt in a Sicilian alley",
-    flip: true,
-    spots: [
-      { x: 50, y: 60, label: "The Linen", match: /linen|stripe|striped|cotton/i },
-    ],
-  },
-  {
-    n: 3,
-    src: loaferSrc,
-    eyebrow: "Chapter III — The Italian Loafer",
-    title: "Black calf, gold Medusa, mirror polish.",
-    body:
-      "Versace's calfskin slip-on — slightly elongated round toe, leather block heel, the gold Medusa plaque set into the vamp. The shoe that does the work after midnight.",
-    alt: "Versace black calfskin slip-on loafer with gold Medusa plaque on terracotta tile in late Roman sun",
-    spots: [
-      { x: 50, y: 60, label: "The Loafer", match: /loafer|medusa|slip-on|calf/i },
-    ],
-  },
-];
 
 export const Route = createFileRoute("/men/ss26")({
   head: () => {
     const title = "Spring/Summer 2026 — Men | Palace of Roman";
     const desc =
-      "Spring/Summer 2026 for men — Tom Ford trunks, Dolce & Gabbana striped linen, the Versace Medusa loafer. The pieces that define the season at Palace of Roman, in stock.";
+      "The SS26 men's edit — every piece in stock carrying the New Season mark. Curated from Versace, Tom Ford, Dolce & Gabbana and Jacquemus.";
     const rh = routeHead({
       path: "/men/ss26",
       title,
@@ -58,28 +19,96 @@ export const Route = createFileRoute("/men/ss26")({
       image: heroSrc,
       type: "article",
     });
-    return { meta: [{ title }, { name: "description", content: desc }, ...rh.meta], links: rh.links };
+    return {
+      meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
+      links: rh.links,
+    };
   },
-  component: () => (
-    <ThemedEdit
-      issueLabel="SS26 — Men"
-      title={`Spring\nSummer 26.`}
-      subtitle="The Men's Edit — In Stock"
-      intro="Cobalt water, bone linen, gold Medusa on black calf. Three chapters for the spring — the trunk that earns the pool, the linen that earns the table, the loafer that earns the night."
-      heroN={1}
-      heroSrc={heroSrc}
-      heroPosition="center 35%"
-      heroAlt="Palace of Roman Spring Summer 2026 men — model in striped Dolce and Gabbana linen shorts and bone linen shirt at a Tuscan pool terrace"
-      manifesto="Sprezzatura, in stock."
-      chapters={CHAPTERS}
-      productQuery='tag:Men AND (vendor:Versace OR vendor:"Tom Ford" OR vendor:"Dolce &amp; Gabbana" OR vendor:Jacquemus)'
-      shopTitle="Shop SS26 — Men"
-      shopEyebrow="Spring/Summer 26 — In Stock"
-      outroCtas={[
-        { label: "Men's Clothing", handle: "mens-clothing" },
-        { label: "Men's Shoes", handle: "mens-shoes" },
-        { label: "Designer Men's Shirts", handle: "designer-mens-shirts" },
-      ]}
-    />
-  ),
+  component: MenSS26,
 });
+
+function MenSS26() {
+  const q = useQuery({
+    queryKey: ["ss26", "men"],
+    queryFn: () =>
+      fetchProducts({
+        first: 100,
+        query: "tag:Men",
+        sortKey: "CREATED_AT",
+        reverse: true,
+      }),
+    staleTime: 5 * 60_000,
+  });
+
+  const products = useMemo(
+    () => (q.data ?? []).filter((p) => isCurrentOrUpcomingSeason(p.node.description)),
+    [q.data],
+  );
+
+  return (
+    <main className="bg-canvas text-ink">
+      {/* Hero */}
+      <section className="relative h-[64vh] min-h-[480px] w-full overflow-hidden">
+        <img
+          src={heroSrc}
+          alt="Palace of Roman Spring/Summer 2026 — Men"
+          className="absolute inset-0 h-full w-full object-cover"
+          style={{ objectPosition: "center 30%" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/40" />
+        <div className="relative z-10 flex h-full flex-col justify-end px-6 pb-10 text-canvas md:px-12 md:pb-14">
+          <p className="font-serif text-xs uppercase tracking-[0.3em] opacity-90">
+            Spring/Summer 26 — Men
+          </p>
+          <h1 className="mt-3 font-serif text-4xl leading-[0.95] md:text-6xl">
+            The SS26 Edit
+          </h1>
+          <p className="mt-3 max-w-xl text-sm leading-relaxed opacity-90 md:text-base">
+            Every piece below carries the New Season mark — handpicked from the
+            spring deliveries we have in stock today.
+          </p>
+        </div>
+      </section>
+
+      {/* Grid */}
+      <section className="mx-auto max-w-[1400px] px-4 py-12 md:px-8 md:py-16">
+        <div className="mb-8 flex items-end justify-between">
+          <div>
+            <p className="font-serif text-xs uppercase tracking-[0.3em] text-ink/60">
+              In Stock — New Season
+            </p>
+            <h2 className="mt-1 font-serif text-2xl md:text-3xl">
+              {q.isLoading ? "Loading…" : `${products.length} pieces`}
+            </h2>
+          </div>
+          <Link
+            to="/collections/$handle"
+            params={{ handle: "designer-mens-shirts" }}
+            className="hidden text-xs uppercase tracking-[0.2em] underline-offset-4 hover:underline md:inline"
+          >
+            All Men's
+          </Link>
+        </div>
+
+        {q.isError ? (
+          <p className="text-sm text-ink/60">Couldn't load the edit. Try again shortly.</p>
+        ) : !q.isLoading && products.length === 0 ? (
+          <p className="text-sm text-ink/60">
+            No SS26 pieces are tagged in stock right now. New deliveries land weekly.
+          </p>
+        ) : (
+          <div className="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3 lg:grid-cols-4">
+            {products.map((p, i) => (
+              <ProductCard
+                key={p.node.id}
+                product={p}
+                surface="page:ss26-men"
+                position={i}
+              />
+            ))}
+          </div>
+        )}
+      </section>
+    </main>
+  );
+}
