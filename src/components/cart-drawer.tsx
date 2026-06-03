@@ -8,7 +8,7 @@ import { formatPrice } from "@/lib/shopify";
 import { trackCartEvent } from "@/lib/cart-analytics";
 import { CartFbt } from "@/components/cart-fbt";
 import { CartEmailCapture, type CartEmailCaptureHandle } from "@/components/atelier/cart-email-capture";
-import { GiftWrapOption } from "@/components/gift-wrap-option";
+
 
 export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
   // 1. Add mount state to prevent hydration errors
@@ -153,7 +153,6 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
 
               {/* Extras in the scroll area; email capture lives in the sticky footer */}
               <CartFbt productType={fbtProductType} excludeHandles={fbtExclude} />
-              <GiftWrapOption />
               <div className="h-2" />
             </div>
 
