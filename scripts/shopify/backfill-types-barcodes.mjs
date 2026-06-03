@@ -335,6 +335,7 @@ async function main() {
       if (state.totalSeen % 10 === 0) {
         saveLocal();
         await pushStatus("running", false);
+        await maybeAlertErrorRate();
       }
       if (state.totalSeen % 50 === 0) {
         log(`seen=${state.totalSeen}/${state.totalProducts} typeUpd=${state.productsTypeUpdated} varBarcoded=${state.variantsBarcoded} errors=${state.errors}`);
