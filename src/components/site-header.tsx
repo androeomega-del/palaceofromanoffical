@@ -27,6 +27,7 @@ import { DeliverToButton } from "@/components/deliver-to-button";
 import { useCustomerStore } from "@/stores/customer-store";
 import { useWishlistStore } from "@/stores/wishlist-store";
 import { CurrencySwitcher } from "@/components/currency-switcher";
+import prMonogram from "@/assets/pr-monogram.png";
 
 function WishlistHeaderLink() {
   const count = useWishlistStore((s) => s.handles.length);
