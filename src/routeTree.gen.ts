@@ -46,6 +46,7 @@ import { Route as CompareIndexRouteImport } from './routes/compare.index'
 import { Route as CollectionsIndexRouteImport } from './routes/collections.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AccountIndexRouteImport } from './routes/account.index'
+import { Route as WomenSs26RouteImport } from './routes/women.ss26'
 import { Route as TrendsTomFordEssentialsRouteImport } from './routes/trends.tom-ford-essentials'
 import { Route as TrendsSectionSamplesRouteImport } from './routes/trends.section-samples'
 import { Route as TrendsPucciEyewearRouteImport } from './routes/trends.pucci-eyewear'
@@ -55,6 +56,7 @@ import { Route as ProductsHandleRouteImport } from './routes/products.$handle'
 import { Route as ProductHandleRouteImport } from './routes/product.$handle'
 import { Route as PreviewLookbookRouteImport } from './routes/preview.lookbook'
 import { Route as NewsletterConfirmRouteImport } from './routes/newsletter.confirm'
+import { Route as MenSs26RouteImport } from './routes/men.ss26'
 import { Route as MaisonSlugRouteImport } from './routes/maison.$slug'
 import { Route as EditsYachtEditRouteImport } from './routes/edits.yacht-edit'
 import { Route as EditsThePradaEffectRouteImport } from './routes/edits.the-prada-effect'
@@ -330,6 +332,11 @@ const AccountIndexRoute = AccountIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AccountRoute,
 } as any)
+const WomenSs26Route = WomenSs26RouteImport.update({
+  id: '/ss26',
+  path: '/ss26',
+  getParentRoute: () => WomenRoute,
+} as any)
 const TrendsTomFordEssentialsRoute = TrendsTomFordEssentialsRouteImport.update({
   id: '/trends/tom-ford-essentials',
   path: '/trends/tom-ford-essentials',
@@ -374,6 +381,11 @@ const NewsletterConfirmRoute = NewsletterConfirmRouteImport.update({
   id: '/newsletter/confirm',
   path: '/newsletter/confirm',
   getParentRoute: () => rootRouteImport,
+} as any)
+const MenSs26Route = MenSs26RouteImport.update({
+  id: '/ss26',
+  path: '/ss26',
+  getParentRoute: () => MenRoute,
 } as any)
 const MaisonSlugRoute = MaisonSlugRouteImport.update({
   id: '/maison/$slug',
@@ -867,7 +879,7 @@ export interface FileRoutesByFullPath {
   '/limited-finds': typeof LimitedFindsRoute
   '/links': typeof LinksRoute
   '/login': typeof LoginRoute
-  '/men': typeof MenRoute
+  '/men': typeof MenRouteWithChildren
   '/order-confirmed': typeof OrderConfirmedRoute
   '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
@@ -882,7 +894,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/vacation-stylist': typeof VacationStylistRoute
   '/wishlist': typeof WishlistRoute
-  '/women': typeof WomenRoute
+  '/women': typeof WomenRouteWithChildren
   '/account/login': typeof AccountLoginRoute
   '/account/recover': typeof AccountRecoverRoute
   '/account/register': typeof AccountRegisterRoute
@@ -942,6 +954,7 @@ export interface FileRoutesByFullPath {
   '/edits/the-prada-effect': typeof EditsThePradaEffectRoute
   '/edits/yacht-edit': typeof EditsYachtEditRouteWithChildren
   '/maison/$slug': typeof MaisonSlugRoute
+  '/men/ss26': typeof MenSs26Route
   '/newsletter/confirm': typeof NewsletterConfirmRoute
   '/preview/lookbook': typeof PreviewLookbookRoute
   '/product/$handle': typeof ProductHandleRoute
@@ -951,6 +964,7 @@ export interface FileRoutesByFullPath {
   '/trends/pucci-eyewear': typeof TrendsPucciEyewearRoute
   '/trends/section-samples': typeof TrendsSectionSamplesRoute
   '/trends/tom-ford-essentials': typeof TrendsTomFordEssentialsRoute
+  '/women/ss26': typeof WomenSs26Route
   '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/collections/': typeof CollectionsIndexRoute
@@ -1001,7 +1015,7 @@ export interface FileRoutesByTo {
   '/limited-finds': typeof LimitedFindsRoute
   '/links': typeof LinksRoute
   '/login': typeof LoginRoute
-  '/men': typeof MenRoute
+  '/men': typeof MenRouteWithChildren
   '/order-confirmed': typeof OrderConfirmedRoute
   '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
@@ -1016,7 +1030,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/vacation-stylist': typeof VacationStylistRoute
   '/wishlist': typeof WishlistRoute
-  '/women': typeof WomenRoute
+  '/women': typeof WomenRouteWithChildren
   '/account/login': typeof AccountLoginRoute
   '/account/recover': typeof AccountRecoverRoute
   '/account/register': typeof AccountRegisterRoute
@@ -1075,6 +1089,7 @@ export interface FileRoutesByTo {
   '/edits/the-cucinelli-edit': typeof EditsTheCucinelliEditRoute
   '/edits/the-prada-effect': typeof EditsThePradaEffectRoute
   '/maison/$slug': typeof MaisonSlugRoute
+  '/men/ss26': typeof MenSs26Route
   '/newsletter/confirm': typeof NewsletterConfirmRoute
   '/preview/lookbook': typeof PreviewLookbookRoute
   '/product/$handle': typeof ProductHandleRoute
@@ -1084,6 +1099,7 @@ export interface FileRoutesByTo {
   '/trends/pucci-eyewear': typeof TrendsPucciEyewearRoute
   '/trends/section-samples': typeof TrendsSectionSamplesRoute
   '/trends/tom-ford-essentials': typeof TrendsTomFordEssentialsRoute
+  '/women/ss26': typeof WomenSs26Route
   '/account': typeof AccountIndexRoute
   '/admin': typeof AdminIndexRoute
   '/collections': typeof CollectionsIndexRoute
@@ -1137,7 +1153,7 @@ export interface FileRoutesById {
   '/limited-finds': typeof LimitedFindsRoute
   '/links': typeof LinksRoute
   '/login': typeof LoginRoute
-  '/men': typeof MenRoute
+  '/men': typeof MenRouteWithChildren
   '/order-confirmed': typeof OrderConfirmedRoute
   '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
@@ -1152,7 +1168,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/vacation-stylist': typeof VacationStylistRoute
   '/wishlist': typeof WishlistRoute
-  '/women': typeof WomenRoute
+  '/women': typeof WomenRouteWithChildren
   '/account/login': typeof AccountLoginRoute
   '/account/recover': typeof AccountRecoverRoute
   '/account/register': typeof AccountRegisterRoute
@@ -1212,6 +1228,7 @@ export interface FileRoutesById {
   '/edits/the-prada-effect': typeof EditsThePradaEffectRoute
   '/edits/yacht-edit': typeof EditsYachtEditRouteWithChildren
   '/maison/$slug': typeof MaisonSlugRoute
+  '/men/ss26': typeof MenSs26Route
   '/newsletter/confirm': typeof NewsletterConfirmRoute
   '/preview/lookbook': typeof PreviewLookbookRoute
   '/product/$handle': typeof ProductHandleRoute
@@ -1221,6 +1238,7 @@ export interface FileRoutesById {
   '/trends/pucci-eyewear': typeof TrendsPucciEyewearRoute
   '/trends/section-samples': typeof TrendsSectionSamplesRoute
   '/trends/tom-ford-essentials': typeof TrendsTomFordEssentialsRoute
+  '/women/ss26': typeof WomenSs26Route
   '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/collections/': typeof CollectionsIndexRoute
@@ -1350,6 +1368,7 @@ export interface FileRouteTypes {
     | '/edits/the-prada-effect'
     | '/edits/yacht-edit'
     | '/maison/$slug'
+    | '/men/ss26'
     | '/newsletter/confirm'
     | '/preview/lookbook'
     | '/product/$handle'
@@ -1359,6 +1378,7 @@ export interface FileRouteTypes {
     | '/trends/pucci-eyewear'
     | '/trends/section-samples'
     | '/trends/tom-ford-essentials'
+    | '/women/ss26'
     | '/account/'
     | '/admin/'
     | '/collections/'
@@ -1483,6 +1503,7 @@ export interface FileRouteTypes {
     | '/edits/the-cucinelli-edit'
     | '/edits/the-prada-effect'
     | '/maison/$slug'
+    | '/men/ss26'
     | '/newsletter/confirm'
     | '/preview/lookbook'
     | '/product/$handle'
@@ -1492,6 +1513,7 @@ export interface FileRouteTypes {
     | '/trends/pucci-eyewear'
     | '/trends/section-samples'
     | '/trends/tom-ford-essentials'
+    | '/women/ss26'
     | '/account'
     | '/admin'
     | '/collections'
@@ -1619,6 +1641,7 @@ export interface FileRouteTypes {
     | '/edits/the-prada-effect'
     | '/edits/yacht-edit'
     | '/maison/$slug'
+    | '/men/ss26'
     | '/newsletter/confirm'
     | '/preview/lookbook'
     | '/product/$handle'
@@ -1628,6 +1651,7 @@ export interface FileRouteTypes {
     | '/trends/pucci-eyewear'
     | '/trends/section-samples'
     | '/trends/tom-ford-essentials'
+    | '/women/ss26'
     | '/account/'
     | '/admin/'
     | '/collections/'
@@ -1681,7 +1705,7 @@ export interface RootRouteChildren {
   LimitedFindsRoute: typeof LimitedFindsRoute
   LinksRoute: typeof LinksRoute
   LoginRoute: typeof LoginRoute
-  MenRoute: typeof MenRoute
+  MenRoute: typeof MenRouteWithChildren
   OrderConfirmedRoute: typeof OrderConfirmedRoute
   PrivacyRoute: typeof PrivacyRoute
   ShippingReturnsRoute: typeof ShippingReturnsRoute
@@ -1696,7 +1720,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   VacationStylistRoute: typeof VacationStylistRoute
   WishlistRoute: typeof WishlistRoute
-  WomenRoute: typeof WomenRoute
+  WomenRoute: typeof WomenRouteWithChildren
   AdminAcquiredLeadsRoute: typeof AdminAcquiredLeadsRoute
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminBackfillStatusRoute: typeof AdminBackfillStatusRoute
@@ -2045,6 +2069,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountIndexRouteImport
       parentRoute: typeof AccountRoute
     }
+    '/women/ss26': {
+      id: '/women/ss26'
+      path: '/ss26'
+      fullPath: '/women/ss26'
+      preLoaderRoute: typeof WomenSs26RouteImport
+      parentRoute: typeof WomenRoute
+    }
     '/trends/tom-ford-essentials': {
       id: '/trends/tom-ford-essentials'
       path: '/trends/tom-ford-essentials'
@@ -2107,6 +2138,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/newsletter/confirm'
       preLoaderRoute: typeof NewsletterConfirmRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/men/ss26': {
+      id: '/men/ss26'
+      path: '/ss26'
+      fullPath: '/men/ss26'
+      preLoaderRoute: typeof MenSs26RouteImport
+      parentRoute: typeof MenRoute
     }
     '/maison/$slug': {
       id: '/maison/$slug'
@@ -2786,6 +2824,16 @@ const JournalRouteChildren: JournalRouteChildren = {
 const JournalRouteWithChildren =
   JournalRoute._addFileChildren(JournalRouteChildren)
 
+interface MenRouteChildren {
+  MenSs26Route: typeof MenSs26Route
+}
+
+const MenRouteChildren: MenRouteChildren = {
+  MenSs26Route: MenSs26Route,
+}
+
+const MenRouteWithChildren = MenRoute._addFileChildren(MenRouteChildren)
+
 interface SwimRouteChildren {
   SwimSizeGuideRoute: typeof SwimSizeGuideRoute
 }
@@ -2795,6 +2843,16 @@ const SwimRouteChildren: SwimRouteChildren = {
 }
 
 const SwimRouteWithChildren = SwimRoute._addFileChildren(SwimRouteChildren)
+
+interface WomenRouteChildren {
+  WomenSs26Route: typeof WomenSs26Route
+}
+
+const WomenRouteChildren: WomenRouteChildren = {
+  WomenSs26Route: WomenSs26Route,
+}
+
+const WomenRouteWithChildren = WomenRoute._addFileChildren(WomenRouteChildren)
 
 interface BrandVendorRouteChildren {
   BrandVendorInRomeRoute: typeof BrandVendorInRomeRoute
@@ -2839,7 +2897,7 @@ const rootRouteChildren: RootRouteChildren = {
   LimitedFindsRoute: LimitedFindsRoute,
   LinksRoute: LinksRoute,
   LoginRoute: LoginRoute,
-  MenRoute: MenRoute,
+  MenRoute: MenRouteWithChildren,
   OrderConfirmedRoute: OrderConfirmedRoute,
   PrivacyRoute: PrivacyRoute,
   ShippingReturnsRoute: ShippingReturnsRoute,
@@ -2854,7 +2912,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   VacationStylistRoute: VacationStylistRoute,
   WishlistRoute: WishlistRoute,
-  WomenRoute: WomenRoute,
+  WomenRoute: WomenRouteWithChildren,
   AdminAcquiredLeadsRoute: AdminAcquiredLeadsRoute,
   AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminBackfillStatusRoute: AdminBackfillStatusRoute,
@@ -2951,13 +3009,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
