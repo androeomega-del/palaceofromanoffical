@@ -99,6 +99,7 @@ import { Route as AdminLookbookHotspotsRouteImport } from './routes/admin.lookbo
 import { Route as AdminLandingPagesRouteImport } from './routes/admin.landing-pages'
 import { Route as AdminInventorySyncRouteImport } from './routes/admin.inventory-sync'
 import { Route as AdminInboxRouteImport } from './routes/admin.inbox'
+import { Route as AdminImageExportRouteImport } from './routes/admin.image-export'
 import { Route as AdminHomepageCurationRouteImport } from './routes/admin.homepage-curation'
 import { Route as AdminGscMonitorRouteImport } from './routes/admin.gsc-monitor'
 import { Route as AdminGrowthOsRouteImport } from './routes/admin.growth-os'
@@ -607,6 +608,11 @@ const AdminInboxRoute = AdminInboxRouteImport.update({
   path: '/admin/inbox',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminImageExportRoute = AdminImageExportRouteImport.update({
+  id: '/admin/image-export',
+  path: '/admin/image-export',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminHomepageCurationRoute = AdminHomepageCurationRouteImport.update({
   id: '/admin/homepage-curation',
   path: '/admin/homepage-curation',
@@ -910,6 +916,7 @@ export interface FileRoutesByFullPath {
   '/admin/growth-os': typeof AdminGrowthOsRoute
   '/admin/gsc-monitor': typeof AdminGscMonitorRoute
   '/admin/homepage-curation': typeof AdminHomepageCurationRoute
+  '/admin/image-export': typeof AdminImageExportRoute
   '/admin/inbox': typeof AdminInboxRoute
   '/admin/inventory-sync': typeof AdminInventorySyncRoute
   '/admin/landing-pages': typeof AdminLandingPagesRoute
@@ -1046,6 +1053,7 @@ export interface FileRoutesByTo {
   '/admin/growth-os': typeof AdminGrowthOsRoute
   '/admin/gsc-monitor': typeof AdminGscMonitorRoute
   '/admin/homepage-curation': typeof AdminHomepageCurationRoute
+  '/admin/image-export': typeof AdminImageExportRoute
   '/admin/inbox': typeof AdminInboxRoute
   '/admin/inventory-sync': typeof AdminInventorySyncRoute
   '/admin/landing-pages': typeof AdminLandingPagesRoute
@@ -1184,6 +1192,7 @@ export interface FileRoutesById {
   '/admin/growth-os': typeof AdminGrowthOsRoute
   '/admin/gsc-monitor': typeof AdminGscMonitorRoute
   '/admin/homepage-curation': typeof AdminHomepageCurationRoute
+  '/admin/image-export': typeof AdminImageExportRoute
   '/admin/inbox': typeof AdminInboxRoute
   '/admin/inventory-sync': typeof AdminInventorySyncRoute
   '/admin/landing-pages': typeof AdminLandingPagesRoute
@@ -1324,6 +1333,7 @@ export interface FileRouteTypes {
     | '/admin/growth-os'
     | '/admin/gsc-monitor'
     | '/admin/homepage-curation'
+    | '/admin/image-export'
     | '/admin/inbox'
     | '/admin/inventory-sync'
     | '/admin/landing-pages'
@@ -1460,6 +1470,7 @@ export interface FileRouteTypes {
     | '/admin/growth-os'
     | '/admin/gsc-monitor'
     | '/admin/homepage-curation'
+    | '/admin/image-export'
     | '/admin/inbox'
     | '/admin/inventory-sync'
     | '/admin/landing-pages'
@@ -1597,6 +1608,7 @@ export interface FileRouteTypes {
     | '/admin/growth-os'
     | '/admin/gsc-monitor'
     | '/admin/homepage-curation'
+    | '/admin/image-export'
     | '/admin/inbox'
     | '/admin/inventory-sync'
     | '/admin/landing-pages'
@@ -1733,6 +1745,7 @@ export interface RootRouteChildren {
   AdminGrowthOsRoute: typeof AdminGrowthOsRoute
   AdminGscMonitorRoute: typeof AdminGscMonitorRoute
   AdminHomepageCurationRoute: typeof AdminHomepageCurationRoute
+  AdminImageExportRoute: typeof AdminImageExportRoute
   AdminInboxRoute: typeof AdminInboxRoute
   AdminInventorySyncRoute: typeof AdminInventorySyncRoute
   AdminLandingPagesRoute: typeof AdminLandingPagesRoute
@@ -2442,6 +2455,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminInboxRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/image-export': {
+      id: '/admin/image-export'
+      path: '/admin/image-export'
+      fullPath: '/admin/image-export'
+      preLoaderRoute: typeof AdminImageExportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/homepage-curation': {
       id: '/admin/homepage-curation'
       path: '/admin/homepage-curation'
@@ -2907,6 +2927,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminGrowthOsRoute: AdminGrowthOsRoute,
   AdminGscMonitorRoute: AdminGscMonitorRoute,
   AdminHomepageCurationRoute: AdminHomepageCurationRoute,
+  AdminImageExportRoute: AdminImageExportRoute,
   AdminInboxRoute: AdminInboxRoute,
   AdminInventorySyncRoute: AdminInventorySyncRoute,
   AdminLandingPagesRoute: AdminLandingPagesRoute,

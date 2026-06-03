@@ -139,6 +139,12 @@ const TILES: Tile[] = [
     icon: CheckSquare,
   },
   {
+    to: "/admin/image-export",
+    label: "Image Export",
+    desc: "Gallery of every site image — pick assets for Google Business Profile",
+    icon: ImageIcon,
+  },
+  {
     to: "/admin/collection-image-qa",
     label: "Collection Images — QA",
     desc: "Review generated hero imagery",
