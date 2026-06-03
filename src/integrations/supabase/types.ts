@@ -161,6 +161,51 @@ export type Database = {
         }
         Relationships: []
       }
+      backfill_status: {
+        Row: {
+          cursor: string | null
+          errors: number
+          finished_at: string | null
+          id: string
+          last_error: string | null
+          products_type_updated: number
+          started_at: string | null
+          status: string
+          total_products: number
+          total_seen: number
+          updated_at: string
+          variants_barcoded: number
+        }
+        Insert: {
+          cursor?: string | null
+          errors?: number
+          finished_at?: string | null
+          id: string
+          last_error?: string | null
+          products_type_updated?: number
+          started_at?: string | null
+          status?: string
+          total_products?: number
+          total_seen?: number
+          updated_at?: string
+          variants_barcoded?: number
+        }
+        Update: {
+          cursor?: string | null
+          errors?: number
+          finished_at?: string | null
+          id?: string
+          last_error?: string | null
+          products_type_updated?: number
+          started_at?: string | null
+          status?: string
+          total_products?: number
+          total_seen?: number
+          updated_at?: string
+          variants_barcoded?: number
+        }
+        Relationships: []
+      }
       bg_products: {
         Row: {
           brand: string | null
