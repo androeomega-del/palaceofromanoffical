@@ -119,7 +119,7 @@ function ShippingReturnsPage() {
         <div className="bg-canvas p-8 text-center">
           <p className="font-serif text-5xl md:text-6xl tracking-tight text-ink leading-none">100%</p>
           <p className="mt-3 text-[10px] uppercase tracking-[0.3em] text-bronze font-semibold">Authentic</p>
-          <p className="mt-2 text-xs text-muted-foreground leading-relaxed">Sealed from a brand-authorised partner</p>
+          <p className="mt-2 text-xs text-muted-foreground leading-relaxed">New &amp; sealed, sourced from official European stockists</p>
         </div>
         <div className="bg-canvas p-8 text-center">
           <p className="font-serif text-5xl md:text-6xl tracking-tight text-ink leading-none">$0</p>
