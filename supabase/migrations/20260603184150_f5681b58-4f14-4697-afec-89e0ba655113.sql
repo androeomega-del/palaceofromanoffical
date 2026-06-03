@@ -1,0 +1,2 @@
+REVOKE SELECT (prompt) ON public.collection_images FROM anon, authenticated;
+GRANT SELECT (handle, title, image_url, source, updated_at, width, height, focal_x, focal_y) ON public.collection_images TO anon, authenticated;
