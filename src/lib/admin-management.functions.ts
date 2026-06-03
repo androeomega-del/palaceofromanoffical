@@ -160,9 +160,13 @@ export const forceRefreshHomepage = createServerFn({ method: "POST" })
     let status = 0;
     let body: any = {};
     try {
+      const cronSecret = process.env.SYNC_WEBHOOK_SECRET || process.env.SUPABASE_PUBLISHABLE_KEY || "";
+      const cronHeaders: Record<string, string> = { "Content-Type": "application/json" };
+      if (process.env.SYNC_WEBHOOK_SECRET) cronHeaders["x-webhook-secret"] = cronSecret;
+      else if (cronSecret) cronHeaders["apikey"] = cronSecret;
       const res = await fetch(`${base}/api/public/cron/refresh-homepage-layout?force=true`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: cronHeaders,
       });
       status = res.status;
       body = await res.json().catch(() => ({}));
