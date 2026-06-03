@@ -108,6 +108,7 @@ import { Route as AdminCollectionImageQaRouteImport } from './routes/admin.colle
 import { Route as AdminCollectionImagePreviewRouteImport } from './routes/admin.collection-image-preview'
 import { Route as AdminCollectionHeroRegressionRouteImport } from './routes/admin.collection-hero-regression'
 import { Route as AdminCollectionFocalRouteImport } from './routes/admin.collection-focal'
+import { Route as AdminBackfillStatusRouteImport } from './routes/admin.backfill-status'
 import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 import { Route as AdminAcquiredLeadsRouteImport } from './routes/admin.acquired-leads'
 import { Route as AccountRegisterRouteImport } from './routes/account.register'
@@ -651,6 +652,11 @@ const AdminCollectionFocalRoute = AdminCollectionFocalRouteImport.update({
   path: '/admin/collection-focal',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminBackfillStatusRoute = AdminBackfillStatusRouteImport.update({
+  id: '/admin/backfill-status',
+  path: '/admin/backfill-status',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
   id: '/admin/analytics',
   path: '/admin/analytics',
@@ -882,6 +888,7 @@ export interface FileRoutesByFullPath {
   '/account/register': typeof AccountRegisterRoute
   '/admin/acquired-leads': typeof AdminAcquiredLeadsRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/backfill-status': typeof AdminBackfillStatusRoute
   '/admin/collection-focal': typeof AdminCollectionFocalRoute
   '/admin/collection-hero-regression': typeof AdminCollectionHeroRegressionRoute
   '/admin/collection-image-preview': typeof AdminCollectionImagePreviewRoute
@@ -1015,6 +1022,7 @@ export interface FileRoutesByTo {
   '/account/register': typeof AccountRegisterRoute
   '/admin/acquired-leads': typeof AdminAcquiredLeadsRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/backfill-status': typeof AdminBackfillStatusRoute
   '/admin/collection-focal': typeof AdminCollectionFocalRoute
   '/admin/collection-hero-regression': typeof AdminCollectionHeroRegressionRoute
   '/admin/collection-image-preview': typeof AdminCollectionImagePreviewRoute
@@ -1150,6 +1158,7 @@ export interface FileRoutesById {
   '/account/register': typeof AccountRegisterRoute
   '/admin/acquired-leads': typeof AdminAcquiredLeadsRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/backfill-status': typeof AdminBackfillStatusRoute
   '/admin/collection-focal': typeof AdminCollectionFocalRoute
   '/admin/collection-hero-regression': typeof AdminCollectionHeroRegressionRoute
   '/admin/collection-image-preview': typeof AdminCollectionImagePreviewRoute
@@ -1287,6 +1296,7 @@ export interface FileRouteTypes {
     | '/account/register'
     | '/admin/acquired-leads'
     | '/admin/analytics'
+    | '/admin/backfill-status'
     | '/admin/collection-focal'
     | '/admin/collection-hero-regression'
     | '/admin/collection-image-preview'
@@ -1420,6 +1430,7 @@ export interface FileRouteTypes {
     | '/account/register'
     | '/admin/acquired-leads'
     | '/admin/analytics'
+    | '/admin/backfill-status'
     | '/admin/collection-focal'
     | '/admin/collection-hero-regression'
     | '/admin/collection-image-preview'
@@ -1554,6 +1565,7 @@ export interface FileRouteTypes {
     | '/account/register'
     | '/admin/acquired-leads'
     | '/admin/analytics'
+    | '/admin/backfill-status'
     | '/admin/collection-focal'
     | '/admin/collection-hero-regression'
     | '/admin/collection-image-preview'
@@ -1687,6 +1699,7 @@ export interface RootRouteChildren {
   WomenRoute: typeof WomenRoute
   AdminAcquiredLeadsRoute: typeof AdminAcquiredLeadsRoute
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
+  AdminBackfillStatusRoute: typeof AdminBackfillStatusRoute
   AdminCollectionFocalRoute: typeof AdminCollectionFocalRoute
   AdminCollectionHeroRegressionRoute: typeof AdminCollectionHeroRegressionRoute
   AdminCollectionImagePreviewRoute: typeof AdminCollectionImagePreviewRoute
@@ -2466,6 +2479,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCollectionFocalRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/backfill-status': {
+      id: '/admin/backfill-status'
+      path: '/admin/backfill-status'
+      fullPath: '/admin/backfill-status'
+      preLoaderRoute: typeof AdminBackfillStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/analytics': {
       id: '/admin/analytics'
       path: '/admin/analytics'
@@ -2837,6 +2857,7 @@ const rootRouteChildren: RootRouteChildren = {
   WomenRoute: WomenRoute,
   AdminAcquiredLeadsRoute: AdminAcquiredLeadsRoute,
   AdminAnalyticsRoute: AdminAnalyticsRoute,
+  AdminBackfillStatusRoute: AdminBackfillStatusRoute,
   AdminCollectionFocalRoute: AdminCollectionFocalRoute,
   AdminCollectionHeroRegressionRoute: AdminCollectionHeroRegressionRoute,
   AdminCollectionImagePreviewRoute: AdminCollectionImagePreviewRoute,
