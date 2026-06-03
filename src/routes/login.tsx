@@ -7,10 +7,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 
+// Only allow same-origin, relative redirect targets. Blocks
+// `//evil.com`, `https://evil.com`, and other off-site URLs.
+function isSafeRedirect(url: string): boolean {
+  return (
+    typeof url === "string" &&
+    url.startsWith("/") &&
+    !url.startsWith("//") &&
+    !url.startsWith("/\\")
+  );
+}
+
 export const Route = createFileRoute("/login")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    redirect: (search.redirect as string) || "/admin/",
-  }),
+  validateSearch: (search: Record<string, unknown>) => {
+    const raw = typeof search.redirect === "string" ? search.redirect : "";
+    return { redirect: isSafeRedirect(raw) ? raw : "/admin/" };
+  },
   component: LoginPage,
   head: () => ({
     meta: [
@@ -22,7 +34,6 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const { redirect: redirectTo } = Route.useSearch();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -34,36 +45,18 @@ function LoginPage() {
     setError(null);
     setLoading(true);
     try {
-      let accessToken: string | undefined;
-      if (mode === "signup") {
-        const { data, error: signUpError } = await supabase.auth.signUp({
-          email,
-          password,
-          options: { emailRedirectTo: window.location.origin + "/admin/" },
-        });
-        if (signUpError) throw signUpError;
-        accessToken = data.session?.access_token;
-      } else {
-        const { data, error: signInError } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        if (signInError) throw signInError;
-        accessToken = data.session?.access_token;
-      }
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (signInError) throw signInError;
+      const accessToken = data.session?.access_token;
       if (!accessToken) {
-        // Email-confirmation required (signup) — show a clear message
-        // instead of pretending we redirected.
-        throw new Error(
-          "Check your email to confirm your account before signing in.",
-        );
+        throw new Error("Authentication failed. Please try again.");
       }
-      // Admin role is provisioned via secure migration / DB grant — no
-      // self-service promotion at login. See bootstrap-admin.functions.ts.
-      // Hard navigation guarantees router context, query cache, and
-      // auth-attacher all see the freshly-persisted session — eliminates
-      // the "signed in but not redirected" race that ate prior fixes.
-      window.location.assign(redirectTo);
+      // Redirect target was validated in validateSearch — same-origin only.
+      const safe = isSafeRedirect(redirectTo) ? redirectTo : "/admin/";
+      window.location.assign(safe);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Authentication failed");
     } finally {
@@ -97,7 +90,7 @@ function LoginPage() {
             <Input
               id="password"
               type="password"
-              autoComplete={mode === "signup" ? "new-password" : "current-password"}
+              autoComplete="current-password"
               required
               minLength={8}
               value={password}
@@ -112,22 +105,13 @@ function LoginPage() {
           )}
 
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "…" : mode === "signup" ? "Create account" : "Sign in"}
+            {loading ? "…" : "Sign in"}
           </Button>
         </form>
 
-        <button
-          type="button"
-          className="text-xs text-muted-foreground hover:text-foreground w-full text-center"
-          onClick={() => {
-            setMode((m) => (m === "signin" ? "signup" : "signin"));
-            setError(null);
-          }}
-        >
-          {mode === "signin"
-            ? "First time? Create the founder account."
-            : "Already have an account? Sign in."}
-        </button>
+        <p className="text-xs text-muted-foreground text-center">
+          Accounts are provisioned by invitation only.
+        </p>
       </Card>
     </div>
   );
