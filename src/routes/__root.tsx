@@ -198,7 +198,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { name: "google-site-verification", content: "fMHX1ox7fghr5UYvoTTCaxSRNcKuE5BEUuPd-tDZYE4" },
       { name: "google-site-verification", content: "AtWXsRuhIBiU3qtuduY5QlJUXKCQipTKSAQ2_P9_fM4" },
       { title: "Palace of Roman | The Maisons Defining the Seasons" },
       { name: "description", content: "The maisons defining the seasons — curated luxury menswear and womenswear from the world's leading designer houses. Authenticated. Express delivery." },
