@@ -62,7 +62,7 @@ const EVENT_TYPES: EventType[] = [
 ];
 
 export const getMetaAbReport = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAdmin])
   .inputValidator((input) => inputSchema.parse(input ?? {}))
   .handler(async ({ data }): Promise<MetaAbReport> => {
     const days = data.days ?? 30;
