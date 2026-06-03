@@ -139,9 +139,19 @@ export function SiteHeader() {
           {/* Center: serif wordmark */}
           <Link
             to="/"
-            className="text-[17px] sm:text-xl md:text-2xl font-serif tracking-[0.14em] md:tracking-[0.18em] uppercase whitespace-nowrap justify-self-center leading-none"
+            aria-label="Palace of Roman — home"
+            className="justify-self-center leading-none inline-flex items-center"
           >
-            Palace of Roman
+            <img
+              src={prMonogram}
+              alt="Palace of Roman"
+              width={36}
+              height={36}
+              className="lg:hidden h-9 w-9 object-contain"
+            />
+            <span className="hidden lg:inline text-[17px] sm:text-xl md:text-2xl font-serif tracking-[0.14em] md:tracking-[0.18em] uppercase whitespace-nowrap">
+              Palace of Roman
+            </span>
           </Link>
 
           {/* Right: utility cluster */}
