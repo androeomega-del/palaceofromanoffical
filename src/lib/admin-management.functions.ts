@@ -200,9 +200,13 @@ export const generateHomepagePreview = createServerFn({ method: "POST" })
       process.env.SITE_URL ||
       process.env.VITE_SITE_URL ||
       "https://palaceofromanofficial.com";
+    const cronSecret = process.env.SYNC_WEBHOOK_SECRET || process.env.SUPABASE_PUBLISHABLE_KEY || "";
+    const cronHeaders: Record<string, string> = { "Content-Type": "application/json" };
+    if (process.env.SYNC_WEBHOOK_SECRET) cronHeaders["x-webhook-secret"] = cronSecret;
+    else if (cronSecret) cronHeaders["apikey"] = cronSecret;
     const res = await fetch(
       `${base}/api/public/cron/refresh-homepage-layout?preview=true`,
-      { method: "POST", headers: { "Content-Type": "application/json" } },
+      { method: "POST", headers: cronHeaders },
     );
     const body = await res.json().catch(() => ({}));
     return { status: res.status, body };
