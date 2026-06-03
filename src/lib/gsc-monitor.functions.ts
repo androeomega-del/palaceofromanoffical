@@ -96,7 +96,7 @@ export const runGscWeeklyReviewNow = createServerFn({ method: "POST" })
 
 export const resolveGscAlert = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
-  .inputValidator((data: { id: string }) => data)
+  .inputValidator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
   .handler(async ({ data }) => {
     await supabaseAdmin
       .from("gsc_alerts")
