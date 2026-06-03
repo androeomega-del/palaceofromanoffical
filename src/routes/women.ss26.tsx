@@ -1,56 +1,17 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { ThemedEdit, type ThemedChapter } from "@/components/themed-edit";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
+import { fetchProducts } from "@/lib/shopify";
+import { ProductCard } from "@/components/product-card";
+import { isCurrentOrUpcomingSeason } from "@/lib/season-badge";
 import { routeHead } from "@/lib/seo";
 import heroSrc from "@/assets/editorial/ss26/w-hero.jpg";
-import swimSrc from "@/assets/editorial/ss26/w-swim.jpg";
-import silkSrc from "@/assets/editorial/ss26/w-silk.jpg";
-import codesSrc from "@/assets/editorial/ss26/w-codes.jpg";
-
-const CHAPTERS: ThemedChapter[] = [
-  {
-    n: 1,
-    src: swimSrc,
-    eyebrow: "Chapter I — Riviera Swim",
-    title: "The one-piece, gold at the shoulder.",
-    body:
-      "Black polyamide, gathered front, gold Medusa hardware at the strap. Cut high on the leg in the Versace tradition — a swimsuit that reads as a dress when the sun drops.",
-    alt: "Versace black gathered one-piece swimsuit with gold Medusa hardware on a Mediterranean pool deck",
-    spots: [
-      { x: 50, y: 50, label: "The Swim", match: /swim|swimsuit|one-piece|polyamide/i },
-    ],
-  },
-  {
-    n: 2,
-    src: silkSrc,
-    eyebrow: "Chapter II — Slip & Silk",
-    title: "Creamy yellow, ivory, bordeaux.",
-    body:
-      "The silk tank in a quiet sun-warmed yellow. The long satin skirt. The bordeaux slip waiting on the bed. Soft power, written in three pieces.",
-    alt: "Tom Ford yellow silk tank top styled with an ivory silk slip skirt in morning Roman light",
-    flip: true,
-    spots: [
-      { x: 50, y: 45, label: "The Silk", match: /silk|tank|satin|slip/i },
-    ],
-  },
-  {
-    n: 3,
-    src: codesSrc,
-    eyebrow: "Chapter III — House Codes",
-    title: "Soft lamb, gold Medusa, vintage edge.",
-    body:
-      "The slip-on loafer in soft brown lamb leather, the gold Medusa plaque on the vamp. The house code worn at lunch on the terrace.",
-    alt: "Versace brown lamb leather slip-on loafer with gold Medusa plaque on travertine in raking sun",
-    spots: [
-      { x: 50, y: 60, label: "The Loafer", match: /loafer|medusa|slip-on/i },
-    ],
-  },
-];
 
 export const Route = createFileRoute("/women/ss26")({
   head: () => {
     const title = "Spring/Summer 2026 — Women | Palace of Roman";
     const desc =
-      "Spring/Summer 2026 for women — the Versace swim, the Tom Ford silk, the Medusa loafer. The pieces that define the season at Palace of Roman, in stock.";
+      "The SS26 women's edit — every piece in stock carrying the New Season mark. Curated from Versace, Tom Ford, Dolce & Gabbana, Jacquemus and Roberto Cavalli.";
     const rh = routeHead({
       path: "/women/ss26",
       title,
@@ -58,28 +19,96 @@ export const Route = createFileRoute("/women/ss26")({
       image: heroSrc,
       type: "article",
     });
-    return { meta: [{ title }, { name: "description", content: desc }, ...rh.meta], links: rh.links };
+    return {
+      meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
+      links: rh.links,
+    };
   },
-  component: () => (
-    <ThemedEdit
-      issueLabel="SS26 — Women"
-      title={`Spring\nSummer 26.`}
-      subtitle="The Women's Edit — In Stock"
-      intro="Bone limestone, creamy yellow silk, a single bordeaux note. Three chapters for the spring — the swim that holds the eye, the silk that holds the room, the loafer that holds the season."
-      heroN={1}
-      heroSrc={heroSrc}
-      heroPosition="center 30%"
-      heroAlt="Palace of Roman Spring Summer 2026 women — model on a Mediterranean villa terrace in a creamy yellow Tom Ford silk tank"
-      manifesto="Soft power, in Italian."
-      chapters={CHAPTERS}
-      productQuery='tag:Women AND (vendor:Versace OR vendor:"Tom Ford" OR vendor:"Dolce &amp; Gabbana" OR vendor:Jacquemus OR vendor:"Roberto Cavalli")'
-      shopTitle="Shop SS26 — Women"
-      shopEyebrow="Spring/Summer 26 — In Stock"
-      outroCtas={[
-        { label: "Women's Clothing", handle: "womens-clothing" },
-        { label: "Women's Shoes", handle: "womens-shoes" },
-        { label: "Italian Leather Loafers", handle: "italian-leather-loafers" },
-      ]}
-    />
-  ),
+  component: WomenSS26,
 });
+
+function WomenSS26() {
+  const q = useQuery({
+    queryKey: ["ss26", "women"],
+    queryFn: () =>
+      fetchProducts({
+        first: 100,
+        query: "tag:Women",
+        sortKey: "CREATED_AT",
+        reverse: true,
+      }),
+    staleTime: 5 * 60_000,
+  });
+
+  const products = useMemo(
+    () => (q.data ?? []).filter((p) => isCurrentOrUpcomingSeason(p.node.description)),
+    [q.data],
+  );
+
+  return (
+    <main className="bg-canvas text-ink">
+      {/* Hero */}
+      <section className="relative h-[64vh] min-h-[480px] w-full overflow-hidden">
+        <img
+          src={heroSrc}
+          alt="Palace of Roman Spring/Summer 2026 — Women"
+          className="absolute inset-0 h-full w-full object-cover"
+          style={{ objectPosition: "center 30%" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/40" />
+        <div className="relative z-10 flex h-full flex-col justify-end px-6 pb-10 text-canvas md:px-12 md:pb-14">
+          <p className="font-serif text-xs uppercase tracking-[0.3em] opacity-90">
+            Spring/Summer 26 — Women
+          </p>
+          <h1 className="mt-3 font-serif text-4xl leading-[0.95] md:text-6xl">
+            The SS26 Edit
+          </h1>
+          <p className="mt-3 max-w-xl text-sm leading-relaxed opacity-90 md:text-base">
+            Every piece below carries the New Season mark — handpicked from the
+            spring deliveries we have in stock today.
+          </p>
+        </div>
+      </section>
+
+      {/* Grid */}
+      <section className="mx-auto max-w-[1400px] px-4 py-12 md:px-8 md:py-16">
+        <div className="mb-8 flex items-end justify-between">
+          <div>
+            <p className="font-serif text-xs uppercase tracking-[0.3em] text-ink/60">
+              In Stock — New Season
+            </p>
+            <h2 className="mt-1 font-serif text-2xl md:text-3xl">
+              {q.isLoading ? "Loading…" : `${products.length} pieces`}
+            </h2>
+          </div>
+          <Link
+            to="/collections/$handle"
+            params={{ handle: "womens-clothing" }}
+            className="hidden text-xs uppercase tracking-[0.2em] underline-offset-4 hover:underline md:inline"
+          >
+            All Women's Clothing
+          </Link>
+        </div>
+
+        {q.isError ? (
+          <p className="text-sm text-ink/60">Couldn't load the edit. Try again shortly.</p>
+        ) : !q.isLoading && products.length === 0 ? (
+          <p className="text-sm text-ink/60">
+            No SS26 pieces are tagged in stock right now. New deliveries land weekly.
+          </p>
+        ) : (
+          <div className="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3 lg:grid-cols-4">
+            {products.map((p, i) => (
+              <ProductCard
+                key={p.node.id}
+                product={p}
+                surface="page:ss26-women"
+                position={i}
+              />
+            ))}
+          </div>
+        )}
+      </section>
+    </main>
+  );
+}
