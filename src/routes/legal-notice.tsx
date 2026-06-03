@@ -39,14 +39,14 @@ function LegalNoticePage() {
         <section>
           <SectionTitle kicker="01">Operator</SectionTitle>
           <p>
-            <strong className="font-medium">Palace of Roman</strong> is operated as a sole proprietorship by the founder. The boutique operates exclusively online; there is no physical showroom, atelier or in-person appointment service.
+            <strong className="font-medium">Palace of Roman</strong> is an independent luxury boutique, registered and operating in the United States. All business is conducted online; visits, atelier appointments and in-person consultations are not offered at this time.
           </p>
         </section>
 
         <section>
-          <SectionTitle kicker="02">Contact</SectionTitle>
+          <SectionTitle kicker="02">Client Services</SectionTitle>
           <p>
-            For all correspondence — orders, sourcing requests, returns and general enquiries — please write to:
+            For all correspondence — orders, sourcing requests, returns and general enquiries — please contact our Client Services team:
           </p>
           <ul className="mt-4 space-y-2 text-sm text-ink/80 list-none">
             <li>
