@@ -58,15 +58,8 @@ function LoginPage() {
           "Check your email to confirm your account before signing in.",
         );
       }
-      // Best-effort founder bootstrap (no-op if an admin already exists).
-      // Don't fail the redirect on its error — the guard handles non-admins.
-      try {
-        await bootstrapAdminIfFirst({
-          headers: { Authorization: `Bearer ${accessToken}` },
-        });
-      } catch (err) {
-        console.warn("[login] bootstrapAdminIfFirst failed", err);
-      }
+      // Admin role is provisioned via secure migration / DB grant — no
+      // self-service promotion at login. See bootstrap-admin.functions.ts.
       // Hard navigation guarantees router context, query cache, and
       // auth-attacher all see the freshly-persisted session — eliminates
       // the "signed in but not redirected" race that ate prior fixes.
