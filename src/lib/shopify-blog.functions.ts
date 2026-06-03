@@ -147,7 +147,7 @@ export const getJournalArticles = createServerFn({ method: "GET" }).handler(
 );
 
 export const getJournalArticleByHandle = createServerFn({ method: "GET" })
-  .inputValidator((d: { blogHandle: string; articleHandle: string }) => d)
+  .inputValidator((d: unknown) => articleInputSchema.parse(d))
   .handler(async ({ data }): Promise<ShopifyArticle | null> => {
     const Q = `
       query ArticleByHandle($blogHandle: String!, $articleHandle: String!) {
