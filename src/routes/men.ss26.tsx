@@ -77,8 +77,8 @@ export const Route = createFileRoute("/men/ss26")({
       shopEyebrow="Spring/Summer 26 — In Stock"
       outroCtas={[
         { label: "Men's Clothing", handle: "mens-clothing" },
-        { label: "Men's Swim", handle: "mens-swim" },
         { label: "Men's Shoes", handle: "mens-shoes" },
+        { label: "Designer Men's Shirts", handle: "designer-mens-shirts" },
       ]}
     />
   ),
