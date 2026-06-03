@@ -36,7 +36,7 @@ import brandBottegaVeneta from "@/assets/brand-bottega-veneta-women.jpg";
 import brandGucci from "@/assets/brand-gucci-women.jpg";
 import brandVersace from "@/assets/brand-versace-women.jpg";
 
-export const Route = createFileRoute("/women")({
+export const Route = createFileRoute("/women/")({
   head: () => ({
     meta: [
       { title: "Designer Womenswear | Palace of Roman" },

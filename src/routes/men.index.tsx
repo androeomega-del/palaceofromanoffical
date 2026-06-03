@@ -42,7 +42,7 @@ import brandSaintLaurent from "@/assets/brand-saint-laurent.jpg";
 import brandLoroPiana from "@/assets/brand-loro-piana.jpg";
 import brandBottegaVeneta from "@/assets/brand-bottega-veneta.jpg";
 
-export const Route = createFileRoute("/men")({
+export const Route = createFileRoute("/men/")({
   head: () => ({
     meta: [
       { title: "Designer Menswear | Palace of Roman" },
