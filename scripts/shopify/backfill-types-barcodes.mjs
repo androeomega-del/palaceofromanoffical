@@ -192,6 +192,106 @@ async function pushStatus(status, finished = false) {
   }
 }
 
+// ---- Notifications (webhook + Gmail) -----------------------------------
+const NOTIFY_WEBHOOK = process.env.BACKFILL_NOTIFY_WEBHOOK || "";
+const NOTIFY_EMAIL = process.env.BACKFILL_NOTIFY_EMAIL || "";
+const NOTIFY_FROM = process.env.BACKFILL_NOTIFY_FROM ||
+  "Palace of Roman <notify@palaceofromanofficial.com>";
+const LOVABLE_API_KEY = process.env.LOVABLE_API_KEY || "";
+const GOOGLE_MAIL_API_KEY = process.env.GOOGLE_MAIL_API_KEY || "";
+const ERROR_RATE_THRESHOLD = Number(process.env.BACKFILL_ERROR_RATE || "0.05"); // 5%
+const ERROR_MIN_COUNT = Number(process.env.BACKFILL_ERROR_MIN || "20");
+let errorAlertSent = false;
+
+function b64url(s) {
+  return Buffer.from(s, "utf8").toString("base64")
+    .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+async function sendWebhook(event, payload) {
+  if (!NOTIFY_WEBHOOK) return;
+  try {
+    const r = await fetch(NOTIFY_WEBHOOK, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ event, ...payload }),
+    });
+    if (!r.ok) log(`webhook ${r.status}: ${(await r.text()).slice(0, 300)}`);
+  } catch (e) { log(`webhook failed: ${e?.message || e}`); }
+}
+
+async function sendEmail(subject, text) {
+  if (!NOTIFY_EMAIL || !LOVABLE_API_KEY || !GOOGLE_MAIL_API_KEY) return;
+  const msg = [
+    `From: ${NOTIFY_FROM}`,
+    `To: ${NOTIFY_EMAIL}`,
+    `Subject: ${subject}`,
+    `MIME-Version: 1.0`,
+    `Content-Type: text/plain; charset="UTF-8"`,
+    ``,
+    text,
+  ].join("\r\n");
+  try {
+    const r = await fetch(
+      "https://connector-gateway.lovable.dev/google_mail/gmail/v1/users/me/messages/send",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "X-Connection-Api-Key": GOOGLE_MAIL_API_KEY,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ raw: b64url(msg) }),
+      },
+    );
+    if (!r.ok) log(`email ${r.status}: ${(await r.text()).slice(0, 300)}`);
+    else log(`email sent: ${subject}`);
+  } catch (e) { log(`email failed: ${e?.message || e}`); }
+}
+
+function summaryText() {
+  return [
+    `domain=${DOMAIN}`,
+    `seen=${state.totalSeen}/${state.totalProducts}`,
+    `productsTypeUpdated=${state.productsTypeUpdated}`,
+    `variantsBarcoded=${state.variantsBarcoded}`,
+    `errors=${state.errors}`,
+    state.lastError ? `lastError=${state.lastError.slice(0, 500)}` : "",
+  ].filter(Boolean).join("\n");
+}
+
+async function notify(event) {
+  const payload = {
+    domain: DOMAIN,
+    totalSeen: state.totalSeen,
+    totalProducts: state.totalProducts,
+    productsTypeUpdated: state.productsTypeUpdated,
+    variantsBarcoded: state.variantsBarcoded,
+    errors: state.errors,
+    lastError: state.lastError,
+    timestamp: new Date().toISOString(),
+  };
+  const subjects = {
+    done: "✅ Shopify backfill complete",
+    error_spike: "⚠️ Shopify backfill error-rate spike",
+    fatal: "❌ Shopify backfill FAILED",
+  };
+  await Promise.all([
+    sendWebhook(event, payload),
+    sendEmail(subjects[event] || `Backfill: ${event}`, summaryText()),
+  ]);
+}
+
+async function maybeAlertErrorRate() {
+  if (errorAlertSent) return;
+  if (state.totalSeen < 50) return;
+  if (state.errors < ERROR_MIN_COUNT) return;
+  if (state.errors / Math.max(1, state.totalSeen) < ERROR_RATE_THRESHOLD) return;
+  errorAlertSent = true;
+  log(`error-rate spike: ${state.errors}/${state.totalSeen}`);
+  await notify("error_spike");
+}
+
 async function main() {
   log(`Starting. domain=${DOMAIN} resumeCursor=${state.cursor ? "yes" : "no"}`);
   // Get total once, for ETA.
@@ -235,6 +335,7 @@ async function main() {
       if (state.totalSeen % 10 === 0) {
         saveLocal();
         await pushStatus("running", false);
+        await maybeAlertErrorRate();
       }
       if (state.totalSeen % 50 === 0) {
         log(`seen=${state.totalSeen}/${state.totalProducts} typeUpd=${state.productsTypeUpdated} varBarcoded=${state.variantsBarcoded} errors=${state.errors}`);
@@ -247,6 +348,7 @@ async function main() {
   }
   log(`DONE. seen=${state.totalSeen} typeUpd=${state.productsTypeUpdated} varBarcoded=${state.variantsBarcoded} errors=${state.errors}`);
   await pushStatus("done", true);
+  await notify("done");
 }
 
 main().catch(async (e) => {
@@ -254,5 +356,6 @@ main().catch(async (e) => {
   state.lastError = msg.slice(0, 2000);
   log("FATAL: " + msg);
   await pushStatus("error", true);
+  await notify("fatal");
   process.exit(1);
 });
