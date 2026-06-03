@@ -8,6 +8,7 @@ import {
 import { callLlmJson } from "@/lib/llm.server";
 import { PALACE_BRAND_VOICE } from "@/lib/brand-voice";
 import { logHomepageAudit } from "@/lib/homepage-audit.server";
+import { checkWebhookSecret } from "@/lib/webhook-secret";
 
 /**
  * /api/public/cron/refresh-homepage-layout
