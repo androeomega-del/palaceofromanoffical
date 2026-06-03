@@ -47,7 +47,7 @@ export const getHomepageCuration = createServerFn({ method: "GET" })
 
 export const getHomepageEditionById = createServerFn({ method: "GET" })
   .middleware([requireAdmin])
-  .inputValidator((d: { id: string }) => d)
+  .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data }) => {
     const { data: row, error } = await supabaseAdmin
       .from("homepage_daily_layout")
@@ -79,7 +79,7 @@ export const updateHomepageLayoutJson = createServerFn({ method: "POST" })
 
 export const activateHomepageLayout = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
-  .inputValidator((d: { id: string }) => d)
+  .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     const { error: deErr } = await supabaseAdmin
       .from("homepage_daily_layout")
@@ -392,7 +392,7 @@ export const updateLandingPageStatus = createServerFn({ method: "POST" })
 
 export const deleteLandingPage = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
-  .inputValidator((d: { id: string }) => d)
+  .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data }) => {
     const { error } = await supabaseAdmin
       .from("dynamic_landing_pages")
@@ -455,7 +455,7 @@ export const upsertTrendingBrand = createServerFn({ method: "POST" })
 
 export const deleteTrendingBrand = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
-  .inputValidator((d: { id: string }) => d)
+  .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data }) => {
     const { error } = await supabaseAdmin
       .from("trending_brands")
@@ -506,7 +506,7 @@ export const setReviewStatus = createServerFn({ method: "POST" })
 
 export const deleteReview = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
-  .inputValidator((d: { id: string }) => d)
+  .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data }) => {
     const { error } = await supabaseAdmin
       .from("product_reviews")
