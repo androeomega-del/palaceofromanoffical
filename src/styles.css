@@ -212,6 +212,27 @@
     color: var(--ink);
   }
 
+  /* Obsidian scope — PDP-only luxury dark skin (Phase 2a).
+     Overrides the studio aliases with explicit obsidian hex values so every
+     component that reads --studio-* re-skins automatically. Apply by adding
+     the `obsidian` class alongside `studio` on the PDP wrapper. */
+  .studio.obsidian,
+  .commerce-shell.obsidian {
+    --studio-bg: #0A0A0A;
+    --studio-canvas: #121212;
+    --studio-ink: #F9F6F0;
+    --studio-muted: #A39E93;
+    --studio-rule: #1A1A1A;
+    --studio-bronze: #E5DDCB;
+    background: #0A0A0A;
+    color: #F9F6F0;
+  }
+  .studio.obsidian ::selection,
+  .commerce-shell.obsidian ::selection {
+    background: #E5DDCB;
+    color: #0A0A0A;
+  }
+
   /* Noir scope — reverts a single section to the original Noir & Gold palette.
      Used for dramatic dark moments (e.g. homepage hero) on an otherwise
      light-themed site. Override the same tokens locally; children inherit. */
