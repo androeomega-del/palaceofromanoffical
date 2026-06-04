@@ -10,9 +10,19 @@
 import { toast } from "sonner";
 
 export const SHOPIFY_API_VERSION = "2025-07";
-export const SHOPIFY_STORE_PERMANENT_DOMAIN = "mwuwqi-vy.myshopify.com";
+
+// Use env vars when available (e.g. for local overrides or rotation) and
+// fall back to the known production values so the storefront never breaks.
+export const SHOPIFY_STORE_PERMANENT_DOMAIN =
+  (typeof import.meta !== "undefined" && import.meta.env?.VITE_SHOPIFY_STORE_DOMAIN) ||
+  "mwuwqi-vy.myshopify.com";
+
 export const SHOPIFY_STOREFRONT_URL = `https://${SHOPIFY_STORE_PERMANENT_DOMAIN}/api/${SHOPIFY_API_VERSION}/graphql.json`;
-export const SHOPIFY_STOREFRONT_TOKEN = "79bc8e00121fca48464e24c4443d8538";
+
+export const SHOPIFY_STOREFRONT_TOKEN =
+  (typeof import.meta !== "undefined" && import.meta.env?.VITE_SHOPIFY_STOREFRONT_TOKEN) ||
+  "79bc8e00121fca48464e24c4443d8538";
+
 export const EXCLUDE_QUERY = "";
 
 // Legacy query-string export stubs (kept for any leftover imports).
