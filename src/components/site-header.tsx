@@ -97,7 +97,7 @@ export function SiteHeader() {
       {announceOpen && (
         <div className="relative w-full bg-ink text-canvas text-[10px] py-2.5 uppercase tracking-[0.28em] text-center border-b border-ink/10">
           <span className="inline-flex items-center gap-2">
-            Sign up for our newsletter — 10% off your first order
+            Sign up for our newsletter and receive a surprise offer
           </span>
           <button
             type="button"
