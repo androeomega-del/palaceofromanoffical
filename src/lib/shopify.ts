@@ -269,6 +269,30 @@ export async function fetchProductByHandle(handle: string): Promise<ShopifyProdu
   return res?.data?.productByHandle ?? null;
 }
 
+// ── Product recommendations ─────────────────────────────────────────────────
+// Shopify-curated "Complete the Look" companions, driven by the Storefront
+// API's productRecommendations resolver. Falls back to [] on any error so
+// callers can render a graceful empty state.
+const PRODUCT_RECOMMENDATIONS = `
+  ${PRODUCT_FRAGMENT}
+  query ProductRecommendations($productId: ID!, $intent: ProductRecommendationIntent) {
+    productRecommendations(productId: $productId, intent: $intent) {
+      ...ProductFields
+    }
+  }
+`;
+
+export async function fetchProductRecommendations(
+  productId: string,
+  intent: "RELATED" | "COMPLEMENTARY" = "COMPLEMENTARY",
+): Promise<ShopifyProductNode[]> {
+  const res = await storefrontApiRequest<{ productRecommendations: ShopifyProductNode[] | null }>(
+    PRODUCT_RECOMMENDATIONS,
+    { productId, intent },
+  );
+  return res?.data?.productRecommendations ?? [];
+}
+
 // ── Collections list ────────────────────────────────────────────────────────
 // Storefront API does not expose productCount on Collection; we ask for a
 // single sentinel product to flag "has products" (1) vs "empty" (0). If a
