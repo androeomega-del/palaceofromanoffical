@@ -28,8 +28,11 @@ export function renderWelcomeEmail(): { subject: string; html: string; text: str
             </td></tr>
           </table>
         </td></tr>
-        <tr><td align="center" style="padding:0 0 16px;">
+        <tr><td align="center" style="padding:0 0 24px;">
           <a href="${SITE}/shop" style="display:inline-block;background:#1a1a1a;color:#fffaf2;text-decoration:none;font-family:Karla,Helvetica,sans-serif;font-size:13px;letter-spacing:0.24em;text-transform:uppercase;padding:16px 36px;">Explore the collection</a>
+        </td></tr>
+        <tr><td style="font-family:Karla,Helvetica,sans-serif;font-size:13px;line-height:1.7;color:#5a5040;padding:8px 0 0;font-style:italic;" align="center">
+          A quiet word &mdash; share Palace of Roman with friends and family, and we'll thank you with a further private discount on your next piece. Simply reply to this email once they've placed their first order.
         </td></tr>
         <tr><td align="center" style="font-family:Karla,Helvetica,sans-serif;font-size:12px;color:#9c8c70;padding:40px 0 0;line-height:1.6;">
           <a href="${SITE}/privacy" style="color:#7a6a55;text-decoration:none;">Privacy Notice</a> &mdash; you may unsubscribe at any time.
