@@ -1,80 +1,61 @@
-# Promote Studio shell to homepage — non-destructive merge
+# Phase 2a — Full Obsidian Re-Skin of PDP
 
-## Intent
-Make the existing `/studio` visual layer the live homepage `/`, while every backend wire, server function, Shopify connection, cart/checkout protocol, and SEO surface stays exactly as it is today. Nothing is deleted; legacy is archived by unlinking, per the staged-launches rule.
+Apply the obsidian palette (`#0A0A0A` / `#121212` / `#1A1A1A` / `#F9F6F0` / `#E5DDCB` / `#A39E93`) and editorial typography (serif title, wide-tracked sans micro-labels) across the live PDP and every sub-component it mounts. **Zero logic, state, SEO, JSON-LD, loader, ATC, or cart-store changes** — className overrides only.
 
-## What stays untouched (hard guarantees)
-- `src/lib/shopify.ts`, `src/lib/ai-concierge.functions.ts`, `src/lib/rails/queries.ts`, `formatPrice`, `EUR_TO_USD`.
-- Cart protocol: `cart-store.ts`, `cart-drawer.tsx`, `use-cart-sync.ts`, `formatCheckoutUrl`.
-- All server functions, all routes except `/`, all API endpoints, all sitemaps, all admin tools.
-- `src/components/editors-edition/*` (EditionLayout) — left in place, just unlinked from `/`. Reachable via direct import if you ever want to restore.
-- Meta-AB SEO on `/` (`readMetaAbBucket`, `pickHomeMeta`, `seoMetaForBucket`, `useMetaAb`, OG/Twitter image, BreadcrumbList JSON-LD, canonical).
-- Studio route at `/studio` continues to work (kept as draft mirror).
+## Files Touched (12)
 
-## What changes
+**Route file**
+1. `src/routes/product.$handle.tsx` — outer wrapper, breadcrumbs, vendor/title block, price, size tiles, quantity stepper, ATC button, accordion wrapper, gallery surface.
 
-### 1. `src/routes/index.tsx` — rewire visual layer only
-- Keep the existing `loader`, `head()`, and `useMetaAb` block exactly as they are (preserves SEO + A/B).
-- Replace the `HomePage` body: instead of `<EditionLayout/>`, render a new `<HomeStudioLayout/>` component that wraps the studio shell (header trigger, hero, asymmetric grid, concierge drawer, footer).
-- Keep `HomeErrorComponent`.
-- Add the loader prime for `newThisWeekQueryOptions("Women")` alongside the existing `readMetaAbBucket` call so the grid SSRs without a flash. Both run in parallel via `Promise.all`.
+**Sub-components mounted on the PDP**
+2. `src/components/pdp-authenticity-strip.tsx`
+3. `src/components/pdp-brand-heritage.tsx`
+4. `src/components/pdp-delivery-badge.tsx`
+5. `src/components/pdp-shipping-sheet.tsx`
+6. `src/components/pdp-journal-links.tsx`
+7. `src/components/pdp-faq.tsx`
+8. `src/components/product-reviews.tsx`
+9. `src/components/recently-viewed-rail.tsx`
+10. `src/components/product/size-fit-guide.tsx`
+11. `src/components/product/image-lightbox.tsx`
+12. `src/components/yelp-trust-badge.tsx` (only if it has light backgrounds — verify first)
 
-### 2. New `src/components/home-studio/*` — extracted from studio.tsx
-Move the studio composition into reusable components so `/` and `/studio` share one source of truth and we never drift:
-- `home-studio-layout.tsx` — orchestrator (hero + grid + concierge drawer + footer area)
-- `home-studio-header.tsx` — concierge-trigger header (used only on `/studio`; on `/` we keep the real `SiteHeader`)
-- `asymmetric-grid.tsx` — the 12-col asymmetric tile grid, fed by `newThisWeekQueryOptions`
-- `concierge-drawer.tsx` — left drawer wired to `fetchConciergePicks` (same as today)
-- `palette.ts` — the obsidian/off-white/sand tokens, scoped via inline style props (no global CSS-var changes)
+## Token Mapping (applied consistently across all 12 files)
 
-### 3. Chrome handling on `/`
-- Do **not** suppress `<SiteHeader/>` / `<SiteFooter/>` on `/`. The real site nav, cart drawer trigger, search, and account menu must remain functional.
-- Add a single concierge entry-point inside the new home body (a "Begin with the concierge" CTA + an `<button>` icon in the hero) — the drawer is mounted at the page level, not in the global header.
-- Tighten the layout so SiteHeader + the obsidian hero coexist cleanly (small spacer, no double background).
-
-### 4. `src/routes/studio.tsx` — refactor to consume the same components
-- Keep the route at `/studio` (still noindex) but rewrite its body to render `<HomeStudioLayout variant="standalone"/>` so the two surfaces never diverge. The `standalone` variant keeps the suppressed SiteHeader + custom StudioHeader behavior it has today.
-
-### 5. Asymmetric grid — catalog-truth guarantee
-- Source is `newThisWeekQueryOptions("Women")`, which already returns live Shopify handles from your storefront. Each tile links to `/product/$handle` using `p.node.handle` — verified by the API response. No hard-coded handles, no placeholder images.
-- Empty / error state: render the existing "The next edit is being curated." line — no fabricated tiles.
-
-### 6. Cart wiring
-- The studio shell currently has no add-to-cart on tiles (tiles link to PDPs). Cart drawer continues to open from the real `SiteHeader`. No changes to cart store or checkout URL formation.
-
-## What the user will see at `/`
-- Real `SiteHeader` (nav, search, cart, account) on top — unchanged.
-- New obsidian hero: oversized serif headline, sand accent, "Begin with the concierge" CTA.
-- Editorial asymmetric grid of 6 live "New In" products with inward image scaling on hover and staggered fade-in.
-- Footer = existing `SiteFooter` (unchanged).
-- Concierge drawer (left, off-white) opened from the hero CTA, wired to `fetchConciergePicks`.
-
-## Files touched
-| File | Action |
+| Surface | Class |
 |---|---|
-| `src/routes/index.tsx` | Edit: swap body to `HomeStudioLayout`, add grid prefetch to loader |
-| `src/routes/studio.tsx` | Edit: thin wrapper around `HomeStudioLayout variant="standalone"` |
-| `src/components/home-studio/home-studio-layout.tsx` | New |
-| `src/components/home-studio/home-studio-header.tsx` | New (standalone variant only) |
-| `src/components/home-studio/asymmetric-grid.tsx` | New |
-| `src/components/home-studio/concierge-drawer.tsx` | New |
-| `src/components/home-studio/palette.ts` | New |
-| `src/components/editors-edition/*` | UNTOUCHED (archived by unlinking from `/`) |
+| Page canvas | `bg-[#0A0A0A] text-[#F9F6F0]` |
+| Card / panel surface | `bg-[#121212] border-[#1A1A1A]` |
+| Divider / hairline | `border-[#1A1A1A]` |
+| Hero/serif heading | `font-serif font-light tracking-wide text-[#F9F6F0]` |
+| Body copy | `text-[#A39E93]` |
+| Highlighted accent | `text-[#E5DDCB]` |
+| Micro-label | `font-sans text-[10px] tracking-[0.35em] uppercase text-[#A39E93]` |
+| Primary CTA | `bg-[#F9F6F0] text-[#0A0A0A] hover:bg-[#E5DDCB]` |
+| Selected tile | `border-[#E5DDCB] bg-[#121212] text-[#E5DDCB]` |
+| Disabled / OOS | `border-[#1A1A1A] bg-[#0A0A0A] text-[#2A2A2A] line-through` |
 
-## Verification after build
-1. Typecheck/build passes.
-2. `/` renders new shell + real SiteHeader/SiteFooter; cart drawer still opens; checkout URL unchanged.
-3. `/studio` still renders (standalone variant).
-4. Concierge drawer streams from `fetchConciergePicks`.
-5. Grid tiles route to `/product/<live-handle>` — handle equals `p.node.handle` from the live query.
-6. View-source: title, description, og:image, canonical, BreadcrumbList JSON-LD all match the meta-AB bucket (SEO preserved).
-7. Lighthouse/preview check that hover scale and stagger animations run.
+## Out of Scope (untouched)
 
-## Non-goals (explicit)
-- No changes to product data, vendor names, prices (USD continues via `formatPrice`).
-- No new copy on legal/compliance surfaces; no BG mention introduced.
-- No changes to navigation taxonomy, no new nav links, no new collections.
-- No changes to admin tools, sitemaps, or any other route.
-- No restyling of global tokens in `src/styles.css` — palette stays scoped to the home shell.
+- `ProductCard`, `AIRecommendations` — used on PDP but rendered identically in collections/home; re-skinning them changes the whole site. Defer to a separate global pass.
+- `Accordion` primitive in `src/components/ui/accordion.tsx` — shadcn primitive used app-wide; we override at the wrapper className level instead.
+- All loader code, hooks, intersection observers, error timers, JSON-LD, head() meta, ATC handler, variant state, cart-store calls.
+- Components NOT mounted on the PDP.
 
-Approve and I'll execute exactly this. If you'd rather keep the EditionLayout content (Editor's Edition body, themed Edit tiles) and only wrap the existing home in the new obsidian chrome, say so and I'll re-plan — that's a different shape.
+## Approach
+
+1. Read each file fully before editing.
+2. Surgical className swaps only — no JSX structure changes.
+3. Per memory `mem://preferences/working-mode`: smallest diff per file, verify after.
+4. **Note re design tokens**: per project memory we normally avoid hardcoded hex. This phase intentionally uses inline `bg-[#…]` because the obsidian palette is a PDP-scoped experiment; if approved, Phase 2c will promote these to semantic tokens in `src/styles.css`.
+
+## Verification
+
+After all 12 edits: open `/product/<handle>` in the preview, confirm:
+- No light cream/white seams between sections
+- Variant selection still toggles
+- ATC still adds to cart drawer
+- Accordions still expand
+- No console errors
+
+Awaiting your go-ahead to execute.
