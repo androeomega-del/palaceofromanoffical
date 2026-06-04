@@ -116,8 +116,9 @@ function StudioPDP() {
       }}
     >
       <StudioPDPHeader />
-      <PDPBody product={product} market={market} />
+      <PDPBody product={product} />
       <CompleteTheLook product={product} market={market} />
+
       <style>{`
         @keyframes studioFade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
         @keyframes studioScale { from { opacity: 0; transform: scale(1.015); } to { opacity: 1; transform: scale(1); } }
