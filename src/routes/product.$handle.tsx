@@ -622,7 +622,7 @@ function ProductView({
 
 
   return (
-    <div className="studio">
+    <div className="studio obsidian min-h-screen">
       {/* Breadcrumb */}
       <div className="px-6 pt-10">
         <div className="max-w-screen-2xl mx-auto flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-[var(--studio-muted)]">
