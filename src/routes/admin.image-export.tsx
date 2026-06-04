@@ -238,23 +238,19 @@ function ImageTile({
     }
   };
 
-  const download = async () => {
-    try {
-      const r = await fetch(img.url);
-      const blob = await r.blob();
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      const name = img.url.split("/").pop()?.split("?")[0] || "image";
-      a.download = name;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(a.href);
-    } catch {
-      // Cross-origin without CORS — fallback to opening in a new tab.
-      window.open(img.url, "_blank", "noopener");
-    }
+  const download = () => {
+    // Route through our server-side proxy so cross-origin CDN images
+    // (Shopify, Supabase storage) download properly with Content-Disposition.
+    const name = (img.url.split("/").pop()?.split("?")[0] || "image").replace(/[^\w.\-]/g, "_");
+    const proxied = `/api/admin/image-proxy?url=${encodeURIComponent(absoluteUrl)}&filename=${encodeURIComponent(name)}`;
+    const a = document.createElement("a");
+    a.href = proxied;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
   };
+
 
   return (
     <Card className="overflow-hidden flex flex-col">
