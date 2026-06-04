@@ -100,8 +100,9 @@ function StudioProductPreview() {
   const selectedVariant =
     variants.find((v) => v.id === selectedVariantId) ?? firstAvailable;
 
-  const tags = (product.tags ?? []).map((t) => t.toLowerCase());
-  const isMen = tags.some((t) => t.includes("men") || t.includes("homme"));
+  // Derive segment label from productType/title (ShopifyProductNode has no `tags`)
+  const haystack = `${product.productType ?? ""} ${product.title}`.toLowerCase();
+  const isMen = /\b(men|homme|man|mens)\b/.test(haystack);
   const segmentLabel = isMen ? "Homme / Archive" : "Femme / Archive";
 
   // Detect a single-variant product (Shopify default "Default Title")
