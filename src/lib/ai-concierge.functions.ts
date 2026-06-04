@@ -413,3 +413,51 @@ function emptyPage() {
     pageInfo: { hasNextPage: false, endCursor: null as string | null },
   };
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Live chat: free-form back-and-forth with the concierge.
+// Uses the same LLM helper; returns a single assistant reply per call.
+// Conversation history is held client-side and re-sent on each turn.
+// ─────────────────────────────────────────────────────────────────────────────
+
+const ChatTurnSchema = z.object({
+  role: z.enum(["user", "assistant"]),
+  text: z.string().trim().min(1).max(2000),
+});
+
+const ChatInputSchema = z.object({
+  messages: z.array(ChatTurnSchema).min(1).max(24),
+});
+
+import { callLlm } from "@/lib/llm.server";
+
+const CHAT_SYSTEM = `You are the Palace of Roman Concierge — a senior personal stylist for a luxury multi-brand boutique.
+Voice: curatorial, restrained, confident, warm. Never effusive, never salesy. Speak as "we".
+Scope: styling advice, fit/sizing intuition, occasion dressing, season pairing, brand context, delivery expectations.
+For returns, refunds, tracking, customs, damaged or wrong items — politely direct the client to support@palaceofromanofficial.com.
+Never invent products, prices, stock, or boutique partners by name. Never mention BrandsGateway.
+Keep replies to 2–4 sentences unless asked for more.`;
+
+export const conciergeChat = createServerFn({ method: "POST" })
+  .inputValidator((i: unknown) => ChatInputSchema.parse(i))
+  .handler(async ({ data }): Promise<{ ok: true; reply: string } | { ok: false; error: string }> => {
+    const handoff = detectServiceHandoff(data.messages.at(-1)?.text);
+    if (handoff) {
+      return { ok: true, reply: `${handoff.message} Please write to ${SUPPORT_EMAIL}.` };
+    }
+    const transcript = data.messages
+      .map((m) => `${m.role === "user" ? "Client" : "Concierge"}: ${m.text}`)
+      .join("\n");
+    try {
+      const reply = await callLlm({
+        system: CHAT_SYSTEM,
+        user: `${transcript}\n\nConcierge:`,
+        maxTokens: 320,
+        temperature: 0.4,
+      });
+      return { ok: true, reply: reply.trim() || "Tell me a little more about what you have in mind." };
+    } catch (err) {
+      console.error("[concierge] chat failed:", err);
+      return { ok: false, error: "The concierge is briefly unavailable. Try again in a moment." };
+    }
+  });
