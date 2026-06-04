@@ -20,7 +20,7 @@ import { useChromeStore } from "@/stores/chrome-store";
 import { newThisWeekQueryOptions } from "@/lib/rails/queries";
 import { ConciergeDrawer } from "./concierge-drawer";
 import { AsymmetricGrid } from "./asymmetric-grid";
-import { StudioHeader } from "./home-studio-header";
+import { PalaceHeader } from "./palace-header";
 import { palette, fontSans, fontSerif } from "./palette";
 
 interface HomeStudioLayoutProps {
@@ -54,7 +54,7 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
         fontFamily: fontSerif,
       }}
     >
-      {isStandalone && <StudioHeader onOpenConcierge={() => setConciergeOpen(true)} />}
+      {isStandalone && <PalaceHeader onOpenConcierge={() => setConciergeOpen(true)} />}
 
       {/* ───── Hero ───── */}
       <section className="relative px-6 md:px-14 pt-16 md:pt-28 pb-24 md:pb-40 animate-[studioFade_1.2s_ease-out_both]">
