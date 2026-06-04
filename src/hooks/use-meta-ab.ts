@@ -52,19 +52,17 @@ export function useMetaAb(
     }
 
     // 2. If the assigned bucket diverges from what SSR rendered, patch the
-    //    visible title + description tags in place, and add/remove the
-    //    robots noindex tag to match the canonical-safety rules.
+    //    visible title + description tags in place. We deliberately do NOT
+    //    inject a noindex on variant B — Google's URL Inspection tool
+    //    executes JS and was reporting the homepage as "noindex" whenever
+    //    the random bucket landed on 1. Canonical/og:url stay stable, so
+    //    Google sees a single canonical homepage either way.
     if (bucket !== ssrBucket) {
       const v = bucket === 1 ? variants.b : variants.a;
       document.title = v.title;
       setMeta("description", v.description, "name");
       setMeta("og:title", v.title, "property");
       setMeta("og:description", v.description, "property");
-      if (bucket === 1) {
-        setMeta("robots", "noindex,follow", "name");
-      } else {
-        removeMeta("robots", "name");
-      }
     }
 
     // 3. Track exposure (no-op if Plausible script hasn't loaded yet —
