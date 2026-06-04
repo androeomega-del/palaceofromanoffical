@@ -40,8 +40,10 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
 
   const [conciergeOpen, setConciergeOpen] = useState(false);
 
-  const { data: rail } = useSuspenseQuery(newThisWeekQueryOptions("Women"));
-  const products = (rail ?? []).slice(0, 6);
+  const { data: menRail } = useSuspenseQuery(newThisWeekQueryOptions("Men"));
+  const { data: womenRail } = useSuspenseQuery(newThisWeekQueryOptions("Women"));
+  const menProducts = (menRail ?? []).slice(0, 6);
+  const womenProducts = (womenRail ?? []).slice(0, 6);
 
   return (
     <div
