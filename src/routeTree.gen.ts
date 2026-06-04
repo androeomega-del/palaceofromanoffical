@@ -129,6 +129,7 @@ import { Route as EditsYachtEditChapterRouteImport } from './routes/edits.yacht-
 import { Route as CartCCartIdRouteImport } from './routes/cart.c.$cartId'
 import { Route as BrandVendorInRomeRouteImport } from './routes/brand.$vendor.in-rome'
 import { Route as ApiPublicSeoHealthRouteImport } from './routes/api/public/seo-health'
+import { Route as ApiAdminImageProxyRouteImport } from './routes/api/admin.image-proxy'
 import { Route as LocaleProductsHandleRouteImport } from './routes/$locale.products.$handle'
 import { Route as ApiPublicStockAlertsSubscribeRouteImport } from './routes/api/public/stock-alerts/subscribe'
 import { Route as ApiPublicIndexnowSubmitRouteImport } from './routes/api/public/indexnow.submit'
@@ -767,6 +768,11 @@ const ApiPublicSeoHealthRoute = ApiPublicSeoHealthRouteImport.update({
   path: '/api/public/seo-health',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminImageProxyRoute = ApiAdminImageProxyRouteImport.update({
+  id: '/api/admin/image-proxy',
+  path: '/api/admin/image-proxy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LocaleProductsHandleRoute = LocaleProductsHandleRouteImport.update({
   id: '/$locale/products/$handle',
   path: '/$locale/products/$handle',
@@ -978,6 +984,7 @@ export interface FileRoutesByFullPath {
   '/men/': typeof MenIndexRoute
   '/women/': typeof WomenIndexRoute
   '/$locale/products/$handle': typeof LocaleProductsHandleRoute
+  '/api/admin/image-proxy': typeof ApiAdminImageProxyRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
   '/brand/$vendor/in-rome': typeof BrandVendorInRomeRoute
   '/cart/c/$cartId': typeof CartCCartIdRoute
@@ -1114,6 +1121,7 @@ export interface FileRoutesByTo {
   '/men': typeof MenIndexRoute
   '/women': typeof WomenIndexRoute
   '/$locale/products/$handle': typeof LocaleProductsHandleRoute
+  '/api/admin/image-proxy': typeof ApiAdminImageProxyRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
   '/brand/$vendor/in-rome': typeof BrandVendorInRomeRoute
   '/cart/c/$cartId': typeof CartCCartIdRoute
@@ -1254,6 +1262,7 @@ export interface FileRoutesById {
   '/men/': typeof MenIndexRoute
   '/women/': typeof WomenIndexRoute
   '/$locale/products/$handle': typeof LocaleProductsHandleRoute
+  '/api/admin/image-proxy': typeof ApiAdminImageProxyRoute
   '/api/public/seo-health': typeof ApiPublicSeoHealthRoute
   '/brand/$vendor/in-rome': typeof BrandVendorInRomeRoute
   '/cart/c/$cartId': typeof CartCCartIdRoute
@@ -1395,6 +1404,7 @@ export interface FileRouteTypes {
     | '/men/'
     | '/women/'
     | '/$locale/products/$handle'
+    | '/api/admin/image-proxy'
     | '/api/public/seo-health'
     | '/brand/$vendor/in-rome'
     | '/cart/c/$cartId'
@@ -1531,6 +1541,7 @@ export interface FileRouteTypes {
     | '/men'
     | '/women'
     | '/$locale/products/$handle'
+    | '/api/admin/image-proxy'
     | '/api/public/seo-health'
     | '/brand/$vendor/in-rome'
     | '/cart/c/$cartId'
@@ -1670,6 +1681,7 @@ export interface FileRouteTypes {
     | '/men/'
     | '/women/'
     | '/$locale/products/$handle'
+    | '/api/admin/image-proxy'
     | '/api/public/seo-health'
     | '/brand/$vendor/in-rome'
     | '/cart/c/$cartId'
@@ -1803,6 +1815,7 @@ export interface RootRouteChildren {
   MenIndexRoute: typeof MenIndexRoute
   WomenIndexRoute: typeof WomenIndexRoute
   LocaleProductsHandleRoute: typeof LocaleProductsHandleRoute
+  ApiAdminImageProxyRoute: typeof ApiAdminImageProxyRoute
   ApiPublicSeoHealthRoute: typeof ApiPublicSeoHealthRoute
   CartCCartIdRoute: typeof CartCCartIdRoute
   ApiPublicAiRecommendationsRoute: typeof ApiPublicAiRecommendationsRoute
@@ -2665,6 +2678,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicSeoHealthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/image-proxy': {
+      id: '/api/admin/image-proxy'
+      path: '/api/admin/image-proxy'
+      fullPath: '/api/admin/image-proxy'
+      preLoaderRoute: typeof ApiAdminImageProxyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/$locale/products/$handle': {
       id: '/$locale/products/$handle'
       path: '/$locale/products/$handle'
@@ -2986,6 +3006,7 @@ const rootRouteChildren: RootRouteChildren = {
   MenIndexRoute: MenIndexRoute,
   WomenIndexRoute: WomenIndexRoute,
   LocaleProductsHandleRoute: LocaleProductsHandleRoute,
+  ApiAdminImageProxyRoute: ApiAdminImageProxyRoute,
   ApiPublicSeoHealthRoute: ApiPublicSeoHealthRoute,
   CartCCartIdRoute: CartCCartIdRoute,
   ApiPublicAiRecommendationsRoute: ApiPublicAiRecommendationsRoute,
