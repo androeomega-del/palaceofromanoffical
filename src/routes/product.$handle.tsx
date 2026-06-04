@@ -622,7 +622,7 @@ function ProductView({
 
 
   return (
-    <div className="studio">
+    <div className="studio obsidian min-h-screen">
       {/* Breadcrumb */}
       <div className="px-6 pt-10">
         <div className="max-w-screen-2xl mx-auto flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-[var(--studio-muted)]">
@@ -824,7 +824,7 @@ function ProductView({
               )}
 
               <div className="flex flex-col gap-3">
-                <div className="flex items-center border border-[var(--studio-rule)] bg-white h-14 shadow-sm self-start">
+                <div className="flex items-center border border-[var(--studio-rule)] bg-[var(--studio-canvas)] h-14 shadow-sm self-start">
                   <button
                     type="button"
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
@@ -1362,7 +1362,7 @@ function VariantOption({
               className={`min-w-16 h-14 px-4 text-[11px] uppercase tracking-widest border transition-all duration-300 ${
                 active
                   ? "por-tick border-[var(--studio-ink)] bg-[var(--studio-ink)] text-[var(--studio-bg)]"
-                  : "border-[var(--studio-ink)]/10 bg-white hover:border-[var(--studio-ink)] motion-safe:hover:-translate-y-px"
+                  : "border-[var(--studio-ink)]/10 bg-[var(--studio-canvas)] hover:border-[var(--studio-ink)] motion-safe:hover:-translate-y-px"
               } ${unavailable ? "line-through opacity-50" : ""}`}
             >
               {value}
