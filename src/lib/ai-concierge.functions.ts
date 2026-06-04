@@ -429,7 +429,7 @@ const ChatInputSchema = z.object({
   messages: z.array(ChatTurnSchema).min(1).max(24),
 });
 
-import { callLlm } from "@/lib/llm.server";
+
 
 const CHAT_SYSTEM = `You are the Palace of Roman Concierge — a senior personal stylist for a luxury multi-brand boutique.
 Voice: curatorial, restrained, confident, warm. Never effusive, never salesy. Speak as "we".
