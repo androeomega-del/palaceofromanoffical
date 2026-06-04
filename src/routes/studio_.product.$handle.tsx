@@ -31,7 +31,7 @@ const productQueryOptions = (handle: string) =>
     },
   });
 
-export const Route = createFileRoute("/studio/product/$handle")({
+export const Route = createFileRoute("/studio_/product/$handle")({
   loader: ({ params, context }) =>
     context.queryClient.ensureQueryData(productQueryOptions(params.handle)),
   component: StudioProductPreview,
