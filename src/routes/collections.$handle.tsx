@@ -576,7 +576,7 @@ function CollectionPage() {
   const gridGap = isEditorial ? "gap-x-10 gap-y-20" : "gap-x-6 gap-y-16";
 
   return (
-    <div>
+    <div className="studio obsidian min-h-screen">
       {isEditorial ? (
         <section
           className="relative h-[58vh] min-h-[420px] max-h-[680px] w-full overflow-hidden bg-ink"
