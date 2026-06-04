@@ -375,10 +375,11 @@ function ChromeAwareShell() {
   // the client-only suppression store hydrates.
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isHomepage = pathname === "/";
+  const isStudio = pathname === "/studio";
   const headerSuppressed = useChromeStore((s) => s.headerSuppressed);
   const footerSuppressed = useChromeStore((s) => s.footerSuppressed);
-  const hideHeader = isHomepage || headerSuppressed;
-  const hideFooter = isHomepage || footerSuppressed;
+  const hideHeader = isHomepage || isStudio || headerSuppressed;
+  const hideFooter = isHomepage || isStudio || footerSuppressed;
   return (
     <div className="min-h-screen flex flex-col bg-canvas">
       {!hideHeader && <SiteHeader />}
