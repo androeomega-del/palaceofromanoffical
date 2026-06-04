@@ -8,6 +8,7 @@
 // A collection handle that does not exist in Shopify returns null; pages
 // handle that as a 404. Add the collection in Shopify Admin to make it live.
 import { toast } from "sonner";
+import { useMarketStore } from "@/stores/market-store";
 
 export const SHOPIFY_API_VERSION = "2025-07";
 
@@ -104,13 +105,8 @@ function injectInContext(query: string): string {
 }
 
 function readCurrentMarket(): { country: string; language: string } {
-  // Lazy-require to avoid an import cycle (market-store has no deps on
-  // shopify.ts but keeping the import inline makes the dependency direction
-  // explicit and SSR-safe).
   try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const mod = require("@/stores/market-store") as typeof import("@/stores/market-store");
-    const m = mod.useMarketStore.getState().market;
+    const m = useMarketStore.getState().market;
     return { country: m.country, language: m.language };
   } catch {
     return { country: "US", language: "EN" };
