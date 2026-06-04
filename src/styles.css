@@ -212,18 +212,48 @@
     color: var(--ink);
   }
 
-  /* Obsidian scope — PDP-only luxury dark skin (Phase 2a).
+  /* Obsidian scope — luxury dark skin (Phase 2a + 2b).
      Overrides the studio aliases with explicit obsidian hex values so every
      component that reads --studio-* re-skins automatically. Apply by adding
-     the `obsidian` class alongside `studio` on the PDP wrapper. */
+     the `obsidian` class alongside `studio` on a route's outer wrapper.
+
+     Phase 2b: also remaps the global Tailwind theme tokens (canvas / ink /
+     bronze / background / foreground / border / card / muted-foreground)
+     so transactional routes authored against the global tokens
+     (account, collections, cart drawer) re-skin from the wrapper alone —
+     no per-component className sweep required. */
   .studio.obsidian,
   .commerce-shell.obsidian {
+    /* Studio aliases (PDP sub-components) */
     --studio-bg: #0A0A0A;
     --studio-canvas: #121212;
     --studio-ink: #F9F6F0;
     --studio-muted: #A39E93;
     --studio-rule: #1A1A1A;
     --studio-bronze: #E5DDCB;
+
+    /* Global Tailwind theme tokens — remap inside obsidian scope only */
+    --canvas: #0A0A0A;
+    --canvas-raised: #121212;
+    --ink: #F9F6F0;
+    --bronze: #E5DDCB;
+    --bronze-soft: #D9CFB8;
+    --bronze-deep: #C7B894;
+    --background: #0A0A0A;
+    --foreground: #F9F6F0;
+    --card: #121212;
+    --card-foreground: #F9F6F0;
+    --popover: #121212;
+    --popover-foreground: #F9F6F0;
+    --primary: #F9F6F0;
+    --primary-foreground: #0A0A0A;
+    --secondary: #121212;
+    --secondary-foreground: #F9F6F0;
+    --muted: #1A1A1A;
+    --muted-foreground: #A39E93;
+    --border: #1A1A1A;
+    --input: #1A1A1A;
+
     background: #0A0A0A;
     color: #F9F6F0;
   }
