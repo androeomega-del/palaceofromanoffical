@@ -14,6 +14,7 @@ import { Route as VacationStylistRouteImport } from './routes/vacation-stylist'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SwimRouteImport } from './routes/swim'
 import { Route as StyleQuizRouteImport } from './routes/style-quiz'
+import { Route as StudioRouteImport } from './routes/studio'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SitemapStaticDotxmlRouteImport } from './routes/sitemap-static[.]xml'
 import { Route as SitemapProductsDotxmlRouteImport } from './routes/sitemap-products[.]xml'
@@ -171,6 +172,11 @@ const SwimRoute = SwimRouteImport.update({
 const StyleQuizRoute = StyleQuizRouteImport.update({
   id: '/style-quiz',
   path: '/style-quiz',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudioRoute = StudioRouteImport.update({
+  id: '/studio',
+  path: '/studio',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -900,6 +906,7 @@ export interface FileRoutesByFullPath {
   '/sitemap-products.xml': typeof SitemapProductsDotxmlRoute
   '/sitemap-static.xml': typeof SitemapStaticDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/studio': typeof StudioRoute
   '/style-quiz': typeof StyleQuizRoute
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
@@ -1038,6 +1045,7 @@ export interface FileRoutesByTo {
   '/sitemap-products.xml': typeof SitemapProductsDotxmlRoute
   '/sitemap-static.xml': typeof SitemapStaticDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/studio': typeof StudioRoute
   '/style-quiz': typeof StyleQuizRoute
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
@@ -1178,6 +1186,7 @@ export interface FileRoutesById {
   '/sitemap-products.xml': typeof SitemapProductsDotxmlRoute
   '/sitemap-static.xml': typeof SitemapStaticDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/studio': typeof StudioRoute
   '/style-quiz': typeof StyleQuizRoute
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
@@ -1320,6 +1329,7 @@ export interface FileRouteTypes {
     | '/sitemap-products.xml'
     | '/sitemap-static.xml'
     | '/sitemap.xml'
+    | '/studio'
     | '/style-quiz'
     | '/swim'
     | '/terms'
@@ -1458,6 +1468,7 @@ export interface FileRouteTypes {
     | '/sitemap-products.xml'
     | '/sitemap-static.xml'
     | '/sitemap.xml'
+    | '/studio'
     | '/style-quiz'
     | '/swim'
     | '/terms'
@@ -1597,6 +1608,7 @@ export interface FileRouteTypes {
     | '/sitemap-products.xml'
     | '/sitemap-static.xml'
     | '/sitemap.xml'
+    | '/studio'
     | '/style-quiz'
     | '/swim'
     | '/terms'
@@ -1738,6 +1750,7 @@ export interface RootRouteChildren {
   SitemapProductsDotxmlRoute: typeof SitemapProductsDotxmlRoute
   SitemapStaticDotxmlRoute: typeof SitemapStaticDotxmlRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  StudioRoute: typeof StudioRoute
   StyleQuizRoute: typeof StyleQuizRoute
   SwimRoute: typeof SwimRouteWithChildren
   TermsRoute: typeof TermsRoute
@@ -1871,6 +1884,13 @@ declare module '@tanstack/react-router' {
       path: '/style-quiz'
       fullPath: '/style-quiz'
       preLoaderRoute: typeof StyleQuizRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/studio': {
+      id: '/studio'
+      path: '/studio'
+      fullPath: '/studio'
+      preLoaderRoute: typeof StudioRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -2928,6 +2948,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapProductsDotxmlRoute: SitemapProductsDotxmlRoute,
   SitemapStaticDotxmlRoute: SitemapStaticDotxmlRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  StudioRoute: StudioRoute,
   StyleQuizRoute: StyleQuizRoute,
   SwimRoute: SwimRouteWithChildren,
   TermsRoute: TermsRoute,
