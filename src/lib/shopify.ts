@@ -122,6 +122,24 @@ export async function storefrontApiRequest<T = unknown>(
   }
 }
 
+/**
+ * `shopifyFetch` — canonical reusable Storefront API client.
+ *
+ * Takes a GraphQL query string and optional variables, returns typed data
+ * or `undefined` on any failure.  Never throws; UI callers can safely
+ * destructure without try/catch.
+ *
+ * Usage:
+ *   const { data } = await shopifyFetch<MyQueryType>(query, { handle: "abc" });
+ *   if (!data) { /* graceful fallback /* }
+ */
+export async function shopifyFetch<T = unknown>(
+  query: string,
+  variables: Record<string, unknown> = {},
+): Promise<{ data?: T } | undefined> {
+  return storefrontApiRequest<T>(query, variables);
+}
+
 // ── GraphQL fragments ───────────────────────────────────────────────────────
 const PRODUCT_FRAGMENT = `
   fragment ProductFields on Product {
