@@ -1,15 +1,20 @@
 /**
  * ConciergeDrawer — left-hand obsidian drawer with a live AI chat
- * interface wired to the `conciergeChat` serverFn. Conversation history is
- * held in component state and re-sent on each turn (no DB persistence —
- * one session per drawer open).
+ * interface wired to the `conciergeChat` serverFn. Each assistant turn may
+ * include inline product cards resolved from verified Shopify handles
+ * (server-side filtered to in-stock only — never fabricated).
  *
- * Visual language: deep obsidian, off-white, soft sand. Premium type scale.
+ * Empty state shows three curated suggested prompts.
  */
 import { useEffect, useRef, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { useMutation } from "@tanstack/react-query";
-import { Loader2, X, ArrowUp } from "lucide-react";
-import { conciergeChat } from "@/lib/ai-concierge.functions";
+import { Loader2, X, ArrowUp, ArrowUpRight } from "lucide-react";
+import {
+  conciergeChat,
+  type ConciergeChatProduct,
+} from "@/lib/ai-concierge.functions";
+import { formatPrice } from "@/lib/shopify";
 import { palette, fontSans, fontSerif } from "./palette";
 
 interface ConciergeDrawerProps {
@@ -17,13 +22,23 @@ interface ConciergeDrawerProps {
   onClose: () => void;
 }
 
-type ChatTurn = { role: "user" | "assistant"; text: string };
+type ChatTurn = {
+  role: "user" | "assistant";
+  text: string;
+  products?: ConciergeChatProduct[];
+};
 
 const GREETING: ChatTurn = {
   role: "assistant",
   text:
     "Good day. I'm your Palace of Roman concierge — here to advise on collections, fit, and styling. What may I help you find?",
 };
+
+const SUGGESTED_PROMPTS = [
+  "Curate an understated evening uniform.",
+  "What's arriving this week worth considering?",
+  "Help me build a quiet capsule for travel.",
+];
 
 export function ConciergeDrawer({ open, onClose }: ConciergeDrawerProps) {
   const [messages, setMessages] = useState<ChatTurn[]>([GREETING]);
@@ -32,15 +47,27 @@ export function ConciergeDrawer({ open, onClose }: ConciergeDrawerProps) {
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
 
   const chat = useMutation({
-    mutationFn: async (history: ChatTurn[]) => conciergeChat({ data: { messages: history } }),
+    mutationFn: async (history: ChatTurn[]) =>
+      conciergeChat({
+        data: { messages: history.map((m) => ({ role: m.role, text: m.text })) },
+      }),
     onSuccess: (res) => {
-      const text = res.ok ? res.reply : res.error;
-      setMessages((prev) => [...prev, { role: "assistant", text }]);
+      if (res.ok) {
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", text: res.reply, products: res.products },
+        ]);
+      } else {
+        setMessages((prev) => [...prev, { role: "assistant", text: res.error }]);
+      }
     },
     onError: () => {
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", text: "The concierge is briefly unavailable. Try again in a moment." },
+        {
+          role: "assistant",
+          text: "The concierge is briefly unavailable. Try again in a moment.",
+        },
       ]);
     },
   });
@@ -49,9 +76,10 @@ export function ConciergeDrawer({ open, onClose }: ConciergeDrawerProps) {
     if (!open) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    setTimeout(() => inputRef.current?.focus(), 200);
+    const t = setTimeout(() => inputRef.current?.focus(), 200);
     return () => {
       document.body.style.overflow = prev;
+      clearTimeout(t);
     };
   }, [open]);
 
@@ -59,17 +87,23 @@ export function ConciergeDrawer({ open, onClose }: ConciergeDrawerProps) {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, chat.isPending]);
 
-  const handleSend = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const text = input.trim();
-    if (!text || chat.isPending) return;
-    const next: ChatTurn[] = [...messages, { role: "user", text }];
+  const sendText = (text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed || chat.isPending) return;
+    const next: ChatTurn[] = [...messages, { role: "user", text: trimmed }];
     setMessages(next);
     setInput("");
     chat.mutate(next);
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    sendText(input);
+  };
+
   if (!open) return null;
+
+  const showSuggestions = messages.length === 1 && !chat.isPending;
 
   return (
     <div className="fixed inset-0 z-[60]" role="dialog" aria-label="Personal styling concierge">
@@ -91,7 +125,10 @@ export function ConciergeDrawer({ open, onClose }: ConciergeDrawerProps) {
         {/* Header */}
         <header
           className="flex items-center justify-between px-7 py-6"
-          style={{ borderBottom: "1px solid rgba(244,241,236,0.08)", fontFamily: fontSans }}
+          style={{
+            borderBottom: "1px solid rgba(244,241,236,0.08)",
+            fontFamily: fontSans,
+          }}
         >
           <div>
             <p
@@ -134,13 +171,112 @@ export function ConciergeDrawer({ open, onClose }: ConciergeDrawerProps) {
                 style={{
                   fontFamily: msg.role === "user" ? fontSans : fontSerif,
                   fontWeight: msg.role === "user" ? 300 : 400,
-                  color: msg.role === "user" ? palette.offwhite : palette.offwhite,
+                  color: palette.offwhite,
                 }}
               >
                 {msg.text}
               </p>
+
+              {/* Inline product cards (verified handles only, server-resolved) */}
+              {msg.products && msg.products.length > 0 && (
+                <ul className="mt-5 space-y-3">
+                  {msg.products.map((p) => (
+                    <li key={p.handle}>
+                      <Link
+                        to="/product/$handle"
+                        params={{ handle: p.handle }}
+                        onClick={onClose}
+                        className="group grid grid-cols-[88px_1fr] gap-4 transition-opacity hover:opacity-90"
+                      >
+                        <div
+                          className="aspect-[4/5] overflow-hidden"
+                          style={{ background: "rgba(244,241,236,0.04)" }}
+                        >
+                          {p.imageUrl && (
+                            <img
+                              src={p.imageUrl}
+                              alt={p.imageAlt ?? p.title}
+                              loading="lazy"
+                              className="w-full h-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-[1.05]"
+                            />
+                          )}
+                        </div>
+                        <div style={{ fontFamily: fontSans }}>
+                          <p
+                            className="text-[9px] uppercase tracking-[0.3em]"
+                            style={{ color: palette.sand }}
+                          >
+                            {p.vendor}
+                          </p>
+                          <p
+                            className="text-[13px] leading-snug mt-1.5 line-clamp-2"
+                            style={{ fontWeight: 300, color: palette.offwhite }}
+                          >
+                            {p.title}
+                          </p>
+                          <p
+                            className="text-[11px] mt-1.5"
+                            style={{ color: "rgba(244,241,236,0.7)" }}
+                          >
+                            {formatPrice(p.price)}
+                          </p>
+                          <span
+                            className="mt-3 inline-flex items-center gap-1 text-[9px] uppercase tracking-[0.32em] pb-0.5 border-b"
+                            style={{
+                              color: palette.sand,
+                              borderColor: "rgba(217,207,193,0.4)",
+                            }}
+                          >
+                            View piece
+                            <ArrowUpRight className="w-2.5 h-2.5" strokeWidth={1.5} />
+                          </span>
+                        </div>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           ))}
+
+          {/* Suggested prompts (only on the initial greeting) */}
+          {showSuggestions && (
+            <div className="pt-2">
+              <p
+                className="text-[9px] uppercase tracking-[0.4em] mb-3"
+                style={{ color: "rgba(244,241,236,0.45)", fontFamily: fontSans }}
+              >
+                Suggested inquiries
+              </p>
+              <div className="space-y-2">
+                {SUGGESTED_PROMPTS.map((prompt) => (
+                  <button
+                    key={prompt}
+                    onClick={() => sendText(prompt)}
+                    className="w-full text-left text-[13px] py-3 px-4 transition-all duration-300"
+                    style={{
+                      background: "#121214",
+                      border: "1px solid rgba(244,241,236,0.1)",
+                      color: palette.offwhite,
+                      fontFamily: fontSans,
+                      fontWeight: 300,
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = palette.sand;
+                      e.currentTarget.style.background = "#16161A";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = "rgba(244,241,236,0.1)";
+                      e.currentTarget.style.background = "#121214";
+                    }}
+                  >
+                    {prompt}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {chat.isPending && (
             <div
               className="flex items-center gap-2 text-[11px] uppercase tracking-[0.32em]"
@@ -155,7 +291,7 @@ export function ConciergeDrawer({ open, onClose }: ConciergeDrawerProps) {
 
         {/* Composer */}
         <form
-          onSubmit={handleSend}
+          onSubmit={handleSubmit}
           className="px-7 py-5"
           style={{ borderTop: "1px solid rgba(244,241,236,0.08)" }}
         >
@@ -167,7 +303,7 @@ export function ConciergeDrawer({ open, onClose }: ConciergeDrawerProps) {
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
-                  handleSend(e as unknown as React.FormEvent);
+                  sendText(input);
                 }
               }}
               rows={2}
