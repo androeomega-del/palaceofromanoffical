@@ -695,19 +695,26 @@ function ProductView({
               )}
             </div>
 
-            {/* Desktop: hero frame, then editorial 2-column grid */}
-            <div className="hidden lg:grid grid-cols-2 gap-3 xl:gap-4">
-              {(images.length ? images : [{ url: "", altText: product.title }]).map((img, i, arr) => {
-                const hero = i === 0;
-                // Make the trailing orphan span the full row to avoid an empty cell
-                const isLastOrphan = !hero && i === arr.length - 1 && (arr.length - 1) % 2 === 1;
-                const wide = hero || isLastOrphan;
+            {/* Desktop: single vertical asymmetric column (Phase 2b).
+                Each frame uses a varied aspect ratio to create editorial rhythm
+                without breaking the monolith feel of one continuous column. */}
+            <div className="hidden lg:flex lg:flex-col gap-4 xl:gap-6">
+              {(images.length ? images : [{ url: "", altText: product.title }]).map((img, i) => {
+                // Editorial rhythm: hero portrait, then alternate 3/4 portrait
+                // and 4/5 wide-portrait so the column reads as a curated story
+                // rather than a uniform stack.
+                const ratioClass =
+                  i === 0
+                    ? "aspect-[4/5]"
+                    : i % 3 === 1
+                      ? "aspect-[3/4]"
+                      : i % 3 === 2
+                        ? "aspect-[4/5]"
+                        : "aspect-square";
                 return (
                   <div
                     key={img.url || i}
-                    className={`bg-secondary overflow-hidden ${
-                      wide ? "col-span-2 aspect-[4/5]" : "aspect-[3/4]"
-                    }`}
+                    className={`bg-[var(--studio-canvas)] overflow-hidden ${ratioClass}`}
                   >
                     {img.url && (
                       <button
@@ -717,16 +724,16 @@ function ProductView({
                         className="block w-full h-full cursor-zoom-in"
                       >
                         <img
-                          src={cdnImage(img.url, { width: wide ? 1600 : 1000 })}
-                          srcSet={cdnSrcSet(img.url, wide ? [800, 1200, 1600, 2000] : [500, 800, 1100])}
-                          sizes={wide ? "(min-width: 1280px) 58vw, 100vw" : "(min-width: 1280px) 29vw, 50vw"}
+                          src={cdnImage(img.url, { width: 1600 })}
+                          srcSet={cdnSrcSet(img.url, [800, 1200, 1600, 2000])}
+                          sizes="(min-width: 1280px) 58vw, 100vw"
                           alt={buildProductAlt({ ...product, selectedOptions: selectedVariant?.selectedOptions }, { index: i, total: images.length, shopifyAlt: img.altText })}
-                          width={wide ? 1600 : 1000}
-                          height={wide ? 2000 : 1333}
+                          width={1600}
+                          height={2000}
                           loading={i === 0 ? "eager" : "lazy"}
                           fetchPriority={i === 0 ? "high" : undefined}
                           decoding="async"
-                          className="w-full h-full object-contain p-6 xl:p-8 transition-transform duration-[1000ms] motion-safe:hover:scale-[1.015]"
+                          className="w-full h-full object-contain p-6 xl:p-10 transition-transform duration-[1200ms] ease-out motion-safe:hover:scale-[1.02]"
                         />
                       </button>
                     )}
@@ -734,6 +741,7 @@ function ProductView({
                 );
               })}
             </div>
+
 
           </div>
 
