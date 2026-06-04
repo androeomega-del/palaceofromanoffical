@@ -92,13 +92,18 @@ export const Route = createFileRoute("/studio/product/$handle")({
 
 function StudioPDP() {
   const { handle } = Route.useParams();
+  const market = useMarketStore((s) => s.market);
   const setSuppressed = useChromeStore((s) => s.setSuppressed);
   useEffect(() => {
     setSuppressed({ header: true, footer: true });
     return () => setSuppressed({ header: false, footer: false });
   }, [setSuppressed]);
 
-  const { data: product } = useSuspenseQuery(studioProductQO(handle));
+  // Suspense-bound on the localized query: changing the market re-keys the
+  // query and re-suspends until the new @inContext payload returns.
+  const { data: product } = useSuspenseQuery(
+    studioProductQO(handle, market.country, market.language),
+  );
   if (!product) return null;
 
   return (
@@ -111,8 +116,8 @@ function StudioPDP() {
       }}
     >
       <StudioPDPHeader />
-      <PDPBody product={product} />
-      <CompleteTheLook product={product} />
+      <PDPBody product={product} market={market} />
+      <CompleteTheLook product={product} market={market} />
       <style>{`
         @keyframes studioFade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
         @keyframes studioScale { from { opacity: 0; transform: scale(1.015); } to { opacity: 1; transform: scale(1); } }
@@ -127,7 +132,7 @@ function StudioPDP() {
 function StudioPDPHeader() {
   return (
     <header
-      className="flex items-center justify-between px-6 md:px-14 py-6 border-b sticky top-0 z-30"
+      className="flex items-center justify-between gap-4 px-6 md:px-14 py-6 border-b sticky top-0 z-30"
       style={{
         borderColor: palette.hairline,
         background: "rgba(11,11,12,0.85)",
@@ -143,14 +148,21 @@ function StudioPDPHeader() {
         ← Studio
       </Link>
       <span
-        className="text-[11px] tracking-[0.45em] uppercase"
+        className="hidden md:inline text-[11px] tracking-[0.45em] uppercase"
         style={{ color: palette.muted }}
       >
         Palace of Roman
       </span>
+      <CountrySelector
+        ink={palette.offwhite}
+        hairline={palette.hairline}
+        accent={palette.sand}
+        surface={palette.obsidian}
+      />
     </header>
   );
 }
+
 
 /* ===================== Body ===================== */
 
