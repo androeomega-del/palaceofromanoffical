@@ -323,7 +323,7 @@ function AddToCartButton({
     if (!variant) return;
     setBusy(true);
     const ok = await addItem({
-      product,
+      product: { node: product },
       variantId: variant.id,
       variantTitle: variant.title,
       price: variant.price,
