@@ -293,6 +293,67 @@ export async function fetchProductRecommendations(
   return res?.data?.productRecommendations ?? [];
 }
 
+// ── Localized (@inContext) variants ─────────────────────────────────────────
+// Shopify's Storefront API resolves prices, taxes (when inclusive pricing is
+// configured for the market), and translated content based on the @inContext
+// directive. We inject country/language at the query level so the SAME
+// `productByHandle` and `productRecommendations` resolvers return the
+// correct localised payload — no second endpoint required.
+export type CountryCode =
+  | "US" | "GB" | "FR" | "DE" | "IT" | "ES" | "JP" | "CN" | "HK" | "SG"
+  | "AE" | "SA" | "AU" | "CA" | "CH" | "NL" | "BE" | "SE" | "NO" | "DK"
+  | "BR" | "MX" | "KR" | "TW";
+export type LanguageCode =
+  | "EN" | "FR" | "DE" | "IT" | "ES" | "JA" | "ZH" | "AR" | "KO" | "PT" | "NL" | "SV";
+
+const PRODUCT_BY_HANDLE_IN_CONTEXT = `
+  ${PRODUCT_FRAGMENT}
+  query ProductByHandleInContext(
+    $handle: String!
+    $country: CountryCode!
+    $language: LanguageCode!
+  ) @inContext(country: $country, language: $language) {
+    productByHandle(handle: $handle) { ...ProductFields }
+  }
+`;
+
+const PRODUCT_RECOMMENDATIONS_IN_CONTEXT = `
+  ${PRODUCT_FRAGMENT}
+  query ProductRecommendationsInContext(
+    $productId: ID!
+    $intent: ProductRecommendationIntent
+    $country: CountryCode!
+    $language: LanguageCode!
+  ) @inContext(country: $country, language: $language) {
+    productRecommendations(productId: $productId, intent: $intent) {
+      ...ProductFields
+    }
+  }
+`;
+
+export async function fetchProductByHandleLocalized(
+  handle: string,
+  ctx: { country: CountryCode; language: LanguageCode },
+): Promise<ShopifyProductNode | null> {
+  const res = await storefrontApiRequest<{ productByHandle: ShopifyProductNode | null }>(
+    PRODUCT_BY_HANDLE_IN_CONTEXT,
+    { handle, country: ctx.country, language: ctx.language },
+  );
+  return res?.data?.productByHandle ?? null;
+}
+
+export async function fetchProductRecommendationsLocalized(
+  productId: string,
+  ctx: { country: CountryCode; language: LanguageCode },
+  intent: "RELATED" | "COMPLEMENTARY" = "COMPLEMENTARY",
+): Promise<ShopifyProductNode[]> {
+  const res = await storefrontApiRequest<{ productRecommendations: ShopifyProductNode[] | null }>(
+    PRODUCT_RECOMMENDATIONS_IN_CONTEXT,
+    { productId, intent, country: ctx.country, language: ctx.language },
+  );
+  return res?.data?.productRecommendations ?? [];
+}
+
 // ── Collections list ────────────────────────────────────────────────────────
 // Storefront API does not expose productCount on Collection; we ask for a
 // single sentinel product to flag "has products" (1) vs "empty" (0). If a
