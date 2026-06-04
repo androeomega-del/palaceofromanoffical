@@ -1,22 +1,31 @@
 /**
- * Homepage route — thin shell.
+ * Homepage route — obsidian editorial shell.
  *
- * All page content is owned by <EditionLayout/>: it renders the site
- * header, the AI-curated edition body (or <DefaultEditionBody/> as
- * fallback), and the site footer. The root layout's default chrome is
- * suppressed on `/` so there are never duplicate headers/footers.
+ * Renders <HomeStudioLayout/> (embedded variant) inside the real
+ * <SiteHeader/> + <SiteFooter/> chrome so search, cart, account, and nav
+ * stay fully functional. All SEO (meta-AB, OG, canonical, BreadcrumbList)
+ * is preserved from the prior EditionLayout implementation.
+ *
+ * Legacy <EditionLayout/> is intentionally left in src/components/editors-edition/
+ * (archived by unlinking — preserve-legacy rule).
  */
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { EditionLayout } from "@/components/editors-edition";
+import { HomeStudioLayout } from "@/components/home-studio/home-studio-layout";
 import heroImage from "@/assets/home-hero.jpg";
 import summerHero from "@/assets/summer-bento-hero.jpg";
 import { readMetaAbBucket } from "@/lib/meta-ab.functions";
 import { pickHomeMeta, seoMetaForBucket, type MetaBucket } from "@/lib/meta-ab";
 import { useMetaAb } from "@/hooks/use-meta-ab";
+import { newThisWeekQueryOptions } from "@/lib/rails/queries";
 
 export const Route = createFileRoute("/")({
-  loader: async (): Promise<{ abBucket: MetaBucket }> => {
-    const { bucket } = await readMetaAbBucket();
+  loader: async ({ context }): Promise<{ abBucket: MetaBucket }> => {
+    // Prime the New In rail in parallel with the meta-AB bucket lookup so
+    // the editorial grid SSRs without a loading flash.
+    const [{ bucket }] = await Promise.all([
+      readMetaAbBucket(),
+      context.queryClient.ensureQueryData(newThisWeekQueryOptions("Women")),
+    ]);
     return { abBucket: bucket };
   },
   head: ({ loaderData }) => {
@@ -64,7 +73,7 @@ export const Route = createFileRoute("/")({
 function HomePage() {
   const { abBucket } = Route.useLoaderData();
   useMetaAb("home", abBucket, { a: pickHomeMeta(0), b: pickHomeMeta(1) });
-  return <EditionLayout />;
+  return <HomeStudioLayout variant="embedded" />;
 }
 
 function HomeErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
