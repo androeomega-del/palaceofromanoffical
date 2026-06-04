@@ -34,7 +34,7 @@ export function LandingCollectionPage({
   const products = data ?? [];
 
   return (
-    <main className="bg-canvas text-ink">
+    <main className="studio obsidian min-h-screen bg-canvas text-ink">
       {/* ItemList JSON-LD — emitted once products load so search engines can
           map the collection page to the products it lists. */}
       {products.length > 0 ? (
