@@ -9,6 +9,7 @@
  */
 import { Link, useLocation } from "@tanstack/react-router";
 import { Sparkles, ShoppingBag } from "lucide-react";
+import { useCartStore } from "@/stores/cart-store";
 import { palette, fontSans, fontSerif } from "./palette";
 
 interface PalaceHeaderProps {
@@ -17,6 +18,10 @@ interface PalaceHeaderProps {
 
 export function PalaceHeader({ onOpenConcierge }: PalaceHeaderProps) {
   const location = useLocation();
+  const openCart = useCartStore((s) => s.openDrawer);
+  const itemCount = useCartStore((s) =>
+    s.items.reduce((n, i) => n + i.quantity, 0),
+  );
   // Studio is a draft surface — "active" reflects whichever segment the
   // visitor is exploring on /shop. We read the gender search param.
   const search = location.search as { gender?: "Men" | "Women" | "Unisex" };
