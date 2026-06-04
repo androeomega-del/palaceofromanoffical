@@ -9,15 +9,27 @@
  * consistent under the global dept toggle. Best-Sellers is dept-scoped on
  * purpose: store-wide best-sellers on a dept-anchored surface is a product
  * error, not just a UX quirk.
+ *
+ * Market scoping: the active Shopify Markets country/language is baked into
+ * the queryKey so flipping the country selector instantly re-fetches the
+ * rail with the localised currency + (where configured) tax-inclusive
+ * pricing. The fetch itself injects @inContext automatically inside
+ * `storefrontApiRequest`, so we only need the key to vary here.
  */
 import { queryOptions } from "@tanstack/react-query";
 import { fetchProducts } from "@/lib/shopify";
+import { useMarketStore } from "@/stores/market-store";
 
 export type Dept = "Women" | "Men";
 
+function marketKey() {
+  const m = useMarketStore.getState().market;
+  return `${m.country}-${m.language}`;
+}
+
 export const newThisWeekQueryOptions = (dept: Dept) =>
   queryOptions({
-    queryKey: ["rail-new-this-week", dept] as const,
+    queryKey: ["rail-new-this-week", dept, marketKey()] as const,
     queryFn: () =>
       fetchProducts({
         first: 4,
@@ -30,7 +42,7 @@ export const newThisWeekQueryOptions = (dept: Dept) =>
 
 export const bestSellersQueryOptions = (dept: Dept) =>
   queryOptions({
-    queryKey: ["rail-best-sellers", dept] as const,
+    queryKey: ["rail-best-sellers", dept, marketKey()] as const,
     queryFn: () =>
       fetchProducts({
         first: 4,

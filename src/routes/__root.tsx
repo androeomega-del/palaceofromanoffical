@@ -16,6 +16,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { WelcomeDispatchModal } from "@/components/welcome-dispatch-modal";
 import { ConciergeWidget } from "@/components/concierge-widget";
 import { ExitIntentStylist } from "@/components/exit-intent-stylist";
+import { MarketQuerySync } from "@/components/market-query-sync";
 import { useCartSync } from "@/hooks/use-cart-sync";
 import { Toaster } from "@/components/ui/sonner";
 import { installHydrationMonitor } from "@/lib/hydration-monitor";
@@ -360,6 +361,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <CartSyncBoundary />
+      <MarketQuerySync />
       <ChromeAwareShell />
       <ClientOnlyToaster />
       <WelcomeDispatchModal />
