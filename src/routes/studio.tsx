@@ -57,7 +57,7 @@ function StudioPage() {
   const [conciergeOpen, setConciergeOpen] = useState(false);
 
   const { data: rail } = useSuspenseQuery(newThisWeekQueryOptions("Women"));
-  const products = rail?.products?.edges?.slice(0, 6) ?? [];
+  const products = (rail ?? []).slice(0, 6);
 
   return (
     <div
