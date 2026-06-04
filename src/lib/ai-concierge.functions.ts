@@ -429,35 +429,102 @@ const ChatInputSchema = z.object({
   messages: z.array(ChatTurnSchema).min(1).max(24),
 });
 
-
-
 const CHAT_SYSTEM = `You are the Palace of Roman Concierge — a senior personal stylist for a luxury multi-brand boutique.
-Voice: curatorial, restrained, confident, warm. Never effusive, never salesy. Speak as "we".
+Voice: curatorial, restrained, confident, warm. Never effusive, never salesy. Speak as "we". No emoji, no exclamation marks.
 Scope: styling advice, fit/sizing intuition, occasion dressing, season pairing, brand context, delivery expectations.
 For returns, refunds, tracking, customs, damaged or wrong items — politely direct the client to support@palaceofromanofficial.com.
 Never invent products, prices, stock, or boutique partners by name. Never mention BrandsGateway.
-Keep replies to 2–4 sentences unless asked for more.`;
+
+OUTPUT FORMAT — return a JSON object:
+{
+  "reply": "Your 2–4 sentence reply to the client.",
+  "handles": ["product-handle-1", "product-handle-2"]
+}
+- "handles" is an array of up to 3 product handles you want to surface inline as visual cards.
+- Only include a handle if it directly answers the client's request. Empty array if nothing specific to recommend.
+- Use handles EXACTLY as they appear in our catalog (lowercase, hyphenated). If unsure, leave the array empty rather than guess.
+- Do NOT repeat product titles or prices in "reply" — the cards render them. Reference the piece by silhouette or feel.`;
+
+export type ConciergeChatProduct = {
+  handle: string;
+  title: string;
+  vendor: string;
+  imageUrl: string | null;
+  imageAlt: string | null;
+  price: { amount: string; currencyCode: string };
+};
+
+export type ConciergeChatResult =
+  | { ok: true; reply: string; products: ConciergeChatProduct[] }
+  | { ok: false; error: string };
 
 export const conciergeChat = createServerFn({ method: "POST" })
   .inputValidator((i: unknown) => ChatInputSchema.parse(i))
-  .handler(async ({ data }): Promise<{ ok: true; reply: string } | { ok: false; error: string }> => {
+  .handler(async ({ data }): Promise<ConciergeChatResult> => {
     const handoff = detectServiceHandoff(data.messages.at(-1)?.text);
     if (handoff) {
-      return { ok: true, reply: `${handoff.message} Please write to ${SUPPORT_EMAIL}.` };
+      return {
+        ok: true,
+        reply: `${handoff.message} Please write to ${SUPPORT_EMAIL}.`,
+        products: [],
+      };
     }
     const transcript = data.messages
       .map((m) => `${m.role === "user" ? "Client" : "Concierge"}: ${m.text}`)
       .join("\n");
+
     try {
-      const reply = await callLlm({
-        system: CHAT_SYSTEM,
-        user: `${transcript}\n\nConcierge:`,
-        maxTokens: 320,
-        temperature: 0.4,
-      });
-      return { ok: true, reply: reply.trim() || "Tell me a little more about what you have in mind." };
+      const llmOut = await callLlmJson<{ reply?: string; handles?: string[] }>(
+        {
+          system: CHAT_SYSTEM,
+          user: `${transcript}\n\nReturn the JSON object now.`,
+          maxTokens: 400,
+          temperature: 0.4,
+        },
+        { reply: "", handles: [] },
+      );
+
+      const reply =
+        (llmOut.reply ?? "").trim() ||
+        "Tell me a little more about the occasion or feel you have in mind.";
+
+      const rawHandles = Array.isArray(llmOut.handles) ? llmOut.handles : [];
+      const cleanHandles = Array.from(
+        new Set(
+          rawHandles
+            .filter((h): h is string => typeof h === "string")
+            .map((h) => h.trim().toLowerCase())
+            .filter((h) => /^[a-z0-9][a-z0-9-]{0,120}$/.test(h)),
+        ),
+      ).slice(0, 3);
+
+      const resolved = await Promise.all(
+        cleanHandles.map(async (handle) => {
+          const node = await fetchProductByHandle(handle).catch(() => null);
+          if (!node) return null;
+          if (!node.variants.edges.some((v) => v.node.availableForSale)) return null;
+          const img = node.images.edges[0]?.node;
+          const product: ConciergeChatProduct = {
+            handle: node.handle,
+            title: node.title,
+            vendor: node.vendor,
+            imageUrl: img?.url ?? null,
+            imageAlt: img?.altText ?? node.title,
+            price: {
+              amount: node.priceRange.minVariantPrice.amount,
+              currencyCode: node.priceRange.minVariantPrice.currencyCode,
+            },
+          };
+          return product;
+        }),
+      );
+
+      const products = resolved.filter((p): p is ConciergeChatProduct => p !== null);
+
+      return { ok: true, reply, products };
     } catch (err) {
       console.error("[concierge] chat failed:", err);
       return { ok: false, error: "The concierge is briefly unavailable. Try again in a moment." };
     }
   });
+
