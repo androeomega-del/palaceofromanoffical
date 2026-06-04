@@ -20,9 +20,15 @@ export function PriceTag({ money, className, strike }: Props) {
   const currency = useCurrencyStore((s) => s.currency);
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
-  // SSR / first paint: always render USD to match server output, then swap
-  // once the persisted preference is hydrated.
-  const text = mounted && currency !== "USD" ? convertForDisplay(money, currency) : formatPrice(money);
+  // When Shopify Markets has already localised the price (e.g. EUR / GBP /
+  // JPY returned via @inContext), render it directly — the display-currency
+  // converter only knows how to convert from USD. Otherwise apply the
+  // shopper's manual display preference on top of the canonical USD price.
+  const alreadyLocalised = !!money && money.currencyCode !== "USD";
+  const text =
+    mounted && currency !== "USD" && !alreadyLocalised
+      ? convertForDisplay(money, currency)
+      : formatPrice(money);
   if (strike) return <s className={className}>{text}</s>;
   return <span className={className}>{text}</span>;
 }

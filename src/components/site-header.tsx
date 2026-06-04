@@ -27,6 +27,7 @@ import { DeliverToButton } from "@/components/deliver-to-button";
 import { useCustomerStore } from "@/stores/customer-store";
 import { useWishlistStore } from "@/stores/wishlist-store";
 import { CurrencySwitcher } from "@/components/currency-switcher";
+import { HeaderCountrySelector } from "@/components/header-country-selector";
 import prMonogram from "@/assets/pr-monogram.png";
 
 function WishlistHeaderLink() {
@@ -164,6 +165,7 @@ export function SiteHeader() {
             </Link>
             <div className="hidden xl:flex items-center gap-6">
               <DeliverToButton />
+              <HeaderCountrySelector />
               <CurrencySwitcher />
               <ReducedMotionToggle />
             </div>

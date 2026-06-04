@@ -8,6 +8,7 @@
 // A collection handle that does not exist in Shopify returns null; pages
 // handle that as a 404. Add the collection in Shopify Admin to make it live.
 import { toast } from "sonner";
+import { useMarketStore } from "@/stores/market-store";
 
 export const SHOPIFY_API_VERSION = "2025-07";
 
@@ -83,19 +84,53 @@ export type FilteredResult = {
 };
 
 // ── Storefront API client ───────────────────────────────────────────────────
+// Auto-injects Shopify Markets @inContext(country, language) into every
+// outbound query so prices, currency, and (where the market is configured
+// for inclusive pricing) tax-inclusive amounts come back already localised.
+// Read at call time from `useMarketStore`; SSR returns the default (US/EN)
+// and client re-fetches via TanStack Query when the shopper picks a market.
 let BILLING_TOAST_SHOWN = false;
+
+function injectInContext(query: string): string {
+  if (/@inContext\s*\(/.test(query)) return query;
+  // Match the first `query Name(...)? {`  — handles both with and without
+  // a parameter list. Idempotent: if no match, the query is returned as-is.
+  const re = /(query\s+\w+)\s*(?:\(([^)]*)\))?\s*\{/;
+  if (!re.test(query)) return query;
+  return query.replace(re, (_m, head: string, params: string | undefined) => {
+    const extra = `$_country: CountryCode!, $_language: LanguageCode!`;
+    const merged = params && params.trim() ? `${params.trim()}, ${extra}` : extra;
+    return `${head}(${merged}) @inContext(country: $_country, language: $_language) {`;
+  });
+}
+
+function readCurrentMarket(): { country: string; language: string } {
+  try {
+    const m = useMarketStore.getState().market;
+    return { country: m.country, language: m.language };
+  } catch {
+    return { country: "US", language: "EN" };
+  }
+}
+
 export async function storefrontApiRequest<T = unknown>(
   query: string,
   variables: Record<string, unknown> = {},
 ): Promise<{ data?: T } | undefined> {
   try {
+    const mkt = readCurrentMarket();
+    const localizedQuery = injectInContext(query);
+    const localizedVars =
+      localizedQuery === query
+        ? variables
+        : { ...variables, _country: mkt.country, _language: mkt.language };
     const res = await fetch(SHOPIFY_STOREFRONT_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "X-Shopify-Storefront-Access-Token": SHOPIFY_STOREFRONT_TOKEN,
       },
-      body: JSON.stringify({ query, variables }),
+      body: JSON.stringify({ query: localizedQuery, variables: localizedVars }),
     });
     if (res.status === 402) {
       if (!BILLING_TOAST_SHOWN) {
