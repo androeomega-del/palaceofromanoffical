@@ -20,10 +20,11 @@ import { newThisWeekQueryOptions } from "@/lib/rails/queries";
 
 export const Route = createFileRoute("/")({
   loader: async ({ context }): Promise<{ abBucket: MetaBucket }> => {
-    // Prime the New In rail in parallel with the meta-AB bucket lookup so
-    // the editorial grid SSRs without a loading flash.
+    // Prime BOTH the Men's (primary) and Women's New In rails in parallel
+    // so the segmented editorial grid SSRs without a loading flash.
     const [{ bucket }] = await Promise.all([
       readMetaAbBucket(),
+      context.queryClient.ensureQueryData(newThisWeekQueryOptions("Men")),
       context.queryClient.ensureQueryData(newThisWeekQueryOptions("Women")),
     ]);
     return { abBucket: bucket };
