@@ -44,7 +44,7 @@ function Page() {
   return (
     <CraftsmanshipArticle
       eyebrow="Material"
-      title={TITLE}
+      title="The Cashmere Field Guide — Grade, Ply, and the Sweaters Worth Keeping"
       dek="Cashmere is the most misunderstood material in luxury fashion. A short brief on where it comes from, why two sweaters at the same price can be wildly different, and what to look for before you buy."
       readingMinutes={9}
       body={
