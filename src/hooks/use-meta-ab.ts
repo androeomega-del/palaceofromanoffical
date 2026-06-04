@@ -128,8 +128,3 @@ function setMeta(key: string, value: string, attr: "name" | "property") {
   el.setAttribute("content", value);
 }
 
-function removeMeta(key: string, attr: "name" | "property") {
-  const el = document.head.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`);
-  if (el) el.remove();
-}
-
