@@ -20,12 +20,17 @@ import { useSuspenseQuery, useQuery, queryOptions } from "@tanstack/react-query"
 import { ArrowUpRight, Loader2, MessageCircle, X, Check, Plus } from "lucide-react";
 import {
   fetchProductByHandle,
-  fetchProductRecommendations,
+  fetchProductByHandleLocalized,
+  fetchProductRecommendationsLocalized,
   formatPrice,
   type ShopifyProductNode,
+  type CountryCode,
+  type LanguageCode,
 } from "@/lib/shopify";
 import { useChromeStore } from "@/stores/chrome-store";
 import { useCartStore } from "@/stores/cart-store";
+import { useMarketStore, type Market } from "@/stores/market-store";
+import { CountrySelector } from "@/components/studio/country-selector";
 import { cdnImage } from "@/lib/cdn-image";
 import { toast } from "sonner";
 
@@ -38,26 +43,41 @@ const palette = {
   hairline: "rgba(244,241,236,0.14)",
 } as const;
 
-/* ---------- query options ---------- */
-const studioProductQO = (handle: string) =>
+/* ---------- query options ----------
+ * Keys include the active market so changing country/language instantly
+ * triggers a re-fetch and React re-renders with the localized payload.
+ */
+const studioProductQO = (handle: string, country: CountryCode, language: LanguageCode) =>
   queryOptions({
-    queryKey: ["studio-pdp", handle] as const,
-    queryFn: () => fetchProductByHandle(handle),
+    queryKey: ["studio-pdp", handle, country, language] as const,
+    queryFn: () => fetchProductByHandleLocalized(handle, { country, language }),
     staleTime: 60_000,
   });
 
-const studioLookQO = (productId: string | undefined) =>
+const studioLookQO = (
+  productId: string | undefined,
+  country: CountryCode,
+  language: LanguageCode,
+) =>
   queryOptions({
-    queryKey: ["studio-pdp-look", productId] as const,
+    queryKey: ["studio-pdp-look", productId, country, language] as const,
     enabled: !!productId,
     queryFn: () =>
-      productId ? fetchProductRecommendations(productId, "COMPLEMENTARY") : Promise.resolve([]),
+      productId
+        ? fetchProductRecommendationsLocalized(productId, { country, language }, "COMPLEMENTARY")
+        : Promise.resolve([]),
     staleTime: 5 * 60_000,
   });
 
 export const Route = createFileRoute("/studio/product/$handle")({
   loader: async ({ context, params }) => {
-    const p = await context.queryClient.ensureQueryData(studioProductQO(params.handle));
+    // SSR primes with the canonical (un-contextualised) product — the client
+    // re-fetches immediately under the user's persisted market.
+    const p = await context.queryClient.ensureQueryData({
+      queryKey: ["studio-pdp-ssr", params.handle] as const,
+      queryFn: () => fetchProductByHandle(params.handle),
+      staleTime: 60_000,
+    });
     if (!p) throw notFound();
     return null;
   },
