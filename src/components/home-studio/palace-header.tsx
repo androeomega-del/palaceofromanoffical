@@ -97,14 +97,22 @@ export function PalaceHeader({ onOpenConcierge }: PalaceHeaderProps) {
           <Sparkles className="w-3.5 h-3.5" strokeWidth={1.25} style={{ color: palette.sand }} />
           <span className="hidden md:inline">Concierge</span>
         </button>
-        <Link
-          to="/cart"
+        <button
+          onClick={openCart}
           aria-label="Open bag"
-          className="transition-opacity duration-300 opacity-80 hover:opacity-100"
+          className="relative inline-flex items-center transition-opacity duration-300 opacity-80 hover:opacity-100"
           style={{ color: palette.offwhite }}
         >
           <ShoppingBag className="w-4 h-4" strokeWidth={1.25} />
-        </Link>
+          {itemCount > 0 && (
+            <span
+              className="absolute -top-1.5 -right-2 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full text-[9px] tracking-normal"
+              style={{ background: palette.sand, color: palette.obsidian }}
+            >
+              {itemCount}
+            </span>
+          )}
+        </button>
       </div>
     </header>
   );
