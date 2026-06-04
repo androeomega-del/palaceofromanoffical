@@ -16,10 +16,19 @@ export function renderWelcomeEmail(): { subject: string; html: string; text: str
         <tr><td style="font-family:Karla,Helvetica,sans-serif;font-size:15px;line-height:1.75;color:#3a3328;padding-bottom:24px;">
           Thank you for joining us. You'll be among the first to receive new arrivals, private editorials, and quiet notes from the atelier &mdash; nothing more, nothing less.
         </td></tr>
-        <tr><td style="font-family:Karla,Helvetica,sans-serif;font-size:15px;line-height:1.75;color:#3a3328;padding-bottom:36px;">
+        <tr><td style="font-family:Karla,Helvetica,sans-serif;font-size:15px;line-height:1.75;color:#3a3328;padding-bottom:32px;">
           Palace of Roman curates a considered selection of pieces from the world's defining maisons. Every item is 100% authentic, sourced from the brands or their authorised distributors.
         </td></tr>
-        <tr><td align="center" style="padding:8px 0 16px;">
+        <tr><td align="center" style="padding:8px 0 28px;">
+          <table role="presentation" cellpadding="0" cellspacing="0" style="border:1px solid #d8c9ad;background:#fffaf2;">
+            <tr><td align="center" style="padding:22px 36px;">
+              <div style="font-family:Karla,Helvetica,sans-serif;font-size:11px;letter-spacing:0.32em;color:#7a6a55;text-transform:uppercase;padding-bottom:10px;">A welcome from us</div>
+              <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:24px;letter-spacing:0.16em;color:#1a1a1a;padding-bottom:8px;">ROMAN10</div>
+              <div style="font-family:Karla,Helvetica,sans-serif;font-size:13px;color:#3a3328;line-height:1.6;">10% off your first order &middot; one use per client</div>
+            </td></tr>
+          </table>
+        </td></tr>
+        <tr><td align="center" style="padding:0 0 16px;">
           <a href="${SITE}/shop" style="display:inline-block;background:#1a1a1a;color:#fffaf2;text-decoration:none;font-family:Karla,Helvetica,sans-serif;font-size:13px;letter-spacing:0.24em;text-transform:uppercase;padding:16px 36px;">Explore the collection</a>
         </td></tr>
         <tr><td align="center" style="font-family:Karla,Helvetica,sans-serif;font-size:12px;color:#9c8c70;padding:40px 0 0;line-height:1.6;">
@@ -36,6 +45,8 @@ export function renderWelcomeEmail(): { subject: string; html: string; text: str
   const text = `Welcome to Palace of Roman.
 
 Thank you for joining us. You'll be among the first to receive new arrivals, private editorials, and quiet notes from the atelier.
+
+A welcome from us: use code ROMAN10 for 10% off your first order (one use per client).
 
 Explore the collection: ${SITE}/shop
 
