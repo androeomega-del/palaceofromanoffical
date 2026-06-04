@@ -123,7 +123,7 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
           </Link>
         </div>
 
-        <AsymmetricGrid products={products} />
+        <AsymmetricGrid menProducts={menProducts} womenProducts={womenProducts} />
       </section>
 
       {/* ───── Standalone-only draft footer (real SiteFooter handles `/`) ───── */}
