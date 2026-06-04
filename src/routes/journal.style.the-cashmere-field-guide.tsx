@@ -1,17 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CraftsmanshipArticle } from "@/components/craftsmanship-article";
-import { routeHead, articleJsonLd, SITE_NAME } from "@/lib/seo";
+import { routeHead, articleJsonLd, SITE_NAME, pageTitle, metaDescription } from "@/lib/seo";
 
 const PATH = "/journal/style/the-cashmere-field-guide";
-const TITLE = "The Cashmere Field Guide — Grade, Ply, and the Sweaters Worth Keeping";
+const TITLE = "The Cashmere Field Guide";
 const DESC =
-  "A maison-level guide to buying cashmere: where the fibre comes from, what grade and ply actually mean, and the houses still spinning it the way it should be spun.";
+  "A maison-level guide to buying cashmere: where the fibre comes from, what grade and ply mean, and the houses still spinning it as it should be.";
 
 export const Route = createFileRoute("/journal/style/the-cashmere-field-guide")({
   head: () => {
-    const rh = routeHead({ path: PATH, title: `${TITLE} — ${SITE_NAME}`, description: DESC, type: "article" });
+    const title = pageTitle(`${TITLE} — ${SITE_NAME}`);
+    const description = metaDescription(DESC);
+    const rh = routeHead({ path: PATH, title, description, type: "article" });
     return {
-      meta: [{ title: `${TITLE} — ${SITE_NAME}` }, { name: "description", content: DESC }, ...rh.meta],
+      meta: [{ title }, { name: "description", content: description }, ...rh.meta],
       links: rh.links,
       scripts: [
         {
