@@ -53,6 +53,8 @@ A welcome from us: use code ROMAN10 for 10% off your first order (one use per cl
 
 Explore the collection: ${SITE}/shop
 
+Share Palace of Roman with friends and family, and we'll thank you with a further private discount on your next piece. Reply to this email once they've placed their first order.
+
 Palace of Roman — ${SITE}
 `;
 
