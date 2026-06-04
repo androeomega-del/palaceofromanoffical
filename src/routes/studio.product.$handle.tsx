@@ -401,8 +401,11 @@ function AddToCartButton({
 
 /* ===================== Complete the Look ===================== */
 
-function CompleteTheLook({ product }: { product: ShopifyProductNode }) {
-  const { data: recs, isLoading } = useQuery(studioLookQO(product.id));
+function CompleteTheLook({ product, market }: { product: ShopifyProductNode; market: Market }) {
+  const { data: recs, isLoading } = useQuery(
+    studioLookQO(product.id, market.country, market.language),
+  );
+
   const addItem = useCartStore((s) => s.addItem);
   const openDrawer = useCartStore((s) => s.openDrawer);
   const [busy, setBusy] = useState(false);
