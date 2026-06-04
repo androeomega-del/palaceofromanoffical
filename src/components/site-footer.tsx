@@ -14,7 +14,7 @@ export function SiteFooter() {
         {/* ───── Newsletter band (Farfetch-style top) ───── */}
         <div className="grid lg:grid-cols-[1fr_minmax(360px,420px)] gap-12 pb-16 mb-16 border-b border-ink/10 items-start">
           <div className="max-w-[46ch]">
-            <h4 className="text-2xl font-serif mb-4">Palace of Roman</h4>
+            <h3 className="text-2xl font-serif mb-4">Palace of Roman</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
               The destination for refined multi-brand luxury. Curating the world's most significant designers through a singular, architectural lens.
             </p>
