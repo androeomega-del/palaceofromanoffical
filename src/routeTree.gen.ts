@@ -119,7 +119,7 @@ import { Route as AccountRegisterRouteImport } from './routes/account.register'
 import { Route as AccountRecoverRouteImport } from './routes/account.recover'
 import { Route as AccountLoginRouteImport } from './routes/account.login'
 import { Route as EditsYachtEditIndexRouteImport } from './routes/edits.yacht-edit.index'
-import { Route as StudioProductHandleRouteImport } from './routes/studio.product.$handle'
+import { Route as StudioProductHandleRouteImport } from './routes/studio_.product.$handle'
 import { Route as JournalStyleTheInvestmentSunglassesEditRouteImport } from './routes/journal.style.the-investment-sunglasses-edit'
 import { Route as JournalStyleTheCashmereFieldGuideRouteImport } from './routes/journal.style.the-cashmere-field-guide'
 import { Route as JournalStyleLuxurySneakersAsModernTailoringRouteImport } from './routes/journal.style.luxury-sneakers-as-modern-tailoring'
@@ -714,9 +714,9 @@ const EditsYachtEditIndexRoute = EditsYachtEditIndexRouteImport.update({
   getParentRoute: () => EditsYachtEditRoute,
 } as any)
 const StudioProductHandleRoute = StudioProductHandleRouteImport.update({
-  id: '/product/$handle',
-  path: '/product/$handle',
-  getParentRoute: () => StudioRoute,
+  id: '/studio_/product/$handle',
+  path: '/studio/product/$handle',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const JournalStyleTheInvestmentSunglassesEditRoute =
   JournalStyleTheInvestmentSunglassesEditRouteImport.update({
@@ -912,7 +912,7 @@ export interface FileRoutesByFullPath {
   '/sitemap-products.xml': typeof SitemapProductsDotxmlRoute
   '/sitemap-static.xml': typeof SitemapStaticDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/studio': typeof StudioRouteWithChildren
+  '/studio': typeof StudioRoute
   '/style-quiz': typeof StyleQuizRoute
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
@@ -1052,7 +1052,7 @@ export interface FileRoutesByTo {
   '/sitemap-products.xml': typeof SitemapProductsDotxmlRoute
   '/sitemap-static.xml': typeof SitemapStaticDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/studio': typeof StudioRouteWithChildren
+  '/studio': typeof StudioRoute
   '/style-quiz': typeof StyleQuizRoute
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
@@ -1194,7 +1194,7 @@ export interface FileRoutesById {
   '/sitemap-products.xml': typeof SitemapProductsDotxmlRoute
   '/sitemap-static.xml': typeof SitemapStaticDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/studio': typeof StudioRouteWithChildren
+  '/studio': typeof StudioRoute
   '/style-quiz': typeof StyleQuizRoute
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
@@ -1291,7 +1291,7 @@ export interface FileRoutesById {
   '/journal/style/luxury-sneakers-as-modern-tailoring': typeof JournalStyleLuxurySneakersAsModernTailoringRoute
   '/journal/style/the-cashmere-field-guide': typeof JournalStyleTheCashmereFieldGuideRoute
   '/journal/style/the-investment-sunglasses-edit': typeof JournalStyleTheInvestmentSunglassesEditRoute
-  '/studio/product/$handle': typeof StudioProductHandleRoute
+  '/studio_/product/$handle': typeof StudioProductHandleRoute
   '/edits/yacht-edit/': typeof EditsYachtEditIndexRoute
   '/api/public/ai/recommendations': typeof ApiPublicAiRecommendationsRoute
   '/api/public/cron/abandoned-cart-recovery': typeof ApiPublicCronAbandonedCartRecoveryRoute
@@ -1716,7 +1716,7 @@ export interface FileRouteTypes {
     | '/journal/style/luxury-sneakers-as-modern-tailoring'
     | '/journal/style/the-cashmere-field-guide'
     | '/journal/style/the-investment-sunglasses-edit'
-    | '/studio/product/$handle'
+    | '/studio_/product/$handle'
     | '/edits/yacht-edit/'
     | '/api/public/ai/recommendations'
     | '/api/public/cron/abandoned-cart-recovery'
@@ -1762,7 +1762,7 @@ export interface RootRouteChildren {
   SitemapProductsDotxmlRoute: typeof SitemapProductsDotxmlRoute
   SitemapStaticDotxmlRoute: typeof SitemapStaticDotxmlRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
-  StudioRoute: typeof StudioRouteWithChildren
+  StudioRoute: typeof StudioRoute
   StyleQuizRoute: typeof StyleQuizRoute
   SwimRoute: typeof SwimRouteWithChildren
   TermsRoute: typeof TermsRoute
@@ -1843,6 +1843,7 @@ export interface RootRouteChildren {
   ApiAdminImageProxyRoute: typeof ApiAdminImageProxyRoute
   ApiPublicSeoHealthRoute: typeof ApiPublicSeoHealthRoute
   CartCCartIdRoute: typeof CartCCartIdRoute
+  StudioProductHandleRoute: typeof StudioProductHandleRoute
   ApiPublicAiRecommendationsRoute: typeof ApiPublicAiRecommendationsRoute
   ApiPublicCronAbandonedCartRecoveryRoute: typeof ApiPublicCronAbandonedCartRecoveryRoute
   ApiPublicCronBackInStockNotifyRoute: typeof ApiPublicCronBackInStockNotifyRoute
@@ -2633,12 +2634,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EditsYachtEditIndexRouteImport
       parentRoute: typeof EditsYachtEditRoute
     }
-    '/studio/product/$handle': {
-      id: '/studio/product/$handle'
-      path: '/product/$handle'
+    '/studio_/product/$handle': {
+      id: '/studio_/product/$handle'
+      path: '/studio/product/$handle'
       fullPath: '/studio/product/$handle'
       preLoaderRoute: typeof StudioProductHandleRouteImport
-      parentRoute: typeof StudioRoute
+      parentRoute: typeof rootRouteImport
     }
     '/journal/style/the-investment-sunglasses-edit': {
       id: '/journal/style/the-investment-sunglasses-edit'
@@ -2905,17 +2906,6 @@ const JournalRouteChildren: JournalRouteChildren = {
 const JournalRouteWithChildren =
   JournalRoute._addFileChildren(JournalRouteChildren)
 
-interface StudioRouteChildren {
-  StudioProductHandleRoute: typeof StudioProductHandleRoute
-}
-
-const StudioRouteChildren: StudioRouteChildren = {
-  StudioProductHandleRoute: StudioProductHandleRoute,
-}
-
-const StudioRouteWithChildren =
-  StudioRoute._addFileChildren(StudioRouteChildren)
-
 interface SwimRouteChildren {
   SwimSizeGuideRoute: typeof SwimSizeGuideRoute
 }
@@ -2978,7 +2968,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapProductsDotxmlRoute: SitemapProductsDotxmlRoute,
   SitemapStaticDotxmlRoute: SitemapStaticDotxmlRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
-  StudioRoute: StudioRouteWithChildren,
+  StudioRoute: StudioRoute,
   StyleQuizRoute: StyleQuizRoute,
   SwimRoute: SwimRouteWithChildren,
   TermsRoute: TermsRoute,
@@ -3060,6 +3050,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminImageProxyRoute: ApiAdminImageProxyRoute,
   ApiPublicSeoHealthRoute: ApiPublicSeoHealthRoute,
   CartCCartIdRoute: CartCCartIdRoute,
+  StudioProductHandleRoute: StudioProductHandleRoute,
   ApiPublicAiRecommendationsRoute: ApiPublicAiRecommendationsRoute,
   ApiPublicCronAbandonedCartRecoveryRoute:
     ApiPublicCronAbandonedCartRecoveryRoute,
@@ -3086,3 +3077,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
