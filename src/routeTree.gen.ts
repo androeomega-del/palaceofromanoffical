@@ -119,6 +119,7 @@ import { Route as AccountRegisterRouteImport } from './routes/account.register'
 import { Route as AccountRecoverRouteImport } from './routes/account.recover'
 import { Route as AccountLoginRouteImport } from './routes/account.login'
 import { Route as EditsYachtEditIndexRouteImport } from './routes/edits.yacht-edit.index'
+import { Route as StudioProductHandleRouteImport } from './routes/studio.product.$handle'
 import { Route as JournalStyleTheInvestmentSunglassesEditRouteImport } from './routes/journal.style.the-investment-sunglasses-edit'
 import { Route as JournalStyleTheCashmereFieldGuideRouteImport } from './routes/journal.style.the-cashmere-field-guide'
 import { Route as JournalStyleLuxurySneakersAsModernTailoringRouteImport } from './routes/journal.style.luxury-sneakers-as-modern-tailoring'
@@ -712,6 +713,11 @@ const EditsYachtEditIndexRoute = EditsYachtEditIndexRouteImport.update({
   path: '/',
   getParentRoute: () => EditsYachtEditRoute,
 } as any)
+const StudioProductHandleRoute = StudioProductHandleRouteImport.update({
+  id: '/product/$handle',
+  path: '/product/$handle',
+  getParentRoute: () => StudioRoute,
+} as any)
 const JournalStyleTheInvestmentSunglassesEditRoute =
   JournalStyleTheInvestmentSunglassesEditRouteImport.update({
     id: '/style/the-investment-sunglasses-edit',
@@ -906,7 +912,7 @@ export interface FileRoutesByFullPath {
   '/sitemap-products.xml': typeof SitemapProductsDotxmlRoute
   '/sitemap-static.xml': typeof SitemapStaticDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/studio': typeof StudioRoute
+  '/studio': typeof StudioRouteWithChildren
   '/style-quiz': typeof StyleQuizRoute
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
@@ -1003,6 +1009,7 @@ export interface FileRoutesByFullPath {
   '/journal/style/luxury-sneakers-as-modern-tailoring': typeof JournalStyleLuxurySneakersAsModernTailoringRoute
   '/journal/style/the-cashmere-field-guide': typeof JournalStyleTheCashmereFieldGuideRoute
   '/journal/style/the-investment-sunglasses-edit': typeof JournalStyleTheInvestmentSunglassesEditRoute
+  '/studio/product/$handle': typeof StudioProductHandleRoute
   '/edits/yacht-edit/': typeof EditsYachtEditIndexRoute
   '/api/public/ai/recommendations': typeof ApiPublicAiRecommendationsRoute
   '/api/public/cron/abandoned-cart-recovery': typeof ApiPublicCronAbandonedCartRecoveryRoute
@@ -1045,7 +1052,7 @@ export interface FileRoutesByTo {
   '/sitemap-products.xml': typeof SitemapProductsDotxmlRoute
   '/sitemap-static.xml': typeof SitemapStaticDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/studio': typeof StudioRoute
+  '/studio': typeof StudioRouteWithChildren
   '/style-quiz': typeof StyleQuizRoute
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
@@ -1141,6 +1148,7 @@ export interface FileRoutesByTo {
   '/journal/style/luxury-sneakers-as-modern-tailoring': typeof JournalStyleLuxurySneakersAsModernTailoringRoute
   '/journal/style/the-cashmere-field-guide': typeof JournalStyleTheCashmereFieldGuideRoute
   '/journal/style/the-investment-sunglasses-edit': typeof JournalStyleTheInvestmentSunglassesEditRoute
+  '/studio/product/$handle': typeof StudioProductHandleRoute
   '/edits/yacht-edit': typeof EditsYachtEditIndexRoute
   '/api/public/ai/recommendations': typeof ApiPublicAiRecommendationsRoute
   '/api/public/cron/abandoned-cart-recovery': typeof ApiPublicCronAbandonedCartRecoveryRoute
@@ -1186,7 +1194,7 @@ export interface FileRoutesById {
   '/sitemap-products.xml': typeof SitemapProductsDotxmlRoute
   '/sitemap-static.xml': typeof SitemapStaticDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/studio': typeof StudioRoute
+  '/studio': typeof StudioRouteWithChildren
   '/style-quiz': typeof StyleQuizRoute
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
@@ -1283,6 +1291,7 @@ export interface FileRoutesById {
   '/journal/style/luxury-sneakers-as-modern-tailoring': typeof JournalStyleLuxurySneakersAsModernTailoringRoute
   '/journal/style/the-cashmere-field-guide': typeof JournalStyleTheCashmereFieldGuideRoute
   '/journal/style/the-investment-sunglasses-edit': typeof JournalStyleTheInvestmentSunglassesEditRoute
+  '/studio/product/$handle': typeof StudioProductHandleRoute
   '/edits/yacht-edit/': typeof EditsYachtEditIndexRoute
   '/api/public/ai/recommendations': typeof ApiPublicAiRecommendationsRoute
   '/api/public/cron/abandoned-cart-recovery': typeof ApiPublicCronAbandonedCartRecoveryRoute
@@ -1426,6 +1435,7 @@ export interface FileRouteTypes {
     | '/journal/style/luxury-sneakers-as-modern-tailoring'
     | '/journal/style/the-cashmere-field-guide'
     | '/journal/style/the-investment-sunglasses-edit'
+    | '/studio/product/$handle'
     | '/edits/yacht-edit/'
     | '/api/public/ai/recommendations'
     | '/api/public/cron/abandoned-cart-recovery'
@@ -1564,6 +1574,7 @@ export interface FileRouteTypes {
     | '/journal/style/luxury-sneakers-as-modern-tailoring'
     | '/journal/style/the-cashmere-field-guide'
     | '/journal/style/the-investment-sunglasses-edit'
+    | '/studio/product/$handle'
     | '/edits/yacht-edit'
     | '/api/public/ai/recommendations'
     | '/api/public/cron/abandoned-cart-recovery'
@@ -1705,6 +1716,7 @@ export interface FileRouteTypes {
     | '/journal/style/luxury-sneakers-as-modern-tailoring'
     | '/journal/style/the-cashmere-field-guide'
     | '/journal/style/the-investment-sunglasses-edit'
+    | '/studio/product/$handle'
     | '/edits/yacht-edit/'
     | '/api/public/ai/recommendations'
     | '/api/public/cron/abandoned-cart-recovery'
@@ -1750,7 +1762,7 @@ export interface RootRouteChildren {
   SitemapProductsDotxmlRoute: typeof SitemapProductsDotxmlRoute
   SitemapStaticDotxmlRoute: typeof SitemapStaticDotxmlRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
-  StudioRoute: typeof StudioRoute
+  StudioRoute: typeof StudioRouteWithChildren
   StyleQuizRoute: typeof StyleQuizRoute
   SwimRoute: typeof SwimRouteWithChildren
   TermsRoute: typeof TermsRoute
@@ -2621,6 +2633,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EditsYachtEditIndexRouteImport
       parentRoute: typeof EditsYachtEditRoute
     }
+    '/studio/product/$handle': {
+      id: '/studio/product/$handle'
+      path: '/product/$handle'
+      fullPath: '/studio/product/$handle'
+      preLoaderRoute: typeof StudioProductHandleRouteImport
+      parentRoute: typeof StudioRoute
+    }
     '/journal/style/the-investment-sunglasses-edit': {
       id: '/journal/style/the-investment-sunglasses-edit'
       path: '/style/the-investment-sunglasses-edit'
@@ -2886,6 +2905,17 @@ const JournalRouteChildren: JournalRouteChildren = {
 const JournalRouteWithChildren =
   JournalRoute._addFileChildren(JournalRouteChildren)
 
+interface StudioRouteChildren {
+  StudioProductHandleRoute: typeof StudioProductHandleRoute
+}
+
+const StudioRouteChildren: StudioRouteChildren = {
+  StudioProductHandleRoute: StudioProductHandleRoute,
+}
+
+const StudioRouteWithChildren =
+  StudioRoute._addFileChildren(StudioRouteChildren)
+
 interface SwimRouteChildren {
   SwimSizeGuideRoute: typeof SwimSizeGuideRoute
 }
@@ -2948,7 +2978,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapProductsDotxmlRoute: SitemapProductsDotxmlRoute,
   SitemapStaticDotxmlRoute: SitemapStaticDotxmlRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
-  StudioRoute: StudioRoute,
+  StudioRoute: StudioRouteWithChildren,
   StyleQuizRoute: StyleQuizRoute,
   SwimRoute: SwimRouteWithChildren,
   TermsRoute: TermsRoute,
