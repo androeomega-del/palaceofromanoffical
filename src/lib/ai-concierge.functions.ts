@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { callLlm, callLlmJson } from "@/lib/llm.server";
+import { callLlmJson } from "@/lib/llm.server";
 import {
   fetchProductByHandle,
   fetchProductsPage,
