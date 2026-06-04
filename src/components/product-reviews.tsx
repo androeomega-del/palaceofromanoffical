@@ -227,7 +227,7 @@ function ReviewForm({
         e.preventDefault();
         submit.mutate();
       }}
-      className="w-full max-w-2xl space-y-6 border border-[var(--studio-rule)] p-8 bg-white"
+      className="w-full max-w-2xl space-y-6 border border-[var(--studio-rule)] p-8 bg-[var(--studio-canvas)]"
     >
       <div className="space-y-2 text-center">
         <p className="text-[10px] tracking-[0.3em] uppercase text-[var(--studio-bronze)] font-semibold">
