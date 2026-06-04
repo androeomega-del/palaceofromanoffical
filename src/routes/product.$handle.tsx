@@ -824,7 +824,7 @@ function ProductView({
               )}
 
               <div className="flex flex-col gap-3">
-                <div className="flex items-center border border-[var(--studio-rule)] bg-white h-14 shadow-sm self-start">
+                <div className="flex items-center border border-[var(--studio-rule)] bg-[var(--studio-canvas)] h-14 shadow-sm self-start">
                   <button
                     type="button"
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
