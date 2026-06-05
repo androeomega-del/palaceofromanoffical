@@ -163,9 +163,13 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
           from { opacity: 0; transform: translateX(-24px); }
           to   { opacity: 1; transform: translateX(0); }
         }
+        @keyframes conciergeDot {
+          0%, 80%, 100% { transform: translateY(0); opacity: 0.35; }
+          40%           { transform: translateY(-3px); opacity: 1; }
+        }
         .studio-tile { animation: studioScale 1.4s cubic-bezier(.2,.7,.2,1) both; }
-        .studio-tile img { transition: transform 1.6s cubic-bezier(.2,.7,.2,1), opacity .8s ease; }
-        .studio-tile:hover img { transform: scale(1.04); }
+        .studio-tile img { transition: transform 1.6s cubic-bezier(.2,.7,.2,1), opacity .8s ease; will-change: transform; }
+        .studio-tile:hover img { transform: scale(1.06); }
       `}</style>
     </div>
   );
