@@ -46,9 +46,10 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
   const currency = items[0]?.price.currencyCode ?? "USD";
   const fbtProductType = items[0]?.product?.node?.productType ?? null;
   const fbtExclude = useMemo(
-    () => new Set(items.map((i: any) => i.product.node.handle)),
+    () => new Set<string>(items.map((i: any) => i.product.node.handle as string)),
     [items],
   );
+
 
 
   // 2. Set mounted to true once the browser takes over
