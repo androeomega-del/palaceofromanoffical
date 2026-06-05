@@ -10,37 +10,14 @@ import { CartFbt } from "@/components/cart-fbt";
 import { CartEmailCapture, type CartEmailCaptureHandle } from "@/components/atelier/cart-email-capture";
 
 
-// QA-only: visual mock items injected via ?qa-cart=1 — never touches Zustand store or Shopify cart.
-const QA_MOCK_ITEMS = [
-  {
-    lineId: "qa-mock-1",
-    variantId: "qa-mock-variant-1",
-    variantTitle: "42 / Black",
-    quantity: 1,
-    price: { amount: "1450.00", currencyCode: "USD" },
-    selectedOptions: [{ name: "Size", value: "42" }, { name: "Color", value: "Black" }],
-    product: {
-      node: {
-        id: "qa-mock-product-1",
-        handle: "qa-mock-loafer",
-        title: "Bit Loafer in Polished Calfskin",
-        vendor: "Gucci",
-        productType: "Shoes",
-        images: { edges: [{ node: { url: "https://images.unsplash.com/photo-1614252369475-531eba835eb1?w=400&q=80", altText: "Loafer" } }] },
-      },
-    },
-  },
-] as any;
 
 export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
   // 1. Add mount state to prevent hydration errors
   const [isMounted, setIsMounted] = useState(false);
 
-  const qaCart = isMounted && typeof window !== "undefined" && new URLSearchParams(window.location.search).get("qa-cart") === "1";
-
   const store = useCartStore();
   const { isLoading, isSyncing, updateQuantity, removeItem, getCheckoutUrl, syncCart } = store;
-  const items = qaCart ? QA_MOCK_ITEMS : store.items;
+  const items = store.items;
   const totalItems = items.reduce((sum: number, i: any) => sum + i.quantity, 0);
   const totalAmount = items.reduce((sum: number, i: any) => sum + parseFloat(i.price.amount) * i.quantity, 0);
   const currency = items[0]?.price.currencyCode ?? "USD";
@@ -50,18 +27,12 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
     [items],
   );
 
-
-
   // 2. Set mounted to true once the browser takes over
-  useEffect(() => { 
+  useEffect(() => {
     setIsMounted(true);
-    if (open) syncCart(); 
+    if (open) syncCart();
   }, [open, syncCart]);
 
-  // QA: auto-open drawer when ?qa-cart=1 is present
-  useEffect(() => {
-    if (qaCart && !open) onOpenChange(true);
-  }, [qaCart, open, onOpenChange]);
 
 
   const emailCaptureRef = useRef<CartEmailCaptureHandle | null>(null);
