@@ -130,7 +130,7 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
           <>
             <div className="flex-1 overflow-y-auto">
               <ul className="space-y-8 px-6 py-6">
-                {items.map((item) => {
+                {items.map((item: any) => {
                   const img = item.product.node.images?.edges?.[0]?.node;
                   return (
                     <li key={item.variantId} className="flex gap-4">
