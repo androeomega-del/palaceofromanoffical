@@ -142,7 +142,10 @@ function isCartNotFoundError(errs: Array<{ field: string[] | null; message: stri
 
 async function createShopifyCart(item: CartItem) {
   const data = await storefrontApiRequest<any>(CART_CREATE_MUTATION, {
-    input: { lines: [{ quantity: item.quantity, merchandiseId: item.variantId }] },
+    input: {
+      lines: [{ quantity: item.quantity, merchandiseId: item.variantId }],
+      buyerIdentity: { countryCode: currentCountry() },
+    },
   });
   const errs = data?.data?.cartCreate?.userErrors || [];
   if (errs.length) { console.error("Cart creation failed:", errs); return null; }
@@ -151,6 +154,17 @@ async function createShopifyCart(item: CartItem) {
   const lineId = cart.lines.edges[0]?.node?.id;
   if (!lineId) return null;
   return { cartId: cart.id, checkoutUrl: formatCheckoutUrl(cart.checkoutUrl), lineId };
+}
+
+async function updateCartBuyerCountry(cartId: string, countryCode: string) {
+  const data = await storefrontApiRequest<any>(CART_BUYER_IDENTITY_UPDATE_MUTATION, {
+    cartId,
+    buyerIdentity: { countryCode },
+  });
+  const errs = data?.data?.cartBuyerIdentityUpdate?.userErrors || [];
+  if (errs.length) { console.error("Cart buyerIdentity update failed:", errs); return null; }
+  const cart = data?.data?.cartBuyerIdentityUpdate?.cart;
+  return cart?.checkoutUrl ? formatCheckoutUrl(cart.checkoutUrl) : null;
 }
 
 async function addLineToShopifyCart(cartId: string, item: CartItem) {
