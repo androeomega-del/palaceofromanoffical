@@ -3,6 +3,15 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import { SHOPIFY_STORE_PERMANENT_DOMAIN, storefrontApiRequest, type ShopifyProduct, type Money } from "@/lib/shopify";
 import { trackCartEvent } from "@/lib/cart-analytics";
 import { scheduleAbandonedCartSync } from "@/lib/abandoned-cart-capture";
+import { useMarketStore } from "@/stores/market-store";
+
+function currentCountry(): string {
+  try {
+    return useMarketStore.getState().market.country;
+  } catch {
+    return "US";
+  }
+}
 
 export interface CartItem {
   lineId: string | null;
