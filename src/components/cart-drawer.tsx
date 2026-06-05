@@ -10,19 +10,47 @@ import { CartFbt } from "@/components/cart-fbt";
 import { CartEmailCapture, type CartEmailCaptureHandle } from "@/components/atelier/cart-email-capture";
 
 
+// QA-only: visual mock items injected via ?qa-cart=1 — never touches Zustand store or Shopify cart.
+const QA_MOCK_ITEMS = [
+  {
+    lineId: "qa-mock-1",
+    variantId: "qa-mock-variant-1",
+    variantTitle: "42 / Black",
+    quantity: 1,
+    price: { amount: "1450.00", currencyCode: "USD" },
+    selectedOptions: [{ name: "Size", value: "42" }, { name: "Color", value: "Black" }],
+    product: {
+      node: {
+        id: "qa-mock-product-1",
+        handle: "qa-mock-loafer",
+        title: "Bit Loafer in Polished Calfskin",
+        vendor: "Gucci",
+        productType: "Shoes",
+        images: { edges: [{ node: { url: "https://images.unsplash.com/photo-1614252369475-531eba835eb1?w=400&q=80", altText: "Loafer" } }] },
+      },
+    },
+  },
+] as any;
+
 export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
   // 1. Add mount state to prevent hydration errors
   const [isMounted, setIsMounted] = useState(false);
-  
-  const { items, isLoading, isSyncing, updateQuantity, removeItem, getCheckoutUrl, syncCart } = useCartStore();
-  const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
-  const totalAmount = items.reduce((sum, i) => sum + parseFloat(i.price.amount) * i.quantity, 0);
+
+  const qaCart = isMounted && typeof window !== "undefined" && new URLSearchParams(window.location.search).get("qa-cart") === "1";
+
+  const store = useCartStore();
+  const { isLoading, isSyncing, updateQuantity, removeItem, getCheckoutUrl, syncCart } = store;
+  const items = qaCart ? QA_MOCK_ITEMS : store.items;
+  const totalItems = items.reduce((sum: number, i: any) => sum + i.quantity, 0);
+  const totalAmount = items.reduce((sum: number, i: any) => sum + parseFloat(i.price.amount) * i.quantity, 0);
   const currency = items[0]?.price.currencyCode ?? "USD";
   const fbtProductType = items[0]?.product?.node?.productType ?? null;
   const fbtExclude = useMemo(
-    () => new Set(items.map((i) => i.product.node.handle)),
+    () => new Set<string>(items.map((i: any) => i.product.node.handle as string)),
     [items],
   );
+
+
 
   // 2. Set mounted to true once the browser takes over
   useEffect(() => { 
@@ -102,7 +130,7 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
           <>
             <div className="flex-1 overflow-y-auto">
               <ul className="space-y-8 px-6 py-6">
-                {items.map((item) => {
+                {items.map((item: any) => {
                   const img = item.product.node.images?.edges?.[0]?.node;
                   return (
                     <li key={item.variantId} className="flex gap-4">
@@ -113,7 +141,7 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
                         <p className="text-[10px] uppercase tracking-widest text-bronze">{item.product.node.vendor}</p>
                         <h4 className="text-sm font-medium leading-snug mt-1 line-clamp-2">{item.product.node.title}</h4>
                         <p className="text-[11px] text-muted-foreground mt-1">
-                          {item.selectedOptions.map((o) => o.value).join(" · ")}
+                          {item.selectedOptions.map((o: any) => o.value).join(" · ")}
                         </p>
                         <div className="flex items-center justify-between mt-auto pt-3">
                           <div className="flex items-center border border-ink/10">
