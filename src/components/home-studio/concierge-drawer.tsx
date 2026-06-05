@@ -9,7 +9,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useMutation } from "@tanstack/react-query";
-import { Loader2, X, ArrowUp, ArrowUpRight } from "lucide-react";
+import { X, ArrowUp, ArrowUpRight } from "lucide-react";
 import {
   conciergeChat,
   type ConciergeChatProduct,
@@ -74,11 +74,17 @@ export function ConciergeDrawer({ open, onClose }: ConciergeDrawerProps) {
 
   useEffect(() => {
     if (!open) return;
-    const prev = document.body.style.overflow;
+    const prevOverflow = document.body.style.overflow;
+    const prevPadding = document.body.style.paddingRight;
+    // Compensate for the disappearing scrollbar so the page behind the
+    // drawer doesn't reflow on open — zero layout shift.
+    const sbw = window.innerWidth - document.documentElement.clientWidth;
     document.body.style.overflow = "hidden";
+    if (sbw > 0) document.body.style.paddingRight = `${sbw}px`;
     const t = setTimeout(() => inputRef.current?.focus(), 200);
     return () => {
-      document.body.style.overflow = prev;
+      document.body.style.overflow = prevOverflow;
+      document.body.style.paddingRight = prevPadding;
       clearTimeout(t);
     };
   }, [open]);
@@ -279,11 +285,30 @@ export function ConciergeDrawer({ open, onClose }: ConciergeDrawerProps) {
 
           {chat.isPending && (
             <div
-              className="flex items-center gap-2 text-[11px] uppercase tracking-[0.32em]"
-              style={{ color: palette.sand, fontFamily: fontSans }}
+              className="flex items-center gap-3 animate-[studioFade_.3s_ease-out_both]"
+              aria-live="polite"
+              aria-label="Concierge is composing a reply"
             >
-              <Loader2 className="w-3.5 h-3.5 animate-spin" strokeWidth={1.25} />
-              Composing…
+              <p
+                className="text-[9px] uppercase tracking-[0.4em]"
+                style={{ color: palette.sand, fontFamily: fontSans }}
+              >
+                Concierge
+              </p>
+              <span className="flex items-end gap-1.5 h-3" aria-hidden="true">
+                <span
+                  className="w-1.5 h-1.5 rounded-full animate-[conciergeDot_1.2s_ease-in-out_infinite]"
+                  style={{ background: palette.sand, animationDelay: "0ms" }}
+                />
+                <span
+                  className="w-1.5 h-1.5 rounded-full animate-[conciergeDot_1.2s_ease-in-out_infinite]"
+                  style={{ background: palette.sand, animationDelay: "180ms" }}
+                />
+                <span
+                  className="w-1.5 h-1.5 rounded-full animate-[conciergeDot_1.2s_ease-in-out_infinite]"
+                  style={{ background: palette.sand, animationDelay: "360ms" }}
+                />
+              </span>
             </div>
           )}
           <div ref={chatEndRef} />
