@@ -255,17 +255,18 @@ export function ConciergeDrawer({ open, onClose }: ConciergeDrawerProps) {
                 Suggested inquiries
               </p>
               <div className="space-y-2">
-                {SUGGESTED_PROMPTS.map((prompt) => (
+                {SUGGESTED_PROMPTS.map((prompt, i) => (
                   <button
                     key={prompt}
                     onClick={() => sendText(prompt)}
-                    className="w-full text-left text-[13px] py-3 px-4 transition-all duration-300"
+                    className="w-full text-left text-[13px] py-3 px-4 transition-all duration-300 animate-[studioFade_.5s_ease-out_both]"
                     style={{
                       background: "#121214",
                       border: "1px solid rgba(244,241,236,0.1)",
                       color: palette.offwhite,
                       fontFamily: fontSans,
                       fontWeight: 300,
+                      animationDelay: `${120 + i * 90}ms`,
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.borderColor = palette.sand;
