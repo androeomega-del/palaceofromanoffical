@@ -53,6 +53,7 @@ import { Route as TrendsSectionSamplesRouteImport } from './routes/trends.sectio
 import { Route as TrendsPucciEyewearRouteImport } from './routes/trends.pucci-eyewear'
 import { Route as TrendsDolceGabbanaIconsRouteImport } from './routes/trends.dolce-gabbana-icons'
 import { Route as SwimSizeGuideRouteImport } from './routes/swim.size-guide'
+import { Route as QaCartPreviewRouteImport } from './routes/qa.cart-preview'
 import { Route as ProductsHandleRouteImport } from './routes/products.$handle'
 import { Route as ProductHandleRouteImport } from './routes/product.$handle'
 import { Route as PreviewLookbookRouteImport } from './routes/preview.lookbook'
@@ -370,6 +371,11 @@ const SwimSizeGuideRoute = SwimSizeGuideRouteImport.update({
   id: '/size-guide',
   path: '/size-guide',
   getParentRoute: () => SwimRoute,
+} as any)
+const QaCartPreviewRoute = QaCartPreviewRouteImport.update({
+  id: '/qa/cart-preview',
+  path: '/qa/cart-preview',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ProductsHandleRoute = ProductsHandleRouteImport.update({
   id: '/products/$handle',
@@ -983,6 +989,7 @@ export interface FileRoutesByFullPath {
   '/preview/lookbook': typeof PreviewLookbookRoute
   '/product/$handle': typeof ProductHandleRoute
   '/products/$handle': typeof ProductsHandleRoute
+  '/qa/cart-preview': typeof QaCartPreviewRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/trends/dolce-gabbana-icons': typeof TrendsDolceGabbanaIconsRoute
   '/trends/pucci-eyewear': typeof TrendsPucciEyewearRoute
@@ -1122,6 +1129,7 @@ export interface FileRoutesByTo {
   '/preview/lookbook': typeof PreviewLookbookRoute
   '/product/$handle': typeof ProductHandleRoute
   '/products/$handle': typeof ProductsHandleRoute
+  '/qa/cart-preview': typeof QaCartPreviewRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/trends/dolce-gabbana-icons': typeof TrendsDolceGabbanaIconsRoute
   '/trends/pucci-eyewear': typeof TrendsPucciEyewearRoute
@@ -1265,6 +1273,7 @@ export interface FileRoutesById {
   '/preview/lookbook': typeof PreviewLookbookRoute
   '/product/$handle': typeof ProductHandleRoute
   '/products/$handle': typeof ProductsHandleRoute
+  '/qa/cart-preview': typeof QaCartPreviewRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/trends/dolce-gabbana-icons': typeof TrendsDolceGabbanaIconsRoute
   '/trends/pucci-eyewear': typeof TrendsPucciEyewearRoute
@@ -1409,6 +1418,7 @@ export interface FileRouteTypes {
     | '/preview/lookbook'
     | '/product/$handle'
     | '/products/$handle'
+    | '/qa/cart-preview'
     | '/swim/size-guide'
     | '/trends/dolce-gabbana-icons'
     | '/trends/pucci-eyewear'
@@ -1548,6 +1558,7 @@ export interface FileRouteTypes {
     | '/preview/lookbook'
     | '/product/$handle'
     | '/products/$handle'
+    | '/qa/cart-preview'
     | '/swim/size-guide'
     | '/trends/dolce-gabbana-icons'
     | '/trends/pucci-eyewear'
@@ -1690,6 +1701,7 @@ export interface FileRouteTypes {
     | '/preview/lookbook'
     | '/product/$handle'
     | '/products/$handle'
+    | '/qa/cart-preview'
     | '/swim/size-guide'
     | '/trends/dolce-gabbana-icons'
     | '/trends/pucci-eyewear'
@@ -1829,6 +1841,7 @@ export interface RootRouteChildren {
   PreviewLookbookRoute: typeof PreviewLookbookRoute
   ProductHandleRoute: typeof ProductHandleRoute
   ProductsHandleRoute: typeof ProductsHandleRoute
+  QaCartPreviewRoute: typeof QaCartPreviewRoute
   TrendsDolceGabbanaIconsRoute: typeof TrendsDolceGabbanaIconsRoute
   TrendsPucciEyewearRoute: typeof TrendsPucciEyewearRoute
   TrendsSectionSamplesRoute: typeof TrendsSectionSamplesRoute
@@ -2171,6 +2184,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/swim/size-guide'
       preLoaderRoute: typeof SwimSizeGuideRouteImport
       parentRoute: typeof SwimRoute
+    }
+    '/qa/cart-preview': {
+      id: '/qa/cart-preview'
+      path: '/qa/cart-preview'
+      fullPath: '/qa/cart-preview'
+      preLoaderRoute: typeof QaCartPreviewRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/products/$handle': {
       id: '/products/$handle'
@@ -3036,6 +3056,7 @@ const rootRouteChildren: RootRouteChildren = {
   PreviewLookbookRoute: PreviewLookbookRoute,
   ProductHandleRoute: ProductHandleRoute,
   ProductsHandleRoute: ProductsHandleRoute,
+  QaCartPreviewRoute: QaCartPreviewRoute,
   TrendsDolceGabbanaIconsRoute: TrendsDolceGabbanaIconsRoute,
   TrendsPucciEyewearRoute: TrendsPucciEyewearRoute,
   TrendsSectionSamplesRoute: TrendsSectionSamplesRoute,
