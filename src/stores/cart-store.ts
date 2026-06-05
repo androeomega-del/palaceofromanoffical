@@ -98,6 +98,14 @@ const CART_LINES_REMOVE_MUTATION = `
     cartLinesRemove(cartId: $cartId, lineIds: $lineIds) { cart { id } userErrors { field message } }
   }
 `;
+const CART_BUYER_IDENTITY_UPDATE_MUTATION = `
+  mutation cartBuyerIdentityUpdate($cartId: ID!, $buyerIdentity: CartBuyerIdentityInput!) {
+    cartBuyerIdentityUpdate(cartId: $cartId, buyerIdentity: $buyerIdentity) {
+      cart { id checkoutUrl }
+      userErrors { field message }
+    }
+  }
+`;
 
 function formatCheckoutUrl(checkoutUrl: string): string {
   try {
