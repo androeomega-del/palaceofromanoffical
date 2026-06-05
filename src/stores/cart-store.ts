@@ -415,3 +415,22 @@ if (typeof window !== "undefined") {
     if (state.items !== prev.items) scheduleAbandonedCartSync();
   });
 }
+
+// When the shopper switches market in the header, push the new country onto
+// any existing Shopify cart so the hosted checkout opens in the same currency
+// the storefront is rendering. No-op if there is no cart yet.
+if (typeof window !== "undefined") {
+  let lastCountry = (() => {
+    try { return useMarketStore.getState().market.country; } catch { return "US"; }
+  })();
+  useMarketStore.subscribe((state) => {
+    const next = state.market.country;
+    if (next === lastCountry) return;
+    lastCountry = next;
+    const { cartId } = useCartStore.getState();
+    if (!cartId) return;
+    void updateCartBuyerCountry(cartId, next).then((newUrl) => {
+      if (newUrl) useCartStore.setState({ checkoutUrl: newUrl });
+    });
+  });
+}
