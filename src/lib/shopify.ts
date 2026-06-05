@@ -37,12 +37,16 @@ export const SEARCH_FILTERED_QUERY = "";
 // ── Types (preserved shape — existing callers don't change) ─────────────────
 export interface Money { amount: string; currencyCode: string; }
 export interface ShopifyImage { url: string; altText: string | null; width?: number | null; height?: number | null; }
+export interface ShopifyMetafield { namespace: string; key: string; value: string; type: string }
 export interface ShopifyVariant {
   id: string;
   title: string;
+  sku?: string | null;
   price: Money;
+  compareAtPrice?: Money | null;
   availableForSale: boolean;
   quantityAvailable?: number | null;
+  image?: ShopifyImage | null;
   selectedOptions: Array<{ name: string; value: string }>;
 }
 export interface ShopifyProductNode {
@@ -58,6 +62,7 @@ export interface ShopifyProductNode {
   images: { edges: Array<{ node: ShopifyImage }> };
   variants: { edges: Array<{ node: ShopifyVariant }> };
   options: Array<{ name: string; values: string[] }>;
+  metafields?: Array<ShopifyMetafield | null>;
 }
 export interface ShopifyProduct { node: ShopifyProductNode }
 export interface ShopifyCollection {
@@ -193,13 +198,22 @@ const PRODUCT_FRAGMENT = `
         node {
           id
           title
+          sku
           price { amount currencyCode }
+          compareAtPrice { amount currencyCode }
           availableForSale
+          image { url altText width height }
           selectedOptions { name value }
         }
       }
     }
     options { name values }
+    metafields(identifiers: [
+      { namespace: "custom", key: "composition" },
+      { namespace: "custom", key: "care_instructions" },
+      { namespace: "custom", key: "origin" },
+      { namespace: "custom", key: "fabric" }
+    ]) { namespace key value type }
   }
 `;
 
