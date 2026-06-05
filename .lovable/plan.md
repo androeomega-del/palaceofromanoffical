@@ -1,61 +1,71 @@
-# Phase 2a — Full Obsidian Re-Skin of PDP
+# Prompt 3 — Localized Pricing (Shopify Markets `@inContext`)
 
-Apply the obsidian palette (`#0A0A0A` / `#121212` / `#1A1A1A` / `#F9F6F0` / `#E5DDCB` / `#A39E93`) and editorial typography (serif title, wide-tracked sans micro-labels) across the live PDP and every sub-component it mounts. **Zero logic, state, SEO, JSON-LD, loader, ATC, or cart-store changes** — className overrides only.
+## Goal
+Surface true Shopify Markets pricing (correct currency symbol, tax-inclusive where the market is configured for it) on every storefront query, driven by a sleek country/currency selector in the utility nav. No full page reload on switch.
 
-## Files Touched (12)
+## Constraints (must hold)
+- **Checkout protocol lockdown** — `formatCheckoutUrl`, cart mutations, Zustand cart shape: untouched.
+- **Pricing-currency memory** — display in selected currency, but keep the existing USD-default + EUR→USD conversion as the **fallback** when no Shopify Markets price is returned.
+- **Staged launch** — selector hidden behind a feature flag until all queries migrated + verified, then exposed in one batch.
+- **Obsidian theme** — selector matches utility-nav tokens (`--studio-ink`, `--studio-bronze`, `--studio-rule`).
 
-**Route file**
-1. `src/routes/product.$handle.tsx` — outer wrapper, breadcrumbs, vendor/title block, price, size tiles, quantity stepper, ATC button, accordion wrapper, gallery surface.
+## Architecture
 
-**Sub-components mounted on the PDP**
-2. `src/components/pdp-authenticity-strip.tsx`
-3. `src/components/pdp-brand-heritage.tsx`
-4. `src/components/pdp-delivery-badge.tsx`
-5. `src/components/pdp-shipping-sheet.tsx`
-6. `src/components/pdp-journal-links.tsx`
-7. `src/components/pdp-faq.tsx`
-8. `src/components/product-reviews.tsx`
-9. `src/components/recently-viewed-rail.tsx`
-10. `src/components/product/size-fit-guide.tsx`
-11. `src/components/product/image-lightbox.tsx`
-12. `src/components/yelp-trust-badge.tsx` (only if it has light backgrounds — verify first)
+### 1. New: `src/stores/locale-store.ts` (Zustand, persisted)
+```text
+{ country: CountryCode, language: LanguageCode, currency: CurrencyCode }
+```
+- Defaults seeded from `geo-ip.functions.ts` on first load (already exists in repo).
+- Persists to localStorage under `por-locale`.
+- Exposes `setCountry(code)` which also updates language + currency from a static map.
 
-## Token Mapping (applied consistently across all 12 files)
+### 2. Modify: `src/lib/shopify.ts`
+- `storefrontApiRequest(query, variables, opts?)` gains optional `{ country, language }`.
+- New helper `withInContext(query)` injects `@inContext(country: $country, language: $language)` into the operation and adds the required `$country: CountryCode!`, `$language: LanguageCode!` variable declarations.
+- All product/collection queries (`PRODUCT_QUERY`, `PRODUCTS_QUERY`, `COLLECTION_QUERY`, `CART_QUERY` if needed) get wrapped.
+- `priceMoney()` / `formatPrice()` already currency-aware via `currencyCode` — no change needed once Shopify returns the localized money object.
+- `EUR_TO_USD` fallback path remains for products without Shopify Markets pricing.
 
-| Surface | Class |
-|---|---|
-| Page canvas | `bg-[#0A0A0A] text-[#F9F6F0]` |
-| Card / panel surface | `bg-[#121212] border-[#1A1A1A]` |
-| Divider / hairline | `border-[#1A1A1A]` |
-| Hero/serif heading | `font-serif font-light tracking-wide text-[#F9F6F0]` |
-| Body copy | `text-[#A39E93]` |
-| Highlighted accent | `text-[#E5DDCB]` |
-| Micro-label | `font-sans text-[10px] tracking-[0.35em] uppercase text-[#A39E93]` |
-| Primary CTA | `bg-[#F9F6F0] text-[#0A0A0A] hover:bg-[#E5DDCB]` |
-| Selected tile | `border-[#E5DDCB] bg-[#121212] text-[#E5DDCB]` |
-| Disabled / OOS | `border-[#1A1A1A] bg-[#0A0A0A] text-[#2A2A2A] line-through` |
+### 3. Modify: TanStack Query keys
+- Every product/collection query key gets `[..., country]` appended so a switch re-fetches automatically (instead of manual `queryClient.invalidateQueries()`).
+- Pattern: `["product", handle, country]`, `["products", query, country]`, etc.
 
-## Out of Scope (untouched)
+### 4. New: `src/components/locale-selector.tsx`
+- Headless `<Select>` (already in shadcn) → custom obsidian trigger: flag emoji + `EUR` code in utility nav.
+- Dropdown shows curated list (US, GB, CA, AU, JP, DE, FR, IT, ES, AE, HK, SG, CH — 13 priority markets matching the SEO playbook).
+- On change: `setCountry()` + (Query keys auto re-fetch) + toast "Showing prices in <currency>".
+- A11y: labeled, keyboard-navigable, `aria-current` on selected.
 
-- `ProductCard`, `AIRecommendations` — used on PDP but rendered identically in collections/home; re-skinning them changes the whole site. Defer to a separate global pass.
-- `Accordion` primitive in `src/components/ui/accordion.tsx` — shadcn primitive used app-wide; we override at the wrapper className level instead.
-- All loader code, hooks, intersection observers, error timers, JSON-LD, head() meta, ATC handler, variant state, cart-store calls.
-- Components NOT mounted on the PDP.
+### 5. Modify: `src/components/site-header.tsx` (utility nav)
+- Mount `<LocaleSelector />` next to the existing concierge/wishlist icons.
+- Behind `import.meta.env.VITE_LOCALE_SWITCHER === "on"` flag for staged rollout.
 
-## Approach
+## Files touched
+```text
+NEW   src/stores/locale-store.ts
+NEW   src/components/locale-selector.tsx
+EDIT  src/lib/shopify.ts                  (add @inContext helper + plumb variables)
+EDIT  src/components/site-header.tsx      (mount selector, gated)
+EDIT  src/routes/product.$handle.tsx      (query key += country)
+EDIT  src/routes/collections.$handle.tsx  (query key += country)
+EDIT  src/routes/shop.tsx                 (query key += country)
+EDIT  src/lib/rails/queries.ts            (query key += country)
+```
 
-1. Read each file fully before editing.
-2. Surgical className swaps only — no JSX structure changes.
-3. Per memory `mem://preferences/working-mode`: smallest diff per file, verify after.
-4. **Note re design tokens**: per project memory we normally avoid hardcoded hex. This phase intentionally uses inline `bg-[#…]` because the obsidian palette is a PDP-scoped experiment; if approved, Phase 2c will promote these to semantic tokens in `src/styles.css`.
+Files explicitly NOT touched:
+- `src/stores/cart-store.ts`, `src/components/cart-drawer.tsx`, `src/hooks/use-cart-sync.ts` (checkout lockdown).
+- Any `scripts/shopify/*` (admin scripts, irrelevant).
 
-## Verification
+## Verification checklist
+1. Switch country → product card price re-renders with correct symbol within 1 RTT, no page reload.
+2. Cart drawer subtotal currency follows the selected market.
+3. Checkout URL still carries `channel=online_store` (lockdown).
+4. SSR build still passes; no server bundle leak from locale-store.
+5. Markets without Shopify Markets pricing fall back to USD via existing `EUR_TO_USD`.
+6. Selector hidden until `VITE_LOCALE_SWITCHER=on` set in `.env` — staged-launch rule.
 
-After all 12 edits: open `/product/<handle>` in the preview, confirm:
-- No light cream/white seams between sections
-- Variant selection still toggles
-- ATC still adds to cart drawer
-- Accordions still expand
-- No console errors
-
-Awaiting your go-ahead to execute.
+## Open questions before I start
+1. **Market list** — confirm the 13 priority markets above, or give me your shortlist.
+2. **Tax-inclusive display** — Shopify returns `price` as configured in each Market. Want to also surface a `(VAT included)` micro-line in EU/GB markets?
+3. **Language switching** — for Phase 1, do you want language tied 1:1 to country (e.g. JP→JA) or country-only with English UI everywhere?
+4. **Flag UI** — emoji flags (works everywhere, but inconsistent on Windows) or a small SVG flag set in `src/assets/flags/`?
