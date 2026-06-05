@@ -3,6 +3,15 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import { SHOPIFY_STORE_PERMANENT_DOMAIN, storefrontApiRequest, type ShopifyProduct, type Money } from "@/lib/shopify";
 import { trackCartEvent } from "@/lib/cart-analytics";
 import { scheduleAbandonedCartSync } from "@/lib/abandoned-cart-capture";
+import { useMarketStore } from "@/stores/market-store";
+
+function currentCountry(): string {
+  try {
+    return useMarketStore.getState().market.country;
+  } catch {
+    return "US";
+  }
+}
 
 export interface CartItem {
   lineId: string | null;
@@ -89,6 +98,14 @@ const CART_LINES_REMOVE_MUTATION = `
     cartLinesRemove(cartId: $cartId, lineIds: $lineIds) { cart { id } userErrors { field message } }
   }
 `;
+const CART_BUYER_IDENTITY_UPDATE_MUTATION = `
+  mutation cartBuyerIdentityUpdate($cartId: ID!, $buyerIdentity: CartBuyerIdentityInput!) {
+    cartBuyerIdentityUpdate(cartId: $cartId, buyerIdentity: $buyerIdentity) {
+      cart { id checkoutUrl }
+      userErrors { field message }
+    }
+  }
+`;
 
 function formatCheckoutUrl(checkoutUrl: string): string {
   try {
@@ -125,7 +142,10 @@ function isCartNotFoundError(errs: Array<{ field: string[] | null; message: stri
 
 async function createShopifyCart(item: CartItem) {
   const data = await storefrontApiRequest<any>(CART_CREATE_MUTATION, {
-    input: { lines: [{ quantity: item.quantity, merchandiseId: item.variantId }] },
+    input: {
+      lines: [{ quantity: item.quantity, merchandiseId: item.variantId }],
+      buyerIdentity: { countryCode: currentCountry() },
+    },
   });
   const errs = data?.data?.cartCreate?.userErrors || [];
   if (errs.length) { console.error("Cart creation failed:", errs); return null; }
@@ -134,6 +154,17 @@ async function createShopifyCart(item: CartItem) {
   const lineId = cart.lines.edges[0]?.node?.id;
   if (!lineId) return null;
   return { cartId: cart.id, checkoutUrl: formatCheckoutUrl(cart.checkoutUrl), lineId };
+}
+
+async function updateCartBuyerCountry(cartId: string, countryCode: string) {
+  const data = await storefrontApiRequest<any>(CART_BUYER_IDENTITY_UPDATE_MUTATION, {
+    cartId,
+    buyerIdentity: { countryCode },
+  });
+  const errs = data?.data?.cartBuyerIdentityUpdate?.userErrors || [];
+  if (errs.length) { console.error("Cart buyerIdentity update failed:", errs); return null; }
+  const cart = data?.data?.cartBuyerIdentityUpdate?.cart;
+  return cart?.checkoutUrl ? formatCheckoutUrl(cart.checkoutUrl) : null;
 }
 
 async function addLineToShopifyCart(cartId: string, item: CartItem) {
@@ -382,5 +413,24 @@ export const useCartStore = create<CartStore>()(
 if (typeof window !== "undefined") {
   useCartStore.subscribe((state, prev) => {
     if (state.items !== prev.items) scheduleAbandonedCartSync();
+  });
+}
+
+// When the shopper switches market in the header, push the new country onto
+// any existing Shopify cart so the hosted checkout opens in the same currency
+// the storefront is rendering. No-op if there is no cart yet.
+if (typeof window !== "undefined") {
+  let lastCountry = (() => {
+    try { return useMarketStore.getState().market.country; } catch { return "US"; }
+  })();
+  useMarketStore.subscribe((state) => {
+    const next = state.market.country;
+    if (next === lastCountry) return;
+    lastCountry = next;
+    const { cartId } = useCartStore.getState();
+    if (!cartId) return;
+    void updateCartBuyerCountry(cartId, next).then((newUrl) => {
+      if (newUrl) useCartStore.setState({ checkoutUrl: newUrl });
+    });
   });
 }
