@@ -58,6 +58,12 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
     if (open) syncCart(); 
   }, [open, syncCart]);
 
+  // QA: auto-open drawer when ?qa-cart=1 is present
+  useEffect(() => {
+    if (qaCart && !open) onOpenChange(true);
+  }, [qaCart, open, onOpenChange]);
+
+
   const emailCaptureRef = useRef<CartEmailCaptureHandle | null>(null);
   const [skipEmail, setSkipEmail] = useState(false);
 
