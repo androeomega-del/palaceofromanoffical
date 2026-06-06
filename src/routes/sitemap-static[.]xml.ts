@@ -86,7 +86,7 @@ const STATIC_ROUTES: UrlEntry[] = [
 export const Route = createFileRoute("/sitemap-static.xml")({
   server: {
     handlers: {
-      GET: async () => sitemapResponse(renderSitemap(STATIC_ROUTES)),
+      GET: async ({ request }) => guardCanonicalSitemapHost(request) ?? sitemapResponse(renderSitemap(STATIC_ROUTES)),
     },
   },
 });
