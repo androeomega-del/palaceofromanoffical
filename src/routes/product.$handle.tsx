@@ -716,9 +716,47 @@ function ProductView({
     .filter((e) => e.node.handle !== product.handle && e.node.vendor !== product.vendor)
     .slice(0, 8);
 
+  // ── Auto "The Look" — AI fallback when `custom.look_products` is empty.
+  // Pulls Shopify's COMPLEMENTARY recommendations first (cross-category by
+  // design), then enforces our own no-duplicate-category / vendor-diversity
+  // rules. A second background fetch backfills from a category-targeted
+  // catalog search when recommendations under-deliver.
+  const hasManualLook =
+    !!product.lookReferences?.references?.nodes?.length;
+  const anchorCat = classifyLookCategory(product);
+  const targetCats = COMPLEMENTARY_MAP[anchorCat];
+
+  const autoRecsQ = useQuery({
+    queryKey: ["auto-look-recs", product.id],
+    queryFn: () => fetchProductRecommendations(product.id, "COMPLEMENTARY"),
+    enabled: !hasManualLook,
+    staleTime: 5 * 60_000,
+  });
+
+  const autoBackfillQ = useQuery({
+    queryKey: ["auto-look-backfill", product.handle, anchorCat],
+    queryFn: () =>
+      fetchProducts({
+        first: 24,
+        sortKey: "BEST_SELLING",
+        query: `${categoryQueryFragment(targetCats)} -vendor:"${product.vendor.replace(/"/g, "")}"`.trim(),
+      }),
+    enabled: !hasManualLook,
+    staleTime: 5 * 60_000,
+  });
+
+  const autoLookItems = useMemo<ShopifyProductLite[]>(() => {
+    if (hasManualLook) return [];
+    const recs = autoRecsQ.data ?? [];
+    const backfillNodes = (autoBackfillQ.data ?? []).map((e) => e.node);
+    const pool = [...recs, ...backfillNodes];
+    return pickCompanions(pool, product, 3);
+  }, [hasManualLook, autoRecsQ.data, autoBackfillQ.data, product]);
+
   const vendorHandle = product.vendor.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
   const layering = layeringKey(product);
   const editorial = layering ? LAYERING_COPY[layering] : null;
+
 
 
   return (
