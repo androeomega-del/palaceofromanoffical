@@ -8,8 +8,8 @@
  * kind. Selecting an item fills the slot via local React state.
  *
  * Safety:
- * - No cart/checkout state mutations. The "Purchase This Look" button
- *   logs the gathered variant IDs to the console only.
+ * - Uses the official `useCartStore.addItem` + `openDrawer` actions only.
+ *   No edits to cart-store, cart-drawer, use-cart-sync, or checkout URL gen.
  * - No new network calls — drawer is populated from the preloaded
  *   `candidatePool` prop.
  * - Strict CSS containment + reserved min-height to prevent CLS.
@@ -26,6 +26,7 @@ import {
   SheetTitle,
   SheetDescription,
 } from "@/components/ui/sheet";
+import { useCartStore } from "@/stores/cart-store";
 
 export type CapsuleSlotKind =
   | "Top"
@@ -199,14 +200,54 @@ export function CapsuleBuilder({
     [openKind],
   );
 
-  const onPurchaseLook = React.useCallback(() => {
-    const variantIds = slots
-      .map((s) => s.variantId)
-      .filter((v): v is string => Boolean(v));
-    // Log-only. No cart mutations.
-    // eslint-disable-next-line no-console
-    console.log("[CapsuleBuilder] Purchase This Look — variantIds:", variantIds);
-  }, [slots]);
+  const addItem = useCartStore((s) => s.addItem);
+  const openDrawer = useCartStore((s) => s.openDrawer);
+  const isLoading = useCartStore((s) => s.isLoading);
+  const [isBundling, setIsBundling] = React.useState(false);
+
+  const onPurchaseLook = React.useCallback(async () => {
+    if (isBundling) return;
+    // Collect filled slots only — empty slots are ignored.
+    const filled = slots.filter(
+      (s): s is CapsuleSlot & { product: ShopifyProductNode; variantId: string } =>
+        Boolean(s.product) && Boolean(s.variantId),
+    );
+    if (filled.length === 0) return;
+
+    // De-dupe by variantId so a single accidental repeat doesn't stack lines.
+    const seen = new Set<string>();
+    const unique = filled.filter((s) => {
+      if (seen.has(s.variantId)) return false;
+      seen.add(s.variantId);
+      return true;
+    });
+
+    setIsBundling(true);
+    try {
+      // Sequential adds — the cart store creates the cart on the first call
+      // and appends on subsequent calls. Parallel would race the cartId.
+      for (const slot of unique) {
+        const product = slot.product;
+        const variantEdge =
+          product.variants?.edges?.find((e) => e.node.id === slot.variantId) ??
+          product.variants?.edges?.find((e) => e.node.availableForSale) ??
+          product.variants?.edges?.[0];
+        const variantNode = variantEdge?.node;
+        if (!variantNode) continue;
+        await addItem({
+          product: { node: product },
+          variantId: slot.variantId,
+          variantTitle: variantNode.title ?? "",
+          price: variantNode.price,
+          quantity: 1,
+          selectedOptions: variantNode.selectedOptions ?? [],
+        });
+      }
+      openDrawer();
+    } finally {
+      setIsBundling(false);
+    }
+  }, [slots, addItem, openDrawer, isBundling]);
 
   return (
     <section
@@ -246,9 +287,10 @@ export function CapsuleBuilder({
         <button
           type="button"
           onClick={onPurchaseLook}
-          className="inline-flex items-center justify-center rounded-sm border border-foreground/80 bg-foreground px-4 py-2 text-xs uppercase tracking-[0.18em] text-background transition-opacity hover:opacity-90"
+          disabled={isBundling || isLoading || slots.every((s) => !s.variantId)}
+          className="inline-flex items-center justify-center rounded-sm border border-foreground/80 bg-foreground px-4 py-2 text-xs uppercase tracking-[0.18em] text-background transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Purchase This Look
+          {isBundling ? "Bundling…" : "Purchase This Look"}
         </button>
       </div>
 
