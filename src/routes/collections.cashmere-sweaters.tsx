@@ -96,7 +96,8 @@ function Page() {
           </p>
         </>
       }
-      shopifyQuery="cashmere"
+      shopifyQuery={SHOPIFY_QUERY}
+      queryOptions={LANDING_QO}
       faqs={FAQS}
       relatedGuides={[
         { to: "/journal/craftsmanship/made-in-italy-vs-designed-in-italy", label: "Made in Italy vs Designed in Italy" },
