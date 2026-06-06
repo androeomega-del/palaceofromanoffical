@@ -35,7 +35,9 @@ export function SiteFooter() {
             <Link to="/contact" className="text-sm text-muted-foreground hover:text-ink transition-colors">Contact Us</Link>
             <Link to="/faq" className="text-sm text-muted-foreground hover:text-ink transition-colors">FAQs</Link>
             <Link to="/shipping-returns" className="text-sm text-muted-foreground hover:text-ink transition-colors">Shipping &amp; Returns</Link>
+            <Link to="/reviews" className="text-sm text-muted-foreground hover:text-ink transition-colors">Client Reviews</Link>
             <Link to="/account" className="text-sm text-muted-foreground hover:text-ink transition-colors">Order Tracking</Link>
+
           </div>
 
           <div className="flex flex-col gap-3">
