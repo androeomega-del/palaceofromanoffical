@@ -24,6 +24,9 @@ export type Database = {
           item_count: number
           items: Json
           last_activity_at: string
+          market_country: string | null
+          market_currency: string | null
+          market_language: string | null
           page_path: string | null
           recovered_at: string | null
           recovery_email_count: number
@@ -42,6 +45,9 @@ export type Database = {
           item_count?: number
           items?: Json
           last_activity_at?: string
+          market_country?: string | null
+          market_currency?: string | null
+          market_language?: string | null
           page_path?: string | null
           recovered_at?: string | null
           recovery_email_count?: number
@@ -60,6 +66,9 @@ export type Database = {
           item_count?: number
           items?: Json
           last_activity_at?: string
+          market_country?: string | null
+          market_currency?: string | null
+          market_language?: string | null
           page_path?: string | null
           recovered_at?: string | null
           recovery_email_count?: number
