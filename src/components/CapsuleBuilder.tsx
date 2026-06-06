@@ -287,9 +287,10 @@ export function CapsuleBuilder({
         <button
           type="button"
           onClick={onPurchaseLook}
-          className="inline-flex items-center justify-center rounded-sm border border-foreground/80 bg-foreground px-4 py-2 text-xs uppercase tracking-[0.18em] text-background transition-opacity hover:opacity-90"
+          disabled={isBundling || isLoading || slots.every((s) => !s.variantId)}
+          className="inline-flex items-center justify-center rounded-sm border border-foreground/80 bg-foreground px-4 py-2 text-xs uppercase tracking-[0.18em] text-background transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Purchase This Look
+          {isBundling ? "Bundling…" : "Purchase This Look"}
         </button>
       </div>
 
