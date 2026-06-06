@@ -44,8 +44,7 @@ export function VipPriorityAccess() {
     };
   }, []);
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
+  const handleInput = (value: string) => {
     setEmail(value);
     if (saved && value.trim().toLowerCase() !== lastSyncedRef.current) {
       setSaved(false);
@@ -85,23 +84,24 @@ export function VipPriorityAccess() {
           Priority Access Discovery
         </p>
       </div>
-      <p className="text-[11px] leading-relaxed text-ink/70 mb-3">
-        Enter your email for priority order placement, automated designer
-        authentication updates, and low-stock boutique alerts.
-      </p>
-      <label htmlFor="vip-priority-access-email" className="sr-only">
-        Email address for VIP Priority Access
-      </label>
-      <div className="relative">
+      <form
+        onSubmit={(e) => e.preventDefault()}
+        className="relative"
+      >
+        <label htmlFor="vip-priority-access-email" className="sr-only">
+          Email address for VIP Priority Access
+        </label>
         <input
           id="vip-priority-access-email"
           type="email"
+          name="email"
           inputMode="email"
           autoComplete="email"
           spellCheck={false}
           placeholder="your@email.com"
           value={email}
-          onChange={onChange}
+          onChange={(e) => handleInput(e.target.value)}
+          onInput={(e) => handleInput(e.currentTarget.value)}
           className="w-full bg-transparent border-b border-ink/25 py-2 pr-16 text-xs text-ink placeholder:text-ink/40 focus:outline-none focus:border-bronze transition-colors"
           aria-describedby="vip-priority-access-status"
         />
@@ -115,7 +115,12 @@ export function VipPriorityAccess() {
           <Check className="w-3 h-3" strokeWidth={2} />
           Reserved
         </span>
-      </div>
+      </form>
+      <p className="text-[11px] leading-relaxed text-ink/70 mt-2">
+        Your curation data is handled with absolute discretion. Palace of Roman
+        secures your priority access parameters without third-party data
+        tracking.
+      </p>
     </section>
   );
 }
