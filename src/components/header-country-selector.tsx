@@ -10,6 +10,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, Check, Globe } from "lucide-react";
 import { MARKETS, useMarketStore, type Market } from "@/stores/market-store";
+import { marketTaxNote } from "@/lib/market-tax";
 
 export function HeaderCountrySelector({ className = "" }: { className?: string }) {
   const market = useMarketStore((s) => s.market);
@@ -102,7 +103,7 @@ export function HeaderCountrySelector({ className = "" }: { className?: string }
             })}
           </ul>
           <p className="px-4 py-3 text-[10px] leading-relaxed text-muted-foreground border-t border-ink/10">
-            Prices update instantly. Where the market supports it, taxes are shown inclusive.
+            Prices update instantly. <span className="text-ink/80">{mounted ? marketTaxNote(market) : "Duties & taxes calculated at checkout"}.</span>
           </p>
         </div>
       )}
