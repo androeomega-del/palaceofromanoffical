@@ -177,13 +177,40 @@ export function CapsuleBuilder({
     [slots],
   );
 
+  // Loose Bottoms detector — checks productType, tags (when present), and title
+  // for any of: Bottoms, Pants, Trousers, Shorts, Skirts, Denim, Jeans, Bermuda
+  // (plus common synonyms already used elsewhere). Case-insensitive.
+  const BOTTOMS_RE = /bottom|pant|trouser|short|skirt|denim|jean|bermuda|chino|slack|legging|sweatpant|jogger|culotte|capri/i;
+  const isBottom = React.useCallback((p: ShopifyProductNode) => {
+    if (classifyKind(p.productType) === "Bottom") return true;
+    if (BOTTOMS_RE.test(p.productType ?? "")) return true;
+    const tags = (p as unknown as { tags?: string[] }).tags;
+    if (Array.isArray(tags) && tags.some((t) => BOTTOMS_RE.test(t))) return true;
+    if (BOTTOMS_RE.test(p.title ?? "")) return true;
+    return false;
+  }, []);
+
   const filteredForOpen = React.useMemo(() => {
     if (!openKind) return [];
     const pool = candidatePool.filter((p) => !usedHandles.has(p.handle));
-    const matches = pool.filter((p) => classifyKind(p.productType) === openKind);
-    // Per spec: if no direct matches, fall back to the full curated edit.
-    return matches.length > 0 ? matches : pool;
-  }, [openKind, candidatePool, usedHandles]);
+    if (openKind === "Bottom") {
+      const matches = pool.filter(isBottom);
+      if (matches.length > 0) return matches;
+      // Strict fallback: clothing only — never footwear or accessories.
+      return pool.filter((p) => {
+        const k = classifyKind(p.productType);
+        return k !== "Footwear" && k !== "Accessory";
+      });
+    }
+    // No full-pool fallback for other slots — empty state handles it.
+    return pool.filter((p) => classifyKind(p.productType) === openKind);
+  }, [openKind, candidatePool, usedHandles, isBottom]);
+
+  const isBottomFallback = React.useMemo(() => {
+    if (openKind !== "Bottom") return false;
+    const pool = candidatePool.filter((p) => !usedHandles.has(p.handle));
+    return pool.filter(isBottom).length === 0 && filteredForOpen.length > 0;
+  }, [openKind, candidatePool, usedHandles, isBottom, filteredForOpen]);
 
   const handleSelect = React.useCallback(
     (product: ShopifyProductNode) => {
@@ -320,7 +347,13 @@ export function CapsuleBuilder({
                 No companion pieces available for this slot.
               </p>
             ) : (
-              <ul className="grid grid-cols-1 gap-3">
+              <>
+                {isBottomFallback ? (
+                  <p className="mb-3 text-xs uppercase tracking-[0.18em] text-muted-foreground text-center">
+                    Curating matching bottoms…
+                  </p>
+                ) : null}
+                <ul className="grid grid-cols-1 gap-3">
                 {filteredForOpen.map((p) => {
                   const thumb = p.images?.edges?.[0]?.node;
                   return (
@@ -361,6 +394,7 @@ export function CapsuleBuilder({
                   );
                 })}
               </ul>
+              </>
             )}
           </div>
         </SheetContent>
