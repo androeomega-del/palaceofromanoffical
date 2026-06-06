@@ -27,7 +27,6 @@ import { Route as ShippingReturnsRouteImport } from './routes/shipping-returns'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as PrelovedRouteImport } from './routes/preloved'
 import { Route as OrderConfirmedRouteImport } from './routes/order-confirmed'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LinksRouteImport } from './routes/links'
@@ -46,6 +45,7 @@ import { Route as AccountRouteImport } from './routes/account'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WomenIndexRouteImport } from './routes/women.index'
+import { Route as PrelovedIndexRouteImport } from './routes/preloved.index'
 import { Route as MenIndexRouteImport } from './routes/men.index'
 import { Route as MaisonIndexRouteImport } from './routes/maison.index'
 import { Route as CompareIndexRouteImport } from './routes/compare.index'
@@ -251,11 +251,6 @@ const PrivacyRoute = PrivacyRouteImport.update({
   path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PrelovedRoute = PrelovedRouteImport.update({
-  id: '/preloved',
-  path: '/preloved',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const OrderConfirmedRoute = OrderConfirmedRouteImport.update({
   id: '/order-confirmed',
   path: '/order-confirmed',
@@ -344,6 +339,11 @@ const IndexRoute = IndexRouteImport.update({
 const WomenIndexRoute = WomenIndexRouteImport.update({
   id: '/women/',
   path: '/women/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrelovedIndexRoute = PrelovedIndexRouteImport.update({
+  id: '/preloved/',
+  path: '/preloved/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MenIndexRoute = MenIndexRouteImport.update({
@@ -956,7 +956,6 @@ export interface FileRoutesByFullPath {
   '/links': typeof LinksRoute
   '/login': typeof LoginRoute
   '/order-confirmed': typeof OrderConfirmedRoute
-  '/preloved': typeof PrelovedRouteWithChildren
   '/privacy': typeof PrivacyRoute
   '/reviews': typeof ReviewsRoute
   '/robots.txt': typeof RobotsDottxtRoute
@@ -1054,6 +1053,7 @@ export interface FileRoutesByFullPath {
   '/compare/': typeof CompareIndexRoute
   '/maison/': typeof MaisonIndexRoute
   '/men/': typeof MenIndexRoute
+  '/preloved/': typeof PrelovedIndexRoute
   '/women/': typeof WomenIndexRoute
   '/$locale/products/$handle': typeof LocaleProductsHandleRoute
   '/api/admin/image-proxy': typeof ApiAdminImageProxyRoute
@@ -1104,7 +1104,6 @@ export interface FileRoutesByTo {
   '/links': typeof LinksRoute
   '/login': typeof LoginRoute
   '/order-confirmed': typeof OrderConfirmedRoute
-  '/preloved': typeof PrelovedRouteWithChildren
   '/privacy': typeof PrivacyRoute
   '/reviews': typeof ReviewsRoute
   '/robots.txt': typeof RobotsDottxtRoute
@@ -1201,6 +1200,7 @@ export interface FileRoutesByTo {
   '/compare': typeof CompareIndexRoute
   '/maison': typeof MaisonIndexRoute
   '/men': typeof MenIndexRoute
+  '/preloved': typeof PrelovedIndexRoute
   '/women': typeof WomenIndexRoute
   '/$locale/products/$handle': typeof LocaleProductsHandleRoute
   '/api/admin/image-proxy': typeof ApiAdminImageProxyRoute
@@ -1254,7 +1254,6 @@ export interface FileRoutesById {
   '/links': typeof LinksRoute
   '/login': typeof LoginRoute
   '/order-confirmed': typeof OrderConfirmedRoute
-  '/preloved': typeof PrelovedRouteWithChildren
   '/privacy': typeof PrivacyRoute
   '/reviews': typeof ReviewsRoute
   '/robots.txt': typeof RobotsDottxtRoute
@@ -1352,6 +1351,7 @@ export interface FileRoutesById {
   '/compare/': typeof CompareIndexRoute
   '/maison/': typeof MaisonIndexRoute
   '/men/': typeof MenIndexRoute
+  '/preloved/': typeof PrelovedIndexRoute
   '/women/': typeof WomenIndexRoute
   '/$locale/products/$handle': typeof LocaleProductsHandleRoute
   '/api/admin/image-proxy': typeof ApiAdminImageProxyRoute
@@ -1406,7 +1406,6 @@ export interface FileRouteTypes {
     | '/links'
     | '/login'
     | '/order-confirmed'
-    | '/preloved'
     | '/privacy'
     | '/reviews'
     | '/robots.txt'
@@ -1504,6 +1503,7 @@ export interface FileRouteTypes {
     | '/compare/'
     | '/maison/'
     | '/men/'
+    | '/preloved/'
     | '/women/'
     | '/$locale/products/$handle'
     | '/api/admin/image-proxy'
@@ -1554,7 +1554,6 @@ export interface FileRouteTypes {
     | '/links'
     | '/login'
     | '/order-confirmed'
-    | '/preloved'
     | '/privacy'
     | '/reviews'
     | '/robots.txt'
@@ -1651,6 +1650,7 @@ export interface FileRouteTypes {
     | '/compare'
     | '/maison'
     | '/men'
+    | '/preloved'
     | '/women'
     | '/$locale/products/$handle'
     | '/api/admin/image-proxy'
@@ -1703,7 +1703,6 @@ export interface FileRouteTypes {
     | '/links'
     | '/login'
     | '/order-confirmed'
-    | '/preloved'
     | '/privacy'
     | '/reviews'
     | '/robots.txt'
@@ -1801,6 +1800,7 @@ export interface FileRouteTypes {
     | '/compare/'
     | '/maison/'
     | '/men/'
+    | '/preloved/'
     | '/women/'
     | '/$locale/products/$handle'
     | '/api/admin/image-proxy'
@@ -1854,7 +1854,6 @@ export interface RootRouteChildren {
   LinksRoute: typeof LinksRoute
   LoginRoute: typeof LoginRoute
   OrderConfirmedRoute: typeof OrderConfirmedRoute
-  PrelovedRoute: typeof PrelovedRouteWithChildren
   PrivacyRoute: typeof PrivacyRoute
   ReviewsRoute: typeof ReviewsRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
@@ -1943,6 +1942,7 @@ export interface RootRouteChildren {
   CollectionsIndexRoute: typeof CollectionsIndexRoute
   MaisonIndexRoute: typeof MaisonIndexRoute
   MenIndexRoute: typeof MenIndexRoute
+  PrelovedIndexRoute: typeof PrelovedIndexRoute
   WomenIndexRoute: typeof WomenIndexRoute
   LocaleProductsHandleRoute: typeof LocaleProductsHandleRoute
   ApiAdminImageProxyRoute: typeof ApiAdminImageProxyRoute
@@ -2095,13 +2095,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/preloved': {
-      id: '/preloved'
-      path: '/preloved'
-      fullPath: '/preloved'
-      preLoaderRoute: typeof PrelovedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/order-confirmed': {
       id: '/order-confirmed'
       path: '/order-confirmed'
@@ -2226,6 +2219,13 @@ declare module '@tanstack/react-router' {
       path: '/women'
       fullPath: '/women/'
       preLoaderRoute: typeof WomenIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/preloved/': {
+      id: '/preloved/'
+      path: '/preloved'
+      fullPath: '/preloved/'
+      preLoaderRoute: typeof PrelovedIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/men/': {
@@ -3070,18 +3070,6 @@ const JournalRouteChildren: JournalRouteChildren = {
 const JournalRouteWithChildren =
   JournalRoute._addFileChildren(JournalRouteChildren)
 
-interface PrelovedRouteChildren {
-  PrelovedConditionRoute: typeof PrelovedConditionRoute
-}
-
-const PrelovedRouteChildren: PrelovedRouteChildren = {
-  PrelovedConditionRoute: PrelovedConditionRoute,
-}
-
-const PrelovedRouteWithChildren = PrelovedRoute._addFileChildren(
-  PrelovedRouteChildren,
-)
-
 interface SwimRouteChildren {
   SwimSizeGuideRoute: typeof SwimSizeGuideRoute
 }
@@ -3148,7 +3136,6 @@ const rootRouteChildren: RootRouteChildren = {
   LinksRoute: LinksRoute,
   LoginRoute: LoginRoute,
   OrderConfirmedRoute: OrderConfirmedRoute,
-  PrelovedRoute: PrelovedRouteWithChildren,
   PrivacyRoute: PrivacyRoute,
   ReviewsRoute: ReviewsRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
@@ -3238,6 +3225,7 @@ const rootRouteChildren: RootRouteChildren = {
   CollectionsIndexRoute: CollectionsIndexRoute,
   MaisonIndexRoute: MaisonIndexRoute,
   MenIndexRoute: MenIndexRoute,
+  PrelovedIndexRoute: PrelovedIndexRoute,
   WomenIndexRoute: WomenIndexRoute,
   LocaleProductsHandleRoute: LocaleProductsHandleRoute,
   ApiAdminImageProxyRoute: ApiAdminImageProxyRoute,
@@ -3270,3 +3258,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
