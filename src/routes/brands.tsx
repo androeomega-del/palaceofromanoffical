@@ -111,7 +111,7 @@ function BrandsPage() {
           </p>
         </div>
 
-        {sampleQ.isLoading ? (
+        {grouped.length === 0 && sampleQ.isFetching ? (
           <p className="text-sm text-muted-foreground">Loading brand index…</p>
         ) : grouped.length === 0 ? (
           <p className="text-sm text-muted-foreground">No brands found.</p>
