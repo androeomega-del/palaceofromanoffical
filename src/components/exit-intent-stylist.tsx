@@ -88,10 +88,10 @@ export function ExitIntentStylist() {
             </span>
           </div>
           <DialogTitle className="font-serif text-3xl md:text-4xl leading-tight text-ink mb-4 text-balance">
-            Sign up for our newsletter
+            SUBSCRIBE
           </DialogTitle>
           <DialogDescription className="text-sm text-ink/70 leading-relaxed mb-6">
-            You might receive promo codes here and there.
+            Enter your email to receive updates on new arrivals, exclusive collection drops, and boutique releases.
           </DialogDescription>
 
           <AtelierListInline onSubscribed={() => undefined} />
@@ -187,6 +187,7 @@ function AtelierListInline({ onSubscribed }: { onSubscribed: () => void }) {
       <input
         id="exit-intent-email"
         type="email"
+        name="email"
         required
         autoComplete="email"
         placeholder="your@email.com"
@@ -212,7 +213,7 @@ function AtelierListInline({ onSubscribed }: { onSubscribed: () => void }) {
         </p>
       )}
       <p className="mt-3 text-[10px] text-ink/45 leading-relaxed">
-        You might receive promo codes here and there. Unsubscribe anytime.
+        Receive updates on new arrivals, exclusive collection drops, and boutique releases. Unsubscribe anytime.
       </p>
     </form>
   );

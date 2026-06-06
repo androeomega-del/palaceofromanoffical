@@ -61,8 +61,8 @@ export function NewsletterForm() {
         </p>
         <p className="text-sm text-ink leading-relaxed">
           We've sent a confirmation email. Please click the link inside to
-          activate your subscription — promo codes and occasional offers will
-          land in your inbox once your email is verified.
+          activate your subscription — new arrivals and exclusive drops will
+          reach your inbox once verified.
         </p>
       </div>
     );
@@ -71,10 +71,10 @@ export function NewsletterForm() {
   return (
     <div>
       <p className="text-[10px] uppercase tracking-[0.32em] text-bronze mb-3 inline-flex items-center gap-2">
-        <Sparkles className="w-3 h-3" /> Our Newsletter
+        <Sparkles className="w-3 h-3" /> SUBSCRIBE
       </p>
       <p className="text-sm text-ink/80 leading-relaxed mb-5 max-w-sm">
-        We send occasional surprises to our clients — private previews, early access, and the rare token of thanks. Subscribe, and one may find its way to you.
+        Enter your email to receive updates on new arrivals, exclusive collection drops, and boutique releases.
       </p>
       <form className="relative" onSubmit={onSubmit} noValidate>
         <label htmlFor="newsletter-email" className="sr-only">
@@ -83,6 +83,7 @@ export function NewsletterForm() {
         <input
           id="newsletter-email"
           type="email"
+          name="email"
           required
           autoComplete="email"
           placeholder="your@email.com"

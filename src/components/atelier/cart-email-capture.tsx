@@ -91,6 +91,7 @@ export const CartEmailCapture = forwardRef<CartEmailCaptureHandle>((_, ref) => {
           id="cart-email-capture"
           ref={inputRef}
           type="email"
+          name="email"
           required
           autoComplete="email"
           placeholder="your@email.com"
@@ -116,7 +117,7 @@ export const CartEmailCapture = forwardRef<CartEmailCaptureHandle>((_, ref) => {
           </p>
         )}
         <p className="mt-1.5 text-[9px] text-ink/55 leading-relaxed">
-          This piece is held for you. Enter your email to reserve it beyond this session and gain entry to our private circle — members receive confidential promotions, reserved sales, and first notice of limited pieces. Plus 10% off your first purchase, for members only.
+          Enter your email to reserve this piece beyond the session and receive updates on new arrivals, exclusive collection drops, and boutique releases.
         </p>
       </form>
     </div>

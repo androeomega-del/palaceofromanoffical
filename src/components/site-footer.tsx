@@ -20,9 +20,9 @@ export function SiteFooter() {
             </p>
           </div>
           <div className="flex flex-col gap-4">
-            <h5 className="text-[10px] uppercase tracking-[0.25em] font-semibold">Sign up for our newsletter</h5>
+            <h5 className="text-[10px] uppercase tracking-[0.25em] font-semibold">SUBSCRIBE</h5>
             <p className="text-[12px] text-muted-foreground leading-relaxed">
-              Sign up for our newsletter — you might receive promo codes here and there.
+              Enter your email to receive updates on new arrivals, exclusive collection drops, and boutique releases.
             </p>
             <NewsletterForm />
           </div>
