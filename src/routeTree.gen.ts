@@ -45,6 +45,7 @@ import { Route as AccountRouteImport } from './routes/account'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WomenIndexRouteImport } from './routes/women.index'
+import { Route as PrelovedIndexRouteImport } from './routes/preloved.index'
 import { Route as MenIndexRouteImport } from './routes/men.index'
 import { Route as MaisonIndexRouteImport } from './routes/maison.index'
 import { Route as CompareIndexRouteImport } from './routes/compare.index'
@@ -61,6 +62,7 @@ import { Route as SwimSizeGuideRouteImport } from './routes/swim.size-guide'
 import { Route as ProductsHandleRouteImport } from './routes/products.$handle'
 import { Route as ProductHandleRouteImport } from './routes/product.$handle'
 import { Route as PreviewLookbookRouteImport } from './routes/preview.lookbook'
+import { Route as PrelovedConditionRouteImport } from './routes/preloved.$condition'
 import { Route as NewsletterConfirmRouteImport } from './routes/newsletter.confirm'
 import { Route as MenSs26RouteImport } from './routes/men.ss26'
 import { Route as MaisonSlugRouteImport } from './routes/maison.$slug'
@@ -339,6 +341,11 @@ const WomenIndexRoute = WomenIndexRouteImport.update({
   path: '/women/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrelovedIndexRoute = PrelovedIndexRouteImport.update({
+  id: '/preloved/',
+  path: '/preloved/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MenIndexRoute = MenIndexRouteImport.update({
   id: '/men/',
   path: '/men/',
@@ -419,6 +426,11 @@ const PreviewLookbookRoute = PreviewLookbookRouteImport.update({
   id: '/preview/lookbook',
   path: '/preview/lookbook',
   getParentRoute: () => rootRouteImport,
+} as any)
+const PrelovedConditionRoute = PrelovedConditionRouteImport.update({
+  id: '/$condition',
+  path: '/$condition',
+  getParentRoute: () => PrelovedRoute,
 } as any)
 const NewsletterConfirmRoute = NewsletterConfirmRouteImport.update({
   id: '/newsletter/confirm',
@@ -1024,6 +1036,7 @@ export interface FileRoutesByFullPath {
   '/maison/$slug': typeof MaisonSlugRoute
   '/men/ss26': typeof MenSs26Route
   '/newsletter/confirm': typeof NewsletterConfirmRoute
+  '/preloved/$condition': typeof PrelovedConditionRoute
   '/preview/lookbook': typeof PreviewLookbookRoute
   '/product/$handle': typeof ProductHandleRoute
   '/products/$handle': typeof ProductsHandleRoute
@@ -1040,6 +1053,7 @@ export interface FileRoutesByFullPath {
   '/compare/': typeof CompareIndexRoute
   '/maison/': typeof MaisonIndexRoute
   '/men/': typeof MenIndexRoute
+  '/preloved/': typeof PrelovedIndexRoute
   '/women/': typeof WomenIndexRoute
   '/$locale/products/$handle': typeof LocaleProductsHandleRoute
   '/api/admin/image-proxy': typeof ApiAdminImageProxyRoute
@@ -1169,6 +1183,7 @@ export interface FileRoutesByTo {
   '/maison/$slug': typeof MaisonSlugRoute
   '/men/ss26': typeof MenSs26Route
   '/newsletter/confirm': typeof NewsletterConfirmRoute
+  '/preloved/$condition': typeof PrelovedConditionRoute
   '/preview/lookbook': typeof PreviewLookbookRoute
   '/product/$handle': typeof ProductHandleRoute
   '/products/$handle': typeof ProductsHandleRoute
@@ -1185,6 +1200,7 @@ export interface FileRoutesByTo {
   '/compare': typeof CompareIndexRoute
   '/maison': typeof MaisonIndexRoute
   '/men': typeof MenIndexRoute
+  '/preloved': typeof PrelovedIndexRoute
   '/women': typeof WomenIndexRoute
   '/$locale/products/$handle': typeof LocaleProductsHandleRoute
   '/api/admin/image-proxy': typeof ApiAdminImageProxyRoute
@@ -1318,6 +1334,7 @@ export interface FileRoutesById {
   '/maison/$slug': typeof MaisonSlugRoute
   '/men/ss26': typeof MenSs26Route
   '/newsletter/confirm': typeof NewsletterConfirmRoute
+  '/preloved/$condition': typeof PrelovedConditionRoute
   '/preview/lookbook': typeof PreviewLookbookRoute
   '/product/$handle': typeof ProductHandleRoute
   '/products/$handle': typeof ProductsHandleRoute
@@ -1334,6 +1351,7 @@ export interface FileRoutesById {
   '/compare/': typeof CompareIndexRoute
   '/maison/': typeof MaisonIndexRoute
   '/men/': typeof MenIndexRoute
+  '/preloved/': typeof PrelovedIndexRoute
   '/women/': typeof WomenIndexRoute
   '/$locale/products/$handle': typeof LocaleProductsHandleRoute
   '/api/admin/image-proxy': typeof ApiAdminImageProxyRoute
@@ -1468,6 +1486,7 @@ export interface FileRouteTypes {
     | '/maison/$slug'
     | '/men/ss26'
     | '/newsletter/confirm'
+    | '/preloved/$condition'
     | '/preview/lookbook'
     | '/product/$handle'
     | '/products/$handle'
@@ -1484,6 +1503,7 @@ export interface FileRouteTypes {
     | '/compare/'
     | '/maison/'
     | '/men/'
+    | '/preloved/'
     | '/women/'
     | '/$locale/products/$handle'
     | '/api/admin/image-proxy'
@@ -1613,6 +1633,7 @@ export interface FileRouteTypes {
     | '/maison/$slug'
     | '/men/ss26'
     | '/newsletter/confirm'
+    | '/preloved/$condition'
     | '/preview/lookbook'
     | '/product/$handle'
     | '/products/$handle'
@@ -1629,6 +1650,7 @@ export interface FileRouteTypes {
     | '/compare'
     | '/maison'
     | '/men'
+    | '/preloved'
     | '/women'
     | '/$locale/products/$handle'
     | '/api/admin/image-proxy'
@@ -1761,6 +1783,7 @@ export interface FileRouteTypes {
     | '/maison/$slug'
     | '/men/ss26'
     | '/newsletter/confirm'
+    | '/preloved/$condition'
     | '/preview/lookbook'
     | '/product/$handle'
     | '/products/$handle'
@@ -1777,6 +1800,7 @@ export interface FileRouteTypes {
     | '/compare/'
     | '/maison/'
     | '/men/'
+    | '/preloved/'
     | '/women/'
     | '/$locale/products/$handle'
     | '/api/admin/image-proxy'
@@ -1918,6 +1942,7 @@ export interface RootRouteChildren {
   CollectionsIndexRoute: typeof CollectionsIndexRoute
   MaisonIndexRoute: typeof MaisonIndexRoute
   MenIndexRoute: typeof MenIndexRoute
+  PrelovedIndexRoute: typeof PrelovedIndexRoute
   WomenIndexRoute: typeof WomenIndexRoute
   LocaleProductsHandleRoute: typeof LocaleProductsHandleRoute
   ApiAdminImageProxyRoute: typeof ApiAdminImageProxyRoute
@@ -2196,6 +2221,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WomenIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/preloved/': {
+      id: '/preloved/'
+      path: '/preloved'
+      fullPath: '/preloved/'
+      preLoaderRoute: typeof PrelovedIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/men/': {
       id: '/men/'
       path: '/men'
@@ -2307,6 +2339,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/preview/lookbook'
       preLoaderRoute: typeof PreviewLookbookRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/preloved/$condition': {
+      id: '/preloved/$condition'
+      path: '/$condition'
+      fullPath: '/preloved/$condition'
+      preLoaderRoute: typeof PrelovedConditionRouteImport
+      parentRoute: typeof PrelovedRoute
     }
     '/newsletter/confirm': {
       id: '/newsletter/confirm'
@@ -3186,6 +3225,7 @@ const rootRouteChildren: RootRouteChildren = {
   CollectionsIndexRoute: CollectionsIndexRoute,
   MaisonIndexRoute: MaisonIndexRoute,
   MenIndexRoute: MenIndexRoute,
+  PrelovedIndexRoute: PrelovedIndexRoute,
   WomenIndexRoute: WomenIndexRoute,
   LocaleProductsHandleRoute: LocaleProductsHandleRoute,
   ApiAdminImageProxyRoute: ApiAdminImageProxyRoute,
@@ -3218,3 +3258,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
