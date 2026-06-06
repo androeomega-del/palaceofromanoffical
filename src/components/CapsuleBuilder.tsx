@@ -12,7 +12,7 @@
  */
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import type { ShopifyProduct } from "@/lib/shopify";
+import type { ShopifyProductNode } from "@/lib/shopify";
 import { cdnImage } from "@/lib/cdn-image";
 import { buildLuxuryListingAlt } from "@/lib/product-alt";
 
@@ -25,13 +25,13 @@ export type CapsuleSlotKind =
 
 export type CapsuleSlot = {
   kind: CapsuleSlotKind;
-  product?: ShopifyProduct | null;
+  product?: ShopifyProductNode | null;
   variantId?: string | null;
 };
 
 export interface CapsuleBuilderProps {
   /** Seed product for Slot 1 (typically the current PDP product). */
-  seedProduct: ShopifyProduct;
+  seedProduct: ShopifyProductNode;
   /** Optional pre-selected variant id for the seed product. */
   seedVariantId?: string | null;
   /** Inferred slot kind for the seed product. Defaults to "Top". */
@@ -48,7 +48,7 @@ const SLOT_ORDER: CapsuleSlotKind[] = [
 ];
 
 function SlotTile({ slot }: { slot: CapsuleSlot }) {
-  const node = slot.product?.node;
+  const node = slot.product;
   const img = node?.images?.edges?.[0]?.node;
   const filled = Boolean(node);
 
