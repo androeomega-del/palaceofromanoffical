@@ -159,6 +159,36 @@ export function ConciergeDrawer({ open, onClose }: ConciergeDrawerProps) {
           </button>
         </header>
 
+        {/* Quick navigation */}
+        <nav
+          aria-label="Concierge quick navigation"
+          className="flex items-center gap-6 px-7 py-3"
+          style={{
+            borderBottom: "1px solid rgba(244,241,236,0.08)",
+            fontFamily: fontSans,
+          }}
+        >
+          {[
+            { to: "/", label: "Home" },
+            { to: "/women", label: "Women" },
+            { to: "/men", label: "Men" },
+          ].map((item) => (
+            <Link
+              key={item.to}
+              to={item.to}
+              onClick={onClose}
+              className="text-[10px] uppercase tracking-[0.4em] pb-0.5 border-b transition-opacity hover:opacity-70"
+              style={{
+                color: palette.offwhite,
+                borderColor: "rgba(217,207,193,0.3)",
+                fontWeight: 300,
+              }}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+
         {/* Transcript */}
         <div className="flex-1 overflow-y-auto px-7 py-7 space-y-7">
           {messages.map((msg, idx) => (
