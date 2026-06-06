@@ -200,23 +200,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { name: "google-site-verification", content: "AtWXsRuhIBiU3qtuduY5QlJUXKCQipTKSAQ2_P9_fM4" },
-      { title: "Palace of Roman | The Maisons Defining the Seasons" },
-      { name: "description", content: "The maisons defining the seasons — curated luxury menswear and womenswear from the world's leading designer houses. Authenticated. Express delivery." },
+      // Sitewide identity only. Page-level title / description / og:title /
+      // og:description / og:image / twitter:* live on each leaf route's
+      // head() so the SEO scanner (and crawlers like Slack/LinkedIn that
+      // don't dedupe by name/property) only see one tag per page.
+      // Routes that genuinely need to opt out of indexing override
+      // name="robots" themselves (meta dedupes by name).
       { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" },
       { property: "og:site_name", content: "Palace of Roman" },
-      { property: "og:title", content: "Palace of Roman | The Maisons Defining the Seasons" },
-      { property: "og:description", content: "The maisons defining the seasons — curated luxury menswear and womenswear from the world's leading designer houses. Authenticated. Express delivery." },
       { property: "og:type", content: "website" },
       { property: "og:locale", content: "en_US" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Palace of Roman | The Maisons Defining the Seasons" },
-      { name: "twitter:description", content: "The maisons defining the seasons — curated luxury menswear and womenswear from the world's leading designer houses. Authenticated. Express delivery." },
-      { property: "og:image", content: "https://palaceofromanofficial.com/og-image.jpg" },
-      { property: "og:image:width", content: "1200" },
-      { property: "og:image:height", content: "630" },
-      { property: "og:image:alt", content: "Palace of Roman — The Maisons Defining the Seasons" },
-      { name: "twitter:image", content: "https://palaceofromanofficial.com/og-image.jpg" },
-      { name: "twitter:image:alt", content: "Palace of Roman — The Maisons Defining the Seasons" },
+      { name: "twitter:site", content: "@palaceofroman" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
