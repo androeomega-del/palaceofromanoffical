@@ -25,6 +25,7 @@ import { Route as SitemapBrandsDotxmlRouteImport } from './routes/sitemap-brands
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ShippingReturnsRouteImport } from './routes/shipping-returns'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
+import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as OrderConfirmedRouteImport } from './routes/order-confirmed'
 import { Route as LoginRouteImport } from './routes/login'
@@ -236,6 +237,11 @@ const ShippingReturnsRoute = ShippingReturnsRouteImport.update({
 const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
   id: '/robots.txt',
   path: '/robots.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReviewsRoute = ReviewsRouteImport.update({
+  id: '/reviews',
+  path: '/reviews',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -939,6 +945,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/order-confirmed': typeof OrderConfirmedRoute
   '/privacy': typeof PrivacyRoute
+  '/reviews': typeof ReviewsRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
@@ -1084,6 +1091,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/order-confirmed': typeof OrderConfirmedRoute
   '/privacy': typeof PrivacyRoute
+  '/reviews': typeof ReviewsRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
@@ -1231,6 +1239,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/order-confirmed': typeof OrderConfirmedRoute
   '/privacy': typeof PrivacyRoute
+  '/reviews': typeof ReviewsRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
@@ -1380,6 +1389,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/order-confirmed'
     | '/privacy'
+    | '/reviews'
     | '/robots.txt'
     | '/shipping-returns'
     | '/shop'
@@ -1525,6 +1535,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/order-confirmed'
     | '/privacy'
+    | '/reviews'
     | '/robots.txt'
     | '/shipping-returns'
     | '/shop'
@@ -1671,6 +1682,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/order-confirmed'
     | '/privacy'
+    | '/reviews'
     | '/robots.txt'
     | '/shipping-returns'
     | '/shop'
@@ -1819,6 +1831,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   OrderConfirmedRoute: typeof OrderConfirmedRoute
   PrivacyRoute: typeof PrivacyRoute
+  ReviewsRoute: typeof ReviewsRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   ShippingReturnsRoute: typeof ShippingReturnsRoute
   ShopRoute: typeof ShopRoute
@@ -2041,6 +2054,13 @@ declare module '@tanstack/react-router' {
       path: '/robots.txt'
       fullPath: '/robots.txt'
       preLoaderRoute: typeof RobotsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reviews': {
+      id: '/reviews'
+      path: '/reviews'
+      fullPath: '/reviews'
+      preLoaderRoute: typeof ReviewsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -3078,6 +3098,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   OrderConfirmedRoute: OrderConfirmedRoute,
   PrivacyRoute: PrivacyRoute,
+  ReviewsRoute: ReviewsRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   ShippingReturnsRoute: ShippingReturnsRoute,
   ShopRoute: ShopRoute,
@@ -3197,13 +3218,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
