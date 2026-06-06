@@ -8,13 +8,37 @@ import { routeHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/vacation-stylist")({
   head: () => {
-    const title = "Vacation Stylist — Palace of Roman";
+    const title =
+      "Vacation Stylist: Personalized Luxury Packing Edits | Palace of Roman Official";
     const description =
-      "Tell us your destination, dates, and vibe. The boutique returns a curated capsule of designer pieces drawn from the live collection.";
+      "Discover custom luxury vacation capsule wardrobes tailored by AI. Get authenticated designer styling edits, packing lists, and resort wear curation for global destinations.";
     const rh = routeHead({ path: "/vacation-stylist", title, description });
+    const jsonLd = {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      name: "Palace of Roman Vacation Stylist",
+      url: "https://palaceofromanofficial.com/vacation-stylist",
+      description,
+      applicationCategory: "LifestyleApplication",
+      operatingSystem: "All",
+      browserRequirements: "Requires JavaScript. Requires a modern browser.",
+      isAccessibleForFree: true,
+      offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+      provider: {
+        "@type": "Organization",
+        name: "Palace of Roman",
+        url: "https://palaceofromanofficial.com",
+      },
+    };
     return {
       meta: [{ title }, { name: "description", content: description }, ...rh.meta],
       links: rh.links,
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(jsonLd),
+        },
+      ],
     };
   },
   component: VacationStylistPage,
@@ -78,8 +102,54 @@ function VacationStylistPage() {
         </p>
       </section>
 
-      {/* Form */}
-      <section className="px-6 md:px-12 py-12 md:py-16 max-w-3xl mx-auto">
+      {/* Server-rendered SEO content — indexable above the questionnaire */}
+      <section className="border-b border-ink/10 px-6 md:px-12 py-16 md:py-20 max-w-4xl mx-auto">
+
+        <div className="space-y-12">
+          <div>
+            <h2 className="font-serif text-2xl md:text-3xl tracking-tight mb-4">
+              AI-Curated Resort Wear Curation
+            </h2>
+            <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+              Our complimentary concierge composes a personalized resort wardrobe drawn
+              exclusively from authenticated designer inventory — investment-grade fashion
+              sourced through our global boutique network. Each edit is shaped around your
+              destination, climate, and itinerary, so every piece earns its place in the
+              suitcase.
+            </p>
+          </div>
+
+          <div>
+            <h2 className="font-serif text-2xl md:text-3xl tracking-tight mb-4">
+              Destination-Specific Packing Matrices
+            </h2>
+            <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+              From a Mykonos beach club to an Aspen alpine retreat, the stylist returns a
+              chapter-by-chapter packing list — daywear, evening, transit, and accessories
+              — built for the way the days actually unfold. Designer curation, not
+              guesswork.
+            </p>
+          </div>
+
+          <div>
+            <h2 className="font-serif text-2xl md:text-3xl tracking-tight mb-4">
+              Boutique Styling, Composed in Seconds
+            </h2>
+            <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+              Tell us where you're going, when, and how the trip should feel. The
+              questionnaire below returns a private capsule of in-stock pieces — every
+              item shoppable, every recommendation tied back to the live Palace of Roman
+              collection.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Form — reserved height prevents layout shift as questionnaire hydrates */}
+      <section
+        className="px-6 md:px-12 py-12 md:py-16 max-w-3xl mx-auto"
+        style={{ minHeight: "720px" }}
+      >
         <form onSubmit={submit} className="space-y-8">
           <div>
             <label className="block text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-2">
@@ -94,6 +164,7 @@ function VacationStylistPage() {
               className="w-full border-b border-ink/30 bg-transparent py-3 text-base focus:outline-none focus:border-ink placeholder:text-muted-foreground/60"
             />
           </div>
+
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
