@@ -22,6 +22,7 @@ import { ConciergeDrawer } from "./concierge-drawer";
 import { AsymmetricGrid } from "./asymmetric-grid";
 import { PalaceHeader } from "./palace-header";
 import { palette, fontSans, fontSerif } from "./palette";
+import heroImage from "@/assets/home-hero.jpg";
 
 interface HomeStudioLayoutProps {
   variant?: "embedded" | "standalone";
@@ -56,47 +57,75 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
     >
       {isStandalone && <PalaceHeader onOpenConcierge={() => setConciergeOpen(true)} />}
 
-      {/* ───── Hero ───── */}
+      {/* ───── Hero (asymmetric split — text left, cinematic loop right) ───── */}
       <section className="relative px-6 md:px-14 pt-16 md:pt-28 pb-24 md:pb-40 animate-[studioFade_1.2s_ease-out_both]">
-        <p
-          className="text-[10px] md:text-[11px] tracking-[0.45em] uppercase mb-10"
-          style={{ color: palette.sand, fontFamily: fontSans }}
-        >
-          Palace of Roman — {isStandalone ? "Studio" : "The Edit"}
-        </p>
-        <h1
-          className="text-[15vw] md:text-[10vw] leading-[0.92] font-light tracking-[-0.02em] text-balance"
-          style={{ fontWeight: 300 }}
-        >
-          The quiet
-          <br />
-          <em className="italic" style={{ color: palette.sand }}>art</em> of
-          <br />
-          dressing.
-        </h1>
-        <div className="mt-14 md:mt-20 max-w-md">
-          <p
-            className="text-base md:text-lg leading-relaxed"
-            style={{ color: palette.muted, fontFamily: fontSans, fontWeight: 300 }}
-          >
-            A curated season of pieces from a global network of authorised
-            boutiques — chosen one at a time, delivered with duties cleared.
-          </p>
-          <button
-            onClick={() => setConciergeOpen(true)}
-            className="group inline-flex items-center gap-3 mt-10 pb-2 text-[11px] uppercase tracking-[0.32em] border-b transition-all duration-500 hover:gap-5"
-            style={{
-              color: palette.offwhite,
-              borderColor: palette.sand,
-              fontFamily: fontSans,
-            }}
-          >
-            Begin with the concierge
-            <ArrowUpRight
-              className="w-3.5 h-3.5 transition-transform duration-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-              strokeWidth={1.25}
-            />
-          </button>
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-14 items-center">
+          {/* Left column — text block (unchanged copy) */}
+          <div className="md:col-span-7">
+            <p
+              className="text-[10px] md:text-[11px] tracking-[0.45em] uppercase mb-10"
+              style={{ color: palette.sand, fontFamily: fontSans }}
+            >
+              Palace of Roman — {isStandalone ? "Studio" : "The Edit"}
+            </p>
+            <h1
+              className="text-[15vw] md:text-[8.5vw] leading-[0.92] font-light tracking-[-0.02em] text-balance"
+              style={{ fontWeight: 300 }}
+            >
+              The quiet
+              <br />
+              <em className="italic" style={{ color: palette.sand }}>art</em> of
+              <br />
+              dressing.
+            </h1>
+            <div className="mt-14 md:mt-20 max-w-md">
+              <p
+                className="text-base md:text-lg leading-relaxed"
+                style={{ color: palette.muted, fontFamily: fontSans, fontWeight: 300 }}
+              >
+                A curated season of pieces from a global network of authorised
+                boutiques — chosen one at a time, delivered with duties cleared.
+              </p>
+              <button
+                onClick={() => setConciergeOpen(true)}
+                className="group inline-flex items-center gap-3 mt-10 pb-2 text-[11px] uppercase tracking-[0.32em] border-b transition-all duration-500 hover:gap-5"
+                style={{
+                  color: palette.offwhite,
+                  borderColor: palette.sand,
+                  fontFamily: fontSans,
+                }}
+              >
+                Begin with the concierge
+                <ArrowUpRight
+                  className="w-3.5 h-3.5 transition-transform duration-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                  strokeWidth={1.25}
+                />
+              </button>
+            </div>
+          </div>
+
+          {/* Right column — vertical cinematic loop. Aspect ratio + contain:layout
+              reserve the box at SSR so CLS stays 0. Poster falls back to the
+              existing home-hero asset until the .mp4 is uploaded. */}
+          <div className="md:col-span-5">
+            <div
+              className="relative w-full overflow-hidden bg-black/40"
+              style={{ aspectRatio: "3 / 4", contain: "layout" }}
+            >
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="auto"
+                poster={heroImage}
+                aria-hidden="true"
+                className="absolute inset-0 w-full h-full object-cover"
+              >
+                <source src="/assets/hero-cinematic.mp4" type="video/mp4" />
+              </video>
+            </div>
+          </div>
         </div>
       </section>
 
