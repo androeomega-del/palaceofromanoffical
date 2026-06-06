@@ -65,15 +65,88 @@ const SLOT_ORDER: CapsuleSlotKind[] = [
   "Accessory",
 ];
 
-/** Map a Shopify productType string → CapsuleSlotKind. */
-function classifyKind(productType: string | undefined | null): CapsuleSlotKind | null {
-  const t = (productType ?? "").toLowerCase();
-  if (!t) return null;
-  if (/shoe|sneaker|boot|loafer|sandal|slipper|heel|oxford|derby|brogue|espadrille|mule|pump|flip.flop|slide|clog/.test(t)) return "Footwear";
-  if (/pant|trouser|jean|short|skirt|legging|sweatpant|chino|slack|brief|boxer|swim|trunk|jogger/.test(t)) return "Bottom";
-  if (/jacket|coat|blazer|overcoat|parka|trench|bomber|windbreaker|anorak|cape|cardigan|sweater|hoodie|sweatshirt|knitwear|fleece|gilet|pullover|turtleneck|poncho/.test(t)) return "Outerwear";
-  if (/bag|belt|tie|scarf|hat|cap|glove|watch|jewelry|jewellery|necklace|bracelet|ring|earring|sunglass|wallet|card holder|keyring|pocket square|cufflink|brooch|headband|umbrella|phone case|strap|mask|lanyard|accessory/.test(t)) return "Accessory";
-  if (/shirt|t-shirt|tee|polo|top|blouse|tank|camisole|bodysuit|tunic|henley|vest/.test(t)) return "Top";
+/**
+ * Strict Category Taxonomy Map.
+ * Each slot defines an explicit list of keyword variations that may appear in
+ * a Shopify product's `productType` or any `tags` entry. Matching is
+ * case-insensitive, whole-word-ish (word-boundary based) to avoid bleed
+ * (e.g. "Tank Top" must not match "Pants").
+ *
+ * Resolution is single-slot: a product is classified into exactly one slot,
+ * evaluated in priority order so footwear/accessories/outerwear cannot leak
+ * into Bottom/Top drawers.
+ */
+const CAPSULE_TAXONOMY: Record<CapsuleSlotKind, string[]> = {
+  Footwear: [
+    "Sneakers", "Loafers", "Sandals", "Oxfords and Derbies", "Oxfords",
+    "Derbies", "Flats", "Pumps", "Slides", "Espadrilles", "Boots", "Shoes",
+    "Heels", "Mules", "Clogs",
+  ],
+  Accessory: [
+    "Handbags", "Crossbody Bags", "Tote Bags", "Backpacks", "Shoulder Bags",
+    "Clutch Bags", "Belt Bags", "Briefcases", "Belts", "Wallets", "Jewellery",
+    "Jewelry", "Scarves", "Hats", "Sunglasses", "Ties", "Keychains", "Gloves",
+    "Watches", "Card Holders",
+  ],
+  Outerwear: [
+    "Blazers", "Coats", "Jackets", "Outerwear", "Trench", "Shearling",
+    "Parkas", "Bombers", "Overcoats", "Capes",
+  ],
+  Bottom: [
+    "Bottoms", "Bottom", "Pants", "Trousers", "Shorts", "Short", "Skirts",
+    "Skirt", "Denim", "Jeans", "Jeans Denim", "Bermuda", "Cargo",
+    "Cargo Pants", "Joggers", "Chinos", "Leggings", "Sweatpants", "Culottes",
+  ],
+  Top: [
+    "Shirts", "Shirt", "T-Shirts", "T-Shirt", "Tee", "Tees", "Tops", "Top",
+    "Blouses", "Blouse", "Knitwear", "Sweaters", "Sweater", "Cardigans",
+    "Cardigan", "Polos", "Polo", "Suits", "Dresses", "Sportswear",
+    "Underwear", "Tank", "Camisole", "Bodysuit", "Henley", "Vest", "Tunic",
+  ],
+};
+
+/**
+ * Resolution priority — first slot whose keyword set matches wins. This
+ * guarantees a Footwear/Accessory item never appears in a Bottom or Top
+ * drawer, even if it carries overlapping brand/material tags.
+ */
+const TAXONOMY_PRIORITY: CapsuleSlotKind[] = [
+  "Footwear",
+  "Accessory",
+  "Outerwear",
+  "Bottom",
+  "Top",
+];
+
+/** Escape a keyword for safe inclusion in a RegExp. */
+function escapeRe(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/** Pre-compile one word-boundary, case-insensitive RegExp per slot. */
+const TAXONOMY_RE: Record<CapsuleSlotKind, RegExp> = Object.fromEntries(
+  (Object.keys(CAPSULE_TAXONOMY) as CapsuleSlotKind[]).map((k) => [
+    k,
+    new RegExp(`\\b(?:${CAPSULE_TAXONOMY[k].map(escapeRe).join("|")})\\b`, "i"),
+  ]),
+) as Record<CapsuleSlotKind, RegExp>;
+
+/**
+ * Classify a product into a single CapsuleSlotKind using productType + tags.
+ * Returns null when no taxonomy matches.
+ */
+function classifyKind(
+  productType: string | undefined | null,
+  tags?: string[] | null,
+): CapsuleSlotKind | null {
+  const haystack = [
+    productType ?? "",
+    ...(Array.isArray(tags) ? tags : []),
+  ].join(" | ");
+  if (!haystack.trim()) return null;
+  for (const kind of TAXONOMY_PRIORITY) {
+    if (TAXONOMY_RE[kind].test(haystack)) return kind;
+  }
   return null;
 }
 
