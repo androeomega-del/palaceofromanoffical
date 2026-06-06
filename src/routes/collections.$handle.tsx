@@ -767,14 +767,14 @@ function CollectionPage() {
                 <span className="text-ink">{title}</span>
               </nav>
               <div className="mt-6 flex flex-col md:flex-row md:items-end justify-between gap-6">
-                <h1 className="text-4xl md:text-6xl font-serif text-balance">{title}</h1>
+                <h1 className="text-4xl md:text-6xl font-serif text-balance">{formatCollectionH1(title, handle)}</h1>
                 <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
                   {countLabel}
                 </p>
               </div>
-              {description && (
-                <p className="mt-6 max-w-[64ch] text-sm text-muted-foreground leading-relaxed">{description}</p>
-              )}
+              <p className="mt-6 max-w-[64ch] text-sm text-muted-foreground leading-relaxed" style={{ contain: "layout style", minHeight: "3.5rem" }}>
+                {(description && description.trim()) ? description : collectionFallbackDescription(title, handle)}
+              </p>
             </div>
           </section>
         </>
