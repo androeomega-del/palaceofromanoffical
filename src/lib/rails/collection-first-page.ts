@@ -1,19 +1,24 @@
 /**
  * Collection first-page SSR cache.
  *
- * Primes the EXACT cache key that `useInfiniteQuery` on
+ * Primes the EXACT cache key + shape that `useInfiniteQuery` on
  * /collections/$handle reads for page 1 with no filters, so the streamed
  * HTML carries real /product/$handle anchors on cold loads.
  *
  * Scope is intentionally narrow:
- *  - filters: always [] (combinatorial filter state is client-only)
+ *  - filters: always [] (combinatorial filter state stays client-only)
  *  - cursor: always null (only page 1)
- *  - keyed by handle + sort + market so the SWR semantics stay correct
+ *  - keyed by handle + sort + reverse + market so SWR stays correct
  *
- * Cache is server-only via `ssrCached`; on the browser, TanStack Query
- * already owns freshness so we just pass through to `fetch`.
+ * The Storefront fetch is wrapped in a 60s server-only in-memory cache
+ * via `ssrCached`. On the browser, TanStack Query already owns freshness
+ * so we pass through to `fetch` directly.
+ *
+ * Shape: returns `infiniteQueryOptions` so the route loader can call
+ * `ensureInfiniteQueryData(...)` and prime the same InfiniteData entry
+ * the component subscribes to via `useInfiniteQuery`.
  */
-import { queryOptions } from "@tanstack/react-query";
+import { infiniteQueryOptions } from "@tanstack/react-query";
 import { fetchCollectionFiltered, fetchProductsPage } from "@/lib/shopify";
 import { useMarketStore } from "@/stores/market-store";
 import { cached } from "@/lib/server-cache";
@@ -36,16 +41,19 @@ export const collectionFirstPageQueryOptions = (args: {
   const { handle, sortKey, reverse } = args;
   const mk = marketKey();
   const key = `collection-first-page:${handle}:${sortKey}:${reverse}:${mk}`;
-  return queryOptions({
-    // MUST match the shape useInfiniteQuery uses for page 1:
-    //   ["collection-filtered", handle, [], sortKey, reverse]
+  // MUST match the shape useInfiniteQuery uses for page 1 with no filters:
+  //   ["collection-filtered", handle, [], sortKey, reverse]
+  return infiniteQueryOptions({
     queryKey: ["collection-filtered", handle, [] as object[], sortKey, reverse] as const,
-    queryFn: () =>
+    initialPageParam: null as string | null,
+    getNextPageParam: (last: { pageInfo?: { hasNextPage?: boolean; endCursor?: string | null } }) =>
+      last?.pageInfo?.hasNextPage ? last.pageInfo.endCursor : undefined,
+    queryFn: ({ pageParam }) =>
       ssrCached(key, 60_000, async () => {
         if (handle === "new-arrivals") {
           const page = await fetchProductsPage({
             first: 48,
-            after: null,
+            after: pageParam as string | null,
             sortKey: sortKey === "CREATED" ? "CREATED_AT" : sortKey,
             reverse,
           });
@@ -66,7 +74,7 @@ export const collectionFirstPageQueryOptions = (args: {
         return fetchCollectionFiltered({
           handle,
           first: 48,
-          after: null,
+          after: pageParam as string | null,
           filters: [],
           sortKey,
           reverse,
