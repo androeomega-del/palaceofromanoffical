@@ -381,78 +381,96 @@ export const Route = createFileRoute("/product/$handle")({
         ...hreflangLinks,
         { rel: "alternate", hrefLang: "x-default", href: url },
       ],
-      scripts: [
-        {
-          type: "application/ld+json",
-          children: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Product",
-            "@id": url + "#product",
-            name: p.title,
-            description: metaDescription(p.description, 5000),
-            sku: variants[0]?.id,
-            mpn: p.handle,
-            productID: p.id,
-            url,
-            image: ldImages,
-            brand: p.vendor ? { "@type": "Brand", name: p.vendor } : undefined,
-            category: p.productType || undefined,
-            material: parsedComp.composition || undefined,
-            countryOfOrigin: parsedComp.madeIn
-              ? { "@type": "Country", name: parsedComp.madeIn.replace(/^Made in /, "") }
-              : { "@type": "Country", name: "Italy" },
-            offers,
-            ...(isRelatedTo.length ? { isRelatedTo } : {}),
-          }),
-        },
-        {
-          type: "application/ld+json",
-          children: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "FAQPage",
-            mainEntity: buildPdpFaq({
-              title: p.title,
-              vendor: p.vendor || "",
-              productType: p.productType || "",
-              description: p.description || "",
-            }).map((qa) => ({
-              "@type": "Question",
-              name: qa.q,
-              acceptedAnswer: { "@type": "Answer", text: qa.a },
-            })),
-            speakable: {
-              "@type": "SpeakableSpecification",
-              cssSelector: [".pdp-faq"],
-            },
-          }),
-        },
-        {
-          type: "application/ld+json",
-          children: JSON.stringify(
-            buildBreadcrumbJsonLd(
-              // Home > Brand > Signature Category > Product Title.
-              // Each non-terminal step links to a real, indexable destination
-              // and carries its full long-tail label (e.g.
-              // "Prada Re-Nylon Bags") so the BreadcrumbList rich result
-              // reinforces collection-keyword variants in SERPs.
-              [
-                { name: "Home", href: "/" },
-                ...(p.vendor && vendorSlug
-                  ? [{ name: p.vendor, href: `/brand/${vendorSlug}` } as BreadcrumbItem]
-                  : []),
-                ...(p.productType
-                  ? [{
-                      name: p.vendor ? `${p.vendor} ${p.productType}` : p.productType,
-                      href: vendorSlug ? `/collections/${vendorSlug}` : "/shop",
-                    } as BreadcrumbItem]
-                  : []),
-                { name: p.title },
-              ],
-              `/product/${p.handle}`,
-            ),
-          ),
-        },
-      ],
+      scripts: (() => {
+        // ── BLOCK A: Product / Merchant Listing ───────────────────────────
+        const productNode = {
+          "@type": "Product",
+          "@id": url + "#product",
+          name: p.title,
+          description: metaDescription(p.description, 5000),
+          sku: variants[0]?.id,
+          mpn: p.handle,
+          productID: p.id,
+          url,
+          image: ldImages,
+          brand: p.vendor ? { "@type": "Brand", name: p.vendor } : undefined,
+          category: p.productType || undefined,
+          material: parsedComp.composition || undefined,
+          countryOfOrigin: parsedComp.madeIn
+            ? { "@type": "Country", name: parsedComp.madeIn.replace(/^Made in /, "") }
+            : { "@type": "Country", name: "Italy" },
+          offers,
+          ...(isRelatedTo.length ? { isRelatedTo } : {}),
+        };
+
+        // ── BLOCK B: Breadcrumb ───────────────────────────────────────────
+        const breadcrumbNode = (() => {
+          const { "@context": _ctx, ...rest } = buildBreadcrumbJsonLd(
+            [
+              { name: "Home", href: "/" },
+              ...(p.vendor && vendorSlug
+                ? [{ name: p.vendor, href: `/brand/${vendorSlug}` } as BreadcrumbItem]
+                : []),
+              ...(p.productType
+                ? [{
+                    name: p.vendor ? `${p.vendor} ${p.productType}` : p.productType,
+                    href: vendorSlug ? `/collections/${vendorSlug}` : "/shop",
+                  } as BreadcrumbItem]
+                : []),
+              { name: p.title },
+            ],
+            `/product/${p.handle}`,
+          );
+          return { "@id": url + "#breadcrumb", ...rest };
+        })();
+
+        // ── BLOCK C: Transactional FAQ ────────────────────────────────────
+        // High-intent transactional Q&A prepended to the curated PDP FAQ.
+        // Single quotes only — no raw double quotes — to keep JSON.stringify
+        // output free of escape edge cases.
+        const transactionalFaq = [
+          {
+            q: "Is this item authenticated?",
+            a: "Yes, every item curated by Palace of Roman undergoes a strict, multi-tiered structural and brand authentication process.",
+          },
+          {
+            q: "What are the shipping and delivery parameters?",
+            a: "Palace of Roman offers expedited, insured worldwide shipping from our global boutique network channels.",
+          },
+        ];
+        const curatedFaq = buildPdpFaq({
+          title: p.title,
+          vendor: p.vendor || "",
+          productType: p.productType || "",
+          description: p.description || "",
+        });
+        const faqNode = {
+          "@type": "FAQPage",
+          "@id": url + "#faq",
+          mainEntity: [...transactionalFaq, ...curatedFaq].map((qa) => ({
+            "@type": "Question",
+            name: qa.q,
+            acceptedAnswer: { "@type": "Answer", text: qa.a },
+          })),
+          speakable: {
+            "@type": "SpeakableSpecification",
+            cssSelector: [".pdp-faq"],
+          },
+        };
+
+        // Unified @graph — single JSON-LD script for the entire PDP payload.
+        const graph = {
+          "@context": "https://schema.org",
+          "@graph": [productNode, breadcrumbNode, faqNode],
+        };
+
+        return [
+          {
+            type: "application/ld+json",
+            children: JSON.stringify(graph),
+          },
+        ];
+      })(),
 
     };
   },
