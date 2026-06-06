@@ -98,6 +98,7 @@ export function NotifyMeForm({
         <input
           id={`notify-${variantGid}`}
           type="email"
+          name="email"
           required
           autoComplete="email"
           placeholder="your@email.com"

@@ -159,7 +159,7 @@ export function WelcomeDispatchModal() {
         </button>
         <div className="px-8 py-10 sm:px-10 sm:py-12 text-center">
           <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-5">
-            Our Newsletter
+            SUBSCRIBE
           </p>
           <h2
             id="welcome-dispatch-title"
@@ -168,7 +168,7 @@ export function WelcomeDispatchModal() {
             A quiet invitation.
           </h2>
           <p className="text-sm text-ink/70 leading-relaxed mb-7 max-w-sm mx-auto">
-            We write to our clients sparingly — and when we do, it is usually worth opening.
+            Enter your email to receive updates on new arrivals, exclusive collection drops, and boutique releases.
           </p>
 
           {status === "ok" ? (
@@ -209,6 +209,7 @@ export function WelcomeDispatchModal() {
                 <input
                   id="welcome-email"
                   type="email"
+                  name="email"
                   required
                   autoComplete="email"
                   placeholder="Email Address"
