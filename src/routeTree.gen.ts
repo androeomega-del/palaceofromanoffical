@@ -428,9 +428,9 @@ const PreviewLookbookRoute = PreviewLookbookRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrelovedConditionRoute = PrelovedConditionRouteImport.update({
-  id: '/$condition',
-  path: '/$condition',
-  getParentRoute: () => PrelovedRoute,
+  id: '/preloved/$condition',
+  path: '/preloved/$condition',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const NewsletterConfirmRoute = NewsletterConfirmRouteImport.update({
   id: '/newsletter/confirm',
@@ -1930,6 +1930,7 @@ export interface RootRouteChildren {
   MaisonSlugRoute: typeof MaisonSlugRoute
   MenSs26Route: typeof MenSs26Route
   NewsletterConfirmRoute: typeof NewsletterConfirmRoute
+  PrelovedConditionRoute: typeof PrelovedConditionRoute
   PreviewLookbookRoute: typeof PreviewLookbookRoute
   ProductHandleRoute: typeof ProductHandleRoute
   ProductsHandleRoute: typeof ProductsHandleRoute
@@ -2342,10 +2343,10 @@ declare module '@tanstack/react-router' {
     }
     '/preloved/$condition': {
       id: '/preloved/$condition'
-      path: '/$condition'
+      path: '/preloved/$condition'
       fullPath: '/preloved/$condition'
       preLoaderRoute: typeof PrelovedConditionRouteImport
-      parentRoute: typeof PrelovedRoute
+      parentRoute: typeof rootRouteImport
     }
     '/newsletter/confirm': {
       id: '/newsletter/confirm'
@@ -3213,6 +3214,7 @@ const rootRouteChildren: RootRouteChildren = {
   MaisonSlugRoute: MaisonSlugRoute,
   MenSs26Route: MenSs26Route,
   NewsletterConfirmRoute: NewsletterConfirmRoute,
+  PrelovedConditionRoute: PrelovedConditionRoute,
   PreviewLookbookRoute: PreviewLookbookRoute,
   ProductHandleRoute: ProductHandleRoute,
   ProductsHandleRoute: ProductsHandleRoute,
@@ -3258,13 +3260,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

@@ -13,9 +13,11 @@ import {
   PRELOVED_CONDITIONS,
   PRELOVED_CONDITION_LABEL,
   type PrelovedCondition,
+  type PrelovedPage,
 } from "@/lib/rails/preloved";
 import { PrelovedProductTile } from "@/components/preloved-product-tile";
 import { absoluteUrl } from "@/lib/seo";
+import { buildPrelovedConditionJsonLd } from "@/lib/preloved-jsonld";
 
 function parseCondition(raw: string): PrelovedCondition {
   const v = raw.toLowerCase() as PrelovedCondition;
@@ -37,10 +39,17 @@ export const Route = createFileRoute("/preloved/$condition")({
     parse: (raw) => ({ condition: parseCondition(raw.condition) }),
     stringify: (parsed) => ({ condition: parsed.condition }),
   },
-  head: ({ params }) => {
-    const title = titleFor(params.condition as PrelovedCondition);
-    const desc = descFor(params.condition as PrelovedCondition);
+  head: ({
+    params,
+    loaderData,
+  }: {
+    params: { condition: PrelovedCondition };
+    loaderData?: PrelovedPage;
+  }) => {
+    const title = titleFor(params.condition);
+    const desc = descFor(params.condition);
     const url = absoluteUrl(`/preloved/${params.condition}`);
+    const products = (loaderData?.edges ?? []).map((e) => e.node);
     return {
       meta: [
         { title },
@@ -50,7 +59,13 @@ export const Route = createFileRoute("/preloved/$condition")({
         { property: "og:type", content: "website" },
         { property: "og:url", content: url },
         { name: "twitter:card", content: "summary_large_image" },
-        { rel: "canonical", href: url },
+      ],
+      links: [{ rel: "canonical", href: url }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: buildPrelovedConditionJsonLd(params.condition, products),
+        },
       ],
     };
   },
