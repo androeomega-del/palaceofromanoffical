@@ -57,6 +57,7 @@ const STATIC_ROUTES: UrlEntry[] = [
   { path: "/journal/craftsmanship/spot-real-italian-leather", changefreq: "monthly", priority: "0.7" },
   { path: "/journal/craftsmanship/made-in-italy-vs-designed-in-italy", changefreq: "monthly", priority: "0.7" },
   { path: "/journal/craftsmanship/caring-for-fine-leather", changefreq: "monthly", priority: "0.7" },
+  { path: "/journal/craftsmanship/leather-quality-guide", changefreq: "monthly", priority: "0.7" },
   { path: "/journal/style/the-investment-sunglasses-edit", changefreq: "monthly", priority: "0.7" },
   { path: "/journal/style/luxury-sneakers-as-modern-tailoring", changefreq: "monthly", priority: "0.7" },
   { path: "/journal/style/the-cashmere-field-guide", changefreq: "monthly", priority: "0.7" },
