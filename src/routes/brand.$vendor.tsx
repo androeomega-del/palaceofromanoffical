@@ -124,7 +124,52 @@ export const Route = createFileRoute("/brand/$vendor")({
             })),
           }),
         },
+        // ItemList — dynamic, per-product schema built from the SSR loader.
+        // Each element is a full Product node (name, image, url, offers with
+        // price/currency/availability) so Google can link rich-result cards
+        // straight to the long-tail brand page. Skipped when the loader
+        // returned no items (Storefront API down / empty vendor result) to
+        // avoid emitting an empty-array ItemList that fails validation.
+        ...(loaderData?.items?.length
+          ? [{
+              type: "application/ld+json",
+              children: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "ItemList",
+                name: `${name} — Products`,
+                url: absoluteUrl(path),
+                numberOfItems: loaderData.items.length,
+                itemListOrder: "https://schema.org/ItemListOrderAscending",
+                itemListElement: loaderData.items.map((p, i) => ({
+                  "@type": "ListItem",
+                  position: i + 1,
+                  url: absoluteUrl(`/product/${p.handle}`),
+                  item: {
+                    "@type": "Product",
+                    name: p.title,
+                    url: absoluteUrl(`/product/${p.handle}`),
+                    brand: { "@type": "Brand", name },
+                    ...(p.image ? { image: p.image } : {}),
+                    ...(p.price
+                      ? {
+                          offers: {
+                            "@type": "Offer",
+                            price: p.price,
+                            priceCurrency: p.currency,
+                            availability: p.available
+                              ? "https://schema.org/InStock"
+                              : "https://schema.org/OutOfStock",
+                            url: absoluteUrl(`/product/${p.handle}`),
+                          },
+                        }
+                      : {}),
+                  },
+                })),
+              }),
+            }]
+          : []),
       ],
+
     };
   },
   component: BrandPage,
