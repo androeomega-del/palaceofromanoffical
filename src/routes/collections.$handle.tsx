@@ -724,10 +724,10 @@ function CollectionPage() {
                 {editorialCopy!.eyebrow}
               </span>
               <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl leading-[0.95] text-canvas text-balance max-w-4xl">
-                {title}
+                {formatCollectionH1(title, handle)}
               </h1>
-              <p className="mt-7 max-w-xl text-sm md:text-base text-canvas/80 leading-relaxed text-pretty">
-                {editorialCopy!.tagline}
+              <p className="mt-7 max-w-xl text-sm md:text-base text-canvas/80 leading-relaxed text-pretty" style={{ contain: "layout style", minHeight: "3rem" }}>
+                {(description && description.trim()) ? description : editorialCopy!.tagline}
               </p>
               <p className="mt-8 text-[10px] uppercase tracking-[0.3em] text-canvas/60">
                 {countLabel}
