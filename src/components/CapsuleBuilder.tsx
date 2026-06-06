@@ -15,6 +15,7 @@
  * - Strict CSS containment + reserved min-height to prevent CLS.
  */
 import * as React from "react";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import type { ShopifyProductNode } from "@/lib/shopify";
 import { cdnImage } from "@/lib/cdn-image";
@@ -244,6 +245,7 @@ export function CapsuleBuilder({
         });
       }
       openDrawer();
+      toast.success(`${unique.length} item${unique.length === 1 ? "" : "s"} added to your bag`);
     } finally {
       setIsBundling(false);
     }
