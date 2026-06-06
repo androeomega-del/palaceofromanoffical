@@ -11,6 +11,30 @@ import { getVacationDestination } from "@/lib/vacation-destinations.functions";
 import { buildVacationCapsule, type StylistResult } from "@/lib/vacation-stylist.functions";
 import { ProductCard } from "@/components/product-card";
 import { routeHead } from "@/lib/seo";
+import { fetchProducts, formatPrice, type ShopifyProduct } from "@/lib/shopify";
+
+function buildTagQuery(styleTags: string[]): string {
+  const cleaned = styleTags
+    .map((t) => t.trim())
+    .filter(Boolean)
+    .slice(0, 6);
+  if (cleaned.length === 0) return "";
+  return cleaned.map((t) => `tag:"${t.replace(/"/g, "")}"`).join(" OR ");
+}
+
+async function fetchCuratedProducts(styleTags: string[]): Promise<ShopifyProduct[]> {
+  const query = buildTagQuery(styleTags);
+  try {
+    const edges = await fetchProducts({
+      first: 8,
+      query: query || undefined,
+      sortKey: "BEST_SELLING",
+    });
+    return edges;
+  } catch {
+    return [];
+  }
+}
 
 const VIBES: Array<{ id: VacationVibe; label: string; hint: string }> = [
   { id: "beach-club", label: "Beach Club", hint: "Linen, swim, sandal" },
