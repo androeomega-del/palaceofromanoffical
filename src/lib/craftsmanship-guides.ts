@@ -40,6 +40,15 @@ export const CRAFTSMANSHIP_GUIDES: CraftsmanshipGuide[] = [
     readingMinutes: 8,
   },
   {
+    slug: "leather-quality-guide",
+    to: "/journal/craftsmanship/leather-quality-guide",
+    title: "Full-Grain vs Top-Grain Leather — The Wallet Buyer's Guide",
+    excerpt:
+      "What the leather grade on a luxury wallet actually means — how full-grain, top-grain, and corrected-grain Italian leather wear over a decade, and why the cheapest cut almost always costs the most.",
+    publishedAt: "2026-06-06T09:00:00Z",
+    readingMinutes: 9,
+  },
+  {
     slug: "the-investment-sunglasses-edit",
     to: "/journal/style/the-investment-sunglasses-edit",
     title: "The Investment Sunglasses Edit — Frames That Outlast a Trend",

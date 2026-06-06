@@ -125,6 +125,7 @@ import { Route as JournalStyleTheCashmereFieldGuideRouteImport } from './routes/
 import { Route as JournalStyleLuxurySneakersAsModernTailoringRouteImport } from './routes/journal.style.luxury-sneakers-as-modern-tailoring'
 import { Route as JournalCraftsmanshipSpotRealItalianLeatherRouteImport } from './routes/journal.craftsmanship.spot-real-italian-leather'
 import { Route as JournalCraftsmanshipMadeInItalyVsDesignedInItalyRouteImport } from './routes/journal.craftsmanship.made-in-italy-vs-designed-in-italy'
+import { Route as JournalCraftsmanshipLeatherQualityGuideRouteImport } from './routes/journal.craftsmanship.leather-quality-guide'
 import { Route as JournalCraftsmanshipCaringForFineLeatherRouteImport } from './routes/journal.craftsmanship.caring-for-fine-leather'
 import { Route as JournalBlogHandleArticleHandleRouteImport } from './routes/journal.$blogHandle.$articleHandle'
 import { Route as EditsYachtEditChapterRouteImport } from './routes/edits.yacht-edit.$chapter'
@@ -748,6 +749,12 @@ const JournalCraftsmanshipMadeInItalyVsDesignedInItalyRoute =
     path: '/craftsmanship/made-in-italy-vs-designed-in-italy',
     getParentRoute: () => JournalRoute,
   } as any)
+const JournalCraftsmanshipLeatherQualityGuideRoute =
+  JournalCraftsmanshipLeatherQualityGuideRouteImport.update({
+    id: '/craftsmanship/leather-quality-guide',
+    path: '/craftsmanship/leather-quality-guide',
+    getParentRoute: () => JournalRoute,
+  } as any)
 const JournalCraftsmanshipCaringForFineLeatherRoute =
   JournalCraftsmanshipCaringForFineLeatherRouteImport.update({
     id: '/craftsmanship/caring-for-fine-leather',
@@ -1004,6 +1011,7 @@ export interface FileRoutesByFullPath {
   '/edits/yacht-edit/$chapter': typeof EditsYachtEditChapterRoute
   '/journal/$blogHandle/$articleHandle': typeof JournalBlogHandleArticleHandleRoute
   '/journal/craftsmanship/caring-for-fine-leather': typeof JournalCraftsmanshipCaringForFineLeatherRoute
+  '/journal/craftsmanship/leather-quality-guide': typeof JournalCraftsmanshipLeatherQualityGuideRoute
   '/journal/craftsmanship/made-in-italy-vs-designed-in-italy': typeof JournalCraftsmanshipMadeInItalyVsDesignedInItalyRoute
   '/journal/craftsmanship/spot-real-italian-leather': typeof JournalCraftsmanshipSpotRealItalianLeatherRoute
   '/journal/style/luxury-sneakers-as-modern-tailoring': typeof JournalStyleLuxurySneakersAsModernTailoringRoute
@@ -1143,6 +1151,7 @@ export interface FileRoutesByTo {
   '/edits/yacht-edit/$chapter': typeof EditsYachtEditChapterRoute
   '/journal/$blogHandle/$articleHandle': typeof JournalBlogHandleArticleHandleRoute
   '/journal/craftsmanship/caring-for-fine-leather': typeof JournalCraftsmanshipCaringForFineLeatherRoute
+  '/journal/craftsmanship/leather-quality-guide': typeof JournalCraftsmanshipLeatherQualityGuideRoute
   '/journal/craftsmanship/made-in-italy-vs-designed-in-italy': typeof JournalCraftsmanshipMadeInItalyVsDesignedInItalyRoute
   '/journal/craftsmanship/spot-real-italian-leather': typeof JournalCraftsmanshipSpotRealItalianLeatherRoute
   '/journal/style/luxury-sneakers-as-modern-tailoring': typeof JournalStyleLuxurySneakersAsModernTailoringRoute
@@ -1286,6 +1295,7 @@ export interface FileRoutesById {
   '/edits/yacht-edit/$chapter': typeof EditsYachtEditChapterRoute
   '/journal/$blogHandle/$articleHandle': typeof JournalBlogHandleArticleHandleRoute
   '/journal/craftsmanship/caring-for-fine-leather': typeof JournalCraftsmanshipCaringForFineLeatherRoute
+  '/journal/craftsmanship/leather-quality-guide': typeof JournalCraftsmanshipLeatherQualityGuideRoute
   '/journal/craftsmanship/made-in-italy-vs-designed-in-italy': typeof JournalCraftsmanshipMadeInItalyVsDesignedInItalyRoute
   '/journal/craftsmanship/spot-real-italian-leather': typeof JournalCraftsmanshipSpotRealItalianLeatherRoute
   '/journal/style/luxury-sneakers-as-modern-tailoring': typeof JournalStyleLuxurySneakersAsModernTailoringRoute
@@ -1430,6 +1440,7 @@ export interface FileRouteTypes {
     | '/edits/yacht-edit/$chapter'
     | '/journal/$blogHandle/$articleHandle'
     | '/journal/craftsmanship/caring-for-fine-leather'
+    | '/journal/craftsmanship/leather-quality-guide'
     | '/journal/craftsmanship/made-in-italy-vs-designed-in-italy'
     | '/journal/craftsmanship/spot-real-italian-leather'
     | '/journal/style/luxury-sneakers-as-modern-tailoring'
@@ -1569,6 +1580,7 @@ export interface FileRouteTypes {
     | '/edits/yacht-edit/$chapter'
     | '/journal/$blogHandle/$articleHandle'
     | '/journal/craftsmanship/caring-for-fine-leather'
+    | '/journal/craftsmanship/leather-quality-guide'
     | '/journal/craftsmanship/made-in-italy-vs-designed-in-italy'
     | '/journal/craftsmanship/spot-real-italian-leather'
     | '/journal/style/luxury-sneakers-as-modern-tailoring'
@@ -1711,6 +1723,7 @@ export interface FileRouteTypes {
     | '/edits/yacht-edit/$chapter'
     | '/journal/$blogHandle/$articleHandle'
     | '/journal/craftsmanship/caring-for-fine-leather'
+    | '/journal/craftsmanship/leather-quality-guide'
     | '/journal/craftsmanship/made-in-italy-vs-designed-in-italy'
     | '/journal/craftsmanship/spot-real-italian-leather'
     | '/journal/style/luxury-sneakers-as-modern-tailoring'
@@ -2676,6 +2689,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof JournalCraftsmanshipMadeInItalyVsDesignedInItalyRouteImport
       parentRoute: typeof JournalRoute
     }
+    '/journal/craftsmanship/leather-quality-guide': {
+      id: '/journal/craftsmanship/leather-quality-guide'
+      path: '/craftsmanship/leather-quality-guide'
+      fullPath: '/journal/craftsmanship/leather-quality-guide'
+      preLoaderRoute: typeof JournalCraftsmanshipLeatherQualityGuideRouteImport
+      parentRoute: typeof JournalRoute
+    }
     '/journal/craftsmanship/caring-for-fine-leather': {
       id: '/journal/craftsmanship/caring-for-fine-leather'
       path: '/craftsmanship/caring-for-fine-leather'
@@ -2880,6 +2900,7 @@ const CompareRouteWithChildren =
 interface JournalRouteChildren {
   JournalBlogHandleArticleHandleRoute: typeof JournalBlogHandleArticleHandleRoute
   JournalCraftsmanshipCaringForFineLeatherRoute: typeof JournalCraftsmanshipCaringForFineLeatherRoute
+  JournalCraftsmanshipLeatherQualityGuideRoute: typeof JournalCraftsmanshipLeatherQualityGuideRoute
   JournalCraftsmanshipMadeInItalyVsDesignedInItalyRoute: typeof JournalCraftsmanshipMadeInItalyVsDesignedInItalyRoute
   JournalCraftsmanshipSpotRealItalianLeatherRoute: typeof JournalCraftsmanshipSpotRealItalianLeatherRoute
   JournalStyleLuxurySneakersAsModernTailoringRoute: typeof JournalStyleLuxurySneakersAsModernTailoringRoute
@@ -2891,6 +2912,8 @@ const JournalRouteChildren: JournalRouteChildren = {
   JournalBlogHandleArticleHandleRoute: JournalBlogHandleArticleHandleRoute,
   JournalCraftsmanshipCaringForFineLeatherRoute:
     JournalCraftsmanshipCaringForFineLeatherRoute,
+  JournalCraftsmanshipLeatherQualityGuideRoute:
+    JournalCraftsmanshipLeatherQualityGuideRoute,
   JournalCraftsmanshipMadeInItalyVsDesignedInItalyRoute:
     JournalCraftsmanshipMadeInItalyVsDesignedInItalyRoute,
   JournalCraftsmanshipSpotRealItalianLeatherRoute:
