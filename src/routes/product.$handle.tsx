@@ -54,8 +54,6 @@ import {
   toLite,
 } from "@/lib/look-bundle";
 import { MARKETS } from "@/stores/market-store";
-// `toLite` is re-exported for downstream component coercion of full nodes.
-void toLite;
 
 export const Route = createFileRoute("/product/$handle")({
   loader: async ({ params }) => {
