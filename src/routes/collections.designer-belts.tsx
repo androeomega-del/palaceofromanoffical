@@ -53,6 +53,9 @@ export const Route = createFileRoute("/collections/designer-belts")({
       ],
     };
   },
+  loader: ({ context }) => context.queryClient.ensureQueryData(LANDING_QO),
+  errorComponent: ErrorComponent,
+  notFoundComponent: () => <div className="p-12 text-center text-ink/70">Collection not found.</div>,
   component: Page,
 });
 
@@ -91,7 +94,8 @@ function Page() {
           </p>
         </>
       }
-      shopifyQuery="belt"
+      shopifyQuery={SHOPIFY_QUERY}
+      queryOptions={LANDING_QO}
       faqs={FAQS}
       relatedGuides={[
         { to: "/journal/craftsmanship/caring-for-fine-leather", label: "Caring for fine leather" },

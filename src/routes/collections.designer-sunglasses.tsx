@@ -53,6 +53,9 @@ export const Route = createFileRoute("/collections/designer-sunglasses")({
       ],
     };
   },
+  loader: ({ context }) => context.queryClient.ensureQueryData(LANDING_QO),
+  errorComponent: ErrorComponent,
+  notFoundComponent: () => <div className="p-12 text-center text-ink/70">Collection not found.</div>,
   component: Page,
 });
 
@@ -94,7 +97,8 @@ function Page() {
           </p>
         </>
       }
-      shopifyQuery="sunglasses"
+      shopifyQuery={SHOPIFY_QUERY}
+      queryOptions={LANDING_QO}
       faqs={FAQS}
       relatedGuides={[
         { to: "/editorial/accessories", label: "The Accessories Edit" },
