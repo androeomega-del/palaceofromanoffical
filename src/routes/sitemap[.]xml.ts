@@ -7,6 +7,7 @@ const SITEMAPS = [
   "/sitemap-collections.xml",
   "/sitemap-brands.xml",
   "/sitemap-products.xml",
+  "/sitemap-product-images.xml",
 ];
 
 export const Route = createFileRoute("/sitemap.xml")({
