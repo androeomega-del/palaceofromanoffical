@@ -23,6 +23,7 @@ import { AsymmetricGrid } from "./asymmetric-grid";
 import { PalaceHeader } from "./palace-header";
 import { palette, fontSans, fontSerif } from "./palette";
 import heroImage from "@/assets/home-hero.jpg";
+import heroVideoAsset from "@/assets/hero-cinematic.mp4.asset.json";
 
 interface HomeStudioLayoutProps {
   variant?: "embedded" | "standalone";
