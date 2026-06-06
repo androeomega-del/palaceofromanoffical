@@ -11,7 +11,7 @@ import { useWishlistStore } from "@/stores/wishlist-store";
 import { useInteractionStore } from "@/stores/interaction-store";
 import { QuickViewSheet } from "@/components/quick-view-sheet";
 import { PriceTag } from "@/components/price-tag";
-import { buildProductAlt } from "@/lib/product-alt";
+import { buildProductAlt, buildLuxuryListingAlt } from "@/lib/product-alt";
 
 
 export type SuppressedBadge = "markdown" | "scarcity";
@@ -207,8 +207,15 @@ export function ProductCard({
 
   const altBase = p.vendor ? `${p.title} — ${p.vendor}` : p.title;
   const totalImages = p.images?.edges?.length ?? 0;
-  const alt1 = buildProductAlt(p, { index: 0, total: totalImages, shopifyAlt: img?.altText });
+  // Primary card image uses the strict luxury-listing alt format for SEO.
+  // Secondary (hover) image keeps the descriptive multi-attribute alt so
+  // screen-readers get distinct, useful context per view.
+  const alt1 = buildLuxuryListingAlt(p);
   const alt2 = buildProductAlt(p, { index: 1, total: totalImages, shopifyAlt: img2?.altText });
+  // Above-the-fold heuristic: first row of any grid (positions 0–3) gets
+  // fetchpriority="high" and skips lazy-loading so the LCP candidate is
+  // requested at high priority. Everything below the fold stays lazy.
+  const isAboveFold = typeof position === "number" && position < 4;
 
   const onAdd = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -329,7 +336,8 @@ export function ProductCard({
             alt={alt1}
             width={700}
             height={875}
-            loading="lazy"
+            loading={isAboveFold ? "eager" : "lazy"}
+            fetchPriority={isAboveFold ? "high" : undefined}
             decoding="async"
             onError={() => setImgError(true)}
             className="absolute inset-0 w-full h-full object-contain p-4 transition-opacity duration-500 group-hover:opacity-0"

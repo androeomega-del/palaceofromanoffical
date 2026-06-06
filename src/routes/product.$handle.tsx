@@ -47,7 +47,7 @@ import { parseComposition, hasCompositionInfo } from "@/lib/product-composition"
 import { buildPdpFaq } from "@/lib/pdp-faq";
 import { PdpFaq } from "@/components/pdp-faq";
 import { ROME_BRAND_SLUGS } from "@/lib/rome-brands";
-import { buildProductAlt } from "@/lib/product-alt";
+import { buildProductAlt, buildLuxuryListingAlt } from "@/lib/product-alt";
 import {
   classifyLookCategory,
   COMPLEMENTARY_MAP,
@@ -901,7 +901,7 @@ function ProductView({
                           src={cdnImage(img.url, { width: 900 })}
                           srcSet={cdnSrcSet(img.url, [600, 900, 1200])}
                           sizes="100vw"
-                          alt={buildProductAlt({ ...product, selectedOptions: selectedVariant?.selectedOptions }, { index: i, total: images.length, shopifyAlt: img.altText })}
+                          alt={i === 0 ? buildLuxuryListingAlt(product) : buildProductAlt({ ...product, selectedOptions: selectedVariant?.selectedOptions }, { index: i, total: images.length, shopifyAlt: img.altText })}
                           width={900}
                           height={1125}
                           loading={i === 0 ? "eager" : "lazy"}
@@ -962,7 +962,7 @@ function ProductView({
                           src={cdnImage(img.url, { width: 1600 })}
                           srcSet={cdnSrcSet(img.url, [800, 1200, 1600, 2000])}
                           sizes="(min-width: 1280px) 58vw, 100vw"
-                          alt={buildProductAlt({ ...product, selectedOptions: selectedVariant?.selectedOptions }, { index: i, total: images.length, shopifyAlt: img.altText })}
+                          alt={i === 0 ? buildLuxuryListingAlt(product) : buildProductAlt({ ...product, selectedOptions: selectedVariant?.selectedOptions }, { index: i, total: images.length, shopifyAlt: img.altText })}
                           width={1600}
                           height={2000}
                           loading={i === 0 ? "eager" : "lazy"}
@@ -1614,7 +1614,7 @@ function CuratedLookBundle({
               <div key={`anchor-${idx}`} className="block">
                 <div className="relative aspect-[4/5] overflow-hidden bg-[var(--studio-sand-soft,#E8E0D2)]">
                   {img && (
-                    <img src={cdnImage(img.url, { width: 600 })} alt={img.altText ?? anchor.title} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+                    <img src={cdnImage(img.url, { width: 600 })} alt={buildLuxuryListingAlt(anchor)} className="absolute inset-0 w-full h-full object-cover" loading="lazy" decoding="async" />
                   )}
                   <span className="absolute top-3 left-3 px-2 py-1 text-[9px] uppercase tracking-[0.28em] bg-[var(--studio-ink)] text-[var(--studio-bg)]">This piece</span>
                 </div>
@@ -1637,9 +1637,10 @@ function CuratedLookBundle({
                 {img && (
                   <img
                     src={cdnImage(img.url, { width: 600 })}
-                    alt={img.altText ?? it.title}
+                    alt={buildLuxuryListingAlt(it)}
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
                     loading="lazy"
+                    decoding="async"
                   />
                 )}
               </div>

@@ -17,6 +17,19 @@ export interface ProductAltInput {
   selectedOptions?: Array<{ name: string; value: string }> | null;
 }
 
+/**
+ * Luxury-listing alt format used for primary product imagery across the
+ * storefront (cards, PDP gallery, look-bundle anchors). Strict shape:
+ *   "Authentic {Vendor} {Title} available at Palace of Roman"
+ * Falls back gracefully when vendor is missing.
+ */
+export function buildLuxuryListingAlt(p: { title: string; vendor?: string | null }): string {
+  const vendor = (p.vendor || "").trim();
+  const title = (p.title || "").trim();
+  const head = vendor ? `${vendor} ${title}` : title;
+  return `Authentic ${head} available at Palace of Roman`.replace(/\s+/g, " ").trim();
+}
+
 function pickOption(opts: ProductAltInput["selectedOptions"], names: string[]): string | null {
   if (!opts) return null;
   for (const o of opts) {
