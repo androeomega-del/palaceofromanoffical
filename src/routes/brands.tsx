@@ -59,19 +59,19 @@ export const Route = createFileRoute("/brands")({
       ],
     };
   },
+  loader: ({ context }) => context.queryClient.ensureInfiniteQueryData(BRANDS_QO),
+  errorComponent: ErrorComponent,
+  notFoundComponent: () => <div className="p-12 text-center text-muted-foreground">Page not found.</div>,
   component: BrandsPage,
 });
 
 function BrandsPage() {
   // Scan the catalog in pages to extract vendors. Storefront API has no vendor index,
-  // so we walk products and dedupe. User can "Scan more" to keep going.
-  const sampleQ = useInfiniteQuery({
-    queryKey: ["brands-sample"],
-    initialPageParam: null as string | null,
-    queryFn: ({ pageParam }) =>
-      fetchProductsPage({ first: 250, after: pageParam, sortKey: "BEST_SELLING" }),
-    getNextPageParam: (last) => (last.pageInfo.hasNextPage ? last.pageInfo.endCursor : undefined),
-  });
+  // so we walk products and dedupe. User can "Scan more" to keep going. Page 1
+  // is server-primed via brandsSampleInfiniteQueryOptions(); subsequent pages
+  // fetch client-side through useInfiniteQuery's fetchNextPage.
+  const sampleQ = useSuspenseInfiniteQuery(BRANDS_QO);
+
 
   const allEdges = useMemo(
     () => sampleQ.data?.pages.flatMap((p) => p.edges) ?? [],
