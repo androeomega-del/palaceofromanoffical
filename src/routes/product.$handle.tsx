@@ -58,7 +58,39 @@ export const Route = createFileRoute("/product/$handle")({
   loader: async ({ params }) => {
     const p = await fetchProductByHandle(params.handle);
     if (!p) throw notFound();
-    return { product: p };
+
+    // Resolve "Shop the Look" companions for SEO meta + JSON-LD.
+    // Priority: stylist-curated `custom.look_products` metafield, else
+    // Shopify's COMPLEMENTARY recommendations, backfilled by a
+    // category-targeted catalog search when recs under-deliver. Mirrors
+    // the runtime logic in <ProductView/> so the rendered bundle and the
+    // indexed bundle never disagree.
+    const manualNodes = p.lookReferences?.references?.nodes ?? [];
+    let lookCompanions = manualNodes.slice(0, 4);
+    let lookSource: "manual" | "auto" | "none" = manualNodes.length ? "manual" : "none";
+    if (lookCompanions.length === 0) {
+      try {
+        const recs = await fetchProductRecommendations(p.id, "COMPLEMENTARY");
+        let pool = recs ?? [];
+        const anchorCat = classifyLookCategory(p);
+        if (pool.length < 3) {
+          const backfill = await fetchProducts({
+            first: 24,
+            sortKey: "BEST_SELLING",
+            query: `${categoryQueryFragment(COMPLEMENTARY_MAP[anchorCat])} -vendor:"${(p.vendor || "").replace(/"/g, "")}"`.trim(),
+          });
+          pool = [...pool, ...backfill.map((e) => e.node)];
+        }
+        const picked = pickCompanions(pool, p, 3);
+        if (picked.length >= 2) {
+          lookCompanions = picked;
+          lookSource = "auto";
+        }
+      } catch {
+        // SEO enrichment is best-effort; never block the PDP render.
+      }
+    }
+    return { product: p, lookCompanions, lookSource };
   },
   head: ({ params, loaderData }) => {
     const p = loaderData?.product;
