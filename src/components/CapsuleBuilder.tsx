@@ -65,7 +65,7 @@ function SlotTile({ slot }: { slot: CapsuleSlot }) {
       {filled && img ? (
         <img
           src={cdnImage(img.url, { width: 480, format: "webp" })}
-          alt={buildLuxuryListingAlt(slot.product!)}
+          alt={buildLuxuryListingAlt({ title: node!.title, vendor: node!.vendor })}
           className="h-full w-full object-cover"
           loading="lazy"
           decoding="async"
