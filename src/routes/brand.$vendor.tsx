@@ -23,7 +23,40 @@ export const Route = createFileRoute("/brand/$vendor")({
   // SEO: strip default sort from the URL so bare /brand/<vendor> doesn't 307
   // redirect to /brand/<vendor>?sort=BEST_SELLING-false (wasted crawl budget).
   search: { middlewares: [stripSearchParams(DEFAULT_BRAND_SEARCH)] },
-  head: ({ params }) => {
+  // SSR loader — fetches a shallow slice of the brand's catalog so head() can
+  // inject an ItemList schema with real product names, prices, availability,
+  // and per-item URLs. Keyed on params only (not sort) so the schema baseline
+  // stays stable for crawlers regardless of the visitor's chosen sort.
+  loader: async ({ params }) => {
+    const name = brandFromSlug(params.vendor) ?? unslug(params.vendor);
+    try {
+      const page = await fetchProductsPage({
+        first: 20,
+        query: `vendor:"${name}"`,
+        sortKey: "BEST_SELLING",
+        reverse: false,
+      });
+      const items = page.edges.map(({ node }) => {
+        const money = node.priceRange?.minVariantPrice;
+        const image = node.images?.edges?.[0]?.node?.url;
+        const available = node.variants?.edges?.some((v) => v.node.availableForSale) ?? false;
+        return {
+          handle: node.handle,
+          title: node.title,
+          price: money?.amount ?? null,
+          currency: money?.currencyCode ?? "USD",
+          available,
+          image: image ?? null,
+        };
+      });
+
+      return { items };
+    } catch {
+      return { items: [] as Array<{ handle: string; title: string; price: string | null; currency: string; available: boolean; image: string | null }> };
+    }
+  },
+  head: ({ params, loaderData }) => {
+
     // Prefer the canonical brand name from the curated 100; fall back to slug.
     const canonical = brandFromSlug(params.vendor);
     const name = canonical ?? unslug(params.vendor);
@@ -91,7 +124,52 @@ export const Route = createFileRoute("/brand/$vendor")({
             })),
           }),
         },
+        // ItemList — dynamic, per-product schema built from the SSR loader.
+        // Each element is a full Product node (name, image, url, offers with
+        // price/currency/availability) so Google can link rich-result cards
+        // straight to the long-tail brand page. Skipped when the loader
+        // returned no items (Storefront API down / empty vendor result) to
+        // avoid emitting an empty-array ItemList that fails validation.
+        ...(loaderData?.items?.length
+          ? [{
+              type: "application/ld+json",
+              children: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "ItemList",
+                name: `${name} — Products`,
+                url: absoluteUrl(path),
+                numberOfItems: loaderData.items.length,
+                itemListOrder: "https://schema.org/ItemListOrderAscending",
+                itemListElement: loaderData.items.map((p, i) => ({
+                  "@type": "ListItem",
+                  position: i + 1,
+                  url: absoluteUrl(`/product/${p.handle}`),
+                  item: {
+                    "@type": "Product",
+                    name: p.title,
+                    url: absoluteUrl(`/product/${p.handle}`),
+                    brand: { "@type": "Brand", name },
+                    ...(p.image ? { image: p.image } : {}),
+                    ...(p.price
+                      ? {
+                          offers: {
+                            "@type": "Offer",
+                            price: p.price,
+                            priceCurrency: p.currency,
+                            availability: p.available
+                              ? "https://schema.org/InStock"
+                              : "https://schema.org/OutOfStock",
+                            url: absoluteUrl(`/product/${p.handle}`),
+                          },
+                        }
+                      : {}),
+                  },
+                })),
+              }),
+            }]
+          : []),
       ],
+
     };
   },
   component: BrandPage,
