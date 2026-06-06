@@ -164,10 +164,28 @@ export const Route = createFileRoute("/collections/$handle")({
   },
   // SEO: keep bare /collections/<handle> canonical — don't 307 to ?sort=…default.
   search: { middlewares: [stripSearchParams({ sort: "BEST_SELLING-false" as SortValue })] },
-  loader: async ({ params }) => {
+  loaderDeps: ({ search: { sort } }) => ({ sort }),
+  loader: async ({ params, deps, context }) => {
+    // Resolve the effective sort identically to the component so the SSR
+    // cache key matches the client useInfiniteQuery key exactly.
+    const effectiveSort =
+      params.handle === "new-arrivals" && deps.sort === "BEST_SELLING-false"
+        ? "CREATED-true"
+        : deps.sort;
+    const [sortKey, reverseStr] = effectiveSort.split("-");
+    const reverse = reverseStr === "true";
+
     const [collectionRes, abRes] = await Promise.all([
       fetchCollection(params.handle, 1).catch(() => null),
       readMetaAbBucket().catch(() => ({ bucket: 0 as MetaBucket })),
+      // Prime page-1 grid into the same InfiniteData entry the component
+      // subscribes to. .catch keeps the page rendering on Shopify hiccups;
+      // the client query will retry naturally.
+      context.queryClient
+        .ensureInfiniteQueryData(
+          collectionFirstPageQueryOptions({ handle: params.handle, sortKey, reverse }),
+        )
+        .catch(() => null),
     ]);
     return {
       title: collectionRes?.title ?? titleizeHandle(params.handle),
