@@ -1760,6 +1760,51 @@ export type Database = {
         }
         Relationships: []
       }
+      vacation_destinations: {
+        Row: {
+          climate: string
+          created_at: string
+          default_vibe: string
+          editorial_summary: string
+          id: string
+          is_active: boolean
+          name: string
+          region: string
+          seasonal_notes: string
+          slug: string
+          style_tags: string[]
+          updated_at: string
+        }
+        Insert: {
+          climate: string
+          created_at?: string
+          default_vibe?: string
+          editorial_summary: string
+          id?: string
+          is_active?: boolean
+          name: string
+          region?: string
+          seasonal_notes?: string
+          slug: string
+          style_tags?: string[]
+          updated_at?: string
+        }
+        Update: {
+          climate?: string
+          created_at?: string
+          default_vibe?: string
+          editorial_summary?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          region?: string
+          seasonal_notes?: string
+          slug?: string
+          style_tags?: string[]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       win_back_emails_sent: {
         Row: {
           id: string
