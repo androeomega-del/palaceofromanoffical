@@ -120,6 +120,12 @@ export function AsymmetricGrid({ menProducts, womenProducts }: AsymmetricGridPro
                       alt={img.altText ?? p.node.title}
                       className="absolute inset-0 w-full h-full object-cover"
                       loading={idx < 2 ? "eager" : "lazy"}
+                      decoding={idx === 0 ? "sync" : "async"}
+                      // First tile is the LCP candidate on this section — hint
+                      // the browser to fetch it ahead of below-the-fold media.
+                      {...(idx === 0 ? { fetchPriority: "high" as const } : {})}
+                      width={1000}
+                      height={1250}
                     />
                   )}
                 </div>
