@@ -290,6 +290,76 @@ export function CapsuleBuilder({
   const isLoading = useCartStore((s) => s.isLoading);
   const [isBundling, setIsBundling] = React.useState(false);
 
+  // Share-lookbook gating: inline form state. No effect on cart store.
+  const [shareOpen, setShareOpen] = React.useState(false);
+  const [shareEmail, setShareEmail] = React.useState("");
+  const [shareStatus, setShareStatus] = React.useState<
+    "idle" | "sending" | "sent" | "error"
+  >("idle");
+  const shareSentForRef = React.useRef<string | null>(null);
+  const shareDebounceRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const dispatchShare = useServerFn(shareCapsuleLookbook);
+
+  const fireShare = React.useCallback(
+    async (email: string) => {
+      const filled = slots.filter(
+        (s): s is CapsuleSlot & { product: ShopifyProductNode; variantId: string } =>
+          Boolean(s.product) && Boolean(s.variantId),
+      );
+      if (filled.length === 0) return;
+      const signature = `${email}::${filled.map((f) => f.variantId).join("|")}`;
+      if (shareSentForRef.current === signature) return;
+      shareSentForRef.current = signature;
+      setShareStatus("sending");
+      try {
+        const pieces = filled.map((s) => {
+          const variantEdge = s.product.variants?.edges?.find(
+            (e) => e.node.id === s.variantId,
+          );
+          const priceAmount = variantEdge?.node.price?.amount ?? null;
+          return {
+            variantId: s.variantId,
+            productHandle: s.product.handle,
+            title: s.product.title,
+            vendor: s.product.vendor ?? null,
+            imageUrl: s.product.images?.edges?.[0]?.node?.url ?? null,
+            priceUsd: priceAmount != null ? String(priceAmount) : null,
+            slotKind: s.kind,
+          };
+        });
+        await dispatchShare({ data: { email, pieces } });
+        setShareStatus("sent");
+        toast.success("Lookbook dispatched to your inbox");
+      } catch (err) {
+        console.error("[capsule-share] dispatch failed", err);
+        shareSentForRef.current = null;
+        setShareStatus("error");
+      }
+    },
+    [slots, dispatchShare],
+  );
+
+  const handleShareEmail = React.useCallback(
+    (value: string) => {
+      setShareEmail(value);
+      setShareStatus("idle");
+      if (shareDebounceRef.current) clearTimeout(shareDebounceRef.current);
+      const trimmed = value.trim();
+      if (!EMAIL_RE.test(trimmed)) return;
+      shareDebounceRef.current = setTimeout(() => {
+        void fireShare(trimmed.toLowerCase());
+      }, 450);
+    },
+    [fireShare],
+  );
+
+  React.useEffect(() => {
+    return () => {
+      if (shareDebounceRef.current) clearTimeout(shareDebounceRef.current);
+    };
+  }, []);
+
+
   const onPurchaseLook = React.useCallback(async () => {
     if (isBundling) return;
     // Collect filled slots only — empty slots are ignored.
