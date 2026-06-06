@@ -200,14 +200,54 @@ export function CapsuleBuilder({
     [openKind],
   );
 
-  const onPurchaseLook = React.useCallback(() => {
-    const variantIds = slots
-      .map((s) => s.variantId)
-      .filter((v): v is string => Boolean(v));
-    // Log-only. No cart mutations.
-    // eslint-disable-next-line no-console
-    console.log("[CapsuleBuilder] Purchase This Look — variantIds:", variantIds);
-  }, [slots]);
+  const addItem = useCartStore((s) => s.addItem);
+  const openDrawer = useCartStore((s) => s.openDrawer);
+  const isLoading = useCartStore((s) => s.isLoading);
+  const [isBundling, setIsBundling] = React.useState(false);
+
+  const onPurchaseLook = React.useCallback(async () => {
+    if (isBundling) return;
+    // Collect filled slots only — empty slots are ignored.
+    const filled = slots.filter(
+      (s): s is CapsuleSlot & { product: ShopifyProductNode; variantId: string } =>
+        Boolean(s.product) && Boolean(s.variantId),
+    );
+    if (filled.length === 0) return;
+
+    // De-dupe by variantId so a single accidental repeat doesn't stack lines.
+    const seen = new Set<string>();
+    const unique = filled.filter((s) => {
+      if (seen.has(s.variantId)) return false;
+      seen.add(s.variantId);
+      return true;
+    });
+
+    setIsBundling(true);
+    try {
+      // Sequential adds — the cart store creates the cart on the first call
+      // and appends on subsequent calls. Parallel would race the cartId.
+      for (const slot of unique) {
+        const product = slot.product;
+        const variantEdge =
+          product.variants?.edges?.find((e) => e.node.id === slot.variantId) ??
+          product.variants?.edges?.find((e) => e.node.availableForSale) ??
+          product.variants?.edges?.[0];
+        const variantNode = variantEdge?.node;
+        if (!variantNode) continue;
+        await addItem({
+          product: { node: product },
+          variantId: slot.variantId,
+          variantTitle: variantNode.title ?? "",
+          price: variantNode.price,
+          quantity: 1,
+          selectedOptions: variantNode.selectedOptions ?? [],
+        });
+      }
+      openDrawer();
+    } finally {
+      setIsBundling(false);
+    }
+  }, [slots, addItem, openDrawer, isBundling]);
 
   return (
     <section
