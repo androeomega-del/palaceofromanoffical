@@ -53,8 +53,12 @@ export const Route = createFileRoute("/collections/cashmere-sweaters")({
       ],
     };
   },
+  loader: ({ context }) => context.queryClient.ensureQueryData(LANDING_QO),
+  errorComponent: ErrorComponent,
+  notFoundComponent: () => <div className="p-12 text-center text-ink/70">Collection not found.</div>,
   component: Page,
 });
+
 
 function Page() {
   return (
