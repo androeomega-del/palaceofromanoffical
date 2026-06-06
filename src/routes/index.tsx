@@ -16,17 +16,21 @@ import { readMetaAbBucket } from "@/lib/meta-ab.functions";
 import { pickHomeMeta, seoMetaForBucket, type MetaBucket } from "@/lib/meta-ab";
 import { useMetaAb } from "@/hooks/use-meta-ab";
 import { newThisWeekQueryOptions } from "@/lib/rails/queries";
+import { cdnImage } from "@/lib/cdn-image";
 
 export const Route = createFileRoute("/")({
-  loader: async ({ context }): Promise<{ abBucket: MetaBucket }> => {
+  loader: async ({ context }): Promise<{ abBucket: MetaBucket; lcpImage: string | null }> => {
     // Prime BOTH the Men's (primary) and Women's New In rails in parallel
     // so the segmented editorial grid SSRs without a loading flash.
-    const [{ bucket }] = await Promise.all([
+    const [{ bucket }, menRail] = await Promise.all([
       readMetaAbBucket(),
       context.queryClient.ensureQueryData(newThisWeekQueryOptions("Men")),
       context.queryClient.ensureQueryData(newThisWeekQueryOptions("Women")),
     ]);
-    return { abBucket: bucket };
+    const firstImg =
+      (menRail as any)?.[0]?.node?.images?.edges?.[0]?.node?.url ?? null;
+    const lcpImage = firstImg ? cdnImage(firstImg, { width: 1000 }) : null;
+    return { abBucket: bucket, lcpImage };
   },
   head: ({ loaderData }) => {
     const bucket = (loaderData?.abBucket ?? 0) as MetaBucket;
@@ -45,14 +49,25 @@ export const Route = createFileRoute("/")({
       { name: "twitter:image", content: `https://palaceofromanofficial.com${heroImage}` },
     ];
     if (robots) meta.push({ name: "robots", content: robots });
+    const links: Array<Record<string, string>> = [
+      { rel: "canonical", href: canonical },
+      // Warm a connection to the Shopify CDN so the first New-In rail image
+      // (the largest above-the-fold media element on `/`) decodes faster.
+      { rel: "preconnect", href: "https://cdn.shopify.com", crossOrigin: "anonymous" },
+    ];
+    if (loaderData?.lcpImage) {
+      // Preload the actual LCP candidate — the first product tile in the
+      // asymmetric grid — so it starts downloading in parallel with HTML.
+      links.push({
+        rel: "preload",
+        as: "image",
+        href: loaderData.lcpImage,
+        fetchpriority: "high",
+      });
+    }
     return {
       meta,
-      links: [
-        { rel: "canonical", href: canonical },
-        // Warm a connection to the Shopify CDN so the first New-In rail image
-        // (the largest above-the-fold media element on `/`) decodes faster.
-        { rel: "preconnect", href: "https://cdn.shopify.com", crossOrigin: "anonymous" } as any,
-      ],
+      links: links as any,
       scripts: [
         {
           type: "application/ld+json",
