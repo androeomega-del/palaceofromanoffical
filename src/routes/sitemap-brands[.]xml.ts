@@ -41,7 +41,9 @@ async function fetchAllProductSlugs(): Promise<Array<{ handle: string; updatedAt
 export const Route = createFileRoute("/sitemap-brands.xml")({
   server: {
     handlers: {
-      GET: async () => {
+      GET: async ({ request }) => {
+        const blocked = guardCanonicalSitemapHost(request);
+        if (blocked) return blocked;
         const entries: UrlEntry[] = [];
         try {
           const products = await fetchAllProductSlugs();
