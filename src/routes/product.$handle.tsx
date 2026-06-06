@@ -634,7 +634,7 @@ function ProductView({
 }: {
   product: NonNullable<Awaited<ReturnType<typeof fetchProductByHandle>>>;
 }) {
-  const { contextLinks } = Route.useLoaderData();
+  const { contextLinks } = Route.useLoaderData() as { contextLinks: PdpContextLinks };
   const images = product.images.edges.map((e) => e.node);
   const altBase = product.vendor ? `${product.title} — ${product.vendor}` : product.title;
   const variants = product.variants.edges.map((e) => e.node);
