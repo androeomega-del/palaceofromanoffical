@@ -394,6 +394,7 @@ export function CapsuleBuilder({
                   );
                 })}
               </ul>
+              </>
             )}
           </div>
         </SheetContent>
