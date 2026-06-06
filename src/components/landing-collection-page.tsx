@@ -7,10 +7,10 @@ import { SITE_URL } from "@/lib/seo";
 export type LandingFAQ = { q: string; a: string };
 export type LandingRelatedGuide = { to: string; label: string };
 
-// Intentionally permissive: the route loader builds these via
-// `queryOptions(...)` from @tanstack/react-query; we just need a shape
-// useSuspenseQuery can consume.
-export type LandingQueryOptions = Parameters<typeof useSuspenseQuery<ShopifyProduct[]>>[0];
+// Intentionally permissive: routes build these via `queryOptions(...)`.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type LandingQueryOptions = any;
+
 
 
 export function LandingCollectionPage({
