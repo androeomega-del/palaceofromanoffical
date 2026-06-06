@@ -13,9 +13,11 @@ import {
   PRELOVED_CONDITIONS,
   PRELOVED_CONDITION_LABEL,
   type PrelovedCondition,
+  type PrelovedPage,
 } from "@/lib/rails/preloved";
 import { PrelovedProductTile } from "@/components/preloved-product-tile";
 import { absoluteUrl } from "@/lib/seo";
+import { buildPrelovedHubJsonLd } from "@/lib/preloved-jsonld";
 
 const HUB_TITLE = "Authentic Preloved Luxury Designer Fashion | Palace of Roman Official";
 const HUB_DESC =
