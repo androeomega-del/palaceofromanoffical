@@ -74,7 +74,7 @@ export function NewsletterForm() {
         <Sparkles className="w-3 h-3" /> Our Newsletter
       </p>
       <p className="text-sm text-ink/80 leading-relaxed mb-5 max-w-sm">
-        Sign up for our newsletter — you might receive promo codes here and there.
+        We send occasional surprises to our clients — private previews, early access, and the rare token of thanks. Subscribe, and one may find its way to you.
       </p>
       <form className="relative" onSubmit={onSubmit} noValidate>
         <label htmlFor="newsletter-email" className="sr-only">

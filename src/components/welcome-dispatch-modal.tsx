@@ -165,10 +165,10 @@ export function WelcomeDispatchModal() {
             id="welcome-dispatch-title"
             className="font-serif text-3xl sm:text-4xl leading-[1.1] mb-4"
           >
-            Sign up for our newsletter.
+            A quiet invitation.
           </h2>
           <p className="text-sm text-ink/70 leading-relaxed mb-7 max-w-sm mx-auto">
-            You might receive promo codes here and there.
+            We send occasional surprises to our clients — private previews, early access, and the rare token of thanks. Subscribe, and one may find its way to you.
           </p>
 
           {status === "ok" ? (
