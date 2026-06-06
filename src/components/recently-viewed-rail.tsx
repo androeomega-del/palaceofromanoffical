@@ -93,7 +93,7 @@ export function RecentlyViewedRail({ excludeHandle, limit = 8 }: Props) {
   if (products.length === 0) return null;
 
   return (
-    <section className="max-w-7xl mx-auto mt-32 pt-20 border-t border-[var(--studio-rule)]">
+    <section className="max-w-7xl mx-auto mt-32 pt-20 border-t border-[var(--studio-rule)]" style={{ contain: "layout" }}>
       <div className="flex items-end justify-between mb-10 gap-6">
         <div className="space-y-3">
           <p className="text-[10px] tracking-[0.32em] uppercase text-[var(--studio-bronze)] font-semibold">

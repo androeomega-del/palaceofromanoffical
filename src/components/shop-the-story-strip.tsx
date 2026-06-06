@@ -122,7 +122,7 @@ export function ShopTheStoryStrip({
   if (!loading && products.length === 0) return null;
 
   return (
-    <section className="max-w-7xl mx-auto px-6 md:px-10 my-24 md:my-32">
+    <section className="max-w-7xl mx-auto px-6 md:px-10 my-24 md:my-32" style={{ contain: "layout" }}>
       <div className="flex items-end justify-between mb-10 gap-6 flex-wrap">
         <div className="space-y-3 max-w-xl">
           <p className="text-eyebrow uppercase text-bronze-deep">
