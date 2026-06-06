@@ -34,13 +34,17 @@ export function AsymmetricGrid({ menProducts, womenProducts }: AsymmetricGridPro
   const [segment, setSegment] = useState<Segment>("men");
   const products = segment === "men" ? menProducts : womenProducts;
 
+  // Editorial print rhythm: alternate vertical 4:5 portraits with 1:1 squares,
+  // anchored by one wider landscape midway through the spread. Each row is
+  // intentionally offset so the eye drifts diagonally, mimicking a magazine
+  // double-page editorial rather than a uniform grid.
   const layout: Array<{ col: string; aspect: string; mt?: string }> = [
-    { col: "md:col-start-1 md:col-span-5", aspect: "aspect-[3/4]" },
-    { col: "md:col-start-7 md:col-span-6", aspect: "aspect-[16/10]", mt: "md:mt-24" },
-    { col: "md:col-start-1 md:col-span-7", aspect: "aspect-[16/9]", mt: "md:mt-12" },
-    { col: "md:col-start-9 md:col-span-4", aspect: "aspect-[3/4]", mt: "md:-mt-32" },
-    { col: "md:col-start-2 md:col-span-5", aspect: "aspect-square", mt: "md:mt-16" },
-    { col: "md:col-start-8 md:col-span-4", aspect: "aspect-[4/5]", mt: "md:mt-32" },
+    { col: "md:col-start-1 md:col-span-5", aspect: "aspect-[4/5]" },
+    { col: "md:col-start-7 md:col-span-4", aspect: "aspect-square",  mt: "md:mt-28" },
+    { col: "md:col-start-1 md:col-span-7", aspect: "aspect-[16/9]",  mt: "md:mt-16" },
+    { col: "md:col-start-9 md:col-span-4", aspect: "aspect-[4/5]",   mt: "md:-mt-40" },
+    { col: "md:col-start-2 md:col-span-4", aspect: "aspect-square",  mt: "md:mt-20" },
+    { col: "md:col-start-7 md:col-span-5", aspect: "aspect-[4/5]",   mt: "md:mt-36" },
   ];
 
   const SegmentButton = ({ value, label }: { value: Segment; label: string }) => {
