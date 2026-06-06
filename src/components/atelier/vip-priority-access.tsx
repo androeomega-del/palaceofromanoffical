@@ -44,8 +44,7 @@ export function VipPriorityAccess() {
     };
   }, []);
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
+  const handleInput = (value: string) => {
     setEmail(value);
     if (saved && value.trim().toLowerCase() !== lastSyncedRef.current) {
       setSaved(false);
