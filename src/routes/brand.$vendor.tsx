@@ -23,7 +23,38 @@ export const Route = createFileRoute("/brand/$vendor")({
   // SEO: strip default sort from the URL so bare /brand/<vendor> doesn't 307
   // redirect to /brand/<vendor>?sort=BEST_SELLING-false (wasted crawl budget).
   search: { middlewares: [stripSearchParams(DEFAULT_BRAND_SEARCH)] },
-  head: ({ params }) => {
+  // SSR loader — fetches a shallow slice of the brand's catalog so head() can
+  // inject an ItemList schema with real product names, prices, availability,
+  // and per-item URLs. Keyed on params only (not sort) so the schema baseline
+  // stays stable for crawlers regardless of the visitor's chosen sort.
+  loader: async ({ params }) => {
+    const name = brandFromSlug(params.vendor) ?? unslug(params.vendor);
+    try {
+      const page = await fetchProductsPage({
+        first: 20,
+        query: `vendor:"${name}"`,
+        sortKey: "BEST_SELLING",
+        reverse: false,
+      });
+      const items = page.edges.map(({ node }) => {
+        const money = node.priceRange?.minVariantPrice;
+        const image = node.images?.edges?.[0]?.node?.url;
+        return {
+          handle: node.handle,
+          title: node.title,
+          price: money?.amount ?? null,
+          currency: money?.currencyCode ?? "USD",
+          available: !!node.availableForSale,
+          image: image ?? null,
+        };
+      });
+      return { items };
+    } catch {
+      return { items: [] as Array<{ handle: string; title: string; price: string | null; currency: string; available: boolean; image: string | null }> };
+    }
+  },
+  head: ({ params, loaderData }) => {
+
     // Prefer the canonical brand name from the curated 100; fall back to slug.
     const canonical = brandFromSlug(params.vendor);
     const name = canonical ?? unslug(params.vendor);
