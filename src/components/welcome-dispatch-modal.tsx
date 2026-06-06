@@ -236,13 +236,23 @@ export function WelcomeDispatchModal() {
                 </a>{" "}
                 at any time.
               </p>
-              <button
-                type="button"
-                onClick={dismiss}
-                className="block mx-auto text-[10px] uppercase tracking-[0.25em] text-ink/50 hover:text-ink transition-colors pt-2"
-              >
-                No thank you
-              </button>
+              <div className="flex items-center justify-center gap-5 pt-2">
+                <button
+                  type="button"
+                  onClick={dismiss}
+                  className="text-[10px] uppercase tracking-[0.25em] text-ink/50 hover:text-ink transition-colors"
+                >
+                  No thank you
+                </button>
+                <span aria-hidden="true" className="text-ink/20">·</span>
+                <a
+                  href="/"
+                  onClick={dismiss}
+                  className="text-[10px] uppercase tracking-[0.25em] text-ink hover:text-bronze transition-colors border-b border-ink/40 hover:border-bronze pb-0.5"
+                >
+                  Enter the boutique →
+                </a>
+              </div>
             </form>
           )}
         </div>
