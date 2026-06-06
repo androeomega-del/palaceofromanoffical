@@ -73,7 +73,7 @@ export function AsymmetricGrid({ menProducts, womenProducts }: AsymmetricGridPro
   };
 
   return (
-    <div>
+    <div style={{ contain: "layout" }}>
       {/* Segmented controller — Homme primary, Femme secondary */}
       <div
         className="flex items-center gap-10 mb-10 md:mb-14 pb-6 border-b"
