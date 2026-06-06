@@ -5,9 +5,12 @@ import { useEffect, useRef, useState, useMemo } from "react";
 import {
   fetchProductByHandle,
   fetchProducts,
+  fetchProductRecommendations,
   formatPrice,
   type ShopifyVariant,
   type Money,
+  type ShopifyProductNode,
+  type ShopifyProductLite,
 } from "@/lib/shopify";
 import { pageTitle, metaDescription, absoluteUrl, SITE_URL } from "@/lib/seo";
 import { useCartStore } from "@/stores/cart-store";
