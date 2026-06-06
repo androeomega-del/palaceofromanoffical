@@ -5,9 +5,12 @@ import { useEffect, useRef, useState, useMemo } from "react";
 import {
   fetchProductByHandle,
   fetchProducts,
+  fetchProductRecommendations,
   formatPrice,
   type ShopifyVariant,
   type Money,
+  type ShopifyProductNode,
+  type ShopifyProductLite,
 } from "@/lib/shopify";
 import { pageTitle, metaDescription, absoluteUrl, SITE_URL } from "@/lib/seo";
 import { useCartStore } from "@/stores/cart-store";
@@ -448,6 +451,99 @@ function layeringKey(product: { title: string; productType?: string }): Layering
   return null;
 }
 
+// ── Auto "The Look" — cross-category companion classifier ──────────────────
+// Maps a product's type/title into a coarse silhouette category so we can
+// auto-bundle complementary pieces (top → bottoms + accessories, etc.)
+// without ever pairing identical product types.
+type LookCategory =
+  | "top" | "bottom" | "outerwear" | "dress" | "shoes" | "bag" | "accessory" | "unknown";
+
+function classifyLookCategory(p: { productType?: string; title?: string }): LookCategory {
+  const hay = `${p.productType ?? ""} ${p.title ?? ""}`.toLowerCase();
+  if (/\b(dress|gown|robe|kaftan|caftan)\b/.test(hay)) return "dress";
+  if (/\b(coat|jacket|blazer|parka|trench|puffer|overcoat|cardigan)\b/.test(hay)) return "outerwear";
+  if (/\b(shirt|t-shirt|tee|top|blouse|knit|sweater|jumper|hoodie|polo|sweatshirt|tank|bodysuit)\b/.test(hay)) return "top";
+  if (/\b(trouser|pant|jean|short|skirt|legging|chino|bermuda|joggers?)\b/.test(hay)) return "bottom";
+  if (/\b(shoe|sneaker|trainer|boot|loafer|mule|sandal|heel|pump|moccasin|espadrille|derby|brogue)\b/.test(hay)) return "shoes";
+  if (/\b(bag|tote|clutch|backpack|wallet|cardholder|pouch|crossbody|hobo|satchel|messenger|duffel)\b/.test(hay)) return "bag";
+  if (/\b(belt|scarf|hat|cap|beanie|glove|sunglass|tie|jewel|necklace|bracelet|ring|earring|pocket\s?square|wallet|cardholder)\b/.test(hay)) return "accessory";
+  return "unknown";
+}
+
+// Which categories complete the look for a given anchor category. Order = preference.
+const COMPLEMENTARY_MAP: Record<LookCategory, LookCategory[]> = {
+  top:       ["bottom", "shoes", "outerwear", "bag", "accessory"],
+  bottom:    ["top", "shoes", "outerwear", "bag", "accessory"],
+  outerwear: ["top", "bottom", "shoes", "bag", "accessory"],
+  dress:     ["shoes", "bag", "outerwear", "accessory"],
+  shoes:     ["bottom", "top", "bag", "outerwear", "accessory"],
+  bag:       ["top", "bottom", "shoes", "outerwear", "accessory"],
+  accessory: ["top", "bottom", "shoes", "outerwear", "bag"],
+  unknown:   ["bag", "shoes", "accessory", "top", "bottom", "outerwear"],
+};
+
+// Build a Storefront search query fragment from a category list.
+function categoryQueryFragment(cats: LookCategory[]): string {
+  const terms: string[] = [];
+  for (const c of cats) {
+    switch (c) {
+      case "top": terms.push("product_type:Shirt", "product_type:T-shirt", "product_type:Top", "product_type:Sweater", "product_type:Knitwear", "product_type:Polo"); break;
+      case "bottom": terms.push("product_type:Trousers", "product_type:Pants", "product_type:Jeans", "product_type:Shorts", "product_type:Skirt"); break;
+      case "outerwear": terms.push("product_type:Jacket", "product_type:Coat", "product_type:Blazer"); break;
+      case "dress": terms.push("product_type:Dress"); break;
+      case "shoes": terms.push("product_type:Shoes", "product_type:Sneakers", "product_type:Boots", "product_type:Loafers"); break;
+      case "bag": terms.push("product_type:Bag", "product_type:Tote", "product_type:Backpack", "product_type:Clutch", "product_type:Wallet"); break;
+      case "accessory": terms.push("product_type:Belt", "product_type:Scarf", "product_type:Hat", "product_type:Sunglasses", "product_type:Jewelry"); break;
+      default: break;
+    }
+  }
+  return terms.length ? `(${terms.join(" OR ")})` : "";
+}
+
+// Coerce a full ShopifyProductNode (from recommendations / fetchProducts) into
+// the ShopifyProductLite shape that <CuratedLookBundle/> already renders.
+function toLite(n: ShopifyProductNode): ShopifyProductLite {
+  return {
+    id: n.id,
+    title: n.title,
+    handle: n.handle,
+    vendor: n.vendor,
+    availableForSale: n.variants.edges.some((e) => e.node.availableForSale),
+    priceRange: n.priceRange,
+    compareAtPriceRange: n.compareAtPriceRange,
+    images: { edges: n.images.edges.slice(0, 2) },
+    variants: { edges: n.variants.edges.slice(0, 1) },
+  };
+}
+
+// Pick up to `want` companions, enforcing: not same handle, not the anchor's
+// category (no identical product types), prefer different vendors first.
+function pickCompanions(
+  candidates: ShopifyProductNode[],
+  anchor: { handle: string; vendor: string; productType?: string; title?: string },
+  want: number,
+): ShopifyProductLite[] {
+  const anchorCat = classifyLookCategory(anchor);
+  const seenHandles = new Set<string>([anchor.handle]);
+  const seenCats = new Set<LookCategory>([anchorCat]);
+  // Two passes: first prefer different vendor, then allow same vendor.
+  const out: ShopifyProductLite[] = [];
+  for (const preferDifferentVendor of [true, false]) {
+    for (const c of candidates) {
+      if (out.length >= want) break;
+      if (seenHandles.has(c.handle)) continue;
+      if (preferDifferentVendor && c.vendor === anchor.vendor) continue;
+      const cat = classifyLookCategory(c);
+      if (seenCats.has(cat)) continue;
+      out.push(toLite(c));
+      seenHandles.add(c.handle);
+      seenCats.add(cat);
+    }
+    if (out.length >= want) break;
+  }
+  return out;
+}
+
 function ProductView({
   product,
 }: {
@@ -456,6 +552,7 @@ function ProductView({
   const images = product.images.edges.map((e) => e.node);
   const altBase = product.vendor ? `${product.title} — ${product.vendor}` : product.title;
   const variants = product.variants.edges.map((e) => e.node);
+
   const market = useMarketStore((s) => s.market);
   const firstAvailable = variants.find((v) => v.availableForSale) ?? variants[0];
   // No default size selection — shopper must pick. Single-variant products
@@ -619,9 +716,47 @@ function ProductView({
     .filter((e) => e.node.handle !== product.handle && e.node.vendor !== product.vendor)
     .slice(0, 8);
 
+  // ── Auto "The Look" — AI fallback when `custom.look_products` is empty.
+  // Pulls Shopify's COMPLEMENTARY recommendations first (cross-category by
+  // design), then enforces our own no-duplicate-category / vendor-diversity
+  // rules. A second background fetch backfills from a category-targeted
+  // catalog search when recommendations under-deliver.
+  const hasManualLook =
+    !!product.lookReferences?.references?.nodes?.length;
+  const anchorCat = classifyLookCategory(product);
+  const targetCats = COMPLEMENTARY_MAP[anchorCat];
+
+  const autoRecsQ = useQuery({
+    queryKey: ["auto-look-recs", product.id],
+    queryFn: () => fetchProductRecommendations(product.id, "COMPLEMENTARY"),
+    enabled: !hasManualLook,
+    staleTime: 5 * 60_000,
+  });
+
+  const autoBackfillQ = useQuery({
+    queryKey: ["auto-look-backfill", product.handle, anchorCat],
+    queryFn: () =>
+      fetchProducts({
+        first: 24,
+        sortKey: "BEST_SELLING",
+        query: `${categoryQueryFragment(targetCats)} -vendor:"${product.vendor.replace(/"/g, "")}"`.trim(),
+      }),
+    enabled: !hasManualLook,
+    staleTime: 5 * 60_000,
+  });
+
+  const autoLookItems = useMemo<ShopifyProductLite[]>(() => {
+    if (hasManualLook) return [];
+    const recs = autoRecsQ.data ?? [];
+    const backfillNodes = (autoBackfillQ.data ?? []).map((e) => e.node);
+    const pool = [...recs, ...backfillNodes];
+    return pickCompanions(pool, product, 3);
+  }, [hasManualLook, autoRecsQ.data, autoBackfillQ.data, product]);
+
   const vendorHandle = product.vendor.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
   const layering = layeringKey(product);
   const editorial = layering ? LAYERING_COPY[layering] : null;
+
 
 
   return (
@@ -1112,18 +1247,26 @@ function ProductView({
 
 
         {/* ===== Curated "The Look" — stylist-picked bundle from `custom.look_products` ===== */}
-        {product.lookReferences?.references?.nodes && product.lookReferences.references.nodes.length > 0 && (
+        {hasManualLook && product.lookReferences?.references?.nodes && (
           <section className="max-w-7xl mx-auto mt-16 md:mt-20 pt-10 md:pt-12 border-t border-[var(--studio-rule)]">
             <CuratedLookBundle anchor={product} items={product.lookReferences.references.nodes} />
           </section>
         )}
 
-        {/* ===== Style It With — algorithmic cross-house cross-sell rail (fallback) ===== */}
-        {(!product.lookReferences?.references?.nodes || product.lookReferences.references.nodes.length === 0) && styleItWith.length > 0 && (
+        {/* ===== Auto "The Look" — AI-curated fallback (cross-category) ===== */}
+        {!hasManualLook && autoLookItems.length >= 2 && (
+          <section className="max-w-7xl mx-auto mt-16 md:mt-20 pt-10 md:pt-12 border-t border-[var(--studio-rule)]">
+            <CuratedLookBundle anchor={product} items={autoLookItems} auto />
+          </section>
+        )}
+
+        {/* ===== Style It With — algorithmic cross-house cross-sell rail (last-resort fallback) ===== */}
+        {!hasManualLook && autoLookItems.length < 2 && styleItWith.length > 0 && (
           <section className="max-w-7xl mx-auto mt-16 md:mt-20 pt-10 md:pt-12 border-t border-[var(--studio-rule)]">
             <StyleItWithRail items={styleItWith} />
           </section>
         )}
+
 
         {/* ===== Recently Viewed — shopper's own browsing history ===== */}
         <RecentlyViewedRail excludeHandle={product.handle} />
@@ -1181,29 +1324,112 @@ function ProductView({
 
 
 /**
- * CuratedLookBundle — stylist-picked "The Look" rendered from the
- * `custom.look_products` metafield on the anchor product. Cohesive,
- * editorial multi-item bundle (not an algorithmic rail).
+ * CuratedLookBundle — "The Look" multi-item bundle. Renders either:
+ *   • stylist-picked items from `custom.look_products` (when `auto` is false), or
+ *   • AI-curated cross-category companions (when `auto` is true).
+ * Layout, bundle-total chip, and "Add Entire Look to Cart" behave identically.
  */
 function CuratedLookBundle({
   anchor,
   items,
+  auto = false,
 }: {
-  anchor: { title: string; handle: string; vendor: string; images: { edges: Array<{ node: { url: string; altText: string | null } }> }; priceRange: { minVariantPrice: Money } };
-  items: NonNullable<NonNullable<NonNullable<Awaited<ReturnType<typeof fetchProductByHandle>>>["lookReferences"]>["references"]>["nodes"];
+  anchor: NonNullable<Awaited<ReturnType<typeof fetchProductByHandle>>>;
+  items: ShopifyProductLite[];
+  auto?: boolean;
 }) {
+  const addItem = useCartStore((s) => s.addItem);
+  const openDrawer = useCartStore((s) => s.openDrawer);
+  const [bundleLoading, setBundleLoading] = useState(false);
+
   const bundleTotal = items.reduce(
     (sum, it) => sum + parseFloat(it.priceRange.minVariantPrice.amount),
     parseFloat(anchor.priceRange.minVariantPrice.amount),
   );
   const currency = anchor.priceRange.minVariantPrice.currencyCode;
 
+  const handleAddEntireLook = async () => {
+    if (bundleLoading) return;
+    setBundleLoading(true);
+    try {
+      const anchorVariant =
+        anchor.variants.edges.find((e) => e.node.availableForSale)?.node ??
+        anchor.variants.edges[0]?.node;
+      const lines: Array<{ ok: boolean; title: string }> = [];
+
+      if (anchorVariant) {
+        const ok = await addItem({
+          product: { node: anchor },
+          variantId: anchorVariant.id,
+          variantTitle: anchorVariant.title,
+          price: anchorVariant.price,
+          quantity: 1,
+          selectedOptions: anchorVariant.selectedOptions ?? [],
+        });
+        lines.push({ ok, title: anchor.title });
+      }
+
+      for (const it of items) {
+        const v = it.variants.edges.find((e) => e.node.availableForSale)?.node
+          ?? it.variants.edges[0]?.node;
+        if (!v) { lines.push({ ok: false, title: it.title }); continue; }
+        // Coerce ShopifyProductLite → ShopifyProductNode for the cart payload.
+        const node: ShopifyProductNode = {
+          id: it.id,
+          title: it.title,
+          description: "",
+          handle: it.handle,
+          vendor: it.vendor,
+          productType: "",
+          priceRange: it.priceRange,
+          compareAtPriceRange: it.compareAtPriceRange,
+          images: it.images,
+          variants: it.variants,
+          options: [],
+        };
+        const ok = await addItem({
+          product: { node },
+          variantId: v.id,
+          variantTitle: v.title,
+          price: v.price,
+          quantity: 1,
+          selectedOptions: v.selectedOptions ?? [],
+        });
+        lines.push({ ok, title: it.title });
+      }
+
+      const added = lines.filter((l) => l.ok).length;
+      const failed = lines.filter((l) => !l.ok);
+      if (added > 0) {
+        openDrawer();
+        if (failed.length === 0) {
+          toast.success(`The Look added — ${added} pieces in your bag`);
+        } else {
+          toast.success(`${added} of ${lines.length} pieces added`, {
+            description: `Unavailable: ${failed.map((f) => f.title).join(", ")}`,
+          });
+        }
+      } else {
+        toast.error("Could not add this look", {
+          description: "Pieces may be out of stock — try selecting sizes individually.",
+        });
+      }
+    } finally {
+      setBundleLoading(false);
+    }
+  };
+
   return (
     <>
       <div className="flex items-end justify-between mb-10 gap-6">
         <div className="space-y-3">
-          <p className="text-[10px] tracking-[0.32em] uppercase text-[var(--studio-bronze)] font-semibold">
-            Curated by our stylists
+          <p className="text-[10px] tracking-[0.32em] uppercase text-[var(--studio-bronze)] font-semibold inline-flex items-center gap-2">
+            {auto ? "Curated by our AI stylist" : "Curated by our stylists"}
+            {auto && (
+              <span className="px-1.5 py-0.5 text-[8px] tracking-[0.24em] border border-[var(--studio-bronze)] text-[var(--studio-bronze)]">
+                AUTO
+              </span>
+            )}
           </p>
           <h2 className="font-serif text-3xl md:text-4xl">The Look</h2>
         </div>
@@ -1256,12 +1482,32 @@ function CuratedLookBundle({
           );
         })}
       </div>
-      <p className="mt-6 text-[10px] uppercase tracking-[0.28em] text-[var(--studio-muted)] md:hidden">
-        Bundle total · {formatPrice({ amount: bundleTotal.toFixed(2), currencyCode: currency })}
-      </p>
+
+      <div className="mt-8 md:mt-10 flex flex-col-reverse md:flex-row items-stretch md:items-center justify-between gap-4 md:gap-6">
+        <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--studio-muted)]">
+          Bundle total · {formatPrice({ amount: bundleTotal.toFixed(2), currencyCode: currency })}
+        </p>
+        <button
+          type="button"
+          onClick={handleAddEntireLook}
+          aria-busy={bundleLoading}
+          disabled={bundleLoading}
+          className="h-12 md:h-14 px-6 md:px-10 bg-[var(--studio-ink)] text-[var(--studio-bg)] hover:bg-[var(--studio-bronze)] transition-colors text-[10px] md:text-[11px] uppercase tracking-[0.28em] md:tracking-[0.32em] font-semibold inline-flex items-center justify-center gap-2 shadow-md disabled:opacity-60"
+        >
+          {bundleLoading ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <>
+              <Lock className="w-3 h-3" />
+              Add Entire Look to Cart
+            </>
+          )}
+        </button>
+      </div>
     </>
   );
 }
+
 
 
 function StyleItWithRail({ items }: { items: Awaited<ReturnType<typeof fetchProducts>> }) {
