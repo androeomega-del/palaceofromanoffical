@@ -168,7 +168,7 @@ export function WelcomeDispatchModal() {
             A quiet invitation.
           </h2>
           <p className="text-sm text-ink/70 leading-relaxed mb-7 max-w-sm mx-auto">
-            We send occasional surprises to our clients — private previews, early access, and the rare token of thanks. Subscribe, and one may find its way to you.
+            We write to our clients sparingly — and when we do, it is usually worth opening.
           </p>
 
           {status === "ok" ? (
