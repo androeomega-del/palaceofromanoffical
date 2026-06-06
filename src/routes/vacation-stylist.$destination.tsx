@@ -47,12 +47,14 @@ const VIBES: Array<{ id: VacationVibe; label: string; hint: string }> = [
 
 export const Route = createFileRoute("/vacation-stylist/$destination")({
   loader: async ({ params }) => {
+    let dest: VacationDestination;
     try {
-      const dest = await getVacationDestination({ data: { slug: params.destination } });
-      return { destination: dest };
+      dest = await getVacationDestination({ data: { slug: params.destination } });
     } catch {
       throw notFound();
     }
+    const curated = await fetchCuratedProducts(dest.styleTags);
+    return { destination: dest, curated };
   },
   head: ({ loaderData, params }) => {
     const dest = loaderData?.destination;
