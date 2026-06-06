@@ -62,6 +62,7 @@ import { Route as SwimSizeGuideRouteImport } from './routes/swim.size-guide'
 import { Route as ProductsHandleRouteImport } from './routes/products.$handle'
 import { Route as ProductHandleRouteImport } from './routes/product.$handle'
 import { Route as PreviewLookbookRouteImport } from './routes/preview.lookbook'
+import { Route as PrelovedConditionRouteImport } from './routes/preloved.$condition'
 import { Route as NewsletterConfirmRouteImport } from './routes/newsletter.confirm'
 import { Route as MenSs26RouteImport } from './routes/men.ss26'
 import { Route as MaisonSlugRouteImport } from './routes/maison.$slug'
@@ -425,6 +426,11 @@ const PreviewLookbookRoute = PreviewLookbookRouteImport.update({
   id: '/preview/lookbook',
   path: '/preview/lookbook',
   getParentRoute: () => rootRouteImport,
+} as any)
+const PrelovedConditionRoute = PrelovedConditionRouteImport.update({
+  id: '/$condition',
+  path: '/$condition',
+  getParentRoute: () => PrelovedRoute,
 } as any)
 const NewsletterConfirmRoute = NewsletterConfirmRouteImport.update({
   id: '/newsletter/confirm',
@@ -950,7 +956,7 @@ export interface FileRoutesByFullPath {
   '/links': typeof LinksRoute
   '/login': typeof LoginRoute
   '/order-confirmed': typeof OrderConfirmedRoute
-  '/preloved': typeof PrelovedRoute
+  '/preloved': typeof PrelovedRouteWithChildren
   '/privacy': typeof PrivacyRoute
   '/reviews': typeof ReviewsRoute
   '/robots.txt': typeof RobotsDottxtRoute
@@ -1031,6 +1037,7 @@ export interface FileRoutesByFullPath {
   '/maison/$slug': typeof MaisonSlugRoute
   '/men/ss26': typeof MenSs26Route
   '/newsletter/confirm': typeof NewsletterConfirmRoute
+  '/preloved/$condition': typeof PrelovedConditionRoute
   '/preview/lookbook': typeof PreviewLookbookRoute
   '/product/$handle': typeof ProductHandleRoute
   '/products/$handle': typeof ProductsHandleRoute
@@ -1097,7 +1104,7 @@ export interface FileRoutesByTo {
   '/links': typeof LinksRoute
   '/login': typeof LoginRoute
   '/order-confirmed': typeof OrderConfirmedRoute
-  '/preloved': typeof PrelovedRoute
+  '/preloved': typeof PrelovedRouteWithChildren
   '/privacy': typeof PrivacyRoute
   '/reviews': typeof ReviewsRoute
   '/robots.txt': typeof RobotsDottxtRoute
@@ -1177,6 +1184,7 @@ export interface FileRoutesByTo {
   '/maison/$slug': typeof MaisonSlugRoute
   '/men/ss26': typeof MenSs26Route
   '/newsletter/confirm': typeof NewsletterConfirmRoute
+  '/preloved/$condition': typeof PrelovedConditionRoute
   '/preview/lookbook': typeof PreviewLookbookRoute
   '/product/$handle': typeof ProductHandleRoute
   '/products/$handle': typeof ProductsHandleRoute
@@ -1246,7 +1254,7 @@ export interface FileRoutesById {
   '/links': typeof LinksRoute
   '/login': typeof LoginRoute
   '/order-confirmed': typeof OrderConfirmedRoute
-  '/preloved': typeof PrelovedRoute
+  '/preloved': typeof PrelovedRouteWithChildren
   '/privacy': typeof PrivacyRoute
   '/reviews': typeof ReviewsRoute
   '/robots.txt': typeof RobotsDottxtRoute
@@ -1327,6 +1335,7 @@ export interface FileRoutesById {
   '/maison/$slug': typeof MaisonSlugRoute
   '/men/ss26': typeof MenSs26Route
   '/newsletter/confirm': typeof NewsletterConfirmRoute
+  '/preloved/$condition': typeof PrelovedConditionRoute
   '/preview/lookbook': typeof PreviewLookbookRoute
   '/product/$handle': typeof ProductHandleRoute
   '/products/$handle': typeof ProductsHandleRoute
@@ -1478,6 +1487,7 @@ export interface FileRouteTypes {
     | '/maison/$slug'
     | '/men/ss26'
     | '/newsletter/confirm'
+    | '/preloved/$condition'
     | '/preview/lookbook'
     | '/product/$handle'
     | '/products/$handle'
@@ -1624,6 +1634,7 @@ export interface FileRouteTypes {
     | '/maison/$slug'
     | '/men/ss26'
     | '/newsletter/confirm'
+    | '/preloved/$condition'
     | '/preview/lookbook'
     | '/product/$handle'
     | '/products/$handle'
@@ -1773,6 +1784,7 @@ export interface FileRouteTypes {
     | '/maison/$slug'
     | '/men/ss26'
     | '/newsletter/confirm'
+    | '/preloved/$condition'
     | '/preview/lookbook'
     | '/product/$handle'
     | '/products/$handle'
@@ -1842,7 +1854,7 @@ export interface RootRouteChildren {
   LinksRoute: typeof LinksRoute
   LoginRoute: typeof LoginRoute
   OrderConfirmedRoute: typeof OrderConfirmedRoute
-  PrelovedRoute: typeof PrelovedRoute
+  PrelovedRoute: typeof PrelovedRouteWithChildren
   PrivacyRoute: typeof PrivacyRoute
   ReviewsRoute: typeof ReviewsRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
@@ -2327,6 +2339,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/preview/lookbook'
       preLoaderRoute: typeof PreviewLookbookRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/preloved/$condition': {
+      id: '/preloved/$condition'
+      path: '/$condition'
+      fullPath: '/preloved/$condition'
+      preLoaderRoute: typeof PrelovedConditionRouteImport
+      parentRoute: typeof PrelovedRoute
     }
     '/newsletter/confirm': {
       id: '/newsletter/confirm'
@@ -3051,6 +3070,18 @@ const JournalRouteChildren: JournalRouteChildren = {
 const JournalRouteWithChildren =
   JournalRoute._addFileChildren(JournalRouteChildren)
 
+interface PrelovedRouteChildren {
+  PrelovedConditionRoute: typeof PrelovedConditionRoute
+}
+
+const PrelovedRouteChildren: PrelovedRouteChildren = {
+  PrelovedConditionRoute: PrelovedConditionRoute,
+}
+
+const PrelovedRouteWithChildren = PrelovedRoute._addFileChildren(
+  PrelovedRouteChildren,
+)
+
 interface SwimRouteChildren {
   SwimSizeGuideRoute: typeof SwimSizeGuideRoute
 }
@@ -3117,7 +3148,7 @@ const rootRouteChildren: RootRouteChildren = {
   LinksRoute: LinksRoute,
   LoginRoute: LoginRoute,
   OrderConfirmedRoute: OrderConfirmedRoute,
-  PrelovedRoute: PrelovedRoute,
+  PrelovedRoute: PrelovedRouteWithChildren,
   PrivacyRoute: PrivacyRoute,
   ReviewsRoute: ReviewsRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
