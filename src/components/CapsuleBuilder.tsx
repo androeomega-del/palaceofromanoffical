@@ -28,6 +28,10 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import { useCartStore } from "@/stores/cart-store";
+import { useServerFn } from "@tanstack/react-start";
+import { shareCapsuleLookbook } from "@/lib/capsule-lookbook.functions";
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export type CapsuleSlotKind =
   | "Top"
@@ -362,18 +366,82 @@ export function CapsuleBuilder({
         ))}
       </div>
 
-      <div className="mt-5 flex items-center justify-between gap-3 sm:mt-6">
+      <div className="mt-5 flex flex-col gap-3 sm:mt-6 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-xs text-muted-foreground">
           Curate up to five pieces. Editorial preview only.
         </p>
-        <button
-          type="button"
-          onClick={onPurchaseLook}
-          disabled={isBundling || isLoading || slots.every((s) => !s.variantId)}
-          className="inline-flex items-center justify-center rounded-sm border border-foreground/80 bg-foreground px-4 py-2 text-xs uppercase tracking-[0.18em] text-background transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {isBundling ? "Bundling…" : "Purchase This Look"}
-        </button>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+          <button
+            type="button"
+            onClick={() => setShareOpen((o) => !o)}
+            disabled={slots.every((s) => !s.variantId)}
+            className="inline-flex items-center justify-center rounded-sm border border-[color:var(--color-bronze,#7a6a55)] bg-transparent px-4 py-2 text-xs uppercase tracking-[0.28em] text-[color:var(--color-ink,#1a1a1a)] transition-colors hover:bg-[color:var(--color-bronze,#7a6a55)]/10 disabled:cursor-not-allowed disabled:opacity-50"
+            aria-expanded={shareOpen}
+            aria-controls="capsule-share-archive"
+          >
+            Share Lookbook
+          </button>
+          <button
+            type="button"
+            onClick={onPurchaseLook}
+            disabled={isBundling || isLoading || slots.every((s) => !s.variantId)}
+            className="inline-flex items-center justify-center rounded-sm border border-foreground/80 bg-foreground px-4 py-2 text-xs uppercase tracking-[0.18em] text-background transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isBundling ? "Bundling…" : "Purchase This Look"}
+          </button>
+        </div>
+      </div>
+
+      <div
+        id="capsule-share-archive"
+        style={{ contain: "layout", minHeight: shareOpen ? 220 : 0 }}
+        aria-hidden={!shareOpen}
+      >
+        {shareOpen ? (
+          <div className="mt-5 rounded-md border border-[color:var(--color-bronze,#7a6a55)]/30 bg-background/80 p-5 transition-opacity duration-300">
+            <div className="mb-2 text-[11px] uppercase tracking-[0.3em] text-[color:var(--color-bronze,#7a6a55)]">
+              Digital Atelier Archive
+            </div>
+            <p className="mb-4 max-w-prose text-sm leading-relaxed text-[color:var(--color-ink,#1a1a1a)]/80">
+              Enter your email to instantly receive a high-fidelity digital lookbook
+              of this custom capsule, complete with direct private checkout access.
+            </p>
+            <form
+              onSubmit={(e) => e.preventDefault()}
+              className="flex flex-col gap-3 sm:flex-row sm:items-center"
+            >
+              <label className="sr-only" htmlFor="capsule-share-email">
+                Email
+              </label>
+              <input
+                id="capsule-share-email"
+                type="email"
+                name="email"
+                autoComplete="email"
+                inputMode="email"
+                placeholder="you@atelier.com"
+                value={shareEmail}
+                onChange={(e) => handleShareEmail(e.target.value)}
+                onInput={(e) => handleShareEmail((e.target as HTMLInputElement).value)}
+                className="flex-1 rounded-sm border border-[color:var(--color-ink,#1a1a1a)]/30 bg-transparent px-3 py-2 text-sm tracking-wide text-[color:var(--color-ink,#1a1a1a)] placeholder:text-[color:var(--color-ink,#1a1a1a)]/40 focus:border-[color:var(--color-bronze,#7a6a55)] focus:outline-none"
+                disabled={shareStatus === "sending" || shareStatus === "sent"}
+              />
+              <span
+                className="text-[11px] uppercase tracking-[0.24em] text-[color:var(--color-bronze,#7a6a55)]"
+                aria-live="polite"
+              >
+                {shareStatus === "sending" && "Curating…"}
+                {shareStatus === "sent" && "Archive dispatched"}
+                {shareStatus === "error" && "Please try again"}
+                {shareStatus === "idle" && "Auto-saved on entry"}
+              </span>
+            </form>
+            <p className="mt-3 text-[11px] leading-relaxed text-[color:var(--color-ink,#1a1a1a)]/55">
+              Your curation data is handled with absolute discretion. Palace of Roman
+              secures your priority access parameters without third-party data tracking.
+            </p>
+          </div>
+        ) : null}
       </div>
 
       <Sheet open={openKind !== null} onOpenChange={(o) => !o && setOpenKind(null)}>
