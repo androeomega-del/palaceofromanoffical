@@ -7,11 +7,11 @@ import { SITE_URL } from "@/lib/seo";
 export type LandingFAQ = { q: string; a: string };
 export type LandingRelatedGuide = { to: string; label: string };
 
-export type LandingQueryOptions = {
-  queryKey: readonly unknown[];
-  queryFn: () => Promise<ShopifyProduct[]>;
-  staleTime?: number;
-};
+// Intentionally permissive: the route loader builds these via
+// `queryOptions(...)` from @tanstack/react-query; we just need a shape
+// useSuspenseQuery can consume.
+export type LandingQueryOptions = Parameters<typeof useSuspenseQuery<ShopifyProduct[]>>[0];
+
 
 export function LandingCollectionPage({
   eyebrow,
