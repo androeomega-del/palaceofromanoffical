@@ -109,20 +109,46 @@ export const Route = createFileRoute("/product/$handle")({
     }
 
 
-    // SEO-optimized title: "{Vendor} {Title} — Authentic {Type}" (pageTitle appends " — Palace of Roman")
-    // Keeps the high-intent keywords (brand + product + authentic) at the front, under 60 chars total.
-    const titleMain = p.vendor
-      ? `${p.vendor} ${p.title}${p.productType ? ` — Authentic ${p.productType}` : " — Authentic"}`
-      : `${p.title}${p.productType ? ` — Authentic ${p.productType}` : ""}`;
+    // Bundle-aware title/description: when a stylist-curated or AI-curated
+    // "Shop the Look" is present, pivot the meta to surface companion brands —
+    // these phrases double as long-tail SEO targets ("Loro Piana sweater
+    // styled with Brunello Cucinelli trousers") and rich-snippet bait.
+    const companions = loaderData?.lookCompanions ?? [];
+    const lookSource = loaderData?.lookSource ?? "none";
+    const companionBrands = Array.from(
+      new Set(companions.map((c) => c.vendor).filter(Boolean)),
+    ).slice(0, 2);
+
+    let titleMain: string;
+    if (companionBrands.length >= 1) {
+      const styledWith = companionBrands.length === 2
+        ? `${companionBrands[0]} & ${companionBrands[1]}`
+        : companionBrands[0];
+      titleMain = `Shop the Look: ${p.vendor ? `${p.vendor} ` : ""}${p.title} styled with ${styledWith}`;
+    } else {
+      // Fallback: "{Vendor} {Title} — Authentic {Type}" (pageTitle appends " — Palace of Roman").
+      titleMain = p.vendor
+        ? `${p.vendor} ${p.title}${p.productType ? ` — Authentic ${p.productType}` : " — Authentic"}`
+        : `${p.title}${p.productType ? ` — Authentic ${p.productType}` : ""}`;
+    }
+
     const parsedComp = parseComposition(p.description || "");
-    // SEO-optimized description: brand + product + material + trust + shipping + offer.
-    // Front-loaded with the buyer's search query, closed with conversion levers.
     const descPieces: string[] = [];
-    descPieces.push(
-      `Shop the authentic ${p.vendor ? `${p.vendor} ` : ""}${p.title}${p.productType ? ` ${p.productType.toLowerCase()}` : ""}${parsedComp.composition ? ` in ${parsedComp.composition.toLowerCase()}` : ""} at Palace of Roman.`
-    );
-    descPieces.push("Sourced through our authorised European boutique network — guaranteed authentic, with dust bag and original packaging.");
-    descPieces.push("Free worldwide shipping over $250, 14-day returns. Members unlock 10% off.");
+    if (companionBrands.length >= 1) {
+      const styledWith = companionBrands.length === 2
+        ? `${companionBrands[0]} and ${companionBrands[1]}`
+        : companionBrands[0];
+      const curator = lookSource === "auto" ? "hand-selected by our AI stylist" : "curated by our atelier";
+      descPieces.push(
+        `Discover an exclusive sartorial vision featuring the ${p.title}${p.vendor ? ` by ${p.vendor}` : ""}. Complete the look with curated essentials from ${styledWith}, ${curator} at Palace of Roman. Complimentary global shipping available.`,
+      );
+    } else {
+      descPieces.push(
+        `Shop the authentic ${p.vendor ? `${p.vendor} ` : ""}${p.title}${p.productType ? ` ${p.productType.toLowerCase()}` : ""}${parsedComp.composition ? ` in ${parsedComp.composition.toLowerCase()}` : ""} at Palace of Roman.`,
+      );
+      descPieces.push("Sourced through our authorised European boutique network — guaranteed authentic, with dust bag and original packaging.");
+      descPieces.push("Free worldwide shipping over $250, 14-day returns. Members unlock 10% off.");
+    }
     const desc = metaDescription(descPieces.join(" "));
     const img = p.images?.edges?.[0]?.node?.url;
     const price = p.priceRange?.minVariantPrice;
