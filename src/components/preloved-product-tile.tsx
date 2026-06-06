@@ -63,7 +63,7 @@ export function PrelovedProductTile({ product, condition, position = 99 }: Props
           </span>
         ) : null}
         <span className="line-clamp-2 text-sm text-ink">{product.title}</span>
-        <PriceTag price={product.priceRange.minVariantPrice} />
+        <PriceTag money={product.priceRange.minVariantPrice} />
       </div>
     </Link>
   );
