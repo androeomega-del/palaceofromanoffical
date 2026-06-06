@@ -1292,6 +1292,15 @@ function ProductView({
           </section>
         )}
 
+        {/* ===== Capsule Wardrobe Builder — editorial canvas (Phase 2) ===== */}
+        <div className="max-w-7xl mx-auto mt-16 md:mt-20" style={{ contain: "layout style" }}>
+          <CapsuleBuilder
+            seedProduct={product}
+            seedVariantId={selectedVariant?.id}
+            seedKind={classifyCapsuleKind(product.productType)}
+          />
+        </div>
+
         {/* ===== More from vendor ===== */}
 
         {related.length > 0 && (
