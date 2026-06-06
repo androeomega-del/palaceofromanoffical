@@ -325,6 +325,36 @@ function CollectionNotFoundComponent() {
   );
 }
 
+function signatureSuffixForHandle(handle: string): string {
+  const brandHandles = new Set([
+    "gucci", "prada", "versace", "dolce-gabbana", "saint-laurent",
+    "bottega-veneta", "burberry", "fendi", "valentino", "balenciaga",
+    "givenchy", "loewe", "celine", "tom-ford", "brunello-cucinelli",
+    "ermenegildo-zegna", "canali", "corneliani", "kiton", "loro-piana",
+  ]);
+  if (brandHandles.has(handle)) return "Luxury Edit";
+  if (handle === "best-sellers") return "Luxury Edit";
+  if (handle === "new-arrivals") return "Collection";
+  return "Collection";
+}
+
+function formatCollectionH1(title: string, handle: string): string {
+  return `Authentic ${title} ${signatureSuffixForHandle(handle)}`;
+}
+
+function collectionFallbackDescription(title: string, handle: string): string {
+  const brandHandles = new Set([
+    "gucci", "prada", "versace", "dolce-gabbana", "saint-laurent",
+    "bottega-veneta", "burberry", "fendi", "valentino", "balenciaga",
+    "givenchy", "loewe", "celine", "tom-ford", "brunello-cucinelli",
+    "ermenegildo-zegna", "canali", "corneliani", "kiton", "loro-piana",
+  ]);
+  if (brandHandles.has(handle)) {
+    return `Explore our meticulously curated selection of verified, investment-grade items from ${title}, sourced through our exclusive global boutique network channels.`;
+  }
+  return `Explore our meticulously curated selection of verified, investment-grade ${title.toLowerCase()}, sourced through our exclusive global boutique network channels.`;
+}
+
 function titleizeHandle(handle: string) {
   return handle
     .replace(/-/g, " ")
@@ -694,10 +724,10 @@ function CollectionPage() {
                 {editorialCopy!.eyebrow}
               </span>
               <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl leading-[0.95] text-canvas text-balance max-w-4xl">
-                {title}
+                {formatCollectionH1(title, handle)}
               </h1>
-              <p className="mt-7 max-w-xl text-sm md:text-base text-canvas/80 leading-relaxed text-pretty">
-                {editorialCopy!.tagline}
+              <p className="mt-7 max-w-xl text-sm md:text-base text-canvas/80 leading-relaxed text-pretty" style={{ contain: "layout style", minHeight: "3rem" }}>
+                {(description && description.trim()) ? description : editorialCopy!.tagline}
               </p>
               <p className="mt-8 text-[10px] uppercase tracking-[0.3em] text-canvas/60">
                 {countLabel}
@@ -737,14 +767,14 @@ function CollectionPage() {
                 <span className="text-ink">{title}</span>
               </nav>
               <div className="mt-6 flex flex-col md:flex-row md:items-end justify-between gap-6">
-                <h1 className="text-4xl md:text-6xl font-serif text-balance">{title}</h1>
+                <h1 className="text-4xl md:text-6xl font-serif text-balance">{formatCollectionH1(title, handle)}</h1>
                 <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
                   {countLabel}
                 </p>
               </div>
-              {description && (
-                <p className="mt-6 max-w-[64ch] text-sm text-muted-foreground leading-relaxed">{description}</p>
-              )}
+              <p className="mt-6 max-w-[64ch] text-sm text-muted-foreground leading-relaxed" style={{ contain: "layout style", minHeight: "3.5rem" }}>
+                {(description && description.trim()) ? description : collectionFallbackDescription(title, handle)}
+              </p>
             </div>
           </section>
         </>
