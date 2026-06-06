@@ -7,7 +7,9 @@ import { renderSitemap, sitemapResponse, guardCanonicalSitemapHost, type UrlEntr
 export const Route = createFileRoute("/sitemap-collections.xml")({
   server: {
     handlers: {
-      GET: async () => {
+      GET: async ({ request }) => {
+        const blocked = guardCanonicalSitemapHost(request);
+        if (blocked) return blocked;
         const entries: UrlEntry[] = [];
         try {
           const collections = await fetchCollections(500);
