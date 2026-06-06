@@ -65,15 +65,88 @@ const SLOT_ORDER: CapsuleSlotKind[] = [
   "Accessory",
 ];
 
-/** Map a Shopify productType string → CapsuleSlotKind. */
-function classifyKind(productType: string | undefined | null): CapsuleSlotKind | null {
-  const t = (productType ?? "").toLowerCase();
-  if (!t) return null;
-  if (/shoe|sneaker|boot|loafer|sandal|slipper|heel|oxford|derby|brogue|espadrille|mule|pump|flip.flop|slide|clog/.test(t)) return "Footwear";
-  if (/pant|trouser|jean|short|skirt|legging|sweatpant|chino|slack|brief|boxer|swim|trunk|jogger/.test(t)) return "Bottom";
-  if (/jacket|coat|blazer|overcoat|parka|trench|bomber|windbreaker|anorak|cape|cardigan|sweater|hoodie|sweatshirt|knitwear|fleece|gilet|pullover|turtleneck|poncho/.test(t)) return "Outerwear";
-  if (/bag|belt|tie|scarf|hat|cap|glove|watch|jewelry|jewellery|necklace|bracelet|ring|earring|sunglass|wallet|card holder|keyring|pocket square|cufflink|brooch|headband|umbrella|phone case|strap|mask|lanyard|accessory/.test(t)) return "Accessory";
-  if (/shirt|t-shirt|tee|polo|top|blouse|tank|camisole|bodysuit|tunic|henley|vest/.test(t)) return "Top";
+/**
+ * Strict Category Taxonomy Map.
+ * Each slot defines an explicit list of keyword variations that may appear in
+ * a Shopify product's `productType` or any `tags` entry. Matching is
+ * case-insensitive, whole-word-ish (word-boundary based) to avoid bleed
+ * (e.g. "Tank Top" must not match "Pants").
+ *
+ * Resolution is single-slot: a product is classified into exactly one slot,
+ * evaluated in priority order so footwear/accessories/outerwear cannot leak
+ * into Bottom/Top drawers.
+ */
+const CAPSULE_TAXONOMY: Record<CapsuleSlotKind, string[]> = {
+  Footwear: [
+    "Sneakers", "Loafers", "Sandals", "Oxfords and Derbies", "Oxfords",
+    "Derbies", "Flats", "Pumps", "Slides", "Espadrilles", "Boots", "Shoes",
+    "Heels", "Mules", "Clogs",
+  ],
+  Accessory: [
+    "Handbags", "Crossbody Bags", "Tote Bags", "Backpacks", "Shoulder Bags",
+    "Clutch Bags", "Belt Bags", "Briefcases", "Belts", "Wallets", "Jewellery",
+    "Jewelry", "Scarves", "Hats", "Sunglasses", "Ties", "Keychains", "Gloves",
+    "Watches", "Card Holders",
+  ],
+  Outerwear: [
+    "Blazers", "Coats", "Jackets", "Outerwear", "Trench", "Shearling",
+    "Parkas", "Bombers", "Overcoats", "Capes",
+  ],
+  Bottom: [
+    "Bottoms", "Bottom", "Pants", "Trousers", "Shorts", "Short", "Skirts",
+    "Skirt", "Denim", "Jeans", "Jeans Denim", "Bermuda", "Cargo",
+    "Cargo Pants", "Joggers", "Chinos", "Leggings", "Sweatpants", "Culottes",
+  ],
+  Top: [
+    "Shirts", "Shirt", "T-Shirts", "T-Shirt", "Tee", "Tees", "Tops", "Top",
+    "Blouses", "Blouse", "Knitwear", "Sweaters", "Sweater", "Cardigans",
+    "Cardigan", "Polos", "Polo", "Suits", "Dresses", "Sportswear",
+    "Underwear", "Tank", "Camisole", "Bodysuit", "Henley", "Vest", "Tunic",
+  ],
+};
+
+/**
+ * Resolution priority — first slot whose keyword set matches wins. This
+ * guarantees a Footwear/Accessory item never appears in a Bottom or Top
+ * drawer, even if it carries overlapping brand/material tags.
+ */
+const TAXONOMY_PRIORITY: CapsuleSlotKind[] = [
+  "Footwear",
+  "Accessory",
+  "Outerwear",
+  "Bottom",
+  "Top",
+];
+
+/** Escape a keyword for safe inclusion in a RegExp. */
+function escapeRe(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/** Pre-compile one word-boundary, case-insensitive RegExp per slot. */
+const TAXONOMY_RE: Record<CapsuleSlotKind, RegExp> = Object.fromEntries(
+  (Object.keys(CAPSULE_TAXONOMY) as CapsuleSlotKind[]).map((k) => [
+    k,
+    new RegExp(`\\b(?:${CAPSULE_TAXONOMY[k].map(escapeRe).join("|")})\\b`, "i"),
+  ]),
+) as Record<CapsuleSlotKind, RegExp>;
+
+/**
+ * Classify a product into a single CapsuleSlotKind using productType + tags.
+ * Returns null when no taxonomy matches.
+ */
+function classifyKind(
+  productType: string | undefined | null,
+  tags?: string[] | null,
+): CapsuleSlotKind | null {
+  const haystack = [
+    productType ?? "",
+    ...(Array.isArray(tags) ? tags : []),
+  ].join(" | ");
+  if (!haystack.trim()) return null;
+  for (const kind of TAXONOMY_PRIORITY) {
+    if (TAXONOMY_RE[kind].test(haystack)) return kind;
+  }
   return null;
 }
 
@@ -177,40 +250,20 @@ export function CapsuleBuilder({
     [slots],
   );
 
-  // Loose Bottoms detector — checks productType, tags (when present), and title
-  // for any of: Bottoms, Pants, Trousers, Shorts, Skirts, Denim, Jeans, Bermuda
-  // (plus common synonyms already used elsewhere). Case-insensitive.
-  const BOTTOMS_RE = /bottom|pant|trouser|short|skirt|denim|jean|bermuda|chino|slack|legging|sweatpant|jogger|culotte|capri/i;
-  const isBottom = React.useCallback((p: ShopifyProductNode) => {
-    if (classifyKind(p.productType) === "Bottom") return true;
-    if (BOTTOMS_RE.test(p.productType ?? "")) return true;
-    const tags = (p as unknown as { tags?: string[] }).tags;
-    if (Array.isArray(tags) && tags.some((t) => BOTTOMS_RE.test(t))) return true;
-    if (BOTTOMS_RE.test(p.title ?? "")) return true;
-    return false;
-  }, []);
-
+  // Strict, taxonomy-driven filter. Each product is classified into exactly
+  // one slot via CAPSULE_TAXONOMY (priority-resolved), so Footwear /
+  // Accessory / Outerwear items cannot bleed into Bottom or Top drawers —
+  // and vice versa — regardless of overlapping brand, material, or color tags.
   const filteredForOpen = React.useMemo(() => {
     if (!openKind) return [];
     const pool = candidatePool.filter((p) => !usedHandles.has(p.handle));
-    if (openKind === "Bottom") {
-      const matches = pool.filter(isBottom);
-      if (matches.length > 0) return matches;
-      // Strict fallback: clothing only — never footwear or accessories.
-      return pool.filter((p) => {
-        const k = classifyKind(p.productType);
-        return k !== "Footwear" && k !== "Accessory";
-      });
-    }
-    // No full-pool fallback for other slots — empty state handles it.
-    return pool.filter((p) => classifyKind(p.productType) === openKind);
-  }, [openKind, candidatePool, usedHandles, isBottom]);
+    return pool.filter((p) => {
+      const tags = (p as unknown as { tags?: string[] }).tags;
+      return classifyKind(p.productType, tags) === openKind;
+    });
+  }, [openKind, candidatePool, usedHandles]);
 
-  const isBottomFallback = React.useMemo(() => {
-    if (openKind !== "Bottom") return false;
-    const pool = candidatePool.filter((p) => !usedHandles.has(p.handle));
-    return pool.filter(isBottom).length === 0 && filteredForOpen.length > 0;
-  }, [openKind, candidatePool, usedHandles, isBottom, filteredForOpen]);
+
 
   const handleSelect = React.useCallback(
     (product: ShopifyProductNode) => {
@@ -347,13 +400,7 @@ export function CapsuleBuilder({
                 No companion pieces available for this slot.
               </p>
             ) : (
-              <>
-                {isBottomFallback ? (
-                  <p className="mb-3 text-xs uppercase tracking-[0.18em] text-muted-foreground text-center">
-                    Curating matching bottoms…
-                  </p>
-                ) : null}
-                <ul className="grid grid-cols-1 gap-3">
+              <ul className="grid grid-cols-1 gap-3">
                 {filteredForOpen.map((p) => {
                   const thumb = p.images?.edges?.[0]?.node;
                   return (
@@ -394,7 +441,6 @@ export function CapsuleBuilder({
                   );
                 })}
               </ul>
-              </>
             )}
           </div>
         </SheetContent>
