@@ -48,7 +48,7 @@ const SLOT_ORDER: CapsuleSlotKind[] = [
 ];
 
 function SlotTile({ slot }: { slot: CapsuleSlot }) {
-  const node = slot.product?.node;
+  const node = slot.product;
   const img = node?.images?.edges?.[0]?.node;
   const filled = Boolean(node);
 
