@@ -112,6 +112,8 @@ export function SiteFooter() {
             <a href="https://www.instagram.com/palaceofroman/" target="_blank" rel="noopener noreferrer" aria-label="Palace of Roman on Instagram" className="hover:text-ink transition-colors">Instagram</a>
             <a href="https://www.facebook.com/people/Palace-of-Roman/61581195176963/" target="_blank" rel="noopener noreferrer" aria-label="Palace of Roman on Facebook" className="hover:text-ink transition-colors">Facebook</a>
             <a href="https://www.tiktok.com/@palaceofroman" target="_blank" rel="noopener noreferrer" aria-label="Palace of Roman on TikTok" className="hover:text-ink transition-colors">TikTok</a>
+            <a href="https://share.google/CZeLml2jcRi9MtNqP" target="_blank" rel="noopener noreferrer" aria-label="Palace of Roman on Google" className="hover:text-ink transition-colors">Google</a>
+
             <Link to="/legal-notice" className="hover:text-ink transition-colors">Legal</Link>
             <Link to="/privacy" className="hover:text-ink transition-colors">Privacy</Link>
             <Link to="/terms" className="hover:text-ink transition-colors">Terms</Link>
