@@ -13,9 +13,11 @@ import {
   PRELOVED_CONDITIONS,
   PRELOVED_CONDITION_LABEL,
   type PrelovedCondition,
+  type PrelovedPage,
 } from "@/lib/rails/preloved";
 import { PrelovedProductTile } from "@/components/preloved-product-tile";
 import { absoluteUrl } from "@/lib/seo";
+import { buildPrelovedConditionJsonLd } from "@/lib/preloved-jsonld";
 
 function parseCondition(raw: string): PrelovedCondition {
   const v = raw.toLowerCase() as PrelovedCondition;
