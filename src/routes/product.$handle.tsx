@@ -1247,18 +1247,26 @@ function ProductView({
 
 
         {/* ===== Curated "The Look" — stylist-picked bundle from `custom.look_products` ===== */}
-        {product.lookReferences?.references?.nodes && product.lookReferences.references.nodes.length > 0 && (
+        {hasManualLook && product.lookReferences?.references?.nodes && (
           <section className="max-w-7xl mx-auto mt-16 md:mt-20 pt-10 md:pt-12 border-t border-[var(--studio-rule)]">
             <CuratedLookBundle anchor={product} items={product.lookReferences.references.nodes} />
           </section>
         )}
 
-        {/* ===== Style It With — algorithmic cross-house cross-sell rail (fallback) ===== */}
-        {(!product.lookReferences?.references?.nodes || product.lookReferences.references.nodes.length === 0) && styleItWith.length > 0 && (
+        {/* ===== Auto "The Look" — AI-curated fallback (cross-category) ===== */}
+        {!hasManualLook && autoLookItems.length >= 2 && (
+          <section className="max-w-7xl mx-auto mt-16 md:mt-20 pt-10 md:pt-12 border-t border-[var(--studio-rule)]">
+            <CuratedLookBundle anchor={product} items={autoLookItems} auto />
+          </section>
+        )}
+
+        {/* ===== Style It With — algorithmic cross-house cross-sell rail (last-resort fallback) ===== */}
+        {!hasManualLook && autoLookItems.length < 2 && styleItWith.length > 0 && (
           <section className="max-w-7xl mx-auto mt-16 md:mt-20 pt-10 md:pt-12 border-t border-[var(--studio-rule)]">
             <StyleItWithRail items={styleItWith} />
           </section>
         )}
+
 
         {/* ===== Recently Viewed — shopper's own browsing history ===== */}
         <RecentlyViewedRail excludeHandle={product.handle} />
