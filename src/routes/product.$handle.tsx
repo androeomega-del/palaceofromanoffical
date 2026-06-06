@@ -56,9 +56,20 @@ import {
 } from "@/lib/look-bundle";
 import { MARKETS } from "@/stores/market-store";
 
+import {
+  productByHandleQueryOptions,
+  productRelatedByVendorQueryOptions,
+  productAutoLookRecsQueryOptions,
+} from "@/lib/rails/product-detail";
+
 export const Route = createFileRoute("/product/$handle")({
-  loader: async ({ params }) => {
-    const p = await fetchProductByHandle(params.handle);
+  loader: async ({ params, context }) => {
+    // Primary product fetch — routed through the 60s SSR cache and primed
+    // into the same React Query cache entry the component subscribes to
+    // (`["product", handle]`), so client hydration is a cache hit.
+    const p = await context.queryClient.ensureQueryData(
+      productByHandleQueryOptions(params.handle),
+    );
     if (!p) throw notFound();
 
     // Resolve "Shop the Look" companions for SEO meta + JSON-LD.
@@ -92,6 +103,21 @@ export const Route = createFileRoute("/product/$handle")({
         // SEO enrichment is best-effort; never block the PDP render.
       }
     }
+
+    // Parallel, best-effort prefetch of the two client-side rails so their
+    // first paint is hydration-instant. Failures degrade silently — the
+    // page still renders and the client useQuery retries on its own.
+    void Promise.all([
+      p.vendor
+        ? context.queryClient
+            .prefetchQuery(productRelatedByVendorQueryOptions(p.vendor, p.handle))
+            .catch(() => null)
+        : null,
+      context.queryClient
+        .prefetchQuery(productAutoLookRecsQueryOptions(p.id))
+        .catch(() => null),
+    ]);
+
     return { product: p, lookCompanions, lookSource };
   },
   head: ({ params, loaderData }) => {
@@ -462,9 +488,11 @@ function ProductPage() {
   const { handle } = Route.useParams();
   const { product: initialProduct } = Route.useLoaderData();
 
+  // Subscribes to the SAME queryKey the loader primed via the SSR-cached
+  // productByHandleQueryOptions factory, so first paint is a cache hit
+  // and there's no post-hydration refetch within the 60s staleTime.
   const productQ = useQuery({
-    queryKey: ["product", handle],
-    queryFn: () => fetchProductByHandle(handle),
+    ...productByHandleQueryOptions(handle),
     initialData: initialProduct,
   });
 
