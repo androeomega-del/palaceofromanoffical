@@ -135,7 +135,7 @@ function EditionBlocks({ layout }: { layout: HomepageLayout }) {
   });
 
   return (
-    <section aria-label="The Current Edition" className="bg-canvas">
+    <section aria-label="The Current Edition" className="bg-canvas" style={{ contain: "layout" }}>
       <div className="max-w-screen-2xl mx-auto px-6 md:px-10 py-8 md:py-16">
         <div className="space-y-12 md:space-y-16">
           {dedupedBlocks.map((block) => {
