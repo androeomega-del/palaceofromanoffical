@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
-import { SITE_URL, xmlEscape } from "@/lib/sitemap-xml";
+import { SITE_URL, xmlEscape, guardCanonicalSitemapHost } from "@/lib/sitemap-xml";
 
 const SITEMAPS = [
   "/sitemap-static.xml",
