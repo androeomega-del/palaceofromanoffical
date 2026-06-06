@@ -1,13 +1,17 @@
 /**
- * CapsuleBuilder — Phase 1 visual foundation.
+ * CapsuleBuilder — Phase 3: item selection interface.
  *
  * Renders a 5-slot capsule wardrobe canvas (Top, Bottom, Outerwear,
- * Footwear, Accessory). Slot 1 is seeded with the current PDP product
- * passed in via props; the remaining slots render empty placeholders.
+ * Footwear, Accessory). Slot 1 is seeded with the current PDP product.
+ * Clicking an empty slot opens a side-panel (Sheet) that filters a
+ * server-preloaded `candidatePool` of related products by the slot's
+ * kind. Selecting an item fills the slot via local React state.
  *
  * Safety:
  * - No cart/checkout state mutations. The "Purchase This Look" button
  *   logs the gathered variant IDs to the console only.
+ * - No new network calls — drawer is populated from the preloaded
+ *   `candidatePool` prop.
  * - Strict CSS containment + reserved min-height to prevent CLS.
  */
 import * as React from "react";
@@ -15,6 +19,13 @@ import { cn } from "@/lib/utils";
 import type { ShopifyProductNode } from "@/lib/shopify";
 import { cdnImage } from "@/lib/cdn-image";
 import { buildLuxuryListingAlt } from "@/lib/product-alt";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
 
 export type CapsuleSlotKind =
   | "Top"
@@ -36,6 +47,11 @@ export interface CapsuleBuilderProps {
   seedVariantId?: string | null;
   /** Inferred slot kind for the seed product. Defaults to "Top". */
   seedKind?: CapsuleSlotKind;
+  /**
+   * Server-preloaded pool of related/curated products. Used to populate
+   * the slot-fill drawer without issuing new network calls.
+   */
+  candidatePool?: ShopifyProductNode[];
   className?: string;
 }
 
@@ -47,21 +63,42 @@ const SLOT_ORDER: CapsuleSlotKind[] = [
   "Accessory",
 ];
 
-function SlotTile({ slot }: { slot: CapsuleSlot }) {
+/** Map a Shopify productType string → CapsuleSlotKind. */
+function classifyKind(productType: string | undefined | null): CapsuleSlotKind | null {
+  const t = (productType ?? "").toLowerCase();
+  if (!t) return null;
+  if (/shoe|sneaker|boot|loafer|sandal|slipper|heel|oxford|derby|brogue|espadrille|mule|pump|flip.flop|slide|clog/.test(t)) return "Footwear";
+  if (/pant|trouser|jean|short|skirt|legging|sweatpant|chino|slack|brief|boxer|swim|trunk|jogger/.test(t)) return "Bottom";
+  if (/jacket|coat|blazer|overcoat|parka|trench|bomber|windbreaker|anorak|cape|cardigan|sweater|hoodie|sweatshirt|knitwear|fleece|gilet|pullover|turtleneck|poncho/.test(t)) return "Outerwear";
+  if (/bag|belt|tie|scarf|hat|cap|glove|watch|jewelry|jewellery|necklace|bracelet|ring|earring|sunglass|wallet|card holder|keyring|pocket square|cufflink|brooch|headband|umbrella|phone case|strap|mask|lanyard|accessory/.test(t)) return "Accessory";
+  if (/shirt|t-shirt|tee|polo|top|blouse|tank|camisole|bodysuit|tunic|henley|vest/.test(t)) return "Top";
+  return null;
+}
+
+function SlotTile({
+  slot,
+  onClickEmpty,
+}: {
+  slot: CapsuleSlot;
+  onClickEmpty?: () => void;
+}) {
   const node = slot.product;
   const img = node?.images?.edges?.[0]?.node;
   const filled = Boolean(node);
 
-  return (
-    <div
-      className={cn(
-        "relative flex flex-col overflow-hidden rounded-md border bg-card text-card-foreground",
-        "transition-colors",
-        filled ? "border-border" : "border-dashed border-border/60",
-      )}
-      style={{ contain: "layout style", aspectRatio: "3 / 4" }}
-      aria-label={`${slot.kind} slot${filled ? "" : " — empty"}`}
-    >
+  const baseClass = cn(
+    "relative flex flex-col overflow-hidden rounded-md border bg-card text-card-foreground",
+    "transition-colors",
+    filled ? "border-border" : "border-dashed border-border/60 hover:border-foreground/60 cursor-pointer",
+  );
+  const tileStyle: React.CSSProperties = {
+    contain: "layout style",
+    aspectRatio: "3 / 4",
+  };
+  const innerLabel = `${slot.kind} slot${filled ? "" : " — empty, click to add"}`;
+
+  const content = (
+    <>
       {filled && img ? (
         <img
           src={cdnImage(img.url, { width: 480, format: "webp" })}
@@ -73,13 +110,33 @@ function SlotTile({ slot }: { slot: CapsuleSlot }) {
       ) : (
         <div className="flex flex-1 items-center justify-center">
           <span className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-            {slot.kind}
+            + {slot.kind}
           </span>
         </div>
       )}
       <div className="absolute left-2 top-2 rounded-sm bg-background/80 px-2 py-0.5 text-[10px] uppercase tracking-[0.18em] text-foreground/80 backdrop-blur">
         {slot.kind}
       </div>
+    </>
+  );
+
+  if (!filled) {
+    return (
+      <button
+        type="button"
+        onClick={onClickEmpty}
+        className={baseClass}
+        style={tileStyle}
+        aria-label={innerLabel}
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <div className={baseClass} style={tileStyle} aria-label={innerLabel}>
+      {content}
     </div>
   );
 }
@@ -88,21 +145,65 @@ export function CapsuleBuilder({
   seedProduct,
   seedVariantId = null,
   seedKind = "Top",
+  candidatePool = [],
   className,
 }: CapsuleBuilderProps) {
-  const slots = React.useMemo<CapsuleSlot[]>(() => {
-    return SLOT_ORDER.map((kind) =>
+  const [slots, setSlots] = React.useState<CapsuleSlot[]>(() =>
+    SLOT_ORDER.map((kind) =>
       kind === seedKind
         ? { kind, product: seedProduct, variantId: seedVariantId }
         : { kind, product: null, variantId: null },
+    ),
+  );
+
+  // Re-seed if the host swaps products (PDP route change).
+  React.useEffect(() => {
+    setSlots(
+      SLOT_ORDER.map((kind) =>
+        kind === seedKind
+          ? { kind, product: seedProduct, variantId: seedVariantId }
+          : { kind, product: null, variantId: null },
+      ),
     );
   }, [seedProduct, seedVariantId, seedKind]);
+
+  const [openKind, setOpenKind] = React.useState<CapsuleSlotKind | null>(null);
+
+  // Exclude products already used in any slot (incl. seed) from the picker.
+  const usedHandles = React.useMemo(
+    () => new Set(slots.map((s) => s.product?.handle).filter(Boolean) as string[]),
+    [slots],
+  );
+
+  const filteredForOpen = React.useMemo(() => {
+    if (!openKind) return [];
+    const pool = candidatePool.filter((p) => !usedHandles.has(p.handle));
+    const matches = pool.filter((p) => classifyKind(p.productType) === openKind);
+    // Per spec: if no direct matches, fall back to the full curated edit.
+    return matches.length > 0 ? matches : pool;
+  }, [openKind, candidatePool, usedHandles]);
+
+  const handleSelect = React.useCallback(
+    (product: ShopifyProductNode) => {
+      const variantId =
+        product.variants?.edges?.find((e) => e.node.availableForSale)?.node.id ??
+        product.variants?.edges?.[0]?.node.id ??
+        null;
+      setSlots((prev) =>
+        prev.map((s) =>
+          s.kind === openKind ? { ...s, product, variantId } : s,
+        ),
+      );
+      setOpenKind(null);
+    },
+    [openKind],
+  );
 
   const onPurchaseLook = React.useCallback(() => {
     const variantIds = slots
       .map((s) => s.variantId)
       .filter((v): v is string => Boolean(v));
-    // Phase 1: log-only. No cart mutations.
+    // Log-only. No cart mutations.
     // eslint-disable-next-line no-console
     console.log("[CapsuleBuilder] Purchase This Look — variantIds:", variantIds);
   }, [slots]);
@@ -130,7 +231,11 @@ export function CapsuleBuilder({
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-5 sm:gap-4">
         {slots.map((slot) => (
-          <SlotTile key={slot.kind} slot={slot} />
+          <SlotTile
+            key={slot.kind}
+            slot={slot}
+            onClickEmpty={() => setOpenKind(slot.kind)}
+          />
         ))}
       </div>
 
@@ -146,6 +251,76 @@ export function CapsuleBuilder({
           Purchase This Look
         </button>
       </div>
+
+      <Sheet open={openKind !== null} onOpenChange={(o) => !o && setOpenKind(null)}>
+        <SheetContent
+          side="right"
+          className="w-full sm:max-w-md flex flex-col"
+          style={{ contain: "layout style" }}
+        >
+          <SheetHeader className="text-left">
+            <SheetTitle className="font-serif text-xl">
+              Select {openKind}
+            </SheetTitle>
+            <SheetDescription className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+              Curated from your edit
+            </SheetDescription>
+          </SheetHeader>
+
+          <div
+            className="mt-4 flex-1 overflow-y-auto pr-1"
+            style={{ contain: "layout style" }}
+          >
+            {filteredForOpen.length === 0 ? (
+              <p className="text-sm text-muted-foreground py-8 text-center">
+                No companion pieces available for this slot.
+              </p>
+            ) : (
+              <ul className="grid grid-cols-1 gap-3">
+                {filteredForOpen.map((p) => {
+                  const thumb = p.images?.edges?.[0]?.node;
+                  return (
+                    <li key={p.handle}>
+                      <button
+                        type="button"
+                        onClick={() => handleSelect(p)}
+                        className="group flex w-full items-center gap-3 rounded-md border border-border bg-card p-2 text-left transition-colors hover:border-foreground/60"
+                      >
+                        <div
+                          className="relative shrink-0 overflow-hidden rounded-sm bg-muted"
+                          style={{ width: 72, height: 96, contain: "layout style" }}
+                        >
+                          {thumb ? (
+                            <img
+                              src={cdnImage(thumb.url, { width: 240, format: "webp" })}
+                              alt={buildLuxuryListingAlt({ title: p.title, vendor: p.vendor })}
+                              width={72}
+                              height={96}
+                              className="h-full w-full object-cover"
+                              loading="lazy"
+                              decoding="async"
+                            />
+                          ) : null}
+                        </div>
+                        <div className="flex min-w-0 flex-col gap-1">
+                          {p.vendor ? (
+                            <span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+                              {p.vendor}
+                            </span>
+                          ) : null}
+                          <span className="line-clamp-2 text-sm font-medium text-foreground">
+                            {p.title}
+                          </span>
+                        </div>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
     </section>
   );
 }
