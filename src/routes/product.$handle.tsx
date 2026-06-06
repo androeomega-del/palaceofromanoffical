@@ -61,6 +61,7 @@ import {
   productRelatedByVendorQueryOptions,
   productAutoLookRecsQueryOptions,
 } from "@/lib/rails/product-detail";
+import { getPdpContextLinks, type PdpContextLinks } from "@/lib/pdp-context-links.functions";
 
 export const Route = createFileRoute("/product/$handle")({
   loader: async ({ params, context }) => {
@@ -118,7 +119,19 @@ export const Route = createFileRoute("/product/$handle")({
         .catch(() => null),
     ]);
 
-    return { product: p, lookCompanions, lookSource };
+    // Internal cross-link matrix — resolved server-side so the contextual
+    // text links are present in the initial HTML payload (SEO + zero CLS).
+    const productTags = ((p as { tags?: string[] }).tags ?? []).filter(Boolean);
+    const contextLinks: PdpContextLinks = await getPdpContextLinks({
+      data: {
+        productType: p.productType || "",
+        vendor: p.vendor || "",
+        tags: productTags,
+        title: p.title || "",
+      },
+    }).catch(() => ({ destinations: [], vendor: null }));
+
+    return { product: p, lookCompanions, lookSource, contextLinks };
   },
   head: ({ params, loaderData }) => {
     const p = loaderData?.product;
