@@ -19,6 +19,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SitemapStaticDotxmlRouteImport } from './routes/sitemap-static[.]xml'
 import { Route as SitemapProductsDotxmlRouteImport } from './routes/sitemap-products[.]xml'
 import { Route as SitemapProductImagesDotxmlRouteImport } from './routes/sitemap-product-images[.]xml'
+import { Route as SitemapDestinationsDotxmlRouteImport } from './routes/sitemap-destinations[.]xml'
 import { Route as SitemapCollectionsDotxmlRouteImport } from './routes/sitemap-collections[.]xml'
 import { Route as SitemapBrandsDotxmlRouteImport } from './routes/sitemap-brands[.]xml'
 import { Route as ShopRouteImport } from './routes/shop'
@@ -203,6 +204,12 @@ const SitemapProductImagesDotxmlRoute =
   SitemapProductImagesDotxmlRouteImport.update({
     id: '/sitemap-product-images.xml',
     path: '/sitemap-product-images.xml',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const SitemapDestinationsDotxmlRoute =
+  SitemapDestinationsDotxmlRouteImport.update({
+    id: '/sitemap-destinations.xml',
+    path: '/sitemap-destinations.xml',
     getParentRoute: () => rootRouteImport,
   } as any)
 const SitemapCollectionsDotxmlRoute =
@@ -937,6 +944,7 @@ export interface FileRoutesByFullPath {
   '/shop': typeof ShopRoute
   '/sitemap-brands.xml': typeof SitemapBrandsDotxmlRoute
   '/sitemap-collections.xml': typeof SitemapCollectionsDotxmlRoute
+  '/sitemap-destinations.xml': typeof SitemapDestinationsDotxmlRoute
   '/sitemap-product-images.xml': typeof SitemapProductImagesDotxmlRoute
   '/sitemap-products.xml': typeof SitemapProductsDotxmlRoute
   '/sitemap-static.xml': typeof SitemapStaticDotxmlRoute
@@ -1081,6 +1089,7 @@ export interface FileRoutesByTo {
   '/shop': typeof ShopRoute
   '/sitemap-brands.xml': typeof SitemapBrandsDotxmlRoute
   '/sitemap-collections.xml': typeof SitemapCollectionsDotxmlRoute
+  '/sitemap-destinations.xml': typeof SitemapDestinationsDotxmlRoute
   '/sitemap-product-images.xml': typeof SitemapProductImagesDotxmlRoute
   '/sitemap-products.xml': typeof SitemapProductsDotxmlRoute
   '/sitemap-static.xml': typeof SitemapStaticDotxmlRoute
@@ -1227,6 +1236,7 @@ export interface FileRoutesById {
   '/shop': typeof ShopRoute
   '/sitemap-brands.xml': typeof SitemapBrandsDotxmlRoute
   '/sitemap-collections.xml': typeof SitemapCollectionsDotxmlRoute
+  '/sitemap-destinations.xml': typeof SitemapDestinationsDotxmlRoute
   '/sitemap-product-images.xml': typeof SitemapProductImagesDotxmlRoute
   '/sitemap-products.xml': typeof SitemapProductsDotxmlRoute
   '/sitemap-static.xml': typeof SitemapStaticDotxmlRoute
@@ -1375,6 +1385,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/sitemap-brands.xml'
     | '/sitemap-collections.xml'
+    | '/sitemap-destinations.xml'
     | '/sitemap-product-images.xml'
     | '/sitemap-products.xml'
     | '/sitemap-static.xml'
@@ -1519,6 +1530,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/sitemap-brands.xml'
     | '/sitemap-collections.xml'
+    | '/sitemap-destinations.xml'
     | '/sitemap-product-images.xml'
     | '/sitemap-products.xml'
     | '/sitemap-static.xml'
@@ -1664,6 +1676,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/sitemap-brands.xml'
     | '/sitemap-collections.xml'
+    | '/sitemap-destinations.xml'
     | '/sitemap-product-images.xml'
     | '/sitemap-products.xml'
     | '/sitemap-static.xml'
@@ -1811,6 +1824,7 @@ export interface RootRouteChildren {
   ShopRoute: typeof ShopRoute
   SitemapBrandsDotxmlRoute: typeof SitemapBrandsDotxmlRoute
   SitemapCollectionsDotxmlRoute: typeof SitemapCollectionsDotxmlRoute
+  SitemapDestinationsDotxmlRoute: typeof SitemapDestinationsDotxmlRoute
   SitemapProductImagesDotxmlRoute: typeof SitemapProductImagesDotxmlRoute
   SitemapProductsDotxmlRoute: typeof SitemapProductsDotxmlRoute
   SitemapStaticDotxmlRoute: typeof SitemapStaticDotxmlRoute
@@ -1985,6 +1999,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap-product-images.xml'
       fullPath: '/sitemap-product-images.xml'
       preLoaderRoute: typeof SitemapProductImagesDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap-destinations.xml': {
+      id: '/sitemap-destinations.xml'
+      path: '/sitemap-destinations.xml'
+      fullPath: '/sitemap-destinations.xml'
+      preLoaderRoute: typeof SitemapDestinationsDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap-collections.xml': {
@@ -3062,6 +3083,7 @@ const rootRouteChildren: RootRouteChildren = {
   ShopRoute: ShopRoute,
   SitemapBrandsDotxmlRoute: SitemapBrandsDotxmlRoute,
   SitemapCollectionsDotxmlRoute: SitemapCollectionsDotxmlRoute,
+  SitemapDestinationsDotxmlRoute: SitemapDestinationsDotxmlRoute,
   SitemapProductImagesDotxmlRoute: SitemapProductImagesDotxmlRoute,
   SitemapProductsDotxmlRoute: SitemapProductsDotxmlRoute,
   SitemapStaticDotxmlRoute: SitemapStaticDotxmlRoute,
