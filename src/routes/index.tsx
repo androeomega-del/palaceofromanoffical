@@ -12,7 +12,6 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { HomeStudioLayout } from "@/components/home-studio/home-studio-layout";
 import heroImage from "@/assets/home-hero.jpg";
-import summerHero from "@/assets/summer-bento-hero.jpg";
 import { readMetaAbBucket } from "@/lib/meta-ab.functions";
 import { pickHomeMeta, seoMetaForBucket, type MetaBucket } from "@/lib/meta-ab";
 import { useMetaAb } from "@/hooks/use-meta-ab";
@@ -50,7 +49,9 @@ export const Route = createFileRoute("/")({
       meta,
       links: [
         { rel: "canonical", href: canonical },
-        { rel: "preload", as: "image", href: summerHero, fetchPriority: "high" } as any,
+        // Warm a connection to the Shopify CDN so the first New-In rail image
+        // (the largest above-the-fold media element on `/`) decodes faster.
+        { rel: "preconnect", href: "https://cdn.shopify.com", crossOrigin: "anonymous" } as any,
       ],
       scripts: [
         {
