@@ -336,7 +336,8 @@ export function ProductCard({
             alt={alt1}
             width={700}
             height={875}
-            loading="lazy"
+            loading={isAboveFold ? "eager" : "lazy"}
+            fetchPriority={isAboveFold ? "high" : undefined}
             decoding="async"
             onError={() => setImgError(true)}
             className="absolute inset-0 w-full h-full object-contain p-4 transition-opacity duration-500 group-hover:opacity-0"
