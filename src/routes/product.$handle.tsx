@@ -1637,9 +1637,10 @@ function CuratedLookBundle({
                 {img && (
                   <img
                     src={cdnImage(img.url, { width: 600 })}
-                    alt={img.altText ?? it.title}
+                    alt={buildLuxuryListingAlt(it)}
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
                     loading="lazy"
+                    decoding="async"
                   />
                 )}
               </div>
