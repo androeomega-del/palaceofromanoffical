@@ -1614,7 +1614,7 @@ function CuratedLookBundle({
               <div key={`anchor-${idx}`} className="block">
                 <div className="relative aspect-[4/5] overflow-hidden bg-[var(--studio-sand-soft,#E8E0D2)]">
                   {img && (
-                    <img src={cdnImage(img.url, { width: 600 })} alt={img.altText ?? anchor.title} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+                    <img src={cdnImage(img.url, { width: 600 })} alt={buildLuxuryListingAlt(anchor)} className="absolute inset-0 w-full h-full object-cover" loading="lazy" decoding="async" />
                   )}
                   <span className="absolute top-3 left-3 px-2 py-1 text-[9px] uppercase tracking-[0.28em] bg-[var(--studio-ink)] text-[var(--studio-bg)]">This piece</span>
                 </div>
