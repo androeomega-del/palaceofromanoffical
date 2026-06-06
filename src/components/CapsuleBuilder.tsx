@@ -250,40 +250,20 @@ export function CapsuleBuilder({
     [slots],
   );
 
-  // Loose Bottoms detector — checks productType, tags (when present), and title
-  // for any of: Bottoms, Pants, Trousers, Shorts, Skirts, Denim, Jeans, Bermuda
-  // (plus common synonyms already used elsewhere). Case-insensitive.
-  const BOTTOMS_RE = /bottom|pant|trouser|short|skirt|denim|jean|bermuda|chino|slack|legging|sweatpant|jogger|culotte|capri/i;
-  const isBottom = React.useCallback((p: ShopifyProductNode) => {
-    if (classifyKind(p.productType) === "Bottom") return true;
-    if (BOTTOMS_RE.test(p.productType ?? "")) return true;
-    const tags = (p as unknown as { tags?: string[] }).tags;
-    if (Array.isArray(tags) && tags.some((t) => BOTTOMS_RE.test(t))) return true;
-    if (BOTTOMS_RE.test(p.title ?? "")) return true;
-    return false;
-  }, []);
-
+  // Strict, taxonomy-driven filter. Each product is classified into exactly
+  // one slot via CAPSULE_TAXONOMY (priority-resolved), so Footwear /
+  // Accessory / Outerwear items cannot bleed into Bottom or Top drawers —
+  // and vice versa — regardless of overlapping brand, material, or color tags.
   const filteredForOpen = React.useMemo(() => {
     if (!openKind) return [];
     const pool = candidatePool.filter((p) => !usedHandles.has(p.handle));
-    if (openKind === "Bottom") {
-      const matches = pool.filter(isBottom);
-      if (matches.length > 0) return matches;
-      // Strict fallback: clothing only — never footwear or accessories.
-      return pool.filter((p) => {
-        const k = classifyKind(p.productType);
-        return k !== "Footwear" && k !== "Accessory";
-      });
-    }
-    // No full-pool fallback for other slots — empty state handles it.
-    return pool.filter((p) => classifyKind(p.productType) === openKind);
-  }, [openKind, candidatePool, usedHandles, isBottom]);
+    return pool.filter((p) => {
+      const tags = (p as unknown as { tags?: string[] }).tags;
+      return classifyKind(p.productType, tags) === openKind;
+    });
+  }, [openKind, candidatePool, usedHandles]);
 
-  const isBottomFallback = React.useMemo(() => {
-    if (openKind !== "Bottom") return false;
-    const pool = candidatePool.filter((p) => !usedHandles.has(p.handle));
-    return pool.filter(isBottom).length === 0 && filteredForOpen.length > 0;
-  }, [openKind, candidatePool, usedHandles, isBottom, filteredForOpen]);
+
 
   const handleSelect = React.useCallback(
     (product: ShopifyProductNode) => {
