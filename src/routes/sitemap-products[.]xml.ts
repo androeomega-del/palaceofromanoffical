@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { storefrontApiRequest } from "@/lib/shopify";
-import { renderSitemap, sitemapResponse, type UrlEntry } from "@/lib/sitemap-xml";
+import { renderSitemap, sitemapResponse, guardCanonicalSitemapHost, type UrlEntry } from "@/lib/sitemap-xml";
 
 const MAX_PRODUCTS = 5000;
 const PRODUCT_PAGE_SIZE = 250;
