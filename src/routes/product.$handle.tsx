@@ -488,9 +488,11 @@ function ProductPage() {
   const { handle } = Route.useParams();
   const { product: initialProduct } = Route.useLoaderData();
 
+  // Subscribes to the SAME queryKey the loader primed via the SSR-cached
+  // productByHandleQueryOptions factory, so first paint is a cache hit
+  // and there's no post-hydration refetch within the 60s staleTime.
   const productQ = useQuery({
-    queryKey: ["product", handle],
-    queryFn: () => fetchProductByHandle(handle),
+    ...productByHandleQueryOptions(handle),
     initialData: initialProduct,
   });
 
