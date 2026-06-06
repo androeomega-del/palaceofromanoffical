@@ -71,7 +71,7 @@ export const collectionFirstPageQueryOptions = (args: {
             pageInfo: page.pageInfo,
           };
         }
-        return fetchCollectionFiltered({
+        const res = await fetchCollectionFiltered({
           handle,
           first: 48,
           after: pageParam as string | null,
@@ -79,6 +79,12 @@ export const collectionFirstPageQueryOptions = (args: {
           sortKey,
           reverse,
         });
+        if (!res) {
+          // Unknown handle — surface as an error to the route boundary;
+          // notFoundComponent will catch via Shopify's null collection.
+          throw new Error(`Collection "${handle}" not found`);
+        }
+        return res;
       }),
     staleTime: 60_000,
   });
