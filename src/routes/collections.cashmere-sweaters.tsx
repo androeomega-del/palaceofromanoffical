@@ -1,11 +1,16 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, ErrorComponent } from "@tanstack/react-router";
 import {
   LandingCollectionPage,
   faqJsonLd,
   breadcrumbJsonLd,
   type LandingFAQ,
 } from "@/components/landing-collection-page";
+import { landingCollectionQueryOptions } from "@/lib/landing-collection.functions";
 import { routeHead, SITE_NAME, SITE_URL } from "@/lib/seo";
+
+const SHOPIFY_QUERY = "cashmere";
+const LANDING_QO = landingCollectionQueryOptions({ query: SHOPIFY_QUERY, first: 12 });
+
 
 const PATH = "/collections/cashmere-sweaters";
 const H1 = "Cashmere Sweaters";
