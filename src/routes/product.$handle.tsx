@@ -11,6 +11,8 @@ import {
 } from "@/lib/shopify";
 import { pageTitle, metaDescription, absoluteUrl, SITE_URL } from "@/lib/seo";
 import { useCartStore } from "@/stores/cart-store";
+import { useMarketStore } from "@/stores/market-store";
+import { marketTaxNote } from "@/lib/market-tax";
 import { useRecentlyViewedStore } from "@/stores/recently-viewed-store";
 import { useInteractionStore } from "@/stores/interaction-store";
 import { Loader2, Minus, Plus, ShieldCheck, Truck, RotateCcw, Lock, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
@@ -777,7 +779,7 @@ function ProductView({
                 )}
               </div>
               <p className="text-[10px] uppercase tracking-[0.25em] text-[var(--studio-muted)] font-medium">
-                Import duties included · Express global delivery
+                {marketTaxNote(market)} · Express global delivery
               </p>
               <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] uppercase tracking-[0.2em] text-[var(--studio-bronze)] font-semibold pt-1">
                 <span>100% Authentic</span>
