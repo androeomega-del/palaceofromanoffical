@@ -962,7 +962,7 @@ function ProductView({
                           src={cdnImage(img.url, { width: 1600 })}
                           srcSet={cdnSrcSet(img.url, [800, 1200, 1600, 2000])}
                           sizes="(min-width: 1280px) 58vw, 100vw"
-                          alt={buildProductAlt({ ...product, selectedOptions: selectedVariant?.selectedOptions }, { index: i, total: images.length, shopifyAlt: img.altText })}
+                          alt={i === 0 ? buildLuxuryListingAlt(product) : buildProductAlt({ ...product, selectedOptions: selectedVariant?.selectedOptions }, { index: i, total: images.length, shopifyAlt: img.altText })}
                           width={1600}
                           height={2000}
                           loading={i === 0 ? "eager" : "lazy"}
