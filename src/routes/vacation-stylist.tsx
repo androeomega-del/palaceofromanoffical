@@ -8,13 +8,37 @@ import { routeHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/vacation-stylist")({
   head: () => {
-    const title = "Vacation Stylist — Palace of Roman";
+    const title =
+      "Vacation Stylist: Personalized Luxury Packing Edits | Palace of Roman Official";
     const description =
-      "Tell us your destination, dates, and vibe. The boutique returns a curated capsule of designer pieces drawn from the live collection.";
+      "Discover custom luxury vacation capsule wardrobes tailored by AI. Get authenticated designer styling edits, packing lists, and resort wear curation for global destinations.";
     const rh = routeHead({ path: "/vacation-stylist", title, description });
+    const jsonLd = {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      name: "Palace of Roman Vacation Stylist",
+      url: "https://palaceofromanofficial.com/vacation-stylist",
+      description,
+      applicationCategory: "LifestyleApplication",
+      operatingSystem: "All",
+      browserRequirements: "Requires JavaScript. Requires a modern browser.",
+      isAccessibleForFree: true,
+      offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+      provider: {
+        "@type": "Organization",
+        name: "Palace of Roman",
+        url: "https://palaceofromanofficial.com",
+      },
+    };
     return {
       meta: [{ title }, { name: "description", content: description }, ...rh.meta],
       links: rh.links,
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(jsonLd),
+        },
+      ],
     };
   },
   component: VacationStylistPage,
