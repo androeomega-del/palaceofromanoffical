@@ -11,6 +11,30 @@ import { getVacationDestination } from "@/lib/vacation-destinations.functions";
 import { buildVacationCapsule, type StylistResult } from "@/lib/vacation-stylist.functions";
 import { ProductCard } from "@/components/product-card";
 import { routeHead } from "@/lib/seo";
+import { fetchProducts, formatPrice, type ShopifyProduct } from "@/lib/shopify";
+
+function buildTagQuery(styleTags: string[]): string {
+  const cleaned = styleTags
+    .map((t) => t.trim())
+    .filter(Boolean)
+    .slice(0, 6);
+  if (cleaned.length === 0) return "";
+  return cleaned.map((t) => `tag:"${t.replace(/"/g, "")}"`).join(" OR ");
+}
+
+async function fetchCuratedProducts(styleTags: string[]): Promise<ShopifyProduct[]> {
+  const query = buildTagQuery(styleTags);
+  try {
+    const edges = await fetchProducts({
+      first: 8,
+      query: query || undefined,
+      sortKey: "BEST_SELLING",
+    });
+    return edges;
+  } catch {
+    return [];
+  }
+}
 
 const VIBES: Array<{ id: VacationVibe; label: string; hint: string }> = [
   { id: "beach-club", label: "Beach Club", hint: "Linen, swim, sandal" },
@@ -23,12 +47,14 @@ const VIBES: Array<{ id: VacationVibe; label: string; hint: string }> = [
 
 export const Route = createFileRoute("/vacation-stylist/$destination")({
   loader: async ({ params }) => {
+    let dest: VacationDestination;
     try {
-      const dest = await getVacationDestination({ data: { slug: params.destination } });
-      return { destination: dest };
+      dest = await getVacationDestination({ data: { slug: params.destination } });
     } catch {
       throw notFound();
     }
+    const curated = await fetchCuratedProducts(dest.styleTags);
+    return { destination: dest, curated };
   },
   head: ({ loaderData, params }) => {
     const dest = loaderData?.destination;
@@ -65,11 +91,17 @@ export const Route = createFileRoute("/vacation-stylist/$destination")({
 });
 
 function DestinationPage() {
-  const { destination: dest } = Route.useLoaderData();
-  return <DestinationStylist dest={dest} />;
+  const { destination: dest, curated } = Route.useLoaderData();
+  return <DestinationStylist dest={dest} curated={curated} />;
 }
 
-function DestinationStylist({ dest }: { dest: VacationDestination }) {
+function DestinationStylist({
+  dest,
+  curated,
+}: {
+  dest: VacationDestination;
+  curated: ShopifyProduct[];
+}) {
   const build = useServerFn(buildVacationCapsule);
   const [destination, setDestination] = useState(dest.name);
   const [startDate, setStartDate] = useState("");
@@ -158,6 +190,74 @@ function DestinationStylist({ dest }: { dest: VacationDestination }) {
           </div>
         </div>
       </section>
+
+      {/* SSR Curated Collection — rendered into initial HTML payload, zero CLS */}
+      {curated.length > 0 && (
+        <section
+          className="border-b border-ink/10 px-6 md:px-12 py-16 md:py-20 max-w-7xl mx-auto"
+          aria-label={`Curated luxury edit for ${dest.name}`}
+        >
+          <div className="mb-10 md:mb-14">
+            <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-3">
+              The Boutique Edit
+            </p>
+            <h2 className="font-serif text-2xl md:text-4xl tracking-tight">
+              Authenticated Designer Pieces Curated for {dest.name}
+            </h2>
+          </div>
+          <div
+            className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-10 overflow-x-auto snap-x"
+            role="list"
+          >
+            {curated.map((p) => {
+              const node = p.node;
+              const img = node.images.edges[0]?.node;
+              const title = `Authenticated ${node.vendor} ${node.title} available at Palace of Roman`;
+              const alt = `Luxury ${node.vendor} ${node.title} — Curated for ${dest.name}`;
+              const price = formatPrice(node.priceRange?.minVariantPrice);
+              return (
+                <a
+                  key={node.handle}
+                  href={`/product/${node.handle}`}
+                  role="listitem"
+                  className="group block snap-start"
+                  aria-label={title}
+                >
+                  <div
+                    className="relative w-full overflow-hidden bg-ink/[0.03]"
+                    style={{ aspectRatio: "3 / 4" }}
+                  >
+                    {img?.url && (
+                      <img
+                        src={img.url}
+                        alt={alt}
+                        width={img.width ?? 600}
+                        height={img.height ?? 800}
+                        loading="lazy"
+                        decoding="async"
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
+                      />
+                    )}
+                  </div>
+                  <div className="mt-4 space-y-1">
+                    <p className="text-[10px] uppercase tracking-[0.25em] text-bronze">
+                      {node.vendor}
+                    </p>
+                    <h3 className="text-sm text-ink leading-snug line-clamp-2">
+                      {title}
+                    </h3>
+                    {price && (
+                      <p className="text-sm text-muted-foreground tabular-nums">{price}</p>
+                    )}
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+
 
       {/* Form — pre-seeded; reserved height prevents CLS as the questionnaire hydrates */}
       <section
