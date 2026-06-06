@@ -46,6 +46,14 @@ import { buildPdpFaq } from "@/lib/pdp-faq";
 import { PdpFaq } from "@/components/pdp-faq";
 import { ROME_BRAND_SLUGS } from "@/lib/rome-brands";
 import { buildProductAlt } from "@/lib/product-alt";
+import {
+  classifyLookCategory,
+  COMPLEMENTARY_MAP,
+  categoryQueryFragment,
+  pickCompanions,
+  toLite,
+} from "@/lib/look-bundle";
+import { MARKETS } from "@/stores/market-store";
 
 export const Route = createFileRoute("/product/$handle")({
   loader: async ({ params }) => {
