@@ -50,6 +50,7 @@ import { Route as CollectionsIndexRouteImport } from './routes/collections.index
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AccountIndexRouteImport } from './routes/account.index'
 import { Route as WomenSs26RouteImport } from './routes/women.ss26'
+import { Route as VacationStylistDestinationRouteImport } from './routes/vacation-stylist.$destination'
 import { Route as TrendsTomFordEssentialsRouteImport } from './routes/trends.tom-ford-essentials'
 import { Route as TrendsSectionSamplesRouteImport } from './routes/trends.section-samples'
 import { Route as TrendsPucciEyewearRouteImport } from './routes/trends.pucci-eyewear'
@@ -360,6 +361,12 @@ const WomenSs26Route = WomenSs26RouteImport.update({
   path: '/women/ss26',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VacationStylistDestinationRoute =
+  VacationStylistDestinationRouteImport.update({
+    id: '/$destination',
+    path: '/$destination',
+    getParentRoute: () => VacationStylistRoute,
+  } as any)
 const TrendsTomFordEssentialsRoute = TrendsTomFordEssentialsRouteImport.update({
   id: '/trends/tom-ford-essentials',
   path: '/trends/tom-ford-essentials',
@@ -938,7 +945,7 @@ export interface FileRoutesByFullPath {
   '/style-quiz': typeof StyleQuizRoute
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
-  '/vacation-stylist': typeof VacationStylistRoute
+  '/vacation-stylist': typeof VacationStylistRouteWithChildren
   '/wishlist': typeof WishlistRoute
   '/account/login': typeof AccountLoginRoute
   '/account/recover': typeof AccountRecoverRoute
@@ -1010,6 +1017,7 @@ export interface FileRoutesByFullPath {
   '/trends/pucci-eyewear': typeof TrendsPucciEyewearRoute
   '/trends/section-samples': typeof TrendsSectionSamplesRoute
   '/trends/tom-ford-essentials': typeof TrendsTomFordEssentialsRoute
+  '/vacation-stylist/$destination': typeof VacationStylistDestinationRoute
   '/women/ss26': typeof WomenSs26Route
   '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
@@ -1081,7 +1089,7 @@ export interface FileRoutesByTo {
   '/style-quiz': typeof StyleQuizRoute
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
-  '/vacation-stylist': typeof VacationStylistRoute
+  '/vacation-stylist': typeof VacationStylistRouteWithChildren
   '/wishlist': typeof WishlistRoute
   '/account/login': typeof AccountLoginRoute
   '/account/recover': typeof AccountRecoverRoute
@@ -1152,6 +1160,7 @@ export interface FileRoutesByTo {
   '/trends/pucci-eyewear': typeof TrendsPucciEyewearRoute
   '/trends/section-samples': typeof TrendsSectionSamplesRoute
   '/trends/tom-ford-essentials': typeof TrendsTomFordEssentialsRoute
+  '/vacation-stylist/$destination': typeof VacationStylistDestinationRoute
   '/women/ss26': typeof WomenSs26Route
   '/account': typeof AccountIndexRoute
   '/admin': typeof AdminIndexRoute
@@ -1226,7 +1235,7 @@ export interface FileRoutesById {
   '/style-quiz': typeof StyleQuizRoute
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
-  '/vacation-stylist': typeof VacationStylistRoute
+  '/vacation-stylist': typeof VacationStylistRouteWithChildren
   '/wishlist': typeof WishlistRoute
   '/account/login': typeof AccountLoginRoute
   '/account/recover': typeof AccountRecoverRoute
@@ -1298,6 +1307,7 @@ export interface FileRoutesById {
   '/trends/pucci-eyewear': typeof TrendsPucciEyewearRoute
   '/trends/section-samples': typeof TrendsSectionSamplesRoute
   '/trends/tom-ford-essentials': typeof TrendsTomFordEssentialsRoute
+  '/vacation-stylist/$destination': typeof VacationStylistDestinationRoute
   '/women/ss26': typeof WomenSs26Route
   '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
@@ -1445,6 +1455,7 @@ export interface FileRouteTypes {
     | '/trends/pucci-eyewear'
     | '/trends/section-samples'
     | '/trends/tom-ford-essentials'
+    | '/vacation-stylist/$destination'
     | '/women/ss26'
     | '/account/'
     | '/admin/'
@@ -1587,6 +1598,7 @@ export interface FileRouteTypes {
     | '/trends/pucci-eyewear'
     | '/trends/section-samples'
     | '/trends/tom-ford-essentials'
+    | '/vacation-stylist/$destination'
     | '/women/ss26'
     | '/account'
     | '/admin'
@@ -1732,6 +1744,7 @@ export interface FileRouteTypes {
     | '/trends/pucci-eyewear'
     | '/trends/section-samples'
     | '/trends/tom-ford-essentials'
+    | '/vacation-stylist/$destination'
     | '/women/ss26'
     | '/account/'
     | '/admin/'
@@ -1806,7 +1819,7 @@ export interface RootRouteChildren {
   StyleQuizRoute: typeof StyleQuizRoute
   SwimRoute: typeof SwimRouteWithChildren
   TermsRoute: typeof TermsRoute
-  VacationStylistRoute: typeof VacationStylistRoute
+  VacationStylistRoute: typeof VacationStylistRouteWithChildren
   WishlistRoute: typeof WishlistRoute
   AdminAcquiredLeadsRoute: typeof AdminAcquiredLeadsRoute
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
@@ -2190,6 +2203,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/women/ss26'
       preLoaderRoute: typeof WomenSs26RouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/vacation-stylist/$destination': {
+      id: '/vacation-stylist/$destination'
+      path: '/$destination'
+      fullPath: '/vacation-stylist/$destination'
+      preLoaderRoute: typeof VacationStylistDestinationRouteImport
+      parentRoute: typeof VacationStylistRoute
     }
     '/trends/tom-ford-essentials': {
       id: '/trends/tom-ford-essentials'
@@ -2980,6 +3000,18 @@ const SwimRouteChildren: SwimRouteChildren = {
 
 const SwimRouteWithChildren = SwimRoute._addFileChildren(SwimRouteChildren)
 
+interface VacationStylistRouteChildren {
+  VacationStylistDestinationRoute: typeof VacationStylistDestinationRoute
+}
+
+const VacationStylistRouteChildren: VacationStylistRouteChildren = {
+  VacationStylistDestinationRoute: VacationStylistDestinationRoute,
+}
+
+const VacationStylistRouteWithChildren = VacationStylistRoute._addFileChildren(
+  VacationStylistRouteChildren,
+)
+
 interface BrandVendorRouteChildren {
   BrandVendorInRomeRoute: typeof BrandVendorInRomeRoute
 }
@@ -3038,7 +3070,7 @@ const rootRouteChildren: RootRouteChildren = {
   StyleQuizRoute: StyleQuizRoute,
   SwimRoute: SwimRouteWithChildren,
   TermsRoute: TermsRoute,
-  VacationStylistRoute: VacationStylistRoute,
+  VacationStylistRoute: VacationStylistRouteWithChildren,
   WishlistRoute: WishlistRoute,
   AdminAcquiredLeadsRoute: AdminAcquiredLeadsRoute,
   AdminAnalyticsRoute: AdminAnalyticsRoute,
