@@ -21,7 +21,7 @@ const HUB_TITLE = "Authentic Preloved Luxury Designer Fashion | Palace of Roman 
 const HUB_DESC =
   "Curated pre-owned designer fashion from Gucci, Prada, Saint Laurent and beyond. Every piece authenticated and condition-graded by Palace of Roman's pre-owned atelier — Pristine, Excellent, and New with Tags.";
 
-export const Route = createFileRoute("/preloved")({
+export const Route = createFileRoute("/preloved/")({
   head: () => ({
     meta: [
       { title: HUB_TITLE },
