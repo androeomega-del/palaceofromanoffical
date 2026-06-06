@@ -13,6 +13,8 @@ import {
   type ShopifyProductLite,
 } from "@/lib/shopify";
 import { pageTitle, metaDescription, absoluteUrl, SITE_URL } from "@/lib/seo";
+import { BreadcrumbTrail, buildBreadcrumbJsonLd, type BreadcrumbItem } from "@/components/seo/breadcrumb-trail";
+
 import { useCartStore } from "@/stores/cart-store";
 import { useMarketStore } from "@/stores/market-store";
 import { marketTaxNote } from "@/lib/market-tax";
