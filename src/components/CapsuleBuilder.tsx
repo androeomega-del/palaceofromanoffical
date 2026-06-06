@@ -25,13 +25,13 @@ export type CapsuleSlotKind =
 
 export type CapsuleSlot = {
   kind: CapsuleSlotKind;
-  product?: ShopifyProduct | null;
+  product?: ShopifyProductNode | null;
   variantId?: string | null;
 };
 
 export interface CapsuleBuilderProps {
   /** Seed product for Slot 1 (typically the current PDP product). */
-  seedProduct: ShopifyProduct;
+  seedProduct: ShopifyProductNode;
   /** Optional pre-selected variant id for the seed product. */
   seedVariantId?: string | null;
   /** Inferred slot kind for the seed product. Defaults to "Top". */
