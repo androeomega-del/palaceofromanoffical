@@ -42,7 +42,7 @@ function Primed(props: {
   queryOptions: LandingQueryOptions;
 }) {
   const { data } = useSuspenseQuery(props.queryOptions);
-  return <Body {...props} data={data} isLoading={false} />;
+  return <Body {...props} data={data as ShopifyProduct[]} isLoading={false} />;
 }
 
 function Legacy(props: {
