@@ -787,22 +787,33 @@ function ProductView({
 
   return (
     <div className="studio obsidian min-h-screen">
-      {/* Breadcrumb */}
+      {/* Breadcrumb — SSR; mirrors the BreadcrumbList JSON-LD in head() */}
       <div className="px-6 pt-10">
-        <div className="max-w-screen-2xl mx-auto flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-[var(--studio-muted)]">
-          <Link to="/" className="hover:text-[var(--studio-ink)] transition-colors">Boutique</Link>
-          <span className="opacity-40">/</span>
-          <Link
-            to="/collections/$handle"
-            params={{ handle: vendorHandle }}
-            className="hover:text-[var(--studio-ink)] transition-colors"
-          >
-            {product.vendor}
-          </Link>
-          <span className="opacity-40">/</span>
-          <span className="text-[var(--studio-ink)] truncate max-w-[28ch] sm:max-w-[40ch] xl:max-w-none xl:truncate-none xl:whitespace-normal">{product.title}</span>
+        <div className="max-w-screen-2xl mx-auto">
+          <BreadcrumbTrail
+            items={[
+              { name: "Home", href: "/" },
+              ...(product.vendor && vendorHandle
+                ? [{ name: product.vendor, href: "/brand/$vendor" } as BreadcrumbItem]
+                : []),
+              ...(product.productType
+                ? [{
+                    name: product.vendor
+                      ? `${product.vendor} ${product.productType}`
+                      : product.productType,
+                    href: "/collections/$handle",
+                  } as BreadcrumbItem]
+                : []),
+              { name: product.title },
+            ]}
+            linkParams={{
+              "/brand/$vendor": { vendor: vendorHandle },
+              "/collections/$handle": { handle: vendorHandle },
+            }}
+          />
         </div>
       </div>
+
 
       <div className="px-6 md:px-10 pt-6 md:pt-8 pb-10 md:pb-14">
         <div className="max-w-screen-2xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-10 lg:gap-12 items-start">
