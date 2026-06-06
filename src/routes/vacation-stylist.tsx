@@ -114,10 +114,68 @@ function VacationStylistPage() {
               type="text"
               value={destination}
               onChange={(e) => setDestination(e.target.value)}
+      {/* Server-rendered SEO content — indexable above the questionnaire */}
+      <section className="border-b border-ink/10 px-6 md:px-12 py-16 md:py-20 max-w-4xl mx-auto">
+        <div className="space-y-12">
+          <div>
+            <h2 className="font-serif text-2xl md:text-3xl tracking-tight mb-4">
+              AI-Curated Resort Wear Curation
+            </h2>
+            <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+              Our complimentary concierge composes a personalized resort wardrobe drawn
+              exclusively from authenticated designer inventory — investment-grade fashion
+              sourced through our global boutique network. Each edit is shaped around your
+              destination, climate, and itinerary, so every piece earns its place in the
+              suitcase.
+            </p>
+          </div>
+
+          <div>
+            <h2 className="font-serif text-2xl md:text-3xl tracking-tight mb-4">
+              Destination-Specific Packing Matrices
+            </h2>
+            <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+              From a Mykonos beach club to an Aspen alpine retreat, the stylist returns a
+              chapter-by-chapter packing list — daywear, evening, transit, and accessories
+              — built for the way the days actually unfold. Designer curation, not
+              guesswork.
+            </p>
+          </div>
+
+          <div>
+            <h2 className="font-serif text-2xl md:text-3xl tracking-tight mb-4">
+              Boutique Styling, Composed in Seconds
+            </h2>
+            <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+              Tell us where you're going, when, and how the trip should feel. The
+              questionnaire below returns a private capsule of in-stock pieces — every
+              item shoppable, every recommendation tied back to the live Palace of Roman
+              collection.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Form — reserved height prevents layout shift as questionnaire hydrates */}
+      <section
+        className="px-6 md:px-12 py-12 md:py-16 max-w-3xl mx-auto"
+        style={{ minHeight: "720px" }}
+      >
+        <form onSubmit={submit} className="space-y-8">
+          <div>
+            <label className="block text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-2">
+              <MapPin className="inline h-3 w-3 mr-1.5 -mt-0.5" />
+              Destination
+            </label>
+            <input
+              type="text"
+              value={destination}
+              onChange={(e) => setDestination(e.target.value)}
               placeholder="Mykonos · Capri · Saint-Tropez · Aspen…"
               className="w-full border-b border-ink/30 bg-transparent py-3 text-base focus:outline-none focus:border-ink placeholder:text-muted-foreground/60"
             />
           </div>
+
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
