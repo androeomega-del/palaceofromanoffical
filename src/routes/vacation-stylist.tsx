@@ -102,20 +102,9 @@ function VacationStylistPage() {
         </p>
       </section>
 
-      {/* Form */}
-      <section className="px-6 md:px-12 py-12 md:py-16 max-w-3xl mx-auto">
-        <form onSubmit={submit} className="space-y-8">
-          <div>
-            <label className="block text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-2">
-              <MapPin className="inline h-3 w-3 mr-1.5 -mt-0.5" />
-              Destination
-            </label>
-            <input
-              type="text"
-              value={destination}
-              onChange={(e) => setDestination(e.target.value)}
       {/* Server-rendered SEO content — indexable above the questionnaire */}
       <section className="border-b border-ink/10 px-6 md:px-12 py-16 md:py-20 max-w-4xl mx-auto">
+
         <div className="space-y-12">
           <div>
             <h2 className="font-serif text-2xl md:text-3xl tracking-tight mb-4">
