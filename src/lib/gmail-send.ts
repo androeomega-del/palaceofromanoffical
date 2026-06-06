@@ -16,10 +16,27 @@ function sanitizeHeader(v: string): string {
   return v.replace(/[\r\n]+/g, " ").trim();
 }
 
+function b64(s: string): string {
+  // Standard base64 (with padding) for MIME body parts.
+  return btoa(unescape(encodeURIComponent(s)));
+}
+
+function chunk76(s: string): string {
+  // RFC 2045: base64 body lines should be wrapped at 76 chars.
+  return s.replace(/.{1,76}/g, "$&\r\n").trimEnd();
+}
+
 function buildRfc2822(to: string, subject: string, html: string, text: string): string {
   const safeTo = sanitizeHeader(to);
   const safeSubject = sanitizeHeader(subject);
-  const boundary = `por_${Date.now().toString(36)}`;
+  const boundary = `por_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+
+  // Base64-encode each body part so UTF-8 content (em dashes, accents, ©, etc.)
+  // round-trips cleanly and Gmail / downstream clients never interpret the HTML
+  // as plain text due to malformed 7bit lines.
+  const textPart = chunk76(b64(text || ""));
+  const htmlPart = chunk76(b64(html || ""));
+
   return [
     `From: ${FROM}`,
     `To: ${safeTo}`,
@@ -29,20 +46,21 @@ function buildRfc2822(to: string, subject: string, html: string, text: string): 
     ``,
     `--${boundary}`,
     `Content-Type: text/plain; charset="UTF-8"`,
-    `Content-Transfer-Encoding: 7bit`,
+    `Content-Transfer-Encoding: base64`,
     ``,
-    text,
+    textPart,
     ``,
     `--${boundary}`,
     `Content-Type: text/html; charset="UTF-8"`,
-    `Content-Transfer-Encoding: 7bit`,
+    `Content-Transfer-Encoding: base64`,
     ``,
-    html,
+    htmlPart,
     ``,
     `--${boundary}--`,
     ``,
   ].join("\r\n");
 }
+
 
 export async function sendGmail(
   to: string,
