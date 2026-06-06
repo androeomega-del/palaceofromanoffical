@@ -27,38 +27,115 @@ const InputSchema = z.object({
   market_currency: z.string().min(3).max(4).nullable().optional(),
 });
 
+type IncomingItem = z.infer<typeof ItemSchema>;
+
+// Stable identity for a cart line — what counts as "the same product line"
+// regardless of quantity / size swap detection upstream.
+function lineKey(i: { handle?: string | null; variant_title?: string | null; title?: string | null }): string {
+  return `${(i.handle ?? "").toLowerCase()}::${(i.variant_title ?? "").toLowerCase()}::${(i.title ?? "").toLowerCase()}`;
+}
+
 export const captureAbandonedCart = createServerFn({ method: "POST" })
   .inputValidator((input) => InputSchema.parse(input))
   .handler(async ({ data }) => {
     const email = data.email.trim().toLowerCase();
 
-    // Upsert by session_id. If the cart already received recovery emails, we
-    // still keep recording activity (so the dispatcher can see it became
-    // active again), but we don't re-arm the email — that's the dispatcher's
-    // job based on time + recovery_email_count.
+    // Fetch the existing row (if any) so we can decide whether this sync is a
+    // "major" event that should re-arm the +1h / +24h / +72h recovery clock,
+    // or a "minor" event (qty bump, size swap, remove) that should NOT reset
+    // it. Without this distinction the clock used to reset on every tiny
+    // mutation and no recovery email could ever fire for active sessions.
+    const { data: existing, error: selectError } = await supabaseAdmin
+      .from("abandoned_carts")
+      .select("id, email, items, last_activity_at")
+      .eq("session_id", data.session_id)
+      .maybeSingle();
+
+    if (selectError) {
+      console.error("[abandoned-cart] lookup failed:", selectError.message);
+      return { ok: false, error: "Could not read cart" };
+    }
+
+    // ---- Major-vs-minor classification --------------------------------------
+    let isMajor = false;
+    if (!existing) {
+      // First capture for this session — establishes the clock.
+      isMajor = true;
+    } else {
+      const previousEmail = (existing.email ?? "").trim().toLowerCase();
+      if (!previousEmail && email) {
+        // Shopper just typed their email into the cart-email capture form.
+        isMajor = true;
+      } else {
+        const previousItems = Array.isArray(existing.items)
+          ? (existing.items as IncomingItem[])
+          : [];
+        const previousKeys = new Set(previousItems.map(lineKey));
+        const incomingKeys = new Set(data.items.map(lineKey));
+        // Any incoming line key that wasn't there before = brand-new luxury
+        // item added to basket. Quantity/size changes share the same key, so
+        // they correctly fall through as "minor".
+        for (const key of incomingKeys) {
+          if (!previousKeys.has(key)) {
+            isMajor = true;
+            break;
+          }
+        }
+      }
+    }
+
+    const nowIso = new Date().toISOString();
+
+    if (isMajor) {
+      // Re-arm the recovery clock + persist the new snapshot.
+      const { error } = await supabaseAdmin
+        .from("abandoned_carts")
+        .upsert(
+          {
+            session_id: data.session_id,
+            email,
+            items: data.items,
+            total_usd: data.total_usd,
+            item_count: data.item_count,
+            checkout_url: data.checkout_url ?? null,
+            page_path: data.page_path ?? null,
+            user_agent: data.user_agent ?? null,
+            market_country: data.market_country ?? null,
+            market_language: data.market_language ?? null,
+            market_currency: data.market_currency ?? null,
+            last_activity_at: nowIso,
+          },
+          { onConflict: "session_id" }
+        );
+      if (error) {
+        console.error("[abandoned-cart] upsert failed:", error.message);
+        return { ok: false, error: "Could not save cart" };
+      }
+      return { ok: true, activity: "major" as const };
+    }
+
+    // Minor mutation — refresh the snapshot but PRESERVE last_activity_at so
+    // the recovery thresholds can actually elapse on still-active sessions.
     const { error } = await supabaseAdmin
       .from("abandoned_carts")
-      .upsert(
-        {
-          session_id: data.session_id,
-          email,
-          items: data.items,
-          total_usd: data.total_usd,
-          item_count: data.item_count,
-          checkout_url: data.checkout_url ?? null,
-          page_path: data.page_path ?? null,
-          user_agent: data.user_agent ?? null,
-          market_country: data.market_country ?? null,
-          market_language: data.market_language ?? null,
-          market_currency: data.market_currency ?? null,
-          last_activity_at: new Date().toISOString(),
-        },
-        { onConflict: "session_id" }
-      );
+      .update({
+        email,
+        items: data.items,
+        total_usd: data.total_usd,
+        item_count: data.item_count,
+        checkout_url: data.checkout_url ?? null,
+        page_path: data.page_path ?? null,
+        user_agent: data.user_agent ?? null,
+        market_country: data.market_country ?? null,
+        market_language: data.market_language ?? null,
+        market_currency: data.market_currency ?? null,
+        // intentionally omit last_activity_at
+      })
+      .eq("session_id", data.session_id);
 
     if (error) {
-      console.error("[abandoned-cart] upsert failed:", error.message);
+      console.error("[abandoned-cart] minor update failed:", error.message);
       return { ok: false, error: "Could not save cart" };
     }
-    return { ok: true };
+    return { ok: true, activity: "minor" as const };
   });
