@@ -167,24 +167,47 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
               style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}
             >
               {(() => {
-                const THRESHOLD = 250;
-                const remaining = Math.max(0, THRESHOLD - totalAmount);
-                const pct = Math.min(100, (totalAmount / THRESHOLD) * 100);
-                const qualifies = remaining === 0;
+                const EXPRESS_THRESHOLD = 250;
+                const VIP_THRESHOLD = 1500;
+                const expressUnlocked = totalAmount >= EXPRESS_THRESHOLD;
+                const vipUnlocked = totalAmount >= VIP_THRESHOLD;
+                const remainingExpress = Math.max(0, EXPRESS_THRESHOLD - totalAmount);
+                const remainingVip = Math.max(0, VIP_THRESHOLD - totalAmount);
+                // Two-tier progress: bronze fill to Express, then ink fill to VIP.
+                const pctExpress = Math.min(100, (totalAmount / EXPRESS_THRESHOLD) * 100);
+                const pctVip = expressUnlocked
+                  ? Math.min(100, ((totalAmount - EXPRESS_THRESHOLD) / (VIP_THRESHOLD - EXPRESS_THRESHOLD)) * 100)
+                  : 0;
                 return (
-                  <div className="space-y-1.5">
-                    <p className="text-[10px] uppercase tracking-[0.2em] text-ink/80">
-                      {qualifies
-                        ? "You've unlocked Free Express Shipping!"
-                        : `Spend ${formatPrice({ amount: remaining.toFixed(2), currencyCode: currency })} more for Free Express Delivery`}
+                  <div className="space-y-2">
+                    <p className="text-[10px] uppercase tracking-[0.2em] text-ink/80 transition-opacity duration-500">
+                      {vipUnlocked
+                        ? "Unlocked — Priority White-Glove VIP Dispatch"
+                        : expressUnlocked
+                          ? `Complimentary Express Premium Shipping unlocked · ${formatPrice({ amount: remainingVip.toFixed(2), currencyCode: currency })} more for White-Glove VIP`
+                          : `Spend ${formatPrice({ amount: remainingExpress.toFixed(2), currencyCode: currency })} more for Complimentary Express Premium Shipping`}
                     </p>
-                    <div className="h-[2px] w-full bg-ink/10 overflow-hidden">
+                    <div className="relative h-[2px] w-full bg-ink/10 overflow-hidden">
                       <div
-                        className="h-full bg-bronze transition-all duration-500"
-                        style={{ width: `${pct}%` }}
+                        className="absolute inset-y-0 left-0 bg-bronze transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                        style={{ width: `${pctExpress}%` }}
+                        aria-hidden
+                      />
+                      <div
+                        className="absolute inset-y-0 left-0 bg-ink transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                        style={{
+                          width: `${pctExpress * 0.5 + pctVip * 0.5}%`,
+                          opacity: expressUnlocked ? 1 : 0,
+                          mixBlendMode: "multiply",
+                        }}
                         aria-hidden
                       />
                     </div>
+                    {vipUnlocked && (
+                      <p className="text-[10px] leading-relaxed text-bronze animate-[fade-in_.5s_ease-out_both]">
+                        Hand-delivered by appointment · Signature concierge dispatch · No additional charge.
+                      </p>
+                    )}
                   </div>
                 );
               })()}
