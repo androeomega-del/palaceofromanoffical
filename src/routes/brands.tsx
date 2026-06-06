@@ -1,11 +1,14 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { createFileRoute, ErrorComponent, Link } from "@tanstack/react-router";
+import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { fetchProductsPage } from "@/lib/shopify";
 import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
 import { img } from "@/lib/editorial-library";
 import { isAllowedLuxuryBrand } from "@/lib/nav-config";
 import { ALL_LUXURY_BRANDS } from "@/lib/luxury-brands";
+import { brandsSampleInfiniteQueryOptions } from "@/lib/brands-index.functions";
+
+const BRANDS_QO = brandsSampleInfiniteQueryOptions();
+
 
 const BRANDS_TITLE = "Brands — Palace of Roman";
 const BRANDS_DESC =
