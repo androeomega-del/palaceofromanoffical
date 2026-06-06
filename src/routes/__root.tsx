@@ -13,9 +13,7 @@ import {
 import appCss from "../styles.css?url";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { WelcomeDispatchModal } from "@/components/welcome-dispatch-modal";
 import { ConciergeWidget } from "@/components/concierge-widget";
-import { ExitIntentStylist } from "@/components/exit-intent-stylist";
 import { MarketQuerySync } from "@/components/market-query-sync";
 import { useCartSync } from "@/hooks/use-cart-sync";
 import { Toaster } from "@/components/ui/sonner";
@@ -396,9 +394,7 @@ function RootComponent() {
       <MarketQuerySync />
       <ChromeAwareShell />
       <ClientOnlyToaster />
-      <WelcomeDispatchModal />
       <ClientOnlyConcierge />
-      <ExitIntentStylist />
     </QueryClientProvider>
   );
 }

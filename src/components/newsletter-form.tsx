@@ -89,8 +89,11 @@ export function NewsletterForm() {
           placeholder="your@email.com"
           value={email}
           onChange={(e) => {
-            setEmail(e.target.value);
+            setEmail(e.currentTarget.value);
             if (status === "error") setStatus("idle");
+          }}
+          onInput={(e) => {
+            setEmail((e.currentTarget as HTMLInputElement).value);
           }}
           disabled={status === "sending"}
           className="bg-transparent border-b border-ink/30 py-3 pr-28 w-full text-sm focus:outline-none focus:border-bronze transition-colors disabled:opacity-50 placeholder:text-ink/40"
