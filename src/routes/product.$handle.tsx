@@ -46,12 +46,51 @@ import { buildPdpFaq } from "@/lib/pdp-faq";
 import { PdpFaq } from "@/components/pdp-faq";
 import { ROME_BRAND_SLUGS } from "@/lib/rome-brands";
 import { buildProductAlt } from "@/lib/product-alt";
+import {
+  classifyLookCategory,
+  COMPLEMENTARY_MAP,
+  categoryQueryFragment,
+  pickCompanions,
+} from "@/lib/look-bundle";
+import { MARKETS } from "@/stores/market-store";
 
 export const Route = createFileRoute("/product/$handle")({
   loader: async ({ params }) => {
     const p = await fetchProductByHandle(params.handle);
     if (!p) throw notFound();
-    return { product: p };
+
+    // Resolve "Shop the Look" companions for SEO meta + JSON-LD.
+    // Priority: stylist-curated `custom.look_products` metafield, else
+    // Shopify's COMPLEMENTARY recommendations, backfilled by a
+    // category-targeted catalog search when recs under-deliver. Mirrors
+    // the runtime logic in <ProductView/> so the rendered bundle and the
+    // indexed bundle never disagree.
+    const manualNodes = p.lookReferences?.references?.nodes ?? [];
+    let lookCompanions = manualNodes.slice(0, 4);
+    let lookSource: "manual" | "auto" | "none" = manualNodes.length ? "manual" : "none";
+    if (lookCompanions.length === 0) {
+      try {
+        const recs = await fetchProductRecommendations(p.id, "COMPLEMENTARY");
+        let pool = recs ?? [];
+        const anchorCat = classifyLookCategory(p);
+        if (pool.length < 3) {
+          const backfill = await fetchProducts({
+            first: 24,
+            sortKey: "BEST_SELLING",
+            query: `${categoryQueryFragment(COMPLEMENTARY_MAP[anchorCat])} -vendor:"${(p.vendor || "").replace(/"/g, "")}"`.trim(),
+          });
+          pool = [...pool, ...backfill.map((e) => e.node)];
+        }
+        const picked = pickCompanions(pool, p, 3);
+        if (picked.length >= 2) {
+          lookCompanions = picked;
+          lookSource = "auto";
+        }
+      } catch {
+        // SEO enrichment is best-effort; never block the PDP render.
+      }
+    }
+    return { product: p, lookCompanions, lookSource };
   },
   head: ({ params, loaderData }) => {
     const p = loaderData?.product;
@@ -70,20 +109,46 @@ export const Route = createFileRoute("/product/$handle")({
     }
 
 
-    // SEO-optimized title: "{Vendor} {Title} — Authentic {Type}" (pageTitle appends " — Palace of Roman")
-    // Keeps the high-intent keywords (brand + product + authentic) at the front, under 60 chars total.
-    const titleMain = p.vendor
-      ? `${p.vendor} ${p.title}${p.productType ? ` — Authentic ${p.productType}` : " — Authentic"}`
-      : `${p.title}${p.productType ? ` — Authentic ${p.productType}` : ""}`;
+    // Bundle-aware title/description: when a stylist-curated or AI-curated
+    // "Shop the Look" is present, pivot the meta to surface companion brands —
+    // these phrases double as long-tail SEO targets ("Loro Piana sweater
+    // styled with Brunello Cucinelli trousers") and rich-snippet bait.
+    const companions = loaderData?.lookCompanions ?? [];
+    const lookSource = loaderData?.lookSource ?? "none";
+    const companionBrands = Array.from(
+      new Set(companions.map((c) => c.vendor).filter(Boolean)),
+    ).slice(0, 2);
+
+    let titleMain: string;
+    if (companionBrands.length >= 1) {
+      const styledWith = companionBrands.length === 2
+        ? `${companionBrands[0]} & ${companionBrands[1]}`
+        : companionBrands[0];
+      titleMain = `Shop the Look: ${p.vendor ? `${p.vendor} ` : ""}${p.title} styled with ${styledWith}`;
+    } else {
+      // Fallback: "{Vendor} {Title} — Authentic {Type}" (pageTitle appends " — Palace of Roman").
+      titleMain = p.vendor
+        ? `${p.vendor} ${p.title}${p.productType ? ` — Authentic ${p.productType}` : " — Authentic"}`
+        : `${p.title}${p.productType ? ` — Authentic ${p.productType}` : ""}`;
+    }
+
     const parsedComp = parseComposition(p.description || "");
-    // SEO-optimized description: brand + product + material + trust + shipping + offer.
-    // Front-loaded with the buyer's search query, closed with conversion levers.
     const descPieces: string[] = [];
-    descPieces.push(
-      `Shop the authentic ${p.vendor ? `${p.vendor} ` : ""}${p.title}${p.productType ? ` ${p.productType.toLowerCase()}` : ""}${parsedComp.composition ? ` in ${parsedComp.composition.toLowerCase()}` : ""} at Palace of Roman.`
-    );
-    descPieces.push("Sourced through our authorised European boutique network — guaranteed authentic, with dust bag and original packaging.");
-    descPieces.push("Free worldwide shipping over $250, 14-day returns. Members unlock 10% off.");
+    if (companionBrands.length >= 1) {
+      const styledWith = companionBrands.length === 2
+        ? `${companionBrands[0]} and ${companionBrands[1]}`
+        : companionBrands[0];
+      const curator = lookSource === "auto" ? "hand-selected by our AI stylist" : "curated by our atelier";
+      descPieces.push(
+        `Discover an exclusive sartorial vision featuring the ${p.title}${p.vendor ? ` by ${p.vendor}` : ""}. Complete the look with curated essentials from ${styledWith}, ${curator} at Palace of Roman. Complimentary global shipping available.`,
+      );
+    } else {
+      descPieces.push(
+        `Shop the authentic ${p.vendor ? `${p.vendor} ` : ""}${p.title}${p.productType ? ` ${p.productType.toLowerCase()}` : ""}${parsedComp.composition ? ` in ${parsedComp.composition.toLowerCase()}` : ""} at Palace of Roman.`,
+      );
+      descPieces.push("Sourced through our authorised European boutique network — guaranteed authentic, with dust bag and original packaging.");
+      descPieces.push("Free worldwide shipping over $250, 14-day returns. Members unlock 10% off.");
+    }
     const desc = metaDescription(descPieces.join(" "));
     const img = p.images?.edges?.[0]?.node?.url;
     const price = p.priceRange?.minVariantPrice;
@@ -240,9 +305,54 @@ export const Route = createFileRoute("/product/$handle")({
       meta.push({ property: "product:availability", content: anyAvailable ? "instock" : "out of stock" });
     }
 
+    // ── Localized hreflang alternates ──────────────────────────────────
+    // Same canonical resource, surfaced to each supported market with
+    // `?country=XX&locale=YY` so Shopify's @inContext checkout opens in
+    // the right currency + language when a regional searcher clicks
+    // through. `x-default` falls back to the bare canonical.
+    const hreflangLinks = MARKETS.map((m) => ({
+      rel: "alternate",
+      hrefLang: `${m.language.toLowerCase()}-${m.country}`,
+      href: `${url}?country=${m.country}&locale=${m.language.toLowerCase()}`,
+    }));
+
+    // ── isRelatedTo — companion bundle for Google rich-result carousels ──
+    const isRelatedTo = companions.map((c) => {
+      const cUrl = absoluteUrl(`/product/${c.handle}`);
+      const cImg = c.images?.edges?.[0]?.node?.url;
+      const cPrice = c.priceRange?.minVariantPrice;
+      return {
+        "@type": "Product",
+        "@id": cUrl + "#product",
+        name: c.title,
+        url: cUrl,
+        ...(c.vendor ? { brand: { "@type": "Brand", name: c.vendor } } : {}),
+        ...(cImg ? { image: cdnImage(cImg, { width: 1200, format: "jpg" }) || cImg } : {}),
+        ...(cPrice
+          ? {
+              offers: {
+                "@type": "Offer",
+                url: cUrl,
+                price: cPrice.amount,
+                priceCurrency: cPrice.currencyCode,
+                availability: c.availableForSale
+                  ? "https://schema.org/InStock"
+                  : "https://schema.org/OutOfStock",
+                itemCondition: "https://schema.org/NewCondition",
+                seller,
+              },
+            }
+          : {}),
+      };
+    });
+
     return {
       meta,
-      links: [{ rel: "canonical", href: url }],
+      links: [
+        { rel: "canonical", href: url },
+        ...hreflangLinks,
+        { rel: "alternate", hrefLang: "x-default", href: url },
+      ],
       scripts: [
         {
           type: "application/ld+json",
@@ -264,6 +374,7 @@ export const Route = createFileRoute("/product/$handle")({
               ? { "@type": "Country", name: parsedComp.madeIn.replace(/^Made in /, "") }
               : { "@type": "Country", name: "Italy" },
             offers,
+            ...(isRelatedTo.length ? { isRelatedTo } : {}),
           }),
         },
         {
@@ -451,98 +562,9 @@ function layeringKey(product: { title: string; productType?: string }): Layering
   return null;
 }
 
-// ── Auto "The Look" — cross-category companion classifier ──────────────────
-// Maps a product's type/title into a coarse silhouette category so we can
-// auto-bundle complementary pieces (top → bottoms + accessories, etc.)
-// without ever pairing identical product types.
-type LookCategory =
-  | "top" | "bottom" | "outerwear" | "dress" | "shoes" | "bag" | "accessory" | "unknown";
-
-function classifyLookCategory(p: { productType?: string; title?: string }): LookCategory {
-  const hay = `${p.productType ?? ""} ${p.title ?? ""}`.toLowerCase();
-  if (/\b(dress|gown|robe|kaftan|caftan)\b/.test(hay)) return "dress";
-  if (/\b(coat|jacket|blazer|parka|trench|puffer|overcoat|cardigan)\b/.test(hay)) return "outerwear";
-  if (/\b(shirt|t-shirt|tee|top|blouse|knit|sweater|jumper|hoodie|polo|sweatshirt|tank|bodysuit)\b/.test(hay)) return "top";
-  if (/\b(trouser|pant|jean|short|skirt|legging|chino|bermuda|joggers?)\b/.test(hay)) return "bottom";
-  if (/\b(shoe|sneaker|trainer|boot|loafer|mule|sandal|heel|pump|moccasin|espadrille|derby|brogue)\b/.test(hay)) return "shoes";
-  if (/\b(bag|tote|clutch|backpack|wallet|cardholder|pouch|crossbody|hobo|satchel|messenger|duffel)\b/.test(hay)) return "bag";
-  if (/\b(belt|scarf|hat|cap|beanie|glove|sunglass|tie|jewel|necklace|bracelet|ring|earring|pocket\s?square|wallet|cardholder)\b/.test(hay)) return "accessory";
-  return "unknown";
-}
-
-// Which categories complete the look for a given anchor category. Order = preference.
-const COMPLEMENTARY_MAP: Record<LookCategory, LookCategory[]> = {
-  top:       ["bottom", "shoes", "outerwear", "bag", "accessory"],
-  bottom:    ["top", "shoes", "outerwear", "bag", "accessory"],
-  outerwear: ["top", "bottom", "shoes", "bag", "accessory"],
-  dress:     ["shoes", "bag", "outerwear", "accessory"],
-  shoes:     ["bottom", "top", "bag", "outerwear", "accessory"],
-  bag:       ["top", "bottom", "shoes", "outerwear", "accessory"],
-  accessory: ["top", "bottom", "shoes", "outerwear", "bag"],
-  unknown:   ["bag", "shoes", "accessory", "top", "bottom", "outerwear"],
-};
-
-// Build a Storefront search query fragment from a category list.
-function categoryQueryFragment(cats: LookCategory[]): string {
-  const terms: string[] = [];
-  for (const c of cats) {
-    switch (c) {
-      case "top": terms.push("product_type:Shirt", "product_type:T-shirt", "product_type:Top", "product_type:Sweater", "product_type:Knitwear", "product_type:Polo"); break;
-      case "bottom": terms.push("product_type:Trousers", "product_type:Pants", "product_type:Jeans", "product_type:Shorts", "product_type:Skirt"); break;
-      case "outerwear": terms.push("product_type:Jacket", "product_type:Coat", "product_type:Blazer"); break;
-      case "dress": terms.push("product_type:Dress"); break;
-      case "shoes": terms.push("product_type:Shoes", "product_type:Sneakers", "product_type:Boots", "product_type:Loafers"); break;
-      case "bag": terms.push("product_type:Bag", "product_type:Tote", "product_type:Backpack", "product_type:Clutch", "product_type:Wallet"); break;
-      case "accessory": terms.push("product_type:Belt", "product_type:Scarf", "product_type:Hat", "product_type:Sunglasses", "product_type:Jewelry"); break;
-      default: break;
-    }
-  }
-  return terms.length ? `(${terms.join(" OR ")})` : "";
-}
-
-// Coerce a full ShopifyProductNode (from recommendations / fetchProducts) into
-// the ShopifyProductLite shape that <CuratedLookBundle/> already renders.
-function toLite(n: ShopifyProductNode): ShopifyProductLite {
-  return {
-    id: n.id,
-    title: n.title,
-    handle: n.handle,
-    vendor: n.vendor,
-    availableForSale: n.variants.edges.some((e) => e.node.availableForSale),
-    priceRange: n.priceRange,
-    compareAtPriceRange: n.compareAtPriceRange,
-    images: { edges: n.images.edges.slice(0, 2) },
-    variants: { edges: n.variants.edges.slice(0, 1) },
-  };
-}
-
-// Pick up to `want` companions, enforcing: not same handle, not the anchor's
-// category (no identical product types), prefer different vendors first.
-function pickCompanions(
-  candidates: ShopifyProductNode[],
-  anchor: { handle: string; vendor: string; productType?: string; title?: string },
-  want: number,
-): ShopifyProductLite[] {
-  const anchorCat = classifyLookCategory(anchor);
-  const seenHandles = new Set<string>([anchor.handle]);
-  const seenCats = new Set<LookCategory>([anchorCat]);
-  // Two passes: first prefer different vendor, then allow same vendor.
-  const out: ShopifyProductLite[] = [];
-  for (const preferDifferentVendor of [true, false]) {
-    for (const c of candidates) {
-      if (out.length >= want) break;
-      if (seenHandles.has(c.handle)) continue;
-      if (preferDifferentVendor && c.vendor === anchor.vendor) continue;
-      const cat = classifyLookCategory(c);
-      if (seenCats.has(cat)) continue;
-      out.push(toLite(c));
-      seenHandles.add(c.handle);
-      seenCats.add(cat);
-    }
-    if (out.length >= want) break;
-  }
-  return out;
-}
+// Auto "The Look" helpers are centralised in @/lib/look-bundle so the
+// route loader (SEO meta + JSON-LD) and the rendered PDP component agree
+// on which companion products belong to a given anchor.
 
 function ProductView({
   product,
