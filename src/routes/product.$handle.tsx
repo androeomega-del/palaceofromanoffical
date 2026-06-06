@@ -61,6 +61,7 @@ import {
   productRelatedByVendorQueryOptions,
   productAutoLookRecsQueryOptions,
 } from "@/lib/rails/product-detail";
+import { getPdpContextLinks, type PdpContextLinks } from "@/lib/pdp-context-links.functions";
 
 export const Route = createFileRoute("/product/$handle")({
   loader: async ({ params, context }) => {
@@ -118,7 +119,19 @@ export const Route = createFileRoute("/product/$handle")({
         .catch(() => null),
     ]);
 
-    return { product: p, lookCompanions, lookSource };
+    // Internal cross-link matrix — resolved server-side so the contextual
+    // text links are present in the initial HTML payload (SEO + zero CLS).
+    const productTags = ((p as { tags?: string[] }).tags ?? []).filter(Boolean);
+    const contextLinks: PdpContextLinks = await getPdpContextLinks({
+      data: {
+        productType: p.productType || "",
+        vendor: p.vendor || "",
+        tags: productTags,
+        title: p.title || "",
+      },
+    }).catch(() => ({ destinations: [], vendor: null }));
+
+    return { product: p, lookCompanions, lookSource, contextLinks };
   },
   head: ({ params, loaderData }) => {
     const p = loaderData?.product;
@@ -621,6 +634,7 @@ function ProductView({
 }: {
   product: NonNullable<Awaited<ReturnType<typeof fetchProductByHandle>>>;
 }) {
+  const { contextLinks } = Route.useLoaderData() as { contextLinks: PdpContextLinks };
   const images = product.images.edges.map((e) => e.node);
   const altBase = product.vendor ? `${product.title} — ${product.vendor}` : product.title;
   const variants = product.variants.edges.map((e) => e.node);
@@ -1316,6 +1330,77 @@ function ProductView({
           productType={product.productType}
           description={product.description}
         />
+
+        {/* ===== Curated Styling Context — server-rendered internal cross-link matrix ===== */}
+        {(contextLinks.destinations.length > 0 || contextLinks.vendor) && (
+          <section
+            aria-labelledby="pdp-curated-context-heading"
+            className="max-w-3xl mx-auto mt-16 md:mt-20 px-2 md:px-0"
+            style={{
+              // Reserved metrics — fixed line-height & block min-height
+              // guard against any post-hydration CLS as fonts swap in.
+              contain: "layout style",
+              minHeight: "9rem",
+            }}
+          >
+            <h2
+              id="pdp-curated-context-heading"
+              className="text-[11px] uppercase tracking-[0.32em] font-semibold text-[var(--studio-bronze)] mb-4"
+              style={{ lineHeight: 1.4 }}
+            >
+              The Palace Edit
+            </h2>
+            <p
+              className="font-serif italic text-[15px] md:text-[16px] text-[var(--studio-muted)]"
+              style={{ lineHeight: 1.85, letterSpacing: "0.005em", margin: 0 }}
+            >
+              {contextLinks.vendor && (
+                <>
+                  Discover the full{" "}
+                  <Link
+                    to="/collections/$handle"
+                    params={{ handle: contextLinks.vendor.slug }}
+                    aria-label={`Browse the authentic ${contextLinks.vendor.name} edit at Palace of Roman`}
+                    className="not-italic font-sans text-[var(--studio-ink)] underline decoration-[var(--studio-bronze)] decoration-1 underline-offset-[5px] hover:decoration-[var(--studio-ink)] transition-colors"
+                  >
+                    {contextLinks.vendor.name} Edit
+                  </Link>
+                  {contextLinks.destinations.length > 0 ? ", or explore" : "."}
+                </>
+              )}
+              {contextLinks.destinations.length > 0 && (
+                <>
+                  {contextLinks.vendor ? " " : "Explore our curated styling recommendations in the "}
+                  {contextLinks.destinations.map((d, i) => {
+                    const isLast = i === contextLinks.destinations.length - 1;
+                    const isFirst = i === 0;
+                    const sep = isFirst
+                      ? ""
+                      : isLast
+                      ? contextLinks.destinations.length === 2
+                        ? " and "
+                        : ", and "
+                      : ", ";
+                    return (
+                      <span key={d.slug}>
+                        {sep}
+                        <Link
+                          to="/vacation-stylist/$destination"
+                          params={{ destination: d.slug }}
+                          aria-label={`View the authentic ${d.name} luxury capsule wardrobe and styling guide`}
+                          className="not-italic font-sans text-[var(--studio-ink)] underline decoration-[var(--studio-bronze)] decoration-1 underline-offset-[5px] hover:decoration-[var(--studio-ink)] transition-colors"
+                        >
+                          {d.name} Styling Guide
+                        </Link>
+                      </span>
+                    );
+                  })}
+                  {" — each capsule wardrobe is hand-curated by our atelier."}
+                </>
+              )}
+            </p>
+          </section>
+        )}
 
         {/* ===== AI Recommendations (server-assisted) ===== */}
         <AIRecommendations product={product} />
