@@ -21,7 +21,11 @@ import { cdnImage } from "@/lib/cdn-image";
 export const Route = createFileRoute("/")({
   loader: async ({ context }): Promise<{ abBucket: MetaBucket; lcpImage: string | null }> => {
     // Prime BOTH the Men's (primary) and Women's New In rails in parallel
-    // so the segmented editorial grid SSRs without a loading flash.
+    // so the segmented editorial grid SSRs without a loading flash. The
+    // queryFns are 60s-cached server-side (see src/lib/rails/queries.ts) so
+    // crawler bursts don't fan out to the Storefront API on every request.
+    // Best-Sellers are intentionally NOT prefetched here — the homepage
+    // doesn't render that rail; only New-In is consumed by HomeStudioLayout.
     const [{ bucket }, menRail] = await Promise.all([
       readMetaAbBucket(),
       context.queryClient.ensureQueryData(newThisWeekQueryOptions("Men")),

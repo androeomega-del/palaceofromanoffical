@@ -19,6 +19,7 @@
 import { queryOptions } from "@tanstack/react-query";
 import { fetchProducts } from "@/lib/shopify";
 import { useMarketStore } from "@/stores/market-store";
+import { cached } from "@/lib/server-cache";
 
 export type Dept = "Women" | "Men";
 
@@ -27,27 +28,52 @@ function marketKey() {
   return `${m.country}-${m.language}`;
 }
 
-export const newThisWeekQueryOptions = (dept: Dept) =>
-  queryOptions({
+/**
+ * Server-side read-through cache for rail queries.
+ *
+ * Only activates during SSR / route-loader prefetch (`typeof window ===
+ * "undefined"`). On the client the rail still fetches through `fetchProducts`
+ * normally — a per-browser cache would be both useless (one shopper) and
+ * harmful (stale state across market/dept toggles isn't shared with the
+ * TanStack Query cache that already owns client-side staleness).
+ *
+ * Cache key intentionally mirrors the React Query key so cache scope and
+ * dedup behaviour stay aligned.
+ */
+function railCached<T>(key: string, ttlMs: number, loader: () => Promise<T>): Promise<T> {
+  if (typeof window !== "undefined") return loader();
+  return cached(key, loader, ttlMs);
+}
+
+export const newThisWeekQueryOptions = (dept: Dept) => {
+  const key = `rail-new-this-week:${dept}:${marketKey()}`;
+  return queryOptions({
     queryKey: ["rail-new-this-week", dept, marketKey()] as const,
     queryFn: () =>
-      fetchProducts({
-        first: 4,
-        query: `tag:${dept}`,
-        sortKey: "CREATED_AT",
-        reverse: true,
-      }),
+      railCached(key, 60_000, () =>
+        fetchProducts({
+          first: 4,
+          query: `tag:${dept}`,
+          sortKey: "CREATED_AT",
+          reverse: true,
+        }),
+      ),
     staleTime: 5 * 60_000,
   });
+};
 
-export const bestSellersQueryOptions = (dept: Dept) =>
-  queryOptions({
+export const bestSellersQueryOptions = (dept: Dept) => {
+  const key = `rail-best-sellers:${dept}:${marketKey()}`;
+  return queryOptions({
     queryKey: ["rail-best-sellers", dept, marketKey()] as const,
     queryFn: () =>
-      fetchProducts({
-        first: 4,
-        query: `tag:${dept}`,
-        sortKey: "BEST_SELLING",
-      }),
+      railCached(key, 60_000, () =>
+        fetchProducts({
+          first: 4,
+          query: `tag:${dept}`,
+          sortKey: "BEST_SELLING",
+        }),
+      ),
     staleTime: 10 * 60_000,
   });
+};
