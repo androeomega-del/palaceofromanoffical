@@ -23,6 +23,7 @@ import { Route as SitemapCollectionsDotxmlRouteImport } from './routes/sitemap-c
 import { Route as SitemapBrandsDotxmlRouteImport } from './routes/sitemap-brands[.]xml'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ShippingReturnsRouteImport } from './routes/shipping-returns'
+import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as OrderConfirmedRouteImport } from './routes/order-confirmed'
 import { Route as LoginRouteImport } from './routes/login'
@@ -222,6 +223,11 @@ const ShopRoute = ShopRouteImport.update({
 const ShippingReturnsRoute = ShippingReturnsRouteImport.update({
   id: '/shipping-returns',
   path: '/shipping-returns',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
+  id: '/robots.txt',
+  path: '/robots.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -919,6 +925,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/order-confirmed': typeof OrderConfirmedRoute
   '/privacy': typeof PrivacyRoute
+  '/robots.txt': typeof RobotsDottxtRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
   '/sitemap-brands.xml': typeof SitemapBrandsDotxmlRoute
@@ -1061,6 +1068,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/order-confirmed': typeof OrderConfirmedRoute
   '/privacy': typeof PrivacyRoute
+  '/robots.txt': typeof RobotsDottxtRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
   '/sitemap-brands.xml': typeof SitemapBrandsDotxmlRoute
@@ -1205,6 +1213,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/order-confirmed': typeof OrderConfirmedRoute
   '/privacy': typeof PrivacyRoute
+  '/robots.txt': typeof RobotsDottxtRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
   '/sitemap-brands.xml': typeof SitemapBrandsDotxmlRoute
@@ -1351,6 +1360,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/order-confirmed'
     | '/privacy'
+    | '/robots.txt'
     | '/shipping-returns'
     | '/shop'
     | '/sitemap-brands.xml'
@@ -1493,6 +1503,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/order-confirmed'
     | '/privacy'
+    | '/robots.txt'
     | '/shipping-returns'
     | '/shop'
     | '/sitemap-brands.xml'
@@ -1636,6 +1647,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/order-confirmed'
     | '/privacy'
+    | '/robots.txt'
     | '/shipping-returns'
     | '/shop'
     | '/sitemap-brands.xml'
@@ -1781,6 +1793,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   OrderConfirmedRoute: typeof OrderConfirmedRoute
   PrivacyRoute: typeof PrivacyRoute
+  RobotsDottxtRoute: typeof RobotsDottxtRoute
   ShippingReturnsRoute: typeof ShippingReturnsRoute
   ShopRoute: typeof ShopRoute
   SitemapBrandsDotxmlRoute: typeof SitemapBrandsDotxmlRoute
@@ -1987,6 +2000,13 @@ declare module '@tanstack/react-router' {
       path: '/shipping-returns'
       fullPath: '/shipping-returns'
       preLoaderRoute: typeof ShippingReturnsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/robots.txt': {
+      id: '/robots.txt'
+      path: '/robots.txt'
+      fullPath: '/robots.txt'
+      preLoaderRoute: typeof RobotsDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -3005,6 +3025,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   OrderConfirmedRoute: OrderConfirmedRoute,
   PrivacyRoute: PrivacyRoute,
+  RobotsDottxtRoute: RobotsDottxtRoute,
   ShippingReturnsRoute: ShippingReturnsRoute,
   ShopRoute: ShopRoute,
   SitemapBrandsDotxmlRoute: SitemapBrandsDotxmlRoute,
@@ -3122,13 +3143,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
