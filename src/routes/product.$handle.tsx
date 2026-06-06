@@ -51,7 +51,6 @@ import {
   COMPLEMENTARY_MAP,
   categoryQueryFragment,
   pickCompanions,
-  toLite,
 } from "@/lib/look-bundle";
 import { MARKETS } from "@/stores/market-store";
 
