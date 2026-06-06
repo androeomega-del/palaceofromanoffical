@@ -32,16 +32,18 @@ export const Route = createFileRoute("/reviews")({
 function ReviewsPage() {
   // Per policy: never fabricate reviews. We surface only what is publicly
   // verifiable on third-party platforms and link out for verification.
-  const hasGoogle = GBP_REVIEW_COUNT > 0;
-  const hasYelp = YELP_REVIEW_COUNT > 0;
+  const gbpCount: number = GBP_REVIEW_COUNT;
+  const yelpCount: number = YELP_REVIEW_COUNT;
+  const hasGoogle = gbpCount > 0;
+  const hasYelp = yelpCount > 0;
   const hasAny = hasGoogle || hasYelp;
 
   return (
     <EditorialPageShell
       eyebrow="Client Voices"
       title="Reviews, verified — never invented."
-      lede="We publish nothing we cannot verify. All client feedback lives on independent platforms, where it is open, dated, and tied to a real account."
-      heroSrc={img(7)}
+      intro="We publish nothing we cannot verify. All client feedback lives on independent platforms, where it is open, dated, and tied to a real account."
+      heroImage={img(7)}
     >
       <div className="max-w-3xl mx-auto px-6 py-16 space-y-12">
         <section className="grid sm:grid-cols-2 gap-6">
@@ -53,7 +55,7 @@ function ReviewsPage() {
           >
             <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-3">Google Business Profile</p>
             <p className="text-2xl font-serif mb-2">
-              {hasGoogle ? `${GBP_REVIEW_COUNT} verified review${GBP_REVIEW_COUNT === 1 ? "" : "s"}` : "No reviews yet"}
+              {hasGoogle ? `${gbpCount} verified review${gbpCount === 1 ? "" : "s"}` : "No reviews yet"}
             </p>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Read or leave a review on our verified Google listing →
@@ -67,13 +69,14 @@ function ReviewsPage() {
           >
             <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-3">Yelp</p>
             <p className="text-2xl font-serif mb-2">
-              {hasYelp ? `${YELP_REVIEW_COUNT} verified review${YELP_REVIEW_COUNT === 1 ? "" : "s"}` : "No reviews yet"}
+              {hasYelp ? `${yelpCount} verified review${yelpCount === 1 ? "" : "s"}` : "No reviews yet"}
             </p>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Read or leave a review on our verified Yelp listing →
             </p>
           </a>
         </section>
+
 
         {!hasAny ? (
           <section className="border-t border-ink/10 pt-12 text-center">
