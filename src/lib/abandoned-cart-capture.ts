@@ -4,6 +4,7 @@
 // that upserts the latest cart snapshot through the server function.
 
 import { useCartStore, type CartItem } from "@/stores/cart-store";
+import { useMarketStore } from "@/stores/market-store";
 import { captureAbandonedCart } from "@/lib/abandoned-cart.functions";
 
 const EMAIL_KEY = "por-customer-email";
@@ -58,6 +59,10 @@ export function scheduleAbandonedCartSync() {
     const total = snapshot.reduce((s, i) => s + i.price_usd * i.quantity, 0);
     const itemCount = snapshot.reduce((s, i) => s + i.quantity, 0);
 
+    const market = (() => {
+      try { return useMarketStore.getState().market; } catch { return null; }
+    })();
+
     captureAbandonedCart({
       data: {
         session_id: sessionId,
@@ -68,6 +73,9 @@ export function scheduleAbandonedCartSync() {
         checkout_url: checkoutUrl ?? null,
         page_path: window.location.pathname.slice(0, 500),
         user_agent: (navigator.userAgent ?? "").slice(0, 500),
+        market_country: market?.country ?? null,
+        market_language: market?.language ?? null,
+        market_currency: market?.currency ?? null,
       },
     }).catch((e) => console.debug("[abandoned-cart] sync failed:", e));
   }, 1500);

@@ -20,6 +20,11 @@ const InputSchema = z.object({
   checkout_url: z.string().max(1000).nullable().optional(),
   page_path: z.string().max(500).nullable().optional(),
   user_agent: z.string().max(500).nullable().optional(),
+  // Active Shopify Markets context — lets the recovery dispatcher reopen the
+  // cart in the same currency/language the shopper was browsing in.
+  market_country: z.string().min(2).max(4).nullable().optional(),
+  market_language: z.string().min(2).max(8).nullable().optional(),
+  market_currency: z.string().min(3).max(4).nullable().optional(),
 });
 
 export const captureAbandonedCart = createServerFn({ method: "POST" })
@@ -43,6 +48,9 @@ export const captureAbandonedCart = createServerFn({ method: "POST" })
           checkout_url: data.checkout_url ?? null,
           page_path: data.page_path ?? null,
           user_agent: data.user_agent ?? null,
+          market_country: data.market_country ?? null,
+          market_language: data.market_language ?? null,
+          market_currency: data.market_currency ?? null,
           last_activity_at: new Date().toISOString(),
         },
         { onConflict: "session_id" }
