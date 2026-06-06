@@ -8,8 +8,8 @@
  * kind. Selecting an item fills the slot via local React state.
  *
  * Safety:
- * - No cart/checkout state mutations. The "Purchase This Look" button
- *   logs the gathered variant IDs to the console only.
+ * - Uses the official `useCartStore.addItem` + `openDrawer` actions only.
+ *   No edits to cart-store, cart-drawer, use-cart-sync, or checkout URL gen.
  * - No new network calls — drawer is populated from the preloaded
  *   `candidatePool` prop.
  * - Strict CSS containment + reserved min-height to prevent CLS.
