@@ -63,6 +63,26 @@ export interface ShopifyProductNode {
   variants: { edges: Array<{ node: ShopifyVariant }> };
   options: Array<{ name: string; values: string[] }>;
   metafields?: Array<ShopifyMetafield | null>;
+  /**
+   * Curated "Shop the Look" companions, sourced from the
+   * `custom.look_products` metafield (type: list.product_reference).
+   * When set in Shopify admin, takes priority over the algorithmic
+   * Style-It-With rail on the PDP.
+   */
+  lookReferences?: {
+    references: { nodes: ShopifyProductLite[] } | null;
+  } | null;
+}
+export interface ShopifyProductLite {
+  id: string;
+  title: string;
+  handle: string;
+  vendor: string;
+  availableForSale: boolean;
+  priceRange: { minVariantPrice: Money };
+  compareAtPriceRange?: { minVariantPrice: Money };
+  images: { edges: Array<{ node: ShopifyImage }> };
+  variants: { edges: Array<{ node: ShopifyVariant }> };
 }
 export interface ShopifyProduct { node: ShopifyProductNode }
 export interface ShopifyCollection {
@@ -181,7 +201,38 @@ export async function shopifyFetch<T = unknown>(
 }
 
 // ── GraphQL fragments ───────────────────────────────────────────────────────
+// ProductLite — minimal shape sufficient to render a small card. Used for
+// metafield references (Shopify rejects recursive fragment spreads on the
+// same Product type), so curated `look_products` references stay shallow.
+const PRODUCT_LITE_FRAGMENT = `
+  fragment ProductLiteFields on Product {
+    id
+    title
+    handle
+    vendor
+    availableForSale
+    priceRange { minVariantPrice { amount currencyCode } }
+    compareAtPriceRange { minVariantPrice { amount currencyCode } }
+    images(first: 2) { edges { node { url altText width height } } }
+    variants(first: 1) {
+      edges {
+        node {
+          id
+          title
+          sku
+          price { amount currencyCode }
+          compareAtPrice { amount currencyCode }
+          availableForSale
+          image { url altText width height }
+          selectedOptions { name value }
+        }
+      }
+    }
+  }
+`;
+
 const PRODUCT_FRAGMENT = `
+  ${PRODUCT_LITE_FRAGMENT}
   fragment ProductFields on Product {
     id
     title
@@ -214,6 +265,11 @@ const PRODUCT_FRAGMENT = `
       { namespace: "custom", key: "origin" },
       { namespace: "custom", key: "fabric" }
     ]) { namespace key value type }
+    lookReferences: metafield(namespace: "custom", key: "look_products") {
+      references(first: 8) {
+        nodes { ... on Product { ...ProductLiteFields } }
+      }
+    }
   }
 `;
 

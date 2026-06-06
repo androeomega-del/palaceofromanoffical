@@ -11,6 +11,8 @@ import {
 } from "@/lib/shopify";
 import { pageTitle, metaDescription, absoluteUrl, SITE_URL } from "@/lib/seo";
 import { useCartStore } from "@/stores/cart-store";
+import { useMarketStore } from "@/stores/market-store";
+import { marketTaxNote } from "@/lib/market-tax";
 import { useRecentlyViewedStore } from "@/stores/recently-viewed-store";
 import { useInteractionStore } from "@/stores/interaction-store";
 import { Loader2, Minus, Plus, ShieldCheck, Truck, RotateCcw, Lock, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
@@ -454,6 +456,7 @@ function ProductView({
   const images = product.images.edges.map((e) => e.node);
   const altBase = product.vendor ? `${product.title} — ${product.vendor}` : product.title;
   const variants = product.variants.edges.map((e) => e.node);
+  const market = useMarketStore((s) => s.market);
   const firstAvailable = variants.find((v) => v.availableForSale) ?? variants[0];
   // No default size selection — shopper must pick. Single-variant products
   // (title-only option) auto-select since there's nothing to choose.
@@ -777,7 +780,7 @@ function ProductView({
                 )}
               </div>
               <p className="text-[10px] uppercase tracking-[0.25em] text-[var(--studio-muted)] font-medium">
-                Import duties included · Express global delivery
+                {marketTaxNote(market)} · Express global delivery
               </p>
               <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] uppercase tracking-[0.2em] text-[var(--studio-bronze)] font-semibold pt-1">
                 <span>100% Authentic</span>
@@ -1108,8 +1111,15 @@ function ProductView({
         />
 
 
-        {/* ===== Style It With — cross-house cross-sell rail ===== */}
-        {styleItWith.length > 0 && (
+        {/* ===== Curated "The Look" — stylist-picked bundle from `custom.look_products` ===== */}
+        {product.lookReferences?.references?.nodes && product.lookReferences.references.nodes.length > 0 && (
+          <section className="max-w-7xl mx-auto mt-16 md:mt-20 pt-10 md:pt-12 border-t border-[var(--studio-rule)]">
+            <CuratedLookBundle anchor={product} items={product.lookReferences.references.nodes} />
+          </section>
+        )}
+
+        {/* ===== Style It With — algorithmic cross-house cross-sell rail (fallback) ===== */}
+        {(!product.lookReferences?.references?.nodes || product.lookReferences.references.nodes.length === 0) && styleItWith.length > 0 && (
           <section className="max-w-7xl mx-auto mt-16 md:mt-20 pt-10 md:pt-12 border-t border-[var(--studio-rule)]">
             <StyleItWithRail items={styleItWith} />
           </section>
@@ -1166,6 +1176,90 @@ function ProductView({
         </div>
       </div>
     </div>
+  );
+}
+
+
+/**
+ * CuratedLookBundle — stylist-picked "The Look" rendered from the
+ * `custom.look_products` metafield on the anchor product. Cohesive,
+ * editorial multi-item bundle (not an algorithmic rail).
+ */
+function CuratedLookBundle({
+  anchor,
+  items,
+}: {
+  anchor: { title: string; handle: string; vendor: string; images: { edges: Array<{ node: { url: string; altText: string | null } }> }; priceRange: { minVariantPrice: Money } };
+  items: NonNullable<NonNullable<NonNullable<Awaited<ReturnType<typeof fetchProductByHandle>>>["lookReferences"]>["references"]>["nodes"];
+}) {
+  const bundleTotal = items.reduce(
+    (sum, it) => sum + parseFloat(it.priceRange.minVariantPrice.amount),
+    parseFloat(anchor.priceRange.minVariantPrice.amount),
+  );
+  const currency = anchor.priceRange.minVariantPrice.currencyCode;
+
+  return (
+    <>
+      <div className="flex items-end justify-between mb-10 gap-6">
+        <div className="space-y-3">
+          <p className="text-[10px] tracking-[0.32em] uppercase text-[var(--studio-bronze)] font-semibold">
+            Curated by our stylists
+          </p>
+          <h2 className="font-serif text-3xl md:text-4xl">The Look</h2>
+        </div>
+        <div className="hidden md:block text-right">
+          <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--studio-muted)]">Bundle total</p>
+          <p className="font-serif text-2xl mt-1">{formatPrice({ amount: bundleTotal.toFixed(2), currencyCode: currency })}</p>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-5 md:gap-6">
+        {[{ kind: "anchor" as const }, ...items.map((it) => ({ kind: "item" as const, it }))].slice(0, 4).map((entry, idx) => {
+          if (entry.kind === "anchor") {
+            const img = anchor.images.edges[0]?.node;
+            return (
+              <div key={`anchor-${idx}`} className="block">
+                <div className="relative aspect-[4/5] overflow-hidden bg-[var(--studio-sand-soft,#E8E0D2)]">
+                  {img && (
+                    <img src={cdnImage(img.url, { width: 600 })} alt={img.altText ?? anchor.title} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+                  )}
+                  <span className="absolute top-3 left-3 px-2 py-1 text-[9px] uppercase tracking-[0.28em] bg-[var(--studio-ink)] text-[var(--studio-bg)]">This piece</span>
+                </div>
+                <p className="mt-3 text-[10px] uppercase tracking-[0.28em] text-[var(--studio-bronze)] font-semibold">{anchor.vendor}</p>
+                <p className="text-sm font-serif truncate">{anchor.title}</p>
+                <p className="text-[11px] text-[var(--studio-muted)] mt-0.5">{formatPrice(anchor.priceRange.minVariantPrice)}</p>
+              </div>
+            );
+          }
+          const it = entry.it;
+          const img = it.images.edges[0]?.node;
+          return (
+            <Link
+              key={it.id}
+              to="/product/$handle"
+              params={{ handle: it.handle }}
+              className="group block"
+            >
+              <div className="relative aspect-[4/5] overflow-hidden bg-[var(--studio-sand-soft,#E8E0D2)]">
+                {img && (
+                  <img
+                    src={cdnImage(img.url, { width: 600 })}
+                    alt={img.altText ?? it.title}
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                    loading="lazy"
+                  />
+                )}
+              </div>
+              <p className="mt-3 text-[10px] uppercase tracking-[0.28em] text-[var(--studio-bronze)] font-semibold">{it.vendor}</p>
+              <p className="text-sm font-serif truncate group-hover:opacity-70 transition-opacity">{it.title}</p>
+              <p className="text-[11px] text-[var(--studio-muted)] mt-0.5">{formatPrice(it.priceRange.minVariantPrice)}</p>
+            </Link>
+          );
+        })}
+      </div>
+      <p className="mt-6 text-[10px] uppercase tracking-[0.28em] text-[var(--studio-muted)] md:hidden">
+        Bundle total · {formatPrice({ amount: bundleTotal.toFixed(2), currencyCode: currency })}
+      </p>
+    </>
   );
 }
 

@@ -107,6 +107,15 @@ const CART_BUYER_IDENTITY_UPDATE_MUTATION = `
   }
 `;
 
+function currentLocale(): string {
+  try {
+    const m = useMarketStore.getState().market;
+    return `${m.language.toLowerCase()}-${m.country.toUpperCase()}`;
+  } catch {
+    return "en-US";
+  }
+}
+
 function formatCheckoutUrl(checkoutUrl: string): string {
   try {
     const url = new URL(checkoutUrl);
@@ -126,6 +135,14 @@ function formatCheckoutUrl(checkoutUrl: string): string {
     url.protocol = "https:";
     url.searchParams.set("_fd", "0");
     url.searchParams.set("channel", "online_store");
+    // Surface the active market on the checkout URL itself — Shopify Markets
+    // honours `country` + `locale` query params so the hosted checkout opens
+    // in the same currency + language the storefront cart is rendering, even
+    // if the cart's `buyerIdentity.countryCode` was set in an earlier session.
+    const country = currentCountry();
+    const locale = currentLocale();
+    if (country) url.searchParams.set("country", country);
+    if (locale) url.searchParams.set("locale", locale);
     return url.toString();
   } catch {
     return checkoutUrl;
