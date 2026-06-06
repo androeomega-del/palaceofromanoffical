@@ -899,7 +899,10 @@ function CollectionPage() {
             />
 
             {q.isLoading ? (
-              <div className="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-x-5 md:gap-x-6 gap-y-12">
+              <div
+                className="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-x-5 md:gap-x-6 gap-y-12"
+                style={{ contain: "layout", minHeight: "60vh" }}
+              >
                 {Array.from({ length: 9 }).map((_, i) => (
                   <div key={i}>
                     <div className="w-full aspect-[4/5] por-shimmer mb-5" />
@@ -909,7 +912,7 @@ function CollectionPage() {
                 ))}
               </div>
             ) : edges.length === 0 ? (
-              <div className="py-20 text-center">
+              <div className="py-20 text-center" style={{ contain: "layout", minHeight: "60vh" }}>
                 <p className="text-sm text-muted-foreground mb-6">
                   No pieces match the current filters.
                 </p>
@@ -924,7 +927,10 @@ function CollectionPage() {
               </div>
             ) : (
               <>
-                <div className={`grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 ${gridGap}`}>
+                <div
+                  className={`grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 ${gridGap}`}
+                  style={{ contain: "layout", minHeight: "60vh" }}
+                >
                   {gridEdges.map((e) => (
                     <ProductCard key={e.node.id} product={e} suppressBadges={[...suppressedBadges]} />
                   ))}
