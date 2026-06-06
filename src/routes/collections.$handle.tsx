@@ -325,6 +325,36 @@ function CollectionNotFoundComponent() {
   );
 }
 
+function signatureSuffixForHandle(handle: string): string {
+  const brandHandles = new Set([
+    "gucci", "prada", "versace", "dolce-gabbana", "saint-laurent",
+    "bottega-veneta", "burberry", "fendi", "valentino", "balenciaga",
+    "givenchy", "loewe", "celine", "tom-ford", "brunello-cucinelli",
+    "ermenegildo-zegna", "canali", "corneliani", "kiton", "loro-piana",
+  ]);
+  if (brandHandles.has(handle)) return "Luxury Edit";
+  if (handle === "best-sellers") return "Luxury Edit";
+  if (handle === "new-arrivals") return "Collection";
+  return "Collection";
+}
+
+function formatCollectionH1(title: string, handle: string): string {
+  return `Authentic ${title} ${signatureSuffixForHandle(handle)}`;
+}
+
+function collectionFallbackDescription(title: string, handle: string): string {
+  const brandHandles = new Set([
+    "gucci", "prada", "versace", "dolce-gabbana", "saint-laurent",
+    "bottega-veneta", "burberry", "fendi", "valentino", "balenciaga",
+    "givenchy", "loewe", "celine", "tom-ford", "brunello-cucinelli",
+    "ermenegildo-zegna", "canali", "corneliani", "kiton", "loro-piana",
+  ]);
+  if (brandHandles.has(handle)) {
+    return `Explore our meticulously curated selection of verified, investment-grade items from ${title}, sourced through our exclusive global boutique network channels.`;
+  }
+  return `Explore our meticulously curated selection of verified, investment-grade ${title.toLowerCase()}, sourced through our exclusive global boutique network channels.`;
+}
+
 function titleizeHandle(handle: string) {
   return handle
     .replace(/-/g, " ")
