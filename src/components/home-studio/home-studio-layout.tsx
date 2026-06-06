@@ -23,6 +23,7 @@ import { AsymmetricGrid } from "./asymmetric-grid";
 import { PalaceHeader } from "./palace-header";
 import { palette, fontSans, fontSerif } from "./palette";
 import heroImage from "@/assets/home-hero.jpg";
+import heroVideoAsset from "@/assets/hero-cinematic.mp4.asset.json";
 
 interface HomeStudioLayoutProps {
   variant?: "embedded" | "standalone";
@@ -122,7 +123,7 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
                 aria-hidden="true"
                 className="absolute inset-0 w-full h-full object-cover"
               >
-                <source src="/assets/hero-cinematic.mp4" type="video/mp4" />
+                <source src={heroVideoAsset.url} type="video/mp4" />
               </video>
             </div>
           </div>
