@@ -324,5 +324,3 @@ function DestinationStylist({ dest }: { dest: VacationDestination }) {
   );
 }
 
-// Silence unused import in environments where useQuery tree-shaking warns.
-void useQuery;
