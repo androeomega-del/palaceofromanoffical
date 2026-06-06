@@ -52,7 +52,7 @@ export const newThisWeekQueryOptions = (dept: Dept) => {
     queryFn: () =>
       railCached(key, 60_000, () =>
         fetchProducts({
-          first: 4,
+          first: 6,
           query: `tag:${dept}`,
           sortKey: "CREATED_AT",
           reverse: true,
