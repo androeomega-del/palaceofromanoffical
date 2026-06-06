@@ -8,6 +8,7 @@ import { formatPrice } from "@/lib/shopify";
 import { trackCartEvent } from "@/lib/cart-analytics";
 import { CartFbt } from "@/components/cart-fbt";
 import { CartEmailCapture, type CartEmailCaptureHandle } from "@/components/atelier/cart-email-capture";
+import { VipPriorityAccess } from "@/components/atelier/vip-priority-access";
 
 
 
@@ -106,6 +107,7 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
         ) : (
           <>
             <div className="flex-1 overflow-y-auto">
+              <VipPriorityAccess />
               <ul className="space-y-8 px-6 py-6">
                 {items.map((item: any) => {
                   const img = item.product.node.images?.edges?.[0]?.node;
