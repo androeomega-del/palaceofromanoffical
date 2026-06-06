@@ -1,4 +1,5 @@
-import { createFileRoute, Link, useNavigate, redirect, stripSearchParams } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useRouter, redirect, stripSearchParams } from "@tanstack/react-router";
+import { collectionFirstPageQueryOptions } from "@/lib/rails/collection-first-page";
 import { canonicalCollectionHandle } from "@/lib/collection-canonical";
 import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo, useState, useEffect, useRef, useCallback } from "react";
@@ -163,10 +164,28 @@ export const Route = createFileRoute("/collections/$handle")({
   },
   // SEO: keep bare /collections/<handle> canonical — don't 307 to ?sort=…default.
   search: { middlewares: [stripSearchParams({ sort: "BEST_SELLING-false" as SortValue })] },
-  loader: async ({ params }) => {
+  loaderDeps: ({ search: { sort } }) => ({ sort }),
+  loader: async ({ params, deps, context }) => {
+    // Resolve the effective sort identically to the component so the SSR
+    // cache key matches the client useInfiniteQuery key exactly.
+    const effectiveSort =
+      params.handle === "new-arrivals" && deps.sort === "BEST_SELLING-false"
+        ? "CREATED-true"
+        : deps.sort;
+    const [sortKey, reverseStr] = effectiveSort.split("-");
+    const reverse = reverseStr === "true";
+
     const [collectionRes, abRes] = await Promise.all([
       fetchCollection(params.handle, 1).catch(() => null),
       readMetaAbBucket().catch(() => ({ bucket: 0 as MetaBucket })),
+      // Prime page-1 grid into the same InfiniteData entry the component
+      // subscribes to. .catch keeps the page rendering on Shopify hiccups;
+      // the client query will retry naturally.
+      context.queryClient
+        .ensureInfiniteQueryData(
+          collectionFirstPageQueryOptions({ handle: params.handle, sortKey, reverse }),
+        )
+        .catch(() => null),
     ]);
     return {
       title: collectionRes?.title ?? titleizeHandle(params.handle),
@@ -237,7 +256,74 @@ export const Route = createFileRoute("/collections/$handle")({
     };
   },
   component: CollectionPage,
+  errorComponent: CollectionErrorComponent,
+  notFoundComponent: CollectionNotFoundComponent,
 });
+
+function CollectionErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+  console.error("[collection] runtime error:", error);
+  const router = useRouter();
+  return (
+    <div className="flex min-h-[70vh] items-center justify-center bg-canvas px-4">
+      <div className="max-w-md text-center">
+        <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-6">
+          Something interrupted this edit
+        </p>
+        <h1 className="text-4xl font-serif mb-6">We couldn't load this collection</h1>
+        <p className="text-sm text-muted-foreground mb-10">
+          A passing glitch — please try again, or browse the boutique while we tidy up.
+        </p>
+        <div className="flex flex-wrap justify-center gap-6">
+          <button
+            onClick={() => { router.invalidate(); reset(); }}
+            className="text-[11px] uppercase tracking-[0.25em] border-b border-ink pb-1 hover:text-bronze hover:border-bronze transition-colors"
+          >
+            Try Again
+          </button>
+          <Link
+            to="/shop"
+            className="text-[11px] uppercase tracking-[0.25em] border-b border-ink/20 pb-1 hover:text-ink transition-colors"
+          >
+            Browse the Boutique
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CollectionNotFoundComponent() {
+  const { handle } = Route.useParams();
+  return (
+    <div className="flex min-h-[70vh] items-center justify-center bg-canvas px-4">
+      <div className="max-w-md text-center">
+        <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-6">
+          Collection not found
+        </p>
+        <h1 className="text-4xl font-serif mb-6">
+          {titleizeHandle(handle)} isn't in the boutique
+        </h1>
+        <p className="text-sm text-muted-foreground mb-10">
+          The collection you're looking for may have moved or been renamed.
+        </p>
+        <div className="flex flex-wrap justify-center gap-6">
+          <Link
+            to="/collections"
+            className="text-[11px] uppercase tracking-[0.25em] border-b border-ink pb-1 hover:text-bronze hover:border-bronze transition-colors"
+          >
+            All Collections
+          </Link>
+          <Link
+            to="/shop"
+            className="text-[11px] uppercase tracking-[0.25em] border-b border-ink/20 pb-1 hover:text-ink transition-colors"
+          >
+            Browse the Boutique
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function titleizeHandle(handle: string) {
   return handle
