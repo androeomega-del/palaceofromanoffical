@@ -1,11 +1,16 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, ErrorComponent } from "@tanstack/react-router";
 import {
   LandingCollectionPage,
   faqJsonLd,
   breadcrumbJsonLd,
   type LandingFAQ,
 } from "@/components/landing-collection-page";
+import { landingCollectionQueryOptions } from "@/lib/landing-collection.functions";
 import { routeHead, SITE_NAME, SITE_URL } from "@/lib/seo";
+
+const SHOPIFY_QUERY = "belt";
+const LANDING_QO = landingCollectionQueryOptions({ query: SHOPIFY_QUERY, first: 12 });
+
 
 const PATH = "/collections/designer-belts";
 const H1 = "Designer Belts";
@@ -48,6 +53,9 @@ export const Route = createFileRoute("/collections/designer-belts")({
       ],
     };
   },
+  loader: ({ context }) => context.queryClient.ensureQueryData(LANDING_QO),
+  errorComponent: ErrorComponent,
+  notFoundComponent: () => <div className="p-12 text-center text-ink/70">Collection not found.</div>,
   component: Page,
 });
 
@@ -86,7 +94,8 @@ function Page() {
           </p>
         </>
       }
-      shopifyQuery="belt"
+      shopifyQuery={SHOPIFY_QUERY}
+      queryOptions={LANDING_QO}
       faqs={FAQS}
       relatedGuides={[
         { to: "/journal/craftsmanship/caring-for-fine-leather", label: "Caring for fine leather" },

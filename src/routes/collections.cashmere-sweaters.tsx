@@ -1,11 +1,16 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, ErrorComponent } from "@tanstack/react-router";
 import {
   LandingCollectionPage,
   faqJsonLd,
   breadcrumbJsonLd,
   type LandingFAQ,
 } from "@/components/landing-collection-page";
+import { landingCollectionQueryOptions } from "@/lib/landing-collection.functions";
 import { routeHead, SITE_NAME, SITE_URL } from "@/lib/seo";
+
+const SHOPIFY_QUERY = "cashmere";
+const LANDING_QO = landingCollectionQueryOptions({ query: SHOPIFY_QUERY, first: 12 });
+
 
 const PATH = "/collections/cashmere-sweaters";
 const H1 = "Cashmere Sweaters";
@@ -48,8 +53,12 @@ export const Route = createFileRoute("/collections/cashmere-sweaters")({
       ],
     };
   },
+  loader: ({ context }) => context.queryClient.ensureQueryData(LANDING_QO),
+  errorComponent: ErrorComponent,
+  notFoundComponent: () => <div className="p-12 text-center text-ink/70">Collection not found.</div>,
   component: Page,
 });
+
 
 function Page() {
   return (
@@ -87,7 +96,8 @@ function Page() {
           </p>
         </>
       }
-      shopifyQuery="cashmere"
+      shopifyQuery={SHOPIFY_QUERY}
+      queryOptions={LANDING_QO}
       faqs={FAQS}
       relatedGuides={[
         { to: "/journal/craftsmanship/made-in-italy-vs-designed-in-italy", label: "Made in Italy vs Designed in Italy" },
