@@ -207,8 +207,15 @@ export function ProductCard({
 
   const altBase = p.vendor ? `${p.title} — ${p.vendor}` : p.title;
   const totalImages = p.images?.edges?.length ?? 0;
-  const alt1 = buildProductAlt(p, { index: 0, total: totalImages, shopifyAlt: img?.altText });
+  // Primary card image uses the strict luxury-listing alt format for SEO.
+  // Secondary (hover) image keeps the descriptive multi-attribute alt so
+  // screen-readers get distinct, useful context per view.
+  const alt1 = buildLuxuryListingAlt(p);
   const alt2 = buildProductAlt(p, { index: 1, total: totalImages, shopifyAlt: img2?.altText });
+  // Above-the-fold heuristic: first row of any grid (positions 0–3) gets
+  // fetchpriority="high" and skips lazy-loading so the LCP candidate is
+  // requested at high priority. Everything below the fold stays lazy.
+  const isAboveFold = typeof position === "number" && position < 4;
 
   const onAdd = async (e: React.MouseEvent) => {
     e.preventDefault();
