@@ -50,7 +50,7 @@ import brandVersace from "@/assets/brand-versace.jpg";
 
 export function FarfetchEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {}) {
   return (
-    <>
+    <div style={{ contain: "layout" }}>
       <HomepageShippingTrustBar />
       <DepartmentGateway />
       <BestSellersRail />
@@ -65,7 +65,7 @@ export function FarfetchEditionBody({ aiBlocks }: { aiBlocks?: ReactNode } = {})
       />
       <DiscreteTrustStrip />
       <BrandStatement />
-    </>
+    </div>
   );
 }
 
