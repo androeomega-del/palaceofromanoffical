@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { storefrontApiRequest } from "@/lib/shopify";
-import { renderSitemap, sitemapResponse, type UrlEntry } from "@/lib/sitemap-xml";
+import { renderSitemap, sitemapResponse, guardCanonicalSitemapHost, type UrlEntry } from "@/lib/sitemap-xml";
 
 const MAX_PRODUCTS = 5000;
 const PRODUCT_PAGE_SIZE = 250;
@@ -41,7 +41,9 @@ async function fetchAllProductSlugs(): Promise<Array<{ handle: string; updatedAt
 export const Route = createFileRoute("/sitemap-brands.xml")({
   server: {
     handlers: {
-      GET: async () => {
+      GET: async ({ request }) => {
+        const blocked = guardCanonicalSitemapHost(request);
+        if (blocked) return blocked;
         const entries: UrlEntry[] = [];
         try {
           const products = await fetchAllProductSlugs();

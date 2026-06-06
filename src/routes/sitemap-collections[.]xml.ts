@@ -2,12 +2,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { fetchCollections } from "@/lib/shopify";
 import { canonicalCollectionHandle } from "@/lib/collection-canonical";
-import { renderSitemap, sitemapResponse, type UrlEntry } from "@/lib/sitemap-xml";
+import { renderSitemap, sitemapResponse, guardCanonicalSitemapHost, type UrlEntry } from "@/lib/sitemap-xml";
 
 export const Route = createFileRoute("/sitemap-collections.xml")({
   server: {
     handlers: {
-      GET: async () => {
+      GET: async ({ request }) => {
+        const blocked = guardCanonicalSitemapHost(request);
+        if (blocked) return blocked;
         const entries: UrlEntry[] = [];
         try {
           const collections = await fetchCollections(500);

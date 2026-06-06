@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
-import { SITE_URL, xmlEscape } from "@/lib/sitemap-xml";
+import { SITE_URL, xmlEscape, guardCanonicalSitemapHost } from "@/lib/sitemap-xml";
 
 const SITEMAPS = [
   "/sitemap-static.xml",
@@ -12,7 +12,10 @@ const SITEMAPS = [
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
-      GET: async () => {
+      GET: async ({ request }) => {
+        const blocked = guardCanonicalSitemapHost(request);
+        if (blocked) return blocked;
+
         const lines = [
           `<?xml version="1.0" encoding="UTF-8"?>`,
           `<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`,

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
-import { renderSitemap, sitemapResponse, type UrlEntry } from "@/lib/sitemap-xml";
+import { renderSitemap, sitemapResponse, guardCanonicalSitemapHost, type UrlEntry } from "@/lib/sitemap-xml";
 
 const STATIC_ROUTES: UrlEntry[] = [
   { path: "/", changefreq: "daily", priority: "1.0" },
@@ -86,7 +86,7 @@ const STATIC_ROUTES: UrlEntry[] = [
 export const Route = createFileRoute("/sitemap-static.xml")({
   server: {
     handlers: {
-      GET: async () => sitemapResponse(renderSitemap(STATIC_ROUTES)),
+      GET: async ({ request }) => guardCanonicalSitemapHost(request) ?? sitemapResponse(renderSitemap(STATIC_ROUTES)),
     },
   },
 });
