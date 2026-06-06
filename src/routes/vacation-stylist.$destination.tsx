@@ -4,10 +4,10 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { Loader2, MapPin, Calendar, Sparkles } from "lucide-react";
 import {
-  getVacationDestination,
   type VacationDestination,
   type VacationVibe,
 } from "@/lib/vacation-destinations";
+import { getVacationDestination } from "@/lib/vacation-destinations.functions";
 import { buildVacationCapsule, type StylistResult } from "@/lib/vacation-stylist.functions";
 import { ProductCard } from "@/components/product-card";
 import { routeHead } from "@/lib/seo";
