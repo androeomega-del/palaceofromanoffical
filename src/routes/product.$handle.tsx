@@ -29,6 +29,7 @@ import AIRecommendations from "@/components/ai-recommendations";
 import { PdpAuthenticityStrip } from "@/components/pdp-authenticity-strip";
 import { PdpShippingSheet } from "@/components/pdp-shipping-sheet";
 import { YelpTrustBadge } from "@/components/yelp-trust-badge";
+import { GbpTrustBadge } from "@/components/gbp-trust-badge";
 import { cdnImage, cdnSrcSet } from "@/lib/cdn-image";
 import { PdpDeliveryBadge } from "@/components/pdp-delivery-badge";
 import { PdpBrandHeritage } from "@/components/pdp-brand-heritage";
