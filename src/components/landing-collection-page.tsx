@@ -1,11 +1,17 @@
 import { Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { fetchProducts, type ShopifyProduct } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
 import { SITE_URL } from "@/lib/seo";
 
 export type LandingFAQ = { q: string; a: string };
 export type LandingRelatedGuide = { to: string; label: string };
+
+export type LandingQueryOptions = {
+  queryKey: readonly unknown[];
+  queryFn: () => Promise<ShopifyProduct[]>;
+  staleTime?: number;
+};
 
 export function LandingCollectionPage({
   eyebrow,
@@ -15,6 +21,7 @@ export function LandingCollectionPage({
   shopifyQuery,
   faqs,
   relatedGuides,
+  queryOptions,
 }: {
   eyebrow: string;
   h1: string;
@@ -23,14 +30,41 @@ export function LandingCollectionPage({
   shopifyQuery: string;
   faqs: LandingFAQ[];
   relatedGuides: LandingRelatedGuide[];
+  queryOptions?: LandingQueryOptions;
+}) {
+  if (queryOptions) return <Primed {...{ eyebrow, h1, intro, body, faqs, relatedGuides, queryOptions }} />;
+  return <Legacy {...{ eyebrow, h1, intro, body, shopifyQuery, faqs, relatedGuides }} />;
+}
+
+function Primed(props: {
+  eyebrow: string; h1: string; intro: string; body: React.ReactNode;
+  faqs: LandingFAQ[]; relatedGuides: LandingRelatedGuide[];
+  queryOptions: LandingQueryOptions;
+}) {
+  const { data } = useSuspenseQuery(props.queryOptions);
+  return <Body {...props} data={data} isLoading={false} />;
+}
+
+function Legacy(props: {
+  eyebrow: string; h1: string; intro: string; body: React.ReactNode;
+  shopifyQuery: string; faqs: LandingFAQ[]; relatedGuides: LandingRelatedGuide[];
 }) {
   const { data, isLoading } = useQuery({
-    queryKey: ["landing", shopifyQuery],
+    queryKey: ["landing", props.shopifyQuery],
     queryFn: async () =>
-      (await fetchProducts({ first: 12, query: shopifyQuery, sortKey: "BEST_SELLING" })) as ShopifyProduct[],
+      (await fetchProducts({ first: 12, query: props.shopifyQuery, sortKey: "BEST_SELLING" })) as ShopifyProduct[],
     staleTime: 5 * 60 * 1000,
   });
+  return <Body {...props} data={data} isLoading={isLoading} />;
+}
 
+function Body({
+  eyebrow, h1, intro, body, faqs, relatedGuides, data, isLoading,
+}: {
+  eyebrow: string; h1: string; intro: string; body: React.ReactNode;
+  faqs: LandingFAQ[]; relatedGuides: LandingRelatedGuide[];
+  data: ShopifyProduct[] | undefined; isLoading: boolean;
+}) {
   const products = data ?? [];
 
   return (
