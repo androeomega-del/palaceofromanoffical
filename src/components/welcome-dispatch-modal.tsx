@@ -182,13 +182,23 @@ export function WelcomeDispatchModal() {
                 We've sent a confirmation link to verify your email. Click it to
                 complete your subscription.
               </p>
-              <button
-                type="button"
-                onClick={dismiss}
-                className="mt-6 inline-block text-[11px] uppercase tracking-[0.25em] border-b border-ink pb-1 hover:text-bronze hover:border-bronze transition-colors"
-              >
-                Continue browsing
-              </button>
+              <div className="mt-6 flex items-center justify-center gap-5">
+                <button
+                  type="button"
+                  onClick={dismiss}
+                  className="text-[11px] uppercase tracking-[0.25em] border-b border-ink pb-1 hover:text-bronze hover:border-bronze transition-colors"
+                >
+                  Continue browsing
+                </button>
+                <span aria-hidden="true" className="text-ink/20">·</span>
+                <a
+                  href="/"
+                  onClick={dismiss}
+                  className="text-[11px] uppercase tracking-[0.25em] border-b border-ink pb-1 hover:text-bronze hover:border-bronze transition-colors"
+                >
+                  Enter the boutique →
+                </a>
+              </div>
             </div>
           ) : (
             <form onSubmit={onSubmit} noValidate className="space-y-4">
