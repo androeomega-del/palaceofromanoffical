@@ -291,7 +291,10 @@ function BrandPage() {
       <section className="px-6 py-20">
         <div className="max-w-screen-2xl mx-auto">
           {q.isLoading ? (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
+            <div
+              className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12"
+              style={{ contain: "layout", minHeight: "60vh" }}
+            >
               {Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className="animate-pulse">
                   <div className="w-full aspect-[4/5] bg-muted mb-5" />
@@ -301,7 +304,7 @@ function BrandPage() {
               ))}
             </div>
           ) : edges.length === 0 ? (
-            <div className="py-32 text-center">
+            <div className="py-32 text-center" style={{ contain: "layout", minHeight: "60vh" }}>
               <p className="text-sm text-muted-foreground">
                 No pieces currently available from {name}. The buyers refresh the {name} edit
                 weekly — check back shortly or browse adjacent houses on the{" "}
@@ -313,7 +316,10 @@ function BrandPage() {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-2 lg:grid-cols-4 2xl:grid-cols-5 gap-x-5 md:gap-x-6 gap-y-14">
+              <div
+                className="grid grid-cols-2 lg:grid-cols-4 2xl:grid-cols-5 gap-x-5 md:gap-x-6 gap-y-14"
+                style={{ contain: "layout", minHeight: "60vh" }}
+              >
                 {edges.map((e) => (
                   <ProductCard key={e.node.id} product={e} />
                 ))}
