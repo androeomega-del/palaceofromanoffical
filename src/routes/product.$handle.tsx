@@ -305,9 +305,54 @@ export const Route = createFileRoute("/product/$handle")({
       meta.push({ property: "product:availability", content: anyAvailable ? "instock" : "out of stock" });
     }
 
+    // ── Localized hreflang alternates ──────────────────────────────────
+    // Same canonical resource, surfaced to each supported market with
+    // `?country=XX&locale=YY` so Shopify's @inContext checkout opens in
+    // the right currency + language when a regional searcher clicks
+    // through. `x-default` falls back to the bare canonical.
+    const hreflangLinks = MARKETS.map((m) => ({
+      rel: "alternate",
+      hrefLang: `${m.language.toLowerCase()}-${m.country}`,
+      href: `${url}?country=${m.country}&locale=${m.language.toLowerCase()}`,
+    }));
+
+    // ── isRelatedTo — companion bundle for Google rich-result carousels ──
+    const isRelatedTo = companions.map((c) => {
+      const cUrl = absoluteUrl(`/product/${c.handle}`);
+      const cImg = c.images?.edges?.[0]?.node?.url;
+      const cPrice = c.priceRange?.minVariantPrice;
+      return {
+        "@type": "Product",
+        "@id": cUrl + "#product",
+        name: c.title,
+        url: cUrl,
+        ...(c.vendor ? { brand: { "@type": "Brand", name: c.vendor } } : {}),
+        ...(cImg ? { image: cdnImage(cImg, { width: 1200, format: "jpg" }) || cImg } : {}),
+        ...(cPrice
+          ? {
+              offers: {
+                "@type": "Offer",
+                url: cUrl,
+                price: cPrice.amount,
+                priceCurrency: cPrice.currencyCode,
+                availability: c.availableForSale
+                  ? "https://schema.org/InStock"
+                  : "https://schema.org/OutOfStock",
+                itemCondition: "https://schema.org/NewCondition",
+                seller,
+              },
+            }
+          : {}),
+      };
+    });
+
     return {
       meta,
-      links: [{ rel: "canonical", href: url }],
+      links: [
+        { rel: "canonical", href: url },
+        ...hreflangLinks,
+        { rel: "alternate", hrefLang: "x-default", href: url },
+      ],
       scripts: [
         {
           type: "application/ld+json",
@@ -329,6 +374,7 @@ export const Route = createFileRoute("/product/$handle")({
               ? { "@type": "Country", name: parsedComp.madeIn.replace(/^Made in /, "") }
               : { "@type": "Country", name: "Italy" },
             offers,
+            ...(isRelatedTo.length ? { isRelatedTo } : {}),
           }),
         },
         {
