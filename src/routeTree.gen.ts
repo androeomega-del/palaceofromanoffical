@@ -27,6 +27,7 @@ import { Route as ShippingReturnsRouteImport } from './routes/shipping-returns'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as PrelovedRouteImport } from './routes/preloved'
 import { Route as OrderConfirmedRouteImport } from './routes/order-confirmed'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LinksRouteImport } from './routes/links'
@@ -247,6 +248,11 @@ const ReviewsRoute = ReviewsRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrelovedRoute = PrelovedRouteImport.update({
+  id: '/preloved',
+  path: '/preloved',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OrderConfirmedRoute = OrderConfirmedRouteImport.update({
@@ -944,6 +950,7 @@ export interface FileRoutesByFullPath {
   '/links': typeof LinksRoute
   '/login': typeof LoginRoute
   '/order-confirmed': typeof OrderConfirmedRoute
+  '/preloved': typeof PrelovedRoute
   '/privacy': typeof PrivacyRoute
   '/reviews': typeof ReviewsRoute
   '/robots.txt': typeof RobotsDottxtRoute
@@ -1090,6 +1097,7 @@ export interface FileRoutesByTo {
   '/links': typeof LinksRoute
   '/login': typeof LoginRoute
   '/order-confirmed': typeof OrderConfirmedRoute
+  '/preloved': typeof PrelovedRoute
   '/privacy': typeof PrivacyRoute
   '/reviews': typeof ReviewsRoute
   '/robots.txt': typeof RobotsDottxtRoute
@@ -1238,6 +1246,7 @@ export interface FileRoutesById {
   '/links': typeof LinksRoute
   '/login': typeof LoginRoute
   '/order-confirmed': typeof OrderConfirmedRoute
+  '/preloved': typeof PrelovedRoute
   '/privacy': typeof PrivacyRoute
   '/reviews': typeof ReviewsRoute
   '/robots.txt': typeof RobotsDottxtRoute
@@ -1388,6 +1397,7 @@ export interface FileRouteTypes {
     | '/links'
     | '/login'
     | '/order-confirmed'
+    | '/preloved'
     | '/privacy'
     | '/reviews'
     | '/robots.txt'
@@ -1534,6 +1544,7 @@ export interface FileRouteTypes {
     | '/links'
     | '/login'
     | '/order-confirmed'
+    | '/preloved'
     | '/privacy'
     | '/reviews'
     | '/robots.txt'
@@ -1681,6 +1692,7 @@ export interface FileRouteTypes {
     | '/links'
     | '/login'
     | '/order-confirmed'
+    | '/preloved'
     | '/privacy'
     | '/reviews'
     | '/robots.txt'
@@ -1830,6 +1842,7 @@ export interface RootRouteChildren {
   LinksRoute: typeof LinksRoute
   LoginRoute: typeof LoginRoute
   OrderConfirmedRoute: typeof OrderConfirmedRoute
+  PrelovedRoute: typeof PrelovedRoute
   PrivacyRoute: typeof PrivacyRoute
   ReviewsRoute: typeof ReviewsRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
@@ -2068,6 +2081,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/preloved': {
+      id: '/preloved'
+      path: '/preloved'
+      fullPath: '/preloved'
+      preLoaderRoute: typeof PrelovedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/order-confirmed': {
@@ -3097,6 +3117,7 @@ const rootRouteChildren: RootRouteChildren = {
   LinksRoute: LinksRoute,
   LoginRoute: LoginRoute,
   OrderConfirmedRoute: OrderConfirmedRoute,
+  PrelovedRoute: PrelovedRoute,
   PrivacyRoute: PrivacyRoute,
   ReviewsRoute: ReviewsRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
