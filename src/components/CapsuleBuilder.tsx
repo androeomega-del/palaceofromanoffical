@@ -26,6 +26,7 @@ import {
   SheetTitle,
   SheetDescription,
 } from "@/components/ui/sheet";
+import { useCartStore } from "@/stores/cart-store";
 
 export type CapsuleSlotKind =
   | "Top"
