@@ -91,11 +91,17 @@ export const Route = createFileRoute("/vacation-stylist/$destination")({
 });
 
 function DestinationPage() {
-  const { destination: dest } = Route.useLoaderData();
-  return <DestinationStylist dest={dest} />;
+  const { destination: dest, curated } = Route.useLoaderData();
+  return <DestinationStylist dest={dest} curated={curated} />;
 }
 
-function DestinationStylist({ dest }: { dest: VacationDestination }) {
+function DestinationStylist({
+  dest,
+  curated,
+}: {
+  dest: VacationDestination;
+  curated: ShopifyProduct[];
+}) {
   const build = useServerFn(buildVacationCapsule);
   const [destination, setDestination] = useState(dest.name);
   const [startDate, setStartDate] = useState("");
