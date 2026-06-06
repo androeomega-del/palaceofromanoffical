@@ -22,18 +22,27 @@ const HUB_DESC =
   "Curated pre-owned designer fashion from Gucci, Prada, Saint Laurent and beyond. Every piece authenticated and condition-graded by Palace of Roman's pre-owned atelier — Pristine, Excellent, and New with Tags.";
 
 export const Route = createFileRoute("/preloved/")({
-  head: () => ({
-    meta: [
-      { title: HUB_TITLE },
-      { name: "description", content: HUB_DESC },
-      { property: "og:title", content: HUB_TITLE },
-      { property: "og:description", content: HUB_DESC },
-      { property: "og:type", content: "website" },
-      { property: "og:url", content: absoluteUrl("/preloved") },
-      { name: "twitter:card", content: "summary_large_image" },
-      { rel: "canonical", href: absoluteUrl("/preloved") },
-    ],
-  }),
+  head: ({ loaderData }) => {
+    const products = loaderData?.edges?.map((e) => e.node) ?? [];
+    return {
+      meta: [
+        { title: HUB_TITLE },
+        { name: "description", content: HUB_DESC },
+        { property: "og:title", content: HUB_TITLE },
+        { property: "og:description", content: HUB_DESC },
+        { property: "og:type", content: "website" },
+        { property: "og:url", content: absoluteUrl("/preloved") },
+        { name: "twitter:card", content: "summary_large_image" },
+      ],
+      links: [{ rel: "canonical", href: absoluteUrl("/preloved") }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: buildPrelovedHubJsonLd(products),
+        },
+      ],
+    };
+  },
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(prelovedHubQueryOptions()),
   component: PrelovedHubPage,
