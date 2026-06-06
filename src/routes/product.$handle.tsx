@@ -1298,6 +1298,10 @@ function ProductView({
             seedProduct={product}
             seedVariantId={selectedVariant?.id}
             seedKind={classifyCapsuleKind(product.productType)}
+            candidatePool={[
+              ...related.map((e) => e.node),
+              ...styleItWith.map((e) => e.node),
+            ]}
           />
         </div>
 
