@@ -12,8 +12,10 @@ const SITEMAPS = [
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
-      GET: async () => {
-        const lines = [
+      GET: async ({ request }) => {
+        const blocked = guardCanonicalSitemapHost(request);
+        if (blocked) return blocked;
+
           `<?xml version="1.0" encoding="UTF-8"?>`,
           `<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`,
           ...SITEMAPS.map(
