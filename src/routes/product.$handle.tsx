@@ -13,6 +13,8 @@ import {
   type ShopifyProductLite,
 } from "@/lib/shopify";
 import { pageTitle, metaDescription, absoluteUrl, SITE_URL } from "@/lib/seo";
+import { BreadcrumbTrail, buildBreadcrumbJsonLd, type BreadcrumbItem } from "@/components/seo/breadcrumb-trail";
+
 import { useCartStore } from "@/stores/cart-store";
 import { useMarketStore } from "@/stores/market-store";
 import { marketTaxNote } from "@/lib/market-tax";
@@ -400,30 +402,32 @@ export const Route = createFileRoute("/product/$handle")({
         },
         {
           type: "application/ld+json",
-          children: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL + "/" },
-              { "@type": "ListItem", position: 2, name: "Shop", item: SITE_URL + "/shop" },
-              ...(p.vendor && vendorSlug
-                ? [{
-                    "@type": "ListItem",
-                    position: 3,
-                    name: p.vendor,
-                    item: `${SITE_URL}/collections/${vendorSlug}`,
-                  }]
-                : []),
-              {
-                "@type": "ListItem",
-                position: p.vendor && vendorSlug ? 4 : 3,
-                name: p.title,
-                item: url,
-              },
-            ],
-          }),
+          children: JSON.stringify(
+            buildBreadcrumbJsonLd(
+              // Home > Brand > Signature Category > Product Title.
+              // Each non-terminal step links to a real, indexable destination
+              // and carries its full long-tail label (e.g.
+              // "Prada Re-Nylon Bags") so the BreadcrumbList rich result
+              // reinforces collection-keyword variants in SERPs.
+              [
+                { name: "Home", href: "/" },
+                ...(p.vendor && vendorSlug
+                  ? [{ name: p.vendor, href: `/brand/${vendorSlug}` } as BreadcrumbItem]
+                  : []),
+                ...(p.productType
+                  ? [{
+                      name: p.vendor ? `${p.vendor} ${p.productType}` : p.productType,
+                      href: vendorSlug ? `/collections/${vendorSlug}` : "/shop",
+                    } as BreadcrumbItem]
+                  : []),
+                { name: p.title },
+              ],
+              `/product/${p.handle}`,
+            ),
+          ),
         },
       ],
+
     };
   },
   component: ProductPage,
@@ -783,22 +787,33 @@ function ProductView({
 
   return (
     <div className="studio obsidian min-h-screen">
-      {/* Breadcrumb */}
+      {/* Breadcrumb — SSR; mirrors the BreadcrumbList JSON-LD in head() */}
       <div className="px-6 pt-10">
-        <div className="max-w-screen-2xl mx-auto flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-[var(--studio-muted)]">
-          <Link to="/" className="hover:text-[var(--studio-ink)] transition-colors">Boutique</Link>
-          <span className="opacity-40">/</span>
-          <Link
-            to="/collections/$handle"
-            params={{ handle: vendorHandle }}
-            className="hover:text-[var(--studio-ink)] transition-colors"
-          >
-            {product.vendor}
-          </Link>
-          <span className="opacity-40">/</span>
-          <span className="text-[var(--studio-ink)] truncate max-w-[28ch] sm:max-w-[40ch] xl:max-w-none xl:truncate-none xl:whitespace-normal">{product.title}</span>
+        <div className="max-w-screen-2xl mx-auto">
+          <BreadcrumbTrail
+            items={[
+              { name: "Home", href: "/" },
+              ...(product.vendor && vendorHandle
+                ? [{ name: product.vendor, href: "/brand/$vendor" } as BreadcrumbItem]
+                : []),
+              ...(product.productType
+                ? [{
+                    name: product.vendor
+                      ? `${product.vendor} ${product.productType}`
+                      : product.productType,
+                    href: "/collections/$handle",
+                  } as BreadcrumbItem]
+                : []),
+              { name: product.title },
+            ]}
+            linkParams={{
+              "/brand/$vendor": { vendor: vendorHandle },
+              "/collections/$handle": { handle: vendorHandle },
+            }}
+          />
         </div>
       </div>
+
 
       <div className="px-6 md:px-10 pt-6 md:pt-8 pb-10 md:pb-14">
         <div className="max-w-screen-2xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-10 lg:gap-12 items-start">
