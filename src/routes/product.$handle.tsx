@@ -1324,29 +1324,112 @@ function ProductView({
 
 
 /**
- * CuratedLookBundle — stylist-picked "The Look" rendered from the
- * `custom.look_products` metafield on the anchor product. Cohesive,
- * editorial multi-item bundle (not an algorithmic rail).
+ * CuratedLookBundle — "The Look" multi-item bundle. Renders either:
+ *   • stylist-picked items from `custom.look_products` (when `auto` is false), or
+ *   • AI-curated cross-category companions (when `auto` is true).
+ * Layout, bundle-total chip, and "Add Entire Look to Cart" behave identically.
  */
 function CuratedLookBundle({
   anchor,
   items,
+  auto = false,
 }: {
-  anchor: { title: string; handle: string; vendor: string; images: { edges: Array<{ node: { url: string; altText: string | null } }> }; priceRange: { minVariantPrice: Money } };
-  items: NonNullable<NonNullable<NonNullable<Awaited<ReturnType<typeof fetchProductByHandle>>>["lookReferences"]>["references"]>["nodes"];
+  anchor: NonNullable<Awaited<ReturnType<typeof fetchProductByHandle>>>;
+  items: ShopifyProductLite[];
+  auto?: boolean;
 }) {
+  const addItem = useCartStore((s) => s.addItem);
+  const openDrawer = useCartStore((s) => s.openDrawer);
+  const [bundleLoading, setBundleLoading] = useState(false);
+
   const bundleTotal = items.reduce(
     (sum, it) => sum + parseFloat(it.priceRange.minVariantPrice.amount),
     parseFloat(anchor.priceRange.minVariantPrice.amount),
   );
   const currency = anchor.priceRange.minVariantPrice.currencyCode;
 
+  const handleAddEntireLook = async () => {
+    if (bundleLoading) return;
+    setBundleLoading(true);
+    try {
+      const anchorVariant =
+        anchor.variants.edges.find((e) => e.node.availableForSale)?.node ??
+        anchor.variants.edges[0]?.node;
+      const lines: Array<{ ok: boolean; title: string }> = [];
+
+      if (anchorVariant) {
+        const ok = await addItem({
+          product: { node: anchor },
+          variantId: anchorVariant.id,
+          variantTitle: anchorVariant.title,
+          price: anchorVariant.price,
+          quantity: 1,
+          selectedOptions: anchorVariant.selectedOptions ?? [],
+        });
+        lines.push({ ok, title: anchor.title });
+      }
+
+      for (const it of items) {
+        const v = it.variants.edges.find((e) => e.node.availableForSale)?.node
+          ?? it.variants.edges[0]?.node;
+        if (!v) { lines.push({ ok: false, title: it.title }); continue; }
+        // Coerce ShopifyProductLite → ShopifyProductNode for the cart payload.
+        const node: ShopifyProductNode = {
+          id: it.id,
+          title: it.title,
+          description: "",
+          handle: it.handle,
+          vendor: it.vendor,
+          productType: "",
+          priceRange: it.priceRange,
+          compareAtPriceRange: it.compareAtPriceRange,
+          images: it.images,
+          variants: it.variants,
+          options: [],
+        };
+        const ok = await addItem({
+          product: { node },
+          variantId: v.id,
+          variantTitle: v.title,
+          price: v.price,
+          quantity: 1,
+          selectedOptions: v.selectedOptions ?? [],
+        });
+        lines.push({ ok, title: it.title });
+      }
+
+      const added = lines.filter((l) => l.ok).length;
+      const failed = lines.filter((l) => !l.ok);
+      if (added > 0) {
+        openDrawer();
+        if (failed.length === 0) {
+          toast.success(`The Look added — ${added} pieces in your bag`);
+        } else {
+          toast.success(`${added} of ${lines.length} pieces added`, {
+            description: `Unavailable: ${failed.map((f) => f.title).join(", ")}`,
+          });
+        }
+      } else {
+        toast.error("Could not add this look", {
+          description: "Pieces may be out of stock — try selecting sizes individually.",
+        });
+      }
+    } finally {
+      setBundleLoading(false);
+    }
+  };
+
   return (
     <>
       <div className="flex items-end justify-between mb-10 gap-6">
         <div className="space-y-3">
-          <p className="text-[10px] tracking-[0.32em] uppercase text-[var(--studio-bronze)] font-semibold">
-            Curated by our stylists
+          <p className="text-[10px] tracking-[0.32em] uppercase text-[var(--studio-bronze)] font-semibold inline-flex items-center gap-2">
+            {auto ? "Curated by our AI stylist" : "Curated by our stylists"}
+            {auto && (
+              <span className="px-1.5 py-0.5 text-[8px] tracking-[0.24em] border border-[var(--studio-bronze)] text-[var(--studio-bronze)]">
+                AUTO
+              </span>
+            )}
           </p>
           <h2 className="font-serif text-3xl md:text-4xl">The Look</h2>
         </div>
@@ -1399,12 +1482,32 @@ function CuratedLookBundle({
           );
         })}
       </div>
-      <p className="mt-6 text-[10px] uppercase tracking-[0.28em] text-[var(--studio-muted)] md:hidden">
-        Bundle total · {formatPrice({ amount: bundleTotal.toFixed(2), currencyCode: currency })}
-      </p>
+
+      <div className="mt-8 md:mt-10 flex flex-col-reverse md:flex-row items-stretch md:items-center justify-between gap-4 md:gap-6">
+        <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--studio-muted)]">
+          Bundle total · {formatPrice({ amount: bundleTotal.toFixed(2), currencyCode: currency })}
+        </p>
+        <button
+          type="button"
+          onClick={handleAddEntireLook}
+          aria-busy={bundleLoading}
+          disabled={bundleLoading}
+          className="h-12 md:h-14 px-6 md:px-10 bg-[var(--studio-ink)] text-[var(--studio-bg)] hover:bg-[var(--studio-bronze)] transition-colors text-[10px] md:text-[11px] uppercase tracking-[0.28em] md:tracking-[0.32em] font-semibold inline-flex items-center justify-center gap-2 shadow-md disabled:opacity-60"
+        >
+          {bundleLoading ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <>
+              <Lock className="w-3 h-3" />
+              Add Entire Look to Cart
+            </>
+          )}
+        </button>
+      </div>
     </>
   );
 }
+
 
 
 function StyleItWithRail({ items }: { items: Awaited<ReturnType<typeof fetchProducts>> }) {
