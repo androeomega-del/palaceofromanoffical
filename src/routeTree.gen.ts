@@ -54,6 +54,7 @@ import { Route as TrendsSectionSamplesRouteImport } from './routes/trends.sectio
 import { Route as TrendsPucciEyewearRouteImport } from './routes/trends.pucci-eyewear'
 import { Route as TrendsDolceGabbanaIconsRouteImport } from './routes/trends.dolce-gabbana-icons'
 import { Route as SwimSizeGuideRouteImport } from './routes/swim.size-guide'
+import { Route as RobotsTxtRouteImport } from './routes/robots.txt'
 import { Route as ProductsHandleRouteImport } from './routes/products.$handle'
 import { Route as ProductHandleRouteImport } from './routes/product.$handle'
 import { Route as PreviewLookbookRouteImport } from './routes/preview.lookbook'
@@ -378,6 +379,11 @@ const SwimSizeGuideRoute = SwimSizeGuideRouteImport.update({
   id: '/size-guide',
   path: '/size-guide',
   getParentRoute: () => SwimRoute,
+} as any)
+const RobotsTxtRoute = RobotsTxtRouteImport.update({
+  id: '/robots/txt',
+  path: '/robots/txt',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ProductsHandleRoute = ProductsHandleRouteImport.update({
   id: '/products/$handle',
@@ -998,6 +1004,7 @@ export interface FileRoutesByFullPath {
   '/preview/lookbook': typeof PreviewLookbookRoute
   '/product/$handle': typeof ProductHandleRoute
   '/products/$handle': typeof ProductsHandleRoute
+  '/robots/txt': typeof RobotsTxtRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/trends/dolce-gabbana-icons': typeof TrendsDolceGabbanaIconsRoute
   '/trends/pucci-eyewear': typeof TrendsPucciEyewearRoute
@@ -1139,6 +1146,7 @@ export interface FileRoutesByTo {
   '/preview/lookbook': typeof PreviewLookbookRoute
   '/product/$handle': typeof ProductHandleRoute
   '/products/$handle': typeof ProductsHandleRoute
+  '/robots/txt': typeof RobotsTxtRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/trends/dolce-gabbana-icons': typeof TrendsDolceGabbanaIconsRoute
   '/trends/pucci-eyewear': typeof TrendsPucciEyewearRoute
@@ -1284,6 +1292,7 @@ export interface FileRoutesById {
   '/preview/lookbook': typeof PreviewLookbookRoute
   '/product/$handle': typeof ProductHandleRoute
   '/products/$handle': typeof ProductsHandleRoute
+  '/robots/txt': typeof RobotsTxtRoute
   '/swim/size-guide': typeof SwimSizeGuideRoute
   '/trends/dolce-gabbana-icons': typeof TrendsDolceGabbanaIconsRoute
   '/trends/pucci-eyewear': typeof TrendsPucciEyewearRoute
@@ -1430,6 +1439,7 @@ export interface FileRouteTypes {
     | '/preview/lookbook'
     | '/product/$handle'
     | '/products/$handle'
+    | '/robots/txt'
     | '/swim/size-guide'
     | '/trends/dolce-gabbana-icons'
     | '/trends/pucci-eyewear'
@@ -1571,6 +1581,7 @@ export interface FileRouteTypes {
     | '/preview/lookbook'
     | '/product/$handle'
     | '/products/$handle'
+    | '/robots/txt'
     | '/swim/size-guide'
     | '/trends/dolce-gabbana-icons'
     | '/trends/pucci-eyewear'
@@ -1715,6 +1726,7 @@ export interface FileRouteTypes {
     | '/preview/lookbook'
     | '/product/$handle'
     | '/products/$handle'
+    | '/robots/txt'
     | '/swim/size-guide'
     | '/trends/dolce-gabbana-icons'
     | '/trends/pucci-eyewear'
@@ -1856,6 +1868,7 @@ export interface RootRouteChildren {
   PreviewLookbookRoute: typeof PreviewLookbookRoute
   ProductHandleRoute: typeof ProductHandleRoute
   ProductsHandleRoute: typeof ProductsHandleRoute
+  RobotsTxtRoute: typeof RobotsTxtRoute
   TrendsDolceGabbanaIconsRoute: typeof TrendsDolceGabbanaIconsRoute
   TrendsPucciEyewearRoute: typeof TrendsPucciEyewearRoute
   TrendsSectionSamplesRoute: typeof TrendsSectionSamplesRoute
@@ -2205,6 +2218,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/swim/size-guide'
       preLoaderRoute: typeof SwimSizeGuideRouteImport
       parentRoute: typeof SwimRoute
+    }
+    '/robots/txt': {
+      id: '/robots/txt'
+      path: '/robots/txt'
+      fullPath: '/robots/txt'
+      preLoaderRoute: typeof RobotsTxtRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/products/$handle': {
       id: '/products/$handle'
@@ -3081,6 +3101,7 @@ const rootRouteChildren: RootRouteChildren = {
   PreviewLookbookRoute: PreviewLookbookRoute,
   ProductHandleRoute: ProductHandleRoute,
   ProductsHandleRoute: ProductsHandleRoute,
+  RobotsTxtRoute: RobotsTxtRoute,
   TrendsDolceGabbanaIconsRoute: TrendsDolceGabbanaIconsRoute,
   TrendsPucciEyewearRoute: TrendsPucciEyewearRoute,
   TrendsSectionSamplesRoute: TrendsSectionSamplesRoute,
