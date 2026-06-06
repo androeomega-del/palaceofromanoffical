@@ -456,6 +456,7 @@ function ProductView({
   const images = product.images.edges.map((e) => e.node);
   const altBase = product.vendor ? `${product.title} — ${product.vendor}` : product.title;
   const variants = product.variants.edges.map((e) => e.node);
+  const market = useMarketStore((s) => s.market);
   const firstAvailable = variants.find((v) => v.availableForSale) ?? variants[0];
   // No default size selection — shopper must pick. Single-variant products
   // (title-only option) auto-select since there's nothing to choose.
