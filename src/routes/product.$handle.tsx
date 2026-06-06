@@ -29,6 +29,7 @@ import AIRecommendations from "@/components/ai-recommendations";
 import { PdpAuthenticityStrip } from "@/components/pdp-authenticity-strip";
 import { PdpShippingSheet } from "@/components/pdp-shipping-sheet";
 import { YelpTrustBadge } from "@/components/yelp-trust-badge";
+import { GbpTrustBadge } from "@/components/gbp-trust-badge";
 import { cdnImage, cdnSrcSet } from "@/lib/cdn-image";
 import { PdpDeliveryBadge } from "@/components/pdp-delivery-badge";
 import { PdpBrandHeritage } from "@/components/pdp-brand-heritage";
@@ -1140,9 +1141,10 @@ function ProductView({
             {/* Authenticity strip — defensible claims only */}
             <PdpAuthenticityStrip />
 
-            {/* Real third-party validation — Yelp verified listing */}
-            <div className="mt-3 pt-3 border-t border-ink/5">
+            {/* Real third-party validation — Yelp & Google verified listings */}
+            <div className="mt-3 pt-3 border-t border-ink/5 flex flex-wrap gap-x-4 gap-y-2">
               <YelpTrustBadge />
+              <GbpTrustBadge />
             </div>
 
             {/* Accordions */}

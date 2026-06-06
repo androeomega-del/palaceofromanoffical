@@ -42,6 +42,7 @@ export const Route = createFileRoute("/about")({
         "https://www.facebook.com/people/Palace-of-Roman/61581195176963/",
         "https://www.tiktok.com/@palaceofroman",
         "https://www.yelp.com/biz/palace-of-roman",
+        "https://share.google/CZeLml2jcRi9MtNqP",
       ],
     };
     return {
