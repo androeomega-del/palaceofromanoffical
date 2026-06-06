@@ -238,17 +238,40 @@ function ImageTile({
     }
   };
 
-  const download = () => {
+  const download = async () => {
     // Route through our server-side proxy so cross-origin CDN images
-    // (Shopify, Supabase storage) download properly with Content-Disposition.
+    // (Shopify, Supabase storage) download properly. The proxy requires
+    // an admin Supabase JWT, so we fetch with an Authorization header and
+    // trigger the download from an in-memory blob.
     const name = (img.url.split("/").pop()?.split("?")[0] || "image").replace(/[^\w.\-]/g, "_");
     const proxied = `/api/admin/image-proxy?url=${encodeURIComponent(absoluteUrl)}&filename=${encodeURIComponent(name)}`;
-    const a = document.createElement("a");
-    a.href = proxied;
-    a.download = name;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+    try {
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+      if (!token) {
+        toast.error("Sign in as an admin to download");
+        return;
+      }
+      const res = await fetch(proxied, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) {
+        toast.error(`Download failed (${res.status})`);
+        return;
+      }
+      const blob = await res.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = name;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+    } catch (e) {
+      toast.error(`Download failed: ${(e as Error).message}`);
+    }
   };
 
 
