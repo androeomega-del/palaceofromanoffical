@@ -1,11 +1,16 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, ErrorComponent } from "@tanstack/react-router";
 import {
   LandingCollectionPage,
   faqJsonLd,
   breadcrumbJsonLd,
   type LandingFAQ,
 } from "@/components/landing-collection-page";
+import { landingCollectionQueryOptions } from "@/lib/landing-collection.functions";
 import { routeHead, SITE_NAME, SITE_URL } from "@/lib/seo";
+
+const SHOPIFY_QUERY = "belt";
+const LANDING_QO = landingCollectionQueryOptions({ query: SHOPIFY_QUERY, first: 12 });
+
 
 const PATH = "/collections/designer-belts";
 const H1 = "Designer Belts";
