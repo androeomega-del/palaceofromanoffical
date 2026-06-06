@@ -12,7 +12,7 @@ import { Link } from "@tanstack/react-router";
  *   2. The carriers used (DHL Express / FedEx / UPS)
  *   3. The returns window, stated verbatim to match Merchant Center
  *   4. A direct support email + response window
- *   5. A real third-party validation link (Yelp, 3 verified reviews)
+ *   5. Real third-party validation links (Yelp, 3 verified reviews; Google Business Profile)
  *
  * Copy here MUST match the Merchant Center business-info fields and
  * the /shipping-returns page verbatim — any drift re-triggers the

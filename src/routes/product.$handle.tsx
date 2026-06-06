@@ -1141,9 +1141,10 @@ function ProductView({
             {/* Authenticity strip — defensible claims only */}
             <PdpAuthenticityStrip />
 
-            {/* Real third-party validation — Yelp verified listing */}
-            <div className="mt-3 pt-3 border-t border-ink/5">
+            {/* Real third-party validation — Yelp & Google verified listings */}
+            <div className="mt-3 pt-3 border-t border-ink/5 flex flex-wrap gap-x-4 gap-y-2">
               <YelpTrustBadge />
+              <GbpTrustBadge />
             </div>
 
             {/* Accordions */}
