@@ -347,7 +347,13 @@ export function CapsuleBuilder({
                 No companion pieces available for this slot.
               </p>
             ) : (
-              <ul className="grid grid-cols-1 gap-3">
+              <>
+                {isBottomFallback ? (
+                  <p className="mb-3 text-xs uppercase tracking-[0.18em] text-muted-foreground text-center">
+                    Curating matching bottoms…
+                  </p>
+                ) : null}
+                <ul className="grid grid-cols-1 gap-3">
                 {filteredForOpen.map((p) => {
                   const thumb = p.images?.edges?.[0]?.node;
                   return (
