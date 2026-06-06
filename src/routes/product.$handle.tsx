@@ -402,30 +402,32 @@ export const Route = createFileRoute("/product/$handle")({
         },
         {
           type: "application/ld+json",
-          children: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL + "/" },
-              { "@type": "ListItem", position: 2, name: "Shop", item: SITE_URL + "/shop" },
-              ...(p.vendor && vendorSlug
-                ? [{
-                    "@type": "ListItem",
-                    position: 3,
-                    name: p.vendor,
-                    item: `${SITE_URL}/collections/${vendorSlug}`,
-                  }]
-                : []),
-              {
-                "@type": "ListItem",
-                position: p.vendor && vendorSlug ? 4 : 3,
-                name: p.title,
-                item: url,
-              },
-            ],
-          }),
+          children: JSON.stringify(
+            buildBreadcrumbJsonLd(
+              // Home > Brand > Signature Category > Product Title.
+              // Each non-terminal step links to a real, indexable destination
+              // and carries its full long-tail label (e.g.
+              // "Prada Re-Nylon Bags") so the BreadcrumbList rich result
+              // reinforces collection-keyword variants in SERPs.
+              [
+                { name: "Home", href: "/" },
+                ...(p.vendor && vendorSlug
+                  ? [{ name: p.vendor, href: `/brand/${vendorSlug}` } as BreadcrumbItem]
+                  : []),
+                ...(p.productType
+                  ? [{
+                      name: p.vendor ? `${p.vendor} ${p.productType}` : p.productType,
+                      href: vendorSlug ? `/collections/${vendorSlug}` : "/shop",
+                    } as BreadcrumbItem]
+                  : []),
+                { name: p.title },
+              ],
+              `/product/${p.handle}`,
+            ),
+          ),
         },
       ],
+
     };
   },
   component: ProductPage,
