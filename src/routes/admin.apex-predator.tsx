@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useCallback } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Radar, Crosshair, Target, Zap, Copy, Mail, FileDown, RefreshCw, AlertTriangle } from "lucide-react";
 import { adminBeforeLoad } from "@/lib/admin-route-guard";
 import { callAdminServerFn } from "@/lib/admin-server-call";
