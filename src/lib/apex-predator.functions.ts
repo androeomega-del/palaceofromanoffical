@@ -224,7 +224,7 @@ export const refreshPoacherFeed = createServerFn({ method: "POST" })
     }
   });
 
-const POR_BRIEF = `Palace of Roman is a luxury fashion boutique sourcing from a global network of authorised boutiques and distributors. Catalog includes maisons such as Gucci, Prada, Saint Laurent, Bottega Veneta, Loewe, Off-White, Balenciaga, Maison Margiela, Comme des Garçons, and other heritage and contemporary houses. Free worldwide shipping, authenticated stock, USD pricing. Site: palaceofroman.com.`;
+const POR_BRIEF = `Palace of Roman is a luxury fashion boutique sourcing from a global network of authorised boutiques and distributors. Catalog includes maisons such as Gucci, Prada, Saint Laurent, Bottega Veneta, Loewe, Off-White, Balenciaga, Maison Margiela, Comme des Garçons, and other heritage and contemporary houses. Free worldwide shipping, authenticated stock, USD pricing. Live shop: ${OUR_DOMAIN}. Legacy domain (still redirecting): ${OUR_LEGACY_DOMAIN}.`;
 
 const PUBLICATION_NAMES: Record<string, string> = {
   "vogue.com": "Vogue",
@@ -249,7 +249,22 @@ export function publicationNameFromDomain(domain: string | null | undefined): st
   return root.charAt(0).toUpperCase() + root.slice(1);
 }
 
-/** Shared pitch prompt builder so DB-backed and inline (sandbox) flows stay aligned. */
+/**
+ * Map a legacy palaceofroman.com URL to its new equivalent on
+ * palaceofromanofficial.com. The path is preserved verbatim — 301 redirects
+ * on our side handle the actual mapping; this is purely for the email copy.
+ */
+function maturedDestination(legacyUrl: string | null): string {
+  if (!legacyUrl) return `https://${OUR_DOMAIN}/`;
+  try {
+    const u = new URL(legacyUrl);
+    return `https://${OUR_DOMAIN}${u.pathname}${u.search}`;
+  } catch {
+    return `https://${OUR_DOMAIN}/`;
+  }
+}
+
+/** Shared pitch prompt builder — "Authority Maturing" URL-update request. */
 function buildPitchPrompts(args: {
   source_url: string;
   source_domain: string;
@@ -258,9 +273,20 @@ function buildPitchPrompts(args: {
   excerpt: string | null;
 }) {
   const publication = publicationNameFromDomain(args.source_domain);
-  const sys = `You write concise, editor-grade outreach emails sent from Palace of Roman to a luxury fashion publication's editor. Tone: confident, restrained, never spammy. Never mention Palace of Roman's wholesale source. The FIRST sentence MUST directly address the publication by name ("${publication}") and reference a specific detail from the linked piece — no generic openers, no "Dear Editor", no flattery without specifics. Output JSON only with keys: subject (<=70 chars), body (180-260 words, 3 paragraphs, no greeting beyond first line, no signature line, plain text, no markdown).`;
-  const user = `Brand brief:\n${POR_BRIEF}\n\nPublication: ${publication}\nLinking domain: ${args.source_domain}\nLinking page: ${args.source_url}\nAnchor used for competitor: ${args.anchor || "(none)"}\nCompetitor target on that page: ${args.target_url || "(unknown)"}\n\nPage excerpt:\n${args.excerpt || "(no excerpt available — write a topic-agnostic pitch that flatters the publication and offers an editorial angle.)"}\n\nDraft a personalised pitch to the editor of this page asking them to either add or swap-in a link to a relevant Palace of Roman collection. The opening sentence MUST name "${publication}" and quote/paraphrase a specific detail from the page excerpt or URL slug (e.g. "Your recent luxury resale analysis in ${publication} perfectly highlights…"). Offer one exclusive editorial angle (e.g. a curated edit, an interview, a behind-the-craft note) the publication can run with. Do NOT mention the competitor by name.`;
-  return { sys, user, publication };
+  const newTarget = maturedDestination(args.target_url);
+  const sys = `You write concise, editor-grade webmaster notices sent FROM Palace of Roman (the brand the article already links to) requesting an OFFICIAL URL UPDATE.
+
+Strict identity rules:
+- WE ARE Palace of Roman. Our live shop is ${OUR_DOMAIN}. ${OUR_LEGACY_DOMAIN} is our previous domain — it still 301-redirects, but we want the canonical URL updated for SEO authority hygiene.
+- The publication ("${publication}") is NOT a competitor. They are an editorial partner who has already linked to us.
+- Tone: professional, gracious, factual. No sales pitch, no offers, no flattery without specifics. Treat this as a routine URL-housekeeping request between professionals.
+- FIRST sentence MUST address the publication by name and reference the specific article being updated.
+- Mention that the existing link still resolves via redirect, but a direct link preserves full link equity and removes the redirect hop.
+- Provide the exact OLD URL and the exact NEW URL on one line each so the webmaster can find-and-replace.
+
+Output JSON only with keys: subject (<=70 chars, e.g. "URL update request — Palace of Roman feature in ${publication}"), body (180-260 words, 3 short paragraphs + the OLD→NEW URL block, no signature line, plain text, no markdown).`;
+  const user = `Brand brief:\n${POR_BRIEF}\n\nPublication: ${publication}\nArticle URL: ${args.source_url}\nAnchor text currently used: ${args.anchor || "(none)"}\nOLD destination (legacy): ${args.target_url || `(unknown — assume https://${OUR_LEGACY_DOMAIN}/)`}\nNEW destination (live shop): ${newTarget}\n\nPage excerpt:\n${args.excerpt || "(no excerpt available — keep the body topic-agnostic.)"}\n\nDraft the webmaster notice. The opening sentence MUST name "${publication}" and reference the specific article. Include the OLD → NEW URL block verbatim. End by thanking them for the original feature.`;
+  return { sys, user, publication, newTarget };
 }
 
 export const draftPoacherPitch = createServerFn({ method: "POST" })
