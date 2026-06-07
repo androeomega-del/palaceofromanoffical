@@ -79,6 +79,11 @@ const TILES: Tile[] = [
     desc: "AI editorial, social, email & UGC — one queue",
     icon: Sparkles,
   },
+    to: "/admin/apex-predator",
+    label: "Apex Predator Terminal",
+    desc: "Autonomous competitor surveillance, backlink interception feeds, and traffic hijack pipelines targeting palaceofromanofficial.com.",
+    icon: Crosshair,
+  },
   {
     to: "/admin/analytics",
     label: "Cart Analytics",
