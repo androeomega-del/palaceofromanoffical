@@ -121,7 +121,13 @@ async function checkTechSecurity(): Promise<AuditCheck[]> {
   });
 
   // 5. Webhook / API secrets present in the server env
-  const requiredEnv = ["LOVABLE_API_KEY", "SHOPIFY_WEBHOOK_SECRET", "SHOPIFY_STOREFRONT_ACCESS_TOKEN", "SHOPIFY_ACCESS_TOKEN"];
+  const requiredEnv = [
+    "LOVABLE_API_KEY",
+    "SHOPIFY_WEBHOOK_SECRET",
+    "SHOPIFY_STOREFRONT_ACCESS_TOKEN",
+    "SHOPIFY_ADMIN_API_CLIENT_ID",
+    "SHOPIFY_ADMIN_API_SECRET",
+  ];
   const missing = requiredEnv.filter((k) => !process.env[k]);
   checks.push({
     id: "server_secrets",

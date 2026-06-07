@@ -14,16 +14,8 @@ import { requireAdmin } from "@/lib/admin-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { callAi, getMonthlySpendUsd, MONTHLY_BUDGET_USD, BudgetExceededError } from "@/lib/ai-gateway.server";
 import { PALACE_BRAND_VOICE, PALACE_DOMAIN } from "@/lib/brand-voice";
-import { SHOPIFY_API_VERSION, SHOPIFY_STORE_PERMANENT_DOMAIN } from "@/lib/shopify";
+import { adminRest } from "@/lib/shopify-admin.server";
 import { z } from "zod";
-
-const SHOPIFY_ADMIN_BASE = `https://${SHOPIFY_STORE_PERMANENT_DOMAIN}/admin/api/${SHOPIFY_API_VERSION}`;
-
-function adminToken(): string {
-  const t = typeof process !== "undefined" ? process.env?.SHOPIFY_ACCESS_TOKEN : undefined;
-  if (!t) throw new Error("SHOPIFY_ACCESS_TOKEN missing");
-  return t;
-}
 
 // ─── Queue list ────────────────────────────────────────────────────────────
 export const listQueue = createServerFn({ method: "GET" })
@@ -196,20 +188,7 @@ Return JSON with this shape:
 
 // ─── Approve / publish to Shopify blog ─────────────────────────────────────
 async function shopifyAdmin<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const res = await fetch(`${SHOPIFY_ADMIN_BASE}${path}`, {
-    ...init,
-    headers: {
-      "X-Shopify-Access-Token": adminToken(),
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      ...(init.headers ?? {}),
-    },
-  });
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`Shopify Admin ${res.status} ${path}: ${text.slice(0, 240)}`);
-  }
-  return res.json() as Promise<T>;
+  return adminRest<T>(path, init);
 }
 
 async function getOrCreateJournalBlogId(): Promise<number> {
