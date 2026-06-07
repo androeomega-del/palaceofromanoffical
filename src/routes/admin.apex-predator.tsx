@@ -122,7 +122,7 @@ function ApexPredatorTerminal() {
             <ArrowLeft size={12} /> ADMIN
           </Link>
           <span style={{ color: T.neon, fontWeight: 700 }}>APEX PREDATOR</span>
-          <span style={{ color: T.muted }}>// TARGET: <span style={{ color: T.amber }}>{status.data?.competitor ?? "—"}</span></span>
+          <span style={{ color: T.muted }}>// OURS: <span style={{ color: T.neon }}>{OUR_DOMAIN}</span> <span style={{ color: T.muted }}>← legacy: {OUR_LEGACY_DOMAIN}</span></span>
           <span style={{ color: T.muted }}>// SEMRUSH QUOTA: <span style={{ color: T.ink }}>{status.data?.semrushQuota ? `${fmt(status.data.semrushQuota.used)} / ${fmt(status.data.semrushQuota.limit)}` : "—"}</span></span>
           <span style={{ marginLeft: "auto", color: T.muted }}>LAST RUN: <span style={{ color: T.ink }}>{renderSafeUIDate(status.data?.lastRuns?.[0]?.created_at)}</span> <span style={{ color: T.neon, marginLeft: 6 }}>●</span></span>
         </div>
