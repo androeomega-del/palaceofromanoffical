@@ -748,6 +748,7 @@ export type HighIntentSeoPatch = {
   newTitle: string;        // <title> tag, <= 60 chars, transactional intent
   newH1: string;           // <= 70 chars, brand + product + qualifier
   newMetaDescription: string; // <= 155 chars, action-forward CTA
+  internalLinks: string[]; // 3 Palace of Roman collection paths to link from
   rationale: string;
   raw?: string;
 };
