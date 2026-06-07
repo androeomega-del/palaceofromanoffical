@@ -136,16 +136,22 @@ const TAXONOMY_RE: Record<CapsuleSlotKind, RegExp> = Object.fromEntries(
 ) as Record<CapsuleSlotKind, RegExp>;
 
 /**
- * Classify a product into a single CapsuleSlotKind using productType + tags.
+ * Classify a product into a single CapsuleSlotKind using productType, tags,
+ * and title. Title is included because Shopify `productType` is frequently
+ * empty on imported catalogs, but titles almost always carry the category
+ * word (e.g. "Loafers", "Belt", "Sunglasses"). Without this fallback the
+ * picker shows "No companion pieces available for this slot."
  * Returns null when no taxonomy matches.
  */
 function classifyKind(
   productType: string | undefined | null,
   tags?: string[] | null,
+  title?: string | null,
 ): CapsuleSlotKind | null {
   const haystack = [
     productType ?? "",
     ...(Array.isArray(tags) ? tags : []),
+    title ?? "",
   ].join(" | ");
   if (!haystack.trim()) return null;
   for (const kind of TAXONOMY_PRIORITY) {
@@ -263,7 +269,7 @@ export function CapsuleBuilder({
     const pool = candidatePool.filter((p) => !usedHandles.has(p.handle));
     return pool.filter((p) => {
       const tags = (p as unknown as { tags?: string[] }).tags;
-      return classifyKind(p.productType, tags) === openKind;
+      return classifyKind(p.productType, tags, p.title) === openKind;
     });
   }, [openKind, candidatePool, usedHandles]);
 

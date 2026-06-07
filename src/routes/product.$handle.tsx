@@ -805,14 +805,14 @@ function ProductView({
     queryKey: ["style-it-with", product.handle, product.vendor],
     queryFn: () =>
       fetchProducts({
-        first: 16,
+        first: 50,
         sortKey: "BEST_SELLING",
         query: `-vendor:"${product.vendor}"`,
       }),
   });
   const styleItWith = (styleItWithQ.data ?? [])
     .filter((e) => e.node.handle !== product.handle && e.node.vendor !== product.vendor)
-    .slice(0, 8);
+    .slice(0, 40);
 
   // ── Auto "The Look" — AI fallback when `custom.look_products` is empty.
   // Pulls Shopify's COMPLEMENTARY recommendations first (cross-category by
@@ -1457,7 +1457,7 @@ function ProductView({
         {/* ===== Style It With — algorithmic cross-house cross-sell rail (last-resort fallback) ===== */}
         {!hasManualLook && autoLookItems.length < 2 && styleItWith.length > 0 && (
           <section className="max-w-7xl mx-auto mt-16 md:mt-20 pt-10 md:pt-12 border-t border-[var(--studio-rule)]">
-            <StyleItWithRail items={styleItWith} />
+            <StyleItWithRail items={styleItWith.slice(0, 8)} />
           </section>
         )}
 
