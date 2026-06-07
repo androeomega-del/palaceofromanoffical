@@ -256,10 +256,23 @@ export const getHijackFeed = createServerFn({ method: "POST" })
     }
   });
 
+export type ContentBlueprint = {
+  targetKeyword: string;
+  searchIntent: string;
+  intentBrief: string;
+  semanticTerms: string[];
+  outline: Array<{ h2: string; h3s: string[]; evidence: string }>;
+  internalLinkTargets: string[];
+  schemaTypes: string[];
+  wordCount: number;
+  eatSignals: string[];
+  raw?: string;
+};
+
 export const generateContentBlueprint = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
   .inputValidator((d: unknown) => z.object({ url: z.string().url(), targetKeyword: z.string().optional() }).parse(d))
-  .handler(async ({ data }) => {
+  .handler(async ({ data }): Promise<ContentBlueprint> => {
     let target = data.targetKeyword;
     if (!target) {
       try {
@@ -281,10 +294,28 @@ export const generateContentBlueprint = createServerFn({ method: "POST" })
       maxTokens: 1800,
       temperature: 0.4,
     });
-    let parsed: unknown = {};
-    try { parsed = JSON.parse(res.content); } catch { parsed = { raw: res.content }; }
-    return parsed;
+    try {
+      const parsed = JSON.parse(res.content) as Partial<ContentBlueprint>;
+      return {
+        targetKeyword: parsed.targetKeyword ?? target,
+        searchIntent: parsed.searchIntent ?? "commercial",
+        intentBrief: parsed.intentBrief ?? "",
+        semanticTerms: parsed.semanticTerms ?? [],
+        outline: parsed.outline ?? [],
+        internalLinkTargets: parsed.internalLinkTargets ?? [],
+        schemaTypes: parsed.schemaTypes ?? [],
+        wordCount: parsed.wordCount ?? 0,
+        eatSignals: parsed.eatSignals ?? [],
+      };
+    } catch {
+      return {
+        targetKeyword: target, searchIntent: "", intentBrief: "", semanticTerms: [],
+        outline: [], internalLinkTargets: [], schemaTypes: [], wordCount: 0, eatSignals: [],
+        raw: res.content,
+      };
+    }
   });
+
 
 // =================================================================
 // MODULE 3 — Striking-Distance Impact Pipeline
