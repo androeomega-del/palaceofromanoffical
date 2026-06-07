@@ -300,22 +300,48 @@ export async function fetchCompetitorTopPages(opts: {
   }
 }
 
+export type SearchIntent = "commercial" | "transactional" | "informational" | "navigational" | "unknown";
+
+/** Map Semrush `In` column code to a human label. Semrush codes: 0=commercial, 1=informational, 2=navigational, 3=transactional. */
+export function mapSemrushIntent(raw: string | number | undefined): SearchIntent {
+  if (raw === undefined || raw === null || raw === "") return "unknown";
+  const s = String(raw).trim().toLowerCase();
+  if (s === "0" || s.startsWith("comm")) return "commercial";
+  if (s === "1" || s.startsWith("info")) return "informational";
+  if (s === "2" || s.startsWith("nav")) return "navigational";
+  if (s === "3" || s.startsWith("trans")) return "transactional";
+  return "unknown";
+}
+
+/** Heuristic intent classifier — used when Semrush doesn't return the `In` column (e.g. seed/fallback data). */
+export function heuristicIntent(keyword: string): SearchIntent {
+  const k = (keyword || "").toLowerCase();
+  if (/\b(buy|shop|order|sale|discount|deal|cheap|price|cost|coupon|free shipping|outlet|in stock|near me|for sale)\b/.test(k)) return "transactional";
+  if (/\b(best|top|review|vs|compare|alternative|brand[s]?|designer[s]?|luxury|authentic|handbag|bag|shoes|sneakers|dress|jacket|coat)\b/.test(k)) return "commercial";
+  if (/\b(how|what|why|guide|tutorial|tips|ideas|history|meaning)\b/.test(k)) return "informational";
+  return "commercial";
+}
+
 export async function fetchUrlTopKeywords(opts: { url: string; database?: string; limit?: number }) {
   const data = await callSemrush("/url/url_organic", {
     url: opts.url,
     database: opts.database ?? "us",
     display_limit: opts.limit ?? 5,
     display_sort: "tr_desc",
-    export_columns: "Ph,Po,Nq,Cp,Tr,Kd",
+    export_columns: "Ph,Po,Nq,Cp,Tr,Kd,In",
   });
-  return tableToObjects<{ Ph: string; Po: string; Nq: string; Cp: string; Tr: string; Kd: string }>(data).map((r) => ({
-    keyword: r.Ph,
-    position: Number(r.Po) || 0,
-    volume: Number(r.Nq) || 0,
-    cpc: Number(r.Cp) || 0,
-    traffic: Number(r.Tr) || 0,
-    kd: Number(r.Kd) || 0,
-  }));
+  return tableToObjects<{ Ph: string; Po: string; Nq: string; Cp: string; Tr: string; Kd: string; In?: string }>(data).map((r) => {
+    const intent = mapSemrushIntent(r.In);
+    return {
+      keyword: r.Ph,
+      position: Number(r.Po) || 0,
+      volume: Number(r.Nq) || 0,
+      cpc: Number(r.Cp) || 0,
+      traffic: Number(r.Tr) || 0,
+      kd: Number(r.Kd) || 0,
+      intent: intent === "unknown" ? heuristicIntent(r.Ph) : intent,
+    };
+  });
 }
 
 // =================================================================
