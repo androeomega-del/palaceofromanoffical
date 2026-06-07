@@ -420,12 +420,13 @@ function PoacherModule() {
 // =============================================================
 function HijackModule() {
   const [domain, setDomain] = useState<(typeof COMPETITOR_DOMAINS)[number]>(COMPETITOR_DOMAINS[0]);
+  const [transactionalOnly, setTransactionalOnly] = useState(true);
   const feed = useQuery({
-    queryKey: ["apex", "hijack", domain],
-    queryFn: () => callAdminServerFn(getHijackFeed, { data: { domain } }),
+    queryKey: ["apex", "hijack", domain, transactionalOnly],
+    queryFn: () => callAdminServerFn(getHijackFeed, { data: { domain, transactionalOnly } }),
   });
   const refresh = useMutation({
-    mutationFn: () => callAdminServerFn(getHijackFeed, { data: { domain, force: true } }),
+    mutationFn: () => callAdminServerFn(getHijackFeed, { data: { domain, transactionalOnly, force: true } }),
     onSuccess: () => feed.refetch(),
   });
   const [openBlueprint, setOpenBlueprint] = useState<string | null>(null);
@@ -438,13 +439,33 @@ function HijackModule() {
     },
   });
 
+  const intentColor = (intent: string) =>
+    intent === "transactional" ? T.neon : intent === "commercial" ? T.amber : T.muted;
+
   return (
     <div>
       <ModuleHeader
-        title="HIJACK FEED"
-        sub={`Reverse-engineering ${domain}'s highest-traffic pages and top keywords. Generate a content brief to outrank each.`}
+        title="HIJACK FEED — TRANSACTION TARGETS"
+        sub={`Reverse-engineering ${domain}'s highest-revenue pages. ${transactionalOnly ? "Filtered to commercial + transactional intent only — every row is a credit-card-swipe candidate." : "Showing all intents."} Generate a content brief to outrank each.`}
         action={
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <button
+              onClick={() => setTransactionalOnly((v) => !v)}
+              style={{
+                background: transactionalOnly ? T.neon : "transparent",
+                color: transactionalOnly ? T.bg : T.neon,
+                border: `1px solid ${T.neon}`,
+                padding: "5px 10px",
+                fontSize: 10,
+                letterSpacing: "0.1em",
+                fontFamily: T.mono,
+                fontWeight: 700,
+                cursor: "pointer",
+              }}
+              title="Show only Commercial + Transactional intent keywords"
+            >
+              {transactionalOnly ? "● TXN ONLY" : "○ ALL INTENTS"}
+            </button>
             <select
               value={domain}
               onChange={(e) => setDomain(e.target.value as (typeof COMPETITOR_DOMAINS)[number])}
@@ -463,14 +484,24 @@ function HijackModule() {
       {feed.isError && <Banner color={T.red}>FEED ERROR: {(feed.error as Error).message}</Banner>}
       {feed.data?.error && <Banner color={T.red}>SEMRUSH: {feed.data.error}</Banner>}
       {feed.data?.seeded && <Banner color={T.amber}>Showing placeholder data for {domain} — click REFRESH to pull live data from Semrush.</Banner>}
-      {feed.data && (
+      {feed.data && feed.data.filteredOut > 0 && (
+        <Banner color={T.muted}>
+          {feed.data.filteredOut} informational/navigational row{feed.data.filteredOut === 1 ? "" : "s"} hidden — toggle ALL INTENTS to see every page.
+        </Banner>
+      )}
+      {feed.data && feed.data.rows.length === 0 && !feed.isLoading && (
+        <Banner color={T.amber}>
+          No commercial/transactional pages found for {domain} with current filter — toggle ALL INTENTS or REFRESH.
+        </Banner>
+      )}
+      {feed.data && feed.data.rows.length > 0 && (
         <div style={{ border: `1px solid ${T.border}`, background: T.surface }}>
-          <div style={{ display: "grid", gridTemplateColumns: "40px 1fr 80px 80px 1fr 60px 60px 160px", gap: 10, padding: "10px 14px", borderBottom: `1px solid ${T.border}`, fontSize: 10, color: T.muted, letterSpacing: "0.1em" }}>
-            <span>#</span><span>URL</span><span style={{ textAlign: "right" }}>TRAFFIC</span><span style={{ textAlign: "right" }}>KWS</span><span>TOP KW</span><span style={{ textAlign: "right" }}>VOL</span><span style={{ textAlign: "right" }}>KD</span><span></span>
+          <div style={{ display: "grid", gridTemplateColumns: "40px 1fr 80px 80px 1fr 60px 60px 80px 160px", gap: 10, padding: "10px 14px", borderBottom: `1px solid ${T.border}`, fontSize: 10, color: T.muted, letterSpacing: "0.1em" }}>
+            <span>#</span><span>URL</span><span style={{ textAlign: "right" }}>TRAFFIC</span><span style={{ textAlign: "right" }}>KWS</span><span>TOP KW</span><span style={{ textAlign: "right" }}>VOL</span><span style={{ textAlign: "right" }}>KD</span><span>INTENT</span><span></span>
           </div>
           {feed.data.rows.map((row, i) => (
             <div key={row.url}>
-              <div style={{ display: "grid", gridTemplateColumns: "40px 1fr 80px 80px 1fr 60px 60px 160px", gap: 10, padding: "10px 14px", borderBottom: `1px solid ${T.border}`, fontSize: 11, alignItems: "center" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "40px 1fr 80px 80px 1fr 60px 60px 80px 160px", gap: 10, padding: "10px 14px", borderBottom: `1px solid ${T.border}`, fontSize: 11, alignItems: "center" }}>
                 <span style={{ color: T.muted }}>{i + 1}</span>
                 <a href={row.url} target="_blank" rel="noreferrer" style={{ color: T.ink, textDecoration: "none", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{row.url.replace(/^https?:\/\/[^/]+/, "")}</a>
                 <span style={{ textAlign: "right", color: T.neon }}>{fmt(row.est_traffic)}</span>
@@ -478,6 +509,7 @@ function HijackModule() {
                 <span style={{ color: T.amber, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{row.top_keyword || "—"}</span>
                 <span style={{ textAlign: "right" }}>{fmt(row.top_keyword_volume)}</span>
                 <span style={{ textAlign: "right", color: row.top_keyword_kd > 60 ? T.amber : T.ink }}>{row.top_keyword_kd || "—"}</span>
+                <span style={{ color: intentColor(row.top_keyword_intent), fontSize: 10, letterSpacing: "0.05em", textTransform: "uppercase" }}>{row.top_keyword_intent}</span>
                 <ActionBtn onClick={() => blueprint.mutate({ url: row.url, targetKeyword: row.top_keyword || undefined })} disabled={blueprint.isPending && blueprint.variables?.url === row.url} color={T.neon}>
                   <Zap size={11} /> BLUEPRINT
                 </ActionBtn>
