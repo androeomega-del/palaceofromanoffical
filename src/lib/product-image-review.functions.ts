@@ -20,6 +20,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { requireAdmin } from "@/lib/admin-middleware";
+import { adminRest } from "@/lib/shopify-admin.server";
 
 const skuSchema = z.string().min(1).max(128).regex(/^[A-Za-z0-9._\-/]+$/);
 const sourceSchema = z.enum(["bg_products", "shopify"]);
@@ -216,18 +217,7 @@ function shopifyToCatalog(p: ShopifyProduct): CatalogAttributes | null {
 }
 
 async function shopifyAdminFetch(path: string): Promise<unknown> {
-  const token = process.env.SHOPIFY_ACCESS_TOKEN;
-  const domain = process.env.SHOPIFY_STORE_DOMAIN;
-  if (!token || !domain) throw new Error("Shopify credentials missing");
-  const url = `https://${domain}/admin/api/${SHOPIFY_API_VERSION}/${path}`;
-  const res = await fetch(url, {
-    headers: {
-      "X-Shopify-Access-Token": token,
-      "Content-Type": "application/json",
-    },
-  });
-  if (!res.ok) throw new Error(`Shopify ${res.status}: ${await res.text()}`);
-  return res.json();
+  return adminRest(path);
 }
 
 async function listShopifyCatalog(limit: number) {
@@ -469,39 +459,37 @@ export const shopifyAdminDebugProbe = createServerFn({ method: "POST" })
       .parse(d ?? {}),
   )
   .handler(async ({ data }) => {
-    const token = process.env.SHOPIFY_ACCESS_TOKEN;
     const domain = process.env.SHOPIFY_STORE_DOMAIN;
-    if (!token || !domain) {
+    if (!domain) {
       return {
         ok: false as const,
         url: null as string | null,
         status: 0,
         statusText: "missing-credentials",
         headers: {} as Record<string, string>,
-        body:
-          "SHOPIFY_ACCESS_TOKEN or SHOPIFY_STORE_DOMAIN is not set in the server env.",
+        body: "SHOPIFY_STORE_DOMAIN is not set in the server env.",
       };
     }
     const qs = data.handle
       ? `handle=${encodeURIComponent(data.handle)}`
       : `limit=1&fields=id,handle,title,variants&status=active`;
     const url = `https://${domain}/admin/api/${SHOPIFY_API_VERSION}/products.json?${qs}`;
-    const res = await fetch(url, {
-      headers: {
-        "X-Shopify-Access-Token": token,
-        "Content-Type": "application/json",
-      },
-    });
     const headers: Record<string, string> = {};
-    res.headers.forEach((v, k) => {
-      headers[k] = v;
-    });
-    const body = await res.text();
+    let status = 200;
+    let statusText = "OK";
+    let body = "";
+    try {
+      body = JSON.stringify(await adminRest(`products.json?${qs}`), null, 2);
+    } catch (error) {
+      status = 500;
+      statusText = "Admin OAuth probe failed";
+      body = error instanceof Error ? error.message : String(error);
+    }
     return {
-      ok: res.ok,
+      ok: status === 200,
       url,
-      status: res.status,
-      statusText: res.statusText,
+      status,
+      statusText,
       headers,
       body,
     };
