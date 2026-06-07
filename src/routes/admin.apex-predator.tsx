@@ -181,12 +181,16 @@ type SandboxRow = {
   first_seen_at: string;
 };
 
+const OUR_DOMAIN = "palaceofromanofficial.com";
+const OUR_LEGACY_DOMAIN = "palaceofroman.com";
+const COMPETITOR_DOMAINS = ["net-a-porter.com", "ssense.com", "mytheresa.com"] as const;
+
 const SANDBOX_ROWS: SandboxRow[] = [
   {
     id: "sandbox-vogue",
     source_url: "https://www.vogue.com/article/ultimate-luxury-resale-guide",
     source_domain: "vogue.com",
-    target_url: "https://palaceofromanofficial.com/collections/all",
+    target_url: `https://${OUR_LEGACY_DOMAIN}/collections/all`,
     anchor: "Palace of Roman",
     page_ascore: 92,
     page_title: "The Ultimate Luxury Resale Guide",
@@ -198,7 +202,7 @@ const SANDBOX_ROWS: SandboxRow[] = [
     id: "sandbox-gq",
     source_url: "https://www.gq.com/story/best-designer-bags-of-the-season",
     source_domain: "gq.com",
-    target_url: "https://palaceofromanofficial.com/collections/bags",
+    target_url: `https://${OUR_LEGACY_DOMAIN}/collections/bags`,
     anchor: "designer leather goods",
     page_ascore: 88,
     page_title: "Best Designer Bags of the Season",
