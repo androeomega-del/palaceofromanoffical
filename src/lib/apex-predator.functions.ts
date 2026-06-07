@@ -19,6 +19,8 @@ import {
   impactScore,
   getCompetitorDomain,
   heuristicIntent,
+  isLegalOrHelpUrl,
+  isScraperLoopUrl,
   OUR_DOMAIN,
   OUR_LEGACY_DOMAIN,
   COMPETITOR_DOMAINS,
