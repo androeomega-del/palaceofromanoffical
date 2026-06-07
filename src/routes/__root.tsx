@@ -393,16 +393,29 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
+      <RouteAwareRuntime />
+    </QueryClientProvider>
+  );
+}
+
+function RouteAwareRuntime() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isAdmin = pathname.startsWith("/admin");
+
+  if (isAdmin) return <ChromeAwareShell isAdmin />;
+
+  return (
+    <>
       <CartSyncBoundary />
       <MarketQuerySync />
       <ChromeAwareShell />
       <ClientOnlyToaster />
       <ClientOnlyConcierge />
-    </QueryClientProvider>
+    </>
   );
 }
 
-function ChromeAwareShell() {
+function ChromeAwareShell({ isAdmin = false }: { isAdmin?: boolean }) {
   // The homepage owns its own header/footer inside <EditionLayout/>. Hide the
   // root chrome synchronously by route so it never flashes a duplicate before
   // the client-only suppression store hydrates.
@@ -411,10 +424,10 @@ function ChromeAwareShell() {
   const isStudio = pathname === "/studio";
   const headerSuppressed = useChromeStore((s) => s.headerSuppressed);
   const footerSuppressed = useChromeStore((s) => s.footerSuppressed);
-  const hideHeader = isHomepage || isStudio || headerSuppressed;
-  const hideFooter = isHomepage || isStudio || footerSuppressed;
+  const hideHeader = isAdmin || isHomepage || isStudio || headerSuppressed;
+  const hideFooter = isAdmin || isHomepage || isStudio || footerSuppressed;
   return (
-    <div className="min-h-screen flex flex-col bg-canvas">
+    <div className="min-h-screen flex flex-col bg-canvas" data-surface={isAdmin ? "apex" : undefined}>
       {!hideHeader && <SiteHeader />}
       <main className="flex-1">
         <Outlet />
