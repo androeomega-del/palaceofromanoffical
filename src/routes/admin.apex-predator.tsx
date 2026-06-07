@@ -52,15 +52,19 @@ function fmt(n: number | null | undefined, d = 0) {
   return Number(n).toLocaleString("en-US", { maximumFractionDigits: d, minimumFractionDigits: d });
 }
 
-/** Safe date formatter — never throws RangeError on bad input. */
-function safeDateLabel(input?: string | number | Date | null): string {
-  if (input === undefined || input === null || input === "") return "—";
+/** Bulletproof date renderer — never throws, always returns a display string. */
+function renderSafeUIDate(rawDate: unknown): string {
+  if (rawDate === null || rawDate === undefined || rawDate === "") return "Pending";
   try {
-    const d = input instanceof Date ? input : new Date(input);
-    const t = d.getTime();
-    if (!Number.isFinite(t)) return "—";
-    return d.toLocaleString();
-  } catch { return "—"; }
+    const parsed = new Date(rawDate as string | number | Date);
+    if (Number.isNaN(parsed.getTime())) {
+      const s = String(rawDate);
+      return s.split("T")[0] || "Recent";
+    }
+    return parsed.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  } catch {
+    return "Recent";
+  }
 }
 
 // =============================================================
