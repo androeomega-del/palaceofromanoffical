@@ -269,7 +269,7 @@ export function CapsuleBuilder({
     const pool = candidatePool.filter((p) => !usedHandles.has(p.handle));
     return pool.filter((p) => {
       const tags = (p as unknown as { tags?: string[] }).tags;
-      return classifyKind(p.productType, tags) === openKind;
+      return classifyKind(p.productType, tags, p.title) === openKind;
     });
   }, [openKind, candidatePool, usedHandles]);
 
