@@ -134,7 +134,7 @@ function ApexPredatorTerminal() {
         {/* Module nav */}
         <nav style={{ borderRight: `1px solid ${T.border}`, padding: "24px 0", minHeight: "calc(100vh - 41px)" }}>
           {[
-            { k: "poacher", label: "Authority Protection", desc: "Legacy redirect maturing", icon: Radar },
+            { k: "poacher", label: "Backlink Intercept", desc: "Poach SSENSE / Net-a-Porter links", icon: Radar },
             { k: "hijack", label: "Hijack", desc: "Giant-competitor reverse-eng.", icon: Crosshair },
             { k: "striking", label: "Striking", desc: "Impact pipeline", icon: Target },
           ].map(({ k, label, desc, icon: Icon }) => {
