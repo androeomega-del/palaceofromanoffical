@@ -627,6 +627,9 @@ function StrikingModule() {
   const [plans, setPlans] = useState<Record<string, StrikePlan>>({});
   const [patches, setPatches] = useState<Record<string, HighIntentSeoPatch>>({});
   const [localRows, setLocalRows] = useState<StrikingRow[] | null>(null);
+  type BulkStatus = "pending" | "ok" | "err" | "skip";
+  const [bulkResults, setBulkResults] = useState<Record<string, { status: BulkStatus; message?: string }>>({});
+  const [bulkRunning, setBulkRunning] = useState(false);
   const plan = useMutation({
     mutationFn: (vars: { query: string; page: string | null; position: number; impressions: number; kd: number }) =>
       callAdminServerFn(generateStrikePlan, { data: vars }),
@@ -640,8 +643,47 @@ function StrikingModule() {
 
   const planFor = useCallback((q: string) => plans[q], [plans]);
   const patchFor = useCallback((q: string) => patches[q], [patches]);
+  const resultFor = useCallback((q: string) => bulkResults[q], [bulkResults]);
 
   const refreshGSCQueue = () => setLocalRows(STRIKING_LOCAL_FALLBACK);
+
+  const deployAllPending = async () => {
+    const entries = Object.entries(patches);
+    if (entries.length === 0) {
+      toast.error("No patches to deploy", { description: "Generate HIGH-INTENT PATCH on product rows first." });
+      return;
+    }
+    setBulkRunning(true);
+    const initial: Record<string, { status: BulkStatus; message?: string }> = {};
+    entries.forEach(([q]) => { initial[q] = { status: "pending" }; });
+    setBulkResults(initial);
+    let ok = 0, err = 0, skip = 0;
+    for (const [query, p] of entries) {
+      const ready = Boolean(p.productUrl && p.newTitle && p.newH1 && p.newMetaDescription);
+      if (!ready) {
+        skip++;
+        setBulkResults((prev) => ({ ...prev, [query]: { status: "skip", message: "missing fields" } }));
+        continue;
+      }
+      try {
+        await callAdminServerFn(deployPatchToShopify, {
+          data: {
+            productUrl: p.productUrl ?? "",
+            newTitle: p.newTitle,
+            newH1: p.newH1,
+            newMetaDescription: p.newMetaDescription,
+          },
+        });
+        ok++;
+        setBulkResults((prev) => ({ ...prev, [query]: { status: "ok" } }));
+      } catch (e) {
+        err++;
+        setBulkResults((prev) => ({ ...prev, [query]: { status: "err", message: (e as Error).message } }));
+      }
+    }
+    setBulkRunning(false);
+    toast.success(`Bulk deploy complete: ${ok} ok · ${err} failed · ${skip} skipped`);
+  };
 
   /** Derive a clean product-title-style string from a Palace of Roman product URL slug. */
   const productTitleFromPage = (page: string | null, query: string): { title: string; isProduct: boolean } => {
