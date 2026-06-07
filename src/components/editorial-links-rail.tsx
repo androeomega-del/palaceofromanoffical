@@ -149,6 +149,24 @@ const E = {
     title: "The month, in seven pieces",
     dek: "What's quietly defining the season — across menswear, womenswear and accessories.",
   },
+  pucci: {
+    href: "/trends/pucci-eyewear",
+    kicker: "Trend",
+    title: "Pucci Eyewear",
+    dek: "The Italian house that turned print into eyewear architecture — colour, curve, and unmistakable attitude.",
+  },
+  tomFord: {
+    href: "/trends/tom-ford-essentials",
+    kicker: "Trend",
+    title: "Tom Ford Essentials",
+    dek: "The codes that made Tom Ford a reference point for modern luxury — cut, hardware, and quiet confidence.",
+  },
+  dgIcons: {
+    href: "/trends/dolce-gabbana-icons",
+    kicker: "Trend",
+    title: "Dolce & Gabbana Icons",
+    dek: "The prints, the lace, the gold — the pieces that define the house and return every season.",
+  },
 } as const;
 
 type Key = keyof typeof E;
