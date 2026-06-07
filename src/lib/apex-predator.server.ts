@@ -226,9 +226,20 @@ export async function fetchCompetitorBacklinks(opts: {
       } satisfies CompetitorBacklink;
     });
 
-    // Identity reset: no self-link filter. Inbound links to palaceofroman.com
-    // (the legacy domain) are exactly what Authority Protection wants to see.
-    const result = mapped;
+    // Production filters — keep the intercept feed elite:
+    // 1) Drop legal/help/policy destinations (no commercial intercept value).
+    // 2) Drop scraper/pagination loops on the source side (e.g. /page/2/page/3/...).
+    const LEGAL_PATH_RX = /\/(privacy-policy|privacy|help|support|terms|terms-of-service|terms-and-conditions|cookie-policy|cookies|legal|accessibility|imprint|returns|shipping-policy)(\/|$|\?)/i;
+    const PAGINATION_LOOP_RX = /(?:\/page\/\d+){2,}/i;
+    const result = mapped.filter((row) => {
+      const target = row.target_url.toLowerCase();
+      if (LEGAL_PATH_RX.test(target)) return false;
+      const source = row.source_url.toLowerCase();
+      if (PAGINATION_LOOP_RX.test(source)) return false;
+      // Catch generic infinite-repeat segments like /foo/foo/foo/
+      if (/(\/[^/]{2,30})\1{2,}/i.test(source)) return false;
+      return true;
+    });
     // If the live network payload returns empty, instantly force-inject the elite fallback array
     if (!result || result.length === 0) {
       console.log("Live Semrush gateway returned empty payload. Activating seed protection fallback.");
