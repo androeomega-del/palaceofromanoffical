@@ -74,17 +74,53 @@ export type PoacherRow = {
   status: string;
 };
 
+const POACHER_SEEDS: PoacherRow[] = [
+  {
+    id: "seed-vogue", source_url: "https://www.vogue.com/article/luxury-resale-guide",
+    source_domain: "vogue.com", target_url: "https://palaceofromanofficial.com/", anchor: "Palace of Roman",
+    page_ascore: 92, is_nofollow: false, is_net_new: true,
+    first_seen_at: new Date(Date.now() - 86_400_000).toISOString(),
+    pitch_subject: null, pitch_body: null, pitch_generated_at: null, status: "seed",
+  },
+  {
+    id: "seed-gq", source_url: "https://www.gq.com/story/best-designer-bags-2026",
+    source_domain: "gq.com", target_url: "https://palaceofromanofficial.com/collections/bags", anchor: "designer leather goods",
+    page_ascore: 88, is_nofollow: false, is_net_new: true,
+    first_seen_at: new Date(Date.now() - 2 * 86_400_000).toISOString(),
+    pitch_subject: null, pitch_body: null, pitch_generated_at: null, status: "seed",
+  },
+  {
+    id: "seed-hb", source_url: "https://www.harpersbazaar.com/fashion/trends/loewe-spring-edit",
+    source_domain: "harpersbazaar.com", target_url: "https://palaceofromanofficial.com/collections/loewe", anchor: "Loewe edit",
+    page_ascore: 84, is_nofollow: true, is_net_new: false,
+    first_seen_at: new Date(Date.now() - 5 * 86_400_000).toISOString(),
+    pitch_subject: null, pitch_body: null, pitch_generated_at: null, status: "seed",
+  },
+];
+
+export type PoacherFeedResponse = { rows: PoacherRow[]; error: string | null; seeded: boolean };
+
 export const getPoacherFeed = createServerFn({ method: "GET" })
   .middleware([requireAdmin])
-  .handler(async (): Promise<PoacherRow[]> => {
-    const { data, error } = await supabaseAdmin
-      .from("apex_competitor_backlinks")
-      .select("id, source_url, source_domain, target_url, anchor, page_ascore, is_nofollow, is_net_new, first_seen_at, pitch_subject, pitch_body, pitch_generated_at, status")
-      .order("page_ascore", { ascending: false })
-      .order("first_seen_at", { ascending: false })
-      .limit(200);
-    if (error) throw new Error(error.message);
-    return (data ?? []) as PoacherRow[];
+  .handler(async (): Promise<PoacherFeedResponse> => {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from("apex_competitor_backlinks")
+        .select("id, source_url, source_domain, target_url, anchor, page_ascore, is_nofollow, is_net_new, first_seen_at, pitch_subject, pitch_body, pitch_generated_at, status")
+        .order("page_ascore", { ascending: false })
+        .order("first_seen_at", { ascending: false })
+        .limit(200);
+      if (error) {
+        console.error("[apex/poacher] db error:", error.message);
+        return { rows: POACHER_SEEDS, error: `DB: ${error.message}`, seeded: true };
+      }
+      const rows = (data ?? []) as PoacherRow[];
+      if (rows.length === 0) return { rows: POACHER_SEEDS, error: null, seeded: true };
+      return { rows, error: null, seeded: false };
+    } catch (e) {
+      console.error("[apex/poacher] unhandled:", (e as Error).message);
+      return { rows: POACHER_SEEDS, error: (e as Error).message, seeded: true };
+    }
   });
 
 export const refreshPoacherFeed = createServerFn({ method: "POST" })
