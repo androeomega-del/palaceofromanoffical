@@ -176,7 +176,7 @@ const entry = (k: Key): EditorialLink => E[k];
 /*  Collection → editorial map                                              */
 /* ──────────────────────────────────────────────────────────────────────── */
 
-/** Pick 3 contextually-relevant editorial features for a given PLP. */
+/** Pick 3–4 contextually-relevant editorial features for a given PLP. */
 export function editorialLinksForCollection(handle: string): EditorialLink[] {
   const map: Record<string, Key[]> = {
     "womens-clothing": ["womens", "cucinelli", "dolce"],
@@ -187,7 +187,7 @@ export function editorialLinksForCollection(handle: string): EditorialLink[] {
     "designer-belts": ["spotLeather", "leatherCare", "madeIn"],
     "designer-crossbody-bags": ["bagVault", "leatherCare", "prada"],
     "designer-mens-shirts": ["mens", "shoreline", "resort"],
-    "designer-sunglasses": ["sunglasses", "shoreline", "yacht"],
+    "designer-sunglasses": ["sunglasses", "pucci", "tomFord"],
     "italian-leather-handbags": ["bagVault", "spotLeather", "leatherCare"],
     "italian-leather-loafers": ["spotLeather", "leatherCare", "madeIn"],
     "italian-leather-wallets": ["spotLeather", "leatherCare", "madeIn"],
@@ -195,8 +195,20 @@ export function editorialLinksForCollection(handle: string): EditorialLink[] {
     "silk-scarves": ["resort", "shoreline", "womens"],
     bags: ["bagVault", "leatherCare", "prada"],
     shoes: ["sneakers", "spotLeather", "madeIn"],
-    sunglasses: ["sunglasses", "shoreline", "yacht"],
+    sunglasses: ["sunglasses", "pucci", "tomFord"],
     accessories: ["bagVault", "leatherCare", "spotLeather"],
+    // Brand-specific pages — link to the house's own editorial / trends
+    versace: ["versace", "newEvening", "mens"],
+    "dolce-gabbana": ["dolce", "dgIcons", "newEvening"],
+    prada: ["prada", "bagVault", "womens"],
+    "brunello-cucinelli": ["cucinelli", "cashmere", "mens"],
+    gucci: ["bagVault", "resort", "womens"],
+    "saint-laurent": ["newEvening", "mens", "womens"],
+    "bottega-veneta": ["bagVault", "leatherCare", "mens"],
+    fendi: ["bagVault", "womens", "resort"],
+    valentino: ["newEvening", "womens", "resort"],
+    givenchy: ["mens", "newEvening", "womens"],
+    "tom-ford": ["tomFord", "mens", "newEvening"],
   };
   const keys = map[handle] ?? ["resort", "cucinelli", "may2026"];
   return keys.map(entry);
