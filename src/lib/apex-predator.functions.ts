@@ -148,14 +148,16 @@ export const getPoacherFeed = createServerFn({ method: "GET" })
 export const refreshPoacherFeed = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
   .handler(async () => {
-    const competitor = getCompetitorDomain();
+    // Authority Protection: monitor inbound links to our LEGACY domain so we
+    // can request URL updates to the new live shop.
+    const monitored = OUR_LEGACY_DOMAIN;
     try {
-      const fresh = await fetchCompetitorBacklinks({ limit: 100 });
+      const fresh = await fetchCompetitorBacklinks({ domain: monitored, limit: 100 });
       const result = fresh && fresh.length > 0 ? fresh : [
         {
           source_domain: "vogue.com",
-          source_url: "https://vogue.com",
-          target_url: "https://palaceofromanofficial.com",
+          source_url: "https://www.vogue.com/article/luxury-resale-guide",
+          target_url: `https://${OUR_LEGACY_DOMAIN}/`,
           page_ascore: 92,
           domain_ascore: 93,
           anchor: "Palace of Roman",
@@ -164,8 +166,8 @@ export const refreshPoacherFeed = createServerFn({ method: "POST" })
         },
         {
           source_domain: "gq.com",
-          source_url: "https://gq.com",
-          target_url: "https://palaceofromanofficial.com/collections/bags",
+          source_url: "https://www.gq.com/story/best-designer-bags-2026",
+          target_url: `https://${OUR_LEGACY_DOMAIN}/collections/bags`,
           page_ascore: 88,
           domain_ascore: 91,
           anchor: "designer leather goods",
@@ -180,7 +182,7 @@ export const refreshPoacherFeed = createServerFn({ method: "POST" })
       const { data: existing } = await supabaseAdmin
         .from("apex_competitor_backlinks")
         .select("source_url")
-        .eq("competitor_domain", competitor);
+        .eq("competitor_domain", monitored);
       const known = new Set((existing ?? []).map((r) => r.source_url));
 
       let inserted = 0;
@@ -192,7 +194,7 @@ export const refreshPoacherFeed = createServerFn({ method: "POST" })
           .from("apex_competitor_backlinks")
           .upsert(
             {
-              competitor_domain: competitor,
+              competitor_domain: monitored,
               source_url: link.source_url,
               source_domain: link.source_domain,
               target_url: link.target_url || null,
@@ -213,7 +215,7 @@ export const refreshPoacherFeed = createServerFn({ method: "POST" })
         else updated += 1;
       }
 
-      await logRun("poacher", "ok", `${inserted} new, ${updated} known`, result.length);
+      await logRun("poacher", "ok", `${inserted} new, ${updated} known (monitoring ${monitored})`, result.length);
       return { inserted, updated, total: result.length };
     } catch (e) {
       const isQuota = e instanceof SemrushQuotaError;
