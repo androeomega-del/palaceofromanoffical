@@ -22,6 +22,19 @@ import {
 } from "@/lib/apex-predator.server";
 import { callAi, BudgetExceededError } from "@/lib/ai-gateway.server";
 
+/** Safely convert any date-ish value to an ISO string; falls back to now() on parse failure. */
+function safeISO(input?: string | number | Date | null): string {
+  try {
+    if (input === undefined || input === null || input === "") return new Date().toISOString();
+    const d = input instanceof Date ? input : new Date(input);
+    const t = d.getTime();
+    if (!Number.isFinite(t)) return new Date().toISOString();
+    return d.toISOString();
+  } catch {
+    return new Date().toISOString();
+  }
+}
+
 // =================================================================
 // Status header (shared)
 // =================================================================
@@ -152,8 +165,8 @@ export const refreshPoacherFeed = createServerFn({ method: "POST" })
               anchor: link.anchor || null,
               page_ascore: link.page_ascore || null,
               is_nofollow: link.is_nofollow,
-              first_seen_at: link.first_seen ? new Date(link.first_seen).toISOString() : new Date().toISOString(),
-              last_seen_at: new Date().toISOString(),
+              first_seen_at: safeISO(link.first_seen),
+              last_seen_at: safeISO(),
               is_net_new: isNew,
             },
             { onConflict: "competitor_domain,source_url" },

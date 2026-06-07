@@ -52,6 +52,17 @@ function fmt(n: number | null | undefined, d = 0) {
   return Number(n).toLocaleString("en-US", { maximumFractionDigits: d, minimumFractionDigits: d });
 }
 
+/** Safe date formatter — never throws RangeError on bad input. */
+function safeDateLabel(input?: string | number | Date | null): string {
+  if (input === undefined || input === null || input === "") return "—";
+  try {
+    const d = input instanceof Date ? input : new Date(input);
+    const t = d.getTime();
+    if (!Number.isFinite(t)) return "—";
+    return d.toLocaleString();
+  } catch { return "—"; }
+}
+
 // =============================================================
 function ApexPredatorTerminal() {
   const [tab, setTab] = useState<"poacher" | "hijack" | "striking">("poacher");
@@ -83,7 +94,7 @@ function ApexPredatorTerminal() {
           <span style={{ color: T.neon, fontWeight: 700 }}>APEX PREDATOR</span>
           <span style={{ color: T.muted }}>// TARGET: <span style={{ color: T.amber }}>{status.data?.competitor ?? "—"}</span></span>
           <span style={{ color: T.muted }}>// SEMRUSH QUOTA: <span style={{ color: T.ink }}>{status.data?.semrushQuota ? `${fmt(status.data.semrushQuota.used)} / ${fmt(status.data.semrushQuota.limit)}` : "—"}</span></span>
-          <span style={{ marginLeft: "auto", color: T.muted }}>LAST RUN: <span style={{ color: T.ink }}>{status.data?.lastRuns?.[0]?.created_at ? new Date(status.data.lastRuns[0].created_at).toLocaleString() : "—"}</span> <span style={{ color: T.neon, marginLeft: 6 }}>●</span></span>
+          <span style={{ marginLeft: "auto", color: T.muted }}>LAST RUN: <span style={{ color: T.ink }}>{safeDateLabel(status.data?.lastRuns?.[0]?.created_at)}</span> <span style={{ color: T.neon, marginLeft: 6 }}>●</span></span>
         </div>
       </div>
 
