@@ -73,6 +73,33 @@ function readEnv(name: string): string {
   return v;
 }
 
+// ─────────────────────────────────────────────────────────────
+// Striking-Distance hardcoded fallback rows. Surfaced whenever the local GSC
+// tables are empty (no weekly review yet, or all queries filtered out) so the
+// operator can still exercise the "Generate High-Intent SEO Patch" action.
+// ─────────────────────────────────────────────────────────────
+export type StrikingFallbackRow = {
+  query: string;
+  page: string;
+  impressions: number;
+  position: number;
+};
+
+export const STRIKING_FALLBACK_ROWS: StrikingFallbackRow[] = [
+  {
+    query: "luxury black loafers",
+    page: "/products/valentino-garavani-women-black-leather-vlogo-loafers",
+    impressions: 4500,
+    position: 6.2,
+  },
+  {
+    query: "designer cashmere coat men",
+    page: "/products/brunello-cucinelli-men-wool-and-cashmere-coat",
+    impressions: 2800,
+    position: 8.4,
+  },
+];
+
 export class SemrushQuotaError extends Error {
   constructor(public bodyText: string) {
     super("Semrush quota exhausted (ERROR 134). Reset on the Semrush plan cycle or upgrade.");

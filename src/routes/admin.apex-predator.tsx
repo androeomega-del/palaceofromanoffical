@@ -682,20 +682,25 @@ function StrikingModule() {
 }
 
 function HighIntentPatchPanel({ patch }: { patch: HighIntentSeoPatch }) {
-  const text = `# High-Intent SEO Patch\nProduct: ${patch.productTitle}\nURL: ${patch.productUrl || "(unknown)"}\n\nTarget keyword: ${patch.targetKeyword}\nSecondary: ${patch.secondaryKeywords.join(", ")}\n\nTitle: ${patch.newTitle}\nH1: ${patch.newH1}\nMeta: ${patch.newMetaDescription}\n\nRationale: ${patch.rationale}`;
+  const jsonBlock = JSON.stringify({
+    suggested_title: patch.newTitle,
+    suggested_meta: patch.newMetaDescription,
+    revised_h1: patch.newH1,
+    internal_links: patch.internalLinks,
+  }, null, 2);
+  const text = `# High-Intent SEO Patch\nProduct: ${patch.productTitle}\nURL: ${patch.productUrl || "(unknown)"}\n\nTarget keyword: ${patch.targetKeyword}\nSecondary: ${patch.secondaryKeywords.join(", ")}\n\n${jsonBlock}\n\nRationale: ${patch.rationale}`;
   return (
     <div style={{ background: T.bg, padding: 14, borderBottom: `1px solid ${T.border}`, fontSize: 11, borderLeft: `3px solid ${T.neon}` }}>
       <div style={{ display: "flex", gap: 8, marginBottom: 8, alignItems: "center" }}>
         <span style={{ color: T.neon, fontSize: 10, letterSpacing: "0.1em", fontWeight: 700 }}>● HIGH-INTENT SEO PATCH</span>
         <span style={{ color: T.muted, fontSize: 10 }}>raw: "{patch.productTitle}"</span>
-        <ActionBtn onClick={() => copyText(text)} color={T.ink}><Copy size={11} /> COPY</ActionBtn>
+        <ActionBtn onClick={() => copyText(jsonBlock)} color={T.neon}><Copy size={11} /> COPY JSON</ActionBtn>
+        <ActionBtn onClick={() => copyText(text)} color={T.ink}><Copy size={11} /> COPY ALL</ActionBtn>
         <ActionBtn onClick={() => download(`high-intent-${Date.now()}.md`, text)} color={T.ink}><FileDown size={11} /> EXPORT</ActionBtn>
       </div>
       <div><span style={{ color: T.muted }}>Target KW    </span><span style={{ color: T.neon }}>{patch.targetKeyword}</span></div>
       <div><span style={{ color: T.muted }}>Secondary KW </span><span style={{ color: T.amber }}>{patch.secondaryKeywords.join(" · ")}</span></div>
-      <div style={{ marginTop: 6 }}><span style={{ color: T.muted }}>&lt;title&gt; </span><span style={{ color: T.ink }}>{patch.newTitle}</span> <span style={{ color: T.muted }}>({patch.newTitle.length}c)</span></div>
-      <div><span style={{ color: T.muted }}>H1      </span><span style={{ color: T.ink }}>{patch.newH1}</span> <span style={{ color: T.muted }}>({patch.newH1.length}c)</span></div>
-      <div><span style={{ color: T.muted }}>Meta    </span><span style={{ color: T.ink }}>{patch.newMetaDescription}</span> <span style={{ color: T.muted }}>({patch.newMetaDescription.length}c)</span></div>
+      <pre style={{ marginTop: 8, padding: 10, background: "#000", border: `1px solid ${T.border}`, color: T.ink, fontFamily: T.mono, fontSize: 11, whiteSpace: "pre-wrap", overflowX: "auto" }}>{jsonBlock}</pre>
       <div style={{ marginTop: 8, color: T.ink, fontStyle: "italic" }}>{patch.rationale}</div>
     </div>
   );
