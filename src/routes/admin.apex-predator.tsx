@@ -16,6 +16,7 @@ import {
   getStrikingPipeline,
   generateStrikePlan,
   generateHighIntentSeoPatch,
+  deployPatchToShopify,
   type ContentBlueprint,
   type StrikePlan,
   type HighIntentSeoPatch,
