@@ -306,8 +306,8 @@ function PoacherModule() {
   return (
     <div>
       <ModuleHeader
-        title="POACHER PROTOCOL"
-        sub="Net-new premium backlinks landing on the competitor. Draft an editor-grade outreach pitch in one click."
+        title="AUTHORITY PROTECTION"
+        sub={`Monitoring inbound links to our legacy domain (${OUR_LEGACY_DOMAIN}). Confirm Google passes legacy link equity to ${OUR_DOMAIN}, and request webmasters to update destination URLs.`}
         action={
           <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
             <button
