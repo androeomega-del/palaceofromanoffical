@@ -19,6 +19,19 @@ import { checkWebhookSecret } from "@/lib/webhook-secret";
 const HOUR_MS = 60 * 60 * 1000;
 const THRESHOLDS_MS = [1 * HOUR_MS, 24 * HOUR_MS, 72 * HOUR_MS];
 
+// Defense-in-depth: even though the DB CHECK constraint validates email
+// format on INSERT, re-validate server-side before dispatching to prevent
+// any malformed/spoofed value from reaching the mail transport.
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+function isValidRecipient(email: unknown): email is string {
+  return (
+    typeof email === "string" &&
+    email.length >= 5 &&
+    email.length <= 320 &&
+    EMAIL_RE.test(email)
+  );
+}
+
 export const Route = createFileRoute("/api/public/cron/abandoned-cart-recovery")({
   server: {
     handlers: {
