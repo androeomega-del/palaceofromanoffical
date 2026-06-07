@@ -137,8 +137,11 @@ export async function fetchCompetitorBacklinks(opts: {
       domain_ascore: 0,
       is_nofollow: String(r.nofollow || "").toLowerCase() === "true",
       first_seen: firstSeenRaw || null,
-    } satisfies CompetitorBacklink;
-  });
+    }).filter((r) => {
+      // Suppress self-links from our own alternate domain variations
+      const source = (r.source_domain + " " + r.source_url).toLowerCase();
+      return !source.includes("palaceofroman");
+    });
 }
 
 // =================================================================
