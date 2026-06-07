@@ -120,6 +120,7 @@ import { Route as AdminCollectionImagePreviewRouteImport } from './routes/admin.
 import { Route as AdminCollectionHeroRegressionRouteImport } from './routes/admin.collection-hero-regression'
 import { Route as AdminCollectionFocalRouteImport } from './routes/admin.collection-focal'
 import { Route as AdminBackfillStatusRouteImport } from './routes/admin.backfill-status'
+import { Route as AdminApexPredatorRouteImport } from './routes/admin.apex-predator'
 import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 import { Route as AdminAcquiredLeadsRouteImport } from './routes/admin.acquired-leads'
 import { Route as AccountRegisterRouteImport } from './routes/account.register'
@@ -729,6 +730,11 @@ const AdminBackfillStatusRoute = AdminBackfillStatusRouteImport.update({
   path: '/admin/backfill-status',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminApexPredatorRoute = AdminApexPredatorRouteImport.update({
+  id: '/admin/apex-predator',
+  path: '/admin/apex-predator',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
   id: '/admin/analytics',
   path: '/admin/analytics',
@@ -979,6 +985,7 @@ export interface FileRoutesByFullPath {
   '/account/register': typeof AccountRegisterRoute
   '/admin/acquired-leads': typeof AdminAcquiredLeadsRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/apex-predator': typeof AdminApexPredatorRoute
   '/admin/backfill-status': typeof AdminBackfillStatusRoute
   '/admin/collection-focal': typeof AdminCollectionFocalRoute
   '/admin/collection-hero-regression': typeof AdminCollectionHeroRegressionRoute
@@ -1127,6 +1134,7 @@ export interface FileRoutesByTo {
   '/account/register': typeof AccountRegisterRoute
   '/admin/acquired-leads': typeof AdminAcquiredLeadsRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/apex-predator': typeof AdminApexPredatorRoute
   '/admin/backfill-status': typeof AdminBackfillStatusRoute
   '/admin/collection-focal': typeof AdminCollectionFocalRoute
   '/admin/collection-hero-regression': typeof AdminCollectionHeroRegressionRoute
@@ -1277,6 +1285,7 @@ export interface FileRoutesById {
   '/account/register': typeof AccountRegisterRoute
   '/admin/acquired-leads': typeof AdminAcquiredLeadsRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/apex-predator': typeof AdminApexPredatorRoute
   '/admin/backfill-status': typeof AdminBackfillStatusRoute
   '/admin/collection-focal': typeof AdminCollectionFocalRoute
   '/admin/collection-hero-regression': typeof AdminCollectionHeroRegressionRoute
@@ -1429,6 +1438,7 @@ export interface FileRouteTypes {
     | '/account/register'
     | '/admin/acquired-leads'
     | '/admin/analytics'
+    | '/admin/apex-predator'
     | '/admin/backfill-status'
     | '/admin/collection-focal'
     | '/admin/collection-hero-regression'
@@ -1577,6 +1587,7 @@ export interface FileRouteTypes {
     | '/account/register'
     | '/admin/acquired-leads'
     | '/admin/analytics'
+    | '/admin/apex-predator'
     | '/admin/backfill-status'
     | '/admin/collection-focal'
     | '/admin/collection-hero-regression'
@@ -1726,6 +1737,7 @@ export interface FileRouteTypes {
     | '/account/register'
     | '/admin/acquired-leads'
     | '/admin/analytics'
+    | '/admin/apex-predator'
     | '/admin/backfill-status'
     | '/admin/collection-focal'
     | '/admin/collection-hero-regression'
@@ -1874,6 +1886,7 @@ export interface RootRouteChildren {
   WishlistRoute: typeof WishlistRoute
   AdminAcquiredLeadsRoute: typeof AdminAcquiredLeadsRoute
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
+  AdminApexPredatorRoute: typeof AdminApexPredatorRoute
   AdminBackfillStatusRoute: typeof AdminBackfillStatusRoute
   AdminCollectionFocalRoute: typeof AdminCollectionFocalRoute
   AdminCollectionHeroRegressionRoute: typeof AdminCollectionHeroRegressionRoute
@@ -2747,6 +2760,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBackfillStatusRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/apex-predator': {
+      id: '/admin/apex-predator'
+      path: '/admin/apex-predator'
+      fullPath: '/admin/apex-predator'
+      preLoaderRoute: typeof AdminApexPredatorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/analytics': {
       id: '/admin/analytics'
       path: '/admin/analytics'
@@ -3157,6 +3177,7 @@ const rootRouteChildren: RootRouteChildren = {
   WishlistRoute: WishlistRoute,
   AdminAcquiredLeadsRoute: AdminAcquiredLeadsRoute,
   AdminAnalyticsRoute: AdminAnalyticsRoute,
+  AdminApexPredatorRoute: AdminApexPredatorRoute,
   AdminBackfillStatusRoute: AdminBackfillStatusRoute,
   AdminCollectionFocalRoute: AdminCollectionFocalRoute,
   AdminCollectionHeroRegressionRoute: AdminCollectionHeroRegressionRoute,
