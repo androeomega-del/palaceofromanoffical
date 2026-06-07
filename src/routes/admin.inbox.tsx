@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Mail, Bell, ShoppingBag, Inbox as InboxIcon } from "lucide-react";
 
 export const Route = createFileRoute("/admin/inbox")({
+  ssr: false,
   beforeLoad: adminBeforeLoad,
   component: AdminInbox,
   head: () => ({

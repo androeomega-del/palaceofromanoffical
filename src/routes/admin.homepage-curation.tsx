@@ -54,6 +54,7 @@ import {
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/homepage-curation")({
+  ssr: false,
   beforeLoad: adminBeforeLoad,
   component: AdminHomepageCuration,
   head: () => ({

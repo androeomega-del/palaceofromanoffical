@@ -24,6 +24,7 @@ import {
 } from "@/lib/collection-image.functions";
 
 export const Route = createFileRoute("/admin/collection-hero-regression")({
+  ssr: false,
   beforeLoad: adminBeforeLoad,
   component: AdminHeroRegression,
   head: () => ({

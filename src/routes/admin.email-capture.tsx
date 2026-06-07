@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin/email-capture")({
+  ssr: false,
   beforeLoad: adminBeforeLoad,
   component: AdminEmailCapture,
   head: () => ({

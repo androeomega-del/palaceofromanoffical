@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { RefreshCw, CheckCircle2, XCircle, Loader2, Circle, MapPin } from "lucide-react";
 
 export const Route = createFileRoute("/admin/inventory-sync")({
+  ssr: false,
   beforeLoad: adminBeforeLoad,
   component: AdminInventorySync,
   head: () => ({

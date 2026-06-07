@@ -14,6 +14,7 @@ import {
 import { getCollectionImageMap } from "@/lib/collection-image.functions";
 
 export const Route = createFileRoute("/admin/collection-image-qa")({
+  ssr: false,
   beforeLoad: adminBeforeLoad,
   component: AdminCollectionImageQa,
   head: () => ({

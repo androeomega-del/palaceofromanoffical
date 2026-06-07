@@ -31,6 +31,7 @@ import { generateUgcIdeas, queueUgcDraft, type UgcDraft } from "@/lib/ugc-recomm
 import { UrgencyFunnelPanel } from "@/components/admin/urgency-funnel-panel";
 
 export const Route = createFileRoute("/admin/growth-os")({
+  ssr: false,
   beforeLoad: adminBeforeLoad,
   component: GrowthOsPage,
   head: () => ({

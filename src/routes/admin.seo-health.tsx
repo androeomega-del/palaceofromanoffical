@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { RefreshCw, Check, X } from "lucide-react";
 
 export const Route = createFileRoute("/admin/seo-health")({
+  ssr: false,
   beforeLoad: adminBeforeLoad,
   component: AdminSeoHealth,
   head: () => ({

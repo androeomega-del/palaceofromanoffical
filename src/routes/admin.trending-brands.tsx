@@ -14,6 +14,7 @@ import { ArrowLeft, Plus, Save, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/trending-brands")({
+  ssr: false,
   beforeLoad: adminBeforeLoad,
   component: AdminTrendingBrands,
   head: () => ({
