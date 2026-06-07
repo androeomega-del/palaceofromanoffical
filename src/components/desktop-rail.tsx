@@ -224,13 +224,17 @@ function RailLink({
 
 function RailTrigger({
   label,
+  to,
   isOpen,
   onOpen,
+  onClose,
   children,
 }: {
   label: string;
+  to: string;
   isOpen: boolean;
   onOpen: () => void;
+  onClose: () => void;
   children: React.ReactNode;
 }) {
   return (
@@ -239,16 +243,17 @@ function RailTrigger({
       onMouseEnter={onOpen}
       onFocus={onOpen}
     >
-      <button
-        type="button"
+      <a
+        href={to}
         aria-haspopup="true"
         aria-expanded={isOpen}
+        onClick={() => onClose()}
         className={`whitespace-nowrap py-3 transition-colors ${
           isOpen ? "text-bronze" : "text-ink hover:text-bronze"
         }`}
       >
         {label}
-      </button>
+      </a>
       {isOpen && children}
     </div>
   );
