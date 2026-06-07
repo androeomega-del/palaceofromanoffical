@@ -50,8 +50,8 @@ export const getApexStatus = createServerFn({ method: "GET" })
     };
   });
 
-async function logRun(module: string, status: "ok" | "error" | "quota", message: string | null, rows: number | null, metadata: Record<string, unknown> = {}) {
-  await supabaseAdmin.from("apex_run_log").insert({ module, status, message, rows_processed: rows, metadata });
+async function logRun(module: string, status: "ok" | "error" | "quota", message: string | null, rows: number | null) {
+  await supabaseAdmin.from("apex_run_log").insert({ module, status, message, rows_processed: rows });
 }
 
 // =================================================================
