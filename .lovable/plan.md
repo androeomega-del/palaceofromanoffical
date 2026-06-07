@@ -1,54 +1,74 @@
-# Storefront SSR / Cache / CLS / Anchor Hardening
 
-Per our working-mode rule (plan-first, smallest diff, no sweeping changes without per-item approval) and the checkout-protocol lockdown (cart-store / cart-drawer / use-cart-sync / checkout URL generation are untouchable), I'm scoping this into 4 reviewable phases. Approve them individually — I will NOT do all four in one pass.
+# Apex Predator — SEO command terminal
 
-## Phase 1 — Server-side TTL cache helper (foundation)
+A new admin surface that turns the existing SEO tooling (GSC monitor, Growth OS, Semrush) into an aggressive competitor-surveillance terminal for `palaceofromanofficial.com`. Four modules, one shared shell.
 
-Create `src/lib/server-cache.ts`: generic `cached<T>(key, ttlMs, loader)` using a per-Worker `Map<string, {value, expiresAt}>`, mirroring the pattern already shipped in `vacation-destinations.server.ts`. Single file, zero behavior change until Phase 2 wires it in.
+## Prerequisite (one-time, before module 1 works)
 
-## Phase 2 — Homepage (`/`) SSR audit
+The Semrush connector is **not yet linked** to this project — only Gmail and Google Search Console are. Modules 1–3 all depend on Semrush gateway data. As soon as you approve this plan I'll trigger the Semrush connect modal so you can authorize your Semrush account on the spot. Your existing Semrush subscription tier determines depth — Pro is fine for backlink + domain + keyword reports; Guru/Business adds historical depth.
 
-`src/routes/index.tsx` already prefetches Men + Women "New This Week" rails into the QueryClient via `ensureQueryData` in the loader, and the LCP image is preloaded. What's missing:
-- Best-Sellers rail still fetches client-side after hydration.
-- The Shopify calls behind `newThisWeekQueryOptions` / `bestSellersQueryOptions` aren't wrapped in our 60s server cache.
+LOVABLE_API_KEY is already provisioned, so the LLM drafting (poacher pitches, content blueprints, metadata rewrites) needs no further setup.
 
-Changes:
-- Add Men + Women Best-Sellers `ensureQueryData` to the home loader (parallel with existing New-In).
-- Wrap `fetchProducts` calls used by rail queryFns in `cached(...)` keyed by `{surface, dept, market}`, 60s TTL. The cache lives on the server side of the queryFn — `useQuery` keys and client behavior are unchanged.
+## Module 1 — Poacher Protocol (backlink intercept)
 
-Out of scope: any change to `HomeStudioLayout` JSX, cart, or chrome.
+- New server fn `apex-predator.functions.ts → fetchCompetitorBacklinks(domain, sinceDays)` calling the Semrush connector gateway (`/backlinks/backlinks`, `/backlinks/backlinks_refdomains`, `/backlinks/backlinks_overview`) for `palaceofromanofficial.com`.
+- Stores a rolling snapshot in a new `competitor_backlinks` table; on each refresh we diff against the previous snapshot to surface **net-new** referring domains (the "interception feed"), filtered to premium links (AS ≥ 40, dofollow, no spam TLDs).
+- For each net-new link, a "Draft Pitch" action calls Lovable AI (`google/gemini-3-flash-preview` for speed, `openai/gpt-5-mini` toggle for higher polish) with: linking page URL + extracted page summary (fetched server-side via `fetch` + readability strip) + Palace of Roman positioning brief. Output is a 4-paragraph editor-grade outreach email with subject + angle hook.
+- Pitch is saved to the row so the operator can re-open it; "Copy" + "Open in Gmail" actions ship next to it (Gmail connector is already linked).
 
-## Phase 3 — Collection pages (`/collections/$slug`) SSR + cache
+## Module 2 — Hijack Feed (traffic reverse-engineering)
 
-I need to read `src/routes/collections.$slug.tsx` first (not in current context) to confirm current loader shape before committing to a diff. Expected change: move the products query into `loader` via `ensureQueryData`, wrap the Shopify fetch in `cached(...)` with 60s TTL keyed by `{slug, market, page, sort, filters}`. Confirm `errorComponent` + `notFoundComponent` are present (required by our standards).
+- Server fn `fetchTopRankingPages(domain)` → Semrush `/domains/domain_organic_unique` (top URLs) + `/url/url_organic` per URL (highest-traffic keywords). Cached server-side for 6 h.
+- UI: ranked table of competitor URLs (slot, est. traffic, top kw, KD, volume, CPC) — up to 100 rows, sortable.
+- "Generate Content Blueprint" button on each row → Lovable AI structured-output call returning `{ targetKeyword, intent, semanticTerms[], outline[ {h2, h3[], evidence} ], internalLinks[], schemaTypes[], wordCount, eatSignals[] }`. Rendered as an expandable panel + one-click "Export as Markdown" download to `/mnt/documents/blueprint-<slug>.md`.
 
-## Phase 4 — PDP (`/product/$handle`) SSR + cache
+## Module 3 — Striking-Distance Impact Pipeline
 
-Same shape: read current file, then move product + related fetches into the loader in parallel, cache the product read 60s by `{handle, market}`. PDP-specific: cart `onAdd` handlers stay exactly as they are (checkout-protocol lockdown).
+- Reuses existing `gsc-monitor.server.ts` data (positions 4–11) — no new GSC plumbing.
+- Adds an **Impact Score** = `impressions × ctrLift(position) × (1 / max(KD, 10)) × 100`, where `ctrLift` is the modeled CTR delta between current position and position 3, and `KD` comes from a batched Semrush `/keywords/phrase_these` lookup (cached 24 h to stay inside quota).
+- Ranked queue, top N highlighted in neon green ("low-hanging predator" tier).
+- For the top 10, a "Generate Strike Plan" action returns: rewritten `<title>` (≤60c), meta description (≤155c), revised H1, 3 internal-link source pages from our own catalog (drawn from `shop-taxonomy` + live collections), and a 2-sentence on-page rationale. JSON saved to row + one-click "Copy patch" and "Export .md".
 
-## CLS audit — separate, after Phases 2–4
+## Module 4 — Prestige Dark Terminal UI
 
-`ProductCard` (the shared component used by every rail) needs an audit pass: verify every code path renders `aspectRatio: 3/4` + explicit `width`/`height` on `<img>`, matching the Vacation Stylist tile. I'll list any drift in a follow-up and ask before editing. I won't touch the card in the same diff as routing/loader work.
+- New route `src/routes/admin.apex-predator.tsx` behind the existing admin guard.
+- New tokens scoped to the surface (added to `src/styles.css` under `:root[data-surface="apex"]`):
+  - `--apex-bg`: near-black slate (`oklch(0.14 0.012 250)`)
+  - `--apex-surface`: `oklch(0.18 0.014 250)`
+  - `--apex-grid`: `oklch(0.24 0.012 250)` (1px grid lines)
+  - `--apex-neon`: `oklch(0.86 0.22 145)` (high-priority opportunity — Bloomberg green)
+  - `--apex-amber`: `oklch(0.78 0.18 70)` (competitive alert)
+  - `--apex-ink`: `oklch(0.96 0.005 250)` (foreground)
+  - `--apex-muted`: `oklch(0.62 0.01 250)`
+  - Mono numerics: `JetBrains Mono` already in the stack.
+- Layout: fixed left module nav (Poacher / Hijack / Striking) + top status bar (last sync, Semrush quota remaining, run-count) + main grid. Every row has a single primary action button on the right ("Deploy Fix" / "Export Outreach" / "Generate Counter-Strategy"). Subtle scanline + cursor blink on the status bar — no decorative animation in tables (legibility first).
+- Entirely scoped — does not touch the storefront design tokens.
 
-## Anchor audit — separate
+## Backend / data
 
-`ProductCard` already wraps in `<Link to="/product/$handle" params={{handle}}>` — that's a real `<a>` in the DOM, type-safe, preload-friendly. The user's prompt asks for raw `<a href>`, but our standing rule (`tanstack-navigation` knowledge: "Params interpolated into `to` strings instead of `params`" is a common mistake) is to keep `<Link>`. **Question for you:** do you want me to (a) keep `<Link>` everywhere (recommended, same SEO outcome — `<Link>` renders `<a href>`), or (b) downgrade product/brand grids to raw `<a href>` strings? I will NOT change this without an explicit pick.
+- One new migration: `competitor_backlinks` and `apex_run_log` tables (RLS: admin-only via `has_role(auth.uid(),'admin')`, GRANTs for `authenticated` + `service_role` per project convention).
+- All Semrush calls go through `connector-gateway.lovable.dev/semrush/...` with `Authorization: Bearer ${LOVABLE_API_KEY}` + `X-Connection-Api-Key: ${SEMRUSH_API_KEY}`; quota-error body `ERROR 134 :: TOTAL LIMIT EXCEEDED` surfaces as a top-bar warning, not a silent failure.
+- All LLM calls go through Lovable AI Gateway via the existing `ai-gateway.server.ts` helper.
 
-## What I'm explicitly NOT touching
+## Technical notes (build order)
 
-- `__root.tsx` — root `head()` must stay free of `og:image` and per-page meta (per `tanstack-ssr-head`).
-- `cart-store`, `cart-drawer`, `use-cart-sync`, `formatCheckoutUrl`, cart mutations (lockdown).
-- `src/integrations/supabase/*` auto-generated files.
-- `HomeStudioLayout` JSX, megamenu, chrome, filters UI.
+```text
+1. Trigger Semrush connect modal (once approved)
+2. supabase migration: competitor_backlinks + apex_run_log + RLS + GRANTs
+3. src/lib/apex-predator.server.ts  — Semrush gateway client, scoring fns
+4. src/lib/apex-predator.functions.ts — createServerFn wrappers (admin-guarded)
+5. src/styles.css — add :root[data-surface="apex"] tokens
+6. src/components/apex/* — Shell, StatusBar, ModuleNav, PoacherFeed,
+   HijackTable, StrikingQueue, ActionButton, BlueprintPanel
+7. src/routes/admin.apex-predator.tsx — route + head() + module switcher
+8. Wire admin nav link into existing admin index/menu
+```
 
-## Verification per phase
+## What's intentionally NOT in scope
 
-After each phase: `invoke-server-function` against the touched route, confirm initial HTML payload contains the SSR'd grid markup (grep for product handles in the streamed HTML), confirm no console hydration warnings in the preview.
+- No scheduled background jobs / pg_cron — refresh is operator-triggered on this pass (avoids burning Semrush quota during dev). Easy to add later.
+- No public-facing surface; admin-only.
+- No changes to storefront design tokens, megamenu, PDP, or checkout protocol.
+- No changes to existing GSC monitor / Growth OS pages (this surface reads from them, doesn't replace them).
 
----
-
-**Please confirm:**
-1. Approve Phase 1 (cache helper)?
-2. Approve Phase 2 (homepage Best-Sellers SSR + cache)?
-3. Approve Phase 3 + 4 in principle (I'll read the files and come back with concrete diffs)?
-4. Anchor question above: `<Link>` (recommended) or raw `<a href>`?
+Reply with **approve** to proceed, or tell me what to drop / add — e.g. "skip module 1 for now", "add a pg_cron daily refresh", "use Gemini Pro for blueprints instead of Flash", etc.
