@@ -18,6 +18,7 @@ import {
   type ContentBlueprint,
   type StrikePlan,
   type HighIntentSeoPatch,
+  type StrikingRow,
 } from "@/lib/apex-predator.functions";
 
 export const Route = createFileRoute("/admin/apex-predator")({
