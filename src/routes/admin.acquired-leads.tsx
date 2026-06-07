@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { ArrowLeft, Upload } from "lucide-react";
 
 export const Route = createFileRoute("/admin/acquired-leads")({
+  ssr: false,
   beforeLoad: adminBeforeLoad,
   component: AdminAcquiredLeads,
   head: () => ({

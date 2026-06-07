@@ -13,6 +13,7 @@ import { ArrowLeft, Trash2, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/landing-pages")({
+  ssr: false,
   beforeLoad: adminBeforeLoad,
   component: AdminLandingPages,
   head: () => ({

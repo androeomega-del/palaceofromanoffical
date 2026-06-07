@@ -26,6 +26,7 @@ import {
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/collection-image-preview")({
+  ssr: false,
   beforeLoad: adminBeforeLoad,
   component: AdminCollectionImagePreview,
   head: () => ({

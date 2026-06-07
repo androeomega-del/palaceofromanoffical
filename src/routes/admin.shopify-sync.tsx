@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { RefreshCw, MapPin } from "lucide-react";
 
 export const Route = createFileRoute("/admin/shopify-sync")({
+  ssr: false,
   beforeLoad: adminBeforeLoad,
   component: AdminShopifySync,
   head: () => ({

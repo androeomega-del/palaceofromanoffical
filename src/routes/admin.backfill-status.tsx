@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { RefreshCw, CheckCircle2, XCircle, Loader2, Circle } from "lucide-react";
 
 export const Route = createFileRoute("/admin/backfill-status")({
+  ssr: false,
   beforeLoad: adminBeforeLoad,
   component: AdminBackfillStatus,
   head: () => ({

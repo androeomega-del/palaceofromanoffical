@@ -65,6 +65,7 @@ const GROUPS: RouteGroup[] = [
 ];
 
 export const Route = createFileRoute("/admin/structured-data-test")({
+  ssr: false,
   beforeLoad: adminBeforeLoad,
   component: StructuredDataTestPage,
   head: () => ({

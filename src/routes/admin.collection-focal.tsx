@@ -26,6 +26,7 @@ import {
 } from "@/lib/collection-image-admin.functions";
 
 export const Route = createFileRoute("/admin/collection-focal")({
+  ssr: false,
   beforeLoad: adminBeforeLoad,
   component: AdminCollectionFocal,
   head: () => ({

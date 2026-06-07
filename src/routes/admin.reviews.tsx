@@ -14,6 +14,7 @@ import { ArrowLeft, Check, X, Star, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/reviews")({
+  ssr: false,
   beforeLoad: adminBeforeLoad,
   component: AdminReviews,
   head: () => ({
