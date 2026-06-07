@@ -8,6 +8,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/admin-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { adminRest } from "@/lib/shopify-admin.server";
 import {
   fetchCompetitorBacklinks,
   fetchCompetitorTopPages,
@@ -855,56 +856,28 @@ export const deployPatchToShopify = createServerFn({ method: "POST" })
     newMetaDescription: z.string().min(1).max(320),
   }).parse(d))
   .handler(async ({ data }): Promise<DeployPatchResult> => {
-    const token = process.env.SHOPIFY_ACCESS_TOKEN;
-    const domainRaw = process.env.SHOPIFY_STORE_DOMAIN;
-    if (!token || !domainRaw) {
-      throw new Error("Shopify credentials missing (SHOPIFY_ACCESS_TOKEN / SHOPIFY_STORE_DOMAIN).");
-    }
-    const domain = domainRaw.replace(/^https?:\/\//, "").replace(/\/+$/, "");
-
     const handle = extractHandle(data.productUrl);
     if (!handle) throw new Error(`Could not extract product handle from URL: ${data.productUrl}`);
 
-    const API = "2024-04";
-    const headers = {
-      "Content-Type": "application/json",
-      "X-Shopify-Access-Token": token,
-      Accept: "application/json",
-    } as const;
-
     // 1. Resolve product ID from handle
-    const lookupRes = await fetch(
-      `https://${domain}/admin/api/${API}/products.json?handle=${encodeURIComponent(handle)}&fields=id,handle,title`,
-      { headers },
+    const lookup = await adminRest<{ products: Array<{ id: number; handle: string; title: string }> }>(
+      `/products.json?handle=${encodeURIComponent(handle)}&fields=id,handle,title`,
     );
-    if (!lookupRes.ok) {
-      const t = await lookupRes.text().catch(() => "");
-      throw new Error(`Shopify lookup ${lookupRes.status}: ${t.slice(0, 200)}`);
-    }
-    const lookup = (await lookupRes.json()) as { products: Array<{ id: number; handle: string; title: string }> };
     const product = lookup.products?.[0];
     if (!product) throw new Error(`No Shopify product found for handle "${handle}".`);
 
     // 2. PUT update — title (H1), global title_tag and description_tag
-    const putRes = await fetch(
-      `https://${domain}/admin/api/${API}/products/${product.id}.json`,
-      {
-        method: "PUT",
-        headers,
-        body: JSON.stringify({
-          product: {
-            id: product.id,
-            title: data.newH1,
-            metafields_global_title_tag: data.newTitle,
-            metafields_global_description_tag: data.newMetaDescription,
-          },
-        }),
-      },
-    );
-    if (!putRes.ok) {
-      const t = await putRes.text().catch(() => "");
-      throw new Error(`Shopify update ${putRes.status}: ${t.slice(0, 240)}`);
-    }
+    await adminRest(`/products/${product.id}.json`, {
+      method: "PUT",
+      body: JSON.stringify({
+        product: {
+          id: product.id,
+          title: data.newH1,
+          metafields_global_title_tag: data.newTitle,
+          metafields_global_description_tag: data.newMetaDescription,
+        },
+      }),
+    });
 
     return {
       ok: true,
