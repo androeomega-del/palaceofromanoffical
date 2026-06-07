@@ -705,12 +705,41 @@ function StrikingModule() {
       />
       <div className="mb-6 p-4 border border-[#1a2333] bg-[#141923]">
         <p className="text-xs text-slate-400 mb-2 font-mono">OPERATOR OVERRIDE: FORCE SYSTEM DATA REFRESH</p>
-        <button
-          onClick={() => refreshGSCQueue()}
-          className="px-4 py-2 bg-[#00ff00] text-black font-mono text-xs font-bold uppercase tracking-wider rounded hover:bg-[#00cc00] transition-colors"
-        >
-          ⚡ Execute Weekly GSC Sync
-        </button>
+        <div className="flex flex-wrap gap-2 items-center">
+          <button
+            onClick={() => refreshGSCQueue()}
+            className="px-4 py-2 bg-[#00ff00] text-black font-mono text-xs font-bold uppercase tracking-wider rounded hover:bg-[#00cc00] transition-colors"
+          >
+            ⚡ Execute Weekly GSC Sync
+          </button>
+          <button
+            onClick={() => { void deployAllPending(); }}
+            disabled={bulkRunning || Object.keys(patches).length === 0}
+            className="px-4 py-2 bg-[#00ff00] text-black font-mono text-xs font-bold uppercase tracking-wider rounded hover:bg-[#00cc00] disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
+            title="Sequentially push every generated High-Intent SEO Patch to Shopify"
+          >
+            {bulkRunning ? (
+              <><Loader2 size={12} className="animate-spin" /> BULK DEPLOYING...</>
+            ) : (
+              <><Rocket size={12} /> 🚀 Bulk Deploy All Pending Patches ({Object.keys(patches).length})</>
+            )}
+          </button>
+        </div>
+        {Object.keys(bulkResults).length > 0 && (
+          <div className="mt-3 border border-[#1a2333] bg-black p-3 font-mono text-[11px] max-h-48 overflow-y-auto">
+            {Object.entries(bulkResults).map(([q, r]) => {
+              const color = r.status === "ok" ? T.neon : r.status === "err" ? "#ff5577" : r.status === "skip" ? T.amber : T.muted;
+              const label = r.status === "ok" ? "✓ DEPLOYED" : r.status === "err" ? "✗ FAILED" : r.status === "skip" ? "○ SKIPPED" : "… PENDING";
+              return (
+                <div key={q} style={{ color, display: "flex", gap: 10 }}>
+                  <span style={{ width: 100, flexShrink: 0 }}>{label}</span>
+                  <span style={{ color: T.ink, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>{q}</span>
+                  {r.message && <span style={{ color: T.muted, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 280 }}>{r.message}</span>}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
       {pipe.data?.quotaWarning && <Banner color={T.amber}>{pipe.data.quotaWarning}</Banner>}
       {pipe.isLoading && <div style={{ color: T.muted, fontSize: 12 }}>Scanning GSC + Semrush KD…</div>}
