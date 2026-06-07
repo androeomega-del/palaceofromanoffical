@@ -417,12 +417,13 @@ function PoacherModule() {
 
 // =============================================================
 function HijackModule() {
+  const [domain, setDomain] = useState<(typeof COMPETITOR_DOMAINS)[number]>(COMPETITOR_DOMAINS[0]);
   const feed = useQuery({
-    queryKey: ["apex", "hijack"],
-    queryFn: () => callAdminServerFn(getHijackFeed, { data: {} }),
+    queryKey: ["apex", "hijack", domain],
+    queryFn: () => callAdminServerFn(getHijackFeed, { data: { domain } }),
   });
   const refresh = useMutation({
-    mutationFn: () => callAdminServerFn(getHijackFeed, { data: { force: true } }),
+    mutationFn: () => callAdminServerFn(getHijackFeed, { data: { domain, force: true } }),
     onSuccess: () => feed.refetch(),
   });
   const [openBlueprint, setOpenBlueprint] = useState<string | null>(null);
@@ -439,18 +440,27 @@ function HijackModule() {
     <div>
       <ModuleHeader
         title="HIJACK FEED"
-        sub="Competitor's highest-traffic pages and their top keywords. Generate a flawless content brief to outrank each one."
+        sub={`Reverse-engineering ${domain}'s highest-traffic pages and top keywords. Generate a content brief to outrank each.`}
         action={
-          <ActionBtn onClick={() => refresh.mutate()} disabled={refresh.isPending} color={T.neon}>
-            <RefreshCw size={12} className={refresh.isPending ? "animate-spin" : ""} />
-            {refresh.isPending ? "PULLING…" : "REFRESH"}
-          </ActionBtn>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <select
+              value={domain}
+              onChange={(e) => setDomain(e.target.value as (typeof COMPETITOR_DOMAINS)[number])}
+              style={{ background: T.surface, color: T.ink, border: `1px solid ${T.border}`, padding: "5px 8px", fontFamily: T.mono, fontSize: 11 }}
+            >
+              {COMPETITOR_DOMAINS.map((d) => <option key={d} value={d}>{d}</option>)}
+            </select>
+            <ActionBtn onClick={() => refresh.mutate()} disabled={refresh.isPending} color={T.neon}>
+              <RefreshCw size={12} className={refresh.isPending ? "animate-spin" : ""} />
+              {refresh.isPending ? "PULLING…" : "REFRESH"}
+            </ActionBtn>
+          </div>
         }
       />
       {feed.isLoading && <div style={{ color: T.muted, fontSize: 12 }}>Loading top ranking pages…</div>}
       {feed.isError && <Banner color={T.red}>FEED ERROR: {(feed.error as Error).message}</Banner>}
       {feed.data?.error && <Banner color={T.red}>SEMRUSH: {feed.data.error}</Banner>}
-      {feed.data?.seeded && <Banner color={T.amber}>Showing placeholder data — click REFRESH to pull live competitor pages from Semrush.</Banner>}
+      {feed.data?.seeded && <Banner color={T.amber}>Showing placeholder data for {domain} — click REFRESH to pull live data from Semrush.</Banner>}
       {feed.data && (
         <div style={{ border: `1px solid ${T.border}`, background: T.surface }}>
           <div style={{ display: "grid", gridTemplateColumns: "40px 1fr 80px 80px 1fr 60px 60px 160px", gap: 10, padding: "10px 14px", borderBottom: `1px solid ${T.border}`, fontSize: 10, color: T.muted, letterSpacing: "0.1em" }}>
