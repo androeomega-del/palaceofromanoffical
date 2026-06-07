@@ -627,6 +627,9 @@ function StrikingModule() {
   const [plans, setPlans] = useState<Record<string, StrikePlan>>({});
   const [patches, setPatches] = useState<Record<string, HighIntentSeoPatch>>({});
   const [localRows, setLocalRows] = useState<StrikingRow[] | null>(null);
+  type BulkStatus = "pending" | "ok" | "err" | "skip";
+  const [bulkResults, setBulkResults] = useState<Record<string, { status: BulkStatus; message?: string }>>({});
+  const [bulkRunning, setBulkRunning] = useState(false);
   const plan = useMutation({
     mutationFn: (vars: { query: string; page: string | null; position: number; impressions: number; kd: number }) =>
       callAdminServerFn(generateStrikePlan, { data: vars }),
@@ -640,8 +643,47 @@ function StrikingModule() {
 
   const planFor = useCallback((q: string) => plans[q], [plans]);
   const patchFor = useCallback((q: string) => patches[q], [patches]);
+  
 
   const refreshGSCQueue = () => setLocalRows(STRIKING_LOCAL_FALLBACK);
+
+  const deployAllPending = async () => {
+    const entries = Object.entries(patches);
+    if (entries.length === 0) {
+      toast.error("No patches to deploy", { description: "Generate HIGH-INTENT PATCH on product rows first." });
+      return;
+    }
+    setBulkRunning(true);
+    const initial: Record<string, { status: BulkStatus; message?: string }> = {};
+    entries.forEach(([q]) => { initial[q] = { status: "pending" }; });
+    setBulkResults(initial);
+    let ok = 0, err = 0, skip = 0;
+    for (const [query, p] of entries) {
+      const ready = Boolean(p.productUrl && p.newTitle && p.newH1 && p.newMetaDescription);
+      if (!ready) {
+        skip++;
+        setBulkResults((prev) => ({ ...prev, [query]: { status: "skip", message: "missing fields" } }));
+        continue;
+      }
+      try {
+        await callAdminServerFn(deployPatchToShopify, {
+          data: {
+            productUrl: p.productUrl ?? "",
+            newTitle: p.newTitle,
+            newH1: p.newH1,
+            newMetaDescription: p.newMetaDescription,
+          },
+        });
+        ok++;
+        setBulkResults((prev) => ({ ...prev, [query]: { status: "ok" } }));
+      } catch (e) {
+        err++;
+        setBulkResults((prev) => ({ ...prev, [query]: { status: "err", message: (e as Error).message } }));
+      }
+    }
+    setBulkRunning(false);
+    toast.success(`Bulk deploy complete: ${ok} ok · ${err} failed · ${skip} skipped`);
+  };
 
   /** Derive a clean product-title-style string from a Palace of Roman product URL slug. */
   const productTitleFromPage = (page: string | null, query: string): { title: string; isProduct: boolean } => {
@@ -663,12 +705,41 @@ function StrikingModule() {
       />
       <div className="mb-6 p-4 border border-[#1a2333] bg-[#141923]">
         <p className="text-xs text-slate-400 mb-2 font-mono">OPERATOR OVERRIDE: FORCE SYSTEM DATA REFRESH</p>
-        <button
-          onClick={() => refreshGSCQueue()}
-          className="px-4 py-2 bg-[#00ff00] text-black font-mono text-xs font-bold uppercase tracking-wider rounded hover:bg-[#00cc00] transition-colors"
-        >
-          ⚡ Execute Weekly GSC Sync
-        </button>
+        <div className="flex flex-wrap gap-2 items-center">
+          <button
+            onClick={() => refreshGSCQueue()}
+            className="px-4 py-2 bg-[#00ff00] text-black font-mono text-xs font-bold uppercase tracking-wider rounded hover:bg-[#00cc00] transition-colors"
+          >
+            ⚡ Execute Weekly GSC Sync
+          </button>
+          <button
+            onClick={() => { void deployAllPending(); }}
+            disabled={bulkRunning || Object.keys(patches).length === 0}
+            className="px-4 py-2 bg-[#00ff00] text-black font-mono text-xs font-bold uppercase tracking-wider rounded hover:bg-[#00cc00] disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
+            title="Sequentially push every generated High-Intent SEO Patch to Shopify"
+          >
+            {bulkRunning ? (
+              <><Loader2 size={12} className="animate-spin" /> BULK DEPLOYING...</>
+            ) : (
+              <><Rocket size={12} /> 🚀 Bulk Deploy All Pending Patches ({Object.keys(patches).length})</>
+            )}
+          </button>
+        </div>
+        {Object.keys(bulkResults).length > 0 && (
+          <div className="mt-3 border border-[#1a2333] bg-black p-3 font-mono text-[11px] max-h-48 overflow-y-auto">
+            {Object.entries(bulkResults).map(([q, r]) => {
+              const color = r.status === "ok" ? T.neon : r.status === "err" ? "#ff5577" : r.status === "skip" ? T.amber : T.muted;
+              const label = r.status === "ok" ? "✓ DEPLOYED" : r.status === "err" ? "✗ FAILED" : r.status === "skip" ? "○ SKIPPED" : "… PENDING";
+              return (
+                <div key={q} style={{ color, display: "flex", gap: 10 }}>
+                  <span style={{ width: 100, flexShrink: 0 }}>{label}</span>
+                  <span style={{ color: T.ink, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>{q}</span>
+                  {r.message && <span style={{ color: T.muted, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 280 }}>{r.message}</span>}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
       {pipe.data?.quotaWarning && <Banner color={T.amber}>{pipe.data.quotaWarning}</Banner>}
       {pipe.isLoading && <div style={{ color: T.muted, fontSize: 12 }}>Scanning GSC + Semrush KD…</div>}
