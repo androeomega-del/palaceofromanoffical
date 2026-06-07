@@ -291,12 +291,12 @@ export async function fetchCompetitorTopPages(opts: {
     // If the live network payload returns empty, instantly force-inject the elite fallback array
     if (!result || result.length === 0) {
       console.log("Live Semrush gateway returned empty payload. Activating seed protection fallback.");
-      return topPagesSeedFallback();
+      return topPagesSeedFallback(target);
     }
     return result;
   } catch (e) {
     console.warn("[apex] top pages fetch failed, returning seed fallback:", (e as Error).message);
-    return topPagesSeedFallback();
+    return topPagesSeedFallback(target);
   }
 }
 
