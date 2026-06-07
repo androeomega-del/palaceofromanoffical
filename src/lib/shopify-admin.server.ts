@@ -1,7 +1,6 @@
-// Server-only Shopify Admin API client using the new Client Credentials Grant
-// flow (Shopify's updated Dev Dashboard auth, May 2026+). Exchanges
-// SHOPIFY_CLIENT_ID + SHOPIFY_CLIENT_SECRET for a short-lived Admin API token
-// and caches it in memory until ~60s before expiry.
+// Server-only Shopify Admin API client using the Client Credentials Grant.
+// Exchanges the admin app client id + shpss client secret for a short-lived
+// Admin API token and caches it in memory until ~60s before expiry.
 //
 // Usage:
 //   import { adminGraphql } from "@/lib/shopify-admin.server";
@@ -18,6 +17,21 @@ function shopDomain(): string {
   return d.replace(/^https?:\/\//, "").replace(/\/+$/, "");
 }
 
+function adminOAuthCredentials(): { clientId: string; clientSecret: string } {
+  const clientId =
+    process.env.SHOPIFY_ADMIN_API_CLIENT_ID ??
+    process.env.SHOPIFY_CUSTOM_APP_CLIENT_ID ??
+    process.env.SHOPIFY_CLIENT_ID;
+  const clientSecret =
+    process.env.SHOPIFY_ADMIN_API_SECRET ??
+    process.env.SHOPIFY_CUSTOM_APP_CLIENT_SECRET ??
+    process.env.SHOPIFY_CLIENT_SECRET;
+  if (!clientId || !clientSecret) {
+    throw new Error("Shopify Admin OAuth client id / client secret missing");
+  }
+  return { clientId, clientSecret };
+}
+
 /**
  * Fetch (or reuse) an Admin API access token via Client Credentials Grant.
  * Shopify endpoint: POST https://{shop}/admin/oauth/access_token
@@ -27,11 +41,7 @@ export async function getAdminAccessToken(): Promise<string> {
   const now = Date.now();
   if (cached && cached.expiresAt - 60_000 > now) return cached.token;
 
-  const clientId = process.env.SHOPIFY_CLIENT_ID;
-  const clientSecret = process.env.SHOPIFY_CLIENT_SECRET;
-  if (!clientId || !clientSecret) {
-    throw new Error("SHOPIFY_CLIENT_ID / SHOPIFY_CLIENT_SECRET missing");
-  }
+  const { clientId, clientSecret } = adminOAuthCredentials();
 
   const url = `https://${shopDomain()}/admin/oauth/access_token`;
   const res = await fetch(url, {
@@ -57,6 +67,32 @@ export async function getAdminAccessToken(): Promise<string> {
     expiresAt: now + (data.expires_in ?? 3600) * 1000,
   };
   return cached.token;
+}
+
+/** Run an Admin REST request with the cached client-credentials token. */
+export async function adminRest<T = unknown>(
+  path: string,
+  init: RequestInit = {},
+): Promise<T> {
+  const token = await getAdminAccessToken();
+  const cleanedPath = path.startsWith("/") ? path : `/${path}`;
+  const res = await fetch(
+    `https://${shopDomain()}/admin/api/${API_VERSION}${cleanedPath}`,
+    {
+      ...init,
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "X-Shopify-Access-Token": token,
+        ...(init.headers ?? {}),
+      },
+    },
+  );
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Shopify Admin REST ${res.status} ${cleanedPath}: ${text.slice(0, 240)}`);
+  }
+  return res.json() as Promise<T>;
 }
 
 /** Run an Admin GraphQL query with the cached client-credentials token. */
