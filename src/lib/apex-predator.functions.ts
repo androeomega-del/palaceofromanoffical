@@ -18,10 +18,12 @@ import {
   ctrLiftToTop3,
   impactScore,
   getCompetitorDomain,
+  heuristicIntent,
   OUR_DOMAIN,
   OUR_LEGACY_DOMAIN,
   COMPETITOR_DOMAINS,
   SemrushQuotaError,
+  type SearchIntent,
 } from "@/lib/apex-predator.server";
 import { callAi, BudgetExceededError } from "@/lib/ai-gateway.server";
 
@@ -410,16 +412,19 @@ export type TopRankingPageEnriched = {
   top_keyword_volume: number;
   top_keyword_kd: number;
   top_keyword_cpc: number;
+  top_keyword_intent: SearchIntent;
 };
 
 function hijackSeedsFor(domain: string): TopRankingPageEnriched[] {
   return [
     { url: `https://www.${domain}/shop/clothing`, est_traffic: 54200, keyword_count: 1180,
-      top_keyword: "luxury designer clothing", top_keyword_position: 2, top_keyword_volume: 22200, top_keyword_kd: 78, top_keyword_cpc: 2.6 },
+      top_keyword: "luxury designer clothing", top_keyword_position: 2, top_keyword_volume: 22200, top_keyword_kd: 78, top_keyword_cpc: 2.6, top_keyword_intent: "commercial" },
     { url: `https://www.${domain}/shop/bags`, est_traffic: 41200, keyword_count: 940,
-      top_keyword: "designer handbags", top_keyword_position: 3, top_keyword_volume: 33100, top_keyword_kd: 82, top_keyword_cpc: 3.2 },
+      top_keyword: "designer handbags", top_keyword_position: 3, top_keyword_volume: 33100, top_keyword_kd: 82, top_keyword_cpc: 3.2, top_keyword_intent: "commercial" },
     { url: `https://www.${domain}/shop/shoes`, est_traffic: 28700, keyword_count: 760,
-      top_keyword: "designer shoes women", top_keyword_position: 4, top_keyword_volume: 18100, top_keyword_kd: 74, top_keyword_cpc: 2.4 },
+      top_keyword: "designer shoes women", top_keyword_position: 4, top_keyword_volume: 18100, top_keyword_kd: 74, top_keyword_cpc: 2.4, top_keyword_intent: "commercial" },
+    { url: `https://www.${domain}/shop/sale-bags`, est_traffic: 21300, keyword_count: 380,
+      top_keyword: "buy gucci bag online", top_keyword_position: 2, top_keyword_volume: 9800, top_keyword_kd: 65, top_keyword_cpc: 4.1, top_keyword_intent: "transactional" },
   ];
 }
 
@@ -428,12 +433,20 @@ export const getHijackFeed = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => z.object({
     force: z.boolean().optional(),
     domain: z.enum(COMPETITOR_DOMAINS as unknown as [string, ...string[]]).optional(),
+    /** When true, return only commercial/transactional rows (transaction-focused hijack feed). */
+    transactionalOnly: z.boolean().optional(),
   }).parse(d ?? {}))
-  .handler(async ({ data }): Promise<{ rows: TopRankingPageEnriched[]; domain: string; cachedAt: string; error: string | null; seeded: boolean }> => {
+  .handler(async ({ data }): Promise<{ rows: TopRankingPageEnriched[]; domain: string; cachedAt: string; error: string | null; seeded: boolean; filteredOut: number }> => {
     const domain = data.domain ?? COMPETITOR_DOMAINS[0];
+    const applyFilter = (rows: TopRankingPageEnriched[]) => {
+      if (!data.transactionalOnly) return { rows, filteredOut: 0 };
+      const kept = rows.filter((r) => r.top_keyword_intent === "commercial" || r.top_keyword_intent === "transactional");
+      return { rows: kept, filteredOut: rows.length - kept.length };
+    };
     const cached = _hijackCacheByDomain.get(domain);
     if (!data.force && cached && cached.rows.length > 0 && Date.now() - cached.at < HIJACK_TTL_MS) {
-      return { rows: cached.rows, domain, cachedAt: new Date(cached.at).toISOString(), error: null, seeded: false };
+      const f = applyFilter(cached.rows);
+      return { rows: f.rows, domain, cachedAt: new Date(cached.at).toISOString(), error: null, seeded: false, filteredOut: f.filteredOut };
     }
     try {
       const pages = await fetchCompetitorTopPages({ domain, limit: 50 });
@@ -451,30 +464,34 @@ export const getHijackFeed = createServerFn({ method: "POST" })
             top_keyword_volume: top?.volume ?? p.top_keyword_volume,
             top_keyword_kd: top?.kd ?? p.top_keyword_kd,
             top_keyword_cpc: top?.cpc ?? p.top_keyword_cpc,
+            top_keyword_intent: top?.intent ?? heuristicIntent(p.top_keyword),
           });
         } catch (innerErr) {
           if (innerErr instanceof SemrushQuotaError) throw innerErr;
-          enriched.push(p);
+          enriched.push({ ...p, top_keyword_intent: heuristicIntent(p.top_keyword) });
         }
       }
-      for (let i = TOP_N; i < pages.length; i++) enriched.push(pages[i]);
+      for (let i = TOP_N; i < pages.length; i++) enriched.push({ ...pages[i], top_keyword_intent: heuristicIntent(pages[i].top_keyword) });
 
       const seeds = hijackSeedsFor(domain);
       const result = enriched && enriched.length > 0 ? enriched : seeds;
       if (!enriched || enriched.length === 0) {
         console.log(`[apex/hijack] empty payload for ${domain}, serving seeds.`);
         await logRun("hijack", "ok", `empty (${domain}), served seeds`, 0);
-        return { rows: result, domain, cachedAt: new Date().toISOString(), error: null, seeded: true };
+        const f = applyFilter(result);
+        return { rows: f.rows, domain, cachedAt: new Date().toISOString(), error: null, seeded: true, filteredOut: f.filteredOut };
       }
       _hijackCacheByDomain.set(domain, { at: Date.now(), rows: result });
       await logRun("hijack", "ok", `fetched ${result.length} pages from ${domain}`, result.length);
-      return { rows: result, domain, cachedAt: new Date().toISOString(), error: null, seeded: false };
+      const f = applyFilter(result);
+      return { rows: f.rows, domain, cachedAt: new Date().toISOString(), error: null, seeded: false, filteredOut: f.filteredOut };
     } catch (e) {
       const isQuota = e instanceof SemrushQuotaError;
       const msg = (e as Error).message;
       console.error("[apex/hijack] error:", msg);
       await logRun("hijack", isQuota ? "quota" : "error", `${domain}: ${msg}`, 0);
-      return { rows: hijackSeedsFor(domain), domain, cachedAt: new Date().toISOString(), error: msg, seeded: true };
+      const f = applyFilter(hijackSeedsFor(domain));
+      return { rows: f.rows, domain, cachedAt: new Date().toISOString(), error: msg, seeded: true, filteredOut: f.filteredOut };
     }
   });
 
@@ -643,3 +660,89 @@ export const generateStrikePlan = createServerFn({ method: "POST" })
     }
   });
 
+
+// =================================================================
+// MODULE 4 — High-Conversion Intent SEO Patch (product-page rewriter)
+// =================================================================
+
+export type HighIntentSeoPatch = {
+  productTitle: string;
+  productUrl: string | null;
+  targetKeyword: string;
+  secondaryKeywords: string[];
+  newTitle: string;        // <title> tag, <= 60 chars, transactional intent
+  newH1: string;           // <= 70 chars, brand + product + qualifier
+  newMetaDescription: string; // <= 155 chars, action-forward CTA
+  rationale: string;
+  raw?: string;
+};
+
+/**
+ * Rewrite a raw Shopify product title (e.g. "Burberry Women Black Leather Knight
+ * Small Shoulder Bag 1") into commercially-tuned <title>, H1 and meta description
+ * that target high-intent shopping queries ("Burberry Knight Bag", "buy designer
+ * shoulder bag", etc.) instead of catalog-style strings.
+ */
+export const generateHighIntentSeoPatch = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((d: unknown) => z.object({
+    productTitle: z.string().min(2).max(500),
+    productUrl: z.string().max(2048).nullable().optional(),
+    query: z.string().max(300).nullable().optional(),
+  }).parse(d))
+  .handler(async ({ data }): Promise<HighIntentSeoPatch> => {
+    const sys = `You are a conversion-focused SEO copywriter for ${OUR_DOMAIN} (Palace of Roman — luxury multi-brand boutique, USD pricing, authenticated, worldwide shipping). Output JSON only. No fluff.
+
+Strict rules:
+- Strip catalog noise from raw product titles (trailing numbers like " 1", gendered phrasing like "Women", filler words "with", duplicated brand mentions).
+- Lead with BRAND + iconic product name (e.g. "Burberry Knight Small Shoulder Bag"), then a high-intent commercial qualifier ("Authenticated Luxury", "Shop Designer", "Free Worldwide Shipping").
+- Target buyer search intent — phrases shoppers actually type when ready to purchase. Prioritise transactional and commercial-investigation queries over informational.
+- NEVER fabricate prices, discounts, "in stock" claims, sale dates, or review counts.
+- NEVER include the legacy domain or any competitor name.`;
+
+    const user = `Raw product title: "${data.productTitle}"
+Product URL (path or full): ${data.productUrl || "(unknown — leave canonical pathing alone)"}
+${data.query ? `Existing high-impression GSC query: "${data.query}"` : ""}
+
+Return JSON with EXACTLY these keys:
+{
+  "targetKeyword": string (the single high-intent query this page should own, e.g. "burberry knight bag"),
+  "secondaryKeywords": string[] (3-6 supporting commercial/transactional queries),
+  "newTitle": string (<= 60 chars, "Brand Product Name | Commercial Qualifier" pattern, includes target keyword),
+  "newH1": string (<= 70 chars, clean product name + brief authenticity/luxury qualifier),
+  "newMetaDescription": string (<= 155 chars, action-forward, references authentication + worldwide shipping, ends with soft CTA like "Shop now."),
+  "rationale": string (2 sentences: which catalog-noise was stripped, and which buyer intent the rewrite captures)
+}`;
+
+    const res = await callAi({
+      module: "apex/high-intent-patch",
+      model: "google/gemini-3-flash-preview",
+      system: sys,
+      user,
+      json: true,
+      maxTokens: 700,
+      temperature: 0.3,
+    });
+
+    try {
+      const parsed = JSON.parse(res.content) as Partial<HighIntentSeoPatch>;
+      return {
+        productTitle: data.productTitle,
+        productUrl: data.productUrl ?? null,
+        targetKeyword: parsed.targetKeyword ?? "",
+        secondaryKeywords: parsed.secondaryKeywords ?? [],
+        newTitle: (parsed.newTitle ?? "").slice(0, 70),
+        newH1: (parsed.newH1 ?? "").slice(0, 90),
+        newMetaDescription: (parsed.newMetaDescription ?? "").slice(0, 170),
+        rationale: parsed.rationale ?? "",
+      };
+    } catch {
+      return {
+        productTitle: data.productTitle,
+        productUrl: data.productUrl ?? null,
+        targetKeyword: "", secondaryKeywords: [],
+        newTitle: "", newH1: "", newMetaDescription: "", rationale: "",
+        raw: res.content,
+      };
+    }
+  });
