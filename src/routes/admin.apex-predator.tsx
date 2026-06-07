@@ -154,12 +154,12 @@ function PoacherModule() {
         }
       />
       {refresh.isError && <Banner color={T.red}>{(refresh.error as Error).message}</Banner>}
+      {feed.isError && <Banner color={T.red}>FEED ERROR: {(feed.error as Error).message}</Banner>}
+      {feed.data?.error && <Banner color={T.red}>SERVER: {feed.data.error}</Banner>}
+      {feed.data?.seeded && <Banner color={T.amber}>Showing placeholder data — click INTERCEPT FEED to pull live backlinks from Semrush.</Banner>}
       {feed.isLoading && <div style={{ color: T.muted, fontSize: 12 }}>Loading interception feed…</div>}
-      {feed.data && feed.data.length === 0 && (
-        <Banner color={T.amber}>No backlinks captured yet. Click INTERCEPT FEED to pull the latest from Semrush.</Banner>
-      )}
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        {feed.data?.map((row) => (
+        {feed.data?.rows.map((row) => (
           <article key={row.id} style={{ background: T.surface, border: `1px solid ${T.border}`, borderLeft: `3px solid ${row.is_net_new ? T.neon : T.border}`, padding: 14 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
               <span style={{ color: row.page_ascore && row.page_ascore >= 50 ? T.neon : T.ink, fontSize: 11, fontWeight: 700 }}>AS {row.page_ascore ?? "—"}</span>
@@ -169,7 +169,7 @@ function PoacherModule() {
               </a>
               {row.is_net_new && <span style={{ color: T.neon, fontSize: 10, letterSpacing: "0.1em" }}>● NET-NEW</span>}
               {row.is_nofollow && <span style={{ color: T.muted, fontSize: 10 }}>nofollow</span>}
-              <ActionBtn onClick={() => draft.mutate(row.id)} disabled={draft.isPending && draft.variables === row.id} color={T.amber}>
+              <ActionBtn onClick={() => draft.mutate(row.id)} disabled={(draft.isPending && draft.variables === row.id) || row.id.startsWith("seed-")} color={T.amber}>
                 <Zap size={11} />
                 {row.pitch_body ? "REGENERATE" : "DRAFT PITCH"}
               </ActionBtn>
@@ -237,7 +237,9 @@ function HijackModule() {
         }
       />
       {feed.isLoading && <div style={{ color: T.muted, fontSize: 12 }}>Loading top ranking pages…</div>}
-      {feed.isError && <Banner color={T.red}>{(feed.error as Error).message}</Banner>}
+      {feed.isError && <Banner color={T.red}>FEED ERROR: {(feed.error as Error).message}</Banner>}
+      {feed.data?.error && <Banner color={T.red}>SEMRUSH: {feed.data.error}</Banner>}
+      {feed.data?.seeded && <Banner color={T.amber}>Showing placeholder data — click REFRESH to pull live competitor pages from Semrush.</Banner>}
       {feed.data && (
         <div style={{ border: `1px solid ${T.border}`, background: T.surface }}>
           <div style={{ display: "grid", gridTemplateColumns: "40px 1fr 80px 80px 1fr 60px 60px 160px", gap: 10, padding: "10px 14px", borderBottom: `1px solid ${T.border}`, fontSize: 10, color: T.muted, letterSpacing: "0.1em" }}>

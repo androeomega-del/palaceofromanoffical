@@ -74,17 +74,53 @@ export type PoacherRow = {
   status: string;
 };
 
+const POACHER_SEEDS: PoacherRow[] = [
+  {
+    id: "seed-vogue", source_url: "https://www.vogue.com/article/luxury-resale-guide",
+    source_domain: "vogue.com", target_url: "https://palaceofromanofficial.com/", anchor: "Palace of Roman",
+    page_ascore: 92, is_nofollow: false, is_net_new: true,
+    first_seen_at: new Date(Date.now() - 86_400_000).toISOString(),
+    pitch_subject: null, pitch_body: null, pitch_generated_at: null, status: "seed",
+  },
+  {
+    id: "seed-gq", source_url: "https://www.gq.com/story/best-designer-bags-2026",
+    source_domain: "gq.com", target_url: "https://palaceofromanofficial.com/collections/bags", anchor: "designer leather goods",
+    page_ascore: 88, is_nofollow: false, is_net_new: true,
+    first_seen_at: new Date(Date.now() - 2 * 86_400_000).toISOString(),
+    pitch_subject: null, pitch_body: null, pitch_generated_at: null, status: "seed",
+  },
+  {
+    id: "seed-hb", source_url: "https://www.harpersbazaar.com/fashion/trends/loewe-spring-edit",
+    source_domain: "harpersbazaar.com", target_url: "https://palaceofromanofficial.com/collections/loewe", anchor: "Loewe edit",
+    page_ascore: 84, is_nofollow: true, is_net_new: false,
+    first_seen_at: new Date(Date.now() - 5 * 86_400_000).toISOString(),
+    pitch_subject: null, pitch_body: null, pitch_generated_at: null, status: "seed",
+  },
+];
+
+export type PoacherFeedResponse = { rows: PoacherRow[]; error: string | null; seeded: boolean };
+
 export const getPoacherFeed = createServerFn({ method: "GET" })
   .middleware([requireAdmin])
-  .handler(async (): Promise<PoacherRow[]> => {
-    const { data, error } = await supabaseAdmin
-      .from("apex_competitor_backlinks")
-      .select("id, source_url, source_domain, target_url, anchor, page_ascore, is_nofollow, is_net_new, first_seen_at, pitch_subject, pitch_body, pitch_generated_at, status")
-      .order("page_ascore", { ascending: false })
-      .order("first_seen_at", { ascending: false })
-      .limit(200);
-    if (error) throw new Error(error.message);
-    return (data ?? []) as PoacherRow[];
+  .handler(async (): Promise<PoacherFeedResponse> => {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from("apex_competitor_backlinks")
+        .select("id, source_url, source_domain, target_url, anchor, page_ascore, is_nofollow, is_net_new, first_seen_at, pitch_subject, pitch_body, pitch_generated_at, status")
+        .order("page_ascore", { ascending: false })
+        .order("first_seen_at", { ascending: false })
+        .limit(200);
+      if (error) {
+        console.error("[apex/poacher] db error:", error.message);
+        return { rows: POACHER_SEEDS, error: `DB: ${error.message}`, seeded: true };
+      }
+      const rows = (data ?? []) as PoacherRow[];
+      if (rows.length === 0) return { rows: POACHER_SEEDS, error: null, seeded: true };
+      return { rows, error: null, seeded: false };
+    } catch (e) {
+      console.error("[apex/poacher] unhandled:", (e as Error).message);
+      return { rows: POACHER_SEEDS, error: (e as Error).message, seeded: true };
+    }
   });
 
 export const refreshPoacherFeed = createServerFn({ method: "POST" })
@@ -213,16 +249,24 @@ export type TopRankingPageEnriched = {
   top_keyword_cpc: number;
 };
 
+const HIJACK_SEEDS: TopRankingPageEnriched[] = [
+  { url: "https://palaceofromanofficial.com/collections/gucci", est_traffic: 4820, keyword_count: 312,
+    top_keyword: "gucci handbags sale", top_keyword_position: 6, top_keyword_volume: 18100, top_keyword_kd: 71, top_keyword_cpc: 2.4 },
+  { url: "https://palaceofromanofficial.com/collections/loewe-bags", est_traffic: 2640, keyword_count: 187,
+    top_keyword: "loewe puzzle bag", top_keyword_position: 5, top_keyword_volume: 9900, top_keyword_kd: 64, top_keyword_cpc: 3.1 },
+  { url: "https://palaceofromanofficial.com/collections/bottega-veneta", est_traffic: 1980, keyword_count: 142,
+    top_keyword: "bottega veneta cassette", top_keyword_position: 8, top_keyword_volume: 6600, top_keyword_kd: 58, top_keyword_cpc: 2.0 },
+];
+
 export const getHijackFeed = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
   .inputValidator((d: unknown) => z.object({ force: z.boolean().optional() }).parse(d ?? {}))
-  .handler(async ({ data }): Promise<{ rows: TopRankingPageEnriched[]; cachedAt: string }> => {
+  .handler(async ({ data }): Promise<{ rows: TopRankingPageEnriched[]; cachedAt: string; error: string | null; seeded: boolean }> => {
     if (!data.force && _hijackCache && Date.now() - _hijackCache.at < HIJACK_TTL_MS) {
-      return { rows: _hijackCache.rows, cachedAt: new Date(_hijackCache.at).toISOString() };
+      return { rows: _hijackCache.rows, cachedAt: new Date(_hijackCache.at).toISOString(), error: null, seeded: false };
     }
     try {
       const pages = await fetchCompetitorTopPages({ limit: 50 });
-      // Enrich top 25 with their top keyword (one Semrush call per URL — keep small to respect quota).
       const enriched: TopRankingPageEnriched[] = [];
       const TOP_N = Math.min(25, pages.length);
       for (let i = 0; i < TOP_N; i++) {
@@ -243,16 +287,21 @@ export const getHijackFeed = createServerFn({ method: "POST" })
           enriched.push(p);
         }
       }
-      // Append remaining pages without keyword enrichment.
       for (let i = TOP_N; i < pages.length; i++) enriched.push(pages[i]);
 
+      if (enriched.length === 0) {
+        await logRun("hijack", "ok", "empty result, served seeds", 0);
+        return { rows: HIJACK_SEEDS, cachedAt: new Date().toISOString(), error: null, seeded: true };
+      }
       _hijackCache = { at: Date.now(), rows: enriched };
       await logRun("hijack", "ok", `fetched ${enriched.length} pages`, enriched.length);
-      return { rows: enriched, cachedAt: new Date().toISOString() };
+      return { rows: enriched, cachedAt: new Date().toISOString(), error: null, seeded: false };
     } catch (e) {
       const isQuota = e instanceof SemrushQuotaError;
-      await logRun("hijack", isQuota ? "quota" : "error", (e as Error).message, 0);
-      throw e;
+      const msg = (e as Error).message;
+      console.error("[apex/hijack] error:", msg);
+      await logRun("hijack", isQuota ? "quota" : "error", msg, 0);
+      return { rows: HIJACK_SEEDS, cachedAt: new Date().toISOString(), error: msg, seeded: true };
     }
   });
 
