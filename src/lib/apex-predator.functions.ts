@@ -260,7 +260,37 @@ function maturedDestination(legacyUrl: string | null): string {
   }
 }
 
-/** Shared pitch prompt builder — "Authority Maturing" URL-update request. */
+function hostOf(url: string | null | undefined): string {
+  if (!url) return "";
+  try { return new URL(url).hostname.replace(/^www\./, "").toLowerCase(); } catch { return ""; }
+}
+
+/** Is this target_url pointing at one of the giant retailers we want to poach from? */
+function isCompetitorTarget(targetUrl: string | null | undefined): boolean {
+  const h = hostOf(targetUrl);
+  return POACHER_TARGETS.some((c) => h === c || h.endsWith(`.${c}`));
+}
+
+/** Best-effort extraction of the designer + item from a competitor product URL slug. */
+function extractDesignerItemFromUrl(targetUrl: string | null | undefined): { designer: string | null; item: string | null } {
+  if (!targetUrl) return { designer: null, item: null };
+  try {
+    const u = new URL(targetUrl);
+    const segs = u.pathname.split("/").filter(Boolean);
+    const slug = segs[segs.length - 1] || "";
+    const words = slug.replace(/\.html?$/i, "").replace(/[-_]+/g, " ").replace(/\b\d{4,}\b/g, "").trim();
+    if (!words) return { designer: null, item: null };
+    const tokens = words.split(/\s+/);
+    // Heuristic: first 1-2 tokens are the designer, rest are the item.
+    const designer = tokens.slice(0, Math.min(2, tokens.length)).map((t) => t[0].toUpperCase() + t.slice(1)).join(" ");
+    const item = tokens.slice(Math.min(2, tokens.length)).join(" ");
+    return { designer: designer || null, item: item || null };
+  } catch {
+    return { designer: null, item: null };
+  }
+}
+
+/** Shared pitch prompt builder — routes to "Authority Maturing" or "Backlink Poach" based on the linked target. */
 function buildPitchPrompts(args: {
   source_url: string;
   source_domain: string;
@@ -269,6 +299,31 @@ function buildPitchPrompts(args: {
   excerpt: string | null;
 }) {
   const publication = publicationNameFromDomain(args.source_domain);
+
+  // ── BRANCH A — Backlink poach: editor linked to SSENSE / Net-a-Porter ──
+  if (isCompetitorTarget(args.target_url)) {
+    const competitorHost = hostOf(args.target_url);
+    const competitorName = competitorHost.includes("ssense") ? "SSENSE" : competitorHost.includes("net-a-porter") ? "Net-a-Porter" : competitorHost;
+    const { designer, item } = extractDesignerItemFromUrl(args.target_url);
+    const itemLabel = [designer, item].filter(Boolean).join(" ") || "the featured designer piece";
+    const sys = `You write concise, editor-grade outreach FROM Palace of Roman to a fashion editor.
+
+Strict identity rules:
+- WE ARE Palace of Roman (live shop: ${OUR_DOMAIN}). We are NOT ${competitorName}.
+- The publication ("${publication}") has linked the featured piece to ${competitorName}. We want them to ADD an alternative link to Palace of Roman, or SWAP the existing link to us where editorially appropriate.
+- Tone: warm, professional, never pushy. No discounts, no fake urgency, no flattery without specifics.
+- FIRST sentence MUST name "${publication}" and reference the specific article + the designer item ("${itemLabel}").
+- Acknowledge the existing ${competitorName} link respectfully — frame us as a complementary, smaller-house alternative readers may also appreciate.
+- Highlight what makes Palace of Roman a credible alternative for this piece: curated multi-boutique sourcing, authenticated stock, free worldwide shipping, USD pricing, and a personal concierge touch (single-curator service vs. mass marketplace).
+- Make the ask explicit: either ADD a secondary link to ${OUR_DOMAIN} or SWAP the ${competitorName} link where the piece is in stock with us.
+- Keep it under 240 words. No markdown. No signature line.
+
+Output JSON only with keys: subject (<=70 chars, e.g. "${itemLabel} — alternative source for your ${publication} readers"), body (160-240 words, 3 short paragraphs, plain text).`;
+    const user = `Brand brief:\n${POR_BRIEF}\n\nPublication: ${publication}\nArticle URL: ${args.source_url}\nCurrent link destination: ${args.target_url} (${competitorName})\nAnchor text: ${args.anchor || "(none)"}\nDesigner/item inferred from URL: ${itemLabel}\nOur shop landing: https://${OUR_DOMAIN}/\n\nPage excerpt:\n${args.excerpt || "(no excerpt — keep the body topic-agnostic.)"}\n\nDraft the outreach. The opening sentence MUST name "${publication}" and the "${itemLabel}". Position Palace of Roman as a curated, concierge-led alternative to ${competitorName} for this designer piece — never as a discount or replacement.`;
+    return { sys, user, publication, newTarget: `https://${OUR_DOMAIN}/`, mode: "poach" as const };
+  }
+
+  // ── BRANCH B — Authority maturing: editor already links to our legacy domain ──
   const newTarget = maturedDestination(args.target_url);
   const sys = `You write concise, editor-grade webmaster notices sent FROM Palace of Roman (the brand the article already links to) requesting an OFFICIAL URL UPDATE.
 
@@ -282,7 +337,7 @@ Strict identity rules:
 
 Output JSON only with keys: subject (<=70 chars, e.g. "URL update request — Palace of Roman feature in ${publication}"), body (180-260 words, 3 short paragraphs + the OLD→NEW URL block, no signature line, plain text, no markdown).`;
   const user = `Brand brief:\n${POR_BRIEF}\n\nPublication: ${publication}\nArticle URL: ${args.source_url}\nAnchor text currently used: ${args.anchor || "(none)"}\nOLD destination (legacy): ${args.target_url || `(unknown — assume https://${OUR_LEGACY_DOMAIN}/)`}\nNEW destination (live shop): ${newTarget}\n\nPage excerpt:\n${args.excerpt || "(no excerpt available — keep the body topic-agnostic.)"}\n\nDraft the webmaster notice. The opening sentence MUST name "${publication}" and reference the specific article. Include the OLD → NEW URL block verbatim. End by thanking them for the original feature.`;
-  return { sys, user, publication, newTarget };
+  return { sys, user, publication, newTarget, mode: "maturing" as const };
 }
 
 export const draftPoacherPitch = createServerFn({ method: "POST" })
