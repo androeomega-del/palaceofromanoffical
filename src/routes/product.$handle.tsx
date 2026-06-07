@@ -792,9 +792,15 @@ function ProductView({
   };
 
 
+  // Escape vendor for Shopify search syntax: backslash-escape embedded
+  // double quotes and backslashes so vendors like Comme Des Garçons or
+  // L'Estrange don't break the query parser. Wrap in quotes so the parser
+  // treats the entire vendor string as one literal token.
+  const vendorQ = `"${(product.vendor ?? "").replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`;
+
   const relatedQ = useQuery({
     queryKey: ["related", product.vendor, product.handle],
-    queryFn: () => fetchProducts({ first: 8, query: `vendor:${product.vendor}` }),
+    queryFn: () => fetchProducts({ first: 8, query: `vendor:${vendorQ}` }),
   });
   const related = (relatedQ.data ?? [])
     .filter((e) => e.node.handle !== product.handle)
@@ -807,7 +813,7 @@ function ProductView({
       fetchProducts({
         first: 50,
         sortKey: "BEST_SELLING",
-        query: `-vendor:"${product.vendor}"`,
+        query: `-vendor:${vendorQ}`,
       }),
   });
   const styleItWith = (styleItWithQ.data ?? [])
