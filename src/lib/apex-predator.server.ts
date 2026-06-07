@@ -218,31 +218,40 @@ export async function fetchCompetitorBacklinks(opts: {
   const limit = Math.min(opts.limit ?? 100, 500);
 
   try {
-    // backlinks endpoint: returns source_url, anchor, ascore, nofollow, first_seen
+    // backlinks endpoint — explicit column codes so Semrush returns Authority
+    // Score (`ascore`) for every row. `target_type=domain` scopes the pull to
+    // the exact hostname (not the entire root domain bucket), which is what
+    // the live intercept feed needs to surface fresh AS numbers per link.
     const data = await callSemrush("/backlinks/backlinks", {
       target,
-      target_type: "root_domain",
+      target_type: "domain",
       display_limit: limit,
       display_sort: "first_seen_desc",
-      export_columns: "page_ascore,source_url,source_title,target_url,anchor,first_seen,nofollow",
+      export_columns: "ascore,zone,url_from,url_to,anchor,date_first,nofollow",
       export_escape: 1,
     });
 
     const rows = tableToObjects<Record<string, string>>(data);
     const mapped = rows.map((r) => {
-      const sourceUrl = (r.source_url || "").trim();
+      // Semrush returns: ascore, zone, url_from, url_to, anchor, date_first.
+      // Older deployments aliased these as page_ascore/source_url/target_url/first_seen,
+      // so fall back to those for backwards compatibility with cached payloads.
+      const sourceUrl = (r.url_from || r.source_url || "").trim();
       let sourceDomain = "unknown";
       try {
         if (sourceUrl) sourceDomain = new URL(sourceUrl).hostname.replace(/^www\./, "") || "unknown";
       } catch { /* keep unknown */ }
-      const firstSeenRaw = (r.first_seen || "").trim();
+      const firstSeenRaw = (r.date_first || r.first_seen || "").trim();
+      const ascoreRaw = r.ascore ?? r.page_ascore ?? "0";
       return {
         source_url: sourceUrl || "unknown",
         source_domain: sourceDomain,
-        target_url: (r.target_url || "").trim() || "unknown",
+        target_url: (r.url_to || r.target_url || "").trim() || "unknown",
         anchor: (r.anchor || "").trim() || "unknown",
-        page_ascore: Number(r.page_ascore || 0) || 0,
-        domain_ascore: 0,
+        // Map Semrush `ascore` directly into page_ascore so the UI grid stops
+        // rendering blank "AS —" badges on live rows.
+        page_ascore: Number(ascoreRaw) || 0,
+        domain_ascore: Number(ascoreRaw) || 0,
         is_nofollow: String(r.nofollow || "").toLowerCase() === "true",
         first_seen: firstSeenRaw || null,
       } satisfies CompetitorBacklink;

@@ -246,10 +246,17 @@ function PoacherModule() {
           }
         }
       } catch { /* ignore */ }
+      // Hard-reset the grid so stale rows (with blank "AS —" badges) disappear
+      // instantly when the operator clicks INTERCEPT FEED. The fresh rows with
+      // live Authority Scores print as soon as the server function returns.
       qc.removeQueries({ queryKey: ["apex", "poacher"] });
+      qc.setQueryData(["apex", "poacher"], undefined);
       return callAdminServerFn(refreshPoacherFeed);
     },
-    onSuccess: () => feed.refetch(),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["apex", "poacher"] });
+      feed.refetch();
+    },
   });
   const draft = useMutation({
     mutationFn: (id: string) => callAdminServerFn(draftPoacherPitch, { data: { id } }),
