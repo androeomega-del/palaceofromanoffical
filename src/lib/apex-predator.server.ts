@@ -121,8 +121,10 @@ export type CompetitorBacklink = {
 // High-authority seed rows surfaced when Semrush returns 0 usable backlinks
 // (quota exhausted, brand-new target domain, or transient gateway failure) so
 // the Poacher table never renders empty.
+const SEED_TIMESTAMP = "2026-06-07T00:00:00.000Z";
+
 function backlinkSeedFallback(): CompetitorBacklink[] {
-  const now = new Date().toISOString();
+  const now = SEED_TIMESTAMP;
   return [
     {
       source_url: "https://vogue.com",
