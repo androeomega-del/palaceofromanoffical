@@ -26,6 +26,7 @@ import {
   COMPETITOR_DOMAINS,
   SemrushQuotaError,
   type SearchIntent,
+  STRIKING_FALLBACK_ROWS,
 } from "@/lib/apex-predator.server";
 import { callAi, BudgetExceededError } from "@/lib/ai-gateway.server";
 
