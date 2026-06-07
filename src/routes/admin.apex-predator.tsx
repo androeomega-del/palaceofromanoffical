@@ -308,8 +308,8 @@ function PoacherModule() {
   return (
     <div>
       <ModuleHeader
-        title="AUTHORITY PROTECTION"
-        sub={`Monitoring inbound links to our legacy domain (${OUR_LEGACY_DOMAIN}). Confirm Google passes legacy link equity to ${OUR_DOMAIN}, and request webmasters to update destination URLs.`}
+        title="BACKLINK INTERCEPT"
+        sub={`Tracking net-new high-authority backlinks earned by ${COMPETITOR_DOMAINS.slice(0, 2).join(" + ")}. For every AS ≥ 40 editorial link pointing at a designer item, draft outreach pitching ${OUR_DOMAIN} as the curated alternative source.`}
         action={
           <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
             <button
