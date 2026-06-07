@@ -22,6 +22,19 @@ import {
 } from "@/lib/apex-predator.server";
 import { callAi, BudgetExceededError } from "@/lib/ai-gateway.server";
 
+/** Safely convert any date-ish value to an ISO string; falls back to now() on parse failure. */
+function safeISO(input?: string | number | Date | null): string {
+  try {
+    if (input === undefined || input === null || input === "") return new Date().toISOString();
+    const d = input instanceof Date ? input : new Date(input);
+    const t = d.getTime();
+    if (!Number.isFinite(t)) return new Date().toISOString();
+    return d.toISOString();
+  } catch {
+    return new Date().toISOString();
+  }
+}
+
 // =================================================================
 // Status header (shared)
 // =================================================================
