@@ -56,6 +56,7 @@ export interface ShopifyProductNode {
   handle: string;
   vendor: string;
   productType: string;
+  tags?: string[];
   createdAt?: string;
   priceRange: { minVariantPrice: Money };
   compareAtPriceRange?: { minVariantPrice: Money };
@@ -240,6 +241,7 @@ const PRODUCT_FRAGMENT = `
     handle
     vendor
     productType
+    tags
     createdAt
     priceRange { minVariantPrice { amount currencyCode } }
     compareAtPriceRange { minVariantPrice { amount currencyCode } }

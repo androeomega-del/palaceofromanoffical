@@ -147,11 +147,16 @@ function classifyKind(
   productType: string | undefined | null,
   tags?: string[] | null,
   title?: string | null,
+  handle?: string | null,
 ): CapsuleSlotKind | null {
   const haystack = [
     productType ?? "",
     ...(Array.isArray(tags) ? tags : []),
     title ?? "",
+    // Handles often carry the category word even when titles are abstract
+    // luxury names (e.g. "gucci-horsebit-1955-loafer"). Hyphens are
+    // normalised to spaces so word-boundary regexes match cleanly.
+    (handle ?? "").replace(/-/g, " "),
   ].join(" | ");
   if (!haystack.trim()) return null;
   for (const kind of TAXONOMY_PRIORITY) {
@@ -269,7 +274,7 @@ export function CapsuleBuilder({
     const pool = candidatePool.filter((p) => !usedHandles.has(p.handle));
     return pool.filter((p) => {
       const tags = (p as unknown as { tags?: string[] }).tags;
-      return classifyKind(p.productType, tags, p.title) === openKind;
+      return classifyKind(p.productType, tags, p.title, p.handle) === openKind;
     });
   }, [openKind, candidatePool, usedHandles]);
 
