@@ -261,7 +261,7 @@ export async function fetchCompetitorTopPages(opts: {
   database?: string;
   limit?: number;
 }): Promise<TopRankingPage[]> {
-  const target = opts.domain ?? COMPETITOR_DOMAIN;
+  const target = opts.domain ?? COMPETITOR_DOMAINS[0];
   const database = opts.database ?? "us";
   const limit = Math.min(opts.limit ?? 100, 100);
 
