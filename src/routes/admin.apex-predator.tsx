@@ -275,7 +275,10 @@ function HijackModule() {
           <div style={{ display: "grid", gridTemplateColumns: "40px 1fr 80px 80px 1fr 60px 60px 160px", gap: 10, padding: "10px 14px", borderBottom: `1px solid ${T.border}`, fontSize: 10, color: T.muted, letterSpacing: "0.1em" }}>
             <span>#</span><span>URL</span><span style={{ textAlign: "right" }}>TRAFFIC</span><span style={{ textAlign: "right" }}>KWS</span><span>TOP KW</span><span style={{ textAlign: "right" }}>VOL</span><span style={{ textAlign: "right" }}>KD</span><span></span>
           </div>
-          {feed.data.rows.map((row, i) => (
+          {(feed.data.rows.length === 0
+            ? HIJACK_FALLBACK_ROWS
+            : feed.data.rows
+          ).map((row, i) => (
             <div key={row.url}>
               <div style={{ display: "grid", gridTemplateColumns: "40px 1fr 80px 80px 1fr 60px 60px 160px", gap: 10, padding: "10px 14px", borderBottom: `1px solid ${T.border}`, fontSize: 11, alignItems: "center" }}>
                 <span style={{ color: T.muted }}>{i + 1}</span>
@@ -292,6 +295,11 @@ function HijackModule() {
               {openBlueprint === row.url && blueprints[row.url] && <BlueprintPanel bp={blueprints[row.url]} />}
             </div>
           ))}
+          {feed.data.rows.length === 0 && (
+            <div style={{ padding: "8px 14px", fontSize: 10, color: T.amber, borderTop: `1px dashed ${T.border}` }}>
+              STANDBY FEED · 3 placeholder opportunities shown while Semrush handshake completes.
+            </div>
+          )}
         </div>
       )}
     </div>
