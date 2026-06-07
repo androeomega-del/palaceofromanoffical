@@ -72,6 +72,14 @@ function ApexPredatorTerminal() {
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
     setIsMounted(true);
+    // Shield Plausible analytics safely behind a window check
+    if (typeof window !== "undefined" && (window as unknown as { plausible?: unknown }).plausible) {
+      try {
+        // Plausible logic goes here if needed, safely caught
+      } catch {
+        console.log("Plausible initialization shielded.");
+      }
+    }
   }, []);
 
   const [tab, setTab] = useState<"poacher" | "hijack" | "striking">("poacher");
@@ -85,8 +93,10 @@ function ApexPredatorTerminal() {
 
   if (!isMounted) {
     return (
-      <div className="min-h-screen bg-black text-[#00ff00] font-mono p-8">
-        Initializing Command Terminal...
+      <div className="min-h-screen bg-[#11141a] text-[#00ff00] font-mono p-8 flex items-center justify-center">
+        <div className="border border-[#1a2333] p-6 bg-[#141923] shadow-xl max-w-md w-full text-center">
+          <p className="tracking-widest animate-pulse">⚡ INITIALIZING APEX PREDATOR TERMINAL...</p>
+        </div>
       </div>
     );
   }
