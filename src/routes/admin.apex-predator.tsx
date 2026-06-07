@@ -653,6 +653,7 @@ function StrikingModule() {
 
   return (
     <div>
+      <style>{`@keyframes apexSlideDown{from{opacity:0;transform:translateY(-6px);max-height:0}to{opacity:1;transform:translateY(0);max-height:1200px}}`}</style>
       <ModuleHeader
         title="STRIKING-DISTANCE PIPELINE"
         sub="Positions 4–11, ranked by Impact Score (impressions × CTR lift to top-3 × inverse KD). STRIKE PLAN rewrites editorial pages; HIGH-INTENT PATCH rewrites product pages for transactional buyers."
