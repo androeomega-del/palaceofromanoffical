@@ -52,6 +52,17 @@ function fmt(n: number | null | undefined, d = 0) {
   return Number(n).toLocaleString("en-US", { maximumFractionDigits: d, minimumFractionDigits: d });
 }
 
+/** Safe date formatter — never throws RangeError on bad input. */
+function safeDateLabel(input?: string | number | Date | null): string {
+  if (input === undefined || input === null || input === "") return "—";
+  try {
+    const d = input instanceof Date ? input : new Date(input);
+    const t = d.getTime();
+    if (!Number.isFinite(t)) return "—";
+    return d.toLocaleString();
+  } catch { return "—"; }
+}
+
 // =============================================================
 function ApexPredatorTerminal() {
   const [tab, setTab] = useState<"poacher" | "hijack" | "striking">("poacher");
