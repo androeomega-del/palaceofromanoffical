@@ -393,12 +393,33 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
+      <RouteAwareRuntime />
+    </QueryClientProvider>
+  );
+}
+
+function RouteAwareRuntime() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isAdmin = pathname.startsWith("/admin");
+
+  if (isAdmin) return <AdminOnlyShell />;
+
+  return (
+    <>
       <CartSyncBoundary />
       <MarketQuerySync />
       <ChromeAwareShell />
       <ClientOnlyToaster />
       <ClientOnlyConcierge />
-    </QueryClientProvider>
+    </>
+  );
+}
+
+function AdminOnlyShell() {
+  return (
+    <div className="min-h-screen bg-canvas" data-surface="apex">
+      <Outlet />
+    </div>
   );
 }
 
