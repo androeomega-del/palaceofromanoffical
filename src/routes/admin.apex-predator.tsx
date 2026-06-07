@@ -237,7 +237,9 @@ function HijackModule() {
         }
       />
       {feed.isLoading && <div style={{ color: T.muted, fontSize: 12 }}>Loading top ranking pages…</div>}
-      {feed.isError && <Banner color={T.red}>{(feed.error as Error).message}</Banner>}
+      {feed.isError && <Banner color={T.red}>FEED ERROR: {(feed.error as Error).message}</Banner>}
+      {feed.data?.error && <Banner color={T.red}>SEMRUSH: {feed.data.error}</Banner>}
+      {feed.data?.seeded && <Banner color={T.amber}>Showing placeholder data — click REFRESH to pull live competitor pages from Semrush.</Banner>}
       {feed.data && (
         <div style={{ border: `1px solid ${T.border}`, background: T.surface }}>
           <div style={{ display: "grid", gridTemplateColumns: "40px 1fr 80px 80px 1fr 60px 60px 160px", gap: 10, padding: "10px 14px", borderBottom: `1px solid ${T.border}`, fontSize: 10, color: T.muted, letterSpacing: "0.1em" }}>
