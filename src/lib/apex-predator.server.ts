@@ -226,10 +226,9 @@ export async function fetchCompetitorBacklinks(opts: {
       } satisfies CompetitorBacklink;
     });
 
-    // Exact-domain self-link filter — never broad .includes("palaceofroman").
-    const cleanRows = mapped.filter((row) => !isSelfLink(row.source_domain, row.source_url));
-
-    const result = cleanRows;
+    // Identity reset: no self-link filter. Inbound links to palaceofroman.com
+    // (the legacy domain) are exactly what Authority Protection wants to see.
+    const result = mapped;
     // If the live network payload returns empty, instantly force-inject the elite fallback array
     if (!result || result.length === 0) {
       console.log("Live Semrush gateway returned empty payload. Activating seed protection fallback.");
