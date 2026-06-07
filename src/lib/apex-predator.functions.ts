@@ -18,6 +18,9 @@ import {
   ctrLiftToTop3,
   impactScore,
   getCompetitorDomain,
+  OUR_DOMAIN,
+  OUR_LEGACY_DOMAIN,
+  COMPETITOR_DOMAINS,
   SemrushQuotaError,
 } from "@/lib/apex-predator.server";
 import { callAi, BudgetExceededError } from "@/lib/ai-gateway.server";
