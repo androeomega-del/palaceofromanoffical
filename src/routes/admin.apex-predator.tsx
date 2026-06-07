@@ -189,11 +189,11 @@ const COMPETITOR_DOMAINS = ["net-a-porter.com", "ssense.com", "mytheresa.com"] a
 
 const SANDBOX_ROWS: SandboxRow[] = [
   {
-    id: "sandbox-vogue",
+    id: "sandbox-vogue-ssense",
     source_url: "https://www.vogue.com/article/ultimate-luxury-resale-guide",
     source_domain: "vogue.com",
-    target_url: `https://${OUR_LEGACY_DOMAIN}/collections/all`,
-    anchor: "Palace of Roman",
+    target_url: "https://www.ssense.com/en-us/women/product/bottega-veneta/black-mini-jodie-bag/12345678",
+    anchor: "Bottega Veneta Mini Jodie",
     page_ascore: 92,
     page_title: "The Ultimate Luxury Resale Guide",
     is_nofollow: false,
@@ -201,11 +201,11 @@ const SANDBOX_ROWS: SandboxRow[] = [
     first_seen_at: "2026-06-07T00:00:00.000Z",
   },
   {
-    id: "sandbox-gq",
+    id: "sandbox-gq-nap",
     source_url: "https://www.gq.com/story/best-designer-bags-of-the-season",
     source_domain: "gq.com",
-    target_url: `https://${OUR_LEGACY_DOMAIN}/collections/bags`,
-    anchor: "designer leather goods",
+    target_url: "https://www.net-a-porter.com/en-us/shop/product/loewe/bags/shoulder-bags/puzzle-small-leather-shoulder-bag/1647597289421987",
+    anchor: "Loewe Puzzle Small",
     page_ascore: 88,
     page_title: "Best Designer Bags of the Season",
     is_nofollow: false,
