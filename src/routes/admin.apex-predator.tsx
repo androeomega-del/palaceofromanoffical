@@ -196,6 +196,7 @@ function PoacherModule() {
               </a>
               {row.is_net_new && <span style={{ color: T.neon, fontSize: 10, letterSpacing: "0.1em" }}>● NET-NEW</span>}
               {row.is_nofollow && <span style={{ color: T.muted, fontSize: 10 }}>nofollow</span>}
+              <span style={{ color: T.muted, fontSize: 10 }}>{renderSafeUIDate(row.first_seen_at)}</span>
               <ActionBtn onClick={() => draft.mutate(row.id)} disabled={(draft.isPending && draft.variables === row.id) || row.id.startsWith("seed-")} color={T.amber}>
                 <Zap size={11} />
                 {row.pitch_body ? "REGENERATE" : "DRAFT PITCH"}
