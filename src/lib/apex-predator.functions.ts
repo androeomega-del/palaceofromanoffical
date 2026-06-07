@@ -377,6 +377,15 @@ export const getStrikingPipeline = createServerFn({ method: "GET" })
     return { rows, weekStart: latest.week_start, quotaWarning };
   });
 
+export type StrikePlan = {
+  newTitle: string;
+  newMetaDescription: string;
+  newH1: string;
+  internalLinkSources: Array<{ fromPath: string; anchorText: string }>;
+  rationale: string;
+  raw?: string;
+};
+
 export const generateStrikePlan = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
   .inputValidator((d: unknown) => z.object({
@@ -386,7 +395,7 @@ export const generateStrikePlan = createServerFn({ method: "POST" })
     impressions: z.number(),
     kd: z.number(),
   }).parse(d))
-  .handler(async ({ data }) => {
+  .handler(async ({ data }): Promise<StrikePlan> => {
     const sys = `You are an SEO operator for a luxury fashion site. Output JSON only. No fluff.`;
     const user = `We rank position ${data.position.toFixed(1)} for "${data.query}" with ${data.impressions} monthly impressions and Semrush KD ${data.kd}. Page: ${data.page || "(unknown — pick the most relevant Palace of Roman URL)"}.\n\nCTR lift opportunity to top 3: +${(ctrLiftToTop3(data.position) * 100).toFixed(1)}%.\n\nReturn JSON with EXACTLY:\n{\n  "newTitle": string (<= 60 chars, includes the target query naturally),\n  "newMetaDescription": string (<= 155 chars, action-forward, ends with a soft CTA),\n  "newH1": string (<= 70 chars),\n  "internalLinkSources": [{ "fromPath": string (Palace of Roman URL path like "/collections/gucci-handbags"), "anchorText": string }] (exactly 3),\n  "rationale": string (2 sentences explaining the on-page fix that will push this to top 3)\n}`;
     const res = await callAi({
@@ -398,7 +407,17 @@ export const generateStrikePlan = createServerFn({ method: "POST" })
       maxTokens: 800,
       temperature: 0.4,
     });
-    let parsed: unknown = {};
-    try { parsed = JSON.parse(res.content); } catch { parsed = { raw: res.content }; }
-    return parsed;
+    try {
+      const parsed = JSON.parse(res.content) as Partial<StrikePlan>;
+      return {
+        newTitle: parsed.newTitle ?? "",
+        newMetaDescription: parsed.newMetaDescription ?? "",
+        newH1: parsed.newH1 ?? "",
+        internalLinkSources: parsed.internalLinkSources ?? [],
+        rationale: parsed.rationale ?? "",
+      };
+    } catch {
+      return { newTitle: "", newMetaDescription: "", newH1: "", internalLinkSources: [], rationale: "", raw: res.content };
+    }
   });
+
