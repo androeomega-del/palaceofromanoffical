@@ -313,7 +313,11 @@ export async function fetchCompetitorTopPages(opts: {
         top_keyword_kd: 0,
         top_keyword_cpc: 0,
       }))
-      .filter((row) => row.url.length > 0);
+      .filter((row) => row.url.length > 0)
+      // Apply the same livestream sanitization used by the backlink intercept
+      // feed — drop legal/help/policy URLs and scraper pagination loops so the
+      // hijack grid never surfaces non-commercial competitor pages.
+      .filter((row) => !isLegalOrHelpUrl(row.url) && !isScraperLoopUrl(row.url));
 
     // If the live network payload returns empty, instantly force-inject the elite fallback array
     if (!result || result.length === 0) {
