@@ -154,8 +154,10 @@ export function DesktopCategoryRail() {
 
         <RailTrigger
           label="Brands"
+          to="/brands"
           isOpen={openKey === "brands"}
           onOpen={() => openNow("brands")}
+          onClose={() => setOpenKey(null)}
         >
           <BrandsPanel
             brands={brands ?? []}
@@ -165,22 +167,33 @@ export function DesktopCategoryRail() {
           />
         </RailTrigger>
 
-        {liveColumns.map((col) => (
-          <RailTrigger
-            key={col.heading}
-            label={col.heading}
-            isOpen={openKey === col.heading}
-            onOpen={() => openNow(col.heading)}
-          >
-            <CategoryPanel
-              column={col}
-              dept={activeDept}
-              liveCollections={liveCollections ?? []}
-              onMouseEnter={() => openNow(col.heading)}
-              onMouseLeave={scheduleClose}
-            />
-          </RailTrigger>
-        ))}
+        {liveColumns.map((col) => {
+          // Prefer a column-specific collection if it exists in the live catalog
+          // (e.g. "women-clothing"); otherwise fall back to the dept root so the
+          // click always lands somewhere shoppable.
+          const slug = col.heading.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+          const candidate = `${activeDept.key}-${slug}`;
+          const colHandle =
+            liveHandles && liveHandles.has(candidate) ? candidate : activeDept.rootHandle;
+          return (
+            <RailTrigger
+              key={col.heading}
+              label={col.heading}
+              to={`/collections/${colHandle}`}
+              isOpen={openKey === col.heading}
+              onOpen={() => openNow(col.heading)}
+              onClose={() => setOpenKey(null)}
+            >
+              <CategoryPanel
+                column={col}
+                dept={activeDept}
+                liveCollections={liveCollections ?? []}
+                onMouseEnter={() => openNow(col.heading)}
+                onMouseLeave={scheduleClose}
+              />
+            </RailTrigger>
+          );
+        })}
       </nav>
     </div>
   );
@@ -211,13 +224,17 @@ function RailLink({
 
 function RailTrigger({
   label,
+  to,
   isOpen,
   onOpen,
+  onClose,
   children,
 }: {
   label: string;
+  to: string;
   isOpen: boolean;
   onOpen: () => void;
+  onClose: () => void;
   children: React.ReactNode;
 }) {
   return (
@@ -226,16 +243,17 @@ function RailTrigger({
       onMouseEnter={onOpen}
       onFocus={onOpen}
     >
-      <button
-        type="button"
+      <a
+        href={to}
         aria-haspopup="true"
         aria-expanded={isOpen}
+        onClick={() => onClose()}
         className={`whitespace-nowrap py-3 transition-colors ${
           isOpen ? "text-bronze" : "text-ink hover:text-bronze"
         }`}
       >
         {label}
-      </button>
+      </a>
       {isOpen && children}
     </div>
   );
