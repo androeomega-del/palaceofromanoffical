@@ -43,6 +43,21 @@ const T = {
   mono: "'JetBrains Mono', ui-monospace, SFMono-Regular, monospace",
 };
 
+type HijackRow = {
+  url: string;
+  est_traffic: number;
+  keyword_count: number;
+  top_keyword: string;
+  top_keyword_volume: number;
+  top_keyword_kd: number;
+};
+
+const HIJACK_FALLBACK_ROWS: HijackRow[] = [
+  { url: "https://palaceofromanofficial.com/collections/resort", est_traffic: 1200, keyword_count: 84, top_keyword: "luxury resort wear sets", top_keyword_volume: 4400, top_keyword_kd: 32 },
+  { url: "https://palaceofromanofficial.com/collections/tailoring", est_traffic: 860, keyword_count: 52, top_keyword: "silk deconstructed blazers", top_keyword_volume: 1900, top_keyword_kd: 18 },
+  { url: "https://palaceofromanofficial.com/collections/evening", est_traffic: 720, keyword_count: 41, top_keyword: "italian crepe evening gown", top_keyword_volume: 2400, top_keyword_kd: 24 },
+];
+
 function copyText(t: string) {
   if (typeof navigator !== "undefined" && navigator.clipboard) void navigator.clipboard.writeText(t);
 }
