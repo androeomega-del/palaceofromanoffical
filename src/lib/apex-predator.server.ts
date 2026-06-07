@@ -32,6 +32,28 @@ export type CompetitorDomain = (typeof COMPETITOR_DOMAINS)[number];
 
 const GATEWAY_BASE = "https://connector-gateway.lovable.dev/semrush";
 
+// ─────────────────────────────────────────────────────────────
+// Live-stream sanitization rules — shared across EVERY reverse-engineering
+// pipeline (backlink intercept, hijack top-pages, striking-distance GSC)
+// so a single source of truth drops legal/help URLs and infinite scraper
+// pagination loops identically everywhere.
+// ─────────────────────────────────────────────────────────────
+const LEGAL_PATH_RX = /\/(privacy-policy|privacy|help|support|terms|terms-of-service|terms-and-conditions|cookie-policy|cookies|legal|accessibility|imprint|returns|shipping-policy|gdpr|do-not-sell)(\/|$|\?)/i;
+const PAGINATION_LOOP_RX = /(?:\/page\/\d+){2,}/i;
+const REPEAT_SEGMENT_RX = /(\/[^/]{2,30})\1{2,}/i;
+
+export function isLegalOrHelpUrl(url: string | null | undefined): boolean {
+  if (!url) return false;
+  return LEGAL_PATH_RX.test(url.toLowerCase());
+}
+
+export function isScraperLoopUrl(url: string | null | undefined): boolean {
+  if (!url) return false;
+  const u = url.toLowerCase();
+  return PAGINATION_LOOP_RX.test(u) || REPEAT_SEGMENT_RX.test(u);
+}
+
+
 /** Legacy export retained for callers that still expect a single "target" — now returns the primary giant competitor. */
 export function getCompetitorDomain() {
   return COMPETITOR_DOMAINS[0];
@@ -226,18 +248,12 @@ export async function fetchCompetitorBacklinks(opts: {
       } satisfies CompetitorBacklink;
     });
 
-    // Production filters — keep the intercept feed elite:
-    // 1) Drop legal/help/policy destinations (no commercial intercept value).
-    // 2) Drop scraper/pagination loops on the source side (e.g. /page/2/page/3/...).
-    const LEGAL_PATH_RX = /\/(privacy-policy|privacy|help|support|terms|terms-of-service|terms-and-conditions|cookie-policy|cookies|legal|accessibility|imprint|returns|shipping-policy)(\/|$|\?)/i;
-    const PAGINATION_LOOP_RX = /(?:\/page\/\d+){2,}/i;
+    // Production filters — keep the intercept feed elite (see module-level
+    // LEGAL_PATH_RX / PAGINATION_LOOP_RX / REPEAT_SEGMENT_RX — shared across
+    // every reverse-engineering pipeline so sanitization is identical).
     const result = mapped.filter((row) => {
-      const target = row.target_url.toLowerCase();
-      if (LEGAL_PATH_RX.test(target)) return false;
-      const source = row.source_url.toLowerCase();
-      if (PAGINATION_LOOP_RX.test(source)) return false;
-      // Catch generic infinite-repeat segments like /foo/foo/foo/
-      if (/(\/[^/]{2,30})\1{2,}/i.test(source)) return false;
+      if (isLegalOrHelpUrl(row.target_url)) return false;
+      if (isScraperLoopUrl(row.source_url)) return false;
       return true;
     });
     // If the live network payload returns empty, instantly force-inject the elite fallback array
@@ -297,7 +313,11 @@ export async function fetchCompetitorTopPages(opts: {
         top_keyword_kd: 0,
         top_keyword_cpc: 0,
       }))
-      .filter((row) => row.url.length > 0);
+      .filter((row) => row.url.length > 0)
+      // Apply the same livestream sanitization used by the backlink intercept
+      // feed — drop legal/help/policy URLs and scraper pagination loops so the
+      // hijack grid never surfaces non-commercial competitor pages.
+      .filter((row) => !isLegalOrHelpUrl(row.url) && !isScraperLoopUrl(row.url));
 
     // If the live network payload returns empty, instantly force-inject the elite fallback array
     if (!result || result.length === 0) {
