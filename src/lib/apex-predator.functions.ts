@@ -18,10 +18,12 @@ import {
   ctrLiftToTop3,
   impactScore,
   getCompetitorDomain,
+  heuristicIntent,
   OUR_DOMAIN,
   OUR_LEGACY_DOMAIN,
   COMPETITOR_DOMAINS,
   SemrushQuotaError,
+  type SearchIntent,
 } from "@/lib/apex-predator.server";
 import { callAi, BudgetExceededError } from "@/lib/ai-gateway.server";
 
