@@ -1,33 +1,47 @@
 /**
  * Shared `beforeLoad` guard for admin routes.
  *
- * Root cause of the prior "stuck loading / kicked back to /" behaviour:
- * the previous guard awaited `supabase.auth.getUser()` (a network call) and
- * `ensureAdmin()` (another network call) INSIDE `beforeLoad`. Any transient
- * network blip, cold-worker spin-up, or token-refresh race would either
- *   (a) hang the route navigation (infinite "loading…"), or
- *   (b) be caught and redirect the user to "/" so login appeared to fail.
+ * Two-stage gate (both required):
+ *   1. The caller must have a live Supabase session (otherwise → /login).
+ *   2. The caller must hold the `admin` role in `public.user_roles`,
+ *      verified via the `has_role` SECURITY DEFINER RPC. Non-admin signed-in
+ *      users are redirected to "/" so the admin UI is never exposed.
  *
- * Fix: do only a synchronous, in-memory session check here using
- * `getSession()` (reads from localStorage, no network). The serverFns the
- * page calls are already protected by `requireAdmin` on the server — they
- * are the real gate. If there's no local session at all, send to /login.
- * That's it. No network in beforeLoad → no hang, no flapping redirects.
+ * Routes that use this guard MUST also set `ssr: false` so the admin shell
+ * is not pre-rendered into public HTML before the client-side role check
+ * has a chance to run.
+ *
+ * The serverFns each admin page calls are independently gated by
+ * `requireAdmin` on the server — this client guard is purely to keep the
+ * UI shell invisible to non-admins.
  */
 import { redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 
 export async function adminBeforeLoad() {
-  // SSR / prerender: no localStorage, no session to check. Render the
-  // shell; the client re-runs beforeLoad after hydration.
+  // SSR / prerender: no localStorage, no session to check. Render nothing
+  // server-side (these routes are `ssr: false`); the client re-runs
+  // beforeLoad after hydration and performs the real check there.
   if (typeof window === "undefined") return;
 
-  const { data } = await supabase.auth.getSession();
-  if (!data.session?.access_token) {
+  const { data: sessionData } = await supabase.auth.getSession();
+  if (!sessionData.session?.access_token) {
     throw redirect({ to: "/login" });
   }
-  // Signed-in callers proceed. requireAdmin on each serverFn enforces the
-  // actual admin role server-side; non-admins will see a clear error in
-  // the dashboard rather than a silent redirect loop.
-}
 
+  // Re-validate the user with the Auth server, then check the admin role.
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+  if (userError || !userData.user) {
+    throw redirect({ to: "/login" });
+  }
+
+  const { data: isAdmin, error: roleError } = await supabase.rpc("has_role", {
+    _user_id: userData.user.id,
+    _role: "admin",
+  });
+  if (roleError || !isAdmin) {
+    // Signed in but not an admin → bounce to the public site, never the
+    // admin shell.
+    throw redirect({ to: "/" });
+  }
+}
