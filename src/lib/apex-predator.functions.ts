@@ -433,12 +433,20 @@ export const getHijackFeed = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => z.object({
     force: z.boolean().optional(),
     domain: z.enum(COMPETITOR_DOMAINS as unknown as [string, ...string[]]).optional(),
+    /** When true, return only commercial/transactional rows (transaction-focused hijack feed). */
+    transactionalOnly: z.boolean().optional(),
   }).parse(d ?? {}))
-  .handler(async ({ data }): Promise<{ rows: TopRankingPageEnriched[]; domain: string; cachedAt: string; error: string | null; seeded: boolean }> => {
+  .handler(async ({ data }): Promise<{ rows: TopRankingPageEnriched[]; domain: string; cachedAt: string; error: string | null; seeded: boolean; filteredOut: number }> => {
     const domain = data.domain ?? COMPETITOR_DOMAINS[0];
+    const applyFilter = (rows: TopRankingPageEnriched[]) => {
+      if (!data.transactionalOnly) return { rows, filteredOut: 0 };
+      const kept = rows.filter((r) => r.top_keyword_intent === "commercial" || r.top_keyword_intent === "transactional");
+      return { rows: kept, filteredOut: rows.length - kept.length };
+    };
     const cached = _hijackCacheByDomain.get(domain);
     if (!data.force && cached && cached.rows.length > 0 && Date.now() - cached.at < HIJACK_TTL_MS) {
-      return { rows: cached.rows, domain, cachedAt: new Date(cached.at).toISOString(), error: null, seeded: false };
+      const f = applyFilter(cached.rows);
+      return { rows: f.rows, domain, cachedAt: new Date(cached.at).toISOString(), error: null, seeded: false, filteredOut: f.filteredOut };
     }
     try {
       const pages = await fetchCompetitorTopPages({ domain, limit: 50 });
@@ -456,30 +464,34 @@ export const getHijackFeed = createServerFn({ method: "POST" })
             top_keyword_volume: top?.volume ?? p.top_keyword_volume,
             top_keyword_kd: top?.kd ?? p.top_keyword_kd,
             top_keyword_cpc: top?.cpc ?? p.top_keyword_cpc,
+            top_keyword_intent: top?.intent ?? heuristicIntent(p.top_keyword),
           });
         } catch (innerErr) {
           if (innerErr instanceof SemrushQuotaError) throw innerErr;
-          enriched.push(p);
+          enriched.push({ ...p, top_keyword_intent: heuristicIntent(p.top_keyword) });
         }
       }
-      for (let i = TOP_N; i < pages.length; i++) enriched.push(pages[i]);
+      for (let i = TOP_N; i < pages.length; i++) enriched.push({ ...pages[i], top_keyword_intent: heuristicIntent(pages[i].top_keyword) });
 
       const seeds = hijackSeedsFor(domain);
       const result = enriched && enriched.length > 0 ? enriched : seeds;
       if (!enriched || enriched.length === 0) {
         console.log(`[apex/hijack] empty payload for ${domain}, serving seeds.`);
         await logRun("hijack", "ok", `empty (${domain}), served seeds`, 0);
-        return { rows: result, domain, cachedAt: new Date().toISOString(), error: null, seeded: true };
+        const f = applyFilter(result);
+        return { rows: f.rows, domain, cachedAt: new Date().toISOString(), error: null, seeded: true, filteredOut: f.filteredOut };
       }
       _hijackCacheByDomain.set(domain, { at: Date.now(), rows: result });
       await logRun("hijack", "ok", `fetched ${result.length} pages from ${domain}`, result.length);
-      return { rows: result, domain, cachedAt: new Date().toISOString(), error: null, seeded: false };
+      const f = applyFilter(result);
+      return { rows: f.rows, domain, cachedAt: new Date().toISOString(), error: null, seeded: false, filteredOut: f.filteredOut };
     } catch (e) {
       const isQuota = e instanceof SemrushQuotaError;
       const msg = (e as Error).message;
       console.error("[apex/hijack] error:", msg);
       await logRun("hijack", isQuota ? "quota" : "error", `${domain}: ${msg}`, 0);
-      return { rows: hijackSeedsFor(domain), domain, cachedAt: new Date().toISOString(), error: msg, seeded: true };
+      const f = applyFilter(hijackSeedsFor(domain));
+      return { rows: f.rows, domain, cachedAt: new Date().toISOString(), error: msg, seeded: true, filteredOut: f.filteredOut };
     }
   });
 
