@@ -242,19 +242,22 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "manifest", href: "/site.webmanifest" },
     ],
     scripts: [
-      // --- Plausible Analytics v2 (privacy-first, no cookie banner) ---
-      // New tracking script with init() call. Tracks pageviews + outbound
-      // link clicks against the palaceofromanofficial.com dashboard at
-      // https://plausible.io. No client-side key/ID required.
+      // --- Plausible Analytics (privacy-first, no cookie banner) ---
+      // The `script.outbound-links.js` variant tracks pageviews + outbound
+      // link clicks automatically. The standard CDN script does NOT expose
+      // a `.init()` method — that API only exists in the `plausible-tracker`
+      // npm package. Calling `plausible.init(...)` against the CDN build
+      // throws "plausible.init is not a function" on every page load.
       {
         defer: true,
         "data-domain": "palaceofromanofficial.com",
-        src: "https://plausible.io/js/script.js",
+        src: "https://plausible.io/js/script.outbound-links.js",
       },
       {
         children:
-          "window.plausible=window.plausible||function(){(window.plausible.q=window.plausible.q||[]).push(arguments)};plausible.init({outboundLinks:true})",
+          "window.plausible=window.plausible||function(){(window.plausible.q=window.plausible.q||[]).push(arguments)}",
       },
+
 
       // --- Google Analytics 4 ---
       // TODO: replace G-XXXXXXXXXX with the Measurement ID from your GA4 property
