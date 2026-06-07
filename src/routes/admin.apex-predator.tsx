@@ -69,9 +69,9 @@ function renderSafeUIDate(rawDate: unknown): string {
 
 // =============================================================
 function ApexPredatorTerminal() {
-  const [mounted, setMounted] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
-    setMounted(true);
+    setIsMounted(true);
   }, []);
 
   const [tab, setTab] = useState<"poacher" | "hijack" | "striking">("poacher");
@@ -80,12 +80,14 @@ function ApexPredatorTerminal() {
     queryKey: ["apex", "status"],
     queryFn: () => callAdminServerFn(getApexStatus),
     refetchInterval: 60_000,
-    enabled: mounted,
+    enabled: isMounted,
   });
 
-  if (!mounted) {
+  if (!isMounted) {
     return (
-      <main style={{ minHeight: "100vh", background: T.bg, color: T.ink, fontFamily: T.mono }} />
+      <div className="min-h-screen bg-black text-[#00ff00] font-mono p-8">
+        Initializing Command Terminal...
+      </div>
     );
   }
 
