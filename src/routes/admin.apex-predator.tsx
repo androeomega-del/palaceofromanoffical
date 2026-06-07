@@ -748,7 +748,7 @@ function HighIntentPatchPanel({ patch }: { patch: HighIntentSeoPatch }) {
 function StrikePlanPanel({ plan }: { plan: StrikePlan }) {
   const patch = `Title: ${plan.newTitle}\nMeta: ${plan.newMetaDescription}\nH1: ${plan.newH1}\n\nInternal links:\n${plan.internalLinkSources.map((l) => `- from ${l.fromPath} anchor: "${l.anchorText}"`).join("\n")}\n\nRationale: ${plan.rationale}`;
   return (
-    <div style={{ background: T.bg, padding: 14, borderBottom: `1px solid ${T.border}`, fontSize: 11 }}>
+    <div style={{ background: T.bg, padding: 14, borderBottom: `1px solid ${T.border}`, fontSize: 11, overflow: "hidden", animation: "apexSlideDown 280ms ease-out" }}>
       <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
         <span style={{ color: T.neon, fontSize: 10, letterSpacing: "0.1em" }}>STRIKE PLAN</span>
         <ActionBtn onClick={() => copyText(patch)} color={T.ink}><Copy size={11} /> COPY PATCH</ActionBtn>
