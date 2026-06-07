@@ -151,11 +151,14 @@ const SEED_TIMESTAMP = "2026-06-07T00:00:00.000Z";
 
 function backlinkSeedFallback(): CompetitorBacklink[] {
   const now = SEED_TIMESTAMP;
+  // Seeds now represent inbound links to OUR LEGACY domain (palaceofroman.com)
+  // that we want to defend and "mature" — i.e. ask the editor to update the
+  // destination to the new live shop on palaceofromanofficial.com.
   return [
     {
-      source_url: "https://vogue.com",
+      source_url: "https://www.vogue.com/article/luxury-resale-guide",
       source_domain: "vogue.com",
-      target_url: `https://${COMPETITOR_DOMAIN}`,
+      target_url: `https://${OUR_LEGACY_DOMAIN}/`,
       anchor: "Palace of Roman",
       page_ascore: 92,
       domain_ascore: 93,
@@ -163,9 +166,9 @@ function backlinkSeedFallback(): CompetitorBacklink[] {
       first_seen: now,
     },
     {
-      source_url: "https://gq.com",
+      source_url: "https://www.gq.com/story/best-designer-bags-2026",
       source_domain: "gq.com",
-      target_url: `https://${COMPETITOR_DOMAIN}/collections/bags`,
+      target_url: `https://${OUR_LEGACY_DOMAIN}/collections/bags`,
       anchor: "designer leather goods",
       page_ascore: 88,
       domain_ascore: 91,
@@ -175,26 +178,21 @@ function backlinkSeedFallback(): CompetitorBacklink[] {
   ];
 }
 
-function topPagesSeedFallback(): TopRankingPage[] {
+function topPagesSeedFallback(domain: string): TopRankingPage[] {
   return [
-    { url: `https://${COMPETITOR_DOMAIN}/collections/resort`, est_traffic: 5400, keyword_count: 118, top_keyword: "luxury resort wear", top_keyword_position: 5, top_keyword_volume: 5400, top_keyword_kd: 35, top_keyword_cpc: 2.1 },
-    { url: `https://${COMPETITOR_DOMAIN}/collections/silk-scarves`, est_traffic: 2100, keyword_count: 74, top_keyword: "designer silk scarves", top_keyword_position: 7, top_keyword_volume: 2100, top_keyword_kd: 22, top_keyword_cpc: 1.7 },
-    { url: `https://${COMPETITOR_DOMAIN}/collections/sustainable-fashion`, est_traffic: 3000, keyword_count: 96, top_keyword: "sustainable fashion brands", top_keyword_position: 8, top_keyword_volume: 3000, top_keyword_kd: 28, top_keyword_cpc: 1.9 },
+    { url: `https://${domain}/shop/clothing`, est_traffic: 54000, keyword_count: 1180, top_keyword: "luxury designer clothing", top_keyword_position: 2, top_keyword_volume: 22200, top_keyword_kd: 78, top_keyword_cpc: 2.6 },
+    { url: `https://${domain}/shop/bags`, est_traffic: 41200, keyword_count: 940, top_keyword: "designer handbags", top_keyword_position: 3, top_keyword_volume: 33100, top_keyword_kd: 82, top_keyword_cpc: 3.2 },
+    { url: `https://${domain}/shop/shoes`, est_traffic: 28700, keyword_count: 760, top_keyword: "designer shoes women", top_keyword_position: 4, top_keyword_volume: 18100, top_keyword_kd: 74, top_keyword_cpc: 2.4 },
   ];
-}
-
-function isSelfLink(sourceDomain: string, sourceUrl: string): boolean {
-  const d = sourceDomain.toLowerCase().trim();
-  if (d === "palaceofroman.com" || d === "palaceofromanofficial.com") return true;
-  if (sourceUrl?.startsWith("https://palaceofroman.com/")) return true;
-  return false;
 }
 
 export async function fetchCompetitorBacklinks(opts: {
   domain?: string;
   limit?: number;
 }): Promise<CompetitorBacklink[]> {
-  const target = opts.domain ?? COMPETITOR_DOMAIN;
+  // DEFAULT TARGET = our legacy domain. Authority Protection monitors who
+  // still links to palaceofroman.com so we can request the URL update.
+  const target = opts.domain ?? OUR_LEGACY_DOMAIN;
   const limit = Math.min(opts.limit ?? 100, 500);
 
   try {
