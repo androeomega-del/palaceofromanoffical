@@ -81,6 +81,14 @@ const STATIC_ROUTES: UrlEntry[] = [
   { path: "/maison/tom-ford", changefreq: "monthly", priority: "0.8" },
   { path: "/maison/dolce-gabbana", changefreq: "monthly", priority: "0.8" },
   { path: "/maison/ferragamo", changefreq: "monthly", priority: "0.8" },
+  { path: "/preloved", changefreq: "weekly", priority: "0.8" },
+  { path: "/preloved/pristine", changefreq: "weekly", priority: "0.7" },
+  { path: "/preloved/excellent", changefreq: "weekly", priority: "0.7" },
+  { path: "/preloved/new-with-tags", changefreq: "weekly", priority: "0.7" },
+  { path: "/women/ss26", changefreq: "weekly", priority: "0.7" },
+  { path: "/men/ss26", changefreq: "weekly", priority: "0.7" },
+  { path: "/vacation-stylist", changefreq: "monthly", priority: "0.6" },
+  { path: "/trends/section-samples", changefreq: "monthly", priority: "0.3" },
 ];
 
 export const Route = createFileRoute("/sitemap-static.xml")({
