@@ -345,7 +345,7 @@ function PoacherModule() {
       />
       {sandboxMode && (
         <Banner color={T.neon}>
-          Premium Media Sandbox active — drafting against {SANDBOX_ROWS.length} prestige test rows (Vogue, GQ). Live DB feed paused; no rows are written.
+          Premium Media Sandbox active — drafting against {SANDBOX_ROWS.length} prestige test rows (Vogue → SSENSE, GQ → Net-a-Porter). Live DB feed paused; no rows are written.
         </Banner>
       )}
       {!sandboxMode && refresh.isError && <Banner color={T.red}>{(refresh.error as Error).message}</Banner>}
