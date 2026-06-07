@@ -9,6 +9,7 @@ import {
   getPoacherFeed,
   refreshPoacherFeed,
   draftPoacherPitch,
+  draftPoacherPitchInline,
   getHijackFeed,
   generateContentBlueprint,
   getStrikingPipeline,
