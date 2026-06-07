@@ -201,9 +201,7 @@ function PoacherModule() {
       {feed.data?.seeded && <Banner color={T.amber}>Showing placeholder data — click INTERCEPT FEED to pull live backlinks from Semrush.</Banner>}
       {feed.isLoading && <div style={{ color: T.muted, fontSize: 12 }}>Loading interception feed…</div>}
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        {feed.data?.rows
-          .filter((row) => typeof row.page_ascore === "number" && row.page_ascore > 0)
-          .map((row) => (
+        {feed.data?.rows.map((row) => (
           <article key={row.id} style={{ background: T.surface, border: `1px solid ${T.border}`, borderLeft: `3px solid ${row.is_net_new ? T.neon : T.border}`, padding: 14 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
               <span style={{ color: row.page_ascore && row.page_ascore >= 50 ? T.neon : T.ink, fontSize: 11, fontWeight: 700 }}>AS {row.page_ascore ?? "—"}</span>
