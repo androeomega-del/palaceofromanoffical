@@ -328,7 +328,7 @@ export const draftPoacherPitch = createServerFn({ method: "POST" })
       });
       let parsed: { subject?: string; body?: string } = {};
       try { parsed = JSON.parse(res.content); } catch { /* keep empty */ }
-      const subject = (parsed.subject || "").slice(0, 120) || `Editorial collaboration — ${publication}`;
+      const subject = (parsed.subject || "").slice(0, 120) || `URL update request — Palace of Roman feature in ${publication}`;
       const body = (parsed.body || "").trim() || res.content.trim();
 
       await supabaseAdmin
