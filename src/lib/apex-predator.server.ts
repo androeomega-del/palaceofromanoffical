@@ -121,18 +121,22 @@ export async function fetchCompetitorBacklinks(opts: {
 
   const rows = tableToObjects<Record<string, string>>(data);
   return rows.map((r) => {
-    const sourceUrl = r.source_url || r["source_url"] || "";
-    let sourceDomain = "";
-    try { sourceDomain = new URL(sourceUrl).hostname.replace(/^www\./, ""); } catch { /* ignore */ }
+    const sourceUrl = (r.source_url || r["source_url"] || "").trim();
+    let sourceDomain = "unknown";
+    try {
+      if (sourceUrl) sourceDomain = new URL(sourceUrl).hostname.replace(/^www\./, "") || "unknown";
+    } catch { /* keep unknown */ }
+    // Semrush may return dates as "YYYY-MM-DD HH:MM:SS" or empty strings — keep raw, parsing happens downstream via safeISO.
+    const firstSeenRaw = (r.first_seen || "").trim();
     return {
-      source_url: sourceUrl,
+      source_url: sourceUrl || "unknown",
       source_domain: sourceDomain,
-      target_url: r.target_url || "",
-      anchor: r.anchor || "",
+      target_url: (r.target_url || "").trim() || "unknown",
+      anchor: (r.anchor || "").trim() || "unknown",
       page_ascore: Number(r.page_ascore || 0) || 0,
       domain_ascore: 0,
       is_nofollow: String(r.nofollow || "").toLowerCase() === "true",
-      first_seen: r.first_seen || null,
+      first_seen: firstSeenRaw || null,
     } satisfies CompetitorBacklink;
   });
 }
