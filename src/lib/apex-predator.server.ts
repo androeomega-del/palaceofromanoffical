@@ -88,6 +88,21 @@ function tableToObjects<T extends Record<string, string>>(table: SemrushTable): 
   });
 }
 
+function pickText(row: Record<string, string>, keys: string[], fallback = ""): string {
+  for (const key of keys) {
+    const value = row[key];
+    if (typeof value === "string" && value.trim()) return value.trim();
+  }
+  return fallback;
+}
+
+function pickNumber(row: Record<string, string>, keys: string[]): number {
+  const raw = pickText(row, keys);
+  if (!raw) return 0;
+  const parsed = Number(raw.replace(/[$,%\s]/g, "").replace(/,/g, ""));
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
 // =================================================================
 // Backlinks
 // =================================================================
@@ -138,12 +153,12 @@ export async function fetchCompetitorBacklinks(opts: {
       is_nofollow: String(r.nofollow || "").toLowerCase() === "true",
       first_seen: firstSeenRaw || null,
     } satisfies CompetitorBacklink;
-  }).filter((r) => {
-    // Drop older storefront variation only — KEEP legitimate palaceofromanofficial.com entries
-    const domain = r.source_domain.toLowerCase();
-    const url = r.source_url.toLowerCase();
-    if (domain === "palaceofroman.com" || domain === "www.palaceofroman.com") return false;
-    if (url.includes("//palaceofroman.com/") || url.includes("//www.palaceofroman.com/")) return false;
+  }).filter((row) => {
+    // DO NOT use generic .includes("palaceofroman") as it breaks palaceofromanofficial.com data.
+    // Strictly target the old staging domain string exactly and allow all legitimate palaceofromanofficial.com rows.
+    if (row.source_domain === "palaceofroman.com" || row.source_url?.startsWith("https://palaceofroman.com/")) {
+      return false;
+    }
     return true;
   });
 }
@@ -181,16 +196,18 @@ export async function fetchCompetitorTopPages(opts: {
   });
 
   const rows = tableToObjects<Record<string, string>>(data);
-  return rows.map((r) => ({
-    url: r.Ur || "",
-    est_traffic: Number(r.Tr || 0) || 0,
-    keyword_count: Number(r.Pc || 0) || 0,
-    top_keyword: "",
-    top_keyword_position: 0,
-    top_keyword_volume: 0,
-    top_keyword_kd: 0,
-    top_keyword_cpc: 0,
-  }));
+  return rows
+    .map((r) => ({
+      url: pickText(r, ["Ur", "url", "URL", "Url", "Landing Page", "landing_page"]),
+      est_traffic: pickNumber(r, ["Tr", "traffic", "Traffic", "Estimated Traffic"]),
+      keyword_count: pickNumber(r, ["Pc", "keywords", "Keywords", "Keyword Count"]),
+      top_keyword: "",
+      top_keyword_position: 0,
+      top_keyword_volume: 0,
+      top_keyword_kd: 0,
+      top_keyword_cpc: 0,
+    }))
+    .filter((row) => row.url.length > 0);
 }
 
 export async function fetchUrlTopKeywords(opts: { url: string; database?: string; limit?: number }) {
