@@ -643,7 +643,7 @@ function StrikingModule() {
 
   const planFor = useCallback((q: string) => plans[q], [plans]);
   const patchFor = useCallback((q: string) => patches[q], [patches]);
-  const resultFor = useCallback((q: string) => bulkResults[q], [bulkResults]);
+  
 
   const refreshGSCQueue = () => setLocalRows(STRIKING_LOCAL_FALLBACK);
 
