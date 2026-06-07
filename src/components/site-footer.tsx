@@ -83,7 +83,7 @@ export function SiteFooter() {
             <Link to="/edits/the-cucinelli-edit" className="text-sm text-muted-foreground hover:text-ink transition-colors">The Cucinelli Edit</Link>
             <Link to="/edits/the-prada-effect" className="text-sm text-muted-foreground hover:text-ink transition-colors">The Prada Effect</Link>
             <Link to="/edits/dolce-romana" className="text-sm text-muted-foreground hover:text-ink transition-colors">Dolce Romana</Link>
-            <Link to="/edits/the-bag-vault" className="text-sm text-muted-foreground hover:text-ink transition-calors">The Bag Vault</Link>
+            <Link to="/edits/the-bag-vault" className="text-sm text-muted-foreground hover:text-ink transition-colors">The Bag Vault</Link>
           </div>
 
           <div className="flex flex-col gap-3">
