@@ -143,12 +143,24 @@ function ApexPredatorTerminal() {
 
 // =============================================================
 function PoacherModule() {
+  const qc = useQueryClient();
   const feed = useQuery({
     queryKey: ["apex", "poacher"],
     queryFn: () => callAdminServerFn(getPoacherFeed),
   });
   const refresh = useMutation({
-    mutationFn: () => callAdminServerFn(refreshPoacherFeed),
+    mutationFn: async () => {
+      // Clear any stale local caches that may hold malformed timestamps from prior builds.
+      try {
+        if (typeof window !== "undefined" && window.localStorage) {
+          Object.keys(window.localStorage)
+            .filter((k) => k.startsWith("apex.") || k.startsWith("apex-predator"))
+            .forEach((k) => window.localStorage.removeItem(k));
+        }
+      } catch { /* ignore */ }
+      qc.removeQueries({ queryKey: ["apex", "poacher"] });
+      return callAdminServerFn(refreshPoacherFeed);
+    },
     onSuccess: () => feed.refetch(),
   });
   const draft = useMutation({
