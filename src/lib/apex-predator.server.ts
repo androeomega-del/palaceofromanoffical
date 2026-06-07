@@ -32,6 +32,28 @@ export type CompetitorDomain = (typeof COMPETITOR_DOMAINS)[number];
 
 const GATEWAY_BASE = "https://connector-gateway.lovable.dev/semrush";
 
+// ─────────────────────────────────────────────────────────────
+// Live-stream sanitization rules — shared across EVERY reverse-engineering
+// pipeline (backlink intercept, hijack top-pages, striking-distance GSC)
+// so a single source of truth drops legal/help URLs and infinite scraper
+// pagination loops identically everywhere.
+// ─────────────────────────────────────────────────────────────
+const LEGAL_PATH_RX = /\/(privacy-policy|privacy|help|support|terms|terms-of-service|terms-and-conditions|cookie-policy|cookies|legal|accessibility|imprint|returns|shipping-policy|gdpr|do-not-sell)(\/|$|\?)/i;
+const PAGINATION_LOOP_RX = /(?:\/page\/\d+){2,}/i;
+const REPEAT_SEGMENT_RX = /(\/[^/]{2,30})\1{2,}/i;
+
+export function isLegalOrHelpUrl(url: string | null | undefined): boolean {
+  if (!url) return false;
+  return LEGAL_PATH_RX.test(url.toLowerCase());
+}
+
+export function isScraperLoopUrl(url: string | null | undefined): boolean {
+  if (!url) return false;
+  const u = url.toLowerCase();
+  return PAGINATION_LOOP_RX.test(u) || REPEAT_SEGMENT_RX.test(u);
+}
+
+
 /** Legacy export retained for callers that still expect a single "target" — now returns the primary giant competitor. */
 export function getCompetitorDomain() {
   return COMPETITOR_DOMAINS[0];
