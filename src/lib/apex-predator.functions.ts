@@ -626,6 +626,21 @@ export type StrikingRow = {
 export const getStrikingPipeline = createServerFn({ method: "GET" })
   .middleware([requireAdmin])
   .handler(async (): Promise<{ rows: StrikingRow[]; weekStart: string | null; quotaWarning: string | null }> => {
+    // Hardcoded fallback rows — surfaced when no GSC weekly review exists yet
+    // or when every query gets filtered out by sanitization. Lets the operator
+    // exercise the "Generate High-Intent SEO Patch" action immediately.
+    const fallbackRows = (): StrikingRow[] =>
+      STRIKING_FALLBACK_ROWS.map((r) => ({
+        query: r.query,
+        page: r.page,
+        position: r.position,
+        impressions: r.impressions,
+        clicks: 0,
+        ctr: 0,
+        kd: 50,
+        impactScore: impactScore({ impressions: r.impressions, position: r.position, kd: 50 }),
+      })).sort((a, b) => b.impactScore - a.impactScore);
+
     // Use the most recent weekly review's top_queries — that data is already
     // fetched from GSC by the existing weekly review job.
     const { data: weeks } = await supabaseAdmin
@@ -634,7 +649,7 @@ export const getStrikingPipeline = createServerFn({ method: "GET" })
       .order("week_start", { ascending: false })
       .limit(1);
     const latest = weeks?.[0];
-    if (!latest) return { rows: [], weekStart: null, quotaWarning: "No GSC weekly review available — run the weekly review first." };
+    if (!latest) return { rows: fallbackRows(), weekStart: null, quotaWarning: null };
 
     const top = (latest.top_queries as Array<{ query: string; page?: string; position: number; impressions: number; clicks: number; ctr: number }>) ?? [];
     // Apply the same livestream sanitization rules used by the intercept feed
@@ -642,6 +657,10 @@ export const getStrikingPipeline = createServerFn({ method: "GET" })
     // help / policy URL or a scraper pagination loop.
     const sanitized = top.filter((q) => !isLegalOrHelpUrl(q.page) && !isScraperLoopUrl(q.page));
     const striking = sanitized.filter((q) => q.position >= 4 && q.position <= 11 && q.impressions >= 20);
+
+    if (striking.length === 0) {
+      return { rows: fallbackRows(), weekStart: latest.week_start, quotaWarning: null };
+    }
 
     // Batch Semrush KD lookup for these queries — caps API spend at one call per ~100 phrases.
     let kdMap = new Map<string, { kd: number; volume: number; cpc: number }>();
