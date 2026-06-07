@@ -69,25 +69,39 @@ function renderSafeUIDate(rawDate: unknown): string {
 
 // =============================================================
 function ApexPredatorTerminal() {
-  const [mounted, setMounted] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
-    setMounted(true);
+    setIsMounted(true);
+    if (typeof window !== "undefined" && (window as any).plausible) {
+      try {
+        (window as any).plausible("apex-predator-mount");
+      } catch {
+        /* ignore tracking errors on private admin route */
+      }
+    }
   }, []);
 
+  if (!isMounted) {
+    return (
+      <div className="min-h-screen bg-black text-[#00ff00] font-mono p-8">
+        Initializing Command Terminal...
+      </div>
+    );
+  }
+
+  return <ApexPredatorTerminalShell />;
+}
+
+function ApexPredatorTerminalShell() {
   const [tab, setTab] = useState<"poacher" | "hijack" | "striking">("poacher");
 
   const status = useQuery({
     queryKey: ["apex", "status"],
     queryFn: () => callAdminServerFn(getApexStatus),
     refetchInterval: 60_000,
-    enabled: mounted,
   });
 
-  if (!mounted) {
-    return (
-      <main style={{ minHeight: "100vh", background: T.bg, color: T.ink, fontFamily: T.mono }} />
-    );
-  }
+
 
 
   return (
