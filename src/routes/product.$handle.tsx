@@ -805,14 +805,14 @@ function ProductView({
     queryKey: ["style-it-with", product.handle, product.vendor],
     queryFn: () =>
       fetchProducts({
-        first: 16,
+        first: 50,
         sortKey: "BEST_SELLING",
         query: `-vendor:"${product.vendor}"`,
       }),
   });
   const styleItWith = (styleItWithQ.data ?? [])
     .filter((e) => e.node.handle !== product.handle && e.node.vendor !== product.vendor)
-    .slice(0, 8);
+    .slice(0, 40);
 
   // ── Auto "The Look" — AI fallback when `custom.look_products` is empty.
   // Pulls Shopify's COMPLEMENTARY recommendations first (cross-category by
