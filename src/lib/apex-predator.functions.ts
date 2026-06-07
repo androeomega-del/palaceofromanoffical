@@ -636,7 +636,11 @@ export const getStrikingPipeline = createServerFn({ method: "GET" })
     if (!latest) return { rows: [], weekStart: null, quotaWarning: "No GSC weekly review available — run the weekly review first." };
 
     const top = (latest.top_queries as Array<{ query: string; page?: string; position: number; impressions: number; clicks: number; ctr: number }>) ?? [];
-    const striking = top.filter((q) => q.position >= 4 && q.position <= 11 && q.impressions >= 20);
+    // Apply the same livestream sanitization rules used by the intercept feed
+    // and hijack pipeline — drop GSC queries whose landing page is a legal /
+    // help / policy URL or a scraper pagination loop.
+    const sanitized = top.filter((q) => !isLegalOrHelpUrl(q.page) && !isScraperLoopUrl(q.page));
+    const striking = sanitized.filter((q) => q.position >= 4 && q.position <= 11 && q.impressions >= 20);
 
     // Batch Semrush KD lookup for these queries — caps API spend at one call per ~100 phrases.
     let kdMap = new Map<string, { kd: number; volume: number; cpc: number }>();
