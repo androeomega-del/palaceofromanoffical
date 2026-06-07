@@ -86,6 +86,10 @@ export const Route = createFileRoute("/api/public/cron/abandoned-cart-recovery")
             skipped++;
             continue;
           }
+          if (!isValidRecipient(cart.email)) {
+            skipped++;
+            continue;
+          }
           if (recentlyEmailed.has(cart.email.toLowerCase())) {
             skipped++;
             continue;
