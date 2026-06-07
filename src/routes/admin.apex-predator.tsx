@@ -639,6 +639,8 @@ function StrikingModule() {
   const planFor = useCallback((q: string) => plans[q], [plans]);
   const patchFor = useCallback((q: string) => patches[q], [patches]);
 
+  const refreshGSCQueue = () => setLocalRows(STRIKING_LOCAL_FALLBACK);
+
   /** Derive a clean product-title-style string from a Palace of Roman product URL slug. */
   const productTitleFromPage = (page: string | null, query: string): { title: string; isProduct: boolean } => {
     if (!page) return { title: query, isProduct: false };
@@ -649,7 +651,6 @@ function StrikingModule() {
   };
 
   const effectiveRows: StrikingRow[] = localRows ?? pipe.data?.rows ?? [];
-  const showSyncButton = !pipe.isLoading && (pipe.data?.rows.length ?? 0) === 0 && !localRows;
 
   return (
     <div>
@@ -658,19 +659,18 @@ function StrikingModule() {
         title="STRIKING-DISTANCE PIPELINE"
         sub="Positions 4–11, ranked by Impact Score (impressions × CTR lift to top-3 × inverse KD). STRIKE PLAN rewrites editorial pages; HIGH-INTENT PATCH rewrites product pages for transactional buyers."
       />
+      <div className="mb-6 p-4 border border-[#1a2333] bg-[#141923]">
+        <p className="text-xs text-slate-400 mb-2 font-mono">OPERATOR OVERRIDE: FORCE SYSTEM DATA REFRESH</p>
+        <button
+          onClick={() => refreshGSCQueue()}
+          className="px-4 py-2 bg-[#00ff00] text-black font-mono text-xs font-bold uppercase tracking-wider rounded hover:bg-[#00cc00] transition-colors"
+        >
+          ⚡ Execute Weekly GSC Sync
+        </button>
+      </div>
       {pipe.data?.quotaWarning && <Banner color={T.amber}>{pipe.data.quotaWarning}</Banner>}
       {pipe.isLoading && <div style={{ color: T.muted, fontSize: 12 }}>Scanning GSC + Semrush KD…</div>}
-      {showSyncButton && (
-        <div>
-          <Banner color={T.amber}>No GSC weekly review available</Banner>
-          <button
-            onClick={() => setLocalRows(STRIKING_LOCAL_FALLBACK)}
-            className="mt-4 px-4 py-2 bg-[#00ff00] text-black font-mono text-xs font-bold uppercase tracking-wider rounded hover:bg-[#00cc00]"
-          >
-            ⚡ Execute Weekly GSC Sync
-          </button>
-        </div>
-      )}
+
       {effectiveRows.length > 0 && (
         <div style={{ border: `1px solid ${T.border}`, background: T.surface }}>
           <div style={{ display: "grid", gridTemplateColumns: "60px 1fr 70px 90px 60px 90px 220px", gap: 10, padding: "10px 14px", borderBottom: `1px solid ${T.border}`, fontSize: 10, color: T.muted, letterSpacing: "0.1em" }}>
