@@ -376,7 +376,7 @@ function PoacherModule() {
                 <span style={{ color: T.muted, fontSize: 10 }}>{renderSafeUIDate(row.first_seen_at)}</span>
                 <ActionBtn onClick={onDraft} disabled={draftDisabled} color={T.amber}>
                   <Zap size={11} />
-                  {isDrafting ? "DRAFTING…" : row.pitch_body ? "REGENERATE" : "DRAFT PITCH"}
+                  {isDrafting ? "DRAFTING…" : row.pitch_body ? "REGENERATE" : "SECURE BACKLINK"}
                 </ActionBtn>
               </div>
               {row.isSandbox && row.sandboxSource && (
