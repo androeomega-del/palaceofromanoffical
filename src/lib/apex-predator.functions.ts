@@ -300,7 +300,7 @@ export const getHijackFeed = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
   .inputValidator((d: unknown) => z.object({ force: z.boolean().optional() }).parse(d ?? {}))
   .handler(async ({ data }): Promise<{ rows: TopRankingPageEnriched[]; cachedAt: string; error: string | null; seeded: boolean }> => {
-    if (!data.force && _hijackCache && Date.now() - _hijackCache.at < HIJACK_TTL_MS) {
+    if (!data.force && _hijackCache && _hijackCache.rows.length > 0 && Date.now() - _hijackCache.at < HIJACK_TTL_MS) {
       return { rows: _hijackCache.rows, cachedAt: new Date(_hijackCache.at).toISOString(), error: null, seeded: false };
     }
     try {
@@ -314,11 +314,11 @@ export const getHijackFeed = createServerFn({ method: "POST" })
           const top = kws[0];
           enriched.push({
             ...p,
-            top_keyword: top?.keyword ?? "",
-            top_keyword_position: top?.position ?? 0,
-            top_keyword_volume: top?.volume ?? 0,
-            top_keyword_kd: top?.kd ?? 0,
-            top_keyword_cpc: top?.cpc ?? 0,
+            top_keyword: top?.keyword ?? p.top_keyword,
+            top_keyword_position: top?.position ?? p.top_keyword_position,
+            top_keyword_volume: top?.volume ?? p.top_keyword_volume,
+            top_keyword_kd: top?.kd ?? p.top_keyword_kd,
+            top_keyword_cpc: top?.cpc ?? p.top_keyword_cpc,
           });
         } catch (innerErr) {
           if (innerErr instanceof SemrushQuotaError) throw innerErr;
@@ -327,13 +327,15 @@ export const getHijackFeed = createServerFn({ method: "POST" })
       }
       for (let i = TOP_N; i < pages.length; i++) enriched.push(pages[i]);
 
-      if (enriched.length === 0) {
+      const result = enriched && enriched.length > 0 ? enriched : HIJACK_SEEDS;
+      if (!enriched || enriched.length === 0) {
+        console.log("Live Semrush gateway returned empty payload. Activating seed protection fallback.");
         await logRun("hijack", "ok", "empty result, served seeds", 0);
-        return { rows: HIJACK_SEEDS, cachedAt: new Date().toISOString(), error: null, seeded: true };
+        return { rows: result, cachedAt: new Date().toISOString(), error: null, seeded: true };
       }
-      _hijackCache = { at: Date.now(), rows: enriched };
-      await logRun("hijack", "ok", `fetched ${enriched.length} pages`, enriched.length);
-      return { rows: enriched, cachedAt: new Date().toISOString(), error: null, seeded: false };
+      _hijackCache = { at: Date.now(), rows: result };
+      await logRun("hijack", "ok", `fetched ${result.length} pages`, result.length);
+      return { rows: result, cachedAt: new Date().toISOString(), error: null, seeded: false };
     } catch (e) {
       const isQuota = e instanceof SemrushQuotaError;
       const msg = (e as Error).message;
