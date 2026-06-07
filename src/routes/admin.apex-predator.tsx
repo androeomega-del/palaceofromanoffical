@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useCallback } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Radar, Crosshair, Target, Zap, Copy, Mail, FileDown, RefreshCw, AlertTriangle } from "lucide-react";
 import { adminBeforeLoad } from "@/lib/admin-route-guard";
 import { callAdminServerFn } from "@/lib/admin-server-call";
@@ -52,15 +52,19 @@ function fmt(n: number | null | undefined, d = 0) {
   return Number(n).toLocaleString("en-US", { maximumFractionDigits: d, minimumFractionDigits: d });
 }
 
-/** Safe date formatter — never throws RangeError on bad input. */
-function safeDateLabel(input?: string | number | Date | null): string {
-  if (input === undefined || input === null || input === "") return "—";
+/** Bulletproof date renderer — never throws, always returns a display string. */
+function renderSafeUIDate(rawDate: unknown): string {
+  if (rawDate === null || rawDate === undefined || rawDate === "") return "Pending";
   try {
-    const d = input instanceof Date ? input : new Date(input);
-    const t = d.getTime();
-    if (!Number.isFinite(t)) return "—";
-    return d.toLocaleString();
-  } catch { return "—"; }
+    const parsed = new Date(rawDate as string | number | Date);
+    if (Number.isNaN(parsed.getTime())) {
+      const s = String(rawDate);
+      return s.split("T")[0] || "Recent";
+    }
+    return parsed.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  } catch {
+    return "Recent";
+  }
 }
 
 // =============================================================
@@ -94,7 +98,7 @@ function ApexPredatorTerminal() {
           <span style={{ color: T.neon, fontWeight: 700 }}>APEX PREDATOR</span>
           <span style={{ color: T.muted }}>// TARGET: <span style={{ color: T.amber }}>{status.data?.competitor ?? "—"}</span></span>
           <span style={{ color: T.muted }}>// SEMRUSH QUOTA: <span style={{ color: T.ink }}>{status.data?.semrushQuota ? `${fmt(status.data.semrushQuota.used)} / ${fmt(status.data.semrushQuota.limit)}` : "—"}</span></span>
-          <span style={{ marginLeft: "auto", color: T.muted }}>LAST RUN: <span style={{ color: T.ink }}>{safeDateLabel(status.data?.lastRuns?.[0]?.created_at)}</span> <span style={{ color: T.neon, marginLeft: 6 }}>●</span></span>
+          <span style={{ marginLeft: "auto", color: T.muted }}>LAST RUN: <span style={{ color: T.ink }}>{renderSafeUIDate(status.data?.lastRuns?.[0]?.created_at)}</span> <span style={{ color: T.neon, marginLeft: 6 }}>●</span></span>
         </div>
       </div>
 
@@ -139,12 +143,24 @@ function ApexPredatorTerminal() {
 
 // =============================================================
 function PoacherModule() {
+  const qc = useQueryClient();
   const feed = useQuery({
     queryKey: ["apex", "poacher"],
     queryFn: () => callAdminServerFn(getPoacherFeed),
   });
   const refresh = useMutation({
-    mutationFn: () => callAdminServerFn(refreshPoacherFeed),
+    mutationFn: async () => {
+      // Clear any stale local caches that may hold malformed timestamps from prior builds.
+      try {
+        if (typeof window !== "undefined" && window.localStorage) {
+          Object.keys(window.localStorage)
+            .filter((k) => k.startsWith("apex.") || k.startsWith("apex-predator"))
+            .forEach((k) => window.localStorage.removeItem(k));
+        }
+      } catch { /* ignore */ }
+      qc.removeQueries({ queryKey: ["apex", "poacher"] });
+      return callAdminServerFn(refreshPoacherFeed);
+    },
     onSuccess: () => feed.refetch(),
   });
   const draft = useMutation({
@@ -180,6 +196,7 @@ function PoacherModule() {
               </a>
               {row.is_net_new && <span style={{ color: T.neon, fontSize: 10, letterSpacing: "0.1em" }}>● NET-NEW</span>}
               {row.is_nofollow && <span style={{ color: T.muted, fontSize: 10 }}>nofollow</span>}
+              <span style={{ color: T.muted, fontSize: 10 }}>{renderSafeUIDate(row.first_seen_at)}</span>
               <ActionBtn onClick={() => draft.mutate(row.id)} disabled={(draft.isPending && draft.variables === row.id) || row.id.startsWith("seed-")} color={T.amber}>
                 <Zap size={11} />
                 {row.pitch_body ? "REGENERATE" : "DRAFT PITCH"}
