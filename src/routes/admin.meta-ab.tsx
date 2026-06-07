@@ -2,9 +2,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { adminBeforeLoad } from "@/lib/admin-route-guard";
 import { getMetaAbReport, type MetaAbReport, type EventType } from "@/lib/meta-ab-report.functions";
 
 export const Route = createFileRoute("/admin/meta-ab")({
+  ssr: false,
+  beforeLoad: adminBeforeLoad,
   head: () => ({
     meta: [
       { title: "Meta A/B — Admin" },
