@@ -74,6 +74,61 @@ export function SiteFooter() {
           </div>
         </div>
 
+        {/* ───── Editorial & story index (link-graph backbone) ───── */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-16 mb-20 pt-4 border-t border-ink/5">
+          <div className="flex flex-col gap-3">
+            <h5 className="text-[10px] uppercase tracking-[0.25em] font-semibold mb-1">The Edits</h5>
+            <Link to="/edits/yacht-edit" className="text-sm text-muted-foreground hover:text-ink transition-colors">Yacht Edit</Link>
+            <Link to="/edits/charter-capsule" className="text-sm text-muted-foreground hover:text-ink transition-colors">Charter Capsule</Link>
+            <Link to="/edits/the-cucinelli-edit" className="text-sm text-muted-foreground hover:text-ink transition-colors">The Cucinelli Edit</Link>
+            <Link to="/edits/the-prada-effect" className="text-sm text-muted-foreground hover:text-ink transition-colors">The Prada Effect</Link>
+            <Link to="/edits/dolce-romana" className="text-sm text-muted-foreground hover:text-ink transition-colors">Dolce Romana</Link>
+            <Link to="/edits/the-bag-vault" className="text-sm text-muted-foreground hover:text-ink transition-calors">The Bag Vault</Link>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <h5 className="text-[10px] uppercase tracking-[0.25em] font-semibold mb-1">Editorials</h5>
+            <Link to="/editorial/resort-2026" className="text-sm text-muted-foreground hover:text-ink transition-colors">Resort 2026</Link>
+            <Link to="/editorial/may-2026" className="text-sm text-muted-foreground hover:text-ink transition-colors">May 2026</Link>
+            <Link to="/editorial/summer-edit" className="text-sm text-muted-foreground hover:text-ink transition-colors">Summer Edit</Link>
+            <Link to="/editorial/the-new-evening" className="text-sm text-muted-foreground hover:text-ink transition-colors">The New Evening</Link>
+            <Link to="/editorial/shoreline-perspective" className="text-sm text-muted-foreground hover:text-ink transition-colors">Shoreline Perspective</Link>
+            <Link to="/editorial/accessories" className="text-sm text-muted-foreground hover:text-ink transition-colors">Accessories Edit</Link>
+            <Link to="/editorial/mens-edit" className="text-sm text-muted-foreground hover:text-ink transition-colors">Men's Edit</Link>
+            <Link to="/editorial/womens-edit" className="text-sm text-muted-foreground hover:text-ink transition-colors">Women's Edit</Link>
+            <Link to="/editorial/versace" className="text-sm text-muted-foreground hover:text-ink transition-colors">Versace Editorial</Link>
+            <Link to="/editorial/versace-now" className="text-sm text-muted-foreground hover:text-ink transition-colors">Versace Now</Link>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <h5 className="text-[10px] uppercase tracking-[0.25em] font-semibold mb-1">The Journal</h5>
+            <Link to="/journal" className="text-sm text-muted-foreground hover:text-ink transition-colors">All Articles</Link>
+            <Link to="/journal/craftsmanship/spot-real-italian-leather" className="text-sm text-muted-foreground hover:text-ink transition-colors">Spot Real Italian Leather</Link>
+            <Link to="/journal/craftsmanship/caring-for-fine-leather" className="text-sm text-muted-foreground hover:text-ink transition-colors">Caring for Fine Leather</Link>
+            <Link to="/journal/craftsmanship/leather-quality-guide" className="text-sm text-muted-foreground hover:text-ink transition-colors">Leather Quality Guide</Link>
+            <Link to="/journal/craftsmanship/made-in-italy-vs-designed-in-italy" className="text-sm text-muted-foreground hover:text-ink transition-colors">Made in Italy vs Designed in Italy</Link>
+            <Link to="/journal/style/the-cashmere-field-guide" className="text-sm text-muted-foreground hover:text-ink transition-colors">The Cashmere Field Guide</Link>
+            <Link to="/journal/style/the-investment-sunglasses-edit" className="text-sm text-muted-foreground hover:text-ink transition-colors">Investment Sunglasses</Link>
+            <Link to="/journal/style/luxury-sneakers-as-modern-tailoring" className="text-sm text-muted-foreground hover:text-ink transition-colors">Sneakers as Modern Tailoring</Link>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <h5 className="text-[10px] uppercase tracking-[0.25em] font-semibold mb-1">Preloved &amp; Trends</h5>
+            <Link to="/preloved" className="text-sm text-muted-foreground hover:text-ink transition-colors">The Preloved Edit</Link>
+            <Link to="/preloved/$condition" params={{ condition: "pristine" }} className="text-sm text-muted-foreground hover:text-ink transition-colors">Pristine Condition</Link>
+            <Link to="/preloved/$condition" params={{ condition: "excellent" }} className="text-sm text-muted-foreground hover:text-ink transition-colors">Excellent Condition</Link>
+            <Link to="/preloved/$condition" params={{ condition: "new-with-tags" }} className="text-sm text-muted-foreground hover:text-ink transition-colors">New with Tags</Link>
+            <Link to="/trends/tom-ford-essentials" className="text-sm text-muted-foreground hover:text-ink transition-colors">Tom Ford Essentials</Link>
+            <Link to="/trends/dolce-gabbana-icons" className="text-sm text-muted-foreground hover:text-ink transition-colors">Dolce &amp; Gabbana Icons</Link>
+            <Link to="/trends/pucci-eyewear" className="text-sm text-muted-foreground hover:text-ink transition-colors">Pucci Eyewear</Link>
+            <Link to="/women/ss26" className="text-sm text-muted-foreground hover:text-ink transition-colors">Women SS26</Link>
+            <Link to="/men/ss26" className="text-sm text-muted-foreground hover:text-ink transition-colors">Men SS26</Link>
+            <Link to="/limited-finds" className="text-sm text-muted-foreground hover:text-ink transition-colors">Limited Finds</Link>
+            <Link to="/vacation-stylist" className="text-sm text-muted-foreground hover:text-ink transition-colors">Vacation Stylist</Link>
+            <Link to="/campaign/mens-swim" className="text-sm text-muted-foreground hover:text-ink transition-colors">Men's Swim Campaign</Link>
+          </div>
+        </div>
+
         {/* ───── Trust & support bar ───── */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 py-12 border-t border-ink/10">
           <Link to="/shipping-returns" className="group flex flex-col gap-2 hover:text-ink transition-colors">
