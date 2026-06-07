@@ -17,6 +17,7 @@ import {
   Star,
   Inbox,
   ListChecks,
+  Crosshair,
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin/")({
