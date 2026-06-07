@@ -43,6 +43,21 @@ const T = {
   mono: "'JetBrains Mono', ui-monospace, SFMono-Regular, monospace",
 };
 
+type HijackRow = {
+  url: string;
+  est_traffic: number;
+  keyword_count: number;
+  top_keyword: string;
+  top_keyword_volume: number;
+  top_keyword_kd: number;
+};
+
+const HIJACK_FALLBACK_ROWS: HijackRow[] = [
+  { url: "https://palaceofromanofficial.com/collections/resort", est_traffic: 1200, keyword_count: 84, top_keyword: "luxury resort wear sets", top_keyword_volume: 4400, top_keyword_kd: 32 },
+  { url: "https://palaceofromanofficial.com/collections/tailoring", est_traffic: 860, keyword_count: 52, top_keyword: "silk deconstructed blazers", top_keyword_volume: 1900, top_keyword_kd: 18 },
+  { url: "https://palaceofromanofficial.com/collections/evening", est_traffic: 720, keyword_count: 41, top_keyword: "italian crepe evening gown", top_keyword_volume: 2400, top_keyword_kd: 24 },
+];
+
 function copyText(t: string) {
   if (typeof navigator !== "undefined" && navigator.clipboard) void navigator.clipboard.writeText(t);
 }
@@ -275,7 +290,10 @@ function HijackModule() {
           <div style={{ display: "grid", gridTemplateColumns: "40px 1fr 80px 80px 1fr 60px 60px 160px", gap: 10, padding: "10px 14px", borderBottom: `1px solid ${T.border}`, fontSize: 10, color: T.muted, letterSpacing: "0.1em" }}>
             <span>#</span><span>URL</span><span style={{ textAlign: "right" }}>TRAFFIC</span><span style={{ textAlign: "right" }}>KWS</span><span>TOP KW</span><span style={{ textAlign: "right" }}>VOL</span><span style={{ textAlign: "right" }}>KD</span><span></span>
           </div>
-          {feed.data.rows.map((row, i) => (
+          {(feed.data.rows.length === 0
+            ? HIJACK_FALLBACK_ROWS
+            : feed.data.rows
+          ).map((row, i) => (
             <div key={row.url}>
               <div style={{ display: "grid", gridTemplateColumns: "40px 1fr 80px 80px 1fr 60px 60px 160px", gap: 10, padding: "10px 14px", borderBottom: `1px solid ${T.border}`, fontSize: 11, alignItems: "center" }}>
                 <span style={{ color: T.muted }}>{i + 1}</span>
@@ -292,6 +310,11 @@ function HijackModule() {
               {openBlueprint === row.url && blueprints[row.url] && <BlueprintPanel bp={blueprints[row.url]} />}
             </div>
           ))}
+          {feed.data.rows.length === 0 && (
+            <div style={{ padding: "8px 14px", fontSize: 10, color: T.amber, borderTop: `1px dashed ${T.border}` }}>
+              STANDBY FEED · 3 placeholder opportunities shown while Semrush handshake completes.
+            </div>
+          )}
         </div>
       )}
     </div>

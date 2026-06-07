@@ -139,9 +139,12 @@ export async function fetchCompetitorBacklinks(opts: {
       first_seen: firstSeenRaw || null,
     } satisfies CompetitorBacklink;
   }).filter((r) => {
-    // Suppress self-links from our own alternate domain variations
-    const source = (r.source_domain + " " + r.source_url).toLowerCase();
-    return !source.includes("palaceofroman");
+    // Drop older storefront variation only — KEEP legitimate palaceofromanofficial.com entries
+    const domain = r.source_domain.toLowerCase();
+    const url = r.source_url.toLowerCase();
+    if (domain === "palaceofroman.com" || domain === "www.palaceofroman.com") return false;
+    if (url.includes("//palaceofroman.com/") || url.includes("//www.palaceofroman.com/")) return false;
+    return true;
   });
 }
 
