@@ -402,7 +402,7 @@ function RouteAwareRuntime() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isAdmin = pathname.startsWith("/admin");
 
-  if (isAdmin) return <ChromeAwareShell isAdmin />;
+  if (isAdmin) return <AdminOnlyShell />;
 
   return (
     <>
@@ -415,7 +415,15 @@ function RouteAwareRuntime() {
   );
 }
 
-function ChromeAwareShell({ isAdmin = false }: { isAdmin?: boolean }) {
+function AdminOnlyShell() {
+  return (
+    <div className="min-h-screen bg-canvas" data-surface="apex">
+      <Outlet />
+    </div>
+  );
+}
+
+function ChromeAwareShell() {
   // The homepage owns its own header/footer inside <EditionLayout/>. Hide the
   // root chrome synchronously by route so it never flashes a duplicate before
   // the client-only suppression store hydrates.
@@ -424,10 +432,10 @@ function ChromeAwareShell({ isAdmin = false }: { isAdmin?: boolean }) {
   const isStudio = pathname === "/studio";
   const headerSuppressed = useChromeStore((s) => s.headerSuppressed);
   const footerSuppressed = useChromeStore((s) => s.footerSuppressed);
-  const hideHeader = isAdmin || isHomepage || isStudio || headerSuppressed;
-  const hideFooter = isAdmin || isHomepage || isStudio || footerSuppressed;
+  const hideHeader = isHomepage || isStudio || headerSuppressed;
+  const hideFooter = isHomepage || isStudio || footerSuppressed;
   return (
-    <div className="min-h-screen flex flex-col bg-canvas" data-surface={isAdmin ? "apex" : undefined}>
+    <div className="min-h-screen flex flex-col bg-canvas">
       {!hideHeader && <SiteHeader />}
       <main className="flex-1">
         <Outlet />
