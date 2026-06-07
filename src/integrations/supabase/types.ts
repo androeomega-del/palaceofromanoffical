@@ -170,6 +170,111 @@ export type Database = {
         }
         Relationships: []
       }
+      apex_competitor_backlinks: {
+        Row: {
+          anchor: string | null
+          competitor_domain: string
+          created_at: string
+          domain_ascore: number | null
+          first_seen_at: string
+          id: string
+          is_net_new: boolean
+          is_nofollow: boolean
+          last_seen_at: string
+          page_ascore: number | null
+          page_excerpt: string | null
+          pitch_body: string | null
+          pitch_generated_at: string | null
+          pitch_model: string | null
+          pitch_subject: string | null
+          source_domain: string
+          source_url: string
+          status: string
+          target_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          anchor?: string | null
+          competitor_domain: string
+          created_at?: string
+          domain_ascore?: number | null
+          first_seen_at?: string
+          id?: string
+          is_net_new?: boolean
+          is_nofollow?: boolean
+          last_seen_at?: string
+          page_ascore?: number | null
+          page_excerpt?: string | null
+          pitch_body?: string | null
+          pitch_generated_at?: string | null
+          pitch_model?: string | null
+          pitch_subject?: string | null
+          source_domain: string
+          source_url: string
+          status?: string
+          target_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          anchor?: string | null
+          competitor_domain?: string
+          created_at?: string
+          domain_ascore?: number | null
+          first_seen_at?: string
+          id?: string
+          is_net_new?: boolean
+          is_nofollow?: boolean
+          last_seen_at?: string
+          page_ascore?: number | null
+          page_excerpt?: string | null
+          pitch_body?: string | null
+          pitch_generated_at?: string | null
+          pitch_model?: string | null
+          pitch_subject?: string | null
+          source_domain?: string
+          source_url?: string
+          status?: string
+          target_url?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      apex_run_log: {
+        Row: {
+          ai_cost_usd: number | null
+          created_at: string
+          id: string
+          message: string | null
+          metadata: Json
+          module: string
+          rows_processed: number | null
+          semrush_units_used: number | null
+          status: string
+        }
+        Insert: {
+          ai_cost_usd?: number | null
+          created_at?: string
+          id?: string
+          message?: string | null
+          metadata?: Json
+          module: string
+          rows_processed?: number | null
+          semrush_units_used?: number | null
+          status?: string
+        }
+        Update: {
+          ai_cost_usd?: number | null
+          created_at?: string
+          id?: string
+          message?: string | null
+          metadata?: Json
+          module?: string
+          rows_processed?: number | null
+          semrush_units_used?: number | null
+          status?: string
+        }
+        Relationships: []
+      }
       backfill_status: {
         Row: {
           cursor: string | null
