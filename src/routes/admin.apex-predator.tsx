@@ -579,50 +579,104 @@ function StrikingModule() {
     queryFn: () => callAdminServerFn(getStrikingPipeline),
   });
   const [plans, setPlans] = useState<Record<string, StrikePlan>>({});
+  const [patches, setPatches] = useState<Record<string, HighIntentSeoPatch>>({});
   const plan = useMutation({
     mutationFn: (vars: { query: string; page: string | null; position: number; impressions: number; kd: number }) =>
       callAdminServerFn(generateStrikePlan, { data: vars }),
     onSuccess: (data, vars) => setPlans((p) => ({ ...p, [vars.query]: data })),
   });
+  const patch = useMutation({
+    mutationFn: (vars: { productTitle: string; productUrl: string | null; query: string }) =>
+      callAdminServerFn(generateHighIntentSeoPatch, { data: vars }),
+    onSuccess: (data, vars) => setPatches((p) => ({ ...p, [vars.query]: data })),
+  });
 
   const planFor = useCallback((q: string) => plans[q], [plans]);
+  const patchFor = useCallback((q: string) => patches[q], [patches]);
+
+  /** Derive a clean product-title-style string from a Palace of Roman product URL slug. */
+  const productTitleFromPage = (page: string | null, query: string): { title: string; isProduct: boolean } => {
+    if (!page) return { title: query, isProduct: false };
+    const m = page.match(/\/products?\/([^/?#]+)/i);
+    if (!m) return { title: query, isProduct: false };
+    const slug = m[1].replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+    return { title: slug, isProduct: true };
+  };
 
   return (
     <div>
       <ModuleHeader
         title="STRIKING-DISTANCE PIPELINE"
-        sub="Positions 4–11, ranked by Impact Score (impressions × CTR lift to top-3 × inverse KD). One click generates a copy-paste strike plan."
+        sub="Positions 4–11, ranked by Impact Score (impressions × CTR lift to top-3 × inverse KD). STRIKE PLAN rewrites editorial pages; HIGH-INTENT PATCH rewrites product pages for transactional buyers."
       />
       {pipe.data?.quotaWarning && <Banner color={T.amber}>{pipe.data.quotaWarning}</Banner>}
       {pipe.isLoading && <div style={{ color: T.muted, fontSize: 12 }}>Scanning GSC + Semrush KD…</div>}
       {pipe.data && pipe.data.rows.length === 0 && <Banner color={T.amber}>No striking-distance queries found in the latest weekly review.</Banner>}
       {pipe.data && (
         <div style={{ border: `1px solid ${T.border}`, background: T.surface }}>
-          <div style={{ display: "grid", gridTemplateColumns: "60px 1fr 70px 90px 60px 90px 160px", gap: 10, padding: "10px 14px", borderBottom: `1px solid ${T.border}`, fontSize: 10, color: T.muted, letterSpacing: "0.1em" }}>
-            <span style={{ textAlign: "right" }}>IMPACT</span><span>QUERY</span><span style={{ textAlign: "right" }}>POS</span><span style={{ textAlign: "right" }}>IMPR</span><span style={{ textAlign: "right" }}>KD</span><span>PAGE</span><span></span>
+          <div style={{ display: "grid", gridTemplateColumns: "60px 1fr 70px 90px 60px 90px 220px", gap: 10, padding: "10px 14px", borderBottom: `1px solid ${T.border}`, fontSize: 10, color: T.muted, letterSpacing: "0.1em" }}>
+            <span style={{ textAlign: "right" }}>IMPACT</span><span>QUERY</span><span style={{ textAlign: "right" }}>POS</span><span style={{ textAlign: "right" }}>IMPR</span><span style={{ textAlign: "right" }}>KD</span><span>PAGE</span><span>ACTIONS</span>
           </div>
           {pipe.data.rows.map((row, i) => {
             const isTop = i < 10;
             const p = planFor(row.query);
+            const hp = patchFor(row.query);
+            const { title: productTitle, isProduct } = productTitleFromPage(row.page, row.query);
             return (
               <div key={row.query + i}>
-                <div style={{ display: "grid", gridTemplateColumns: "60px 1fr 70px 90px 60px 90px 160px", gap: 10, padding: "10px 14px", borderBottom: `1px solid ${T.border}`, fontSize: 11, alignItems: "center", borderLeft: `3px solid ${isTop ? T.neon : "transparent"}` }}>
+                <div style={{ display: "grid", gridTemplateColumns: "60px 1fr 70px 90px 60px 90px 220px", gap: 10, padding: "10px 14px", borderBottom: `1px solid ${T.border}`, fontSize: 11, alignItems: "center", borderLeft: `3px solid ${isTop ? T.neon : "transparent"}` }}>
                   <span style={{ textAlign: "right", color: isTop ? T.neon : T.ink, fontWeight: 700 }}>{fmt(row.impactScore)}</span>
                   <span style={{ color: T.ink, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{row.query}</span>
                   <span style={{ textAlign: "right", color: T.amber }}>{row.position.toFixed(1)}</span>
                   <span style={{ textAlign: "right" }}>{fmt(row.impressions)}</span>
                   <span style={{ textAlign: "right", color: row.kd > 50 ? T.amber : T.ink }}>{row.kd}</span>
-                  <span style={{ color: T.muted, fontSize: 10, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{row.page ? row.page.replace(/^https?:\/\/[^/]+/, "") : "—"}</span>
-                  <ActionBtn onClick={() => plan.mutate({ query: row.query, page: row.page, position: row.position, impressions: row.impressions, kd: row.kd })} disabled={plan.isPending && plan.variables?.query === row.query} color={isTop ? T.neon : T.amber}>
-                    <Zap size={11} /> STRIKE PLAN
-                  </ActionBtn>
+                  <span style={{ color: T.muted, fontSize: 10, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {row.page ? row.page.replace(/^https?:\/\/[^/]+/, "") : "—"}
+                    {isProduct && <span style={{ color: T.neon, marginLeft: 6 }}>● PRODUCT</span>}
+                  </span>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                    <ActionBtn onClick={() => plan.mutate({ query: row.query, page: row.page, position: row.position, impressions: row.impressions, kd: row.kd })} disabled={plan.isPending && plan.variables?.query === row.query} color={isTop ? T.neon : T.amber}>
+                      <Zap size={11} /> STRIKE PLAN
+                    </ActionBtn>
+                    {isProduct && (
+                      <ActionBtn
+                        onClick={() => patch.mutate({ productTitle, productUrl: row.page, query: row.query })}
+                        disabled={patch.isPending && patch.variables?.query === row.query}
+                        color={T.neon}
+                        title="Rewrite this product page's <title>, H1 and meta for high-intent commercial buyers"
+                      >
+                        <Target size={11} /> HIGH-INTENT PATCH
+                      </ActionBtn>
+                    )}
+                  </div>
                 </div>
                 {p && <StrikePlanPanel plan={p} />}
+                {hp && <HighIntentPatchPanel patch={hp} />}
               </div>
             );
           })}
         </div>
       )}
+    </div>
+  );
+}
+
+function HighIntentPatchPanel({ patch }: { patch: HighIntentSeoPatch }) {
+  const text = `# High-Intent SEO Patch\nProduct: ${patch.productTitle}\nURL: ${patch.productUrl || "(unknown)"}\n\nTarget keyword: ${patch.targetKeyword}\nSecondary: ${patch.secondaryKeywords.join(", ")}\n\nTitle: ${patch.newTitle}\nH1: ${patch.newH1}\nMeta: ${patch.newMetaDescription}\n\nRationale: ${patch.rationale}`;
+  return (
+    <div style={{ background: T.bg, padding: 14, borderBottom: `1px solid ${T.border}`, fontSize: 11, borderLeft: `3px solid ${T.neon}` }}>
+      <div style={{ display: "flex", gap: 8, marginBottom: 8, alignItems: "center" }}>
+        <span style={{ color: T.neon, fontSize: 10, letterSpacing: "0.1em", fontWeight: 700 }}>● HIGH-INTENT SEO PATCH</span>
+        <span style={{ color: T.muted, fontSize: 10 }}>raw: "{patch.productTitle}"</span>
+        <ActionBtn onClick={() => copyText(text)} color={T.ink}><Copy size={11} /> COPY</ActionBtn>
+        <ActionBtn onClick={() => download(`high-intent-${Date.now()}.md`, text)} color={T.ink}><FileDown size={11} /> EXPORT</ActionBtn>
+      </div>
+      <div><span style={{ color: T.muted }}>Target KW    </span><span style={{ color: T.neon }}>{patch.targetKeyword}</span></div>
+      <div><span style={{ color: T.muted }}>Secondary KW </span><span style={{ color: T.amber }}>{patch.secondaryKeywords.join(" · ")}</span></div>
+      <div style={{ marginTop: 6 }}><span style={{ color: T.muted }}>&lt;title&gt; </span><span style={{ color: T.ink }}>{patch.newTitle}</span> <span style={{ color: T.muted }}>({patch.newTitle.length}c)</span></div>
+      <div><span style={{ color: T.muted }}>H1      </span><span style={{ color: T.ink }}>{patch.newH1}</span> <span style={{ color: T.muted }}>({patch.newH1.length}c)</span></div>
+      <div><span style={{ color: T.muted }}>Meta    </span><span style={{ color: T.ink }}>{patch.newMetaDescription}</span> <span style={{ color: T.muted }}>({patch.newMetaDescription.length}c)</span></div>
+      <div style={{ marginTop: 8, color: T.ink, fontStyle: "italic" }}>{patch.rationale}</div>
     </div>
   );
 }
