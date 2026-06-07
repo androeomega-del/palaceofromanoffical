@@ -44,6 +44,9 @@ function safeISO(input?: string | number | Date | null): string {
 
 export type ApexStatus = {
   competitor: string;
+  ourDomain: string;
+  ourLegacyDomain: string;
+  competitorDomains: readonly string[];
   semrushQuota: { used: number; limit: number } | null;
   lastRuns: { module: string; created_at: string; status: string; rows_processed: number | null; message: string | null }[];
 };
@@ -61,6 +64,9 @@ export const getApexStatus = createServerFn({ method: "GET" })
     ]);
     return {
       competitor: getCompetitorDomain(),
+      ourDomain: OUR_DOMAIN,
+      ourLegacyDomain: OUR_LEGACY_DOMAIN,
+      competitorDomains: COMPETITOR_DOMAINS,
       semrushQuota: quota,
       lastRuns: (runs.data ?? []) as ApexStatus["lastRuns"],
     };
