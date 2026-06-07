@@ -99,21 +99,21 @@ export type PoacherRow = {
 const POACHER_SEEDS: PoacherRow[] = [
   {
     id: "seed-vogue", source_url: "https://www.vogue.com/article/luxury-resale-guide",
-    source_domain: "vogue.com", target_url: "https://palaceofromanofficial.com/", anchor: "Palace of Roman",
+    source_domain: "vogue.com", target_url: `https://${OUR_LEGACY_DOMAIN}/`, anchor: "Palace of Roman",
     page_ascore: 92, is_nofollow: false, is_net_new: true,
     first_seen_at: new Date(Date.now() - 86_400_000).toISOString(),
     pitch_subject: null, pitch_body: null, pitch_generated_at: null, status: "seed",
   },
   {
     id: "seed-gq", source_url: "https://www.gq.com/story/best-designer-bags-2026",
-    source_domain: "gq.com", target_url: "https://palaceofromanofficial.com/collections/bags", anchor: "designer leather goods",
+    source_domain: "gq.com", target_url: `https://${OUR_LEGACY_DOMAIN}/collections/bags`, anchor: "designer leather goods",
     page_ascore: 88, is_nofollow: false, is_net_new: true,
     first_seen_at: new Date(Date.now() - 2 * 86_400_000).toISOString(),
     pitch_subject: null, pitch_body: null, pitch_generated_at: null, status: "seed",
   },
   {
     id: "seed-hb", source_url: "https://www.harpersbazaar.com/fashion/trends/loewe-spring-edit",
-    source_domain: "harpersbazaar.com", target_url: "https://palaceofromanofficial.com/collections/loewe", anchor: "Loewe edit",
+    source_domain: "harpersbazaar.com", target_url: `https://${OUR_LEGACY_DOMAIN}/collections/loewe`, anchor: "Loewe edit",
     page_ascore: 84, is_nofollow: true, is_net_new: false,
     first_seen_at: new Date(Date.now() - 5 * 86_400_000).toISOString(),
     pitch_subject: null, pitch_body: null, pitch_generated_at: null, status: "seed",
