@@ -161,12 +161,13 @@ export function ProductCard({
   }, [p.handle, p.vendor, p.productType, track, hasScarcity, surface, position]);
 
   const onCardClick = (e: React.MouseEvent) => {
-    // Mobile/touch: first tap reveals the CTA overlay; second tap navigates.
-    if (isTouchRef.current && !revealed && quickAddState === "idle") {
-      e.preventDefault();
-      setRevealed(true);
-      return;
-    }
+    // Always navigate to the PDP on click/tap. Previously we intercepted the
+    // first touch to reveal a CTA overlay, but touchscreen-capable desktops
+    // (Windows laptops, hybrid devices) report pointerType "touch" for normal
+    // mouse clicks, which blocked navigation entirely — users had to Ctrl+click
+    // to open the PDP. Quick-add and wishlist remain reachable via their own
+    // buttons (which stopPropagation), so no functionality is lost.
+    void e;
     track({ handle: p.handle, event: "click", ...meta });
     if (surface) {
       track({ handle: p.handle, event: "rail_tap", ...meta });
