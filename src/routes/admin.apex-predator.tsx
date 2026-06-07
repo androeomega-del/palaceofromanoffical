@@ -729,7 +729,7 @@ function HighIntentPatchPanel({ patch }: { patch: HighIntentSeoPatch }) {
   }, null, 2);
   const text = `# High-Intent SEO Patch\nProduct: ${patch.productTitle}\nURL: ${patch.productUrl || "(unknown)"}\n\nTarget keyword: ${patch.targetKeyword}\nSecondary: ${patch.secondaryKeywords.join(", ")}\n\n${jsonBlock}\n\nRationale: ${patch.rationale}`;
   return (
-    <div style={{ background: T.bg, padding: 14, borderBottom: `1px solid ${T.border}`, fontSize: 11, borderLeft: `3px solid ${T.neon}` }}>
+    <div style={{ background: T.bg, padding: 14, borderBottom: `1px solid ${T.border}`, fontSize: 11, borderLeft: `3px solid ${T.neon}`, overflow: "hidden", animation: "apexSlideDown 280ms ease-out" }}>
       <div style={{ display: "flex", gap: 8, marginBottom: 8, alignItems: "center" }}>
         <span style={{ color: T.neon, fontSize: 10, letterSpacing: "0.1em", fontWeight: 700 }}>● HIGH-INTENT SEO PATCH</span>
         <span style={{ color: T.muted, fontSize: 10 }}>raw: "{patch.productTitle}"</span>
