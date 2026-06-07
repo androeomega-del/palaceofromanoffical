@@ -787,6 +787,7 @@ Return JSON with EXACTLY these keys:
   "newTitle": string (<= 60 chars, "Brand Product Name | Commercial Qualifier" pattern, includes target keyword),
   "newH1": string (<= 70 chars, clean product name + brief authenticity/luxury qualifier),
   "newMetaDescription": string (<= 155 chars, action-forward, references authentication + worldwide shipping, ends with soft CTA like "Shop now."),
+  "internalLinks": string[] (EXACTLY 3 Palace of Roman collection page paths, e.g. "/collections/loafers", to link from to pass authority),
   "rationale": string (2 sentences: which catalog-noise was stripped, and which buyer intent the rewrite captures)
 }`;
 
@@ -810,6 +811,7 @@ Return JSON with EXACTLY these keys:
         newTitle: (parsed.newTitle ?? "").slice(0, 70),
         newH1: (parsed.newH1 ?? "").slice(0, 90),
         newMetaDescription: (parsed.newMetaDescription ?? "").slice(0, 170),
+        internalLinks: Array.isArray(parsed.internalLinks) ? parsed.internalLinks.slice(0, 5) : [],
         rationale: parsed.rationale ?? "",
       };
     } catch {
@@ -817,7 +819,9 @@ Return JSON with EXACTLY these keys:
         productTitle: data.productTitle,
         productUrl: data.productUrl ?? null,
         targetKeyword: "", secondaryKeywords: [],
-        newTitle: "", newH1: "", newMetaDescription: "", rationale: "",
+        newTitle: "", newH1: "", newMetaDescription: "",
+        internalLinks: [],
+        rationale: "",
         raw: res.content,
       };
     }
