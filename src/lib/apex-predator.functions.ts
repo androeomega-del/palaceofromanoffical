@@ -151,7 +151,7 @@ export const refreshPoacherFeed = createServerFn({ method: "POST" })
           domain_ascore: 93,
           anchor: "Palace of Roman",
           is_nofollow: false,
-          first_seen: new Date().toISOString(),
+          first_seen: "2026-06-07T00:00:00.000Z",
         },
         {
           source_domain: "gq.com",
@@ -161,7 +161,7 @@ export const refreshPoacherFeed = createServerFn({ method: "POST" })
           domain_ascore: 91,
           anchor: "designer leather goods",
           is_nofollow: false,
-          first_seen: new Date().toISOString(),
+          first_seen: "2026-06-07T00:00:00.000Z",
         },
       ];
       if (!fresh || fresh.length === 0) {
