@@ -412,16 +412,19 @@ export type TopRankingPageEnriched = {
   top_keyword_volume: number;
   top_keyword_kd: number;
   top_keyword_cpc: number;
+  top_keyword_intent: SearchIntent;
 };
 
 function hijackSeedsFor(domain: string): TopRankingPageEnriched[] {
   return [
     { url: `https://www.${domain}/shop/clothing`, est_traffic: 54200, keyword_count: 1180,
-      top_keyword: "luxury designer clothing", top_keyword_position: 2, top_keyword_volume: 22200, top_keyword_kd: 78, top_keyword_cpc: 2.6 },
+      top_keyword: "luxury designer clothing", top_keyword_position: 2, top_keyword_volume: 22200, top_keyword_kd: 78, top_keyword_cpc: 2.6, top_keyword_intent: "commercial" },
     { url: `https://www.${domain}/shop/bags`, est_traffic: 41200, keyword_count: 940,
-      top_keyword: "designer handbags", top_keyword_position: 3, top_keyword_volume: 33100, top_keyword_kd: 82, top_keyword_cpc: 3.2 },
+      top_keyword: "designer handbags", top_keyword_position: 3, top_keyword_volume: 33100, top_keyword_kd: 82, top_keyword_cpc: 3.2, top_keyword_intent: "commercial" },
     { url: `https://www.${domain}/shop/shoes`, est_traffic: 28700, keyword_count: 760,
-      top_keyword: "designer shoes women", top_keyword_position: 4, top_keyword_volume: 18100, top_keyword_kd: 74, top_keyword_cpc: 2.4 },
+      top_keyword: "designer shoes women", top_keyword_position: 4, top_keyword_volume: 18100, top_keyword_kd: 74, top_keyword_cpc: 2.4, top_keyword_intent: "commercial" },
+    { url: `https://www.${domain}/shop/sale-bags`, est_traffic: 21300, keyword_count: 380,
+      top_keyword: "buy gucci bag online", top_keyword_position: 2, top_keyword_volume: 9800, top_keyword_kd: 65, top_keyword_cpc: 4.1, top_keyword_intent: "transactional" },
   ];
 }
 
