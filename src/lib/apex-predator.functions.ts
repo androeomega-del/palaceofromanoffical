@@ -660,3 +660,89 @@ export const generateStrikePlan = createServerFn({ method: "POST" })
     }
   });
 
+
+// =================================================================
+// MODULE 4 — High-Conversion Intent SEO Patch (product-page rewriter)
+// =================================================================
+
+export type HighIntentSeoPatch = {
+  productTitle: string;
+  productUrl: string | null;
+  targetKeyword: string;
+  secondaryKeywords: string[];
+  newTitle: string;        // <title> tag, <= 60 chars, transactional intent
+  newH1: string;           // <= 70 chars, brand + product + qualifier
+  newMetaDescription: string; // <= 155 chars, action-forward CTA
+  rationale: string;
+  raw?: string;
+};
+
+/**
+ * Rewrite a raw Shopify product title (e.g. "Burberry Women Black Leather Knight
+ * Small Shoulder Bag 1") into commercially-tuned <title>, H1 and meta description
+ * that target high-intent shopping queries ("Burberry Knight Bag", "buy designer
+ * shoulder bag", etc.) instead of catalog-style strings.
+ */
+export const generateHighIntentSeoPatch = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((d: unknown) => z.object({
+    productTitle: z.string().min(2).max(500),
+    productUrl: z.string().max(2048).nullable().optional(),
+    query: z.string().max(300).nullable().optional(),
+  }).parse(d))
+  .handler(async ({ data }): Promise<HighIntentSeoPatch> => {
+    const sys = `You are a conversion-focused SEO copywriter for ${OUR_DOMAIN} (Palace of Roman — luxury multi-brand boutique, USD pricing, authenticated, worldwide shipping). Output JSON only. No fluff.
+
+Strict rules:
+- Strip catalog noise from raw product titles (trailing numbers like " 1", gendered phrasing like "Women", filler words "with", duplicated brand mentions).
+- Lead with BRAND + iconic product name (e.g. "Burberry Knight Small Shoulder Bag"), then a high-intent commercial qualifier ("Authenticated Luxury", "Shop Designer", "Free Worldwide Shipping").
+- Target buyer search intent — phrases shoppers actually type when ready to purchase. Prioritise transactional and commercial-investigation queries over informational.
+- NEVER fabricate prices, discounts, "in stock" claims, sale dates, or review counts.
+- NEVER include the legacy domain or any competitor name.`;
+
+    const user = `Raw product title: "${data.productTitle}"
+Product URL (path or full): ${data.productUrl || "(unknown — leave canonical pathing alone)"}
+${data.query ? `Existing high-impression GSC query: "${data.query}"` : ""}
+
+Return JSON with EXACTLY these keys:
+{
+  "targetKeyword": string (the single high-intent query this page should own, e.g. "burberry knight bag"),
+  "secondaryKeywords": string[] (3-6 supporting commercial/transactional queries),
+  "newTitle": string (<= 60 chars, "Brand Product Name | Commercial Qualifier" pattern, includes target keyword),
+  "newH1": string (<= 70 chars, clean product name + brief authenticity/luxury qualifier),
+  "newMetaDescription": string (<= 155 chars, action-forward, references authentication + worldwide shipping, ends with soft CTA like "Shop now."),
+  "rationale": string (2 sentences: which catalog-noise was stripped, and which buyer intent the rewrite captures)
+}`;
+
+    const res = await callAi({
+      module: "apex/high-intent-patch",
+      model: "google/gemini-3-flash-preview",
+      system: sys,
+      user,
+      json: true,
+      maxTokens: 700,
+      temperature: 0.3,
+    });
+
+    try {
+      const parsed = JSON.parse(res.content) as Partial<HighIntentSeoPatch>;
+      return {
+        productTitle: data.productTitle,
+        productUrl: data.productUrl ?? null,
+        targetKeyword: parsed.targetKeyword ?? "",
+        secondaryKeywords: parsed.secondaryKeywords ?? [],
+        newTitle: (parsed.newTitle ?? "").slice(0, 70),
+        newH1: (parsed.newH1 ?? "").slice(0, 90),
+        newMetaDescription: (parsed.newMetaDescription ?? "").slice(0, 170),
+        rationale: parsed.rationale ?? "",
+      };
+    } catch {
+      return {
+        productTitle: data.productTitle,
+        productUrl: data.productUrl ?? null,
+        targetKeyword: "", secondaryKeywords: [],
+        newTitle: "", newH1: "", newMetaDescription: "", rationale: "",
+        raw: res.content,
+      };
+    }
+  });
