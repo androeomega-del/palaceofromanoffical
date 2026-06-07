@@ -75,6 +75,19 @@ function ApexPredatorTerminal() {
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
     setIsMounted(true);
+    // Compilation-time cache purge: drop any stale un-sanitized rows cached
+    // by previous testing cycles so the dashboard always boots against the
+    // current livestream filter set. Keys are namespaced under apex.* /
+    // apex-predator.* so we never touch unrelated app state.
+    try {
+      if (typeof window !== "undefined" && window.localStorage) {
+        for (const k of Object.keys(window.localStorage)) {
+          if (k.startsWith("apex.") || k.startsWith("apex-predator") || k.startsWith("poacher.") || k.startsWith("hijack.") || k.startsWith("striking.")) {
+            window.localStorage.removeItem(k);
+          }
+        }
+      }
+    } catch { /* ignore quota / privacy-mode failures */ }
     // Shield Plausible analytics safely behind a window check
     if (typeof window !== "undefined" && (window as unknown as { plausible?: unknown }).plausible) {
       try {
