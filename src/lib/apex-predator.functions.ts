@@ -147,83 +147,77 @@ export const getPoacherFeed = createServerFn({ method: "GET" })
     }
   });
 
+/** External competitor domains whose net-new backlinks we want to intercept. */
+export const POACHER_TARGETS = ["ssense.com", "net-a-porter.com"] as const;
+
 export const refreshPoacherFeed = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
   .handler(async () => {
-    // Authority Protection: monitor inbound links to our LEGACY domain so we
-    // can request URL updates to the new live shop.
-    const monitored = OUR_LEGACY_DOMAIN;
-    try {
-      const fresh = await fetchCompetitorBacklinks({ domain: monitored, limit: 100 });
-      const result = fresh && fresh.length > 0 ? fresh : [
-        {
-          source_domain: "vogue.com",
-          source_url: "https://www.vogue.com/article/luxury-resale-guide",
-          target_url: `https://${OUR_LEGACY_DOMAIN}/`,
-          page_ascore: 92,
-          domain_ascore: 93,
-          anchor: "Palace of Roman",
-          is_nofollow: false,
-          first_seen: "2026-06-07T00:00:00.000Z",
-        },
-        {
-          source_domain: "gq.com",
-          source_url: "https://www.gq.com/story/best-designer-bags-2026",
-          target_url: `https://${OUR_LEGACY_DOMAIN}/collections/bags`,
-          page_ascore: 88,
-          domain_ascore: 91,
-          anchor: "designer leather goods",
-          is_nofollow: false,
-          first_seen: "2026-06-07T00:00:00.000Z",
-        },
-      ];
-      if (!fresh || fresh.length === 0) {
-        console.log("Live Semrush gateway returned empty payload. Activating seed protection fallback.");
-      }
-      // Snapshot known set BEFORE upsert so we can mark net-new accurately.
-      const { data: existing } = await supabaseAdmin
-        .from("apex_competitor_backlinks")
-        .select("source_url")
-        .eq("competitor_domain", monitored);
-      const known = new Set((existing ?? []).map((r) => r.source_url));
+    // Backlink Intercept: pull net-new inbound links earned by the giant
+    // luxury retailers (SSENSE, Net-a-Porter). For every high-AS editorial
+    // link we discover, we can pitch the editor to include or swap a link
+    // to palaceofromanofficial.com for the same designer item.
+    const monitored = [...POACHER_TARGETS];
+    let totalInserted = 0;
+    let totalUpdated = 0;
+    let totalFetched = 0;
 
-      let inserted = 0;
-      let updated = 0;
-      for (const link of result) {
-        if (!link.source_url) continue;
-        const isNew = !known.has(link.source_url);
-        const { error } = await supabaseAdmin
-          .from("apex_competitor_backlinks")
-          .upsert(
-            {
-              competitor_domain: monitored,
-              source_url: link.source_url,
-              source_domain: link.source_domain,
-              target_url: link.target_url || null,
-              anchor: link.anchor || null,
-              page_ascore: link.page_ascore || null,
-              is_nofollow: link.is_nofollow,
-              first_seen_at: safeISO(link.first_seen),
-              last_seen_at: safeISO(),
-              is_net_new: isNew,
-            },
-            { onConflict: "competitor_domain,source_url" },
-          );
-        if (error) {
-          console.warn("[apex/poacher] upsert failed:", error.message);
+    for (const target of monitored) {
+      try {
+        const fresh = await fetchCompetitorBacklinks({ domain: target, limit: 100 });
+        if (!fresh || fresh.length === 0) {
+          console.log(`[apex/poacher] empty payload for ${target}`);
           continue;
         }
-        if (isNew) inserted += 1;
-        else updated += 1;
-      }
+        totalFetched += fresh.length;
 
-      await logRun("poacher", "ok", `${inserted} new, ${updated} known (monitoring ${monitored})`, result.length);
-      return { inserted, updated, total: result.length };
-    } catch (e) {
-      const isQuota = e instanceof SemrushQuotaError;
-      await logRun("poacher", isQuota ? "quota" : "error", (e as Error).message, 0);
-      throw e;
+        const { data: existing } = await supabaseAdmin
+          .from("apex_competitor_backlinks")
+          .select("source_url")
+          .eq("competitor_domain", target);
+        const known = new Set((existing ?? []).map((r) => r.source_url));
+
+        for (const link of fresh) {
+          if (!link.source_url) continue;
+          const isNew = !known.has(link.source_url);
+          const { error } = await supabaseAdmin
+            .from("apex_competitor_backlinks")
+            .upsert(
+              {
+                competitor_domain: target,
+                source_url: link.source_url,
+                source_domain: link.source_domain,
+                target_url: link.target_url || null,
+                anchor: link.anchor || null,
+                page_ascore: link.page_ascore || null,
+                is_nofollow: link.is_nofollow,
+                first_seen_at: safeISO(link.first_seen),
+                last_seen_at: safeISO(),
+                is_net_new: isNew,
+              },
+              { onConflict: "competitor_domain,source_url" },
+            );
+          if (error) {
+            console.warn("[apex/poacher] upsert failed:", error.message);
+            continue;
+          }
+          if (isNew) totalInserted += 1;
+          else totalUpdated += 1;
+        }
+      } catch (e) {
+        const isQuota = e instanceof SemrushQuotaError;
+        await logRun("poacher", isQuota ? "quota" : "error", `${target}: ${(e as Error).message}`, 0);
+        if (isQuota) throw e;
+      }
     }
+
+    await logRun(
+      "poacher",
+      "ok",
+      `${totalInserted} new, ${totalUpdated} known across ${monitored.join(", ")}`,
+      totalFetched,
+    );
+    return { inserted: totalInserted, updated: totalUpdated, total: totalFetched, targets: monitored };
   });
 
 const POR_BRIEF = `Palace of Roman is a luxury fashion boutique sourcing from a global network of authorised boutiques and distributors. Catalog includes maisons such as Gucci, Prada, Saint Laurent, Bottega Veneta, Loewe, Off-White, Balenciaga, Maison Margiela, Comme des Garçons, and other heritage and contemporary houses. Free worldwide shipping, authenticated stock, USD pricing. Live shop: ${OUR_DOMAIN}. Legacy domain (still redirecting): ${OUR_LEGACY_DOMAIN}.`;
@@ -266,7 +260,37 @@ function maturedDestination(legacyUrl: string | null): string {
   }
 }
 
-/** Shared pitch prompt builder — "Authority Maturing" URL-update request. */
+function hostOf(url: string | null | undefined): string {
+  if (!url) return "";
+  try { return new URL(url).hostname.replace(/^www\./, "").toLowerCase(); } catch { return ""; }
+}
+
+/** Is this target_url pointing at one of the giant retailers we want to poach from? */
+function isCompetitorTarget(targetUrl: string | null | undefined): boolean {
+  const h = hostOf(targetUrl);
+  return POACHER_TARGETS.some((c) => h === c || h.endsWith(`.${c}`));
+}
+
+/** Best-effort extraction of the designer + item from a competitor product URL slug. */
+function extractDesignerItemFromUrl(targetUrl: string | null | undefined): { designer: string | null; item: string | null } {
+  if (!targetUrl) return { designer: null, item: null };
+  try {
+    const u = new URL(targetUrl);
+    const segs = u.pathname.split("/").filter(Boolean);
+    const slug = segs[segs.length - 1] || "";
+    const words = slug.replace(/\.html?$/i, "").replace(/[-_]+/g, " ").replace(/\b\d{4,}\b/g, "").trim();
+    if (!words) return { designer: null, item: null };
+    const tokens = words.split(/\s+/);
+    // Heuristic: first 1-2 tokens are the designer, rest are the item.
+    const designer = tokens.slice(0, Math.min(2, tokens.length)).map((t) => t[0].toUpperCase() + t.slice(1)).join(" ");
+    const item = tokens.slice(Math.min(2, tokens.length)).join(" ");
+    return { designer: designer || null, item: item || null };
+  } catch {
+    return { designer: null, item: null };
+  }
+}
+
+/** Shared pitch prompt builder — routes to "Authority Maturing" or "Backlink Poach" based on the linked target. */
 function buildPitchPrompts(args: {
   source_url: string;
   source_domain: string;
@@ -275,6 +299,31 @@ function buildPitchPrompts(args: {
   excerpt: string | null;
 }) {
   const publication = publicationNameFromDomain(args.source_domain);
+
+  // ── BRANCH A — Backlink poach: editor linked to SSENSE / Net-a-Porter ──
+  if (isCompetitorTarget(args.target_url)) {
+    const competitorHost = hostOf(args.target_url);
+    const competitorName = competitorHost.includes("ssense") ? "SSENSE" : competitorHost.includes("net-a-porter") ? "Net-a-Porter" : competitorHost;
+    const { designer, item } = extractDesignerItemFromUrl(args.target_url);
+    const itemLabel = [designer, item].filter(Boolean).join(" ") || "the featured designer piece";
+    const sys = `You write concise, editor-grade outreach FROM Palace of Roman to a fashion editor.
+
+Strict identity rules:
+- WE ARE Palace of Roman (live shop: ${OUR_DOMAIN}). We are NOT ${competitorName}.
+- The publication ("${publication}") has linked the featured piece to ${competitorName}. We want them to ADD an alternative link to Palace of Roman, or SWAP the existing link to us where editorially appropriate.
+- Tone: warm, professional, never pushy. No discounts, no fake urgency, no flattery without specifics.
+- FIRST sentence MUST name "${publication}" and reference the specific article + the designer item ("${itemLabel}").
+- Acknowledge the existing ${competitorName} link respectfully — frame us as a complementary, smaller-house alternative readers may also appreciate.
+- Highlight what makes Palace of Roman a credible alternative for this piece: curated multi-boutique sourcing, authenticated stock, free worldwide shipping, USD pricing, and a personal concierge touch (single-curator service vs. mass marketplace).
+- Make the ask explicit: either ADD a secondary link to ${OUR_DOMAIN} or SWAP the ${competitorName} link where the piece is in stock with us.
+- Keep it under 240 words. No markdown. No signature line.
+
+Output JSON only with keys: subject (<=70 chars, e.g. "${itemLabel} — alternative source for your ${publication} readers"), body (160-240 words, 3 short paragraphs, plain text).`;
+    const user = `Brand brief:\n${POR_BRIEF}\n\nPublication: ${publication}\nArticle URL: ${args.source_url}\nCurrent link destination: ${args.target_url} (${competitorName})\nAnchor text: ${args.anchor || "(none)"}\nDesigner/item inferred from URL: ${itemLabel}\nOur shop landing: https://${OUR_DOMAIN}/\n\nPage excerpt:\n${args.excerpt || "(no excerpt — keep the body topic-agnostic.)"}\n\nDraft the outreach. The opening sentence MUST name "${publication}" and the "${itemLabel}". Position Palace of Roman as a curated, concierge-led alternative to ${competitorName} for this designer piece — never as a discount or replacement.`;
+    return { sys, user, publication, newTarget: `https://${OUR_DOMAIN}/`, mode: "poach" as const };
+  }
+
+  // ── BRANCH B — Authority maturing: editor already links to our legacy domain ──
   const newTarget = maturedDestination(args.target_url);
   const sys = `You write concise, editor-grade webmaster notices sent FROM Palace of Roman (the brand the article already links to) requesting an OFFICIAL URL UPDATE.
 
@@ -288,7 +337,7 @@ Strict identity rules:
 
 Output JSON only with keys: subject (<=70 chars, e.g. "URL update request — Palace of Roman feature in ${publication}"), body (180-260 words, 3 short paragraphs + the OLD→NEW URL block, no signature line, plain text, no markdown).`;
   const user = `Brand brief:\n${POR_BRIEF}\n\nPublication: ${publication}\nArticle URL: ${args.source_url}\nAnchor text currently used: ${args.anchor || "(none)"}\nOLD destination (legacy): ${args.target_url || `(unknown — assume https://${OUR_LEGACY_DOMAIN}/)`}\nNEW destination (live shop): ${newTarget}\n\nPage excerpt:\n${args.excerpt || "(no excerpt available — keep the body topic-agnostic.)"}\n\nDraft the webmaster notice. The opening sentence MUST name "${publication}" and reference the specific article. Include the OLD → NEW URL block verbatim. End by thanking them for the original feature.`;
-  return { sys, user, publication, newTarget };
+  return { sys, user, publication, newTarget, mode: "maturing" as const };
 }
 
 export const draftPoacherPitch = createServerFn({ method: "POST" })

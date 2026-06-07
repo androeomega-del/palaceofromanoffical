@@ -134,7 +134,7 @@ function ApexPredatorTerminal() {
         {/* Module nav */}
         <nav style={{ borderRight: `1px solid ${T.border}`, padding: "24px 0", minHeight: "calc(100vh - 41px)" }}>
           {[
-            { k: "poacher", label: "Authority Protection", desc: "Legacy redirect maturing", icon: Radar },
+            { k: "poacher", label: "Backlink Intercept", desc: "Poach SSENSE / Net-a-Porter links", icon: Radar },
             { k: "hijack", label: "Hijack", desc: "Giant-competitor reverse-eng.", icon: Crosshair },
             { k: "striking", label: "Striking", desc: "Impact pipeline", icon: Target },
           ].map(({ k, label, desc, icon: Icon }) => {
@@ -189,11 +189,11 @@ const COMPETITOR_DOMAINS = ["net-a-porter.com", "ssense.com", "mytheresa.com"] a
 
 const SANDBOX_ROWS: SandboxRow[] = [
   {
-    id: "sandbox-vogue",
+    id: "sandbox-vogue-ssense",
     source_url: "https://www.vogue.com/article/ultimate-luxury-resale-guide",
     source_domain: "vogue.com",
-    target_url: `https://${OUR_LEGACY_DOMAIN}/collections/all`,
-    anchor: "Palace of Roman",
+    target_url: "https://www.ssense.com/en-us/women/product/bottega-veneta/black-mini-jodie-bag/12345678",
+    anchor: "Bottega Veneta Mini Jodie",
     page_ascore: 92,
     page_title: "The Ultimate Luxury Resale Guide",
     is_nofollow: false,
@@ -201,11 +201,11 @@ const SANDBOX_ROWS: SandboxRow[] = [
     first_seen_at: "2026-06-07T00:00:00.000Z",
   },
   {
-    id: "sandbox-gq",
+    id: "sandbox-gq-nap",
     source_url: "https://www.gq.com/story/best-designer-bags-of-the-season",
     source_domain: "gq.com",
-    target_url: `https://${OUR_LEGACY_DOMAIN}/collections/bags`,
-    anchor: "designer leather goods",
+    target_url: "https://www.net-a-porter.com/en-us/shop/product/loewe/bags/shoulder-bags/puzzle-small-leather-shoulder-bag/1647597289421987",
+    anchor: "Loewe Puzzle Small",
     page_ascore: 88,
     page_title: "Best Designer Bags of the Season",
     is_nofollow: false,
@@ -308,8 +308,8 @@ function PoacherModule() {
   return (
     <div>
       <ModuleHeader
-        title="AUTHORITY PROTECTION"
-        sub={`Monitoring inbound links to our legacy domain (${OUR_LEGACY_DOMAIN}). Confirm Google passes legacy link equity to ${OUR_DOMAIN}, and request webmasters to update destination URLs.`}
+        title="BACKLINK INTERCEPT"
+        sub={`Tracking net-new high-authority backlinks earned by ${COMPETITOR_DOMAINS.slice(0, 2).join(" + ")}. For every AS ≥ 40 editorial link pointing at a designer item, draft outreach pitching ${OUR_DOMAIN} as the curated alternative source.`}
         action={
           <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
             <button
@@ -345,7 +345,7 @@ function PoacherModule() {
       />
       {sandboxMode && (
         <Banner color={T.neon}>
-          Premium Media Sandbox active — drafting against {SANDBOX_ROWS.length} prestige test rows (Vogue, GQ). Live DB feed paused; no rows are written.
+          Premium Media Sandbox active — drafting against {SANDBOX_ROWS.length} prestige test rows (Vogue → SSENSE, GQ → Net-a-Porter). Live DB feed paused; no rows are written.
         </Banner>
       )}
       {!sandboxMode && refresh.isError && <Banner color={T.red}>{(refresh.error as Error).message}</Banner>}
