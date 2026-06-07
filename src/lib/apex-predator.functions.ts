@@ -147,83 +147,77 @@ export const getPoacherFeed = createServerFn({ method: "GET" })
     }
   });
 
+/** External competitor domains whose net-new backlinks we want to intercept. */
+export const POACHER_TARGETS = ["ssense.com", "net-a-porter.com"] as const;
+
 export const refreshPoacherFeed = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
   .handler(async () => {
-    // Authority Protection: monitor inbound links to our LEGACY domain so we
-    // can request URL updates to the new live shop.
-    const monitored = OUR_LEGACY_DOMAIN;
-    try {
-      const fresh = await fetchCompetitorBacklinks({ domain: monitored, limit: 100 });
-      const result = fresh && fresh.length > 0 ? fresh : [
-        {
-          source_domain: "vogue.com",
-          source_url: "https://www.vogue.com/article/luxury-resale-guide",
-          target_url: `https://${OUR_LEGACY_DOMAIN}/`,
-          page_ascore: 92,
-          domain_ascore: 93,
-          anchor: "Palace of Roman",
-          is_nofollow: false,
-          first_seen: "2026-06-07T00:00:00.000Z",
-        },
-        {
-          source_domain: "gq.com",
-          source_url: "https://www.gq.com/story/best-designer-bags-2026",
-          target_url: `https://${OUR_LEGACY_DOMAIN}/collections/bags`,
-          page_ascore: 88,
-          domain_ascore: 91,
-          anchor: "designer leather goods",
-          is_nofollow: false,
-          first_seen: "2026-06-07T00:00:00.000Z",
-        },
-      ];
-      if (!fresh || fresh.length === 0) {
-        console.log("Live Semrush gateway returned empty payload. Activating seed protection fallback.");
-      }
-      // Snapshot known set BEFORE upsert so we can mark net-new accurately.
-      const { data: existing } = await supabaseAdmin
-        .from("apex_competitor_backlinks")
-        .select("source_url")
-        .eq("competitor_domain", monitored);
-      const known = new Set((existing ?? []).map((r) => r.source_url));
+    // Backlink Intercept: pull net-new inbound links earned by the giant
+    // luxury retailers (SSENSE, Net-a-Porter). For every high-AS editorial
+    // link we discover, we can pitch the editor to include or swap a link
+    // to palaceofromanofficial.com for the same designer item.
+    const monitored = [...POACHER_TARGETS];
+    let totalInserted = 0;
+    let totalUpdated = 0;
+    let totalFetched = 0;
 
-      let inserted = 0;
-      let updated = 0;
-      for (const link of result) {
-        if (!link.source_url) continue;
-        const isNew = !known.has(link.source_url);
-        const { error } = await supabaseAdmin
-          .from("apex_competitor_backlinks")
-          .upsert(
-            {
-              competitor_domain: monitored,
-              source_url: link.source_url,
-              source_domain: link.source_domain,
-              target_url: link.target_url || null,
-              anchor: link.anchor || null,
-              page_ascore: link.page_ascore || null,
-              is_nofollow: link.is_nofollow,
-              first_seen_at: safeISO(link.first_seen),
-              last_seen_at: safeISO(),
-              is_net_new: isNew,
-            },
-            { onConflict: "competitor_domain,source_url" },
-          );
-        if (error) {
-          console.warn("[apex/poacher] upsert failed:", error.message);
+    for (const target of monitored) {
+      try {
+        const fresh = await fetchCompetitorBacklinks({ domain: target, limit: 100 });
+        if (!fresh || fresh.length === 0) {
+          console.log(`[apex/poacher] empty payload for ${target}`);
           continue;
         }
-        if (isNew) inserted += 1;
-        else updated += 1;
-      }
+        totalFetched += fresh.length;
 
-      await logRun("poacher", "ok", `${inserted} new, ${updated} known (monitoring ${monitored})`, result.length);
-      return { inserted, updated, total: result.length };
-    } catch (e) {
-      const isQuota = e instanceof SemrushQuotaError;
-      await logRun("poacher", isQuota ? "quota" : "error", (e as Error).message, 0);
-      throw e;
+        const { data: existing } = await supabaseAdmin
+          .from("apex_competitor_backlinks")
+          .select("source_url")
+          .eq("competitor_domain", target);
+        const known = new Set((existing ?? []).map((r) => r.source_url));
+
+        for (const link of fresh) {
+          if (!link.source_url) continue;
+          const isNew = !known.has(link.source_url);
+          const { error } = await supabaseAdmin
+            .from("apex_competitor_backlinks")
+            .upsert(
+              {
+                competitor_domain: target,
+                source_url: link.source_url,
+                source_domain: link.source_domain,
+                target_url: link.target_url || null,
+                anchor: link.anchor || null,
+                page_ascore: link.page_ascore || null,
+                is_nofollow: link.is_nofollow,
+                first_seen_at: safeISO(link.first_seen),
+                last_seen_at: safeISO(),
+                is_net_new: isNew,
+              },
+              { onConflict: "competitor_domain,source_url" },
+            );
+          if (error) {
+            console.warn("[apex/poacher] upsert failed:", error.message);
+            continue;
+          }
+          if (isNew) totalInserted += 1;
+          else totalUpdated += 1;
+        }
+      } catch (e) {
+        const isQuota = e instanceof SemrushQuotaError;
+        await logRun("poacher", isQuota ? "quota" : "error", `${target}: ${(e as Error).message}`, 0);
+        if (isQuota) throw e;
+      }
     }
+
+    await logRun(
+      "poacher",
+      "ok",
+      `${totalInserted} new, ${totalUpdated} known across ${monitored.join(", ")}`,
+      totalFetched,
+    );
+    return { inserted: totalInserted, updated: totalUpdated, total: totalFetched, targets: monitored };
   });
 
 const POR_BRIEF = `Palace of Roman is a luxury fashion boutique sourcing from a global network of authorised boutiques and distributors. Catalog includes maisons such as Gucci, Prada, Saint Laurent, Bottega Veneta, Loewe, Off-White, Balenciaga, Maison Margiela, Comme des Garçons, and other heritage and contemporary houses. Free worldwide shipping, authenticated stock, USD pricing. Live shop: ${OUR_DOMAIN}. Legacy domain (still redirecting): ${OUR_LEGACY_DOMAIN}.`;
