@@ -215,6 +215,43 @@ export const refreshPoacherFeed = createServerFn({ method: "POST" })
 
 const POR_BRIEF = `Palace of Roman is a luxury fashion boutique sourcing from a global network of authorised boutiques and distributors. Catalog includes maisons such as Gucci, Prada, Saint Laurent, Bottega Veneta, Loewe, Off-White, Balenciaga, Maison Margiela, Comme des Garçons, and other heritage and contemporary houses. Free worldwide shipping, authenticated stock, USD pricing. Site: palaceofroman.com.`;
 
+const PUBLICATION_NAMES: Record<string, string> = {
+  "vogue.com": "Vogue",
+  "gq.com": "GQ",
+  "harpersbazaar.com": "Harper's Bazaar",
+  "wmagazine.com": "W Magazine",
+  "elle.com": "Elle",
+  "vanityfair.com": "Vanity Fair",
+  "thecut.com": "The Cut",
+  "businessoffashion.com": "The Business of Fashion",
+  "wwd.com": "WWD",
+  "highsnobiety.com": "Highsnobiety",
+  "hypebeast.com": "Hypebeast",
+};
+
+/** Derive a human-readable publication name from a source domain. */
+export function publicationNameFromDomain(domain: string | null | undefined): string {
+  if (!domain) return "your publication";
+  const clean = domain.replace(/^www\./, "").toLowerCase();
+  if (PUBLICATION_NAMES[clean]) return PUBLICATION_NAMES[clean];
+  const root = clean.split(".")[0] || clean;
+  return root.charAt(0).toUpperCase() + root.slice(1);
+}
+
+/** Shared pitch prompt builder so DB-backed and inline (sandbox) flows stay aligned. */
+function buildPitchPrompts(args: {
+  source_url: string;
+  source_domain: string;
+  anchor: string | null;
+  target_url: string | null;
+  excerpt: string | null;
+}) {
+  const publication = publicationNameFromDomain(args.source_domain);
+  const sys = `You write concise, editor-grade outreach emails sent from Palace of Roman to a luxury fashion publication's editor. Tone: confident, restrained, never spammy. Never mention Palace of Roman's wholesale source. The FIRST sentence MUST directly address the publication by name ("${publication}") and reference a specific detail from the linked piece — no generic openers, no "Dear Editor", no flattery without specifics. Output JSON only with keys: subject (<=70 chars), body (180-260 words, 3 paragraphs, no greeting beyond first line, no signature line, plain text, no markdown).`;
+  const user = `Brand brief:\n${POR_BRIEF}\n\nPublication: ${publication}\nLinking domain: ${args.source_domain}\nLinking page: ${args.source_url}\nAnchor used for competitor: ${args.anchor || "(none)"}\nCompetitor target on that page: ${args.target_url || "(unknown)"}\n\nPage excerpt:\n${args.excerpt || "(no excerpt available — write a topic-agnostic pitch that flatters the publication and offers an editorial angle.)"}\n\nDraft a personalised pitch to the editor of this page asking them to either add or swap-in a link to a relevant Palace of Roman collection. The opening sentence MUST name "${publication}" and quote/paraphrase a specific detail from the page excerpt or URL slug (e.g. "Your recent luxury resale analysis in ${publication} perfectly highlights…"). Offer one exclusive editorial angle (e.g. a curated edit, an interview, a behind-the-craft note) the publication can run with. Do NOT mention the competitor by name.`;
+  return { sys, user, publication };
+}
+
 export const draftPoacherPitch = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
   .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
@@ -234,8 +271,13 @@ export const draftPoacherPitch = createServerFn({ method: "POST" })
       }
     }
 
-    const sys = `You write concise, editor-grade outreach emails for a luxury fashion publication's editor. Tone: confident, restrained, never spammy. Never mention Palace of Roman's wholesale source. Output JSON only with keys: subject (<=70 chars), body (180-260 words, 3 paragraphs, no greeting beyond first line, no signature line, plain text, no markdown).`;
-    const user = `Brand brief:\n${POR_BRIEF}\n\nLinking page: ${row.source_url}\nLinking domain: ${row.source_domain}\nAnchor used for competitor: ${row.anchor || "(none)"}\nCompetitor target on that page: ${row.target_url || "(unknown)"}\n\nPage excerpt:\n${excerpt || "(no excerpt available — write a topic-agnostic pitch that flatters the publication and offers an editorial angle.)"}\n\nDraft a personalised pitch to the editor of this page asking them to either add or swap-in a link to a relevant Palace of Roman collection. Reference one specific detail from the page excerpt. Offer one exclusive editorial angle (e.g. a curated edit, an interview, a behind-the-craft note) the publication can run with. Do NOT mention the competitor by name.`;
+    const { sys, user, publication } = buildPitchPrompts({
+      source_url: row.source_url,
+      source_domain: row.source_domain,
+      anchor: row.anchor,
+      target_url: row.target_url,
+      excerpt,
+    });
 
     try {
       const res = await callAi({
@@ -249,7 +291,7 @@ export const draftPoacherPitch = createServerFn({ method: "POST" })
       });
       let parsed: { subject?: string; body?: string } = {};
       try { parsed = JSON.parse(res.content); } catch { /* keep empty */ }
-      const subject = (parsed.subject || "").slice(0, 120) || `Editorial collaboration — Palace of Roman`;
+      const subject = (parsed.subject || "").slice(0, 120) || `Editorial collaboration — ${publication}`;
       const body = (parsed.body || "").trim() || res.content.trim();
 
       await supabaseAdmin
@@ -262,6 +304,52 @@ export const draftPoacherPitch = createServerFn({ method: "POST" })
           status: "pitch_drafted",
         })
         .eq("id", row.id);
+      return { subject, body };
+    } catch (e) {
+      if (e instanceof BudgetExceededError) throw e;
+      throw e;
+    }
+  });
+
+/**
+ * Sandbox-mode pitch drafter. Accepts an inline row (no DB read/write) so the
+ * Poacher UI can dry-run pitches against high-prestige test publications
+ * (Vogue, GQ, Harper's Bazaar) without polluting the live backlink table.
+ */
+export const draftPoacherPitchInline = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((d: unknown) =>
+    z.object({
+      source_url: z.string().url().max(2048),
+      source_domain: z.string().min(1).max(255),
+      anchor: z.string().max(255).nullable().optional(),
+      target_url: z.string().url().max(2048).nullable().optional(),
+      page_title: z.string().max(500).nullable().optional(),
+    }).parse(d),
+  )
+  .handler(async ({ data }) => {
+    const excerpt = data.page_title ? `Page title: ${data.page_title}` : null;
+    const { sys, user, publication } = buildPitchPrompts({
+      source_url: data.source_url,
+      source_domain: data.source_domain,
+      anchor: data.anchor ?? null,
+      target_url: data.target_url ?? null,
+      excerpt,
+    });
+    try {
+      const res = await callAi({
+        module: "apex/poacher-sandbox",
+        model: "google/gemini-3-flash-preview",
+        system: sys,
+        user,
+        json: true,
+        maxTokens: 700,
+        temperature: 0.6,
+      });
+      let parsed: { subject?: string; body?: string } = {};
+      try { parsed = JSON.parse(res.content); } catch { /* keep empty */ }
+      const subject = (parsed.subject || "").slice(0, 120) || `Editorial collaboration — ${publication}`;
+      const body = (parsed.body || "").trim() || res.content.trim();
       return { subject, body };
     } catch (e) {
       if (e instanceof BudgetExceededError) throw e;

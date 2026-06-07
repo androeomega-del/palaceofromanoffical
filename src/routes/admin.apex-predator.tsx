@@ -9,6 +9,7 @@ import {
   getPoacherFeed,
   refreshPoacherFeed,
   draftPoacherPitch,
+  draftPoacherPitchInline,
   getHijackFeed,
   generateContentBlueprint,
   getStrikingPipeline,
@@ -167,15 +168,58 @@ function ApexPredatorTerminal() {
 }
 
 // =============================================================
+type SandboxRow = {
+  id: string;
+  source_url: string;
+  source_domain: string;
+  target_url: string;
+  anchor: string;
+  page_ascore: number;
+  page_title: string;
+  is_nofollow: boolean;
+  is_net_new: boolean;
+  first_seen_at: string;
+};
+
+const SANDBOX_ROWS: SandboxRow[] = [
+  {
+    id: "sandbox-vogue",
+    source_url: "https://www.vogue.com/article/ultimate-luxury-resale-guide",
+    source_domain: "vogue.com",
+    target_url: "https://palaceofromanofficial.com/collections/all",
+    anchor: "Palace of Roman",
+    page_ascore: 92,
+    page_title: "The Ultimate Luxury Resale Guide",
+    is_nofollow: false,
+    is_net_new: true,
+    first_seen_at: "2026-06-07T00:00:00.000Z",
+  },
+  {
+    id: "sandbox-gq",
+    source_url: "https://www.gq.com/story/best-designer-bags-of-the-season",
+    source_domain: "gq.com",
+    target_url: "https://palaceofromanofficial.com/collections/bags",
+    anchor: "designer leather goods",
+    page_ascore: 88,
+    page_title: "Best Designer Bags of the Season",
+    is_nofollow: false,
+    is_net_new: true,
+    first_seen_at: "2026-06-07T00:00:00.000Z",
+  },
+];
+
 function PoacherModule() {
   const qc = useQueryClient();
+  const [sandboxMode, setSandboxMode] = useState(false);
+  const [sandboxPitches, setSandboxPitches] = useState<Record<string, { subject: string; body: string }>>({});
+
   const feed = useQuery({
     queryKey: ["apex", "poacher"],
     queryFn: () => callAdminServerFn(getPoacherFeed),
+    enabled: !sandboxMode,
   });
   const refresh = useMutation({
     mutationFn: async () => {
-      // Clear any stale local caches that may hold malformed timestamps from prior builds.
       try {
         if (typeof window !== "undefined" && window.localStorage) {
           for (const k of Object.keys(window.localStorage)) {
@@ -192,6 +236,68 @@ function PoacherModule() {
     mutationFn: (id: string) => callAdminServerFn(draftPoacherPitch, { data: { id } }),
     onSuccess: () => feed.refetch(),
   });
+  const draftSandbox = useMutation({
+    mutationFn: (row: SandboxRow) =>
+      callAdminServerFn(draftPoacherPitchInline, {
+        data: {
+          source_url: row.source_url,
+          source_domain: row.source_domain,
+          anchor: row.anchor,
+          target_url: row.target_url,
+          page_title: row.page_title,
+        },
+      }),
+    onSuccess: (res, row) => {
+      setSandboxPitches((prev) => ({ ...prev, [row.id]: res }));
+    },
+  });
+
+  type DisplayRow = {
+    id: string;
+    source_url: string;
+    source_domain: string;
+    target_url: string | null;
+    anchor: string | null;
+    page_ascore: number | null;
+    is_nofollow: boolean;
+    is_net_new: boolean;
+    first_seen_at: string;
+    pitch_subject: string | null;
+    pitch_body: string | null;
+    isSandbox: boolean;
+    sandboxSource?: SandboxRow;
+  };
+
+  const rows: DisplayRow[] = sandboxMode
+    ? SANDBOX_ROWS.map((r) => ({
+        id: r.id,
+        source_url: r.source_url,
+        source_domain: r.source_domain,
+        target_url: r.target_url,
+        anchor: r.anchor,
+        page_ascore: r.page_ascore,
+        is_nofollow: r.is_nofollow,
+        is_net_new: r.is_net_new,
+        first_seen_at: r.first_seen_at,
+        pitch_subject: sandboxPitches[r.id]?.subject ?? null,
+        pitch_body: sandboxPitches[r.id]?.body ?? null,
+        isSandbox: true,
+        sandboxSource: r,
+      }))
+    : (feed.data?.rows ?? []).map((r) => ({
+        id: r.id,
+        source_url: r.source_url,
+        source_domain: r.source_domain,
+        target_url: r.target_url,
+        anchor: r.anchor,
+        page_ascore: r.page_ascore,
+        is_nofollow: r.is_nofollow,
+        is_net_new: r.is_net_new,
+        first_seen_at: r.first_seen_at,
+        pitch_subject: r.pitch_subject,
+        pitch_body: r.pitch_body,
+        isSandbox: false,
+      }));
 
   return (
     <div>
@@ -199,59 +305,107 @@ function PoacherModule() {
         title="POACHER PROTOCOL"
         sub="Net-new premium backlinks landing on the competitor. Draft an editor-grade outreach pitch in one click."
         action={
-          <ActionBtn onClick={() => refresh.mutate()} disabled={refresh.isPending} color={T.neon}>
-            <RefreshCw size={12} className={refresh.isPending ? "animate-spin" : ""} />
-            {refresh.isPending ? "INTERCEPTING…" : "INTERCEPT FEED"}
-          </ActionBtn>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+            <button
+              type="button"
+              onClick={() => setSandboxMode((v) => !v)}
+              style={{
+                display: "inline-flex", alignItems: "center", gap: 8,
+                background: sandboxMode ? "rgba(57,255,136,0.12)" : "transparent",
+                border: `1px solid ${sandboxMode ? T.neon : T.border}`,
+                color: sandboxMode ? T.neon : T.muted,
+                padding: "5px 10px", fontFamily: T.mono, fontSize: 10,
+                letterSpacing: "0.1em", cursor: "pointer", textTransform: "uppercase",
+              }}
+              aria-pressed={sandboxMode}
+            >
+              <span
+                style={{
+                  width: 8, height: 8, borderRadius: "50%",
+                  background: sandboxMode ? T.neon : T.border,
+                  boxShadow: sandboxMode ? `0 0 8px ${T.neon}` : "none",
+                }}
+              />
+              {sandboxMode ? "Mode: Premium Media Sandbox" : "Mode: Live Semrush"}
+            </button>
+            {!sandboxMode && (
+              <ActionBtn onClick={() => refresh.mutate()} disabled={refresh.isPending} color={T.neon}>
+                <RefreshCw size={12} className={refresh.isPending ? "animate-spin" : ""} />
+                {refresh.isPending ? "INTERCEPTING…" : "INTERCEPT FEED"}
+              </ActionBtn>
+            )}
+          </div>
         }
       />
-      {refresh.isError && <Banner color={T.red}>{(refresh.error as Error).message}</Banner>}
-      {feed.isError && <Banner color={T.red}>FEED ERROR: {(feed.error as Error).message}</Banner>}
-      {feed.data?.error && <Banner color={T.red}>SERVER: {feed.data.error}</Banner>}
-      {feed.data?.seeded && <Banner color={T.amber}>Showing placeholder data — click INTERCEPT FEED to pull live backlinks from Semrush.</Banner>}
-      {feed.isLoading && <div style={{ color: T.muted, fontSize: 12 }}>Loading interception feed…</div>}
+      {sandboxMode && (
+        <Banner color={T.neon}>
+          Premium Media Sandbox active — drafting against {SANDBOX_ROWS.length} prestige test rows (Vogue, GQ). Live DB feed paused; no rows are written.
+        </Banner>
+      )}
+      {!sandboxMode && refresh.isError && <Banner color={T.red}>{(refresh.error as Error).message}</Banner>}
+      {!sandboxMode && feed.isError && <Banner color={T.red}>FEED ERROR: {(feed.error as Error).message}</Banner>}
+      {!sandboxMode && feed.data?.error && <Banner color={T.red}>SERVER: {feed.data.error}</Banner>}
+      {!sandboxMode && feed.data?.seeded && <Banner color={T.amber}>Showing placeholder data — click INTERCEPT FEED to pull live backlinks from Semrush.</Banner>}
+      {!sandboxMode && feed.isLoading && <div style={{ color: T.muted, fontSize: 12 }}>Loading interception feed…</div>}
+      {draftSandbox.isError && <Banner color={T.red}>PITCH ERROR: {(draftSandbox.error as Error).message}</Banner>}
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        {feed.data?.rows.map((row) => (
-          <article key={row.id} style={{ background: T.surface, border: `1px solid ${T.border}`, borderLeft: `3px solid ${row.is_net_new ? T.neon : T.border}`, padding: 14 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-              <span style={{ color: row.page_ascore && row.page_ascore >= 50 ? T.neon : T.ink, fontSize: 11, fontWeight: 700 }}>AS {row.page_ascore ?? "—"}</span>
-              <span style={{ color: T.muted, fontSize: 11 }}>{row.source_domain}</span>
-              <a href={row.source_url} target="_blank" rel="noreferrer" style={{ color: T.ink, fontSize: 12, textDecoration: "none", flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                {row.source_url}
-              </a>
-              {row.is_net_new && <span style={{ color: T.neon, fontSize: 10, letterSpacing: "0.1em" }}>● NET-NEW</span>}
-              {row.is_nofollow && <span style={{ color: T.muted, fontSize: 10 }}>nofollow</span>}
-              <span style={{ color: T.muted, fontSize: 10 }}>{renderSafeUIDate(row.first_seen_at)}</span>
-              <ActionBtn onClick={() => draft.mutate(row.id)} disabled={(draft.isPending && draft.variables === row.id) || row.id.startsWith("seed-")} color={T.amber}>
-                <Zap size={11} />
-                {row.pitch_body ? "REGENERATE" : "DRAFT PITCH"}
-              </ActionBtn>
-            </div>
-            {row.anchor && (
-              <div style={{ marginTop: 6, fontSize: 11, color: T.muted }}>
-                Anchor: <span style={{ color: T.ink }}>"{row.anchor}"</span>{row.target_url ? <> → {row.target_url}</> : null}
+        {rows.map((row) => {
+          const isDrafting =
+            (row.isSandbox && draftSandbox.isPending && draftSandbox.variables?.id === row.id) ||
+            (!row.isSandbox && draft.isPending && draft.variables === row.id);
+          const onDraft = () => {
+            if (row.isSandbox && row.sandboxSource) draftSandbox.mutate(row.sandboxSource);
+            else draft.mutate(row.id);
+          };
+          const draftDisabled = isDrafting || (!row.isSandbox && row.id.startsWith("seed-"));
+          return (
+            <article key={row.id} style={{ background: T.surface, border: `1px solid ${T.border}`, borderLeft: `3px solid ${row.is_net_new ? T.neon : T.border}`, padding: 14 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                <span style={{ color: row.page_ascore && row.page_ascore >= 50 ? T.neon : T.ink, fontSize: 11, fontWeight: 700 }}>AS {row.page_ascore ?? "—"}</span>
+                <span style={{ color: T.muted, fontSize: 11 }}>{row.source_domain}</span>
+                <a href={row.source_url} target="_blank" rel="noreferrer" style={{ color: T.ink, fontSize: 12, textDecoration: "none", flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {row.source_url}
+                </a>
+                {row.isSandbox && <span style={{ color: T.neon, fontSize: 10, letterSpacing: "0.1em" }}>● SANDBOX</span>}
+                {row.is_net_new && <span style={{ color: T.neon, fontSize: 10, letterSpacing: "0.1em" }}>● NET-NEW</span>}
+                {row.is_nofollow && <span style={{ color: T.muted, fontSize: 10 }}>nofollow</span>}
+                <span style={{ color: T.muted, fontSize: 10 }}>{renderSafeUIDate(row.first_seen_at)}</span>
+                <ActionBtn onClick={onDraft} disabled={draftDisabled} color={T.amber}>
+                  <Zap size={11} />
+                  {isDrafting ? "DRAFTING…" : row.pitch_body ? "REGENERATE" : "DRAFT PITCH"}
+                </ActionBtn>
               </div>
-            )}
-            {row.pitch_body && (
-              <div style={{ marginTop: 12, borderTop: `1px dashed ${T.border}`, paddingTop: 10 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                  <span style={{ color: T.neon, fontSize: 10, letterSpacing: "0.1em" }}>PITCH</span>
-                  <span style={{ color: T.ink, fontSize: 12, fontWeight: 600 }}>{row.pitch_subject}</span>
-                  <ActionBtn onClick={() => copyText(`Subject: ${row.pitch_subject}\n\n${row.pitch_body}`)} color={T.ink}>
-                    <Copy size={11} /> COPY
-                  </ActionBtn>
-                  <ActionBtn
-                    onClick={() => window.open(`https://mail.google.com/mail/?view=cm&su=${encodeURIComponent(row.pitch_subject || "")}&body=${encodeURIComponent(row.pitch_body || "")}`, "_blank")}
-                    color={T.ink}
-                  >
-                    <Mail size={11} /> GMAIL
-                  </ActionBtn>
+              {row.isSandbox && row.sandboxSource && (
+                <div style={{ marginTop: 6, fontSize: 11, color: T.muted }}>
+                  Title: <span style={{ color: T.ink }}>"{row.sandboxSource.page_title}"</span>
                 </div>
-                <pre style={{ whiteSpace: "pre-wrap", fontSize: 11, color: T.ink, fontFamily: T.mono, margin: 0 }}>{row.pitch_body}</pre>
-              </div>
-            )}
-          </article>
-        ))}
+              )}
+              {row.anchor && (
+                <div style={{ marginTop: 6, fontSize: 11, color: T.muted }}>
+                  Anchor: <span style={{ color: T.ink }}>"{row.anchor}"</span>{row.target_url ? <> → {row.target_url}</> : null}
+                </div>
+              )}
+              {row.pitch_body && (
+                <div style={{ marginTop: 12, borderTop: `1px dashed ${T.border}`, paddingTop: 10 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                    <span style={{ color: T.neon, fontSize: 10, letterSpacing: "0.1em" }}>PITCH</span>
+                    <span style={{ color: T.ink, fontSize: 12, fontWeight: 600 }}>{row.pitch_subject}</span>
+                    <ActionBtn onClick={() => copyText(`Subject: ${row.pitch_subject}\n\n${row.pitch_body}`)} color={T.ink}>
+                      <Copy size={11} /> COPY
+                    </ActionBtn>
+                    <ActionBtn
+                      onClick={() => window.open(`https://mail.google.com/mail/?view=cm&su=${encodeURIComponent(row.pitch_subject || "")}&body=${encodeURIComponent(row.pitch_body || "")}`, "_blank")}
+                      color={T.ink}
+                    >
+                      <Mail size={11} /> GMAIL
+                    </ActionBtn>
+                  </div>
+                  <pre style={{ whiteSpace: "pre-wrap", fontSize: 11, color: T.ink, fontFamily: T.mono, margin: 0 }}>{row.pitch_body}</pre>
+                </div>
+              )}
+            </article>
+          );
+        })}
       </div>
     </div>
   );
