@@ -653,6 +653,7 @@ function StrikingModule() {
 
   return (
     <div>
+      <style>{`@keyframes apexSlideDown{from{opacity:0;transform:translateY(-6px);max-height:0}to{opacity:1;transform:translateY(0);max-height:1200px}}`}</style>
       <ModuleHeader
         title="STRIKING-DISTANCE PIPELINE"
         sub="Positions 4–11, ranked by Impact Score (impressions × CTR lift to top-3 × inverse KD). STRIKE PLAN rewrites editorial pages; HIGH-INTENT PATCH rewrites product pages for transactional buyers."
@@ -728,7 +729,7 @@ function HighIntentPatchPanel({ patch }: { patch: HighIntentSeoPatch }) {
   }, null, 2);
   const text = `# High-Intent SEO Patch\nProduct: ${patch.productTitle}\nURL: ${patch.productUrl || "(unknown)"}\n\nTarget keyword: ${patch.targetKeyword}\nSecondary: ${patch.secondaryKeywords.join(", ")}\n\n${jsonBlock}\n\nRationale: ${patch.rationale}`;
   return (
-    <div style={{ background: T.bg, padding: 14, borderBottom: `1px solid ${T.border}`, fontSize: 11, borderLeft: `3px solid ${T.neon}` }}>
+    <div style={{ background: T.bg, padding: 14, borderBottom: `1px solid ${T.border}`, fontSize: 11, borderLeft: `3px solid ${T.neon}`, overflow: "hidden", animation: "apexSlideDown 280ms ease-out" }}>
       <div style={{ display: "flex", gap: 8, marginBottom: 8, alignItems: "center" }}>
         <span style={{ color: T.neon, fontSize: 10, letterSpacing: "0.1em", fontWeight: 700 }}>● HIGH-INTENT SEO PATCH</span>
         <span style={{ color: T.muted, fontSize: 10 }}>raw: "{patch.productTitle}"</span>
@@ -747,7 +748,7 @@ function HighIntentPatchPanel({ patch }: { patch: HighIntentSeoPatch }) {
 function StrikePlanPanel({ plan }: { plan: StrikePlan }) {
   const patch = `Title: ${plan.newTitle}\nMeta: ${plan.newMetaDescription}\nH1: ${plan.newH1}\n\nInternal links:\n${plan.internalLinkSources.map((l) => `- from ${l.fromPath} anchor: "${l.anchorText}"`).join("\n")}\n\nRationale: ${plan.rationale}`;
   return (
-    <div style={{ background: T.bg, padding: 14, borderBottom: `1px solid ${T.border}`, fontSize: 11 }}>
+    <div style={{ background: T.bg, padding: 14, borderBottom: `1px solid ${T.border}`, fontSize: 11, overflow: "hidden", animation: "apexSlideDown 280ms ease-out" }}>
       <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
         <span style={{ color: T.neon, fontSize: 10, letterSpacing: "0.1em" }}>STRIKE PLAN</span>
         <ActionBtn onClick={() => copyText(patch)} color={T.ink}><Copy size={11} /> COPY PATCH</ActionBtn>
