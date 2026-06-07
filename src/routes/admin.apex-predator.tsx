@@ -122,7 +122,7 @@ function ApexPredatorTerminal() {
             <ArrowLeft size={12} /> ADMIN
           </Link>
           <span style={{ color: T.neon, fontWeight: 700 }}>APEX PREDATOR</span>
-          <span style={{ color: T.muted }}>// TARGET: <span style={{ color: T.amber }}>{status.data?.competitor ?? "—"}</span></span>
+          <span style={{ color: T.muted }}>// OURS: <span style={{ color: T.neon }}>{OUR_DOMAIN}</span> <span style={{ color: T.muted }}>← legacy: {OUR_LEGACY_DOMAIN}</span></span>
           <span style={{ color: T.muted }}>// SEMRUSH QUOTA: <span style={{ color: T.ink }}>{status.data?.semrushQuota ? `${fmt(status.data.semrushQuota.used)} / ${fmt(status.data.semrushQuota.limit)}` : "—"}</span></span>
           <span style={{ marginLeft: "auto", color: T.muted }}>LAST RUN: <span style={{ color: T.ink }}>{renderSafeUIDate(status.data?.lastRuns?.[0]?.created_at)}</span> <span style={{ color: T.neon, marginLeft: 6 }}>●</span></span>
         </div>
@@ -132,8 +132,8 @@ function ApexPredatorTerminal() {
         {/* Module nav */}
         <nav style={{ borderRight: `1px solid ${T.border}`, padding: "24px 0", minHeight: "calc(100vh - 41px)" }}>
           {[
-            { k: "poacher", label: "Poacher", desc: "Backlink intercept", icon: Radar },
-            { k: "hijack", label: "Hijack", desc: "Traffic reverse-eng.", icon: Crosshair },
+            { k: "poacher", label: "Authority Protection", desc: "Legacy redirect maturing", icon: Radar },
+            { k: "hijack", label: "Hijack", desc: "Giant-competitor reverse-eng.", icon: Crosshair },
             { k: "striking", label: "Striking", desc: "Impact pipeline", icon: Target },
           ].map(({ k, label, desc, icon: Icon }) => {
             const active = tab === k;
@@ -181,12 +181,16 @@ type SandboxRow = {
   first_seen_at: string;
 };
 
+const OUR_DOMAIN = "palaceofromanofficial.com";
+const OUR_LEGACY_DOMAIN = "palaceofroman.com";
+const COMPETITOR_DOMAINS = ["net-a-porter.com", "ssense.com", "mytheresa.com"] as const;
+
 const SANDBOX_ROWS: SandboxRow[] = [
   {
     id: "sandbox-vogue",
     source_url: "https://www.vogue.com/article/ultimate-luxury-resale-guide",
     source_domain: "vogue.com",
-    target_url: "https://palaceofromanofficial.com/collections/all",
+    target_url: `https://${OUR_LEGACY_DOMAIN}/collections/all`,
     anchor: "Palace of Roman",
     page_ascore: 92,
     page_title: "The Ultimate Luxury Resale Guide",
@@ -198,7 +202,7 @@ const SANDBOX_ROWS: SandboxRow[] = [
     id: "sandbox-gq",
     source_url: "https://www.gq.com/story/best-designer-bags-of-the-season",
     source_domain: "gq.com",
-    target_url: "https://palaceofromanofficial.com/collections/bags",
+    target_url: `https://${OUR_LEGACY_DOMAIN}/collections/bags`,
     anchor: "designer leather goods",
     page_ascore: 88,
     page_title: "Best Designer Bags of the Season",
@@ -302,8 +306,8 @@ function PoacherModule() {
   return (
     <div>
       <ModuleHeader
-        title="POACHER PROTOCOL"
-        sub="Net-new premium backlinks landing on the competitor. Draft an editor-grade outreach pitch in one click."
+        title="AUTHORITY PROTECTION"
+        sub={`Monitoring inbound links to our legacy domain (${OUR_LEGACY_DOMAIN}). Confirm Google passes legacy link equity to ${OUR_DOMAIN}, and request webmasters to update destination URLs.`}
         action={
           <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
             <button
@@ -372,7 +376,7 @@ function PoacherModule() {
                 <span style={{ color: T.muted, fontSize: 10 }}>{renderSafeUIDate(row.first_seen_at)}</span>
                 <ActionBtn onClick={onDraft} disabled={draftDisabled} color={T.amber}>
                   <Zap size={11} />
-                  {isDrafting ? "DRAFTING…" : row.pitch_body ? "REGENERATE" : "DRAFT PITCH"}
+                  {isDrafting ? "DRAFTING…" : row.pitch_body ? "REGENERATE" : "SECURE BACKLINK"}
                 </ActionBtn>
               </div>
               {row.isSandbox && row.sandboxSource && (
@@ -413,12 +417,13 @@ function PoacherModule() {
 
 // =============================================================
 function HijackModule() {
+  const [domain, setDomain] = useState<(typeof COMPETITOR_DOMAINS)[number]>(COMPETITOR_DOMAINS[0]);
   const feed = useQuery({
-    queryKey: ["apex", "hijack"],
-    queryFn: () => callAdminServerFn(getHijackFeed, { data: {} }),
+    queryKey: ["apex", "hijack", domain],
+    queryFn: () => callAdminServerFn(getHijackFeed, { data: { domain } }),
   });
   const refresh = useMutation({
-    mutationFn: () => callAdminServerFn(getHijackFeed, { data: { force: true } }),
+    mutationFn: () => callAdminServerFn(getHijackFeed, { data: { domain, force: true } }),
     onSuccess: () => feed.refetch(),
   });
   const [openBlueprint, setOpenBlueprint] = useState<string | null>(null);
@@ -435,18 +440,27 @@ function HijackModule() {
     <div>
       <ModuleHeader
         title="HIJACK FEED"
-        sub="Competitor's highest-traffic pages and their top keywords. Generate a flawless content brief to outrank each one."
+        sub={`Reverse-engineering ${domain}'s highest-traffic pages and top keywords. Generate a content brief to outrank each.`}
         action={
-          <ActionBtn onClick={() => refresh.mutate()} disabled={refresh.isPending} color={T.neon}>
-            <RefreshCw size={12} className={refresh.isPending ? "animate-spin" : ""} />
-            {refresh.isPending ? "PULLING…" : "REFRESH"}
-          </ActionBtn>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <select
+              value={domain}
+              onChange={(e) => setDomain(e.target.value as (typeof COMPETITOR_DOMAINS)[number])}
+              style={{ background: T.surface, color: T.ink, border: `1px solid ${T.border}`, padding: "5px 8px", fontFamily: T.mono, fontSize: 11 }}
+            >
+              {COMPETITOR_DOMAINS.map((d) => <option key={d} value={d}>{d}</option>)}
+            </select>
+            <ActionBtn onClick={() => refresh.mutate()} disabled={refresh.isPending} color={T.neon}>
+              <RefreshCw size={12} className={refresh.isPending ? "animate-spin" : ""} />
+              {refresh.isPending ? "PULLING…" : "REFRESH"}
+            </ActionBtn>
+          </div>
         }
       />
       {feed.isLoading && <div style={{ color: T.muted, fontSize: 12 }}>Loading top ranking pages…</div>}
       {feed.isError && <Banner color={T.red}>FEED ERROR: {(feed.error as Error).message}</Banner>}
       {feed.data?.error && <Banner color={T.red}>SEMRUSH: {feed.data.error}</Banner>}
-      {feed.data?.seeded && <Banner color={T.amber}>Showing placeholder data — click REFRESH to pull live competitor pages from Semrush.</Banner>}
+      {feed.data?.seeded && <Banner color={T.amber}>Showing placeholder data for {domain} — click REFRESH to pull live data from Semrush.</Banner>}
       {feed.data && (
         <div style={{ border: `1px solid ${T.border}`, background: T.surface }}>
           <div style={{ display: "grid", gridTemplateColumns: "40px 1fr 80px 80px 1fr 60px 60px 160px", gap: 10, padding: "10px 14px", borderBottom: `1px solid ${T.border}`, fontSize: 10, color: T.muted, letterSpacing: "0.1em" }}>

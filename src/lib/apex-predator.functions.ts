@@ -18,6 +18,9 @@ import {
   ctrLiftToTop3,
   impactScore,
   getCompetitorDomain,
+  OUR_DOMAIN,
+  OUR_LEGACY_DOMAIN,
+  COMPETITOR_DOMAINS,
   SemrushQuotaError,
 } from "@/lib/apex-predator.server";
 import { callAi, BudgetExceededError } from "@/lib/ai-gateway.server";
@@ -41,6 +44,9 @@ function safeISO(input?: string | number | Date | null): string {
 
 export type ApexStatus = {
   competitor: string;
+  ourDomain: string;
+  ourLegacyDomain: string;
+  competitorDomains: readonly string[];
   semrushQuota: { used: number; limit: number } | null;
   lastRuns: { module: string; created_at: string; status: string; rows_processed: number | null; message: string | null }[];
 };
@@ -58,6 +64,9 @@ export const getApexStatus = createServerFn({ method: "GET" })
     ]);
     return {
       competitor: getCompetitorDomain(),
+      ourDomain: OUR_DOMAIN,
+      ourLegacyDomain: OUR_LEGACY_DOMAIN,
+      competitorDomains: COMPETITOR_DOMAINS,
       semrushQuota: quota,
       lastRuns: (runs.data ?? []) as ApexStatus["lastRuns"],
     };
@@ -90,21 +99,21 @@ export type PoacherRow = {
 const POACHER_SEEDS: PoacherRow[] = [
   {
     id: "seed-vogue", source_url: "https://www.vogue.com/article/luxury-resale-guide",
-    source_domain: "vogue.com", target_url: "https://palaceofromanofficial.com/", anchor: "Palace of Roman",
+    source_domain: "vogue.com", target_url: `https://${OUR_LEGACY_DOMAIN}/`, anchor: "Palace of Roman",
     page_ascore: 92, is_nofollow: false, is_net_new: true,
     first_seen_at: new Date(Date.now() - 86_400_000).toISOString(),
     pitch_subject: null, pitch_body: null, pitch_generated_at: null, status: "seed",
   },
   {
     id: "seed-gq", source_url: "https://www.gq.com/story/best-designer-bags-2026",
-    source_domain: "gq.com", target_url: "https://palaceofromanofficial.com/collections/bags", anchor: "designer leather goods",
+    source_domain: "gq.com", target_url: `https://${OUR_LEGACY_DOMAIN}/collections/bags`, anchor: "designer leather goods",
     page_ascore: 88, is_nofollow: false, is_net_new: true,
     first_seen_at: new Date(Date.now() - 2 * 86_400_000).toISOString(),
     pitch_subject: null, pitch_body: null, pitch_generated_at: null, status: "seed",
   },
   {
     id: "seed-hb", source_url: "https://www.harpersbazaar.com/fashion/trends/loewe-spring-edit",
-    source_domain: "harpersbazaar.com", target_url: "https://palaceofromanofficial.com/collections/loewe", anchor: "Loewe edit",
+    source_domain: "harpersbazaar.com", target_url: `https://${OUR_LEGACY_DOMAIN}/collections/loewe`, anchor: "Loewe edit",
     page_ascore: 84, is_nofollow: true, is_net_new: false,
     first_seen_at: new Date(Date.now() - 5 * 86_400_000).toISOString(),
     pitch_subject: null, pitch_body: null, pitch_generated_at: null, status: "seed",
@@ -139,14 +148,16 @@ export const getPoacherFeed = createServerFn({ method: "GET" })
 export const refreshPoacherFeed = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
   .handler(async () => {
-    const competitor = getCompetitorDomain();
+    // Authority Protection: monitor inbound links to our LEGACY domain so we
+    // can request URL updates to the new live shop.
+    const monitored = OUR_LEGACY_DOMAIN;
     try {
-      const fresh = await fetchCompetitorBacklinks({ limit: 100 });
+      const fresh = await fetchCompetitorBacklinks({ domain: monitored, limit: 100 });
       const result = fresh && fresh.length > 0 ? fresh : [
         {
           source_domain: "vogue.com",
-          source_url: "https://vogue.com",
-          target_url: "https://palaceofromanofficial.com",
+          source_url: "https://www.vogue.com/article/luxury-resale-guide",
+          target_url: `https://${OUR_LEGACY_DOMAIN}/`,
           page_ascore: 92,
           domain_ascore: 93,
           anchor: "Palace of Roman",
@@ -155,8 +166,8 @@ export const refreshPoacherFeed = createServerFn({ method: "POST" })
         },
         {
           source_domain: "gq.com",
-          source_url: "https://gq.com",
-          target_url: "https://palaceofromanofficial.com/collections/bags",
+          source_url: "https://www.gq.com/story/best-designer-bags-2026",
+          target_url: `https://${OUR_LEGACY_DOMAIN}/collections/bags`,
           page_ascore: 88,
           domain_ascore: 91,
           anchor: "designer leather goods",
@@ -171,7 +182,7 @@ export const refreshPoacherFeed = createServerFn({ method: "POST" })
       const { data: existing } = await supabaseAdmin
         .from("apex_competitor_backlinks")
         .select("source_url")
-        .eq("competitor_domain", competitor);
+        .eq("competitor_domain", monitored);
       const known = new Set((existing ?? []).map((r) => r.source_url));
 
       let inserted = 0;
@@ -183,7 +194,7 @@ export const refreshPoacherFeed = createServerFn({ method: "POST" })
           .from("apex_competitor_backlinks")
           .upsert(
             {
-              competitor_domain: competitor,
+              competitor_domain: monitored,
               source_url: link.source_url,
               source_domain: link.source_domain,
               target_url: link.target_url || null,
@@ -204,7 +215,7 @@ export const refreshPoacherFeed = createServerFn({ method: "POST" })
         else updated += 1;
       }
 
-      await logRun("poacher", "ok", `${inserted} new, ${updated} known`, result.length);
+      await logRun("poacher", "ok", `${inserted} new, ${updated} known (monitoring ${monitored})`, result.length);
       return { inserted, updated, total: result.length };
     } catch (e) {
       const isQuota = e instanceof SemrushQuotaError;
@@ -213,7 +224,7 @@ export const refreshPoacherFeed = createServerFn({ method: "POST" })
     }
   });
 
-const POR_BRIEF = `Palace of Roman is a luxury fashion boutique sourcing from a global network of authorised boutiques and distributors. Catalog includes maisons such as Gucci, Prada, Saint Laurent, Bottega Veneta, Loewe, Off-White, Balenciaga, Maison Margiela, Comme des Garçons, and other heritage and contemporary houses. Free worldwide shipping, authenticated stock, USD pricing. Site: palaceofroman.com.`;
+const POR_BRIEF = `Palace of Roman is a luxury fashion boutique sourcing from a global network of authorised boutiques and distributors. Catalog includes maisons such as Gucci, Prada, Saint Laurent, Bottega Veneta, Loewe, Off-White, Balenciaga, Maison Margiela, Comme des Garçons, and other heritage and contemporary houses. Free worldwide shipping, authenticated stock, USD pricing. Live shop: ${OUR_DOMAIN}. Legacy domain (still redirecting): ${OUR_LEGACY_DOMAIN}.`;
 
 const PUBLICATION_NAMES: Record<string, string> = {
   "vogue.com": "Vogue",
@@ -238,7 +249,22 @@ export function publicationNameFromDomain(domain: string | null | undefined): st
   return root.charAt(0).toUpperCase() + root.slice(1);
 }
 
-/** Shared pitch prompt builder so DB-backed and inline (sandbox) flows stay aligned. */
+/**
+ * Map a legacy palaceofroman.com URL to its new equivalent on
+ * palaceofromanofficial.com. The path is preserved verbatim — 301 redirects
+ * on our side handle the actual mapping; this is purely for the email copy.
+ */
+function maturedDestination(legacyUrl: string | null): string {
+  if (!legacyUrl) return `https://${OUR_DOMAIN}/`;
+  try {
+    const u = new URL(legacyUrl);
+    return `https://${OUR_DOMAIN}${u.pathname}${u.search}`;
+  } catch {
+    return `https://${OUR_DOMAIN}/`;
+  }
+}
+
+/** Shared pitch prompt builder — "Authority Maturing" URL-update request. */
 function buildPitchPrompts(args: {
   source_url: string;
   source_domain: string;
@@ -247,9 +273,20 @@ function buildPitchPrompts(args: {
   excerpt: string | null;
 }) {
   const publication = publicationNameFromDomain(args.source_domain);
-  const sys = `You write concise, editor-grade outreach emails sent from Palace of Roman to a luxury fashion publication's editor. Tone: confident, restrained, never spammy. Never mention Palace of Roman's wholesale source. The FIRST sentence MUST directly address the publication by name ("${publication}") and reference a specific detail from the linked piece — no generic openers, no "Dear Editor", no flattery without specifics. Output JSON only with keys: subject (<=70 chars), body (180-260 words, 3 paragraphs, no greeting beyond first line, no signature line, plain text, no markdown).`;
-  const user = `Brand brief:\n${POR_BRIEF}\n\nPublication: ${publication}\nLinking domain: ${args.source_domain}\nLinking page: ${args.source_url}\nAnchor used for competitor: ${args.anchor || "(none)"}\nCompetitor target on that page: ${args.target_url || "(unknown)"}\n\nPage excerpt:\n${args.excerpt || "(no excerpt available — write a topic-agnostic pitch that flatters the publication and offers an editorial angle.)"}\n\nDraft a personalised pitch to the editor of this page asking them to either add or swap-in a link to a relevant Palace of Roman collection. The opening sentence MUST name "${publication}" and quote/paraphrase a specific detail from the page excerpt or URL slug (e.g. "Your recent luxury resale analysis in ${publication} perfectly highlights…"). Offer one exclusive editorial angle (e.g. a curated edit, an interview, a behind-the-craft note) the publication can run with. Do NOT mention the competitor by name.`;
-  return { sys, user, publication };
+  const newTarget = maturedDestination(args.target_url);
+  const sys = `You write concise, editor-grade webmaster notices sent FROM Palace of Roman (the brand the article already links to) requesting an OFFICIAL URL UPDATE.
+
+Strict identity rules:
+- WE ARE Palace of Roman. Our live shop is ${OUR_DOMAIN}. ${OUR_LEGACY_DOMAIN} is our previous domain — it still 301-redirects, but we want the canonical URL updated for SEO authority hygiene.
+- The publication ("${publication}") is NOT a competitor. They are an editorial partner who has already linked to us.
+- Tone: professional, gracious, factual. No sales pitch, no offers, no flattery without specifics. Treat this as a routine URL-housekeeping request between professionals.
+- FIRST sentence MUST address the publication by name and reference the specific article being updated.
+- Mention that the existing link still resolves via redirect, but a direct link preserves full link equity and removes the redirect hop.
+- Provide the exact OLD URL and the exact NEW URL on one line each so the webmaster can find-and-replace.
+
+Output JSON only with keys: subject (<=70 chars, e.g. "URL update request — Palace of Roman feature in ${publication}"), body (180-260 words, 3 short paragraphs + the OLD→NEW URL block, no signature line, plain text, no markdown).`;
+  const user = `Brand brief:\n${POR_BRIEF}\n\nPublication: ${publication}\nArticle URL: ${args.source_url}\nAnchor text currently used: ${args.anchor || "(none)"}\nOLD destination (legacy): ${args.target_url || `(unknown — assume https://${OUR_LEGACY_DOMAIN}/)`}\nNEW destination (live shop): ${newTarget}\n\nPage excerpt:\n${args.excerpt || "(no excerpt available — keep the body topic-agnostic.)"}\n\nDraft the webmaster notice. The opening sentence MUST name "${publication}" and reference the specific article. Include the OLD → NEW URL block verbatim. End by thanking them for the original feature.`;
+  return { sys, user, publication, newTarget };
 }
 
 export const draftPoacherPitch = createServerFn({ method: "POST" })
@@ -291,7 +328,7 @@ export const draftPoacherPitch = createServerFn({ method: "POST" })
       });
       let parsed: { subject?: string; body?: string } = {};
       try { parsed = JSON.parse(res.content); } catch { /* keep empty */ }
-      const subject = (parsed.subject || "").slice(0, 120) || `Editorial collaboration — ${publication}`;
+      const subject = (parsed.subject || "").slice(0, 120) || `URL update request — Palace of Roman feature in ${publication}`;
       const body = (parsed.body || "").trim() || res.content.trim();
 
       await supabaseAdmin
@@ -348,7 +385,7 @@ export const draftPoacherPitchInline = createServerFn({ method: "POST" })
       });
       let parsed: { subject?: string; body?: string } = {};
       try { parsed = JSON.parse(res.content); } catch { /* keep empty */ }
-      const subject = (parsed.subject || "").slice(0, 120) || `Editorial collaboration — ${publication}`;
+      const subject = (parsed.subject || "").slice(0, 120) || `URL update request — Palace of Roman feature in ${publication}`;
       const body = (parsed.body || "").trim() || res.content.trim();
       return { subject, body };
     } catch (e) {
@@ -361,7 +398,7 @@ export const draftPoacherPitchInline = createServerFn({ method: "POST" })
 // MODULE 2 — Hijack Feed (top ranking pages + blueprints)
 // =================================================================
 
-let _hijackCache: { at: number; rows: TopRankingPageEnriched[] } | null = null;
+const _hijackCacheByDomain = new Map<string, { at: number; rows: TopRankingPageEnriched[] }>();
 const HIJACK_TTL_MS = 6 * 60 * 60 * 1000; // 6h
 
 export type TopRankingPageEnriched = {
@@ -375,24 +412,31 @@ export type TopRankingPageEnriched = {
   top_keyword_cpc: number;
 };
 
-const HIJACK_SEEDS: TopRankingPageEnriched[] = [
-  { url: "https://palaceofromanofficial.com/collections/gucci", est_traffic: 4820, keyword_count: 312,
-    top_keyword: "gucci handbags sale", top_keyword_position: 6, top_keyword_volume: 18100, top_keyword_kd: 71, top_keyword_cpc: 2.4 },
-  { url: "https://palaceofromanofficial.com/collections/loewe-bags", est_traffic: 2640, keyword_count: 187,
-    top_keyword: "loewe puzzle bag", top_keyword_position: 5, top_keyword_volume: 9900, top_keyword_kd: 64, top_keyword_cpc: 3.1 },
-  { url: "https://palaceofromanofficial.com/collections/bottega-veneta", est_traffic: 1980, keyword_count: 142,
-    top_keyword: "bottega veneta cassette", top_keyword_position: 8, top_keyword_volume: 6600, top_keyword_kd: 58, top_keyword_cpc: 2.0 },
-];
+function hijackSeedsFor(domain: string): TopRankingPageEnriched[] {
+  return [
+    { url: `https://www.${domain}/shop/clothing`, est_traffic: 54200, keyword_count: 1180,
+      top_keyword: "luxury designer clothing", top_keyword_position: 2, top_keyword_volume: 22200, top_keyword_kd: 78, top_keyword_cpc: 2.6 },
+    { url: `https://www.${domain}/shop/bags`, est_traffic: 41200, keyword_count: 940,
+      top_keyword: "designer handbags", top_keyword_position: 3, top_keyword_volume: 33100, top_keyword_kd: 82, top_keyword_cpc: 3.2 },
+    { url: `https://www.${domain}/shop/shoes`, est_traffic: 28700, keyword_count: 760,
+      top_keyword: "designer shoes women", top_keyword_position: 4, top_keyword_volume: 18100, top_keyword_kd: 74, top_keyword_cpc: 2.4 },
+  ];
+}
 
 export const getHijackFeed = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
-  .inputValidator((d: unknown) => z.object({ force: z.boolean().optional() }).parse(d ?? {}))
-  .handler(async ({ data }): Promise<{ rows: TopRankingPageEnriched[]; cachedAt: string; error: string | null; seeded: boolean }> => {
-    if (!data.force && _hijackCache && _hijackCache.rows.length > 0 && Date.now() - _hijackCache.at < HIJACK_TTL_MS) {
-      return { rows: _hijackCache.rows, cachedAt: new Date(_hijackCache.at).toISOString(), error: null, seeded: false };
+  .inputValidator((d: unknown) => z.object({
+    force: z.boolean().optional(),
+    domain: z.enum(COMPETITOR_DOMAINS as unknown as [string, ...string[]]).optional(),
+  }).parse(d ?? {}))
+  .handler(async ({ data }): Promise<{ rows: TopRankingPageEnriched[]; domain: string; cachedAt: string; error: string | null; seeded: boolean }> => {
+    const domain = data.domain ?? COMPETITOR_DOMAINS[0];
+    const cached = _hijackCacheByDomain.get(domain);
+    if (!data.force && cached && cached.rows.length > 0 && Date.now() - cached.at < HIJACK_TTL_MS) {
+      return { rows: cached.rows, domain, cachedAt: new Date(cached.at).toISOString(), error: null, seeded: false };
     }
     try {
-      const pages = await fetchCompetitorTopPages({ limit: 50 });
+      const pages = await fetchCompetitorTopPages({ domain, limit: 50 });
       const enriched: TopRankingPageEnriched[] = [];
       const TOP_N = Math.min(25, pages.length);
       for (let i = 0; i < TOP_N; i++) {
@@ -415,21 +459,22 @@ export const getHijackFeed = createServerFn({ method: "POST" })
       }
       for (let i = TOP_N; i < pages.length; i++) enriched.push(pages[i]);
 
-      const result = enriched && enriched.length > 0 ? enriched : HIJACK_SEEDS;
+      const seeds = hijackSeedsFor(domain);
+      const result = enriched && enriched.length > 0 ? enriched : seeds;
       if (!enriched || enriched.length === 0) {
-        console.log("Live Semrush gateway returned empty payload. Activating seed protection fallback.");
-        await logRun("hijack", "ok", "empty result, served seeds", 0);
-        return { rows: result, cachedAt: new Date().toISOString(), error: null, seeded: true };
+        console.log(`[apex/hijack] empty payload for ${domain}, serving seeds.`);
+        await logRun("hijack", "ok", `empty (${domain}), served seeds`, 0);
+        return { rows: result, domain, cachedAt: new Date().toISOString(), error: null, seeded: true };
       }
-      _hijackCache = { at: Date.now(), rows: result };
-      await logRun("hijack", "ok", `fetched ${result.length} pages`, result.length);
-      return { rows: result, cachedAt: new Date().toISOString(), error: null, seeded: false };
+      _hijackCacheByDomain.set(domain, { at: Date.now(), rows: result });
+      await logRun("hijack", "ok", `fetched ${result.length} pages from ${domain}`, result.length);
+      return { rows: result, domain, cachedAt: new Date().toISOString(), error: null, seeded: false };
     } catch (e) {
       const isQuota = e instanceof SemrushQuotaError;
       const msg = (e as Error).message;
       console.error("[apex/hijack] error:", msg);
-      await logRun("hijack", isQuota ? "quota" : "error", msg, 0);
-      return { rows: HIJACK_SEEDS, cachedAt: new Date().toISOString(), error: msg, seeded: true };
+      await logRun("hijack", isQuota ? "quota" : "error", `${domain}: ${msg}`, 0);
+      return { rows: hijackSeedsFor(domain), domain, cachedAt: new Date().toISOString(), error: msg, seeded: true };
     }
   });
 
@@ -460,7 +505,7 @@ export const generateContentBlueprint = createServerFn({ method: "POST" })
     if (!target) target = "luxury designer fashion";
 
     const sys = `You are an SEO content strategist for a luxury fashion boutique. Output JSON only.`;
-    const user = `Competitor URL to outrank: ${data.url}\nTarget keyword: ${target}\nOur site: palaceofroman.com (Palace of Roman — luxury multi-brand boutique).\n\nReturn JSON with EXACTLY these keys:\n{\n  "targetKeyword": string,\n  "searchIntent": "transactional"|"commercial"|"informational"|"navigational",\n  "intentBrief": string (1-2 sentences),\n  "semanticTerms": string[] (12-20 entities/related terms a top-ranking page must cover),\n  "outline": [{ "h2": string, "h3s": string[], "evidence": string }] (5-8 sections),\n  "internalLinkTargets": string[] (5-8 Palace of Roman URL paths to link from this page, like "/collections/gucci"),\n  "schemaTypes": string[] (e.g. "Product", "BreadcrumbList", "ItemList"),\n  "wordCount": number,\n  "eatSignals": string[] (4-6 specific E-E-A-T enhancements like author bylines, sourcing notes, etc.)\n}`;
+    const user = `Competitor URL to outrank: ${data.url}\nTarget keyword: ${target}\nOur site: ${OUR_DOMAIN} (Palace of Roman — luxury multi-brand boutique).\n\nReturn JSON with EXACTLY these keys:\n{\n  "targetKeyword": string,\n  "searchIntent": "transactional"|"commercial"|"informational"|"navigational",\n  "intentBrief": string (1-2 sentences),\n  "semanticTerms": string[] (12-20 entities/related terms a top-ranking page must cover),\n  "outline": [{ "h2": string, "h3s": string[], "evidence": string }] (5-8 sections),\n  "internalLinkTargets": string[] (5-8 Palace of Roman URL paths to link from this page, like "/collections/gucci"),\n  "schemaTypes": string[] (e.g. "Product", "BreadcrumbList", "ItemList"),\n  "wordCount": number,\n  "eatSignals": string[] (4-6 specific E-E-A-T enhancements like author bylines, sourcing notes, etc.)\n}`;
 
     const res = await callAi({
       module: "apex/hijack-blueprint",

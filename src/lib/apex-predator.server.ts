@@ -12,11 +12,37 @@
  * Never import from client-side files.
  */
 
-const COMPETITOR_DOMAIN = "palaceofromanofficial.com";
+// ─────────────────────────────────────────────────────────────
+// Brand identity (single source of truth)
+// We own BOTH domains. palaceofromanofficial.com is the live shop,
+// palaceofroman.com is the legacy domain — its inbound link equity must
+// be defended and matured into the new domain.
+// ─────────────────────────────────────────────────────────────
+export const OUR_DOMAIN = "palaceofromanofficial.com";
+export const OUR_LEGACY_DOMAIN = "palaceofroman.com";
+export const OUR_DOMAINS = [OUR_DOMAIN, OUR_LEGACY_DOMAIN] as const;
+
+/** Real luxury multi-brand boutiques we reverse-engineer for content/keyword strategy. */
+export const COMPETITOR_DOMAINS = [
+  "net-a-porter.com",
+  "ssense.com",
+  "mytheresa.com",
+] as const;
+export type CompetitorDomain = (typeof COMPETITOR_DOMAINS)[number];
+
 const GATEWAY_BASE = "https://connector-gateway.lovable.dev/semrush";
 
+/** Legacy export retained for callers that still expect a single "target" — now returns the primary giant competitor. */
 export function getCompetitorDomain() {
-  return COMPETITOR_DOMAIN;
+  return COMPETITOR_DOMAINS[0];
+}
+
+export function getOurDomain() {
+  return OUR_DOMAIN;
+}
+
+export function getOurLegacyDomain() {
+  return OUR_LEGACY_DOMAIN;
 }
 
 function readEnv(name: string): string {
@@ -125,11 +151,14 @@ const SEED_TIMESTAMP = "2026-06-07T00:00:00.000Z";
 
 function backlinkSeedFallback(): CompetitorBacklink[] {
   const now = SEED_TIMESTAMP;
+  // Seeds now represent inbound links to OUR LEGACY domain (palaceofroman.com)
+  // that we want to defend and "mature" — i.e. ask the editor to update the
+  // destination to the new live shop on palaceofromanofficial.com.
   return [
     {
-      source_url: "https://vogue.com",
+      source_url: "https://www.vogue.com/article/luxury-resale-guide",
       source_domain: "vogue.com",
-      target_url: `https://${COMPETITOR_DOMAIN}`,
+      target_url: `https://${OUR_LEGACY_DOMAIN}/`,
       anchor: "Palace of Roman",
       page_ascore: 92,
       domain_ascore: 93,
@@ -137,9 +166,9 @@ function backlinkSeedFallback(): CompetitorBacklink[] {
       first_seen: now,
     },
     {
-      source_url: "https://gq.com",
+      source_url: "https://www.gq.com/story/best-designer-bags-2026",
       source_domain: "gq.com",
-      target_url: `https://${COMPETITOR_DOMAIN}/collections/bags`,
+      target_url: `https://${OUR_LEGACY_DOMAIN}/collections/bags`,
       anchor: "designer leather goods",
       page_ascore: 88,
       domain_ascore: 91,
@@ -149,26 +178,21 @@ function backlinkSeedFallback(): CompetitorBacklink[] {
   ];
 }
 
-function topPagesSeedFallback(): TopRankingPage[] {
+function topPagesSeedFallback(domain: string): TopRankingPage[] {
   return [
-    { url: `https://${COMPETITOR_DOMAIN}/collections/resort`, est_traffic: 5400, keyword_count: 118, top_keyword: "luxury resort wear", top_keyword_position: 5, top_keyword_volume: 5400, top_keyword_kd: 35, top_keyword_cpc: 2.1 },
-    { url: `https://${COMPETITOR_DOMAIN}/collections/silk-scarves`, est_traffic: 2100, keyword_count: 74, top_keyword: "designer silk scarves", top_keyword_position: 7, top_keyword_volume: 2100, top_keyword_kd: 22, top_keyword_cpc: 1.7 },
-    { url: `https://${COMPETITOR_DOMAIN}/collections/sustainable-fashion`, est_traffic: 3000, keyword_count: 96, top_keyword: "sustainable fashion brands", top_keyword_position: 8, top_keyword_volume: 3000, top_keyword_kd: 28, top_keyword_cpc: 1.9 },
+    { url: `https://${domain}/shop/clothing`, est_traffic: 54000, keyword_count: 1180, top_keyword: "luxury designer clothing", top_keyword_position: 2, top_keyword_volume: 22200, top_keyword_kd: 78, top_keyword_cpc: 2.6 },
+    { url: `https://${domain}/shop/bags`, est_traffic: 41200, keyword_count: 940, top_keyword: "designer handbags", top_keyword_position: 3, top_keyword_volume: 33100, top_keyword_kd: 82, top_keyword_cpc: 3.2 },
+    { url: `https://${domain}/shop/shoes`, est_traffic: 28700, keyword_count: 760, top_keyword: "designer shoes women", top_keyword_position: 4, top_keyword_volume: 18100, top_keyword_kd: 74, top_keyword_cpc: 2.4 },
   ];
-}
-
-function isSelfLink(sourceDomain: string, sourceUrl: string): boolean {
-  const d = sourceDomain.toLowerCase().trim();
-  if (d === "palaceofroman.com" || d === "palaceofromanofficial.com") return true;
-  if (sourceUrl?.startsWith("https://palaceofroman.com/")) return true;
-  return false;
 }
 
 export async function fetchCompetitorBacklinks(opts: {
   domain?: string;
   limit?: number;
 }): Promise<CompetitorBacklink[]> {
-  const target = opts.domain ?? COMPETITOR_DOMAIN;
+  // DEFAULT TARGET = our legacy domain. Authority Protection monitors who
+  // still links to palaceofroman.com so we can request the URL update.
+  const target = opts.domain ?? OUR_LEGACY_DOMAIN;
   const limit = Math.min(opts.limit ?? 100, 500);
 
   try {
@@ -202,10 +226,9 @@ export async function fetchCompetitorBacklinks(opts: {
       } satisfies CompetitorBacklink;
     });
 
-    // Exact-domain self-link filter — never broad .includes("palaceofroman").
-    const cleanRows = mapped.filter((row) => !isSelfLink(row.source_domain, row.source_url));
-
-    const result = cleanRows;
+    // Identity reset: no self-link filter. Inbound links to palaceofroman.com
+    // (the legacy domain) are exactly what Authority Protection wants to see.
+    const result = mapped;
     // If the live network payload returns empty, instantly force-inject the elite fallback array
     if (!result || result.length === 0) {
       console.log("Live Semrush gateway returned empty payload. Activating seed protection fallback.");
@@ -238,7 +261,7 @@ export async function fetchCompetitorTopPages(opts: {
   database?: string;
   limit?: number;
 }): Promise<TopRankingPage[]> {
-  const target = opts.domain ?? COMPETITOR_DOMAIN;
+  const target = opts.domain ?? COMPETITOR_DOMAINS[0];
   const database = opts.database ?? "us";
   const limit = Math.min(opts.limit ?? 100, 100);
 
@@ -268,12 +291,12 @@ export async function fetchCompetitorTopPages(opts: {
     // If the live network payload returns empty, instantly force-inject the elite fallback array
     if (!result || result.length === 0) {
       console.log("Live Semrush gateway returned empty payload. Activating seed protection fallback.");
-      return topPagesSeedFallback();
+      return topPagesSeedFallback(target);
     }
     return result;
   } catch (e) {
     console.warn("[apex] top pages fetch failed, returning seed fallback:", (e as Error).message);
-    return topPagesSeedFallback();
+    return topPagesSeedFallback(target);
   }
 }
 
