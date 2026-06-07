@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useCallback, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Radar, Crosshair, Target, Zap, Copy, Mail, FileDown, RefreshCw, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Radar, Crosshair, Target, Zap, Copy, Mail, FileDown, RefreshCw, AlertTriangle, Rocket, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { adminBeforeLoad } from "@/lib/admin-route-guard";
 import { callAdminServerFn } from "@/lib/admin-server-call";
 import {
@@ -15,6 +16,7 @@ import {
   getStrikingPipeline,
   generateStrikePlan,
   generateHighIntentSeoPatch,
+  deployPatchToShopify,
   type ContentBlueprint,
   type StrikePlan,
   type HighIntentSeoPatch,
@@ -728,14 +730,47 @@ function HighIntentPatchPanel({ patch }: { patch: HighIntentSeoPatch }) {
     internal_links: patch.internalLinks,
   }, null, 2);
   const text = `# High-Intent SEO Patch\nProduct: ${patch.productTitle}\nURL: ${patch.productUrl || "(unknown)"}\n\nTarget keyword: ${patch.targetKeyword}\nSecondary: ${patch.secondaryKeywords.join(", ")}\n\n${jsonBlock}\n\nRationale: ${patch.rationale}`;
+
+  const deploy = useMutation({
+    mutationFn: () =>
+      callAdminServerFn(deployPatchToShopify, {
+        data: {
+          productUrl: patch.productUrl ?? "",
+          newTitle: patch.newTitle,
+          newH1: patch.newH1,
+          newMetaDescription: patch.newMetaDescription,
+        },
+      }),
+    onSuccess: () => {
+      toast.success("SUCCESS: SEO Patch successfully deployed to live storefront.");
+    },
+    onError: (err: Error) => {
+      toast.error("Deploy failed", { description: err.message });
+    },
+  });
+
+  const canDeploy = Boolean(patch.productUrl && patch.newTitle && patch.newH1 && patch.newMetaDescription);
+
   return (
     <div style={{ background: T.bg, padding: 14, borderBottom: `1px solid ${T.border}`, fontSize: 11, borderLeft: `3px solid ${T.neon}`, overflow: "hidden", animation: "apexSlideDown 280ms ease-out" }}>
-      <div style={{ display: "flex", gap: 8, marginBottom: 8, alignItems: "center" }}>
+      <div style={{ display: "flex", gap: 8, marginBottom: 8, alignItems: "center", flexWrap: "wrap" }}>
         <span style={{ color: T.neon, fontSize: 10, letterSpacing: "0.1em", fontWeight: 700 }}>● HIGH-INTENT SEO PATCH</span>
         <span style={{ color: T.muted, fontSize: 10 }}>raw: "{patch.productTitle}"</span>
         <ActionBtn onClick={() => copyText(jsonBlock)} color={T.neon}><Copy size={11} /> COPY JSON</ActionBtn>
         <ActionBtn onClick={() => copyText(text)} color={T.ink}><Copy size={11} /> COPY ALL</ActionBtn>
         <ActionBtn onClick={() => download(`high-intent-${Date.now()}.md`, text)} color={T.ink}><FileDown size={11} /> EXPORT</ActionBtn>
+        <button
+          onClick={() => deploy.mutate()}
+          disabled={!canDeploy || deploy.isPending}
+          className="px-4 py-2 bg-[#00ff00] text-black font-mono text-xs font-bold uppercase tracking-wider rounded hover:bg-[#00cc00] disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
+          title={canDeploy ? "Push title_tag, description_tag, and H1 to Shopify" : "Need productUrl + all patch fields to deploy"}
+        >
+          {deploy.isPending ? (
+            <><Loader2 size={12} className="animate-spin" /> DEPLOYING...</>
+          ) : (
+            <><Rocket size={12} /> 🚀 Deploy Patch to Storefront</>
+          )}
+        </button>
       </div>
       <div><span style={{ color: T.muted }}>Target KW    </span><span style={{ color: T.neon }}>{patch.targetKeyword}</span></div>
       <div><span style={{ color: T.muted }}>Secondary KW </span><span style={{ color: T.amber }}>{patch.secondaryKeywords.join(" · ")}</span></div>
