@@ -137,11 +137,11 @@ export function PdpJournalLinks(props: {
     <section className="max-w-7xl mx-auto mt-32 pt-20 border-t border-[var(--studio-rule)]">
       <div className="mb-12 text-center md:text-left">
         <p className="text-[10px] tracking-[0.3em] uppercase text-[var(--studio-bronze)] font-semibold mb-3">
-          From the Journal
+          Explore Further
         </p>
-        <h2 className="font-serif text-3xl md:text-4xl">Further reading</h2>
+        <h2 className="font-serif text-3xl md:text-4xl">Related Reading</h2>
         <p className="mt-3 text-[var(--studio-ink)]/70 max-w-xl">
-          Short essays on the materials, construction and houses behind the pieces we sell.
+          Journal essays and authenticated archive pieces related to this item.
         </p>
       </div>
       <ul className="grid sm:grid-cols-2 gap-4 md:gap-6">
@@ -156,7 +156,7 @@ export function PdpJournalLinks(props: {
               </p>
               <h3 className="font-serif text-xl md:text-2xl leading-snug">{g.title}</h3>
               <span className="mt-4 inline-block text-[10px] uppercase tracking-[0.25em] border-b border-[var(--studio-ink)]/40 pb-1 group-hover:border-[var(--studio-ink)]">
-                Read the guide →
+                {g.to.startsWith("/preloved") ? "Browse the archive →" : "Read the guide →"}
               </span>
             </Link>
           </li>
