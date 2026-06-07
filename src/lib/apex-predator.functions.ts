@@ -398,7 +398,7 @@ export const draftPoacherPitchInline = createServerFn({ method: "POST" })
 // MODULE 2 — Hijack Feed (top ranking pages + blueprints)
 // =================================================================
 
-let _hijackCache: { at: number; rows: TopRankingPageEnriched[] } | null = null;
+const _hijackCacheByDomain = new Map<string, { at: number; rows: TopRankingPageEnriched[] }>();
 const HIJACK_TTL_MS = 6 * 60 * 60 * 1000; // 6h
 
 export type TopRankingPageEnriched = {
@@ -412,24 +412,31 @@ export type TopRankingPageEnriched = {
   top_keyword_cpc: number;
 };
 
-const HIJACK_SEEDS: TopRankingPageEnriched[] = [
-  { url: "https://palaceofromanofficial.com/collections/gucci", est_traffic: 4820, keyword_count: 312,
-    top_keyword: "gucci handbags sale", top_keyword_position: 6, top_keyword_volume: 18100, top_keyword_kd: 71, top_keyword_cpc: 2.4 },
-  { url: "https://palaceofromanofficial.com/collections/loewe-bags", est_traffic: 2640, keyword_count: 187,
-    top_keyword: "loewe puzzle bag", top_keyword_position: 5, top_keyword_volume: 9900, top_keyword_kd: 64, top_keyword_cpc: 3.1 },
-  { url: "https://palaceofromanofficial.com/collections/bottega-veneta", est_traffic: 1980, keyword_count: 142,
-    top_keyword: "bottega veneta cassette", top_keyword_position: 8, top_keyword_volume: 6600, top_keyword_kd: 58, top_keyword_cpc: 2.0 },
-];
+function hijackSeedsFor(domain: string): TopRankingPageEnriched[] {
+  return [
+    { url: `https://www.${domain}/shop/clothing`, est_traffic: 54200, keyword_count: 1180,
+      top_keyword: "luxury designer clothing", top_keyword_position: 2, top_keyword_volume: 22200, top_keyword_kd: 78, top_keyword_cpc: 2.6 },
+    { url: `https://www.${domain}/shop/bags`, est_traffic: 41200, keyword_count: 940,
+      top_keyword: "designer handbags", top_keyword_position: 3, top_keyword_volume: 33100, top_keyword_kd: 82, top_keyword_cpc: 3.2 },
+    { url: `https://www.${domain}/shop/shoes`, est_traffic: 28700, keyword_count: 760,
+      top_keyword: "designer shoes women", top_keyword_position: 4, top_keyword_volume: 18100, top_keyword_kd: 74, top_keyword_cpc: 2.4 },
+  ];
+}
 
 export const getHijackFeed = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
-  .inputValidator((d: unknown) => z.object({ force: z.boolean().optional() }).parse(d ?? {}))
-  .handler(async ({ data }): Promise<{ rows: TopRankingPageEnriched[]; cachedAt: string; error: string | null; seeded: boolean }> => {
-    if (!data.force && _hijackCache && _hijackCache.rows.length > 0 && Date.now() - _hijackCache.at < HIJACK_TTL_MS) {
-      return { rows: _hijackCache.rows, cachedAt: new Date(_hijackCache.at).toISOString(), error: null, seeded: false };
+  .inputValidator((d: unknown) => z.object({
+    force: z.boolean().optional(),
+    domain: z.enum(COMPETITOR_DOMAINS as unknown as [string, ...string[]]).optional(),
+  }).parse(d ?? {}))
+  .handler(async ({ data }): Promise<{ rows: TopRankingPageEnriched[]; domain: string; cachedAt: string; error: string | null; seeded: boolean }> => {
+    const domain = data.domain ?? COMPETITOR_DOMAINS[0];
+    const cached = _hijackCacheByDomain.get(domain);
+    if (!data.force && cached && cached.rows.length > 0 && Date.now() - cached.at < HIJACK_TTL_MS) {
+      return { rows: cached.rows, domain, cachedAt: new Date(cached.at).toISOString(), error: null, seeded: false };
     }
     try {
-      const pages = await fetchCompetitorTopPages({ limit: 50 });
+      const pages = await fetchCompetitorTopPages({ domain, limit: 50 });
       const enriched: TopRankingPageEnriched[] = [];
       const TOP_N = Math.min(25, pages.length);
       for (let i = 0; i < TOP_N; i++) {
@@ -452,21 +459,22 @@ export const getHijackFeed = createServerFn({ method: "POST" })
       }
       for (let i = TOP_N; i < pages.length; i++) enriched.push(pages[i]);
 
-      const result = enriched && enriched.length > 0 ? enriched : HIJACK_SEEDS;
+      const seeds = hijackSeedsFor(domain);
+      const result = enriched && enriched.length > 0 ? enriched : seeds;
       if (!enriched || enriched.length === 0) {
-        console.log("Live Semrush gateway returned empty payload. Activating seed protection fallback.");
-        await logRun("hijack", "ok", "empty result, served seeds", 0);
-        return { rows: result, cachedAt: new Date().toISOString(), error: null, seeded: true };
+        console.log(`[apex/hijack] empty payload for ${domain}, serving seeds.`);
+        await logRun("hijack", "ok", `empty (${domain}), served seeds`, 0);
+        return { rows: result, domain, cachedAt: new Date().toISOString(), error: null, seeded: true };
       }
-      _hijackCache = { at: Date.now(), rows: result };
-      await logRun("hijack", "ok", `fetched ${result.length} pages`, result.length);
-      return { rows: result, cachedAt: new Date().toISOString(), error: null, seeded: false };
+      _hijackCacheByDomain.set(domain, { at: Date.now(), rows: result });
+      await logRun("hijack", "ok", `fetched ${result.length} pages from ${domain}`, result.length);
+      return { rows: result, domain, cachedAt: new Date().toISOString(), error: null, seeded: false };
     } catch (e) {
       const isQuota = e instanceof SemrushQuotaError;
       const msg = (e as Error).message;
       console.error("[apex/hijack] error:", msg);
-      await logRun("hijack", isQuota ? "quota" : "error", msg, 0);
-      return { rows: HIJACK_SEEDS, cachedAt: new Date().toISOString(), error: msg, seeded: true };
+      await logRun("hijack", isQuota ? "quota" : "error", `${domain}: ${msg}`, 0);
+      return { rows: hijackSeedsFor(domain), domain, cachedAt: new Date().toISOString(), error: msg, seeded: true };
     }
   });
 
