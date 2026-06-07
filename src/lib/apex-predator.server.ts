@@ -12,11 +12,37 @@
  * Never import from client-side files.
  */
 
-const COMPETITOR_DOMAIN = "palaceofromanofficial.com";
+// ─────────────────────────────────────────────────────────────
+// Brand identity (single source of truth)
+// We own BOTH domains. palaceofromanofficial.com is the live shop,
+// palaceofroman.com is the legacy domain — its inbound link equity must
+// be defended and matured into the new domain.
+// ─────────────────────────────────────────────────────────────
+export const OUR_DOMAIN = "palaceofromanofficial.com";
+export const OUR_LEGACY_DOMAIN = "palaceofroman.com";
+export const OUR_DOMAINS = [OUR_DOMAIN, OUR_LEGACY_DOMAIN] as const;
+
+/** Real luxury multi-brand boutiques we reverse-engineer for content/keyword strategy. */
+export const COMPETITOR_DOMAINS = [
+  "net-a-porter.com",
+  "ssense.com",
+  "mytheresa.com",
+] as const;
+export type CompetitorDomain = (typeof COMPETITOR_DOMAINS)[number];
+
 const GATEWAY_BASE = "https://connector-gateway.lovable.dev/semrush";
 
+/** Legacy export retained for callers that still expect a single "target" — now returns the primary giant competitor. */
 export function getCompetitorDomain() {
-  return COMPETITOR_DOMAIN;
+  return COMPETITOR_DOMAINS[0];
+}
+
+export function getOurDomain() {
+  return OUR_DOMAIN;
+}
+
+export function getOurLegacyDomain() {
+  return OUR_LEGACY_DOMAIN;
 }
 
 function readEnv(name: string): string {
