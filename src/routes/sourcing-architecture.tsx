@@ -18,7 +18,10 @@ export const Route = createFileRoute("/sourcing-architecture")({
         {
           type: "application/ld+json",
           children: JSON.stringify(
-            breadcrumbJsonLd("https://palaceofromanofficial.com", PATH, "Sourcing Architecture"),
+            breadcrumbJsonLd([
+              { name: "Home", path: "/" },
+              { name: "Sourcing Architecture", path: PATH },
+            ]),
           ),
         },
       ],
