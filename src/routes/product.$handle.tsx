@@ -329,17 +329,31 @@ export const Route = createFileRoute("/product/$handle")({
             hasMerchantReturnPolicy: returnPolicy,
           };
 
+    // Dual-layer meta: keyword-dense title for indexers, clean title for social.
+    const luxuryMeta = generateLuxuryMetadata({
+      rawTitle: p.title,
+      cleanTitle: formatLuxuryTitle(p.title, p.vendor || ""),
+      brandName: p.vendor || "",
+      categoryName: p.productType || "Luxury Apparel",
+      rawDescription: p.description || "",
+    });
+    const seoTitle = pageTitle(luxuryMeta.seoMetaTitle.replace(/ \| Palace of Roman$/, ""));
+    const ogTitle = luxuryMeta.socialOgTitle || pageTitle(titleMain);
+    const indexerDesc = metaDescription(luxuryMeta.seoMetaDescription);
+    // Preserve companion-bundle long-tail copy when present; otherwise use indexer desc.
+    const finalDesc = companionBrands.length >= 1 ? desc : indexerDesc;
+
     const meta = [
-      { title: pageTitle(titleMain) },
-      { name: "description", content: desc },
-      { property: "og:title", content: pageTitle(titleMain) },
-      { property: "og:description", content: desc },
+      { title: seoTitle },
+      { name: "description", content: finalDesc },
+      { property: "og:title", content: ogTitle },
+      { property: "og:description", content: finalDesc },
       { property: "og:url", content: url },
       { property: "og:type", content: "product" },
       // Override root twitter:* so PDPs don't share the homepage card copy.
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: pageTitle(titleMain) },
-      { name: "twitter:description", content: desc },
+      { name: "twitter:title", content: ogTitle },
+      { name: "twitter:description", content: finalDesc },
     ];
     if (img) {
       meta.push({ property: "og:image", content: cdnImage(img, { width: 1200, format: "jpg" }) || img });
