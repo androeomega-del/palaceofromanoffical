@@ -4,49 +4,63 @@
  * This store DOES NOT modify the cart-store, cart mutations, or the checkout
  * URL. It only manages the pre-cart email-capture overlay state and resolves
  * a queued promise so each Add-to-Cart call site can await user unlock.
- *
- * Usage from any addItem call site:
- *   import { ensureVaultUnlocked } from "@/lib/vault-gate";
- *   if (!(await ensureVaultUnlocked())) return;
- *   const added = await addItem({ ... });
  */
 import { create } from "zustand";
 
+export type VaultGateOptions = {
+  /** Optional product label rendered inside the overlay (e.g. "Cucinelli Slide"). */
+  label?: string | null;
+  /**
+   * If true, the overlay shows the "Competing Allocation" notice above the
+   * email input — used when stock count is 1 or another live client is on
+   * the checkout screen for the same SKU.
+   */
+  lowStock?: boolean;
+};
+
 export type VaultGateState = {
   open: boolean;
-  /** Optional product label rendered inside the overlay (e.g. "Cucinelli Slide"). */
   label: string | null;
-  /** Pending resolver awaiting user action (unlock or cancel). */
+  lowStock: boolean;
   pending: ((unlocked: boolean) => void) | null;
-  /** Open the overlay and return a promise that resolves to true once unlocked. */
-  requestUnlock: (label?: string | null) => Promise<boolean>;
-  /** Called by the overlay when a valid email has been saved. */
+  requestUnlock: (
+    options?: VaultGateOptions | string | null,
+  ) => Promise<boolean>;
   confirmUnlock: () => void;
-  /** Called when the user dismisses the overlay without unlocking. */
   cancel: () => void;
 };
 
 export const useVaultGateStore = create<VaultGateState>((set, get) => ({
   open: false,
   label: null,
+  lowStock: false,
   pending: null,
-  requestUnlock: (label = null) => {
-    // If a previous request is still pending, resolve it as cancelled before
-    // overwriting so no caller is left hanging.
+  requestUnlock: (options) => {
+    // Backward-compat: callers may still pass a plain string label.
+    const opts: VaultGateOptions =
+      typeof options === "string" || options === null || options === undefined
+        ? { label: (options as string | null) ?? null }
+        : options;
+
     const prev = get().pending;
     if (prev) prev(false);
     return new Promise<boolean>((resolve) => {
-      set({ open: true, label, pending: resolve });
+      set({
+        open: true,
+        label: opts.label ?? null,
+        lowStock: !!opts.lowStock,
+        pending: resolve,
+      });
     });
   },
   confirmUnlock: () => {
     const resolve = get().pending;
-    set({ open: false, pending: null, label: null });
+    set({ open: false, pending: null, label: null, lowStock: false });
     if (resolve) resolve(true);
   },
   cancel: () => {
     const resolve = get().pending;
-    set({ open: false, pending: null, label: null });
+    set({ open: false, pending: null, label: null, lowStock: false });
     if (resolve) resolve(false);
   },
 }));

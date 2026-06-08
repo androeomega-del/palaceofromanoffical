@@ -43,6 +43,7 @@ const SECURING_TOTAL_MS = SECURING_STEP_MS * SECURING_STATUSES.length; // 2100ms
 export function VaultLockerOverlay() {
   const open = useVaultGateStore((s) => s.open);
   const label = useVaultGateStore((s) => s.label);
+  const lowStock = useVaultGateStore((s) => s.lowStock);
   const confirmUnlock = useVaultGateStore((s) => s.confirmUnlock);
   const cancel = useVaultGateStore((s) => s.cancel);
 
@@ -246,6 +247,37 @@ export function VaultLockerOverlay() {
           >
             Reserving — {label}
           </p>
+        )}
+
+        {/* Competing Allocation banner — shown above the email input when the
+            requested SKU has stock count 1 or a live competing checkout. */}
+        {lowStock && (
+          <div
+            role="status"
+            className="mt-7 sm:mt-9 border px-4 py-3 flex items-start gap-3"
+            style={{
+              borderColor: "rgba(244,241,236,0.18)",
+              background: "rgba(244,241,236,0.03)",
+              animation: "vaultTickerIn 360ms cubic-bezier(.2,.7,.2,1) both",
+            }}
+          >
+            <span
+              className="inline-block w-1 h-1 rounded-full mt-2 shrink-0"
+              style={{
+                background: "#8a8580",
+                animation: "vaultPulse 1.6s ease-in-out infinite",
+              }}
+              aria-hidden
+            />
+            <p
+              className="text-[10.5px] uppercase tracking-[0.22em] leading-relaxed"
+              style={{ color: "#8a8580" }}
+            >
+              Notice: Due to restricted designer pipelines, this piece is
+              currently undergoing a live allocation check. Complete your
+              email verification to hold temporary priority access.
+            </p>
+          </div>
         )}
 
         {/* Form */}

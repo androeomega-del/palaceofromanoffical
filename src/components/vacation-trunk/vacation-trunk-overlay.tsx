@@ -52,6 +52,7 @@ function resolveDepartureDate(monthIdx: number, day: number): Date {
 export function VacationTrunkOverlay() {
   const open = useVacationTrunkStore((s) => s.open);
   const items = useVacationTrunkStore((s) => s.items);
+  const lowStock = useVacationTrunkStore((s) => s.lowStock);
   const closeTrunk = useVacationTrunkStore((s) => s.closeTrunk);
   const removeItem = useVacationTrunkStore((s) => s.removeItem);
 
@@ -357,12 +358,62 @@ export function VacationTrunkOverlay() {
                             {it.priceLabel}
                           </p>
                         )}
+                        {it.outOfStock && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (typeof window !== "undefined" && it.handle) {
+                                window.location.href = `/product/${it.handle}#substitution`;
+                              }
+                            }}
+                            className="mt-2 w-full inline-flex items-center justify-center text-[9.5px] uppercase tracking-[0.28em] border transition-colors"
+                            style={{
+                              minHeight: 36,
+                              borderColor: "rgba(10,10,10,0.4)",
+                              color: "#0a0a0a",
+                              background: "transparent",
+                            }}
+                          >
+                            Request Archival Piece Substitution
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))}
                 </div>
               )}
             </div>
+
+
+            {/* Competing Allocation banner */}
+            {lowStock && (
+              <div
+                role="status"
+                className="mt-7 border px-4 py-3 flex items-start gap-3"
+                style={{
+                  borderColor: "rgba(10,10,10,0.18)",
+                  background: "rgba(10,10,10,0.025)",
+                  animation: "trunkTickerIn 360ms cubic-bezier(.2,.7,.2,1) both",
+                }}
+              >
+                <span
+                  className="inline-block w-1 h-1 rounded-full mt-2 shrink-0"
+                  style={{
+                    background: "rgba(10,10,10,0.55)",
+                    animation: "trunkPulse 1.6s ease-in-out infinite",
+                  }}
+                  aria-hidden
+                />
+                <p
+                  className="text-[10.5px] uppercase tracking-[0.22em] leading-relaxed"
+                  style={{ color: "rgba(10,10,10,0.6)" }}
+                >
+                  Notice: Due to restricted designer pipelines, this piece is
+                  currently undergoing a live allocation check. Complete your
+                  email verification to hold temporary priority access.
+                </p>
+              </div>
+            )}
 
             {/* Form */}
             <form id="vacation-trunk-form" onSubmit={handleSubmit} className="mt-8" noValidate>
