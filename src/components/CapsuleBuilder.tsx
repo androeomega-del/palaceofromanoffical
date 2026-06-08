@@ -615,8 +615,25 @@ export function CapsuleBuilder({
                 No companion pieces available for this slot.
               </p>
             ) : (
-              <ul className="grid grid-cols-1 gap-3">
-                {filteredForOpen.map((p) => {
+              (() => {
+                // Group outerwear into sub-sections; flat list for others.
+                const isOuterwear = openKind === "Outerwear";
+                const groups: Array<{ label: string; items: typeof filteredForOpen }> =
+                  isOuterwear
+                    ? OUTERWEAR_SUB_PRIORITY
+                        .slice()
+                        .reverse() // display order: Lightweight first
+                        .map((sub) => ({
+                          label: sub,
+                          items: filteredForOpen.filter((p) => {
+                            const tags = (p as unknown as { tags?: string[] }).tags;
+                            return classifyOuterwearSub(p.productType, tags, p.title, p.handle) === sub;
+                          }),
+                        }))
+                        .filter((g) => g.items.length > 0)
+                    : [{ label: "", items: filteredForOpen }];
+
+                const renderTile = (p: typeof filteredForOpen[number]) => {
                   const thumb = p.images?.edges?.[0]?.node;
                   return (
                     <li key={p.handle}>
@@ -654,8 +671,26 @@ export function CapsuleBuilder({
                       </button>
                     </li>
                   );
-                })}
-              </ul>
+                };
+
+                return (
+                  <div className="space-y-6">
+                    {groups.map((g) => (
+                      <div key={g.label || "all"}>
+                        {g.label ? (
+                          <h3 className="mb-2 text-[10px] uppercase tracking-[0.28em] text-muted-foreground">
+                            {g.label}
+                            <span className="ml-2 text-foreground/40">· {g.items.length}</span>
+                          </h3>
+                        ) : null}
+                        <ul className="grid grid-cols-1 gap-3">
+                          {g.items.map(renderTile)}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()
             )}
           </div>
         </SheetContent>
