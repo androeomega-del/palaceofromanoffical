@@ -21,6 +21,7 @@ import { newThisWeekQueryOptions } from "@/lib/rails/queries";
 import { ConciergeDrawer } from "./concierge-drawer";
 import { AsymmetricGrid } from "./asymmetric-grid";
 import { PalaceHeader } from "./palace-header";
+import { StudioVerificationBanner } from "./studio-verification-banner";
 import { palette, fontSans, fontSerif } from "./palette";
 import heroImage from "@/assets/home-hero.jpg";
 import heroVideoAsset from "@/assets/hero-cinematic.mp4.asset.json";
@@ -133,6 +134,9 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
           </div>
         </div>
       </section>
+
+      {/* ───── Studio Verification — provenance banner ───── */}
+      <StudioVerificationBanner />
 
       {/* ───── Editorial asymmetric grid ───── */}
       <section className="px-6 md:px-14 pb-24 md:pb-40">
