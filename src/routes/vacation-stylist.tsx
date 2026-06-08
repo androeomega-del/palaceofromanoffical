@@ -87,7 +87,13 @@ function VacationStylistPage() {
       setErr("Please tell us where you're going.");
       return;
     }
+    if (!isArrivalValid(startDate)) {
+      setDateErr(true);
+      return;
+    }
+    setDateErr(false);
     setErr(null);
+
     setLoading(true);
     setResult(null);
     try {
