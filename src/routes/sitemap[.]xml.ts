@@ -106,7 +106,6 @@ const STATIC_ROUTES: Array<{
   { path: "/preloved", changefreq: "weekly", priority: "0.8" },
   { path: "/preloved/pristine", changefreq: "weekly", priority: "0.7" },
   { path: "/preloved/excellent", changefreq: "weekly", priority: "0.7" },
-  { path: "/preloved/new-with-tags", changefreq: "weekly", priority: "0.7" },
   { path: "/women/ss26", changefreq: "weekly", priority: "0.7" },
   { path: "/men/ss26", changefreq: "weekly", priority: "0.7" },
   { path: "/vacation-stylist", changefreq: "monthly", priority: "0.6" },
