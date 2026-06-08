@@ -153,7 +153,13 @@ function ApexPredatorTerminal() {
         </div>
       </div>
 
+      {/* GLOBAL RE-INDEX CAMPAIGN — top-of-grid control card */}
+      <div style={{ maxWidth: 1400, margin: "0 auto", padding: "16px 24px 0" }}>
+        <BulkOvertakeControl />
+      </div>
+
       <div style={{ display: "grid", gridTemplateColumns: "180px 1fr", maxWidth: 1400, margin: "0 auto" }}>
+
         {/* Module nav */}
         <nav style={{ borderRight: `1px solid ${T.border}`, padding: "24px 0", minHeight: "calc(100vh - 41px)" }}>
           {[
