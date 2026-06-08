@@ -141,8 +141,10 @@ export function VaultLockerOverlay() {
       // Best-effort — never block checkout
     }
     // Brief secure-sequence animation, then resolve the gate promise
-    window.setTimeout(() => setPhase("secured"), 700);
-    window.setTimeout(() => confirmUnlock(), 1500);
+    // Play the three-status sequence, then transition to "secured",
+    // then resolve the gate promise.
+    window.setTimeout(() => setPhase("secured"), SECURING_TOTAL_MS);
+    window.setTimeout(() => confirmUnlock(), SECURING_TOTAL_MS + 800);
   };
 
 
