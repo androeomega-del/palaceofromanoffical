@@ -112,31 +112,18 @@ function useSessionReady() {
 function useLivePulse(onTick: () => void) {
   const [count, setCount] = useState(0);
   useEffect(() => {
-    const ch = supabase
-      .channel("admin-analytics-live")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "pageviews" },
-        () => {
-          setCount((c) => c + 1);
-          onTick();
-        },
-      )
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "cart_events" },
-        () => {
-          setCount((c) => c + 1);
-          onTick();
-        },
-      )
-      .subscribe();
-    return () => {
-      supabase.removeChannel(ch);
-    };
+    // Poll every 15s instead of subscribing to realtime — the source
+    // tables (pageviews, cart_events) are no longer published to
+    // Realtime to avoid broadcasting visitor session data.
+    const id = setInterval(() => {
+      setCount((c) => c + 1);
+      onTick();
+    }, 15_000);
+    return () => clearInterval(id);
   }, [onTick]);
   return count;
 }
+
 
 function AdminAnalytics() {
   const sessionReady = useSessionReady();
