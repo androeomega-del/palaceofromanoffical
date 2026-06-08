@@ -842,8 +842,8 @@ export type DeployPatchResult = {
 };
 
 function extractHandle(url: string): string | null {
-  // Accept full URL or path; match /products/<handle>
-  const m = url.match(/\/products\/([a-z0-9][a-z0-9-_]*)/i);
+  // Accept full URL or path; match canonical /product/<handle> and legacy /products/<handle>.
+  const m = url.match(/\/products?\/([a-z0-9][a-z0-9-_]*)/i);
   return m ? m[1] : null;
 }
 
@@ -866,23 +866,18 @@ export const deployPatchToShopify = createServerFn({ method: "POST" })
     const product = lookup.products?.[0];
     if (!product) throw new Error(`No Shopify product found for handle "${handle}".`);
 
-    // 2. Compute a clean handle from the new title so Shopify validation
-    //    accepts the title change without crashing.
-    const generatedHandle = data.newH1
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "");
-
-    // 3. PUT update — overwrite title, body_html, and force the handle so
-    //    the backend spreadsheet view refreshes instantly.
+    // 3. PUT update — overwrite title/body_html/SEO fields while preserving
+    //    the existing handle so canonical PDP URLs, sitemaps, and storefront
+    //    routing stay aligned.
     await adminRest(`/products/${product.id}.json`, {
       method: "PUT",
       body: JSON.stringify({
         product: {
           id: product.id,
           title: data.newH1,
-          handle: generatedHandle,
           body_html: `<p>${data.newMetaDescription}</p>`,
+          metafields_global_title_tag: data.newTitle,
+          metafields_global_description_tag: data.newMetaDescription,
         },
       }),
     });

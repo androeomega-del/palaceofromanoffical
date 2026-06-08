@@ -53,9 +53,11 @@ export interface ShopifyProductNode {
   id: string;
   title: string;
   description: string;
+  descriptionHtml?: string;
   handle: string;
   vendor: string;
   productType: string;
+  seo?: { title: string | null; description: string | null } | null;
   tags?: string[];
   createdAt?: string;
   priceRange: { minVariantPrice: Money };
@@ -238,7 +240,9 @@ const PRODUCT_FRAGMENT = `
     id
     title
     description
+    descriptionHtml
     handle
+    seo { title description }
     vendor
     productType
     tags
