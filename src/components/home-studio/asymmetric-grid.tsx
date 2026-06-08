@@ -147,7 +147,7 @@ export function AsymmetricGrid({ menProducts, womenProducts }: AsymmetricGridPro
                       className="text-sm md:text-base font-light truncate group-hover:opacity-70 transition-opacity"
                       style={{ color: palette.offwhite }}
                     >
-                      {p.node.title}
+                      {formatLuxuryTitle(p.node.title, p.node.vendor)}
                     </p>
                   </div>
                   {price && (
