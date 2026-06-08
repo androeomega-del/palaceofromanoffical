@@ -15,6 +15,7 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SwimRouteImport } from './routes/swim'
 import { Route as StyleQuizRouteImport } from './routes/style-quiz'
 import { Route as StudioRouteImport } from './routes/studio'
+import { Route as SourcingArchitectureRouteImport } from './routes/sourcing-architecture'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SitemapStaticDotxmlRouteImport } from './routes/sitemap-static[.]xml'
 import { Route as SitemapProductsDotxmlRouteImport } from './routes/sitemap-products[.]xml'
@@ -192,6 +193,11 @@ const StyleQuizRoute = StyleQuizRouteImport.update({
 const StudioRoute = StudioRouteImport.update({
   id: '/studio',
   path: '/studio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SourcingArchitectureRoute = SourcingArchitectureRouteImport.update({
+  id: '/sourcing-architecture',
+  path: '/sourcing-architecture',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -1011,6 +1017,7 @@ export interface FileRoutesByFullPath {
   '/sitemap-products.xml': typeof SitemapProductsDotxmlRoute
   '/sitemap-static.xml': typeof SitemapStaticDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/sourcing-architecture': typeof SourcingArchitectureRoute
   '/studio': typeof StudioRoute
   '/style-quiz': typeof StyleQuizRoute
   '/swim': typeof SwimRouteWithChildren
@@ -1165,6 +1172,7 @@ export interface FileRoutesByTo {
   '/sitemap-products.xml': typeof SitemapProductsDotxmlRoute
   '/sitemap-static.xml': typeof SitemapStaticDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/sourcing-architecture': typeof SourcingArchitectureRoute
   '/studio': typeof StudioRoute
   '/style-quiz': typeof StyleQuizRoute
   '/swim': typeof SwimRouteWithChildren
@@ -1321,6 +1329,7 @@ export interface FileRoutesById {
   '/sitemap-products.xml': typeof SitemapProductsDotxmlRoute
   '/sitemap-static.xml': typeof SitemapStaticDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/sourcing-architecture': typeof SourcingArchitectureRoute
   '/studio': typeof StudioRoute
   '/style-quiz': typeof StyleQuizRoute
   '/swim': typeof SwimRouteWithChildren
@@ -1479,6 +1488,7 @@ export interface FileRouteTypes {
     | '/sitemap-products.xml'
     | '/sitemap-static.xml'
     | '/sitemap.xml'
+    | '/sourcing-architecture'
     | '/studio'
     | '/style-quiz'
     | '/swim'
@@ -1633,6 +1643,7 @@ export interface FileRouteTypes {
     | '/sitemap-products.xml'
     | '/sitemap-static.xml'
     | '/sitemap.xml'
+    | '/sourcing-architecture'
     | '/studio'
     | '/style-quiz'
     | '/swim'
@@ -1788,6 +1799,7 @@ export interface FileRouteTypes {
     | '/sitemap-products.xml'
     | '/sitemap-static.xml'
     | '/sitemap.xml'
+    | '/sourcing-architecture'
     | '/studio'
     | '/style-quiz'
     | '/swim'
@@ -1945,6 +1957,7 @@ export interface RootRouteChildren {
   SitemapProductsDotxmlRoute: typeof SitemapProductsDotxmlRoute
   SitemapStaticDotxmlRoute: typeof SitemapStaticDotxmlRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  SourcingArchitectureRoute: typeof SourcingArchitectureRoute
   StudioRoute: typeof StudioRoute
   StyleQuizRoute: typeof StyleQuizRoute
   SwimRoute: typeof SwimRouteWithChildren
@@ -2090,6 +2103,13 @@ declare module '@tanstack/react-router' {
       path: '/studio'
       fullPath: '/studio'
       preLoaderRoute: typeof StudioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sourcing-architecture': {
+      id: '/sourcing-architecture'
+      path: '/sourcing-architecture'
+      fullPath: '/sourcing-architecture'
+      preLoaderRoute: typeof SourcingArchitectureRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -3276,6 +3296,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapProductsDotxmlRoute: SitemapProductsDotxmlRoute,
   SitemapStaticDotxmlRoute: SitemapStaticDotxmlRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  SourcingArchitectureRoute: SourcingArchitectureRoute,
   StudioRoute: StudioRoute,
   StyleQuizRoute: StyleQuizRoute,
   SwimRoute: SwimRouteWithChildren,
@@ -3388,13 +3409,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
