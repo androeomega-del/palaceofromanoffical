@@ -87,8 +87,8 @@ const TILES: Tile[] = [
   },
   {
     to: "/admin/analytics",
-    label: "Cart Analytics",
-    desc: "Funnel, revenue, top products, sessions",
+    label: "Live Analytics",
+    desc: "Traffic, funnel, email, subscribers — realtime",
     icon: BarChart3,
   },
   {
