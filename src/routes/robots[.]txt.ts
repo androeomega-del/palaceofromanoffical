@@ -16,7 +16,7 @@ Disallow: /admin/
 Disallow: /api/
 Disallow: /*?q=*
 
-Sitemap: https://palaceofromanofficial.com
+Sitemap: https://palaceofromanofficial.com/sitemap.xml
 `;
 
         return new Response(body, {
