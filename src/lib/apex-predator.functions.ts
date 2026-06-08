@@ -1049,7 +1049,7 @@ type LuxurySeoSignals = {
   primaryKeyword?: string;
   volume?: number;
   difficulty?: number;
-  intent?: SearchIntent | "transactional" | "informational" | "navigational" | "commercial" | null;
+  intent?: SearchIntent | string | null;
   topRankingPages?: Array<{ url: string; domain: string; position: number }>;
   gsc?: { impressions: number; clicks: number; ctr: number; position: number } | null;
 };
