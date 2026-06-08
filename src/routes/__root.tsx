@@ -17,6 +17,7 @@ import { ConciergeWidget } from "@/components/concierge-widget";
 import { MarketQuerySync } from "@/components/market-query-sync";
 import { useCartSync } from "@/hooks/use-cart-sync";
 import { usePageviewBeacon } from "@/lib/pageview-beacon";
+import { useWebVitalsBeacon } from "@/lib/web-vitals-beacon";
 import { Toaster } from "@/components/ui/sonner";
 import { installHydrationMonitor } from "@/lib/hydration-monitor";
 import { useChromeStore } from "@/stores/chrome-store";
@@ -410,6 +411,9 @@ function RouteAwareRuntime() {
   // First-party pageview beacon — fires on every public route change.
   // Lives here so it runs across all non-admin pages without per-route wiring.
   usePageviewBeacon();
+  // Core Web Vitals beacon — captures LCP/INP/CLS/FCP/TTFB per visit for the
+  // Sales Diagnostic Engine. Internal /admin/api/auth paths are filtered inside.
+  useWebVitalsBeacon();
 
   if (isAdmin) return <AdminOnlyShell />;
 
