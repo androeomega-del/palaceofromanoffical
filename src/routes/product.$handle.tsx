@@ -23,7 +23,8 @@ import { useMarketStore } from "@/stores/market-store";
 import { marketTaxNote } from "@/lib/market-tax";
 import { useRecentlyViewedStore } from "@/stores/recently-viewed-store";
 import { useInteractionStore } from "@/stores/interaction-store";
-import { Loader2, Minus, Plus, ShieldCheck, Truck, RotateCcw, Lock, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
+import { Loader2, Minus, Plus, ShieldCheck, Truck, RotateCcw, Lock, ChevronLeft, ChevronRight, Sparkles, Luggage } from "lucide-react";
+import { useVacationTrunkStore } from "@/stores/vacation-trunk-store";
 import { computeScarcitySignal } from "@/lib/scarcity-signal";
 import { toast } from "sonner";
 import { ProductCard } from "@/components/product-card";
@@ -1207,6 +1208,34 @@ function ProductView({
                   )}
                 </button>
               </div>
+
+              {/* Secondary entry point — Vacation Stylist Digital Packing Trunk */}
+              <button
+                type="button"
+                onClick={() => {
+                  const imageUrl = product.images?.edges?.[0]?.node?.url ?? null;
+                  const priceLabel = formatPrice(currentPrice);
+                  useVacationTrunkStore.getState().openTrunk({
+                    id: selectedVariant?.id ?? product.id,
+                    handle: product.handle,
+                    title: product.title,
+                    vendor: product.vendor ?? null,
+                    imageUrl,
+                    priceLabel,
+                    variantTitle: selectedVariant?.title ?? null,
+                  });
+                }}
+                className="mt-3 w-full h-14 inline-flex items-center justify-center gap-2 text-[10.5px] uppercase tracking-[0.32em] border transition-colors"
+                style={{
+                  borderColor: "var(--studio-ink)",
+                  color: "var(--studio-ink)",
+                  background: "transparent",
+                }}
+              >
+                <Luggage className="w-3.5 h-3.5" strokeWidth={1.5} />
+                Save Edit to Vacation Stylist
+              </button>
+
 
               {selectedVariant && !selectedVariant.availableForSale && (
                 <NotifyMeForm
