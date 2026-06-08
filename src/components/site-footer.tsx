@@ -149,8 +149,8 @@ export function SiteFooter() {
           </div>
           <div className="flex flex-col gap-3">
             <Link to="/sourcing-architecture" className="text-sm text-muted-foreground hover:text-ink transition-colors">Sourcing Architecture</Link>
-            <Link to="/authentication" className="text-sm text-muted-foreground hover:text-ink transition-colors">Authenticity Guarantee</Link>
-            <Link to="/shipping-returns" className="text-sm text-muted-foreground hover:text-ink transition-colors">European Logistics &amp; Tracking</Link>
+            <Link to="/sourcing-architecture" hash="authenticity" className="text-sm text-muted-foreground hover:text-ink transition-colors">Authenticity Guarantee</Link>
+            <Link to="/sourcing-architecture" hash="logistics" className="text-sm text-muted-foreground hover:text-ink transition-colors">European Logistics &amp; Tracking</Link>
           </div>
           <div className="flex flex-col gap-3">
             <h5 className="text-[10px] uppercase tracking-[0.25em] font-semibold mb-1">Shop By City</h5>
