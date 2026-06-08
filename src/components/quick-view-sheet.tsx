@@ -6,6 +6,7 @@ import { formatPrice, type ShopifyProduct } from "@/lib/shopify";
 import { cdnImage } from "@/lib/cdn-image";
 import { useCartStore } from "@/stores/cart-store";
 import { useInteractionStore } from "@/stores/interaction-store";
+import { formatLuxuryTitle } from "@/utils/productHelpers";
 
 /**
  * In-grid size picker. Lets shoppers add a multi-variant piece to bag
@@ -128,7 +129,7 @@ export function QuickViewSheet({
               <p className="text-[10px] uppercase tracking-widest text-bronze mb-1">
                 {p.vendor}
               </p>
-              <h3 className="text-base font-medium leading-snug">{p.title}</h3>
+              <h3 className="text-base font-medium leading-snug">{formatLuxuryTitle(p.title, p.vendor)}</h3>
               <p className="text-sm mt-2">{formatPrice(price)}</p>
             </div>
 

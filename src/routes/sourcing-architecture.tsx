@@ -4,9 +4,9 @@ import { img } from "@/lib/editorial-library";
 import { routeHead, breadcrumbJsonLd } from "@/lib/seo";
 
 const PATH = "/sourcing-architecture";
-const TITLE = "Sourcing Architecture — How We Operate";
+const TITLE = "The Architecture of Modern Luxury — Palace of Roman";
 const DESC =
-  "A digital-first window into Europe's authorised luxury distribution networks. Current-season pieces, sourced through the same channels as the houses' own boutiques, with no overhead carried into the price.";
+  "A direct, digitally-synchronised window into Europe's authorised luxury distribution networks. Current-season pieces sourced through the same channels as the continent's heritage boutiques.";
 
 export const Route = createFileRoute("/sourcing-architecture")({
   head: () => {
@@ -34,39 +34,37 @@ function SourcingArchitecturePage() {
   return (
     <EditorialPageShell
       eyebrow="House Notes"
-      title="Sourcing Architecture."
-      intro="The model behind every Palace of Roman order — explained plainly. A direct, digitally-synchronised window into Europe's authorised luxury distribution networks, with the overhead of legacy retail removed and the savings returned, in full, to the client."
+      title="The Architecture of Modern Luxury."
+      intro="The model behind every Palace of Roman order — a digitally-synchronised window into Europe's authorised luxury distribution networks, with the overhead of legacy retail removed and the savings returned, in full, to the client."
       heroImage={img(11)}
       heroAlt="A piece from the current edit, photographed in studio"
     >
       {/* ─── Three-paragraph narrative ─── */}
-      <section className="max-w-3xl mx-auto mb-28">
+      <section className="max-w-3xl mx-auto py-16 md:py-24">
         <p className="text-[10px] uppercase tracking-[0.35em] text-bronze mb-4">The Digital Shift</p>
         <h2 className="font-serif text-3xl md:text-4xl tracking-tight mb-6 text-balance">
           A direct window into Europe's luxury vaults.
         </h2>
         <p className="text-[15px] leading-[1.85] text-ink/80 mb-12">
-          Palace of Roman is a digital-first maison — a quiet evolution of the traditional luxury model. In place
-          of a single flagship and a fixed buying calendar, we operate through a seamless digital architecture
-          connected directly to a network of authorised European distributors, brand licensees, and tier-one
-          supply partners. The expensive geometry of brick-and-mortar retail — long leases on Madison and Bond,
-          regional inventory silos, layers of middlemen — has been replaced with a single, live data channel into
-          the same European vaults that supply the continent's most established boutiques. The result is a
-          private window onto the catalogue, opened, for the first time, to a global clientele on their own
-          terms.
+          Our platform operates on a singular premise: the traditional barriers between the world's finest
+          fashion houses and the global collector are entirely obsolete. By replacing physical retail
+          footprints and legacy media overhead with a seamless digital architecture, we connect your wardrobe
+          directly to the primary source. We interface in real time with Europe's most prestigious authorised
+          distributors and brand licensees. This structural integration grants our clients an uncompromised,
+          direct window into the continent's premier luxury vaults.
         </p>
 
         <p className="text-[10px] uppercase tracking-[0.35em] text-bronze mb-4">Current-Season Availability</p>
         <h2 className="font-serif text-3xl md:text-4xl tracking-tight mb-6 text-balance">
-          The same release date as the boutiques on Via Montenapoleone.
+          Runway-to-doorstep, in season.
         </h2>
         <p className="text-[15px] leading-[1.85] text-ink/80 mb-12">
-          Our ecosystem synchronises directly with authorised European distributor networks and the official
-          licensees of each maison, securing brand-new, current-season ready-to-wear and accessories at the
-          moment of release — simultaneously with the heritage boutiques of Milan, Paris, Florence, and London.
-          When a collection lands on the shop floor, it lands with us. There is no waiting list, no intermediary
-          mark-up, and no quiet hand-off through the grey market. Every piece is current-season, fully
-          authenticated, and offered the instant it becomes available.
+          We do not wait for the season to fade. Our digital logistics ecosystem operates in synchronisation
+          with official runway releases, securing brand-new, current-season ready-to-wear and accessories
+          simultaneously with traditional heritage boutiques. By eliminating the multi-layered middlemen that
+          historically inflated high-fashion pricing, we capture current-season inventory the moment it
+          becomes available. This ensures our clients never have to choose between immediate seasonal
+          relevance and logistical intelligence.
         </p>
 
         <p className="text-[10px] uppercase tracking-[0.35em] text-bronze mb-4">Structural Efficiency</p>
@@ -74,58 +72,90 @@ function SourcingArchitecturePage() {
           Overhead removed. Savings returned.
         </h2>
         <p className="text-[15px] leading-[1.85] text-ink/80">
-          We do not maintain editorial offices, flagship leases, or celebrity campaigns — and we do not ask our
-          clients to underwrite them. The cost structure of traditional luxury retail can absorb thirty to
-          fifty percent of a piece's retail price before a single garment is sold. By eliminating those layers,
-          we are able to redirect the full weight of our resources into the parts of the experience that
-          genuinely matter to a serious buyer: flawless global logistics, rigorous authentication, fully insured
-          express transit from European hubs, and a private concierge that answers personally. The reduction in
-          price you see against traditional retail is not a discount, and it is not a sale. It is the absence
-          of overhead — passed, in full, to you.
+          The absence of traditional brick-and-mortar storefronts, costly editorial campaign buy-ins, and
+          celebrity marketing is our deliberate operational strategy. We allocate those substantial capital
+          reserves directly into what matters most to the collector: flawless global transit, rigorous
+          verification protocols, and an optimised pricing structure. By streamlining the supply chain from
+          the European hub directly to your doorstep, we remove unnecessary systemic costs, delivering
+          pristine, newly released luxury items with absolute operational efficiency.
         </p>
       </section>
 
-      {/* ─── Pillars row ─── */}
-      <section className="grid md:grid-cols-3 gap-10 mb-28 border-y border-ink/10 py-16">
+      {/* ─── 3-Pillar Operational Row ─── */}
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12 border-t border-neutral-200 mb-24">
         <Pillar
           eyebrow="01 — Provenance"
-          title="Authorised European channels only."
-          body="Every piece is sourced through the official supply chain — the maison, its appointed distributor, or a brand licensee operating under European Union commercial law."
+          title="Direct European Integration"
+          body="Tracking real-time luxury allocations straight from authorised European distribution points and brand licensees operating under EU commercial law."
         />
         <Pillar
-          eyebrow="02 — Inventory"
-          title="Live-synced to the exact second."
-          body="What you see on the page is what is physically held, in your size, at the moment of order. No phantom listings, no oversells, no quiet substitutions."
+          eyebrow="02 — Cadence"
+          title="Runway-to-Doorstep Cadence"
+          body="Instant synchronisation with new-season European collections as they drop — the same release window as the boutiques of Milan, Paris, Florence, and London."
         />
         <Pillar
-          eyebrow="03 — Logistics"
-          title="Insured express, worldwide."
-          body="Dispatched from European hubs within 24–48 hours via DHL Express, FedEx, or UPS — fully tracked, fully insured, signature on delivery."
+          eyebrow="03 — Transit"
+          title="Sovereign Authentication"
+          body="Verified transit protocols — insured express from European hubs via DHL, FedEx, UPS — maintaining uncompromised luxury standards from warehouse to wardrobe."
         />
       </section>
 
-      {/* ─── CTA ─── */}
-      <section className="text-center max-w-2xl mx-auto pb-12">
-        <p className="text-[10px] uppercase tracking-[0.35em] text-bronze mb-4">Continue</p>
+      {/* ─── Authenticity anchor ─── */}
+      <section id="authenticity" className="max-w-3xl mx-auto mb-24 scroll-mt-32">
+        <p className="text-[10px] uppercase tracking-[0.35em] text-bronze mb-4">Authenticity Guarantee</p>
         <h2 className="font-serif text-3xl md:text-4xl tracking-tight mb-6 text-balance">
-          Read the authenticity protocol.
+          An unconditional standard.
         </h2>
-        <p className="text-[15px] leading-[1.8] text-ink/80 mb-8">
-          The full standard every order is held to — original presentation, factory tagging, documentation, and
-          the unconditional financial guarantee that backs each acquisition.
+        <p className="text-[15px] leading-[1.85] text-ink/80 mb-6">
+          Every acquisition is backed by a strict alliance with tier-one European distribution networks
+          operating under European Union commercial law. We maintain zero tolerance for secondary-market
+          variance: every piece arrives in original presentation, with house-issued factory tags, regional
+          retail barcodes, original care booklets, dust bags, and serial-numbered authenticity cards where
+          issued by the maison.
         </p>
-        <div className="flex flex-wrap gap-4 justify-center">
+        <div className="border-l-2 border-black pl-4 my-4 italic font-medium text-neutral-900">
+          We provide an absolute, unconditional financial guarantee of authenticity. If any item fails to meet
+          these rigorous standards, a full, immediate financial reversal is issued — no preconditions, no delay.
+        </div>
+      </section>
+
+      {/* ─── Logistics anchor ─── */}
+      <section id="logistics" className="max-w-3xl mx-auto mb-24 scroll-mt-32">
+        <p className="text-[10px] uppercase tracking-[0.35em] text-bronze mb-4">European Logistics &amp; Tracking</p>
+        <h2 className="font-serif text-3xl md:text-4xl tracking-tight mb-6 text-balance">
+          Insured continental express, worldwide.
+        </h2>
+        <p className="text-[15px] leading-[1.85] text-ink/80 mb-6">
+          Dispatched from European hubs within 24–48 hours of order via DHL Express, FedEx, or UPS premium
+          air service — fully tracked in real time, fully insured end-to-end, released only against adult
+          signature on delivery. Typical transit is 3–7 business days.
+        </p>
+        <div className="flex flex-wrap items-center gap-4 text-xs tracking-wider opacity-60 text-neutral-500 uppercase mt-4">
+          <span>DHL Express</span>
+          <span className="opacity-50">·</span>
+          <span>FedEx</span>
+          <span className="opacity-50">·</span>
+          <span>UPS</span>
+        </div>
+      </section>
+
+      {/* ─── CTA cluster ─── */}
+      <section className="text-center max-w-2xl mx-auto pb-12">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <Link
-            to="/authentication"
-            className="px-6 py-3 bg-ink text-canvas text-[11px] uppercase tracking-[0.25em] hover:bg-ink/85 transition-colors"
+            to="/collections/$handle"
+            params={{ handle: "new-arrivals" }}
+            className="px-8 py-4 bg-black text-white text-[11px] uppercase tracking-[0.28em] hover:bg-ink/85 transition-colors"
           >
-            Authenticity Guarantee
+            Discover New Arrivals
           </Link>
           <Link
-            to="/shipping-returns"
-            className="px-6 py-3 ring-1 ring-ink text-[11px] uppercase tracking-[0.25em] hover:bg-ink hover:text-canvas transition-colors"
+            to="/collections/$handle"
+            params={{ handle: "accessories" }}
+            className="group inline-flex items-center gap-2 px-2 py-4 text-[11px] uppercase tracking-[0.28em] text-ink hover:text-bronze transition-colors"
           >
-            European Logistics &amp; Tracking
+            View Current Season Accessories
+            <span aria-hidden className="inline-block transition-transform group-hover:translate-x-1">→</span>
           </Link>
         </div>
       </section>
