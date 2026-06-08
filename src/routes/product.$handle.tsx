@@ -794,7 +794,9 @@ function ProductView({
       return;
     }
     const { ensureVaultUnlocked } = await import("@/lib/vault-gate");
-    if (!(await ensureVaultUnlocked(product.title))) return;
+    const qa = selectedVariant.quantityAvailable;
+    const lowStock = typeof qa === "number" && qa > 0 && qa <= 1;
+    if (!(await ensureVaultUnlocked({ label: product.title, lowStock }))) return;
     const added = await addItem({
       product: { node: product },
       variantId: selectedVariant.id,
