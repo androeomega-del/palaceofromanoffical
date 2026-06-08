@@ -28,9 +28,7 @@ const juneUrls: string[] = Object.entries(juneModules)
   })
   .map(([, mod]) => mod.url);
 
-// Four anchor frames for the staggered right-column grid; the marquee
-// below replays every frame in the drop.
-const featured = [juneUrls[0], juneUrls[1], juneUrls[2], juneUrls[3]].filter(Boolean);
+// The full-bleed contact-sheet marquee replays every frame in the drop.
 const marqueeFrames = juneUrls.length ? [...juneUrls, ...juneUrls] : []; // duplicate for seamless loop
 
 export function StudioVerificationBanner() {
