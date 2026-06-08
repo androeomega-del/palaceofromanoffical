@@ -15,7 +15,7 @@ import { palette, fontSans, fontSerif } from "./palette";
 
 // Eagerly import every June asset pointer at build time; Vite tree-shakes
 // the .asset.json modules into a single map of CDN urls.
-const juneModules = import.meta.glob("@/assets/june/*.png.asset.json", {
+const juneModules = import.meta.glob("../../assets/june/*.png.asset.json", {
   eager: true,
   import: "default",
 }) as Record<string, { url: string }>;
