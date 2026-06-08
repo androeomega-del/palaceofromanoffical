@@ -203,6 +203,12 @@ function ShippingReturnsPage() {
                 Returns must travel with UPS, FedEx or DHL and a live tracking number — regular postal services cannot
                 be accepted and parcels sent that way will be declined.
               </p>
+              <p>
+                <strong className="text-ink font-medium">Return shipping cost:</strong> the customer pays return
+                shipping for standard returns (change of mind, fit or size). For damaged, defective or incorrect
+                pieces, Palace of Roman provides a prepaid courier label at no cost — see "A damaged or incorrect
+                piece arrived" below.
+              </p>
               <p className="text-sm text-muted-foreground">
                 Sending a return to the wrong warehouse incurs a 20% restocking fee, as it adds significant handling
                 and freight cost. We will confirm the correct address before you ship.
