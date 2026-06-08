@@ -37,7 +37,7 @@ export const Route = createFileRoute("/about")({
         telephone: "+1-213-991-4069",
         availableLanguage: ["English"],
         areaServed: "Worldwide",
-        hoursAvailable: "Mo-Sa 09:00-18:00",
+        hoursAvailable: "Mo-Su 00:00-23:59",
       },
       sameAs: [
         "https://www.instagram.com/palaceofroman/",

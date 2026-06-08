@@ -120,7 +120,7 @@ const SECTIONS: { title: string; items: QA[] }[] = [
     items: [
       {
         q: "Which payment methods do you accept?",
-        a: <>All major cards, Apple Pay, Google Pay and Shop Pay through our Shopify checkout. Payment is captured at the moment your order is placed.</>,
+        a: <>Visa, Mastercard, American Express, Apple Pay, Google Pay, Shop Pay and Klarna through our Shopify checkout. Payment is captured at the moment your order is placed.</>,
       },
       {
         q: "Can I cancel or amend an order after checkout?",

@@ -192,7 +192,7 @@ export const Route = createFileRoute("/product/$handle")({
       descPieces.push(
         `Shop the authentic ${p.vendor ? `${p.vendor} ` : ""}${p.title}${p.productType ? ` ${p.productType.toLowerCase()}` : ""}${parsedComp.composition ? ` in ${parsedComp.composition.toLowerCase()}` : ""} at Palace of Roman.`,
       );
-      descPieces.push("Sourced through our authorised European boutique network — guaranteed authentic, with dust bag and original packaging.");
+      descPieces.push("Sourced through our authorised European boutique network — authenticity verified under our 90-day independent-authentication policy, with dust bag and original packaging.");
       descPieces.push("Free worldwide shipping over $250, 14-day returns. Members unlock 10% off.");
     }
     const desc = metaDescription(descPieces.join(" "));
@@ -1096,8 +1096,8 @@ function ProductView({
                 typeof selectedVariant.quantityAvailable === "number" &&
                 selectedVariant.quantityAvailable > 0 &&
                 selectedVariant.quantityAvailable <= 3 && (
-                <p className="text-[11px] tracking-wide text-[oklch(0.52_0.11_25)] font-medium animate-pulse">
-                  Only {selectedVariant.quantityAvailable} {selectedVariant.quantityAvailable === 1 ? "piece" : "pieces"} remaining – Selling fast
+                <p className="text-[11px] tracking-wide text-[oklch(0.52_0.11_25)] font-medium">
+                  Only {selectedVariant.quantityAvailable} {selectedVariant.quantityAvailable === 1 ? "piece" : "pieces"} remaining
                 </p>
               )}
 

@@ -73,11 +73,14 @@ export function CityLandingPage({
       <section className="border-b border-ink/10 bg-ink/[0.02]">
         <div className="max-w-screen-xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-3 gap-10">
           <div>
-            <h3 className="text-[11px] uppercase tracking-[0.25em] mb-3">Authenticity Guaranteed</h3>
+            <h3 className="text-[11px] uppercase tracking-[0.25em] mb-3">Independently Authenticated</h3>
             <p className="text-sm text-ink/70 leading-relaxed">
               Every piece is new, sealed, and sourced through our global network of
               authorised boutiques and distributors. Country of origin and serial
-              stamps appear on every product page.
+              stamps appear on every product page — covered by our{" "}
+              <a href="/authentication" className="underline decoration-bronze/60 underline-offset-4 hover:text-bronze">
+                90-day independent-authentication policy
+              </a>.
             </p>
           </div>
           <div>
