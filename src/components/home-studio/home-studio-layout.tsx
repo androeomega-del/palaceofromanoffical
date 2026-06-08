@@ -104,7 +104,7 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
                   Shop Womenswear
                   <ArrowUpRight className="w-3 h-3 transition-transform duration-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" strokeWidth={1.25} />
                 </Link>
-                <span aria-hidden="true">/</span>
+                
                 <Link
                   to="/men"
                   aria-label="Shop the men's edit"
