@@ -141,6 +141,67 @@ const TAXONOMY_RE: Record<CapsuleSlotKind, RegExp> = Object.fromEntries(
 ) as Record<CapsuleSlotKind, RegExp>;
 
 /**
+ * Outerwear sub-taxonomy — the Outerwear slot is sub-grouped in the picker
+ * into four editorial buckets so shoppers can find the right weight quickly.
+ * Order = display order. Resolution is priority-first (most specific wins),
+ * with "Lightweight & Mid-Layers" as the catch-all default.
+ */
+export type OuterwearSubKind =
+  | "Lightweight & Mid-Layers"
+  | "Insulated & Puffy Jackets"
+  | "Heavy Coats"
+  | "Vest";
+
+const OUTERWEAR_SUBTAXONOMY: Record<OuterwearSubKind, string[]> = {
+  "Vest": ["Vest", "Vests", "Gilet", "Gilets"],
+  "Insulated & Puffy Jackets": [
+    "Puffer", "Puffers", "Down", "Quilted", "Padded", "Shearling",
+    "Insulated", "Parka", "Parkas",
+  ],
+  "Heavy Coats": [
+    "Overcoat", "Overcoats", "Coat", "Coats", "Trench", "Wool Coat",
+    "Cashmere Coat", "Cape", "Capes", "Peacoat",
+  ],
+  "Lightweight & Mid-Layers": [
+    "Blazer", "Blazers", "Bomber", "Bombers", "Jacket", "Jackets",
+    "Anorak", "Windbreaker", "Cardigan", "Overshirt", "Shacket",
+    "Track Jacket", "Harrington",
+  ],
+};
+
+const OUTERWEAR_SUB_PRIORITY: OuterwearSubKind[] = [
+  "Vest",
+  "Insulated & Puffy Jackets",
+  "Heavy Coats",
+  "Lightweight & Mid-Layers",
+];
+
+const OUTERWEAR_SUB_RE: Record<OuterwearSubKind, RegExp> = Object.fromEntries(
+  OUTERWEAR_SUB_PRIORITY.map((k) => [
+    k,
+    new RegExp(`\\b(?:${OUTERWEAR_SUBTAXONOMY[k].map(escapeRe).join("|")})\\b`, "i"),
+  ]),
+) as Record<OuterwearSubKind, RegExp>;
+
+function classifyOuterwearSub(
+  productType: string | undefined | null,
+  tags?: string[] | null,
+  title?: string | null,
+  handle?: string | null,
+): OuterwearSubKind {
+  const haystack = [
+    productType ?? "",
+    ...(Array.isArray(tags) ? tags : []),
+    title ?? "",
+    (handle ?? "").replace(/-/g, " "),
+  ].join(" | ");
+  for (const k of OUTERWEAR_SUB_PRIORITY) {
+    if (OUTERWEAR_SUB_RE[k].test(haystack)) return k;
+  }
+  return "Lightweight & Mid-Layers";
+}
+
+/**
  * Classify a product into a single CapsuleSlotKind using productType, tags,
  * and title. Title is included because Shopify `productType` is frequently
  * empty on imported catalogs, but titles almost always carry the category
