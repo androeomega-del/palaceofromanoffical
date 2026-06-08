@@ -77,3 +77,26 @@ export const bestSellersQueryOptions = (dept: Dept) => {
     staleTime: 10 * 60_000,
   });
 };
+
+/**
+ * Shopify "Home page" collection — populated by the merchant in Shopify
+ * admin (Collections → Home page). We query via `collection:home-page`
+ * search syntax rather than `collection.products` so unpublished-to-
+ * storefront-channel collections still surface their products on the
+ * homepage. Sorted BEST_SELLING for an editorial-feeling hand-picked feel.
+ */
+export const homePageCollectionQueryOptions = () => {
+  const key = `rail-home-page-collection:${marketKey()}`;
+  return queryOptions({
+    queryKey: ["rail-home-page-collection", marketKey()] as const,
+    queryFn: () =>
+      railCached(key, 60_000, () =>
+        fetchProducts({
+          first: 8,
+          query: "collection:home-page",
+          sortKey: "BEST_SELLING",
+        }),
+      ),
+    staleTime: 5 * 60_000,
+  });
+};

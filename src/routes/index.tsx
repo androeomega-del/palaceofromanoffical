@@ -15,7 +15,7 @@ import heroImage from "@/assets/home-hero.jpg";
 import { readMetaAbBucket } from "@/lib/meta-ab.functions";
 import { pickHomeMeta, seoMetaForBucket, type MetaBucket } from "@/lib/meta-ab";
 import { useMetaAb } from "@/hooks/use-meta-ab";
-import { newThisWeekQueryOptions } from "@/lib/rails/queries";
+import { newThisWeekQueryOptions, homePageCollectionQueryOptions } from "@/lib/rails/queries";
 import { cdnImage } from "@/lib/cdn-image";
 
 export const Route = createFileRoute("/")({
@@ -30,6 +30,7 @@ export const Route = createFileRoute("/")({
       readMetaAbBucket(),
       context.queryClient.ensureQueryData(newThisWeekQueryOptions("Men")),
       context.queryClient.ensureQueryData(newThisWeekQueryOptions("Women")),
+      context.queryClient.ensureQueryData(homePageCollectionQueryOptions()),
     ]);
     const firstImg =
       (menRail as any)?.[0]?.node?.images?.edges?.[0]?.node?.url ?? null;

@@ -17,7 +17,8 @@ import { Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useChromeStore } from "@/stores/chrome-store";
-import { newThisWeekQueryOptions } from "@/lib/rails/queries";
+import { newThisWeekQueryOptions, homePageCollectionQueryOptions } from "@/lib/rails/queries";
+import { ProductRail } from "@/components/sections/product-rail";
 import { ConciergeDrawer } from "./concierge-drawer";
 import { AsymmetricGrid } from "./asymmetric-grid";
 import { PalaceHeader } from "./palace-header";
@@ -163,6 +164,19 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
 
         <AsymmetricGrid menProducts={menProducts} womenProducts={womenProducts} />
       </section>
+
+      {/* ───── Shopify "Home page" collection — merchant-curated feature rail ───── */}
+      <div className="bg-canvas text-ink">
+        <ProductRail
+          queryOptions={homePageCollectionQueryOptions()}
+          eyebrow="The Home Page Edit"
+          title="Curated for the season"
+          ctaTo="/collections/home-page"
+          ctaLabel="Explore the edit"
+          surface="rail:home-page-collection"
+          columns={4}
+        />
+      </div>
 
       {/* ───── Standalone-only draft footer (real SiteFooter handles `/`) ───── */}
       {isStandalone && (
