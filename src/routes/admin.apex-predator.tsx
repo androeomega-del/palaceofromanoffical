@@ -17,11 +17,18 @@ import {
   generateStrikePlan,
   generateHighIntentSeoPatch,
   deployPatchToShopify,
+  listBulkOvertakeTargets,
+  startBulkOvertake,
+  executeBulkCatalogOvertake,
+  getBulkOvertakeStatus,
+  BULK_OVERTAKE_BATCH_SIZE,
+  type BulkOvertakeTarget,
   type ContentBlueprint,
   type StrikePlan,
   type HighIntentSeoPatch,
   type StrikingRow,
 } from "@/lib/apex-predator.functions";
+
 
 export const Route = createFileRoute("/admin/apex-predator")({
   ssr: false,
