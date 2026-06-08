@@ -406,6 +406,10 @@ function RouteAwareRuntime() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isAdmin = pathname.startsWith("/admin");
 
+  // First-party pageview beacon — fires on every public route change.
+  // Lives here so it runs across all non-admin pages without per-route wiring.
+  usePageviewBeacon();
+
   if (isAdmin) return <AdminOnlyShell />;
 
   return (
