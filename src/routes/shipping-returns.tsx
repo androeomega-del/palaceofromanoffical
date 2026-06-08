@@ -132,8 +132,10 @@ function ShippingReturnsPage() {
         <section>
           <SectionTitle kicker="Delivery">Where we ship from, and how long it takes</SectionTitle>
           <p>
-            Palace of Roman operates through an authorised distribution network with warehouses across Europe and the
-            United States. Your order is routed automatically from the warehouse holding the piece.
+            Palace of Roman is headquartered in West Hollywood, California, and operates online only. Orders are
+            fulfilled and dispatched from our network of brand-authorised European and US partner distribution
+            centres — your tracking number will therefore originate from the warehouse closest to the piece, not
+            from our US registered address. The piece is routed automatically from the warehouse holding stock.
           </p>
           <ul className="text-sm text-muted-foreground !list-none !pl-0 space-y-1">
             <li><strong className="text-ink font-medium">Italy</strong> — Milan, Giuseppe, Beati, Genova, Florence, Modena, Como, Rome, Pomezia, Napoli, Piacenza, Pescara, Parma</li>
