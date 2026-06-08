@@ -130,20 +130,12 @@ export function VacationTrunkOverlay() {
 
   if (!open) return null;
 
-  const pulseInput = (el: HTMLElement | null) => {
-    if (!el) return;
-    el.style.animation = "none";
-    void (el as HTMLElement).offsetWidth;
-    el.style.animation = "trunkBorderPulse 1.4s ease-in-out 2";
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (phase !== "idle") return;
     let bad = false;
     if (!isEmailValid) {
       setEmailError(true);
-      pulseInput(inputRef.current);
       bad = true;
     }
     if (!isDateSelected || !dateOk) {
@@ -445,6 +437,7 @@ export function VacationTrunkOverlay() {
                   borderColor: emailError ? "rgba(10,10,10,0.55)" : "rgba(10,10,10,0.25)",
                   color: "#0a0a0a",
                   caretColor: "#0a0a0a",
+                  animation: emailError ? "trunkBorderPulse 1.6s ease-in-out 2" : undefined,
                 }}
               />
               <div
@@ -494,6 +487,7 @@ export function VacationTrunkOverlay() {
                           "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' stroke='%230a0a0a' stroke-width='1' fill='none'/></svg>\")",
                         backgroundRepeat: "no-repeat",
                         backgroundPosition: "right 4px center",
+                        animation: dateError ? "trunkBorderPulse 1.6s ease-in-out 2" : undefined,
                       }}
                     >
                       <option value="">Month</option>
@@ -523,6 +517,7 @@ export function VacationTrunkOverlay() {
                           "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' stroke='%230a0a0a' stroke-width='1' fill='none'/></svg>\")",
                         backgroundRepeat: "no-repeat",
                         backgroundPosition: "right 4px center",
+                        animation: dateError ? "trunkBorderPulse 1.6s ease-in-out 2" : undefined,
                       }}
                     >
                       <option value="">Day</option>
@@ -711,7 +706,7 @@ export function VacationTrunkOverlay() {
         }
         @keyframes trunkBorderPulse {
           0%, 100% { border-bottom-color: rgba(10,10,10,0.25); }
-          50%      { border-bottom-color: rgba(10,10,10,0.7); }
+          50%      { border-bottom-color: rgba(10,10,10,0.55); }
         }
         @keyframes trunkPulse {
           0%, 100% { opacity: 0.35; transform: scale(0.9); }
