@@ -354,28 +354,40 @@ function DashboardView({
         </div>
       )}
 
-      {/* CTA */}
-      <button
-        type="button"
-        onClick={onProceed}
-        disabled={items.length === 0}
-        className="mt-12 w-full inline-flex items-center justify-center gap-4 py-5 text-[11px] uppercase font-light transition-all hover:gap-6 disabled:opacity-40 disabled:cursor-not-allowed"
+      {/* Spacer so sticky mobile CTA doesn't cover content */}
+      <div className="h-28 md:hidden" aria-hidden />
+
+      {/* CTA — sticky thumb-zone on mobile, inline on desktop */}
+      <div
+        className="fixed md:static bottom-0 left-0 right-0 z-40 md:z-auto md:mt-12 px-5 md:px-0 pt-3 md:pt-0"
         style={{
-          background: PALETTE.alabaster,
-          color: PALETTE.onyx,
-          letterSpacing: "0.42em",
+          background: "linear-gradient(to top, #0a0a0a 78%, rgba(10,10,10,0))",
+          paddingBottom: "calc(14px + env(safe-area-inset-bottom))",
         }}
       >
-        Proceed to White-Glove Dispatch
-        <ArrowRight className="w-3.5 h-3.5" strokeWidth={1.5} />
-      </button>
+        <button
+          type="button"
+          onClick={onProceed}
+          disabled={items.length === 0}
+          className="w-full inline-flex items-center justify-center gap-4 text-[11px] uppercase font-light transition-all md:hover:gap-6 disabled:opacity-40 disabled:cursor-not-allowed"
+          style={{
+            minHeight: 56,
+            background: PALETTE.alabaster,
+            color: PALETTE.onyx,
+            letterSpacing: "0.36em",
+          }}
+        >
+          Proceed to White-Glove Dispatch
+          <ArrowRight className="w-3.5 h-3.5" strokeWidth={1.5} />
+        </button>
 
-      <p
-        className="mt-6 text-[10px] uppercase tracking-[0.28em] text-center"
-        style={{ color: "rgba(244,241,236,0.45)" }}
-      >
-        Held with absolute discretion · Verified concierge channel
-      </p>
+        <p
+          className="mt-3 md:mt-6 text-[9.5px] md:text-[10px] uppercase tracking-[0.28em] text-center"
+          style={{ color: "rgba(244,241,236,0.45)" }}
+        >
+          Held with absolute discretion · Verified concierge channel
+        </p>
+      </div>
     </section>
   );
 }
@@ -508,39 +520,52 @@ function DispatchView({
         </span>
       </div>
 
-      <button
-        type="button"
-        onClick={confirm}
-        disabled={!checkoutUrl || redirecting}
-        className="mt-12 w-full inline-flex items-center justify-center gap-4 py-5 text-[11px] uppercase font-light transition-all hover:gap-6 disabled:opacity-40 disabled:cursor-not-allowed"
+      <div className="h-28 md:hidden" aria-hidden />
+
+      <div
+        className="fixed md:static bottom-0 left-0 right-0 z-40 md:z-auto md:mt-12 px-5 md:px-0 pt-3 md:pt-0"
         style={{
-          background: PALETTE.alabaster,
-          color: PALETTE.onyx,
-          letterSpacing: "0.42em",
+          background: "linear-gradient(to top, #0a0a0a 78%, rgba(10,10,10,0))",
+          paddingBottom: "calc(14px + env(safe-area-inset-bottom))",
         }}
       >
-        {redirecting ? (
-          <>
-            <Loader2 className="w-3.5 h-3.5 animate-spin" strokeWidth={1.5} />
-            Opening Secure Dispatch
-          </>
-        ) : (
-          <>
-            Confirm &amp; Dispatch
-            <ArrowRight className="w-3.5 h-3.5" strokeWidth={1.5} />
-          </>
-        )}
-      </button>
+        <button
+          type="button"
+          onClick={confirm}
+          disabled={!checkoutUrl || redirecting}
+          className="w-full inline-flex items-center justify-center gap-4 text-[11px] uppercase font-light transition-all md:hover:gap-6 disabled:opacity-40 disabled:cursor-not-allowed"
+          style={{
+            minHeight: 56,
+            background: PALETTE.alabaster,
+            color: PALETTE.onyx,
+            letterSpacing: "0.36em",
+          }}
+        >
+          {redirecting ? (
+            <>
+              <Loader2 className="w-3.5 h-3.5 animate-spin" strokeWidth={1.5} />
+              Opening Secure Dispatch
+            </>
+          ) : (
+            <>
+              Confirm &amp; Dispatch
+              <ArrowRight className="w-3.5 h-3.5" strokeWidth={1.5} />
+            </>
+          )}
+        </button>
 
-      <p
-        className="mt-6 text-[10px] uppercase tracking-[0.28em] text-center"
-        style={{ color: "rgba(244,241,236,0.45)" }}
-      >
-        Payment finalised on the secure dispatch channel
-      </p>
+        <p
+          className="mt-3 md:mt-6 text-[9.5px] md:text-[10px] uppercase tracking-[0.28em] text-center"
+          style={{ color: "rgba(244,241,236,0.45)" }}
+        >
+          Payment finalised on the secure dispatch channel
+        </p>
+      </div>
     </section>
   );
 }
+
+
 
 function Field({
   label,

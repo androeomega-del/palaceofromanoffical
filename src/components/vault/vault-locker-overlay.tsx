@@ -126,7 +126,7 @@ export function VaultLockerOverlay() {
       role="dialog"
       aria-modal="true"
       aria-labelledby="vault-locker-title"
-      className="fixed inset-0 z-[120] flex items-center justify-center px-5 py-8 sm:px-8"
+      className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center sm:px-8 sm:py-8"
       style={{
         background: "rgba(10,10,10,0.92)",
         backdropFilter: "blur(8px)",
@@ -134,12 +134,12 @@ export function VaultLockerOverlay() {
         animation: "vaultOverlayFade 320ms cubic-bezier(.2,.7,.2,1) both",
       }}
     >
-      {/* Dismiss control — top-right, monochrome */}
+      {/* Dismiss control — top-right on desktop, in-sheet handle area on mobile */}
       <button
         type="button"
         onClick={() => phase !== "secured" && cancel()}
         aria-label="Dismiss secure allocation overlay"
-        className="absolute top-5 right-5 sm:top-7 sm:right-7 inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.32em] transition-opacity hover:opacity-100"
+        className="hidden sm:inline-flex absolute top-7 right-7 items-center gap-2 text-[10px] uppercase tracking-[0.32em] transition-opacity hover:opacity-100"
         style={{ color: "rgba(244,241,236,0.55)", fontFamily: "ui-sans-serif, system-ui, sans-serif" }}
       >
         <X className="w-3 h-3" strokeWidth={1.25} />
@@ -147,19 +147,41 @@ export function VaultLockerOverlay() {
       </button>
 
       <div
-        className="relative w-full max-w-[560px] border"
+        className="relative w-full max-w-[560px] border flex flex-col sm:block"
         style={{
           background: "#0f0f0f",
           borderColor: "rgba(244,241,236,0.12)",
-          padding: "clamp(28px, 5vw, 56px)",
-          animation: "vaultPanelIn 480ms cubic-bezier(.2,.7,.2,1) both",
+          maxHeight: "92dvh",
+          animation: "vaultSheetIn 420ms cubic-bezier(.2,.7,.2,1) both",
           fontFamily: "ui-sans-serif, system-ui, sans-serif",
           color: "#f4f1ec",
         }}
       >
+        {/* Mobile drag handle + close */}
+        <div className="sm:hidden flex items-center justify-between pt-3 pb-1 px-5">
+          <span className="w-10 h-1 rounded-full mx-auto" style={{ background: "rgba(244,241,236,0.2)" }} aria-hidden />
+          <button
+            type="button"
+            onClick={() => phase !== "secured" && cancel()}
+            aria-label="Close"
+            className="absolute right-3 top-2 inline-flex items-center justify-center"
+            style={{ minWidth: 48, minHeight: 48, color: "rgba(244,241,236,0.6)" }}
+          >
+            <X className="w-4 h-4" strokeWidth={1.5} />
+          </button>
+        </div>
+
+        {/* Scrollable content (sheet body) */}
+        <div
+          className="flex-1 overflow-y-auto"
+          style={{
+            padding: "20px 22px 16px",
+          }}
+        >
+          <div className="sm:p-[clamp(28px,5vw,56px)] sm:m-0">
         {/* Eyebrow */}
         <div
-          className="flex items-center gap-2 mb-7"
+          className="flex items-center gap-2 mb-5 sm:mb-7"
           style={{ color: "#8a8580" }}
         >
           <Lock className="w-3 h-3" strokeWidth={1.5} aria-hidden />
@@ -171,7 +193,7 @@ export function VaultLockerOverlay() {
         {/* Title */}
         <h2
           id="vault-locker-title"
-          className="text-[28px] sm:text-[34px] leading-[1.05] tracking-[-0.01em] font-light"
+          className="text-[24px] sm:text-[34px] leading-[1.05] tracking-[-0.01em] font-light"
           style={{ fontFamily: "ui-serif, Georgia, 'Times New Roman', serif" }}
         >
           Secure your
@@ -181,7 +203,7 @@ export function VaultLockerOverlay() {
 
         {/* Subtext */}
         <p
-          className="mt-5 text-[13px] sm:text-[13.5px] leading-relaxed max-w-[440px]"
+          className="mt-4 sm:mt-5 text-[13px] sm:text-[13.5px] leading-relaxed max-w-[440px]"
           style={{ color: "rgba(244,241,236,0.7)" }}
         >
           To protect our verified, investment-grade designer edits and preserve
@@ -200,7 +222,7 @@ export function VaultLockerOverlay() {
         )}
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="mt-9" noValidate>
+        <form onSubmit={handleSubmit} className="mt-7 sm:mt-9" noValidate id="vault-locker-form">
           <label htmlFor="vault-locker-email" className="sr-only">
             Private email
           </label>
@@ -211,6 +233,7 @@ export function VaultLockerOverlay() {
             name="email"
             inputMode="email"
             autoComplete="email"
+            autoFocus
             spellCheck={false}
             placeholder="ENTER PRIVATE EMAIL"
             value={email}
@@ -221,8 +244,10 @@ export function VaultLockerOverlay() {
             }}
             aria-invalid={!isValid && email.length > 0}
             aria-describedby={showError ? "vault-locker-email-error" : undefined}
-            className="w-full bg-transparent border-0 border-b py-3 text-[15px] tracking-[0.18em] uppercase placeholder:tracking-[0.32em] placeholder:text-[11px] focus:outline-none transition-colors disabled:opacity-60"
+            className="w-full bg-transparent border-0 border-b text-[16px] tracking-[0.18em] uppercase placeholder:tracking-[0.32em] placeholder:text-[11px] focus:outline-none transition-colors disabled:opacity-60"
             style={{
+              minHeight: 52,
+              padding: "14px 0",
               borderColor: showError ? "rgba(244,241,236,0.55)" : "rgba(244,241,236,0.25)",
               color: "#f4f1ec",
               caretColor: "#f4f1ec",
@@ -295,14 +320,36 @@ export function VaultLockerOverlay() {
               </span>
             )}
           </div>
+        </form>
 
-          {/* Primary action */}
+        {/* Footer reassurance — restrained, no marketing */}
+        <p
+          className="mt-6 sm:mt-7 text-[10px] uppercase tracking-[0.28em] leading-relaxed pb-2"
+          style={{ color: "rgba(244,241,236,0.45)" }}
+        >
+          Held with discretion. No third-party tracking. Used only to safeguard
+          your reservation and curate your private locker.
+        </p>
+          </div>
+        </div>
+
+        {/* Sticky thumb-zone CTA — always within reach, above safe area */}
+        <div
+          className="sticky bottom-0 left-0 right-0 border-t"
+          style={{
+            background: "#0f0f0f",
+            borderColor: "rgba(244,241,236,0.12)",
+            padding: "12px 18px calc(12px + env(safe-area-inset-bottom)) 18px",
+          }}
+        >
           <button
             type="submit"
+            form="vault-locker-form"
             disabled={!isValid || phase !== "idle"}
-            className="mt-7 w-full inline-flex items-center justify-center gap-3 py-4 text-[11px] uppercase tracking-[0.32em] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-full inline-flex items-center justify-center gap-3 text-[11px] uppercase tracking-[0.32em] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
             style={{
-              background: phase === "secured" ? "#f4f1ec" : "#f4f1ec",
+              minHeight: 56,
+              background: "#f4f1ec",
               color: "#0a0a0a",
               letterSpacing: "0.32em",
             }}
@@ -327,20 +374,11 @@ export function VaultLockerOverlay() {
             ) : (
               <>
                 <Lock className="w-3.5 h-3.5" strokeWidth={1.5} />
-                Secure Locker & Access Checkout
+                Generate Verification Link
               </>
             )}
           </button>
-        </form>
-
-        {/* Footer reassurance — restrained, no marketing */}
-        <p
-          className="mt-7 text-[10px] uppercase tracking-[0.28em] leading-relaxed"
-          style={{ color: "rgba(244,241,236,0.45)" }}
-        >
-          Held with discretion. No third-party tracking. Used only to safeguard
-          your reservation and curate your private locker.
-        </p>
+        </div>
       </div>
 
       <style>{`
@@ -351,6 +389,16 @@ export function VaultLockerOverlay() {
         @keyframes vaultPanelIn {
           from { opacity: 0; transform: translateY(16px) scale(0.985); }
           to   { opacity: 1; transform: translateY(0)    scale(1); }
+        }
+        @keyframes vaultSheetIn {
+          from { opacity: 0; transform: translateY(100%); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @media (min-width: 640px) {
+          @keyframes vaultSheetIn {
+            from { opacity: 0; transform: translateY(16px) scale(0.985); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+          }
         }
         @keyframes vaultTickerIn {
           from { opacity: 0; transform: translateY(4px); }
