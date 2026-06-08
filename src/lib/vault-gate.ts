@@ -11,9 +11,11 @@
 import { getCustomerEmail } from "@/lib/abandoned-cart-capture";
 import { useVaultGateStore } from "@/stores/vault-gate-store";
 
-export async function ensureVaultUnlocked(label?: string | null): Promise<boolean> {
+export async function ensureVaultUnlocked(
+  options?: { label?: string | null; lowStock?: boolean } | string | null,
+): Promise<boolean> {
   if (typeof window === "undefined") return true; // SSR / non-interactive
   const existing = getCustomerEmail();
   if (existing && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(existing)) return true;
-  return useVaultGateStore.getState().requestUnlock(label ?? null);
+  return useVaultGateStore.getState().requestUnlock(options ?? null);
 }
