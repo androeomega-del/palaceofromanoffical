@@ -215,19 +215,46 @@ export function VaultLockerOverlay() {
             placeholder="ENTER PRIVATE EMAIL"
             value={email}
             disabled={phase !== "idle"}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (showError) setShowError(false);
+            }}
             aria-invalid={!isValid && email.length > 0}
+            aria-describedby={showError ? "vault-locker-email-error" : undefined}
             className="w-full bg-transparent border-0 border-b py-3 text-[15px] tracking-[0.18em] uppercase placeholder:tracking-[0.32em] placeholder:text-[11px] focus:outline-none transition-colors disabled:opacity-60"
             style={{
-              borderColor: "rgba(244,241,236,0.25)",
+              borderColor: showError ? "rgba(244,241,236,0.55)" : "rgba(244,241,236,0.25)",
               color: "#f4f1ec",
               caretColor: "#f4f1ec",
             }}
-            onFocus={(e) => (e.currentTarget.style.borderColor = "#f4f1ec")}
-            onBlur={(e) =>
-              (e.currentTarget.style.borderColor = "rgba(244,241,236,0.25)")
-            }
+            onFocus={(e) => {
+              if (!showError) e.currentTarget.style.borderColor = "#f4f1ec";
+            }}
+            onBlur={(e) => {
+              if (!showError) e.currentTarget.style.borderColor = "rgba(244,241,236,0.25)";
+            }}
           />
+
+          {/* Sophisticated validation message — stone-gray micro-text */}
+          <div
+            aria-live="polite"
+            id="vault-locker-email-error"
+            className="mt-2 h-3.5 overflow-hidden"
+          >
+            {showError && (
+              <p
+                className="text-[10px] tracking-[0.14em] leading-tight"
+                style={{
+                  color: "#8a8580",
+                  fontStyle: "italic",
+                  animation: "vaultErrorIn 360ms cubic-bezier(.2,.7,.2,1) both",
+                }}
+              >
+                Verification error: Please check the formatting of your private email.
+              </p>
+            )}
+          </div>
+
 
           {/* Live status ticker (reserved height so layout doesn't jump) */}
           <div
