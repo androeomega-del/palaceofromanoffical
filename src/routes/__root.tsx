@@ -335,10 +335,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           priceRange: "$$$$",
           address: {
             "@type": "PostalAddress",
-            streetAddress: "8605 Santa Monica Blvd PMB 610211",
+            streetAddress: "8605 Santa Monica Blvd",
             addressLocality: "West Hollywood",
             addressRegion: "CA",
-            postalCode: "90069-4109",
+            postalCode: "90069",
             addressCountry: "US",
           },
           areaServed: { "@type": "Place", name: "Worldwide" },
