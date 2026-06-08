@@ -22,29 +22,28 @@ export function StudioVerificationBanner() {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-14 items-start">
         {/* ───── Left column — text block ───── */}
         <div className="md:col-span-5 md:col-start-1">
+          {/* ── Header: tracked-out uppercase serif ── */}
+          <h2
+            className="text-[8vw] md:text-[3.2vw] leading-[1.1] font-light tracking-[0.08em] uppercase mb-6"
+            style={{ fontWeight: 300, fontFamily: fontSerif, textWrap: "balance" }}
+          >
+            Verified Physical Provenance
+          </h2>
+
+          {/* ── Subtitle ── */}
           <p
-            className="text-[10px] md:text-[11px] tracking-[0.45em] uppercase mb-8"
+            className="text-[10px] md:text-[11px] tracking-[0.45em] uppercase mb-10"
             style={{ color: palette.sand, fontFamily: fontSans }}
           >
             Beyond the Digital Architecture
           </p>
 
-          <h2
-            className="text-[10vw] md:text-[4vw] leading-[1.05] font-light tracking-[-0.02em] mb-12"
-            style={{ fontWeight: 300, textWrap: "balance" }}
-          >
-            <span className="block text-[10px] md:text-[11px] tracking-[0.5em] uppercase mb-6" style={{ color: palette.muted, fontFamily: fontSans }}>
-              Verified Physical Provenance
-            </span>
-            <span style={{ fontFamily: fontSerif }}>
-              We do not rely on generic catalog imagery or unverified secondary markets.
-            </span>
-          </h2>
-
+          {/* ── Body ── */}
           <p
             className="text-sm md:text-base leading-[1.75] mb-10 max-w-lg"
             style={{ color: palette.muted, fontFamily: fontSans, fontWeight: 300 }}
           >
+            We do not rely on generic catalog imagery or unverified secondary markets.
             Every current-season allocation displayed on palaceofromanofficial.com
             is documented live under our studio architecture. We handle, inspect,
             and photograph the fine material grains and custom hardware of our
