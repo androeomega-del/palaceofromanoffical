@@ -385,37 +385,88 @@ export function VaultLockerOverlay() {
             type="submit"
             form="vault-locker-form"
             disabled={!isValid || phase !== "idle"}
-            className="w-full inline-flex items-center justify-center gap-3 text-[11px] uppercase tracking-[0.32em] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            className="relative w-full inline-flex items-center justify-center gap-3 text-[11px] uppercase tracking-[0.32em] transition-all disabled:cursor-not-allowed overflow-hidden"
             style={{
               minHeight: 56,
               background: "#f4f1ec",
               color: "#0a0a0a",
               letterSpacing: "0.32em",
+              opacity: phase === "idle" && !isValid ? 0.4 : 1,
             }}
           >
-            {phase === "secured" ? (
-              <>
-                <Check className="w-3.5 h-3.5" strokeWidth={2} />
-                Vault Secured
-              </>
-            ) : phase === "securing" ? (
-              <>
+            {/* Idle label — fades out the moment securing begins */}
+            <span
+              className="inline-flex items-center justify-center gap-3"
+              style={{
+                opacity: phase === "idle" ? 1 : 0,
+                transform: phase === "idle" ? "translateY(0)" : "translateY(-4px)",
+                transition: "opacity 240ms ease-out, transform 240ms ease-out",
+                pointerEvents: phase === "idle" ? "auto" : "none",
+              }}
+            >
+              <Lock className="w-3.5 h-3.5" strokeWidth={1.5} />
+              Generate Verification Link
+            </span>
+
+            {/* Securing state — horizontal monochrome progress bar */}
+            {phase === "securing" && (
+              <span
+                aria-hidden
+                className="absolute inset-0 flex items-center justify-center px-6"
+                style={{ animation: "vaultTickerIn 220ms ease-out both" }}
+              >
                 <span
-                  className="inline-block w-2 h-2 rounded-full"
+                  className="relative block w-full overflow-hidden"
                   style={{
-                    background: "#0a0a0a",
-                    animation: "vaultPulse 0.8s ease-in-out infinite",
+                    height: 2,
+                    background: "rgba(10,10,10,0.08)",
                   }}
-                  aria-hidden
-                />
-                Securing
-              </>
-            ) : (
-              <>
-                <Lock className="w-3.5 h-3.5" strokeWidth={1.5} />
-                Generate Verification Link
-              </>
+                >
+                  <span
+                    className="absolute inset-y-0 left-0"
+                    style={{
+                      width: "40%",
+                      background: "linear-gradient(90deg, transparent, #8a8580 50%, transparent)",
+                      animation: "vaultProgress 1.1s cubic-bezier(.4,.0,.2,1) infinite",
+                    }}
+                  />
+                </span>
+              </span>
             )}
+
+            {/* Success — checkmark draws in and softly settles */}
+            {phase === "secured" && (
+              <span
+                className="absolute inset-0 inline-flex items-center justify-center gap-2"
+                style={{ animation: "vaultSuccessIn 360ms cubic-bezier(.2,.7,.2,1) both" }}
+              >
+                <span
+                  className="inline-flex items-center justify-center rounded-full"
+                  style={{
+                    width: 22,
+                    height: 22,
+                    border: "1px solid #0a0a0a",
+                    animation: "vaultCheckRing 420ms cubic-bezier(.2,.7,.2,1) both",
+                  }}
+                >
+                  <Check
+                    className="w-3 h-3"
+                    strokeWidth={2.2}
+                    style={{ animation: "vaultCheckIn 320ms 120ms cubic-bezier(.2,.7,.2,1) both" }}
+                  />
+                </span>
+                Vault Secured
+              </span>
+            )}
+
+            {/* Screen-reader live announcement */}
+            <span className="sr-only" aria-live="polite">
+              {phase === "securing"
+                ? SECURING_STATUSES[securingStep]
+                : phase === "secured"
+                ? "Vault secured"
+                : ""}
+            </span>
           </button>
         </div>
       </div>
