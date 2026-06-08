@@ -97,6 +97,8 @@ const CAPSULE_TAXONOMY: Record<CapsuleSlotKind, string[]> = {
     "Outerwear", "Jackets", "Jacket", "Coats", "Coat", "Blazers", "Blazer",
     "Trench", "Shearling", "Parkas", "Parka", "Bombers", "Bomber",
     "Overcoats", "Overcoat", "Capes", "Cape", "Puffer", "Puffers",
+    "Vest", "Vests", "Gilet", "Gilets", "Anorak", "Windbreaker",
+    "Down Jacket", "Quilted",
   ],
 
   Bottom: [
@@ -137,6 +139,67 @@ const TAXONOMY_RE: Record<CapsuleSlotKind, RegExp> = Object.fromEntries(
     new RegExp(`\\b(?:${CAPSULE_TAXONOMY[k].map(escapeRe).join("|")})\\b`, "i"),
   ]),
 ) as Record<CapsuleSlotKind, RegExp>;
+
+/**
+ * Outerwear sub-taxonomy — the Outerwear slot is sub-grouped in the picker
+ * into four editorial buckets so shoppers can find the right weight quickly.
+ * Order = display order. Resolution is priority-first (most specific wins),
+ * with "Lightweight & Mid-Layers" as the catch-all default.
+ */
+export type OuterwearSubKind =
+  | "Lightweight & Mid-Layers"
+  | "Insulated & Puffy Jackets"
+  | "Heavy Coats"
+  | "Vest";
+
+const OUTERWEAR_SUBTAXONOMY: Record<OuterwearSubKind, string[]> = {
+  "Vest": ["Vest", "Vests", "Gilet", "Gilets"],
+  "Insulated & Puffy Jackets": [
+    "Puffer", "Puffers", "Down", "Quilted", "Padded", "Shearling",
+    "Insulated", "Parka", "Parkas",
+  ],
+  "Heavy Coats": [
+    "Overcoat", "Overcoats", "Coat", "Coats", "Trench", "Wool Coat",
+    "Cashmere Coat", "Cape", "Capes", "Peacoat",
+  ],
+  "Lightweight & Mid-Layers": [
+    "Blazer", "Blazers", "Bomber", "Bombers", "Jacket", "Jackets",
+    "Anorak", "Windbreaker", "Cardigan", "Overshirt", "Shacket",
+    "Track Jacket", "Harrington",
+  ],
+};
+
+const OUTERWEAR_SUB_PRIORITY: OuterwearSubKind[] = [
+  "Vest",
+  "Insulated & Puffy Jackets",
+  "Heavy Coats",
+  "Lightweight & Mid-Layers",
+];
+
+const OUTERWEAR_SUB_RE: Record<OuterwearSubKind, RegExp> = Object.fromEntries(
+  OUTERWEAR_SUB_PRIORITY.map((k) => [
+    k,
+    new RegExp(`\\b(?:${OUTERWEAR_SUBTAXONOMY[k].map(escapeRe).join("|")})\\b`, "i"),
+  ]),
+) as Record<OuterwearSubKind, RegExp>;
+
+function classifyOuterwearSub(
+  productType: string | undefined | null,
+  tags?: string[] | null,
+  title?: string | null,
+  handle?: string | null,
+): OuterwearSubKind {
+  const haystack = [
+    productType ?? "",
+    ...(Array.isArray(tags) ? tags : []),
+    title ?? "",
+    (handle ?? "").replace(/-/g, " "),
+  ].join(" | ");
+  for (const k of OUTERWEAR_SUB_PRIORITY) {
+    if (OUTERWEAR_SUB_RE[k].test(haystack)) return k;
+  }
+  return "Lightweight & Mid-Layers";
+}
 
 /**
  * Classify a product into a single CapsuleSlotKind using productType, tags,
@@ -552,8 +615,25 @@ export function CapsuleBuilder({
                 No companion pieces available for this slot.
               </p>
             ) : (
-              <ul className="grid grid-cols-1 gap-3">
-                {filteredForOpen.map((p) => {
+              (() => {
+                // Group outerwear into sub-sections; flat list for others.
+                const isOuterwear = openKind === "Outerwear";
+                const groups: Array<{ label: string; items: typeof filteredForOpen }> =
+                  isOuterwear
+                    ? OUTERWEAR_SUB_PRIORITY
+                        .slice()
+                        .reverse() // display order: Lightweight first
+                        .map((sub) => ({
+                          label: sub,
+                          items: filteredForOpen.filter((p) => {
+                            const tags = (p as unknown as { tags?: string[] }).tags;
+                            return classifyOuterwearSub(p.productType, tags, p.title, p.handle) === sub;
+                          }),
+                        }))
+                        .filter((g) => g.items.length > 0)
+                    : [{ label: "", items: filteredForOpen }];
+
+                const renderTile = (p: typeof filteredForOpen[number]) => {
                   const thumb = p.images?.edges?.[0]?.node;
                   return (
                     <li key={p.handle}>
@@ -591,8 +671,26 @@ export function CapsuleBuilder({
                       </button>
                     </li>
                   );
-                })}
-              </ul>
+                };
+
+                return (
+                  <div className="space-y-6">
+                    {groups.map((g) => (
+                      <div key={g.label || "all"}>
+                        {g.label ? (
+                          <h3 className="mb-2 text-[10px] uppercase tracking-[0.28em] text-muted-foreground">
+                            {g.label}
+                            <span className="ml-2 text-foreground/40">· {g.items.length}</span>
+                          </h3>
+                        ) : null}
+                        <ul className="grid grid-cols-1 gap-3">
+                          {g.items.map(renderTile)}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()
             )}
           </div>
         </SheetContent>

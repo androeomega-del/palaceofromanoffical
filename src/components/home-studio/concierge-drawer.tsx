@@ -9,12 +9,17 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useMutation } from "@tanstack/react-query";
-import { X, ArrowUp, ArrowUpRight } from "lucide-react";
+import { X, ArrowUp, ArrowUpRight, Check } from "lucide-react";
 import {
   conciergeChat,
   type ConciergeChatProduct,
 } from "@/lib/ai-concierge.functions";
 import { formatPrice } from "@/lib/shopify";
+import {
+  rememberCustomerEmail,
+  rememberMarketingOptIn,
+  getCustomerEmail,
+} from "@/lib/abandoned-cart-capture";
 import { palette, fontSans, fontSerif } from "./palette";
 
 interface ConciergeDrawerProps {
@@ -28,23 +33,75 @@ type ChatTurn = {
   products?: ConciergeChatProduct[];
 };
 
-const GREETING: ChatTurn = {
+type Dept = "women" | "men";
+type Step = "dept" | "email" | "preferences" | "chat";
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const VIBE_OPTIONS = [
+  "Quiet luxury",
+  "Statement & bold",
+  "Tailored & polished",
+  "Relaxed weekend",
+  "Evening & occasion",
+  "Resort & travel",
+] as const;
+
+const CATEGORY_OPTIONS = [
+  "Outerwear",
+  "Tailoring",
+  "Knitwear",
+  "Dresses",
+  "Denim",
+  "Footwear",
+  "Bags",
+  "Accessories",
+] as const;
+
+const PRICE_OPTIONS = [
+  "Under $500",
+  "$500 – $1,500",
+  "$1,500 – $5,000",
+  "No ceiling",
+] as const;
+
+const GREETING_FOR = (dept: Dept, name?: string): ChatTurn => ({
   role: "assistant",
   text:
-    "Good day. I'm your Palace of Roman concierge — here to advise on collections, fit, and styling. What may I help you find?",
+    `${name ? `${name}, welcome` : "Welcome"} — I'll be curating ${
+      dept === "women" ? "womenswear" : "menswear"
+    } selections tailored to your taste. Tell me about an upcoming occasion, a piece you're chasing, or a brand you love — and I'll respond with pieces from the boutique.`,
+});
+
+
+const INTAKE_DONE_KEY = "por-concierge-intake-v1";
+
+type IntakePayload = {
+  dept: Dept;
+  email: string;
+  vibes: string[];
+  categories: string[];
+  priceBand: string;
 };
 
-const SUGGESTED_PROMPTS = [
-  "Curate an understated evening uniform.",
-  "What's arriving this week worth considering?",
-  "Help me build a quiet capsule for travel.",
-];
-
 export function ConciergeDrawer({ open, onClose }: ConciergeDrawerProps) {
-  const [messages, setMessages] = useState<ChatTurn[]>([GREETING]);
+  const [messages, setMessages] = useState<ChatTurn[]>([]);
   const [input, setInput] = useState("");
   const chatEndRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
+
+  // Intake wizard state — drives the gated flow before the chat.
+  const [step, setStep] = useState<Step>("dept");
+  const [dept, setDept] = useState<Dept | null>(null);
+  const [email, setEmail] = useState("");
+  const [optIn, setOptIn] = useState(true);
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [vibes, setVibes] = useState<string[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [priceBand, setPriceBand] = useState<string>("");
+
+  const toggleIn = (list: string[], v: string) =>
+    list.includes(v) ? list.filter((x) => x !== v) : [...list, v];
 
   const chat = useMutation({
     mutationFn: async (history: ChatTurn[]) =>
@@ -72,22 +129,52 @@ export function ConciergeDrawer({ open, onClose }: ConciergeDrawerProps) {
     },
   });
 
+  // On open: restore prior intake if completed this session, else start wizard.
+  useEffect(() => {
+    if (!open) return;
+    if (typeof window === "undefined") return;
+    try {
+      const raw = sessionStorage.getItem(INTAKE_DONE_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw) as IntakePayload;
+        if (saved.dept && saved.email) {
+          setDept(saved.dept);
+          setEmail(saved.email);
+          setStep("chat");
+          if (messages.length === 0) {
+            const name = saved.email.split("@")[0]?.split(/[._-]/)[0];
+            const niceName = name
+              ? name.charAt(0).toUpperCase() + name.slice(1)
+              : undefined;
+            setMessages([GREETING_FOR(saved.dept, niceName)]);
+          }
+          return;
+        }
+      }
+      const savedEmail = getCustomerEmail();
+      if (savedEmail) setEmail(savedEmail);
+    } catch {
+      /* ignore */
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
   useEffect(() => {
     if (!open) return;
     const prevOverflow = document.body.style.overflow;
     const prevPadding = document.body.style.paddingRight;
-    // Compensate for the disappearing scrollbar so the page behind the
-    // drawer doesn't reflow on open — zero layout shift.
     const sbw = window.innerWidth - document.documentElement.clientWidth;
     document.body.style.overflow = "hidden";
     if (sbw > 0) document.body.style.paddingRight = `${sbw}px`;
-    const t = setTimeout(() => inputRef.current?.focus(), 200);
+    const t = setTimeout(() => {
+      if (step === "chat") inputRef.current?.focus();
+    }, 200);
     return () => {
       document.body.style.overflow = prevOverflow;
       document.body.style.paddingRight = prevPadding;
       clearTimeout(t);
     };
-  }, [open]);
+  }, [open, step]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -107,9 +194,54 @@ export function ConciergeDrawer({ open, onClose }: ConciergeDrawerProps) {
     sendText(input);
   };
 
+  const submitIntakeEmail = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = email.trim().toLowerCase();
+    if (!EMAIL_RE.test(trimmed)) {
+      setEmailError("Please enter a valid email address.");
+      return;
+    }
+    setEmailError(null);
+    setEmail(trimmed);
+    rememberCustomerEmail(trimmed);
+    rememberMarketingOptIn(optIn);
+    setStep("preferences");
+  };
+
+  const finishIntake = () => {
+    if (!dept) return;
+    try {
+      sessionStorage.setItem(
+        INTAKE_DONE_KEY,
+        JSON.stringify({ dept, email, vibes, categories, priceBand } satisfies IntakePayload),
+      );
+    } catch {
+      /* ignore */
+    }
+    const name = email.split("@")[0]?.split(/[._-]/)[0];
+    const niceName = name ? name.charAt(0).toUpperCase() + name.slice(1) : undefined;
+    const greeting = GREETING_FOR(dept, niceName);
+
+    // Synthesize an opening user message that gives the model the full
+    // intake context, so the first assistant reply already returns curated
+    // picks aligned with the shopper's taste.
+    const summaryBits: string[] = [];
+    summaryBits.push(`I'm shopping ${dept === "women" ? "womenswear" : "menswear"}.`);
+    if (vibes.length) summaryBits.push(`Aesthetic: ${vibes.join(", ")}.`);
+    if (categories.length) summaryBits.push(`Most interested in: ${categories.join(", ")}.`);
+    if (priceBand) summaryBits.push(`Budget: ${priceBand}.`);
+    summaryBits.push(
+      "Please suggest a curated starter selection of 3–4 pieces from the boutique that match.",
+    );
+    const kickoff = summaryBits.join(" ");
+
+    setMessages([greeting, { role: "user", text: kickoff }]);
+    setStep("chat");
+    chat.mutate([greeting, { role: "user", text: kickoff }]);
+  };
+
   if (!open) return null;
 
-  const showSuggestions = messages.length === 1 && !chat.isPending;
 
   return (
     <div className="fixed inset-0 z-[60]" role="dialog" aria-label="Personal styling concierge">
@@ -189,212 +321,580 @@ export function ConciergeDrawer({ open, onClose }: ConciergeDrawerProps) {
           ))}
         </nav>
 
-        {/* Transcript */}
-        <div className="flex-1 overflow-y-auto px-7 py-7 space-y-7">
-          {messages.map((msg, idx) => (
-            <div key={idx}>
-              <p
-                className="text-[9px] uppercase tracking-[0.4em] mb-2"
-                style={{
-                  color: msg.role === "user" ? "rgba(244,241,236,0.45)" : palette.sand,
-                  fontFamily: fontSans,
-                }}
-              >
-                {msg.role === "user" ? "Client" : "Concierge"}
-              </p>
-              <p
-                className="text-[15px] leading-relaxed whitespace-pre-wrap"
-                style={{
-                  fontFamily: msg.role === "user" ? fontSans : fontSerif,
-                  fontWeight: msg.role === "user" ? 300 : 400,
-                  color: palette.offwhite,
-                }}
-              >
-                {msg.text}
-              </p>
-
-              {/* Inline product cards (verified handles only, server-resolved) */}
-              {msg.products && msg.products.length > 0 && (
-                <ul className="mt-5 space-y-3">
-                  {msg.products.map((p) => (
-                    <li key={p.handle}>
-                      <Link
-                        to="/product/$handle"
-                        params={{ handle: p.handle }}
-                        onClick={onClose}
-                        className="group grid grid-cols-[88px_1fr] gap-4 transition-opacity hover:opacity-90"
-                      >
-                        <div
-                          className="aspect-[4/5] overflow-hidden"
-                          style={{ background: "rgba(244,241,236,0.04)" }}
-                        >
-                          {p.imageUrl && (
-                            <img
-                              src={p.imageUrl}
-                              alt={p.imageAlt ?? p.title}
-                              loading="lazy"
-                              className="w-full h-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-[1.05]"
-                            />
-                          )}
-                        </div>
-                        <div style={{ fontFamily: fontSans }}>
-                          <p
-                            className="text-[9px] uppercase tracking-[0.3em]"
-                            style={{ color: palette.sand }}
-                          >
-                            {p.vendor}
-                          </p>
-                          <p
-                            className="text-[13px] leading-snug mt-1.5 line-clamp-2"
-                            style={{ fontWeight: 300, color: palette.offwhite }}
-                          >
-                            {p.title}
-                          </p>
-                          <p
-                            className="text-[11px] mt-1.5"
-                            style={{ color: "rgba(244,241,236,0.7)" }}
-                          >
-                            {formatPrice(p.price)}
-                          </p>
-                          <span
-                            className="mt-3 inline-flex items-center gap-1 text-[9px] uppercase tracking-[0.32em] pb-0.5 border-b"
-                            style={{
-                              color: palette.sand,
-                              borderColor: "rgba(217,207,193,0.4)",
-                            }}
-                          >
-                            View piece
-                            <ArrowUpRight className="w-2.5 h-2.5" strokeWidth={1.5} />
-                          </span>
-                        </div>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          ))}
-
-          {/* Suggested prompts (only on the initial greeting) */}
-          {showSuggestions && (
-            <div className="pt-2">
-              <p
-                className="text-[9px] uppercase tracking-[0.4em] mb-3"
-                style={{ color: "rgba(244,241,236,0.45)", fontFamily: fontSans }}
-              >
-                Suggested inquiries
-              </p>
-              <div className="space-y-2">
-                {SUGGESTED_PROMPTS.map((prompt, i) => (
-                  <button
-                    key={prompt}
-                    onClick={() => sendText(prompt)}
-                    className="w-full text-left text-[13px] py-3 px-4 transition-all duration-300 animate-[studioFade_.5s_ease-out_both]"
+        {step !== "chat" ? (
+          <IntakeWizard
+            step={step}
+            dept={dept}
+            email={email}
+            optIn={optIn}
+            emailError={emailError}
+            vibes={vibes}
+            categories={categories}
+            priceBand={priceBand}
+            onChooseDept={(d) => {
+              setDept(d);
+              setStep("email");
+            }}
+            onBack={() => {
+              if (step === "email") setStep("dept");
+              else if (step === "preferences") setStep("email");
+            }}
+            onEmailChange={(v) => {
+              setEmail(v);
+              if (emailError) setEmailError(null);
+            }}
+            onOptInChange={setOptIn}
+            onSubmitEmail={submitIntakeEmail}
+            onToggleVibe={(v) => setVibes((p) => toggleIn(p, v))}
+            onToggleCategory={(v) => setCategories((p) => toggleIn(p, v))}
+            onPriceBand={setPriceBand}
+            onFinish={finishIntake}
+          />
+        ) : (
+          <>
+            {/* Transcript */}
+            <div className="flex-1 overflow-y-auto px-7 py-7 space-y-7">
+              {messages.map((msg, idx) => (
+                <div key={idx}>
+                  <p
+                    className="text-[9px] uppercase tracking-[0.4em] mb-2"
                     style={{
-                      background: "#121214",
-                      border: "1px solid rgba(244,241,236,0.1)",
-                      color: palette.offwhite,
+                      color: msg.role === "user" ? "rgba(244,241,236,0.45)" : palette.sand,
                       fontFamily: fontSans,
-                      fontWeight: 300,
-                      animationDelay: `${120 + i * 90}ms`,
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = palette.sand;
-                      e.currentTarget.style.background = "#16161A";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = "rgba(244,241,236,0.1)";
-                      e.currentTarget.style.background = "#121214";
                     }}
                   >
-                    {prompt}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+                    {msg.role === "user" ? "Client" : "Concierge"}
+                  </p>
+                  <p
+                    className="text-[15px] leading-relaxed whitespace-pre-wrap"
+                    style={{
+                      fontFamily: msg.role === "user" ? fontSans : fontSerif,
+                      fontWeight: msg.role === "user" ? 300 : 400,
+                      color: palette.offwhite,
+                    }}
+                  >
+                    {msg.text}
+                  </p>
 
-          {chat.isPending && (
-            <div
-              className="flex items-center gap-3 animate-[studioFade_.3s_ease-out_both]"
-              aria-live="polite"
-              aria-label="Concierge is composing a reply"
+                  {msg.products && msg.products.length > 0 && (
+                    <ul className="mt-5 space-y-3">
+                      {msg.products.map((p) => (
+                        <li key={p.handle}>
+                          <Link
+                            to="/product/$handle"
+                            params={{ handle: p.handle }}
+                            onClick={onClose}
+                            className="group grid grid-cols-[88px_1fr] gap-4 transition-opacity hover:opacity-90"
+                          >
+                            <div
+                              className="aspect-[4/5] overflow-hidden"
+                              style={{ background: "rgba(244,241,236,0.04)" }}
+                            >
+                              {p.imageUrl && (
+                                <img
+                                  src={p.imageUrl}
+                                  alt={p.imageAlt ?? p.title}
+                                  loading="lazy"
+                                  className="w-full h-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-[1.05]"
+                                />
+                              )}
+                            </div>
+                            <div style={{ fontFamily: fontSans }}>
+                              <p
+                                className="text-[9px] uppercase tracking-[0.3em]"
+                                style={{ color: palette.sand }}
+                              >
+                                {p.vendor}
+                              </p>
+                              <p
+                                className="text-[13px] leading-snug mt-1.5 line-clamp-2"
+                                style={{ fontWeight: 300, color: palette.offwhite }}
+                              >
+                                {p.title}
+                              </p>
+                              <p
+                                className="text-[11px] mt-1.5"
+                                style={{ color: "rgba(244,241,236,0.7)" }}
+                              >
+                                {formatPrice(p.price)}
+                              </p>
+                              <span
+                                className="mt-3 inline-flex items-center gap-1 text-[9px] uppercase tracking-[0.32em] pb-0.5 border-b"
+                                style={{
+                                  color: palette.sand,
+                                  borderColor: "rgba(217,207,193,0.4)",
+                                }}
+                              >
+                                View piece
+                                <ArrowUpRight className="w-2.5 h-2.5" strokeWidth={1.5} />
+                              </span>
+                            </div>
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ))}
+
+              {chat.isPending && (
+                <div
+                  className="flex items-center gap-3 animate-[studioFade_.3s_ease-out_both]"
+                  aria-live="polite"
+                  aria-label="Concierge is composing a reply"
+                >
+                  <p
+                    className="text-[9px] uppercase tracking-[0.4em]"
+                    style={{ color: palette.sand, fontFamily: fontSans }}
+                  >
+                    Concierge
+                  </p>
+                  <span className="flex items-end gap-1.5 h-3" aria-hidden="true">
+                    <span
+                      className="w-1.5 h-1.5 rounded-full animate-[conciergeDot_1.2s_ease-in-out_infinite]"
+                      style={{ background: palette.sand, animationDelay: "0ms" }}
+                    />
+                    <span
+                      className="w-1.5 h-1.5 rounded-full animate-[conciergeDot_1.2s_ease-in-out_infinite]"
+                      style={{ background: palette.sand, animationDelay: "180ms" }}
+                    />
+                    <span
+                      className="w-1.5 h-1.5 rounded-full animate-[conciergeDot_1.2s_ease-in-out_infinite]"
+                      style={{ background: palette.sand, animationDelay: "360ms" }}
+                    />
+                  </span>
+                </div>
+              )}
+              <div ref={chatEndRef} />
+            </div>
+
+            {/* Composer */}
+            <form
+              onSubmit={handleSubmit}
+              className="px-7 py-5"
+              style={{ borderTop: "1px solid rgba(244,241,236,0.08)" }}
             >
+              <div className="relative">
+                <textarea
+                  ref={inputRef}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      sendText(input);
+                    }
+                  }}
+                  rows={2}
+                  placeholder="Inquire about collections, fits, or styling…"
+                  disabled={chat.isPending}
+                  className="w-full resize-none text-sm py-3.5 pl-4 pr-12 outline-none transition-colors duration-300 disabled:opacity-60"
+                  style={{
+                    background: "#121214",
+                    border: "1px solid rgba(244,241,236,0.1)",
+                    color: palette.offwhite,
+                    fontFamily: fontSans,
+                    fontWeight: 300,
+                    letterSpacing: "0.005em",
+                  }}
+                  onFocus={(e) => (e.currentTarget.style.borderColor = palette.sand)}
+                  onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(244,241,236,0.1)")}
+                />
+                <button
+                  type="submit"
+                  disabled={!input.trim() || chat.isPending}
+                  aria-label="Send message"
+                  className="absolute right-2.5 bottom-2.5 p-2 transition-all duration-300 disabled:opacity-30 hover:opacity-80"
+                  style={{ color: palette.obsidian, background: palette.sand }}
+                >
+                  <ArrowUp className="w-4 h-4" strokeWidth={1.5} />
+                </button>
+              </div>
               <p
-                className="text-[9px] uppercase tracking-[0.4em]"
-                style={{ color: palette.sand, fontFamily: fontSans }}
+                className="mt-3 text-[9px] uppercase tracking-[0.35em]"
+                style={{ color: "rgba(244,241,236,0.4)", fontFamily: fontSans }}
               >
-                Concierge
+                Curated live · Palace of Roman
               </p>
-              <span className="flex items-end gap-1.5 h-3" aria-hidden="true">
-                <span
-                  className="w-1.5 h-1.5 rounded-full animate-[conciergeDot_1.2s_ease-in-out_infinite]"
-                  style={{ background: palette.sand, animationDelay: "0ms" }}
-                />
-                <span
-                  className="w-1.5 h-1.5 rounded-full animate-[conciergeDot_1.2s_ease-in-out_infinite]"
-                  style={{ background: palette.sand, animationDelay: "180ms" }}
-                />
-                <span
-                  className="w-1.5 h-1.5 rounded-full animate-[conciergeDot_1.2s_ease-in-out_infinite]"
-                  style={{ background: palette.sand, animationDelay: "360ms" }}
-                />
-              </span>
-            </div>
-          )}
-          <div ref={chatEndRef} />
-        </div>
+            </form>
+          </>
+        )}
+      </aside>
+    </div>
+  );
+}
 
-        {/* Composer */}
-        <form
-          onSubmit={handleSubmit}
-          className="px-7 py-5"
-          style={{ borderTop: "1px solid rgba(244,241,236,0.08)" }}
-        >
-          <div className="relative">
-            <textarea
-              ref={inputRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  sendText(input);
-                }
-              }}
-              rows={2}
-              placeholder="Inquire about collections, fits, or styling…"
-              disabled={chat.isPending}
-              className="w-full resize-none text-sm py-3.5 pl-4 pr-12 outline-none transition-colors duration-300 disabled:opacity-60"
+/* ============================================================
+ * IntakeWizard — three-step gated onboarding before chat starts.
+ * Step 1: dept (Womenswear / Menswear)
+ * Step 2: email + marketing opt-in
+ * Step 3: preferences (vibe, categories, budget)
+ * ========================================================== */
+
+interface IntakeWizardProps {
+  step: Step;
+  dept: Dept | null;
+  email: string;
+  optIn: boolean;
+  emailError: string | null;
+  vibes: string[];
+  categories: string[];
+  priceBand: string;
+  onChooseDept: (d: Dept) => void;
+  onBack: () => void;
+  onEmailChange: (v: string) => void;
+  onOptInChange: (v: boolean) => void;
+  onSubmitEmail: (e: React.FormEvent) => void;
+  onToggleVibe: (v: string) => void;
+  onToggleCategory: (v: string) => void;
+  onPriceBand: (v: string) => void;
+  onFinish: () => void;
+}
+
+function IntakeWizard(props: IntakeWizardProps) {
+  const {
+    step,
+    dept,
+    email,
+    optIn,
+    emailError,
+    vibes,
+    categories,
+    priceBand,
+    onChooseDept,
+    onBack,
+    onEmailChange,
+    onOptInChange,
+    onSubmitEmail,
+    onToggleVibe,
+    onToggleCategory,
+    onPriceBand,
+    onFinish,
+  } = props;
+
+  const stepNumber = step === "dept" ? 1 : step === "email" ? 2 : 3;
+
+  return (
+    <div className="flex-1 overflow-y-auto px-7 py-7" style={{ fontFamily: fontSans }}>
+      {/* Stepper */}
+      <div className="flex items-center gap-2 mb-7">
+        {[1, 2, 3].map((n) => (
+          <div key={n} className="flex items-center gap-2">
+            <span
+              className="text-[10px] tracking-[0.3em] uppercase"
               style={{
-                background: "#121214",
-                border: "1px solid rgba(244,241,236,0.1)",
-                color: palette.offwhite,
-                fontFamily: fontSans,
-                fontWeight: 300,
-                letterSpacing: "0.005em",
+                color: n <= stepNumber ? palette.sand : "rgba(244,241,236,0.3)",
               }}
-              onFocus={(e) => (e.currentTarget.style.borderColor = palette.sand)}
-              onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(244,241,236,0.1)")}
+            >
+              0{n}
+            </span>
+            {n < 3 && (
+              <span
+                className="block w-6 h-px"
+                style={{
+                  background:
+                    n < stepNumber ? palette.sand : "rgba(244,241,236,0.15)",
+                }}
+              />
+            )}
+          </div>
+        ))}
+      </div>
+
+      {step === "dept" && (
+        <div className="animate-[studioFade_.45s_ease-out_both]">
+          <p
+            className="text-[9px] uppercase tracking-[0.4em] mb-3"
+            style={{ color: palette.sand }}
+          >
+            Step 01 · Department
+          </p>
+          <h3
+            className="text-[26px] leading-tight mb-2"
+            style={{ fontFamily: fontSerif, fontWeight: 300, letterSpacing: "-0.01em" }}
+          >
+            Where shall we begin?
+          </h3>
+          <p
+            className="text-[13px] leading-relaxed mb-7"
+            style={{ color: "rgba(244,241,236,0.65)", fontWeight: 300 }}
+          >
+            Choose the collection you'd like the concierge to focus on. You can
+            switch at any time.
+          </p>
+          <div className="grid grid-cols-1 gap-3">
+            {(
+              [
+                { id: "women" as const, label: "Womenswear", note: "Ready-to-wear, evening, accessories" },
+                { id: "men" as const, label: "Menswear", note: "Tailoring, knitwear, footwear" },
+              ]
+            ).map((opt) => (
+              <button
+                key={opt.id}
+                onClick={() => onChooseDept(opt.id)}
+                className="w-full text-left px-5 py-5 transition-all duration-300"
+                style={{
+                  background: "#121214",
+                  border: "1px solid rgba(244,241,236,0.12)",
+                  color: palette.offwhite,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = palette.sand;
+                  e.currentTarget.style.background = "#16161A";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(244,241,236,0.12)";
+                  e.currentTarget.style.background = "#121214";
+                }}
+              >
+                <p
+                  className="text-[15px]"
+                  style={{ fontFamily: fontSerif, fontWeight: 400 }}
+                >
+                  {opt.label}
+                </p>
+                <p
+                  className="text-[11px] mt-1 uppercase tracking-[0.22em]"
+                  style={{ color: "rgba(244,241,236,0.5)" }}
+                >
+                  {opt.note}
+                </p>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {step === "email" && (
+        <form
+          onSubmit={onSubmitEmail}
+          className="animate-[studioFade_.45s_ease-out_both]"
+        >
+          <p
+            className="text-[9px] uppercase tracking-[0.4em] mb-3"
+            style={{ color: palette.sand }}
+          >
+            Step 02 · Your Email
+          </p>
+          <h3
+            className="text-[26px] leading-tight mb-2"
+            style={{ fontFamily: fontSerif, fontWeight: 300, letterSpacing: "-0.01em" }}
+          >
+            Save your selections.
+          </h3>
+          <p
+            className="text-[13px] leading-relaxed mb-6"
+            style={{ color: "rgba(244,241,236,0.65)", fontWeight: 300 }}
+          >
+            We use your email to remember your {dept === "men" ? "menswear" : "womenswear"} curation
+            and quietly refine recommendations as your taste comes into view.
+          </p>
+
+          <label
+            className="block text-[10px] uppercase tracking-[0.3em] mb-2"
+            style={{ color: "rgba(244,241,236,0.55)" }}
+            htmlFor="concierge-email"
+          >
+            Email address
+          </label>
+          <input
+            id="concierge-email"
+            type="email"
+            required
+            autoComplete="email"
+            inputMode="email"
+            value={email}
+            onChange={(e) => onEmailChange(e.target.value)}
+            placeholder="you@atelier.com"
+            className="w-full text-sm py-3 px-4 outline-none transition-colors duration-300"
+            style={{
+              background: "#121214",
+              border: `1px solid ${emailError ? "#b04a4a" : "rgba(244,241,236,0.1)"}`,
+              color: palette.offwhite,
+              fontWeight: 300,
+            }}
+          />
+          {emailError && (
+            <p className="mt-2 text-[11px]" style={{ color: "#e3a3a3" }}>
+              {emailError}
+            </p>
+          )}
+
+          <label className="mt-5 flex items-start gap-3 cursor-pointer">
+            <span
+              className="mt-0.5 flex-shrink-0 w-4 h-4 flex items-center justify-center"
+              style={{
+                background: optIn ? palette.sand : "transparent",
+                border: `1px solid ${optIn ? palette.sand : "rgba(244,241,236,0.3)"}`,
+              }}
+            >
+              {optIn && <Check className="w-3 h-3" strokeWidth={2.5} style={{ color: palette.obsidian }} />}
+            </span>
+            <input
+              type="checkbox"
+              className="sr-only"
+              checked={optIn}
+              onChange={(e) => onOptInChange(e.target.checked)}
             />
+            <span
+              className="text-[12px] leading-relaxed"
+              style={{ color: "rgba(244,241,236,0.7)", fontWeight: 300 }}
+            >
+              Send me occasional notes on exclusive drops, private sales, and
+              boutique-only releases. (Optional · unsubscribe anytime.)
+            </span>
+          </label>
+
+          <div className="mt-7 flex items-center justify-between gap-3">
+            <button
+              type="button"
+              onClick={onBack}
+              className="text-[10px] uppercase tracking-[0.32em] pb-0.5 border-b transition-opacity hover:opacity-70"
+              style={{ color: palette.offwhite, borderColor: "rgba(244,241,236,0.25)" }}
+            >
+              ← Back
+            </button>
             <button
               type="submit"
-              disabled={!input.trim() || chat.isPending}
-              aria-label="Send message"
-              className="absolute right-2.5 bottom-2.5 p-2 transition-all duration-300 disabled:opacity-30 hover:opacity-80"
-              style={{ color: palette.obsidian, background: palette.sand }}
+              className="px-6 py-3 text-[10px] uppercase tracking-[0.32em] transition-opacity hover:opacity-90"
+              style={{ background: palette.sand, color: palette.obsidian }}
             >
-              <ArrowUp className="w-4 h-4" strokeWidth={1.5} />
+              Continue
             </button>
           </div>
-          <p
-            className="mt-3 text-[9px] uppercase tracking-[0.35em]"
-            style={{ color: "rgba(244,241,236,0.4)", fontFamily: fontSans }}
-          >
-            Curated live · Palace of Roman
-          </p>
         </form>
-      </aside>
+      )}
+
+      {step === "preferences" && (
+        <div className="animate-[studioFade_.45s_ease-out_both]">
+          <p
+            className="text-[9px] uppercase tracking-[0.4em] mb-3"
+            style={{ color: palette.sand }}
+          >
+            Step 03 · Your Taste
+          </p>
+          <h3
+            className="text-[26px] leading-tight mb-2"
+            style={{ fontFamily: fontSerif, fontWeight: 300, letterSpacing: "-0.01em" }}
+          >
+            Tell us what you love.
+          </h3>
+          <p
+            className="text-[13px] leading-relaxed mb-6"
+            style={{ color: "rgba(244,241,236,0.65)", fontWeight: 300 }}
+          >
+            Pick anything that resonates — the more you share, the more precise
+            the curation. All optional.
+          </p>
+
+          <PreferenceGroup
+            label="Aesthetic"
+            options={VIBE_OPTIONS as unknown as string[]}
+            selected={vibes}
+            onToggle={onToggleVibe}
+          />
+
+          <PreferenceGroup
+            label="Categories of interest"
+            options={CATEGORY_OPTIONS as unknown as string[]}
+            selected={categories}
+            onToggle={onToggleCategory}
+          />
+
+          <div className="mb-6">
+            <p
+              className="text-[10px] uppercase tracking-[0.3em] mb-3"
+              style={{ color: "rgba(244,241,236,0.55)" }}
+            >
+              Typical budget per piece
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {PRICE_OPTIONS.map((p) => {
+                const active = priceBand === p;
+                return (
+                  <button
+                    key={p}
+                    type="button"
+                    onClick={() => onPriceBand(active ? "" : p)}
+                    className="px-3.5 py-2 text-[11px] transition-all duration-200"
+                    style={{
+                      background: active ? palette.sand : "transparent",
+                      color: active ? palette.obsidian : palette.offwhite,
+                      border: `1px solid ${active ? palette.sand : "rgba(244,241,236,0.2)"}`,
+                      fontWeight: 300,
+                    }}
+                  >
+                    {p}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between gap-3">
+            <button
+              type="button"
+              onClick={onBack}
+              className="text-[10px] uppercase tracking-[0.32em] pb-0.5 border-b transition-opacity hover:opacity-70"
+              style={{ color: palette.offwhite, borderColor: "rgba(244,241,236,0.25)" }}
+            >
+              ← Back
+            </button>
+            <button
+              type="button"
+              onClick={onFinish}
+              className="px-6 py-3 text-[10px] uppercase tracking-[0.32em] transition-opacity hover:opacity-90"
+              style={{ background: palette.sand, color: palette.obsidian }}
+            >
+              Curate my selection →
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PreferenceGroup({
+  label,
+  options,
+  selected,
+  onToggle,
+}: {
+  label: string;
+  options: string[];
+  selected: string[];
+  onToggle: (v: string) => void;
+}) {
+  return (
+    <div className="mb-6">
+      <p
+        className="text-[10px] uppercase tracking-[0.3em] mb-3"
+        style={{ color: "rgba(244,241,236,0.55)" }}
+      >
+        {label}
+      </p>
+      <div className="flex flex-wrap gap-2">
+        {options.map((opt) => {
+          const active = selected.includes(opt);
+          return (
+            <button
+              key={opt}
+              type="button"
+              onClick={() => onToggle(opt)}
+              className="px-3.5 py-2 text-[11px] transition-all duration-200"
+              style={{
+                background: active ? palette.sand : "transparent",
+                color: active ? palette.obsidian : palette.offwhite,
+                border: `1px solid ${active ? palette.sand : "rgba(244,241,236,0.2)"}`,
+                fontWeight: 300,
+              }}
+            >
+              {opt}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
