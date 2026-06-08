@@ -12,7 +12,6 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const SITE_ORIGIN = "https://palaceofromanofficial.com";
 const SITEMAP_INDEX = `${SITE_ORIGIN}/sitemap.xml`;
-const PRODUCTS_SITEMAP = `${SITE_ORIGIN}/sitemap-products.xml`;
 const GSC_GATEWAY = "https://connector-gateway.lovable.dev/google_search_console";
 const SITE = "sc-domain:palaceofromanofficial.com";
 const SITE_ENCODED = encodeURIComponent(SITE);
@@ -80,31 +79,13 @@ export interface SitemapSyncResult {
 }
 
 export async function syncSitemapUrls(): Promise<SitemapSyncResult> {
-  // Pull the index and follow product sitemaps; cap to 5k urls.
+  // Pull the single master sitemap; cap to 5k urls.
   const allUrls = new Set<string>();
   try {
-    const indexXml = await fetchText(SITEMAP_INDEX);
-    const subSitemaps = extractLocs(indexXml).filter(
-      (u) => u.includes("sitemap-product") || u.endsWith("/sitemap-products.xml"),
-    );
-    if (subSitemaps.length === 0) subSitemaps.push(PRODUCTS_SITEMAP);
-    for (const sm of subSitemaps.slice(0, 10)) {
-      try {
-        const xml = await fetchText(sm);
-        for (const loc of extractLocs(xml)) allUrls.add(loc);
-        if (allUrls.size >= 5000) break;
-      } catch (e) {
-        console.error("[sitemap-sync] sub sitemap failed", sm, e);
-      }
-    }
+    const xml = await fetchText(SITEMAP_INDEX);
+    for (const loc of extractLocs(xml)) allUrls.add(loc);
   } catch (e) {
-    console.error("[sitemap-sync] index failed, falling back to products", e);
-    try {
-      const xml = await fetchText(PRODUCTS_SITEMAP);
-      for (const loc of extractLocs(xml)) allUrls.add(loc);
-    } catch (e2) {
-      console.error("[sitemap-sync] products sitemap failed too", e2);
-    }
+    console.error("[sitemap-sync] master sitemap failed", e);
   }
 
   const rows = Array.from(allUrls)

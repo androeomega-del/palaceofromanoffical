@@ -68,7 +68,7 @@ function SitemapPanel() {
       <div className="flex items-center justify-between mb-3">
         <div>
           <p className="text-sm text-muted-foreground">
-            Pulls /sitemap.xml + /sitemap-products.xml, classifies each URL by page group
+              Pulls /sitemap.xml, classifies each URL by page group
             (product, legacy-products, collection, brand, journal) and locale.
           </p>
           {data && (
