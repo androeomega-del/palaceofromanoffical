@@ -137,6 +137,8 @@ import { Route as StudioProductHandleRouteImport } from './routes/studio_.produc
 import { Route as JournalStyleTheInvestmentSunglassesEditRouteImport } from './routes/journal.style.the-investment-sunglasses-edit'
 import { Route as JournalStyleTheCashmereFieldGuideRouteImport } from './routes/journal.style.the-cashmere-field-guide'
 import { Route as JournalStyleLuxurySneakersAsModernTailoringRouteImport } from './routes/journal.style.luxury-sneakers-as-modern-tailoring'
+import { Route as JournalCraftsmanshipUnderstandingTheMadeInItalyLabelRouteImport } from './routes/journal.craftsmanship.understanding-the-made-in-italy-label'
+import { Route as JournalCraftsmanshipTheArtOfItalianLeatherTanningRouteImport } from './routes/journal.craftsmanship.the-art-of-italian-leather-tanning'
 import { Route as JournalCraftsmanshipSpotRealItalianLeatherRouteImport } from './routes/journal.craftsmanship.spot-real-italian-leather'
 import { Route as JournalCraftsmanshipMadeInItalyVsDesignedInItalyRouteImport } from './routes/journal.craftsmanship.made-in-italy-vs-designed-in-italy'
 import { Route as JournalCraftsmanshipLeatherQualityGuideRouteImport } from './routes/journal.craftsmanship.leather-quality-guide'
@@ -826,6 +828,18 @@ const JournalStyleLuxurySneakersAsModernTailoringRoute =
     path: '/style/luxury-sneakers-as-modern-tailoring',
     getParentRoute: () => JournalRoute,
   } as any)
+const JournalCraftsmanshipUnderstandingTheMadeInItalyLabelRoute =
+  JournalCraftsmanshipUnderstandingTheMadeInItalyLabelRouteImport.update({
+    id: '/craftsmanship/understanding-the-made-in-italy-label',
+    path: '/craftsmanship/understanding-the-made-in-italy-label',
+    getParentRoute: () => JournalRoute,
+  } as any)
+const JournalCraftsmanshipTheArtOfItalianLeatherTanningRoute =
+  JournalCraftsmanshipTheArtOfItalianLeatherTanningRouteImport.update({
+    id: '/craftsmanship/the-art-of-italian-leather-tanning',
+    path: '/craftsmanship/the-art-of-italian-leather-tanning',
+    getParentRoute: () => JournalRoute,
+  } as any)
 const JournalCraftsmanshipSpotRealItalianLeatherRoute =
   JournalCraftsmanshipSpotRealItalianLeatherRouteImport.update({
     id: '/craftsmanship/spot-real-italian-leather',
@@ -1117,6 +1131,8 @@ export interface FileRoutesByFullPath {
   '/journal/craftsmanship/leather-quality-guide': typeof JournalCraftsmanshipLeatherQualityGuideRoute
   '/journal/craftsmanship/made-in-italy-vs-designed-in-italy': typeof JournalCraftsmanshipMadeInItalyVsDesignedInItalyRoute
   '/journal/craftsmanship/spot-real-italian-leather': typeof JournalCraftsmanshipSpotRealItalianLeatherRoute
+  '/journal/craftsmanship/the-art-of-italian-leather-tanning': typeof JournalCraftsmanshipTheArtOfItalianLeatherTanningRoute
+  '/journal/craftsmanship/understanding-the-made-in-italy-label': typeof JournalCraftsmanshipUnderstandingTheMadeInItalyLabelRoute
   '/journal/style/luxury-sneakers-as-modern-tailoring': typeof JournalStyleLuxurySneakersAsModernTailoringRoute
   '/journal/style/the-cashmere-field-guide': typeof JournalStyleTheCashmereFieldGuideRoute
   '/journal/style/the-investment-sunglasses-edit': typeof JournalStyleTheInvestmentSunglassesEditRoute
@@ -1271,6 +1287,8 @@ export interface FileRoutesByTo {
   '/journal/craftsmanship/leather-quality-guide': typeof JournalCraftsmanshipLeatherQualityGuideRoute
   '/journal/craftsmanship/made-in-italy-vs-designed-in-italy': typeof JournalCraftsmanshipMadeInItalyVsDesignedInItalyRoute
   '/journal/craftsmanship/spot-real-italian-leather': typeof JournalCraftsmanshipSpotRealItalianLeatherRoute
+  '/journal/craftsmanship/the-art-of-italian-leather-tanning': typeof JournalCraftsmanshipTheArtOfItalianLeatherTanningRoute
+  '/journal/craftsmanship/understanding-the-made-in-italy-label': typeof JournalCraftsmanshipUnderstandingTheMadeInItalyLabelRoute
   '/journal/style/luxury-sneakers-as-modern-tailoring': typeof JournalStyleLuxurySneakersAsModernTailoringRoute
   '/journal/style/the-cashmere-field-guide': typeof JournalStyleTheCashmereFieldGuideRoute
   '/journal/style/the-investment-sunglasses-edit': typeof JournalStyleTheInvestmentSunglassesEditRoute
@@ -1429,6 +1447,8 @@ export interface FileRoutesById {
   '/journal/craftsmanship/leather-quality-guide': typeof JournalCraftsmanshipLeatherQualityGuideRoute
   '/journal/craftsmanship/made-in-italy-vs-designed-in-italy': typeof JournalCraftsmanshipMadeInItalyVsDesignedInItalyRoute
   '/journal/craftsmanship/spot-real-italian-leather': typeof JournalCraftsmanshipSpotRealItalianLeatherRoute
+  '/journal/craftsmanship/the-art-of-italian-leather-tanning': typeof JournalCraftsmanshipTheArtOfItalianLeatherTanningRoute
+  '/journal/craftsmanship/understanding-the-made-in-italy-label': typeof JournalCraftsmanshipUnderstandingTheMadeInItalyLabelRoute
   '/journal/style/luxury-sneakers-as-modern-tailoring': typeof JournalStyleLuxurySneakersAsModernTailoringRoute
   '/journal/style/the-cashmere-field-guide': typeof JournalStyleTheCashmereFieldGuideRoute
   '/journal/style/the-investment-sunglasses-edit': typeof JournalStyleTheInvestmentSunglassesEditRoute
@@ -1588,6 +1608,8 @@ export interface FileRouteTypes {
     | '/journal/craftsmanship/leather-quality-guide'
     | '/journal/craftsmanship/made-in-italy-vs-designed-in-italy'
     | '/journal/craftsmanship/spot-real-italian-leather'
+    | '/journal/craftsmanship/the-art-of-italian-leather-tanning'
+    | '/journal/craftsmanship/understanding-the-made-in-italy-label'
     | '/journal/style/luxury-sneakers-as-modern-tailoring'
     | '/journal/style/the-cashmere-field-guide'
     | '/journal/style/the-investment-sunglasses-edit'
@@ -1742,6 +1764,8 @@ export interface FileRouteTypes {
     | '/journal/craftsmanship/leather-quality-guide'
     | '/journal/craftsmanship/made-in-italy-vs-designed-in-italy'
     | '/journal/craftsmanship/spot-real-italian-leather'
+    | '/journal/craftsmanship/the-art-of-italian-leather-tanning'
+    | '/journal/craftsmanship/understanding-the-made-in-italy-label'
     | '/journal/style/luxury-sneakers-as-modern-tailoring'
     | '/journal/style/the-cashmere-field-guide'
     | '/journal/style/the-investment-sunglasses-edit'
@@ -1899,6 +1923,8 @@ export interface FileRouteTypes {
     | '/journal/craftsmanship/leather-quality-guide'
     | '/journal/craftsmanship/made-in-italy-vs-designed-in-italy'
     | '/journal/craftsmanship/spot-real-italian-leather'
+    | '/journal/craftsmanship/the-art-of-italian-leather-tanning'
+    | '/journal/craftsmanship/understanding-the-made-in-italy-label'
     | '/journal/style/luxury-sneakers-as-modern-tailoring'
     | '/journal/style/the-cashmere-field-guide'
     | '/journal/style/the-investment-sunglasses-edit'
@@ -2959,6 +2985,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof JournalStyleLuxurySneakersAsModernTailoringRouteImport
       parentRoute: typeof JournalRoute
     }
+    '/journal/craftsmanship/understanding-the-made-in-italy-label': {
+      id: '/journal/craftsmanship/understanding-the-made-in-italy-label'
+      path: '/craftsmanship/understanding-the-made-in-italy-label'
+      fullPath: '/journal/craftsmanship/understanding-the-made-in-italy-label'
+      preLoaderRoute: typeof JournalCraftsmanshipUnderstandingTheMadeInItalyLabelRouteImport
+      parentRoute: typeof JournalRoute
+    }
+    '/journal/craftsmanship/the-art-of-italian-leather-tanning': {
+      id: '/journal/craftsmanship/the-art-of-italian-leather-tanning'
+      path: '/craftsmanship/the-art-of-italian-leather-tanning'
+      fullPath: '/journal/craftsmanship/the-art-of-italian-leather-tanning'
+      preLoaderRoute: typeof JournalCraftsmanshipTheArtOfItalianLeatherTanningRouteImport
+      parentRoute: typeof JournalRoute
+    }
     '/journal/craftsmanship/spot-real-italian-leather': {
       id: '/journal/craftsmanship/spot-real-italian-leather'
       path: '/craftsmanship/spot-real-italian-leather'
@@ -3187,6 +3227,8 @@ interface JournalRouteChildren {
   JournalCraftsmanshipLeatherQualityGuideRoute: typeof JournalCraftsmanshipLeatherQualityGuideRoute
   JournalCraftsmanshipMadeInItalyVsDesignedInItalyRoute: typeof JournalCraftsmanshipMadeInItalyVsDesignedInItalyRoute
   JournalCraftsmanshipSpotRealItalianLeatherRoute: typeof JournalCraftsmanshipSpotRealItalianLeatherRoute
+  JournalCraftsmanshipTheArtOfItalianLeatherTanningRoute: typeof JournalCraftsmanshipTheArtOfItalianLeatherTanningRoute
+  JournalCraftsmanshipUnderstandingTheMadeInItalyLabelRoute: typeof JournalCraftsmanshipUnderstandingTheMadeInItalyLabelRoute
   JournalStyleLuxurySneakersAsModernTailoringRoute: typeof JournalStyleLuxurySneakersAsModernTailoringRoute
   JournalStyleTheCashmereFieldGuideRoute: typeof JournalStyleTheCashmereFieldGuideRoute
   JournalStyleTheInvestmentSunglassesEditRoute: typeof JournalStyleTheInvestmentSunglassesEditRoute
@@ -3202,6 +3244,10 @@ const JournalRouteChildren: JournalRouteChildren = {
     JournalCraftsmanshipMadeInItalyVsDesignedInItalyRoute,
   JournalCraftsmanshipSpotRealItalianLeatherRoute:
     JournalCraftsmanshipSpotRealItalianLeatherRoute,
+  JournalCraftsmanshipTheArtOfItalianLeatherTanningRoute:
+    JournalCraftsmanshipTheArtOfItalianLeatherTanningRoute,
+  JournalCraftsmanshipUnderstandingTheMadeInItalyLabelRoute:
+    JournalCraftsmanshipUnderstandingTheMadeInItalyLabelRoute,
   JournalStyleLuxurySneakersAsModernTailoringRoute:
     JournalStyleLuxurySneakersAsModernTailoringRoute,
   JournalStyleTheCashmereFieldGuideRoute:
@@ -3409,13 +3455,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
