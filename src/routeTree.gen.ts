@@ -17,6 +17,12 @@ import { Route as StyleQuizRouteImport } from './routes/style-quiz'
 import { Route as StudioRouteImport } from './routes/studio'
 import { Route as SourcingArchitectureRouteImport } from './routes/sourcing-architecture'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SitemapStaticDotxmlRouteImport } from './routes/sitemap-static[.]xml'
+import { Route as SitemapProductsDotxmlRouteImport } from './routes/sitemap-products[.]xml'
+import { Route as SitemapProductImagesDotxmlRouteImport } from './routes/sitemap-product-images[.]xml'
+import { Route as SitemapDestinationsDotxmlRouteImport } from './routes/sitemap-destinations[.]xml'
+import { Route as SitemapCollectionsDotxmlRouteImport } from './routes/sitemap-collections[.]xml'
+import { Route as SitemapBrandsDotxmlRouteImport } from './routes/sitemap-brands[.]xml'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ShippingReturnsRouteImport } from './routes/shipping-returns'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
@@ -144,6 +150,9 @@ import { Route as BrandVendorInRomeRouteImport } from './routes/brand.$vendor.in
 import { Route as ApiPublicSeoHealthRouteImport } from './routes/api/public/seo-health'
 import { Route as ApiAdminImageProxyRouteImport } from './routes/api/admin.image-proxy'
 import { Route as LocaleProductsHandleRouteImport } from './routes/$locale.products.$handle'
+import { Route as AppsSeoSitemapsMwuwqiVyPagesSitemapDotxmlRouteImport } from './routes/apps.seo-sitemaps.mwuwqi-vy.pages-sitemap[.]xml'
+import { Route as AppsSeoSitemapsMwuwqiVyImagesSitemapDotxmlRouteImport } from './routes/apps.seo-sitemaps.mwuwqi-vy.images-sitemap[.]xml'
+import { Route as AppsSeoSitemapsMwuwqiVyArticlesSitemapDotxmlRouteImport } from './routes/apps.seo-sitemaps.mwuwqi-vy.articles-sitemap[.]xml'
 import { Route as ApiPublicStockAlertsSubscribeRouteImport } from './routes/api/public/stock-alerts/subscribe'
 import { Route as ApiPublicIndexnowSubmitRouteImport } from './routes/api/public/indexnow.submit'
 import { Route as ApiPublicHooksSyncCollectionImagesRouteImport } from './routes/api/public/hooks/sync-collection-images'
@@ -199,6 +208,39 @@ const SourcingArchitectureRoute = SourcingArchitectureRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapStaticDotxmlRoute = SitemapStaticDotxmlRouteImport.update({
+  id: '/sitemap-static.xml',
+  path: '/sitemap-static.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapProductsDotxmlRoute = SitemapProductsDotxmlRouteImport.update({
+  id: '/sitemap-products.xml',
+  path: '/sitemap-products.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapProductImagesDotxmlRoute =
+  SitemapProductImagesDotxmlRouteImport.update({
+    id: '/sitemap-product-images.xml',
+    path: '/sitemap-product-images.xml',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const SitemapDestinationsDotxmlRoute =
+  SitemapDestinationsDotxmlRouteImport.update({
+    id: '/sitemap-destinations.xml',
+    path: '/sitemap-destinations.xml',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const SitemapCollectionsDotxmlRoute =
+  SitemapCollectionsDotxmlRouteImport.update({
+    id: '/sitemap-collections.xml',
+    path: '/sitemap-collections.xml',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const SitemapBrandsDotxmlRoute = SitemapBrandsDotxmlRouteImport.update({
+  id: '/sitemap-brands.xml',
+  path: '/sitemap-brands.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ShopRoute = ShopRouteImport.update({
@@ -861,6 +903,24 @@ const LocaleProductsHandleRoute = LocaleProductsHandleRouteImport.update({
   path: '/$locale/products/$handle',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppsSeoSitemapsMwuwqiVyPagesSitemapDotxmlRoute =
+  AppsSeoSitemapsMwuwqiVyPagesSitemapDotxmlRouteImport.update({
+    id: '/apps/seo-sitemaps/mwuwqi-vy/pages-sitemap.xml',
+    path: '/apps/seo-sitemaps/mwuwqi-vy/pages-sitemap.xml',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AppsSeoSitemapsMwuwqiVyImagesSitemapDotxmlRoute =
+  AppsSeoSitemapsMwuwqiVyImagesSitemapDotxmlRouteImport.update({
+    id: '/apps/seo-sitemaps/mwuwqi-vy/images-sitemap.xml',
+    path: '/apps/seo-sitemaps/mwuwqi-vy/images-sitemap.xml',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AppsSeoSitemapsMwuwqiVyArticlesSitemapDotxmlRoute =
+  AppsSeoSitemapsMwuwqiVyArticlesSitemapDotxmlRouteImport.update({
+    id: '/apps/seo-sitemaps/mwuwqi-vy/articles-sitemap.xml',
+    path: '/apps/seo-sitemaps/mwuwqi-vy/articles-sitemap.xml',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicStockAlertsSubscribeRoute =
   ApiPublicStockAlertsSubscribeRouteImport.update({
     id: '/api/public/stock-alerts/subscribe',
@@ -985,6 +1045,12 @@ export interface FileRoutesByFullPath {
   '/robots.txt': typeof RobotsDottxtRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
+  '/sitemap-brands.xml': typeof SitemapBrandsDotxmlRoute
+  '/sitemap-collections.xml': typeof SitemapCollectionsDotxmlRoute
+  '/sitemap-destinations.xml': typeof SitemapDestinationsDotxmlRoute
+  '/sitemap-product-images.xml': typeof SitemapProductImagesDotxmlRoute
+  '/sitemap-products.xml': typeof SitemapProductsDotxmlRoute
+  '/sitemap-static.xml': typeof SitemapStaticDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sourcing-architecture': typeof SourcingArchitectureRoute
   '/studio': typeof StudioRoute
@@ -1109,6 +1175,9 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/sync-collection-images': typeof ApiPublicHooksSyncCollectionImagesRoute
   '/api/public/indexnow/submit': typeof ApiPublicIndexnowSubmitRoute
   '/api/public/stock-alerts/subscribe': typeof ApiPublicStockAlertsSubscribeRoute
+  '/apps/seo-sitemaps/mwuwqi-vy/articles-sitemap.xml': typeof AppsSeoSitemapsMwuwqiVyArticlesSitemapDotxmlRoute
+  '/apps/seo-sitemaps/mwuwqi-vy/images-sitemap.xml': typeof AppsSeoSitemapsMwuwqiVyImagesSitemapDotxmlRoute
+  '/apps/seo-sitemaps/mwuwqi-vy/pages-sitemap.xml': typeof AppsSeoSitemapsMwuwqiVyPagesSitemapDotxmlRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -1136,6 +1205,12 @@ export interface FileRoutesByTo {
   '/robots.txt': typeof RobotsDottxtRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
+  '/sitemap-brands.xml': typeof SitemapBrandsDotxmlRoute
+  '/sitemap-collections.xml': typeof SitemapCollectionsDotxmlRoute
+  '/sitemap-destinations.xml': typeof SitemapDestinationsDotxmlRoute
+  '/sitemap-product-images.xml': typeof SitemapProductImagesDotxmlRoute
+  '/sitemap-products.xml': typeof SitemapProductsDotxmlRoute
+  '/sitemap-static.xml': typeof SitemapStaticDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sourcing-architecture': typeof SourcingArchitectureRoute
   '/studio': typeof StudioRoute
@@ -1259,6 +1334,9 @@ export interface FileRoutesByTo {
   '/api/public/hooks/sync-collection-images': typeof ApiPublicHooksSyncCollectionImagesRoute
   '/api/public/indexnow/submit': typeof ApiPublicIndexnowSubmitRoute
   '/api/public/stock-alerts/subscribe': typeof ApiPublicStockAlertsSubscribeRoute
+  '/apps/seo-sitemaps/mwuwqi-vy/articles-sitemap.xml': typeof AppsSeoSitemapsMwuwqiVyArticlesSitemapDotxmlRoute
+  '/apps/seo-sitemaps/mwuwqi-vy/images-sitemap.xml': typeof AppsSeoSitemapsMwuwqiVyImagesSitemapDotxmlRoute
+  '/apps/seo-sitemaps/mwuwqi-vy/pages-sitemap.xml': typeof AppsSeoSitemapsMwuwqiVyPagesSitemapDotxmlRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -1289,6 +1367,12 @@ export interface FileRoutesById {
   '/robots.txt': typeof RobotsDottxtRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
+  '/sitemap-brands.xml': typeof SitemapBrandsDotxmlRoute
+  '/sitemap-collections.xml': typeof SitemapCollectionsDotxmlRoute
+  '/sitemap-destinations.xml': typeof SitemapDestinationsDotxmlRoute
+  '/sitemap-product-images.xml': typeof SitemapProductImagesDotxmlRoute
+  '/sitemap-products.xml': typeof SitemapProductsDotxmlRoute
+  '/sitemap-static.xml': typeof SitemapStaticDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sourcing-architecture': typeof SourcingArchitectureRoute
   '/studio': typeof StudioRoute
@@ -1413,6 +1497,9 @@ export interface FileRoutesById {
   '/api/public/hooks/sync-collection-images': typeof ApiPublicHooksSyncCollectionImagesRoute
   '/api/public/indexnow/submit': typeof ApiPublicIndexnowSubmitRoute
   '/api/public/stock-alerts/subscribe': typeof ApiPublicStockAlertsSubscribeRoute
+  '/apps/seo-sitemaps/mwuwqi-vy/articles-sitemap.xml': typeof AppsSeoSitemapsMwuwqiVyArticlesSitemapDotxmlRoute
+  '/apps/seo-sitemaps/mwuwqi-vy/images-sitemap.xml': typeof AppsSeoSitemapsMwuwqiVyImagesSitemapDotxmlRoute
+  '/apps/seo-sitemaps/mwuwqi-vy/pages-sitemap.xml': typeof AppsSeoSitemapsMwuwqiVyPagesSitemapDotxmlRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -1444,6 +1531,12 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/shipping-returns'
     | '/shop'
+    | '/sitemap-brands.xml'
+    | '/sitemap-collections.xml'
+    | '/sitemap-destinations.xml'
+    | '/sitemap-product-images.xml'
+    | '/sitemap-products.xml'
+    | '/sitemap-static.xml'
     | '/sitemap.xml'
     | '/sourcing-architecture'
     | '/studio'
@@ -1568,6 +1661,9 @@ export interface FileRouteTypes {
     | '/api/public/hooks/sync-collection-images'
     | '/api/public/indexnow/submit'
     | '/api/public/stock-alerts/subscribe'
+    | '/apps/seo-sitemaps/mwuwqi-vy/articles-sitemap.xml'
+    | '/apps/seo-sitemaps/mwuwqi-vy/images-sitemap.xml'
+    | '/apps/seo-sitemaps/mwuwqi-vy/pages-sitemap.xml'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -1595,6 +1691,12 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/shipping-returns'
     | '/shop'
+    | '/sitemap-brands.xml'
+    | '/sitemap-collections.xml'
+    | '/sitemap-destinations.xml'
+    | '/sitemap-product-images.xml'
+    | '/sitemap-products.xml'
+    | '/sitemap-static.xml'
     | '/sitemap.xml'
     | '/sourcing-architecture'
     | '/studio'
@@ -1718,6 +1820,9 @@ export interface FileRouteTypes {
     | '/api/public/hooks/sync-collection-images'
     | '/api/public/indexnow/submit'
     | '/api/public/stock-alerts/subscribe'
+    | '/apps/seo-sitemaps/mwuwqi-vy/articles-sitemap.xml'
+    | '/apps/seo-sitemaps/mwuwqi-vy/images-sitemap.xml'
+    | '/apps/seo-sitemaps/mwuwqi-vy/pages-sitemap.xml'
   id:
     | '__root__'
     | '/'
@@ -1747,6 +1852,12 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/shipping-returns'
     | '/shop'
+    | '/sitemap-brands.xml'
+    | '/sitemap-collections.xml'
+    | '/sitemap-destinations.xml'
+    | '/sitemap-product-images.xml'
+    | '/sitemap-products.xml'
+    | '/sitemap-static.xml'
     | '/sitemap.xml'
     | '/sourcing-architecture'
     | '/studio'
@@ -1871,6 +1982,9 @@ export interface FileRouteTypes {
     | '/api/public/hooks/sync-collection-images'
     | '/api/public/indexnow/submit'
     | '/api/public/stock-alerts/subscribe'
+    | '/apps/seo-sitemaps/mwuwqi-vy/articles-sitemap.xml'
+    | '/apps/seo-sitemaps/mwuwqi-vy/images-sitemap.xml'
+    | '/apps/seo-sitemaps/mwuwqi-vy/pages-sitemap.xml'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1901,6 +2015,12 @@ export interface RootRouteChildren {
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   ShippingReturnsRoute: typeof ShippingReturnsRoute
   ShopRoute: typeof ShopRoute
+  SitemapBrandsDotxmlRoute: typeof SitemapBrandsDotxmlRoute
+  SitemapCollectionsDotxmlRoute: typeof SitemapCollectionsDotxmlRoute
+  SitemapDestinationsDotxmlRoute: typeof SitemapDestinationsDotxmlRoute
+  SitemapProductImagesDotxmlRoute: typeof SitemapProductImagesDotxmlRoute
+  SitemapProductsDotxmlRoute: typeof SitemapProductsDotxmlRoute
+  SitemapStaticDotxmlRoute: typeof SitemapStaticDotxmlRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SourcingArchitectureRoute: typeof SourcingArchitectureRoute
   StudioRoute: typeof StudioRoute
@@ -2004,6 +2124,9 @@ export interface RootRouteChildren {
   ApiPublicHooksSyncCollectionImagesRoute: typeof ApiPublicHooksSyncCollectionImagesRoute
   ApiPublicIndexnowSubmitRoute: typeof ApiPublicIndexnowSubmitRoute
   ApiPublicStockAlertsSubscribeRoute: typeof ApiPublicStockAlertsSubscribeRoute
+  AppsSeoSitemapsMwuwqiVyArticlesSitemapDotxmlRoute: typeof AppsSeoSitemapsMwuwqiVyArticlesSitemapDotxmlRoute
+  AppsSeoSitemapsMwuwqiVyImagesSitemapDotxmlRoute: typeof AppsSeoSitemapsMwuwqiVyImagesSitemapDotxmlRoute
+  AppsSeoSitemapsMwuwqiVyPagesSitemapDotxmlRoute: typeof AppsSeoSitemapsMwuwqiVyPagesSitemapDotxmlRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -2062,6 +2185,48 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap-static.xml': {
+      id: '/sitemap-static.xml'
+      path: '/sitemap-static.xml'
+      fullPath: '/sitemap-static.xml'
+      preLoaderRoute: typeof SitemapStaticDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap-products.xml': {
+      id: '/sitemap-products.xml'
+      path: '/sitemap-products.xml'
+      fullPath: '/sitemap-products.xml'
+      preLoaderRoute: typeof SitemapProductsDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap-product-images.xml': {
+      id: '/sitemap-product-images.xml'
+      path: '/sitemap-product-images.xml'
+      fullPath: '/sitemap-product-images.xml'
+      preLoaderRoute: typeof SitemapProductImagesDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap-destinations.xml': {
+      id: '/sitemap-destinations.xml'
+      path: '/sitemap-destinations.xml'
+      fullPath: '/sitemap-destinations.xml'
+      preLoaderRoute: typeof SitemapDestinationsDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap-collections.xml': {
+      id: '/sitemap-collections.xml'
+      path: '/sitemap-collections.xml'
+      fullPath: '/sitemap-collections.xml'
+      preLoaderRoute: typeof SitemapCollectionsDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap-brands.xml': {
+      id: '/sitemap-brands.xml'
+      path: '/sitemap-brands.xml'
+      fullPath: '/sitemap-brands.xml'
+      preLoaderRoute: typeof SitemapBrandsDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/shop': {
@@ -2953,6 +3118,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocaleProductsHandleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/apps/seo-sitemaps/mwuwqi-vy/pages-sitemap.xml': {
+      id: '/apps/seo-sitemaps/mwuwqi-vy/pages-sitemap.xml'
+      path: '/apps/seo-sitemaps/mwuwqi-vy/pages-sitemap.xml'
+      fullPath: '/apps/seo-sitemaps/mwuwqi-vy/pages-sitemap.xml'
+      preLoaderRoute: typeof AppsSeoSitemapsMwuwqiVyPagesSitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/apps/seo-sitemaps/mwuwqi-vy/images-sitemap.xml': {
+      id: '/apps/seo-sitemaps/mwuwqi-vy/images-sitemap.xml'
+      path: '/apps/seo-sitemaps/mwuwqi-vy/images-sitemap.xml'
+      fullPath: '/apps/seo-sitemaps/mwuwqi-vy/images-sitemap.xml'
+      preLoaderRoute: typeof AppsSeoSitemapsMwuwqiVyImagesSitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/apps/seo-sitemaps/mwuwqi-vy/articles-sitemap.xml': {
+      id: '/apps/seo-sitemaps/mwuwqi-vy/articles-sitemap.xml'
+      path: '/apps/seo-sitemaps/mwuwqi-vy/articles-sitemap.xml'
+      fullPath: '/apps/seo-sitemaps/mwuwqi-vy/articles-sitemap.xml'
+      preLoaderRoute: typeof AppsSeoSitemapsMwuwqiVyArticlesSitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/stock-alerts/subscribe': {
       id: '/api/public/stock-alerts/subscribe'
       path: '/api/public/stock-alerts/subscribe'
@@ -3212,6 +3398,12 @@ const rootRouteChildren: RootRouteChildren = {
   RobotsDottxtRoute: RobotsDottxtRoute,
   ShippingReturnsRoute: ShippingReturnsRoute,
   ShopRoute: ShopRoute,
+  SitemapBrandsDotxmlRoute: SitemapBrandsDotxmlRoute,
+  SitemapCollectionsDotxmlRoute: SitemapCollectionsDotxmlRoute,
+  SitemapDestinationsDotxmlRoute: SitemapDestinationsDotxmlRoute,
+  SitemapProductImagesDotxmlRoute: SitemapProductImagesDotxmlRoute,
+  SitemapProductsDotxmlRoute: SitemapProductsDotxmlRoute,
+  SitemapStaticDotxmlRoute: SitemapStaticDotxmlRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SourcingArchitectureRoute: SourcingArchitectureRoute,
   StudioRoute: StudioRoute,
@@ -3322,6 +3514,12 @@ const rootRouteChildren: RootRouteChildren = {
     ApiPublicHooksSyncCollectionImagesRoute,
   ApiPublicIndexnowSubmitRoute: ApiPublicIndexnowSubmitRoute,
   ApiPublicStockAlertsSubscribeRoute: ApiPublicStockAlertsSubscribeRoute,
+  AppsSeoSitemapsMwuwqiVyArticlesSitemapDotxmlRoute:
+    AppsSeoSitemapsMwuwqiVyArticlesSitemapDotxmlRoute,
+  AppsSeoSitemapsMwuwqiVyImagesSitemapDotxmlRoute:
+    AppsSeoSitemapsMwuwqiVyImagesSitemapDotxmlRoute,
+  AppsSeoSitemapsMwuwqiVyPagesSitemapDotxmlRoute:
+    AppsSeoSitemapsMwuwqiVyPagesSitemapDotxmlRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
