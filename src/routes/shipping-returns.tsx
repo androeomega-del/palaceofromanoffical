@@ -23,7 +23,7 @@ export const Route = createFileRoute("/shipping-returns")({
           name: "How long does shipping take?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Warehouses dispatch within 24–48 hours of order confirmation. Typical transit is 2–3 business days within the EU, 3–5 business days to the UK, Switzerland and Norway, 4–7 business days to the United States and Canada, and 5–10 business days to the rest of the world. Every shipment travels with UPS, FedEx or DHL, fully tracked and insured.",
+            text: "Orders are processed and dispatched within 24–48 hours of confirmation. Delivery is 1–3 business days within the European Union and 5–7 business days for the rest of the world. Every shipment travels with UPS, FedEx or DHL, fully tracked and insured.",
           },
         },
         {
@@ -31,7 +31,7 @@ export const Route = createFileRoute("/shipping-returns")({
           name: "Does Palace of Roman ship worldwide?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Yes. We ship worldwide via DHL, FedEx and UPS from partner warehouses across Italy, Sweden, Spain, Austria, Northern Ireland and the United States. We currently cannot deliver to Russia, Belarus or Ukraine due to the ongoing conflict.",
+            text: "Yes. We ship worldwide via DHL, FedEx and UPS from our network of authorised European and US partner warehouses. We currently cannot deliver to Russia, Belarus or Ukraine due to the ongoing conflict.",
           },
         },
         {
@@ -39,7 +39,15 @@ export const Route = createFileRoute("/shipping-returns")({
           name: "What is the return window?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Returns are accepted within fourteen days of the day your parcel is delivered. Pieces must be unworn, with all original tags attached and in their original packaging. Returns must travel with UPS, FedEx or DHL with live tracking — regular postal services are declined.",
+            text: "Returns must be shipped back within 14 days of the day your parcel is delivered. A reason for return must be provided to initiate the process. Pieces must be unworn, with all original tags attached and in their original packaging. Returns must travel with UPS, FedEx or DHL — regular postal services are declined and such returns will not be accepted.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "How are refunds processed?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Once your return is delivered to the warehouse, all items are inspected before any refund is issued. If the pieces are unworn, unused and in their original condition with tags attached, the refund is processed to your original method of payment. Used or worn items will not be refunded and will be shipped back to you.",
           },
         },
         {
@@ -47,7 +55,7 @@ export const Route = createFileRoute("/shipping-returns")({
           name: "How do I exchange a piece for a different size?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Place a new order for the replacement size and open a return on the original order. The original piece is refunded as soon as it is received and inspected at the warehouse — this secures your replacement immediately rather than waiting for the return to clear.",
+            text: "Place a new order for the replacement size and open a return on the original order. The original piece is refunded once it is received and inspected at the warehouse.",
           },
         },
         {
