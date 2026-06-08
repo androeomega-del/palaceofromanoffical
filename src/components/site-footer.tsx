@@ -58,6 +58,7 @@ export function SiteFooter() {
             <Link to="/men" className="text-sm text-muted-foreground hover:text-ink transition-colors">Men</Link>
             <Link to="/collections/$handle" params={{ handle: "new-arrivals" }} className="text-sm text-muted-foreground hover:text-ink transition-colors">New In</Link>
             <Link to="/brands" className="text-sm text-muted-foreground hover:text-ink transition-colors">Designers A–Z</Link>
+            <Link to="/luxury-designer-fashion" className="text-sm text-muted-foreground hover:text-ink transition-colors">Luxury Designer Fashion</Link>
             <Link to="/in-rome" className="text-sm text-muted-foreground hover:text-ink transition-colors">In Rome</Link>
             <Link to="/collections" className="text-sm text-muted-foreground hover:text-ink transition-colors">All Collections</Link>
             <Link to="/style-quiz" className="text-sm text-muted-foreground hover:text-ink transition-colors">Style Quiz</Link>
