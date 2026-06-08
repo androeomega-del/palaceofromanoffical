@@ -358,6 +358,25 @@ export function VacationTrunkOverlay() {
                             {it.priceLabel}
                           </p>
                         )}
+                        {it.outOfStock && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (typeof window !== "undefined" && it.handle) {
+                                window.location.href = `/product/${it.handle}#substitution`;
+                              }
+                            }}
+                            className="mt-2 w-full inline-flex items-center justify-center text-[9.5px] uppercase tracking-[0.28em] border transition-colors"
+                            style={{
+                              minHeight: 36,
+                              borderColor: "rgba(10,10,10,0.4)",
+                              color: "#0a0a0a",
+                              background: "transparent",
+                            }}
+                          >
+                            Request Archival Piece Substitution
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))}
