@@ -15,27 +15,11 @@ import heroImage from "@/assets/home-hero.jpg";
 import { readMetaAbBucket } from "@/lib/meta-ab.functions";
 import { pickHomeMeta, seoMetaForBucket, type MetaBucket } from "@/lib/meta-ab";
 import { useMetaAb } from "@/hooks/use-meta-ab";
-import { newThisWeekQueryOptions } from "@/lib/rails/queries";
-import { cdnImage } from "@/lib/cdn-image";
 
 export const Route = createFileRoute("/")({
-  loader: async ({ context }): Promise<{ abBucket: MetaBucket; lcpImage: string | null }> => {
-    // Prime BOTH the Men's (primary) and Women's New In rails in parallel
-    // so the segmented editorial grid SSRs without a loading flash. The
-    // queryFns are 60s-cached server-side (see src/lib/rails/queries.ts) so
-    // crawler bursts don't fan out to the Storefront API on every request.
-    // Best-Sellers are intentionally NOT prefetched here — the homepage
-    // doesn't render that rail; only New-In is consumed by HomeStudioLayout.
-    const [{ bucket }, menRail] = await Promise.all([
-      readMetaAbBucket(),
-      context.queryClient.ensureQueryData(newThisWeekQueryOptions("Men")),
-      context.queryClient.ensureQueryData(newThisWeekQueryOptions("Women")),
-      
-    ]);
-    const firstImg =
-      (menRail as any)?.[0]?.node?.images?.edges?.[0]?.node?.url ?? null;
-    const lcpImage = firstImg ? cdnImage(firstImg, { width: 1000 }) : null;
-    return { abBucket: bucket, lcpImage };
+  loader: async (): Promise<{ abBucket: MetaBucket }> => {
+    const { bucket } = await readMetaAbBucket();
+    return { abBucket: bucket };
   },
   head: ({ loaderData }) => {
     const bucket = (loaderData?.abBucket ?? 0) as MetaBucket;
@@ -56,20 +40,7 @@ export const Route = createFileRoute("/")({
     if (robots) meta.push({ name: "robots", content: robots });
     const links: Array<Record<string, string>> = [
       { rel: "canonical", href: canonical },
-      // Warm a connection to the Shopify CDN so the first New-In rail image
-      // (the largest above-the-fold media element on `/`) decodes faster.
-      { rel: "preconnect", href: "https://cdn.shopify.com", crossOrigin: "anonymous" },
     ];
-    if (loaderData?.lcpImage) {
-      // Preload the actual LCP candidate — the first product tile in the
-      // asymmetric grid — so it starts downloading in parallel with HTML.
-      links.push({
-        rel: "preload",
-        as: "image",
-        href: loaderData.lcpImage,
-        fetchpriority: "high",
-      });
-    }
     return {
       meta,
       links: links as any,
