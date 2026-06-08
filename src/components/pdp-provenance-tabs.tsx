@@ -75,11 +75,11 @@ export function PdpProvenanceTabs({
 
   // Transit rows
   const transitOriginLabel = m.dispatchOrigin
-    ? `Dispatched from ${m.dispatchOrigin} via premium couriers (DHL Express, FedEx, UPS). Fully tracked in real time, released only against adult signature on delivery.`
-    : "Dispatched from European hubs via premium couriers (DHL Express, FedEx, UPS). Fully tracked in real time, released only against adult signature on delivery.";
+    ? `Dispatched from ${m.dispatchOrigin} within 24–48 hours via UPS, FedEx or DHL. Fully insured at no extra cost, tracked end-to-end, and released only against adult signature on delivery.`
+    : "Dispatched within 24–48 hours via UPS, FedEx or DHL from our European or US boutique-network partners. Fully insured at no extra cost, tracked end-to-end, and released only against adult signature on delivery.";
   const transitWindowSuffix = m.transitWindow
     ? ` Typical transit ${m.transitWindow}.`
-    : " Typical transit 3–7 business days.";
+    : " Typical transit: 1–3 business days within the EU, 5–7 business days everywhere else.";
 
   return (
     <div className="mt-6">
