@@ -93,7 +93,19 @@ export function VaultLockerOverlay() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isValid || phase !== "idle") return;
+    if (phase !== "idle") return;
+    if (!isValid) {
+      setShowError(true);
+      // Re-trigger the soft charcoal pulse on every failed attempt
+      if (inputRef.current) {
+        inputRef.current.style.animation = "none";
+        // Force reflow so the animation restarts cleanly
+        void inputRef.current.offsetWidth;
+        inputRef.current.style.animation = "vaultBorderPulse 1.4s ease-in-out 2";
+      }
+      return;
+    }
+    setShowError(false);
     const value = email.trim();
     setPhase("securing");
     // Persist via the existing telemetry helpers (no cart-store changes).
@@ -107,6 +119,7 @@ export function VaultLockerOverlay() {
     window.setTimeout(() => setPhase("secured"), 700);
     window.setTimeout(() => confirmUnlock(), 1500);
   };
+
 
   return (
     <div
