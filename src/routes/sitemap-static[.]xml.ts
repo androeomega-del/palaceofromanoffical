@@ -94,6 +94,8 @@ const STATIC_ROUTES: UrlEntry[] = [
   { path: "/designer-fashion-los-angeles", changefreq: "monthly", priority: "0.7" },
   { path: "/designer-fashion-miami", changefreq: "monthly", priority: "0.7" },
   { path: "/designer-fashion-san-francisco", changefreq: "monthly", priority: "0.7" },
+  // Head-term SEO landers — series, indexable.
+  { path: "/luxury-designer-fashion", changefreq: "weekly", priority: "0.8" },
 ];
 
 export const Route = createFileRoute("/sitemap-static.xml")({
