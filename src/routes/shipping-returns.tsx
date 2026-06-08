@@ -151,11 +151,13 @@ function ShippingReturnsPage() {
             <li><strong className="text-ink font-medium">United States</strong> — Florida, New York</li>
           </ul>
           <p className="text-sm text-muted-foreground">
-            Warehouses dispatch within 24–48 hours of order confirmation. Delivery is by UPS, FedEx or DHL with an
-            active tracking number, sent to you the moment the parcel leaves the warehouse.{" "}
-            <strong className="text-ink font-medium">Every shipment is fully insured at no additional cost</strong>{" "}
-            — this is included in your shipping rate, not an optional add-on. Couriers and warehouses do not operate
-            on weekends or local public holidays.
+            Every order is processed and dispatched within 24–48 hours of confirmation. Delivery is{" "}
+            <strong className="text-ink font-medium">1–3 business days within the European Union</strong> and{" "}
+            <strong className="text-ink font-medium">5–7 business days everywhere else</strong>. All shipments
+            travel with UPS, FedEx or DHL, and an active tracking link is sent the moment your parcel leaves the
+            warehouse. <strong className="text-ink font-medium">Every shipment is fully insured at no additional
+            cost</strong> — included in your shipping rate, not an optional add-on. Couriers and warehouses do
+            not operate on weekends or local public holidays.
           </p>
 
           <div className="not-prose mt-8 overflow-x-auto -mx-2">
