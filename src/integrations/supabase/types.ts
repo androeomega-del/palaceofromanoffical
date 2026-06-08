@@ -1958,6 +1958,42 @@ export type Database = {
         }
         Relationships: []
       }
+      web_vitals: {
+        Row: {
+          created_at: string
+          device: string | null
+          id: number
+          metric: string
+          path: string
+          rating: string | null
+          session_id: string
+          user_agent: string | null
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          device?: string | null
+          id?: number
+          metric: string
+          path: string
+          rating?: string | null
+          session_id: string
+          user_agent?: string | null
+          value: number
+        }
+        Update: {
+          created_at?: string
+          device?: string | null
+          id?: number
+          metric?: string
+          path?: string
+          rating?: string | null
+          session_id?: string
+          user_agent?: string | null
+          value?: number
+        }
+        Relationships: []
+      }
       win_back_emails_sent: {
         Row: {
           id: string

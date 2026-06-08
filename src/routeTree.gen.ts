@@ -119,6 +119,7 @@ import { Route as AdminGscMonitorRouteImport } from './routes/admin.gsc-monitor'
 import { Route as AdminGrowthOsRouteImport } from './routes/admin.growth-os'
 import { Route as AdminEmailRecoveryRouteImport } from './routes/admin.email-recovery'
 import { Route as AdminEmailCaptureRouteImport } from './routes/admin.email-capture'
+import { Route as AdminDiagnosticsRouteImport } from './routes/admin.diagnostics'
 import { Route as AdminDailyTasksRouteImport } from './routes/admin.daily-tasks'
 import { Route as AdminCreativeBriefRouteImport } from './routes/admin.creative-brief'
 import { Route as AdminCollectionImageQaRouteImport } from './routes/admin.collection-image-qa'
@@ -738,6 +739,11 @@ const AdminEmailCaptureRoute = AdminEmailCaptureRouteImport.update({
   path: '/admin/email-capture',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminDiagnosticsRoute = AdminDiagnosticsRouteImport.update({
+  id: '/admin/diagnostics',
+  path: '/admin/diagnostics',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminDailyTasksRoute = AdminDailyTasksRouteImport.update({
   id: '/admin/daily-tasks',
   path: '/admin/daily-tasks',
@@ -1084,6 +1090,7 @@ export interface FileRoutesByFullPath {
   '/admin/collection-image-qa': typeof AdminCollectionImageQaRoute
   '/admin/creative-brief': typeof AdminCreativeBriefRoute
   '/admin/daily-tasks': typeof AdminDailyTasksRoute
+  '/admin/diagnostics': typeof AdminDiagnosticsRoute
   '/admin/email-capture': typeof AdminEmailCaptureRoute
   '/admin/email-recovery': typeof AdminEmailRecoveryRoute
   '/admin/growth-os': typeof AdminGrowthOsRoute
@@ -1246,6 +1253,7 @@ export interface FileRoutesByTo {
   '/admin/collection-image-qa': typeof AdminCollectionImageQaRoute
   '/admin/creative-brief': typeof AdminCreativeBriefRoute
   '/admin/daily-tasks': typeof AdminDailyTasksRoute
+  '/admin/diagnostics': typeof AdminDiagnosticsRoute
   '/admin/email-capture': typeof AdminEmailCaptureRoute
   '/admin/email-recovery': typeof AdminEmailRecoveryRoute
   '/admin/growth-os': typeof AdminGrowthOsRoute
@@ -1410,6 +1418,7 @@ export interface FileRoutesById {
   '/admin/collection-image-qa': typeof AdminCollectionImageQaRoute
   '/admin/creative-brief': typeof AdminCreativeBriefRoute
   '/admin/daily-tasks': typeof AdminDailyTasksRoute
+  '/admin/diagnostics': typeof AdminDiagnosticsRoute
   '/admin/email-capture': typeof AdminEmailCaptureRoute
   '/admin/email-recovery': typeof AdminEmailRecoveryRoute
   '/admin/growth-os': typeof AdminGrowthOsRoute
@@ -1576,6 +1585,7 @@ export interface FileRouteTypes {
     | '/admin/collection-image-qa'
     | '/admin/creative-brief'
     | '/admin/daily-tasks'
+    | '/admin/diagnostics'
     | '/admin/email-capture'
     | '/admin/email-recovery'
     | '/admin/growth-os'
@@ -1738,6 +1748,7 @@ export interface FileRouteTypes {
     | '/admin/collection-image-qa'
     | '/admin/creative-brief'
     | '/admin/daily-tasks'
+    | '/admin/diagnostics'
     | '/admin/email-capture'
     | '/admin/email-recovery'
     | '/admin/growth-os'
@@ -1901,6 +1912,7 @@ export interface FileRouteTypes {
     | '/admin/collection-image-qa'
     | '/admin/creative-brief'
     | '/admin/daily-tasks'
+    | '/admin/diagnostics'
     | '/admin/email-capture'
     | '/admin/email-recovery'
     | '/admin/growth-os'
@@ -2063,6 +2075,7 @@ export interface RootRouteChildren {
   AdminCollectionImageQaRoute: typeof AdminCollectionImageQaRoute
   AdminCreativeBriefRoute: typeof AdminCreativeBriefRoute
   AdminDailyTasksRoute: typeof AdminDailyTasksRoute
+  AdminDiagnosticsRoute: typeof AdminDiagnosticsRoute
   AdminEmailCaptureRoute: typeof AdminEmailCaptureRoute
   AdminEmailRecoveryRoute: typeof AdminEmailRecoveryRoute
   AdminGrowthOsRoute: typeof AdminGrowthOsRoute
@@ -2927,6 +2940,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminEmailCaptureRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/diagnostics': {
+      id: '/admin/diagnostics'
+      path: '/admin/diagnostics'
+      fullPath: '/admin/diagnostics'
+      preLoaderRoute: typeof AdminDiagnosticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/daily-tasks': {
       id: '/admin/daily-tasks'
       path: '/admin/daily-tasks'
@@ -3462,6 +3482,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminCollectionImageQaRoute: AdminCollectionImageQaRoute,
   AdminCreativeBriefRoute: AdminCreativeBriefRoute,
   AdminDailyTasksRoute: AdminDailyTasksRoute,
+  AdminDiagnosticsRoute: AdminDiagnosticsRoute,
   AdminEmailCaptureRoute: AdminEmailCaptureRoute,
   AdminEmailRecoveryRoute: AdminEmailRecoveryRoute,
   AdminGrowthOsRoute: AdminGrowthOsRoute,
@@ -3566,13 +3587,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

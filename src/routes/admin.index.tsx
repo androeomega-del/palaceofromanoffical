@@ -18,6 +18,7 @@ import {
   Inbox,
   ListChecks,
   Crosshair,
+  Activity,
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin/")({
@@ -90,6 +91,12 @@ const TILES: Tile[] = [
     label: "Live Analytics",
     desc: "Traffic, funnel, email, subscribers — realtime",
     icon: BarChart3,
+  },
+  {
+    to: "/admin/diagnostics",
+    label: "Sales Diagnostic Engine",
+    desc: "Abandonment, mobile vitals & email-CVR anomaly triggers with fix packs",
+    icon: Activity,
   },
   {
     to: "/admin/email-recovery",
