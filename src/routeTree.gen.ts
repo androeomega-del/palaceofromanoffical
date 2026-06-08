@@ -36,6 +36,10 @@ import { Route as JournalRouteImport } from './routes/journal'
 import { Route as InRomeRouteImport } from './routes/in-rome'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as DesignersRouteImport } from './routes/designers'
+import { Route as DesignerFashionSanFranciscoRouteImport } from './routes/designer-fashion-san-francisco'
+import { Route as DesignerFashionNewYorkRouteImport } from './routes/designer-fashion-new-york'
+import { Route as DesignerFashionMiamiRouteImport } from './routes/designer-fashion-miami'
+import { Route as DesignerFashionLosAngelesRouteImport } from './routes/designer-fashion-los-angeles'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CompareRouteImport } from './routes/compare'
 import { Route as BrandsRouteImport } from './routes/brands'
@@ -297,6 +301,28 @@ const DesignersRoute = DesignersRouteImport.update({
   path: '/designers',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DesignerFashionSanFranciscoRoute =
+  DesignerFashionSanFranciscoRouteImport.update({
+    id: '/designer-fashion-san-francisco',
+    path: '/designer-fashion-san-francisco',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const DesignerFashionNewYorkRoute = DesignerFashionNewYorkRouteImport.update({
+  id: '/designer-fashion-new-york',
+  path: '/designer-fashion-new-york',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DesignerFashionMiamiRoute = DesignerFashionMiamiRouteImport.update({
+  id: '/designer-fashion-miami',
+  path: '/designer-fashion-miami',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DesignerFashionLosAngelesRoute =
+  DesignerFashionLosAngelesRouteImport.update({
+    id: '/designer-fashion-los-angeles',
+    path: '/designer-fashion-los-angeles',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
@@ -953,6 +979,10 @@ export interface FileRoutesByFullPath {
   '/brands': typeof BrandsRoute
   '/compare': typeof CompareRouteWithChildren
   '/contact': typeof ContactRoute
+  '/designer-fashion-los-angeles': typeof DesignerFashionLosAngelesRoute
+  '/designer-fashion-miami': typeof DesignerFashionMiamiRoute
+  '/designer-fashion-new-york': typeof DesignerFashionNewYorkRoute
+  '/designer-fashion-san-francisco': typeof DesignerFashionSanFranciscoRoute
   '/designers': typeof DesignersRoute
   '/faq': typeof FaqRoute
   '/in-rome': typeof InRomeRoute
@@ -1102,6 +1132,10 @@ export interface FileRoutesByTo {
   '/authentication': typeof AuthenticationRoute
   '/brands': typeof BrandsRoute
   '/contact': typeof ContactRoute
+  '/designer-fashion-los-angeles': typeof DesignerFashionLosAngelesRoute
+  '/designer-fashion-miami': typeof DesignerFashionMiamiRoute
+  '/designer-fashion-new-york': typeof DesignerFashionNewYorkRoute
+  '/designer-fashion-san-francisco': typeof DesignerFashionSanFranciscoRoute
   '/designers': typeof DesignersRoute
   '/faq': typeof FaqRoute
   '/in-rome': typeof InRomeRoute
@@ -1253,6 +1287,10 @@ export interface FileRoutesById {
   '/brands': typeof BrandsRoute
   '/compare': typeof CompareRouteWithChildren
   '/contact': typeof ContactRoute
+  '/designer-fashion-los-angeles': typeof DesignerFashionLosAngelesRoute
+  '/designer-fashion-miami': typeof DesignerFashionMiamiRoute
+  '/designer-fashion-new-york': typeof DesignerFashionNewYorkRoute
+  '/designer-fashion-san-francisco': typeof DesignerFashionSanFranciscoRoute
   '/designers': typeof DesignersRoute
   '/faq': typeof FaqRoute
   '/in-rome': typeof InRomeRoute
@@ -1406,6 +1444,10 @@ export interface FileRouteTypes {
     | '/brands'
     | '/compare'
     | '/contact'
+    | '/designer-fashion-los-angeles'
+    | '/designer-fashion-miami'
+    | '/designer-fashion-new-york'
+    | '/designer-fashion-san-francisco'
     | '/designers'
     | '/faq'
     | '/in-rome'
@@ -1555,6 +1597,10 @@ export interface FileRouteTypes {
     | '/authentication'
     | '/brands'
     | '/contact'
+    | '/designer-fashion-los-angeles'
+    | '/designer-fashion-miami'
+    | '/designer-fashion-new-york'
+    | '/designer-fashion-san-francisco'
     | '/designers'
     | '/faq'
     | '/in-rome'
@@ -1705,6 +1751,10 @@ export interface FileRouteTypes {
     | '/brands'
     | '/compare'
     | '/contact'
+    | '/designer-fashion-los-angeles'
+    | '/designer-fashion-miami'
+    | '/designer-fashion-new-york'
+    | '/designer-fashion-san-francisco'
     | '/designers'
     | '/faq'
     | '/in-rome'
@@ -1857,6 +1907,10 @@ export interface RootRouteChildren {
   BrandsRoute: typeof BrandsRoute
   CompareRoute: typeof CompareRouteWithChildren
   ContactRoute: typeof ContactRoute
+  DesignerFashionLosAngelesRoute: typeof DesignerFashionLosAngelesRoute
+  DesignerFashionMiamiRoute: typeof DesignerFashionMiamiRoute
+  DesignerFashionNewYorkRoute: typeof DesignerFashionNewYorkRoute
+  DesignerFashionSanFranciscoRoute: typeof DesignerFashionSanFranciscoRoute
   DesignersRoute: typeof DesignersRoute
   FaqRoute: typeof FaqRoute
   InRomeRoute: typeof InRomeRoute
@@ -2170,6 +2224,34 @@ declare module '@tanstack/react-router' {
       path: '/designers'
       fullPath: '/designers'
       preLoaderRoute: typeof DesignersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/designer-fashion-san-francisco': {
+      id: '/designer-fashion-san-francisco'
+      path: '/designer-fashion-san-francisco'
+      fullPath: '/designer-fashion-san-francisco'
+      preLoaderRoute: typeof DesignerFashionSanFranciscoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/designer-fashion-new-york': {
+      id: '/designer-fashion-new-york'
+      path: '/designer-fashion-new-york'
+      fullPath: '/designer-fashion-new-york'
+      preLoaderRoute: typeof DesignerFashionNewYorkRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/designer-fashion-miami': {
+      id: '/designer-fashion-miami'
+      path: '/designer-fashion-miami'
+      fullPath: '/designer-fashion-miami'
+      preLoaderRoute: typeof DesignerFashionMiamiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/designer-fashion-los-angeles': {
+      id: '/designer-fashion-los-angeles'
+      path: '/designer-fashion-los-angeles'
+      fullPath: '/designer-fashion-los-angeles'
+      preLoaderRoute: typeof DesignerFashionLosAngelesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -3148,6 +3230,10 @@ const rootRouteChildren: RootRouteChildren = {
   BrandsRoute: BrandsRoute,
   CompareRoute: CompareRouteWithChildren,
   ContactRoute: ContactRoute,
+  DesignerFashionLosAngelesRoute: DesignerFashionLosAngelesRoute,
+  DesignerFashionMiamiRoute: DesignerFashionMiamiRoute,
+  DesignerFashionNewYorkRoute: DesignerFashionNewYorkRoute,
+  DesignerFashionSanFranciscoRoute: DesignerFashionSanFranciscoRoute,
   DesignersRoute: DesignersRoute,
   FaqRoute: FaqRoute,
   InRomeRoute: InRomeRoute,
@@ -3281,3 +3367,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
