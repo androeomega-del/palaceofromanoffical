@@ -8,19 +8,14 @@
  *  - `standalone` (used by `/studio`): suppresses SiteHeader/SiteFooter
  *    via useChromeStore and renders its own StudioHeader + draft footer.
  *
- * Data: `products` come from the live `newThisWeekQueryOptions` rail
- * (verified Shopify handles only — no fabrication).
  * Concierge drawer is wired to the existing `fetchConciergePicks` serverFn.
  */
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { useChromeStore } from "@/stores/chrome-store";
-import { newThisWeekQueryOptions } from "@/lib/rails/queries";
 
 import { ConciergeDrawer } from "./concierge-drawer";
-import { AsymmetricGrid } from "./asymmetric-grid";
 import { PalaceHeader } from "./palace-header";
 import { StudioVerificationBanner } from "./studio-verification-banner";
 import { palette, fontSans, fontSerif } from "./palette";
@@ -43,11 +38,6 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
   }, [isStandalone, setSuppressed]);
 
   const [conciergeOpen, setConciergeOpen] = useState(false);
-
-  const { data: menRail } = useSuspenseQuery(newThisWeekQueryOptions("Men"));
-  const { data: womenRail } = useSuspenseQuery(newThisWeekQueryOptions("Women"));
-  const menProducts = (menRail ?? []).slice(0, 6);
-  const womenProducts = (womenRail ?? []).slice(0, 6);
 
   return (
     <div
@@ -138,33 +128,6 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
 
       {/* ───── Studio Verification — provenance banner ───── */}
       <StudioVerificationBanner />
-
-      {/* ───── Editorial asymmetric grid ───── */}
-      <section className="px-6 md:px-14 pb-24 md:pb-40">
-        <div className="flex items-end justify-between mb-12 md:mb-20">
-          <h2
-            className="text-3xl md:text-5xl font-light tracking-[-0.01em]"
-            style={{ fontWeight: 300 }}
-          >
-            New this week
-          </h2>
-          <Link
-            to="/collections/$handle"
-            params={{ handle: "new-arrivals" }}
-            className="hidden md:inline text-[10px] uppercase tracking-[0.32em] pb-1 border-b transition-colors"
-            style={{
-              color: palette.sand,
-              borderColor: "rgba(217,207,193,0.4)",
-              fontFamily: fontSans,
-            }}
-          >
-            View all
-          </Link>
-        </div>
-
-        <AsymmetricGrid menProducts={menProducts} womenProducts={womenProducts} />
-      </section>
-
 
       {/* ───── Standalone-only draft footer (real SiteFooter handles `/`) ───── */}
       {isStandalone && (
