@@ -11,11 +11,8 @@ import {
 import { Link } from "@tanstack/react-router";
 
 const ZONES = [
-  { region: "European Union", transit: "2–3 business days" },
-  { region: "United Kingdom & Northern Ireland", transit: "3–5 business days" },
-  { region: "Switzerland & Norway", transit: "3–5 business days" },
-  { region: "United States & Canada", transit: "4–7 business days" },
-  { region: "Rest of world", transit: "5–10 business days" },
+  { region: "European Union", transit: "1–3 business days" },
+  { region: "Rest of world", transit: "5–7 business days" },
 ];
 
 /**

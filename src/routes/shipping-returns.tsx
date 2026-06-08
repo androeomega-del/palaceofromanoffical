@@ -23,7 +23,7 @@ export const Route = createFileRoute("/shipping-returns")({
           name: "How long does shipping take?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Warehouses dispatch within 24–48 hours of order confirmation. Typical transit is 2–3 business days within the EU, 3–5 business days to the UK, Switzerland and Norway, 4–7 business days to the United States and Canada, and 5–10 business days to the rest of the world. Every shipment travels with UPS, FedEx or DHL, fully tracked and insured.",
+            text: "Orders are processed and dispatched within 24–48 hours of confirmation. Delivery is 1–3 business days within the European Union and 5–7 business days for the rest of the world. Every shipment travels with UPS, FedEx or DHL, fully tracked and insured.",
           },
         },
         {
@@ -31,7 +31,7 @@ export const Route = createFileRoute("/shipping-returns")({
           name: "Does Palace of Roman ship worldwide?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Yes. We ship worldwide via DHL, FedEx and UPS from partner warehouses across Italy, Sweden, Spain, Austria, Northern Ireland and the United States. We currently cannot deliver to Russia, Belarus or Ukraine due to the ongoing conflict.",
+            text: "Yes. We ship worldwide via DHL, FedEx and UPS from our network of authorised European and US partner warehouses. We currently cannot deliver to Russia, Belarus or Ukraine due to the ongoing conflict.",
           },
         },
         {
@@ -39,7 +39,15 @@ export const Route = createFileRoute("/shipping-returns")({
           name: "What is the return window?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Returns are accepted within fourteen days of the day your parcel is delivered. Pieces must be unworn, with all original tags attached and in their original packaging. Returns must travel with UPS, FedEx or DHL with live tracking — regular postal services are declined.",
+            text: "Returns must be shipped back within 14 days of the day your parcel is delivered. A reason for return must be provided to initiate the process. Pieces must be unworn, with all original tags attached and in their original packaging. Returns must travel with UPS, FedEx or DHL — regular postal services are declined and such returns will not be accepted.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "How are refunds processed?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Once your return is delivered to the warehouse, all items are inspected before any refund is issued. If the pieces are unworn, unused and in their original condition with tags attached, the refund is processed to your original method of payment. Used or worn items will not be refunded and will be shipped back to you.",
           },
         },
         {
@@ -47,7 +55,7 @@ export const Route = createFileRoute("/shipping-returns")({
           name: "How do I exchange a piece for a different size?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Place a new order for the replacement size and open a return on the original order. The original piece is refunded as soon as it is received and inspected at the warehouse — this secures your replacement immediately rather than waiting for the return to clear.",
+            text: "Place a new order for the replacement size and open a return on the original order. The original piece is refunded once it is received and inspected at the warehouse.",
           },
         },
         {
@@ -88,11 +96,8 @@ export const Route = createFileRoute("/shipping-returns")({
 });
 
 const ZONES = [
-  { region: "European Union", standard: "2–3 business days", dispatch: "24–48 hours" },
-  { region: "United Kingdom & Northern Ireland", standard: "3–5 business days", dispatch: "24–48 hours" },
-  { region: "Switzerland & Norway", standard: "3–5 business days", dispatch: "24–48 hours" },
-  { region: "United States & Canada", standard: "4–7 business days", dispatch: "24–48 hours" },
-  { region: "Rest of world", standard: "5–10 business days", dispatch: "24–48 hours" },
+  { region: "European Union", standard: "1–3 business days", dispatch: "24–48 hours" },
+  { region: "Rest of world", standard: "5–7 business days", dispatch: "24–48 hours" },
 ];
 
 function ShippingReturnsPage() {
@@ -112,9 +117,9 @@ function ShippingReturnsPage() {
           <p className="mt-2 text-xs text-muted-foreground leading-relaxed">From the day your parcel is delivered</p>
         </div>
         <div className="bg-canvas p-8 text-center">
-          <p className="font-serif text-5xl md:text-6xl tracking-tight text-ink leading-none">3–5</p>
-          <p className="mt-3 text-[10px] uppercase tracking-[0.3em] text-bronze font-semibold">Day Express</p>
-          <p className="mt-2 text-xs text-muted-foreground leading-relaxed">Insured, tracked worldwide delivery</p>
+          <p className="font-serif text-5xl md:text-6xl tracking-tight text-ink leading-none">1–3</p>
+          <p className="mt-3 text-[10px] uppercase tracking-[0.3em] text-bronze font-semibold">Day EU Delivery</p>
+          <p className="mt-2 text-xs text-muted-foreground leading-relaxed">5–7 business days rest of world, fully insured</p>
         </div>
         <div className="bg-canvas p-8 text-center">
           <p className="font-serif text-5xl md:text-6xl tracking-tight text-ink leading-none">100%</p>
@@ -146,11 +151,13 @@ function ShippingReturnsPage() {
             <li><strong className="text-ink font-medium">United States</strong> — Florida, New York</li>
           </ul>
           <p className="text-sm text-muted-foreground">
-            Warehouses dispatch within 24–48 hours of order confirmation. Delivery is by UPS, FedEx or DHL with an
-            active tracking number, sent to you the moment the parcel leaves the warehouse.{" "}
-            <strong className="text-ink font-medium">Every shipment is fully insured at no additional cost</strong>{" "}
-            — this is included in your shipping rate, not an optional add-on. Couriers and warehouses do not operate
-            on weekends or local public holidays.
+            Every order is processed and dispatched within 24–48 hours of confirmation. Delivery is{" "}
+            <strong className="text-ink font-medium">1–3 business days within the European Union</strong> and{" "}
+            <strong className="text-ink font-medium">5–7 business days everywhere else</strong>. All shipments
+            travel with UPS, FedEx or DHL, and an active tracking link is sent the moment your parcel leaves the
+            warehouse. <strong className="text-ink font-medium">Every shipment is fully insured at no additional
+            cost</strong> — included in your shipping rate, not an optional add-on. Couriers and warehouses do
+            not operate on weekends or local public holidays.
           </p>
 
           <div className="not-prose mt-8 overflow-x-auto -mx-2">
@@ -193,15 +200,21 @@ function ShippingReturnsPage() {
             <AccordionTrigger className="text-base font-serif">Returns — within 14 days of delivery</AccordionTrigger>
             <AccordionContent className="text-[15px] leading-[1.75] text-ink/85 space-y-3">
               <p>
-                We accept returns within fourteen days of the day your parcel is delivered. Pieces must be unworn, with
-                all original tags attached, in their original packaging. To open a return, write to{" "}
+                Returns must be <strong className="text-ink font-medium">shipped back within 14 days</strong> of
+                the day your parcel is delivered. Pieces must be unworn and unused, with all original tags
+                attached and in their original packaging.
+              </p>
+              <p>
+                <strong className="text-ink font-medium">A reason must be provided</strong> to initiate the return
+                process. Write to{" "}
                 <Link to="/contact" className="underline decoration-bronze/60 underline-offset-4">our concierge</Link>{" "}
                 with your order number and the reason for return; we will issue the correct return address and
                 instructions for the warehouse that fulfilled your order.
               </p>
               <p>
-                Returns must travel with UPS, FedEx or DHL and a live tracking number — regular postal services cannot
-                be accepted and parcels sent that way will be declined.
+                Returns must travel with <strong className="text-ink font-medium">UPS, FedEx or DHL</strong> and a
+                live tracking number. We do not accept returns sent via regular postal services — such returns
+                will be declined on arrival.
               </p>
               <p>
                 <strong className="text-ink font-medium">Return shipping cost:</strong> the customer pays return
@@ -212,6 +225,28 @@ function ShippingReturnsPage() {
               <p className="text-sm text-muted-foreground">
                 Sending a return to the wrong warehouse incurs a 20% restocking fee, as it adds significant handling
                 and freight cost. We will confirm the correct address before you ship.
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="refunds">
+            <AccordionTrigger className="text-base font-serif">Refunds — inspection and processing</AccordionTrigger>
+            <AccordionContent className="text-[15px] leading-[1.75] text-ink/85 space-y-3">
+              <p>
+                Once your return is delivered back to the warehouse, all items are{" "}
+                <strong className="text-ink font-medium">subject to inspection before any refund is issued</strong>.
+                If the pieces are unworn, unused and in their original condition with tags attached, the refund is
+                processed to your original method of payment.
+              </p>
+              <p>
+                <strong className="text-ink font-medium">Used or worn items will not be refunded.</strong> Items
+                that fail inspection — including pieces that show signs of wear, missing tags, damage,
+                alterations, fragrance, or marks — will be shipped back to you at no further cost.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Inspection is typically completed within 3–5 business days of the return arriving at the
+                warehouse. Once approved, the refund is issued the same day; depending on your bank or card
+                issuer, the funds may take a further 5–10 business days to appear on your statement.
               </p>
             </AccordionContent>
           </AccordionItem>
