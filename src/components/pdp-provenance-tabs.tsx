@@ -1,0 +1,108 @@
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ShieldCheck, Truck } from "lucide-react";
+
+/**
+ * Polished provenance + logistics tabs surfaced directly beneath the
+ * PDP Add-to-Cart row. Defensible claims only — sourcing framed as
+ * "authorised European boutique and distributor network" per house
+ * rules. Never names the sourcing partner.
+ */
+export function PdpProvenanceTabs() {
+  return (
+    <div className="mt-6">
+      <Tabs defaultValue="authenticity" className="w-full">
+        <TabsList className="grid grid-cols-2 w-full h-auto p-0 bg-transparent border-b border-[var(--studio-rule)] rounded-none">
+          <TabsTrigger
+            value="authenticity"
+            className="rounded-none border-b-2 border-transparent data-[state=active]:border-[var(--studio-ink)] data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2 py-3 text-[11px] uppercase tracking-[0.22em] font-semibold flex items-center gap-2"
+          >
+            <ShieldCheck className="w-3.5 h-3.5" strokeWidth={1.6} />
+            Authenticity Protocol
+          </TabsTrigger>
+          <TabsTrigger
+            value="transit"
+            className="rounded-none border-b-2 border-transparent data-[state=active]:border-[var(--studio-ink)] data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2 py-3 text-[11px] uppercase tracking-[0.22em] font-semibold flex items-center gap-2"
+          >
+            <Truck className="w-3.5 h-3.5" strokeWidth={1.6} />
+            Elite Transit
+          </TabsTrigger>
+        </TabsList>
+
+        {/* ── Authenticity ── */}
+        <TabsContent value="authenticity" className="pt-6 space-y-5">
+          <p className="text-[13px] leading-[1.75] text-[var(--studio-muted)]">
+            Every acquisition is backed by a strict alliance with tier-one European
+            distribution networks operating under European Union commercial law
+            governing the distribution of luxury goods. We maintain zero tolerance
+            for secondary-market variance.
+          </p>
+
+          <ul className="divide-y divide-[var(--studio-rule)] border-y border-[var(--studio-rule)]">
+            <ProvenanceRow
+              title="Original Presentation"
+              body="Dispatched directly from specialised European logistics hubs in original, untouched designer packaging."
+            />
+            <ProvenanceRow
+              title="Factory Tagging"
+              body="Each piece retains all pristine, house-issued factory tags and regional retail barcodes."
+            />
+            <ProvenanceRow
+              title="Documentation"
+              body="Shipments include original care booklets, dust bags, and serial-numbered authenticity cards where issued by the maison."
+            />
+          </ul>
+
+          <div className="border-l-2 border-[var(--studio-bronze)] bg-[color-mix(in_oklab,var(--studio-bronze)_6%,transparent)] px-5 py-4">
+            <p className="text-[11px] uppercase tracking-[0.25em] font-bold text-[var(--studio-ink)] mb-2">
+              Unconditional Guarantee
+            </p>
+            <p className="text-[12.5px] leading-[1.7] text-[var(--studio-ink)]/85">
+              We provide an absolute, unconditional financial guarantee of
+              authenticity. If any item fails to meet these standards, a full,
+              immediate financial reversal is issued — no preconditions, no delay.
+            </p>
+          </div>
+        </TabsContent>
+
+        {/* ── Transit ── */}
+        <TabsContent value="transit" className="pt-6 space-y-5">
+          <ul className="divide-y divide-[var(--studio-rule)] border-y border-[var(--studio-rule)]">
+            <ProvenanceRow
+              title="Insured Continental Express"
+              body="Dispatched from European hubs via premium couriers (DHL Express, FedEx, UPS). Fully tracked in real time, released only against adult signature on delivery. Typical transit 3–7 business days."
+            />
+            <ProvenanceRow
+              title="Millisecond Inventory Precision"
+              body="Our infrastructure is synchronised with authorised European partner warehouses to the exact second — what you see on the page is what is physically held, in your size, at the moment of order."
+            />
+            <ProvenanceRow
+              title="Buyer-Protected Checkout"
+              body="Payments are processed through globally regulated, buyer-protected gateways with bank-grade encryption and full chargeback rights."
+            />
+          </ul>
+
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1 text-[10px] uppercase tracking-[0.28em] text-[var(--studio-muted)]">
+            <span className="font-semibold text-[var(--studio-ink)]/70">Couriers</span>
+            <span className="opacity-30">·</span>
+            <span>DHL Express</span>
+            <span className="opacity-30">·</span>
+            <span>FedEx</span>
+            <span className="opacity-30">·</span>
+            <span>UPS</span>
+          </div>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
+
+function ProvenanceRow({ title, body }: { title: string; body: string }) {
+  return (
+    <li className="py-4 first:pt-3 last:pb-3">
+      <p className="text-[11px] uppercase tracking-[0.22em] font-bold text-[var(--studio-ink)] mb-1.5">
+        {title}
+      </p>
+      <p className="text-[12.5px] leading-[1.7] text-[var(--studio-muted)]">{body}</p>
+    </li>
+  );
+}
