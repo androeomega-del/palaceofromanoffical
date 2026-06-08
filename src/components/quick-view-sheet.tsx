@@ -129,7 +129,7 @@ export function QuickViewSheet({
               <p className="text-[10px] uppercase tracking-widest text-bronze mb-1">
                 {p.vendor}
               </p>
-              <h3 className="text-base font-medium leading-snug">{p.title}</h3>
+              <h3 className="text-base font-medium leading-snug">{formatLuxuryTitle(p.title, p.vendor)}</h3>
               <p className="text-sm mt-2">{formatPrice(price)}</p>
             </div>
 
