@@ -1,4 +1,5 @@
 import { createFileRoute, Link, notFound, useLocation } from "@tanstack/react-router";
+import { formatLuxuryTitle } from "@/lib/format-luxury-title";
 import { CapsuleBuilder, type CapsuleSlotKind } from "@/components/CapsuleBuilder";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState, useMemo } from "react";
