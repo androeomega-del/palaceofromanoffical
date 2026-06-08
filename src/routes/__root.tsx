@@ -16,6 +16,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { ConciergeWidget } from "@/components/concierge-widget";
 import { MarketQuerySync } from "@/components/market-query-sync";
 import { useCartSync } from "@/hooks/use-cart-sync";
+import { usePageviewBeacon } from "@/lib/pageview-beacon";
 import { Toaster } from "@/components/ui/sonner";
 import { installHydrationMonitor } from "@/lib/hydration-monitor";
 import { useChromeStore } from "@/stores/chrome-store";
