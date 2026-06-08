@@ -134,9 +134,9 @@ export function CityLandingPage({
           <p className="text-[10px] uppercase tracking-[0.3em] text-ink/60 mb-3">New In · Shipping to {city}</p>
           <h2 className="font-serif text-2xl md:text-3xl">This week's arrivals</h2>
         </div>
-        <NewThisWeekRail gender="Women" />
+        <NewThisWeekRail dept="Women" />
         <div className="h-12" />
-        <NewThisWeekRail gender="Men" />
+        <NewThisWeekRail dept="Men" />
       </section>
 
       {/* ─── FAQ (objections 1–5) ─── */}
