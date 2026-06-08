@@ -60,6 +60,7 @@ import { Route as CollectionsIndexRouteImport } from './routes/collections.index
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AccountIndexRouteImport } from './routes/account.index'
 import { Route as WomenSs26RouteImport } from './routes/women.ss26'
+import { Route as VaultDashboardRouteImport } from './routes/vault.dashboard'
 import { Route as VacationStylistDestinationRouteImport } from './routes/vacation-stylist.$destination'
 import { Route as TrendsTomFordEssentialsRouteImport } from './routes/trends.tom-ford-essentials'
 import { Route as TrendsSectionSamplesRouteImport } from './routes/trends.section-samples'
@@ -433,6 +434,11 @@ const WomenSs26Route = WomenSs26RouteImport.update({
   id: '/women/ss26',
   path: '/women/ss26',
   getParentRoute: () => rootRouteImport,
+} as any)
+const VaultDashboardRoute = VaultDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => VaultRoute,
 } as any)
 const VacationStylistDestinationRoute =
   VacationStylistDestinationRouteImport.update({
@@ -1082,7 +1088,7 @@ export interface FileRoutesByFullPath {
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
   '/vacation-stylist': typeof VacationStylistRouteWithChildren
-  '/vault': typeof VaultRoute
+  '/vault': typeof VaultRouteWithChildren
   '/wishlist': typeof WishlistRoute
   '/account/login': typeof AccountLoginRoute
   '/account/recover': typeof AccountRecoverRoute
@@ -1158,6 +1164,7 @@ export interface FileRoutesByFullPath {
   '/trends/section-samples': typeof TrendsSectionSamplesRoute
   '/trends/tom-ford-essentials': typeof TrendsTomFordEssentialsRoute
   '/vacation-stylist/$destination': typeof VacationStylistDestinationRoute
+  '/vault/dashboard': typeof VaultDashboardRoute
   '/women/ss26': typeof WomenSs26Route
   '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
@@ -1246,7 +1253,7 @@ export interface FileRoutesByTo {
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
   '/vacation-stylist': typeof VacationStylistRouteWithChildren
-  '/vault': typeof VaultRoute
+  '/vault': typeof VaultRouteWithChildren
   '/wishlist': typeof WishlistRoute
   '/account/login': typeof AccountLoginRoute
   '/account/recover': typeof AccountRecoverRoute
@@ -1321,6 +1328,7 @@ export interface FileRoutesByTo {
   '/trends/section-samples': typeof TrendsSectionSamplesRoute
   '/trends/tom-ford-essentials': typeof TrendsTomFordEssentialsRoute
   '/vacation-stylist/$destination': typeof VacationStylistDestinationRoute
+  '/vault/dashboard': typeof VaultDashboardRoute
   '/women/ss26': typeof WomenSs26Route
   '/account': typeof AccountIndexRoute
   '/admin': typeof AdminIndexRoute
@@ -1412,7 +1420,7 @@ export interface FileRoutesById {
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
   '/vacation-stylist': typeof VacationStylistRouteWithChildren
-  '/vault': typeof VaultRoute
+  '/vault': typeof VaultRouteWithChildren
   '/wishlist': typeof WishlistRoute
   '/account/login': typeof AccountLoginRoute
   '/account/recover': typeof AccountRecoverRoute
@@ -1488,6 +1496,7 @@ export interface FileRoutesById {
   '/trends/section-samples': typeof TrendsSectionSamplesRoute
   '/trends/tom-ford-essentials': typeof TrendsTomFordEssentialsRoute
   '/vacation-stylist/$destination': typeof VacationStylistDestinationRoute
+  '/vault/dashboard': typeof VaultDashboardRoute
   '/women/ss26': typeof WomenSs26Route
   '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
@@ -1656,6 +1665,7 @@ export interface FileRouteTypes {
     | '/trends/section-samples'
     | '/trends/tom-ford-essentials'
     | '/vacation-stylist/$destination'
+    | '/vault/dashboard'
     | '/women/ss26'
     | '/account/'
     | '/admin/'
@@ -1819,6 +1829,7 @@ export interface FileRouteTypes {
     | '/trends/section-samples'
     | '/trends/tom-ford-essentials'
     | '/vacation-stylist/$destination'
+    | '/vault/dashboard'
     | '/women/ss26'
     | '/account'
     | '/admin'
@@ -1985,6 +1996,7 @@ export interface FileRouteTypes {
     | '/trends/section-samples'
     | '/trends/tom-ford-essentials'
     | '/vacation-stylist/$destination'
+    | '/vault/dashboard'
     | '/women/ss26'
     | '/account/'
     | '/admin/'
@@ -2076,7 +2088,7 @@ export interface RootRouteChildren {
   SwimRoute: typeof SwimRouteWithChildren
   TermsRoute: typeof TermsRoute
   VacationStylistRoute: typeof VacationStylistRouteWithChildren
-  VaultRoute: typeof VaultRoute
+  VaultRoute: typeof VaultRouteWithChildren
   WishlistRoute: typeof WishlistRoute
   AdminAcquiredLeadsRoute: typeof AdminAcquiredLeadsRoute
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
@@ -2539,6 +2551,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/women/ss26'
       preLoaderRoute: typeof WomenSs26RouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/vault/dashboard': {
+      id: '/vault/dashboard'
+      path: '/dashboard'
+      fullPath: '/vault/dashboard'
+      preLoaderRoute: typeof VaultDashboardRouteImport
+      parentRoute: typeof VaultRoute
     }
     '/vacation-stylist/$destination': {
       id: '/vacation-stylist/$destination'
@@ -3424,6 +3443,16 @@ const VacationStylistRouteWithChildren = VacationStylistRoute._addFileChildren(
   VacationStylistRouteChildren,
 )
 
+interface VaultRouteChildren {
+  VaultDashboardRoute: typeof VaultDashboardRoute
+}
+
+const VaultRouteChildren: VaultRouteChildren = {
+  VaultDashboardRoute: VaultDashboardRoute,
+}
+
+const VaultRouteWithChildren = VaultRoute._addFileChildren(VaultRouteChildren)
+
 interface BrandVendorRouteChildren {
   BrandVendorInRomeRoute: typeof BrandVendorInRomeRoute
 }
@@ -3491,7 +3520,7 @@ const rootRouteChildren: RootRouteChildren = {
   SwimRoute: SwimRouteWithChildren,
   TermsRoute: TermsRoute,
   VacationStylistRoute: VacationStylistRouteWithChildren,
-  VaultRoute: VaultRoute,
+  VaultRoute: VaultRouteWithChildren,
   WishlistRoute: WishlistRoute,
   AdminAcquiredLeadsRoute: AdminAcquiredLeadsRoute,
   AdminAnalyticsRoute: AdminAnalyticsRoute,
