@@ -966,7 +966,7 @@ function BulkOvertakeControl() {
         return;
       }
 
-      await callAdminServerFn(startBulkOvertake, { total: targets.length });
+      await callAdminServerFn(startBulkOvertake, { data: { total: targets.length } });
       setPhase("processing");
 
       const batches: BulkOvertakeTarget[][] = [];
@@ -979,13 +979,16 @@ function BulkOvertakeControl() {
         const batch = batches[i];
         try {
           const res = await callAdminServerFn(executeBulkCatalogOvertake, {
-            items: batch.map((t) => ({ productId: t.productId, primaryKeyword: t.primaryKeyword })),
-            batchIndex: i,
-            totalBatches: batches.length,
-            finalBatch: i === batches.length - 1,
+            data: {
+              items: batch.map((t) => ({ productId: t.productId, primaryKeyword: t.primaryKeyword })),
+              batchIndex: i,
+              totalBatches: batches.length,
+              finalBatch: i === batches.length - 1,
+            },
           });
           totalErrors += res.errors;
           setErrors(totalErrors);
+
         } catch (err) {
           totalErrors += batch.length;
           setErrors(totalErrors);
