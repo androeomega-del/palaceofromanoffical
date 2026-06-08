@@ -283,6 +283,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           image: "https://palaceofromanofficial.com/brand/logo-wordmark.png",
           description: "Curated multi-brand luxury fashion retailer offering premium designer clothing, shoes, accessories and jewelry from 500+ houses including Gucci, Prada, Armani and Versace. Ships worldwide.",
           email: "support@palaceofromanofficial.com",
+          telephone: "+1-213-991-4069",
           address: {
             "@type": "PostalAddress",
             streetAddress: "8605 Santa Monica Blvd",
@@ -295,8 +296,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
             "@type": "ContactPoint",
             contactType: "customer support",
             email: "support@palaceofromanofficial.com",
+            telephone: "+1-213-991-4069",
             availableLanguage: ["English"],
             areaServed: "Worldwide",
+            hoursAvailable: "Mo-Sa 09:00-18:00",
           }],
           foundingDate: "2026",
           slogan: "Authentic luxury fashion, sourced through a global network of authorised boutiques.",
@@ -332,6 +335,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           logo: "https://palaceofromanofficial.com/brand/logo-wordmark.png",
           description: "Curated multi-brand luxury fashion boutique. Authentic designer pieces from a global network of authorised partners.",
           email: "support@palaceofromanofficial.com",
+          telephone: "+1-213-991-4069",
           priceRange: "$$$$",
           address: {
             "@type": "PostalAddress",

@@ -21,6 +21,7 @@ export const Route = createFileRoute("/about")({
       url: "https://palaceofromanofficial.com",
       logo: "https://palaceofromanofficial.com/favicon.ico",
       email: "support@palaceofromanofficial.com",
+      telephone: "+1-213-991-4069",
       address: {
         "@type": "PostalAddress",
         streetAddress: "8605 Santa Monica Blvd",
@@ -33,6 +34,7 @@ export const Route = createFileRoute("/about")({
         "@type": "ContactPoint",
         contactType: "customer support",
         email: "support@palaceofromanofficial.com",
+        telephone: "+1-213-991-4069",
         availableLanguage: ["English"],
         areaServed: "Worldwide",
         hoursAvailable: "Mo-Sa 09:00-18:00",
