@@ -188,12 +188,18 @@ function ContactPage() {
               </a>
             </div>
             <div>
-              <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">Reply time</p>
-              <p className="text-ink/80">Within 24 hours<br/>Mon–Sat</p>
+              <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">Phone</p>
+              <a
+                href="tel:+12139914069"
+                className="text-ink/80 hover:text-bronze underline underline-offset-4 decoration-ink/20 hover:decoration-bronze transition-colors"
+              >
+                +1 (213) 991-4069
+              </a>
+              <p className="text-ink/60 text-xs mt-1">Mon–Sat, 9–6 PT</p>
             </div>
             <div>
-              <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">Returns</p>
-              <p className="text-ink/80">14 days from<br/>delivery</p>
+              <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">Reply time</p>
+              <p className="text-ink/80">Within 24 hours<br/>Mon–Sat</p>
             </div>
             <div>
               <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">Registered address</p>
