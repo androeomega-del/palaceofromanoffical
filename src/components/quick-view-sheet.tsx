@@ -6,6 +6,7 @@ import { formatPrice, type ShopifyProduct } from "@/lib/shopify";
 import { cdnImage } from "@/lib/cdn-image";
 import { useCartStore } from "@/stores/cart-store";
 import { useInteractionStore } from "@/stores/interaction-store";
+import { formatLuxuryTitle } from "@/utils/productHelpers";
 
 /**
  * In-grid size picker. Lets shoppers add a multi-variant piece to bag
