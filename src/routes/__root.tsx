@@ -19,6 +19,7 @@ import { useCartSync } from "@/hooks/use-cart-sync";
 import { usePageviewBeacon } from "@/lib/pageview-beacon";
 import { useWebVitalsBeacon } from "@/lib/web-vitals-beacon";
 import { Toaster } from "@/components/ui/sonner";
+import { VaultLockerOverlay } from "@/components/vault/vault-locker-overlay";
 import { installHydrationMonitor } from "@/lib/hydration-monitor";
 import { useChromeStore } from "@/stores/chrome-store";
 
@@ -424,6 +425,7 @@ function RouteAwareRuntime() {
       <ChromeAwareShell />
       <ClientOnlyToaster />
       <ClientOnlyConcierge />
+      <VaultLockerOverlay />
     </>
   );
 }

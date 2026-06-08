@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WishlistRouteImport } from './routes/wishlist'
+import { Route as VaultRouteImport } from './routes/vault'
 import { Route as VacationStylistRouteImport } from './routes/vacation-stylist'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SwimRouteImport } from './routes/swim'
@@ -176,6 +177,11 @@ import { Route as ApiPublicECIdRouteImport } from './routes/api/public/e.c.$id'
 const WishlistRoute = WishlistRouteImport.update({
   id: '/wishlist',
   path: '/wishlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VaultRoute = VaultRouteImport.update({
+  id: '/vault',
+  path: '/vault',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VacationStylistRoute = VacationStylistRouteImport.update({
@@ -1076,6 +1082,7 @@ export interface FileRoutesByFullPath {
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
   '/vacation-stylist': typeof VacationStylistRouteWithChildren
+  '/vault': typeof VaultRoute
   '/wishlist': typeof WishlistRoute
   '/account/login': typeof AccountLoginRoute
   '/account/recover': typeof AccountRecoverRoute
@@ -1239,6 +1246,7 @@ export interface FileRoutesByTo {
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
   '/vacation-stylist': typeof VacationStylistRouteWithChildren
+  '/vault': typeof VaultRoute
   '/wishlist': typeof WishlistRoute
   '/account/login': typeof AccountLoginRoute
   '/account/recover': typeof AccountRecoverRoute
@@ -1404,6 +1412,7 @@ export interface FileRoutesById {
   '/swim': typeof SwimRouteWithChildren
   '/terms': typeof TermsRoute
   '/vacation-stylist': typeof VacationStylistRouteWithChildren
+  '/vault': typeof VaultRoute
   '/wishlist': typeof WishlistRoute
   '/account/login': typeof AccountLoginRoute
   '/account/recover': typeof AccountRecoverRoute
@@ -1571,6 +1580,7 @@ export interface FileRouteTypes {
     | '/swim'
     | '/terms'
     | '/vacation-stylist'
+    | '/vault'
     | '/wishlist'
     | '/account/login'
     | '/account/recover'
@@ -1734,6 +1744,7 @@ export interface FileRouteTypes {
     | '/swim'
     | '/terms'
     | '/vacation-stylist'
+    | '/vault'
     | '/wishlist'
     | '/account/login'
     | '/account/recover'
@@ -1898,6 +1909,7 @@ export interface FileRouteTypes {
     | '/swim'
     | '/terms'
     | '/vacation-stylist'
+    | '/vault'
     | '/wishlist'
     | '/account/login'
     | '/account/recover'
@@ -2064,6 +2076,7 @@ export interface RootRouteChildren {
   SwimRoute: typeof SwimRouteWithChildren
   TermsRoute: typeof TermsRoute
   VacationStylistRoute: typeof VacationStylistRouteWithChildren
+  VaultRoute: typeof VaultRoute
   WishlistRoute: typeof WishlistRoute
   AdminAcquiredLeadsRoute: typeof AdminAcquiredLeadsRoute
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
@@ -2175,6 +2188,13 @@ declare module '@tanstack/react-router' {
       path: '/wishlist'
       fullPath: '/wishlist'
       preLoaderRoute: typeof WishlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vault': {
+      id: '/vault'
+      path: '/vault'
+      fullPath: '/vault'
+      preLoaderRoute: typeof VaultRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/vacation-stylist': {
@@ -3471,6 +3491,7 @@ const rootRouteChildren: RootRouteChildren = {
   SwimRoute: SwimRouteWithChildren,
   TermsRoute: TermsRoute,
   VacationStylistRoute: VacationStylistRouteWithChildren,
+  VaultRoute: VaultRoute,
   WishlistRoute: WishlistRoute,
   AdminAcquiredLeadsRoute: AdminAcquiredLeadsRoute,
   AdminAnalyticsRoute: AdminAnalyticsRoute,
@@ -3587,13 +3608,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

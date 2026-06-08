@@ -236,6 +236,8 @@ export function ProductCard({
       return;
     }
     if (adding) return; // per-card spam guard
+    const { ensureVaultUnlocked } = await import("@/lib/vault-gate");
+    if (!(await ensureVaultUnlocked(p.title))) return;
     setAdding(true);
     try {
       const added = await addItem({
@@ -277,6 +279,8 @@ export function ProductCard({
       return;
     }
 
+    const { ensureVaultUnlocked } = await import("@/lib/vault-gate");
+    if (!(await ensureVaultUnlocked(p.title))) return;
     setBuyingNow(true);
     try {
       const added = await addItem({
@@ -590,6 +594,8 @@ export function ProductCard({
                         e.preventDefault();
                         e.stopPropagation();
                         if (!v || unavailable || adding) return;
+                        const { ensureVaultUnlocked } = await import("@/lib/vault-gate");
+                        if (!(await ensureVaultUnlocked(p.title))) return;
                         setAdding(true);
                         try {
                           const added = await addItem({
