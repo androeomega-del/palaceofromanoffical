@@ -38,17 +38,19 @@ export type MetaBucket = 0 | 1;
 /*  Variant catalogue                                                       */
 /* ──────────────────────────────────────────────────────────────────────── */
 
-/** Homepage variants. A is the existing canonical copy. */
+/** Homepage variants. A is the canonical, indexed copy. Both variants lead
+ *  with the audience-aligned pillars: authenticity, curated multi-brand,
+ *  express worldwide delivery. See mem://business/audience-icp. */
 const HOME: [MetaVariant, MetaVariant] = [
   {
-    title: "Palace of Roman | The Maisons Defining the Seasons",
+    title: "Palace of Roman | Authentic Luxury Designer Fashion, Worldwide",
     description:
-      "The maisons defining the seasons — curated luxury menswear and womenswear from the world's leading designer houses. Authenticated. Express delivery.",
+      "Curated luxury fashion from Versace, Prada, Gucci, Dolce & Gabbana and the maisons that matter — 100% authenticated, expressly shipped worldwide.",
   },
   {
-    title: "The Maisons Defining the Seasons | Palace of Roman",
+    title: "Authenticated Designer Fashion — Express Worldwide | Palace of Roman",
     description:
-      "A curated edit of luxury fashion from the maisons defining the seasons. Prada, Gucci, Bottega Veneta, Saint Laurent and more. Authenticated. Worldwide shipping.",
+      "A curated multi-brand boutique for collectors of luxury fashion. Authenticated provenance, express worldwide delivery, 14-day returns.",
   },
 ];
 
@@ -62,11 +64,11 @@ const COLLECTION_RECIPES: Record<string, Recipe> = {
   _default: [
     // Variant A — matches the existing `collectionSeo()` output verbatim.
     { title: "{{title}}", description: "{{description}}" },
-    // Variant B — adds a confidence cue + sharper benefit framing.
+    // Variant B — audience-aligned: leads with authenticity + express worldwide delivery.
     {
-      title: "{{title}} — Authenticated Designer Edit | Palace of Roman",
+      title: "{{title}} — Authentic Designer Edit, Shipped Worldwide | Palace of Roman",
       description:
-        "Shop {{title}} from the maisons that matter. Authenticated, expressly shipped worldwide, with 14-day returns. {{description}}",
+        "Authenticated {{title}} from the maisons that matter. Express worldwide delivery, 14-day returns. {{description}}",
     },
   ],
   "cashmere-sweaters": [

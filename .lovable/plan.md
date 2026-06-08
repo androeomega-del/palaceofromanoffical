@@ -1,74 +1,91 @@
+## Goal
+Translate the audience research (affluent 25–44, NYC/LA/Miami/SF, female-skewed, authenticity-first) into (1) a permanent internal playbook, (2) homepage + key collection meta rewrites, (3) four city SEO landing pages — shipped as a single staged batch per project rules.
 
-# Apex Predator — SEO command terminal
+## Important caveat from Semrush
+City-modifier terms like *"designer clothing new york"* / *"designer fashion los angeles"* show **0/mo volume** in Semrush US data. Versace and category terms (*"luxury italian shirts"* 110, *"italian leather wallets for women"* 110) carry real demand. City pages will therefore be **conversion landers** (linkable from paid social/ads + footer, geo-targeted PPC) rather than pure organic plays. Recommended; flagging so expectations are right.
 
-A new admin surface that turns the existing SEO tooling (GSC monitor, Growth OS, Semrush) into an aggressive competitor-surveillance terminal for `palaceofromanofficial.com`. Four modules, one shared shell.
+## 1. Memory — save audience playbook
 
-## Prerequisite (one-time, before module 1 works)
+New file `mem://business/audience-icp` (type: feature) containing:
+- Cohort splits (Millennials 41%, GenX/GenZ 20.5%, Boomers 10.3%)
+- Demo: 25–44 leads, female 60/40, $100K+ 70%
+- Top metros: NYC, LA, Miami, SF Bay
+- Hard-coded messaging pillars: authenticity proof, express worldwide delivery, exclusivity, craftsmanship, curated multi-brand
+- Objection map (counterfeits, price, try-on, delivery, personalization) → on-page answer for each
+- Cognitive biases to use (Scarcity, Social Proof, Authority, Halo, Anchoring)
+- Persona summaries (Aficionado / Fashion-Forward Pro / Sophisticated Gifter)
+- "Do NOT use" list: hype words, fake urgency, fabricated reviews, generic stock claims
 
-The Semrush connector is **not yet linked** to this project — only Gmail and Google Search Console are. Modules 1–3 all depend on Semrush gateway data. As soon as you approve this plan I'll trigger the Semrush connect modal so you can authorize your Semrush account on the spot. Your existing Semrush subscription tier determines depth — Pro is fine for backlink + domain + keyword reports; Guru/Business adds historical depth.
+Add a one-liner Core rule to `mem://index.md`:
+> All customer-facing copy, ads, and SEO must answer the 5 objections (counterfeit, price, try-on, delivery, personalization) and lead with authenticity + express worldwide delivery. See mem://business/audience-icp.
 
-LOVABLE_API_KEY is already provisioned, so the LLM drafting (poacher pitches, content blueprints, metadata rewrites) needs no further setup.
+And a Memories entry pointing at the new file.
 
-## Module 1 — Poacher Protocol (backlink intercept)
+## 2. Homepage meta — refresh A/B variants
 
-- New server fn `apex-predator.functions.ts → fetchCompetitorBacklinks(domain, sinceDays)` calling the Semrush connector gateway (`/backlinks/backlinks`, `/backlinks/backlinks_refdomains`, `/backlinks/backlinks_overview`) for `palaceofromanofficial.com`.
-- Stores a rolling snapshot in a new `competitor_backlinks` table; on each refresh we diff against the previous snapshot to surface **net-new** referring domains (the "interception feed"), filtered to premium links (AS ≥ 40, dofollow, no spam TLDs).
-- For each net-new link, a "Draft Pitch" action calls Lovable AI (`google/gemini-3-flash-preview` for speed, `openai/gpt-5-mini` toggle for higher polish) with: linking page URL + extracted page summary (fetched server-side via `fetch` + readability strip) + Palace of Roman positioning brief. Output is a 4-paragraph editor-grade outreach email with subject + angle hook.
-- Pitch is saved to the row so the operator can re-open it; "Copy" + "Open in Gmail" actions ship next to it (Gmail connector is already linked).
+Edit `src/lib/meta-ab.ts` → `HOME` array. Keep the A/B framework intact; just rewrite both variants so the canonical (bucket 0) leads with audience-aligned language.
 
-## Module 2 — Hijack Feed (traffic reverse-engineering)
+```
+A (default, indexed):
+  title: "Palace of Roman | Authentic Luxury Designer Fashion, Worldwide"
+  description: "Curated luxury fashion from Versace, Prada, Gucci, Dolce & Gabbana and the maisons that matter — 100% authenticated, expressly shipped worldwide."
 
-- Server fn `fetchTopRankingPages(domain)` → Semrush `/domains/domain_organic_unique` (top URLs) + `/url/url_organic` per URL (highest-traffic keywords). Cached server-side for 6 h.
-- UI: ranked table of competitor URLs (slot, est. traffic, top kw, KD, volume, CPC) — up to 100 rows, sortable.
-- "Generate Content Blueprint" button on each row → Lovable AI structured-output call returning `{ targetKeyword, intent, semanticTerms[], outline[ {h2, h3[], evidence} ], internalLinks[], schemaTypes[], wordCount, eatSignals[] }`. Rendered as an expandable panel + one-click "Export as Markdown" download to `/mnt/documents/blueprint-<slug>.md`.
-
-## Module 3 — Striking-Distance Impact Pipeline
-
-- Reuses existing `gsc-monitor.server.ts` data (positions 4–11) — no new GSC plumbing.
-- Adds an **Impact Score** = `impressions × ctrLift(position) × (1 / max(KD, 10)) × 100`, where `ctrLift` is the modeled CTR delta between current position and position 3, and `KD` comes from a batched Semrush `/keywords/phrase_these` lookup (cached 24 h to stay inside quota).
-- Ranked queue, top N highlighted in neon green ("low-hanging predator" tier).
-- For the top 10, a "Generate Strike Plan" action returns: rewritten `<title>` (≤60c), meta description (≤155c), revised H1, 3 internal-link source pages from our own catalog (drawn from `shop-taxonomy` + live collections), and a 2-sentence on-page rationale. JSON saved to row + one-click "Copy patch" and "Export .md".
-
-## Module 4 — Prestige Dark Terminal UI
-
-- New route `src/routes/admin.apex-predator.tsx` behind the existing admin guard.
-- New tokens scoped to the surface (added to `src/styles.css` under `:root[data-surface="apex"]`):
-  - `--apex-bg`: near-black slate (`oklch(0.14 0.012 250)`)
-  - `--apex-surface`: `oklch(0.18 0.014 250)`
-  - `--apex-grid`: `oklch(0.24 0.012 250)` (1px grid lines)
-  - `--apex-neon`: `oklch(0.86 0.22 145)` (high-priority opportunity — Bloomberg green)
-  - `--apex-amber`: `oklch(0.78 0.18 70)` (competitive alert)
-  - `--apex-ink`: `oklch(0.96 0.005 250)` (foreground)
-  - `--apex-muted`: `oklch(0.62 0.01 250)`
-  - Mono numerics: `JetBrains Mono` already in the stack.
-- Layout: fixed left module nav (Poacher / Hijack / Striking) + top status bar (last sync, Semrush quota remaining, run-count) + main grid. Every row has a single primary action button on the right ("Deploy Fix" / "Export Outreach" / "Generate Counter-Strategy"). Subtle scanline + cursor blink on the status bar — no decorative animation in tables (legibility first).
-- Entirely scoped — does not touch the storefront design tokens.
-
-## Backend / data
-
-- One new migration: `competitor_backlinks` and `apex_run_log` tables (RLS: admin-only via `has_role(auth.uid(),'admin')`, GRANTs for `authenticated` + `service_role` per project convention).
-- All Semrush calls go through `connector-gateway.lovable.dev/semrush/...` with `Authorization: Bearer ${LOVABLE_API_KEY}` + `X-Connection-Api-Key: ${SEMRUSH_API_KEY}`; quota-error body `ERROR 134 :: TOTAL LIMIT EXCEEDED` surfaces as a top-bar warning, not a silent failure.
-- All LLM calls go through Lovable AI Gateway via the existing `ai-gateway.server.ts` helper.
-
-## Technical notes (build order)
-
-```text
-1. Trigger Semrush connect modal (once approved)
-2. supabase migration: competitor_backlinks + apex_run_log + RLS + GRANTs
-3. src/lib/apex-predator.server.ts  — Semrush gateway client, scoring fns
-4. src/lib/apex-predator.functions.ts — createServerFn wrappers (admin-guarded)
-5. src/styles.css — add :root[data-surface="apex"] tokens
-6. src/components/apex/* — Shell, StatusBar, ModuleNav, PoacherFeed,
-   HijackTable, StrikingQueue, ActionButton, BlueprintPanel
-7. src/routes/admin.apex-predator.tsx — route + head() + module switcher
-8. Wire admin nav link into existing admin index/menu
+B (test, noindex):
+  title: "Authenticated Designer Fashion — Express Worldwide | Palace of Roman"
+  description: "A curated multi-brand boutique for collectors of luxury fashion. Authenticated provenance, express worldwide delivery, 14-day returns."
 ```
 
-## What's intentionally NOT in scope
+Both stay ≤60 / ≤160. No structural / loader / canonical changes.
 
-- No scheduled background jobs / pg_cron — refresh is operator-triggered on this pass (avoids burning Semrush quota during dev). Easy to add later.
-- No public-facing surface; admin-only.
-- No changes to storefront design tokens, megamenu, PDP, or checkout protocol.
-- No changes to existing GSC monitor / Growth OS pages (this surface reads from them, doesn't replace them).
+## 3. Landing collection default recipe
 
-Reply with **approve** to proceed, or tell me what to drop / add — e.g. "skip module 1 for now", "add a pg_cron daily refresh", "use Gemini Pro for blueprints instead of Flash", etc.
+Same file — update `COLLECTION_RECIPES._default` variant B so every collection PLP without a custom recipe leans on the authenticity + delivery cues:
+
+```
+B: "{{title}} — Authentic Designer Edit, Shipped Worldwide | Palace of Roman"
+   description: "Authenticated {{title}} from the maisons that matter. Express worldwide delivery, 14-day returns. {{description}}"
+```
+
+Leaves per-collection custom recipes alone.
+
+## 4. Four city SEO landing pages (staged launch)
+
+New routes — built and linked all in one batch:
+
+- `src/routes/designer-fashion-new-york.tsx`
+- `src/routes/designer-fashion-los-angeles.tsx`
+- `src/routes/designer-fashion-miami.tsx`
+- `src/routes/designer-fashion-san-francisco.tsx`
+
+Each route:
+- `head()` with unique `title`, `description`, `og:title`, `og:description`, `og:url`, `og:image` (uses existing `home-hero.jpg`), self-canonical, JSON-LD `BreadcrumbList` + `LocalBusiness`-style `Store` schema with `areaServed` = the metro.
+- Shared component `<CityLandingPage>` in `src/components/city-landing-page.tsx` so the 4 routes stay thin and consistent (eyebrow → H1 → intro → 3-section body answering the 5 objections → FAQ → product rail of New-In Men + Women → CTA strip).
+- Copy: localized by metro ("Manhattan to Tribeca", "Beverly Hills to West Hollywood", "Design District to South Beach", "Pacific Heights to Palo Alto") but every piece authentic — no fabricated showrooms, no fake try-on, no in-person services (founder-identity constraint).
+- Product rail reuses `newThisWeekQueryOptions("Men")` + Women — no new data layer.
+- Bottom CTA links into the curated edits / brands index.
+
+### Linkage (so they're not orphans)
+
+- Add a discrete "Shop By City" group to `src/components/site-footer.tsx` — 4 links, footer only. **No header / megamenu / homepage tile changes.** This satisfies the staged-launch rule without pulling them into the main IA before they prove out.
+- Add the 4 paths to `src/routes/sitemap[.]xml.tsx` (or whatever file owns the sitemap — will read it before editing).
+
+### What I will NOT touch
+
+- Cart, checkout, Shopify integration, fulfillment locations
+- `routeTree.gen.ts` (auto-generated)
+- Existing landing collection routes (`designer-belts`, `designer-mens-shirts`, etc.) beyond what the default recipe in step 3 produces
+- Brand/in-rome routes (`brand.$vendor.in-rome.tsx`) — those are a separate playbook
+- Header nav, homepage tiles, megamenu
+
+## 5. Verification
+
+After writing:
+- Read each new route file to confirm `head()` shape compiles (TanStack-style: `meta`/`links`/`scripts` only).
+- Verify the 4 paths appear in the sitemap loader output.
+- No DB / no migrations / no secrets changes.
+
+## Technical notes
+
+- All copy follows `mem://constraints/no-bg-mention` ("global network of authorised boutiques and distributors") and the team-identity constraint (solo founder — no atelier, no in-person appointments).
+- City pages target conversion + paid-traffic landers, not organic-search wins (Semrush shows ~0 volume on the head terms). Documented in plan caveat so you can decide later whether to expand or repurpose them.
+- Total new files: 1 component + 4 routes + 1 memory file. Total edits: meta-ab.ts, site-footer.tsx, sitemap route, mem://index.md. ~9 files.
