@@ -43,6 +43,7 @@ const SECURING_TOTAL_MS = SECURING_STEP_MS * SECURING_STATUSES.length; // 2100ms
 export function VaultLockerOverlay() {
   const open = useVaultGateStore((s) => s.open);
   const label = useVaultGateStore((s) => s.label);
+  const lowStock = useVaultGateStore((s) => s.lowStock);
   const confirmUnlock = useVaultGateStore((s) => s.confirmUnlock);
   const cancel = useVaultGateStore((s) => s.cancel);
 
