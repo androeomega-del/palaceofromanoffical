@@ -117,7 +117,7 @@ export const captureFunnelLead = createServerFn({ method: "POST" })
         departure_date: data.departure_date ?? null,
         product_handle: data.product_handle ?? null,
         notes: data.notes ?? null,
-        metadata: (data.metadata ?? {}) as Record<string, unknown>,
+        metadata: JSON.parse(JSON.stringify(data.metadata ?? {})),
       })
       .select(
         "id,email,funnel_source,is_verified,verification_token,departure_date,reminder_trigger_date",
