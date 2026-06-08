@@ -60,6 +60,7 @@ export function VaultLockerOverlay() {
       setEmail("");
       setPhase("idle");
       setTickerIdx(0);
+      setSecuringStep(0);
       setShowError(false);
       // Defer focus until after the entrance animation
       const id = window.setTimeout(() => inputRef.current?.focus(), 280);
