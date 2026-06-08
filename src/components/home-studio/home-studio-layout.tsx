@@ -83,37 +83,38 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
                 delivered duties-cleared to your door.
               </p>
               <div className="mt-10 flex flex-col sm:flex-row sm:items-center gap-x-8 gap-y-5">
+                <button
+                  onClick={() => setConciergeOpen(true)}
+                  aria-label="Open personal concierge styling service"
+                  className="group inline-flex items-center justify-between sm:justify-start gap-3 pb-2 text-[11px] uppercase tracking-[0.32em] border-b transition-all duration-500 sm:hover:gap-5"
+                  style={{ color: palette.offwhite, borderColor: palette.offwhite, fontFamily: fontSans }}
+                >
+                  Begin With The Concierge
+                  <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" strokeWidth={1.25} />
+                </button>
+              </div>
+              <div className="mt-6 flex flex-col sm:flex-row sm:items-center gap-x-6 gap-y-3 text-[10px] uppercase tracking-[0.32em]" style={{ color: palette.sand, fontFamily: fontSans }}>
+                <span>Or</span>
                 <Link
                   to="/women"
                   aria-label="Shop the women's edit"
-                  className="group inline-flex items-center justify-between sm:justify-start gap-3 pb-2 text-[11px] uppercase tracking-[0.32em] border-b transition-all duration-500 sm:hover:gap-5"
-                  style={{ color: palette.offwhite, borderColor: palette.offwhite, fontFamily: fontSans }}
+                  className="group inline-flex items-center gap-2 pb-1 border-b transition-all duration-500 hover:gap-4"
+                  style={{ color: palette.sand, borderColor: "rgba(212,184,150,0.4)" }}
                 >
                   Shop Womenswear
-                  <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" strokeWidth={1.25} />
+                  <ArrowUpRight className="w-3 h-3 transition-transform duration-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" strokeWidth={1.25} />
                 </Link>
+                <span aria-hidden="true">/</span>
                 <Link
                   to="/men"
                   aria-label="Shop the men's edit"
-                  className="group inline-flex items-center justify-between sm:justify-start gap-3 pb-2 text-[11px] uppercase tracking-[0.32em] border-b transition-all duration-500 sm:hover:gap-5"
-                  style={{ color: palette.offwhite, borderColor: palette.offwhite, fontFamily: fontSans }}
+                  className="group inline-flex items-center gap-2 pb-1 border-b transition-all duration-500 hover:gap-4"
+                  style={{ color: palette.sand, borderColor: "rgba(212,184,150,0.4)" }}
                 >
                   Shop Menswear
-                  <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" strokeWidth={1.25} />
+                  <ArrowUpRight className="w-3 h-3 transition-transform duration-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" strokeWidth={1.25} />
                 </Link>
               </div>
-              <button
-                onClick={() => setConciergeOpen(true)}
-                aria-label="Open personal concierge styling service"
-                className="group inline-flex items-center gap-3 mt-6 pb-1 text-[10px] uppercase tracking-[0.32em] transition-all duration-500 hover:gap-5"
-                style={{ color: palette.sand, fontFamily: fontSans }}
-              >
-                OR BEGIN WITH THE CONCIERGE
-                <ArrowUpRight
-                  className="w-3 h-3 transition-transform duration-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-                  strokeWidth={1.25}
-                />
-              </button>
             </div>
           </div>
 
