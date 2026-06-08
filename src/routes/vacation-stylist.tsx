@@ -63,6 +63,23 @@ function VacationStylistPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<StylistResult | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [dateErr, setDateErr] = useState(false);
+
+  // Minimum acceptable arrival date — today + 48h, for white-glove transit
+  const minArrival = (() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() + 2);
+    return d.toISOString().slice(0, 10);
+  })();
+
+  const isArrivalValid = (value: string): boolean => {
+    if (!value) return true; // empty is allowed (optional)
+    const picked = new Date(`${value}T00:00:00`);
+    const threshold = new Date(`${minArrival}T00:00:00`);
+    return picked.getTime() >= threshold.getTime();
+  };
+
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
