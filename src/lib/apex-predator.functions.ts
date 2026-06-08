@@ -892,3 +892,401 @@ export const deployPatchToShopify = createServerFn({ method: "POST" })
       appliedMeta: data.newMetaDescription,
     };
   });
+
+// =================================================================
+// MODULE — Luxury SEO enrichment (additive, handle-safe)
+// =================================================================
+//
+// `generateLuxurySeoForProduct` runs a SINGLE Admin GraphQL `productUpdate`
+// mutation per product, writing `title`, `descriptionHtml`, and
+// `seo.{title,description}` only. The canonical `handle` is NEVER touched —
+// this preserves the PDP lockdown rule already enforced elsewhere in this
+// file (see the handle-mismatch fix in `src/routes/product.$handle.tsx`).
+//
+// `updatelistingsSEO` is the executive command: it enriches the AI rewrite
+// with live Semrush page-one data and Google Search Console impressions for
+// the supplied primary keyword, then delegates to
+// `generateLuxurySeoForProduct` for the single safe mutation.
+
+import { HIGH_ADVANTAGE_SEO_PROMPT_SYSTEM } from "@/lib/seo-prompts";
+import { adminGraphql as adminGql } from "@/lib/shopify-admin.server";
+
+type LuxurySeoAiOutput = {
+  cleanTitle: string;
+  cleanDescriptionHtml: string;
+  metaTitle: string;
+  metaDescription: string;
+};
+
+const PRODUCT_FETCH_GQL = /* GraphQL */ `
+  query ApexSeoProduct($id: ID!) {
+    product(id: $id) {
+      id
+      handle
+      title
+      vendor
+      productType
+      tags
+      descriptionHtml
+      seo { title description }
+    }
+  }
+`;
+
+const PRODUCT_UPDATE_GQL = /* GraphQL */ `
+  mutation ApexSeoUpdate($input: ProductInput!) {
+    productUpdate(input: $input) {
+      product { id handle title seo { title description } }
+      userErrors { field message }
+    }
+  }
+`;
+
+function normalizeProductGid(productId: string): string {
+  if (productId.startsWith("gid://")) return productId;
+  const digits = productId.replace(/\D+/g, "");
+  if (!digits) throw new Error("Invalid productId");
+  return `gid://shopify/Product/${digits}`;
+}
+
+function truncate(s: string, max: number): string {
+  const t = (s || "").trim().replace(/\s+/g, " ");
+  if (t.length <= max) return t;
+  const cut = t.slice(0, max - 1);
+  const sp = cut.lastIndexOf(" ");
+  return (sp > max * 0.6 ? cut.slice(0, sp) : cut).trim() + "…";
+}
+
+const SEO_SUFFIX = " | Palace of Roman";
+
+/** Best-effort Semrush page-one fetch. Returns [] on any failure. */
+export async function fetchTopRankingPages(
+  keyword: string,
+  database = "us",
+): Promise<Array<{ url: string; domain: string; position: number }>> {
+  const lovableKey = process.env.LOVABLE_API_KEY;
+  const semrushKey = process.env.SEMRUSH_API_KEY;
+  if (!lovableKey || !semrushKey || !keyword) return [];
+  try {
+    const url = new URL("https://connector-gateway.lovable.dev/semrush/keywords/phrase_organic");
+    url.searchParams.set("phrase", keyword);
+    url.searchParams.set("database", database);
+    url.searchParams.set("export_columns", "Dn,Ur,Po");
+    url.searchParams.set("display_limit", "10");
+    const res = await fetch(url.toString(), {
+      headers: {
+        Authorization: `Bearer ${lovableKey}`,
+        "X-Connection-Api-Key": semrushKey,
+      },
+    });
+    if (!res.ok) return [];
+    const json = (await res.json()) as {
+      data?: { rows?: Array<Record<string, unknown>> };
+    };
+    const rows = json?.data?.rows ?? [];
+    return rows
+      .map((r) => ({
+        domain: String((r as Record<string, unknown>).Dn ?? ""),
+        url: String((r as Record<string, unknown>).Ur ?? ""),
+        position: Number((r as Record<string, unknown>).Po ?? 0),
+      }))
+      .filter((r) => r.url);
+  } catch (e) {
+    console.warn("[apex/seo] fetchTopRankingPages failed:", (e as Error).message);
+    return [];
+  }
+}
+
+/** Best-effort GSC impressions/clicks for the keyword. Returns null on failure. */
+export async function fetchGSCQueue(
+  keyword: string,
+): Promise<{ impressions: number; clicks: number; ctr: number; position: number } | null> {
+  const lovableKey = process.env.LOVABLE_API_KEY;
+  const gscKey = process.env.GOOGLE_SEARCH_CONSOLE_API_KEY;
+  if (!lovableKey || !gscKey || !keyword) return null;
+  try {
+    const site = encodeURIComponent("https://palaceofroman.com/");
+    const today = new Date();
+    const end = today.toISOString().slice(0, 10);
+    const startD = new Date(today.getTime() - 28 * 86_400_000).toISOString().slice(0, 10);
+    const res = await fetch(
+      `https://connector-gateway.lovable.dev/google_search_console/webmasters/v3/sites/${site}/searchAnalytics/query`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${lovableKey}`,
+          "X-Connection-Api-Key": gscKey,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          startDate: startD,
+          endDate: end,
+          dimensions: ["query"],
+          dimensionFilterGroups: [
+            { filters: [{ dimension: "query", operator: "equals", expression: keyword.toLowerCase() }] },
+          ],
+          rowLimit: 1,
+        }),
+      },
+    );
+    if (!res.ok) return null;
+    const json = (await res.json()) as { rows?: Array<{ clicks?: number; impressions?: number; ctr?: number; position?: number }> };
+    const r = json.rows?.[0];
+    if (!r) return { impressions: 0, clicks: 0, ctr: 0, position: 0 };
+    return {
+      impressions: Number(r.impressions ?? 0),
+      clicks: Number(r.clicks ?? 0),
+      ctr: Number(r.ctr ?? 0),
+      position: Number(r.position ?? 0),
+    };
+  } catch (e) {
+    console.warn("[apex/seo] fetchGSCQueue failed:", (e as Error).message);
+    return null;
+  }
+}
+
+type LuxurySeoSignals = {
+  primaryKeyword?: string;
+  volume?: number;
+  difficulty?: number;
+  intent?: SearchIntent | "transactional" | "informational" | "navigational" | "commercial" | null;
+  topRankingPages?: Array<{ url: string; domain: string; position: number }>;
+  gsc?: { impressions: number; clicks: number; ctr: number; position: number } | null;
+};
+
+/**
+ * Single-mutation enrichment: fetch the product, call Gemini via the Lovable
+ * AI Gateway, then commit { title, descriptionHtml, seo } in ONE
+ * productUpdate. Handle is never written.
+ */
+export const generateLuxurySeoForProduct = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((d: unknown) =>
+    z
+      .object({
+        productId: z.string().min(1),
+        signals: z
+          .object({
+            primaryKeyword: z.string().optional(),
+            volume: z.number().optional(),
+            difficulty: z.number().optional(),
+            intent: z.string().nullable().optional(),
+            topRankingPages: z
+              .array(z.object({ url: z.string(), domain: z.string(), position: z.number() }))
+              .optional(),
+            gsc: z
+              .object({
+                impressions: z.number(),
+                clicks: z.number(),
+                ctr: z.number(),
+                position: z.number(),
+              })
+              .nullable()
+              .optional(),
+          })
+          .optional(),
+        dryRun: z.boolean().optional(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data }) => {
+    const gid = normalizeProductGid(data.productId);
+
+    // 1. Fetch current product (Admin API — same source the Storefront PDP reads
+    //    its seo.{title,description} from after productUpdate commits).
+    const fetched = await adminGql<{
+      product: {
+        id: string;
+        handle: string;
+        title: string;
+        vendor: string | null;
+        productType: string | null;
+        tags: string[] | null;
+        descriptionHtml: string | null;
+        seo: { title: string | null; description: string | null } | null;
+      } | null;
+    }>(PRODUCT_FETCH_GQL, { id: gid });
+    const product = fetched.product;
+    if (!product) throw new Error(`Product not found for id ${gid}`);
+
+    // 2. Build the AI prompt payload.
+    const signals: LuxurySeoSignals = data.signals ?? {};
+    const userPayload = {
+      product: {
+        title: product.title,
+        vendor: product.vendor,
+        productType: product.productType,
+        tags: product.tags ?? [],
+        currentDescriptionHtml: product.descriptionHtml ?? "",
+        currentSeoTitle: product.seo?.title ?? "",
+        currentSeoDescription: product.seo?.description ?? "",
+      },
+      signals: {
+        primaryKeyword: signals.primaryKeyword ?? null,
+        volume: signals.volume ?? null,
+        difficulty: signals.difficulty ?? null,
+        intent: signals.intent ?? null,
+        topRankingPages: (signals.topRankingPages ?? []).slice(0, 5),
+        gsc: signals.gsc ?? null,
+      },
+    };
+
+    let ai: LuxurySeoAiOutput;
+    try {
+      const result = await callAi({
+        module: "apex/luxury-seo",
+        model: "google/gemini-3-flash-preview",
+        system: HIGH_ADVANTAGE_SEO_PROMPT_SYSTEM,
+        user: JSON.stringify(userPayload, null, 2),
+        json: true,
+        maxTokens: 900,
+        temperature: 0.4,
+      });
+      const cleaned = result.content.replace(/^```json\s*|^```\s*|```$/gm, "").trim();
+      ai = JSON.parse(cleaned) as LuxurySeoAiOutput;
+    } catch (e) {
+      if (e instanceof BudgetExceededError) throw e;
+      throw new Error(`AI rewrite failed: ${(e as Error).message}`);
+    }
+
+    // 3. Clamp lengths defensively before committing.
+    const titleBudget = 60 - SEO_SUFFIX.length;
+    const safeMetaTitleHead = truncate(ai.metaTitle.replace(SEO_SUFFIX, "").trim(), titleBudget);
+    const finalMetaTitle = safeMetaTitleHead + SEO_SUFFIX;
+    const finalMetaDescription = truncate(ai.metaDescription, 155);
+    const finalTitle = truncate(ai.cleanTitle, 120);
+    const finalDescriptionHtml = ai.cleanDescriptionHtml.trim();
+
+    if (data.dryRun) {
+      return {
+        ok: true,
+        dryRun: true,
+        productId: product.id,
+        handle: product.handle,
+        before: {
+          title: product.title,
+          descriptionHtml: product.descriptionHtml,
+          seoTitle: product.seo?.title ?? null,
+          seoDescription: product.seo?.description ?? null,
+        },
+        after: {
+          title: finalTitle,
+          descriptionHtml: finalDescriptionHtml,
+          seoTitle: finalMetaTitle,
+          seoDescription: finalMetaDescription,
+        },
+      };
+    }
+
+    // 4. ONE GraphQL productUpdate — title + descriptionHtml + seo only.
+    //    Handle is intentionally omitted to preserve PDP routing.
+    const updated = await adminGql<{
+      productUpdate: {
+        product: { id: string; handle: string; title: string; seo: { title: string | null; description: string | null } | null } | null;
+        userErrors: Array<{ field: string[] | null; message: string }>;
+      };
+    }>(PRODUCT_UPDATE_GQL, {
+      input: {
+        id: gid,
+        title: finalTitle,
+        descriptionHtml: finalDescriptionHtml,
+        seo: { title: finalMetaTitle, description: finalMetaDescription },
+      },
+    });
+
+    const errs = updated.productUpdate?.userErrors ?? [];
+    if (errs.length) {
+      await logRun("luxury-seo", "error", `${gid}: ${errs.map((e) => e.message).join("; ")}`, 0);
+      throw new Error(`Shopify rejected productUpdate: ${errs.map((e) => e.message).join("; ")}`);
+    }
+
+    await logRun("luxury-seo", "ok", `${product.handle} rewritten`, 1);
+
+    return {
+      ok: true,
+      productId: product.id,
+      handle: product.handle,
+      before: {
+        title: product.title,
+        seoTitle: product.seo?.title ?? null,
+        seoDescription: product.seo?.description ?? null,
+      },
+      after: {
+        title: updated.productUpdate.product?.title ?? finalTitle,
+        seoTitle: updated.productUpdate.product?.seo?.title ?? finalMetaTitle,
+        seoDescription: updated.productUpdate.product?.seo?.description ?? finalMetaDescription,
+        descriptionHtml: finalDescriptionHtml,
+      },
+    };
+  });
+
+/**
+ * Executive command: enrich a single product with live Semrush page-one data
+ * + GSC impressions for `primaryKeyword`, then run the safe single-mutation
+ * luxury SEO rewrite via `generateLuxurySeoForProduct`.
+ *
+ * NOTE: This is the underlying impl. Callers in components should import the
+ * exported `updatelistingsSEO` server function below.
+ */
+async function _runUpdateListingsSeo(productId: string, primaryKeyword: string) {
+  const trimmedKeyword = primaryKeyword.trim();
+
+  // 1. Pull live competitive signals in parallel — both are best-effort.
+  const [topRankingPages, gsc, kdMap] = await Promise.all([
+    fetchTopRankingPages(trimmedKeyword),
+    fetchGSCQueue(trimmedKeyword),
+    trimmedKeyword
+      ? fetchKeywordDifficulty({ phrases: [trimmedKeyword] }).catch(() => null)
+      : Promise.resolve(null),
+  ]);
+
+  const kd = kdMap?.get(trimmedKeyword.toLowerCase()) ?? null;
+  const intent = trimmedKeyword ? heuristicIntent(trimmedKeyword) : null;
+
+  // 2. Delegate to the safe single-mutation enrichment path.
+  //    We invoke the handler chain directly so server-side callers don't
+  //    need to round-trip through the RPC layer.
+  const out = await generateLuxurySeoForProduct({
+    data: {
+      productId,
+      signals: {
+        primaryKeyword: trimmedKeyword || undefined,
+        volume: kd?.volume,
+        difficulty: kd?.kd,
+        intent: intent ?? null,
+        topRankingPages,
+        gsc,
+      },
+    },
+  });
+
+  return {
+    ...out,
+    signals: {
+      primaryKeyword: trimmedKeyword,
+      volume: kd?.volume ?? null,
+      difficulty: kd?.kd ?? null,
+      intent,
+      topRankingPagesCount: topRankingPages.length,
+      gscImpressions: gsc?.impressions ?? null,
+      gscClicks: gsc?.clicks ?? null,
+    },
+  };
+}
+
+/**
+ * Public server function: `updatelistingsSEO(productId, primaryKeyword)`.
+ * Admin-guarded. Pulls live Semrush + GSC metrics and commits a single safe
+ * productUpdate via `generateLuxurySeoForProduct`.
+ */
+export const updatelistingsSEO = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((d: unknown) =>
+    z
+      .object({
+        productId: z.string().min(1),
+        primaryKeyword: z.string().min(1).max(160),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data }) => _runUpdateListingsSeo(data.productId, data.primaryKeyword));
