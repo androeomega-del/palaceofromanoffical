@@ -63,6 +63,23 @@ function VacationStylistPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<StylistResult | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [dateErr, setDateErr] = useState(false);
+
+  // Minimum acceptable arrival date — today + 48h, for white-glove transit
+  const minArrival = (() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() + 2);
+    return d.toISOString().slice(0, 10);
+  })();
+
+  const isArrivalValid = (value: string): boolean => {
+    if (!value) return true; // empty is allowed (optional)
+    const picked = new Date(`${value}T00:00:00`);
+    const threshold = new Date(`${minArrival}T00:00:00`);
+    return picked.getTime() >= threshold.getTime();
+  };
+
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,7 +87,13 @@ function VacationStylistPage() {
       setErr("Please tell us where you're going.");
       return;
     }
+    if (!isArrivalValid(startDate)) {
+      setDateErr(true);
+      return;
+    }
+    setDateErr(false);
     setErr(null);
+
     setLoading(true);
     setResult(null);
     try {
@@ -175,10 +198,38 @@ function VacationStylistPage() {
               <input
                 type="date"
                 value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="w-full border-b border-ink/30 bg-transparent py-3 text-base focus:outline-none focus:border-ink"
+                min={minArrival}
+                onChange={(e) => {
+                  setStartDate(e.target.value);
+                  if (dateErr) setDateErr(false);
+                }}
+                aria-invalid={dateErr}
+                aria-describedby={dateErr ? "vacation-date-error" : undefined}
+                className="w-full border-b bg-transparent py-3 text-base focus:outline-none transition-colors"
+                style={{
+                  borderColor: dateErr ? "rgba(60,60,60,0.55)" : undefined,
+                  animation: dateErr ? "vacationBorderPulse 1.4s ease-in-out 2" : undefined,
+                }}
               />
+              <div
+                aria-live="polite"
+                id="vacation-date-error"
+                className="mt-2 min-h-[14px]"
+              >
+                {dateErr && (
+                  <p
+                    className="text-[10px] tracking-[0.14em] leading-tight italic"
+                    style={{
+                      color: "#8a8580",
+                      animation: "vacationErrorIn 360ms cubic-bezier(.2,.7,.2,1) both",
+                    }}
+                  >
+                    Logistical restriction: Please provide a departure date that accommodates white-glove transit safety windows.
+                  </p>
+                )}
+              </div>
             </div>
+
             <div>
               <label className="block text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-2">
                 <Calendar className="inline h-3 w-3 mr-1.5 -mt-0.5" />
@@ -301,6 +352,17 @@ function VacationStylistPage() {
           </div>
         </section>
       )}
+      <style>{`
+        @keyframes vacationErrorIn {
+          from { opacity: 0; transform: translateY(-2px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes vacationBorderPulse {
+          0%, 100% { border-bottom-color: rgba(60,60,60,0.25); }
+          50%      { border-bottom-color: rgba(60,60,60,0.75); }
+        }
+      `}</style>
     </main>
+
   );
 }

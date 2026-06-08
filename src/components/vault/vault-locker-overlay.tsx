@@ -40,7 +40,9 @@ export function VaultLockerOverlay() {
   const [email, setEmail] = useState("");
   const [phase, setPhase] = useState<"idle" | "securing" | "secured">("idle");
   const [tickerIdx, setTickerIdx] = useState(0);
+  const [showError, setShowError] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
+
 
   // Reset on open / close
   useEffect(() => {
@@ -48,11 +50,13 @@ export function VaultLockerOverlay() {
       setEmail("");
       setPhase("idle");
       setTickerIdx(0);
+      setShowError(false);
       // Defer focus until after the entrance animation
       const id = window.setTimeout(() => inputRef.current?.focus(), 280);
       return () => window.clearTimeout(id);
     }
   }, [open]);
+
 
   // Rotate ticker copy while the visitor is typing
   useEffect(() => {
@@ -89,7 +93,19 @@ export function VaultLockerOverlay() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isValid || phase !== "idle") return;
+    if (phase !== "idle") return;
+    if (!isValid) {
+      setShowError(true);
+      // Re-trigger the soft charcoal pulse on every failed attempt
+      if (inputRef.current) {
+        inputRef.current.style.animation = "none";
+        // Force reflow so the animation restarts cleanly
+        void inputRef.current.offsetWidth;
+        inputRef.current.style.animation = "vaultBorderPulse 1.4s ease-in-out 2";
+      }
+      return;
+    }
+    setShowError(false);
     const value = email.trim();
     setPhase("securing");
     // Persist via the existing telemetry helpers (no cart-store changes).
@@ -103,6 +119,7 @@ export function VaultLockerOverlay() {
     window.setTimeout(() => setPhase("secured"), 700);
     window.setTimeout(() => confirmUnlock(), 1500);
   };
+
 
   return (
     <div
@@ -198,19 +215,46 @@ export function VaultLockerOverlay() {
             placeholder="ENTER PRIVATE EMAIL"
             value={email}
             disabled={phase !== "idle"}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (showError) setShowError(false);
+            }}
             aria-invalid={!isValid && email.length > 0}
+            aria-describedby={showError ? "vault-locker-email-error" : undefined}
             className="w-full bg-transparent border-0 border-b py-3 text-[15px] tracking-[0.18em] uppercase placeholder:tracking-[0.32em] placeholder:text-[11px] focus:outline-none transition-colors disabled:opacity-60"
             style={{
-              borderColor: "rgba(244,241,236,0.25)",
+              borderColor: showError ? "rgba(244,241,236,0.55)" : "rgba(244,241,236,0.25)",
               color: "#f4f1ec",
               caretColor: "#f4f1ec",
             }}
-            onFocus={(e) => (e.currentTarget.style.borderColor = "#f4f1ec")}
-            onBlur={(e) =>
-              (e.currentTarget.style.borderColor = "rgba(244,241,236,0.25)")
-            }
+            onFocus={(e) => {
+              if (!showError) e.currentTarget.style.borderColor = "#f4f1ec";
+            }}
+            onBlur={(e) => {
+              if (!showError) e.currentTarget.style.borderColor = "rgba(244,241,236,0.25)";
+            }}
           />
+
+          {/* Sophisticated validation message — stone-gray micro-text */}
+          <div
+            aria-live="polite"
+            id="vault-locker-email-error"
+            className="mt-2 h-3.5 overflow-hidden"
+          >
+            {showError && (
+              <p
+                className="text-[10px] tracking-[0.14em] leading-tight"
+                style={{
+                  color: "#8a8580",
+                  fontStyle: "italic",
+                  animation: "vaultErrorIn 360ms cubic-bezier(.2,.7,.2,1) both",
+                }}
+              >
+                Verification error: Please check the formatting of your private email.
+              </p>
+            )}
+          </div>
+
 
           {/* Live status ticker (reserved height so layout doesn't jump) */}
           <div
@@ -312,8 +356,17 @@ export function VaultLockerOverlay() {
           from { opacity: 0; transform: translateY(4px); }
           to   { opacity: 1; transform: translateY(0); }
         }
+        @keyframes vaultErrorIn {
+          from { opacity: 0; transform: translateY(-2px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes vaultBorderPulse {
+          0%, 100% { border-bottom-color: rgba(244,241,236,0.25); }
+          50%      { border-bottom-color: rgba(138,133,128,0.85); }
+        }
         @keyframes vaultPulse {
           0%, 100% { opacity: 0.35; transform: scale(0.9); }
+
           50%      { opacity: 1;    transform: scale(1.1); }
         }
       `}</style>
