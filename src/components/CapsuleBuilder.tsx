@@ -87,15 +87,18 @@ const CAPSULE_TAXONOMY: Record<CapsuleSlotKind, string[]> = {
     "Heels", "Mules", "Clogs",
   ],
   Accessory: [
-    "Handbags", "Crossbody Bags", "Tote Bags", "Backpacks", "Shoulder Bags",
-    "Clutch Bags", "Belt Bags", "Briefcases", "Belts", "Wallets", "Jewellery",
-    "Jewelry", "Scarves", "Hats", "Sunglasses", "Ties", "Keychains", "Gloves",
-    "Watches", "Card Holders",
+    "Accessories", "Accessory", "Bags", "Bag", "Handbags", "Crossbody Bags",
+    "Tote Bags", "Backpacks", "Shoulder Bags", "Clutch Bags", "Belt Bags",
+    "Briefcases", "Belts", "Wallets", "Jewellery", "Jewelry", "Scarves",
+    "Hats", "Sunglasses", "Ties", "Keychains", "Gloves", "Watches",
+    "Card Holders",
   ],
   Outerwear: [
-    "Blazers", "Coats", "Jackets", "Outerwear", "Trench", "Shearling",
-    "Parkas", "Bombers", "Overcoats", "Capes",
+    "Outerwear", "Jackets", "Jacket", "Coats", "Coat", "Blazers", "Blazer",
+    "Trench", "Shearling", "Parkas", "Parka", "Bombers", "Bomber",
+    "Overcoats", "Overcoat", "Capes", "Cape", "Puffer", "Puffers",
   ],
+
   Bottom: [
     "Bottoms", "Bottom", "Pants", "Trousers", "Shorts", "Short", "Skirts",
     "Skirt", "Denim", "Jeans", "Jeans Denim", "Bermuda", "Cargo",
