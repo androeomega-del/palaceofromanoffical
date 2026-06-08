@@ -18,7 +18,7 @@ import { ArrowUpRight } from "lucide-react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useChromeStore } from "@/stores/chrome-store";
 import { newThisWeekQueryOptions } from "@/lib/rails/queries";
-import { ProductRail } from "@/components/sections/product-rail";
+
 import { ConciergeDrawer } from "./concierge-drawer";
 import { AsymmetricGrid } from "./asymmetric-grid";
 import { PalaceHeader } from "./palace-header";
