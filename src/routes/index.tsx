@@ -30,6 +30,7 @@ export const Route = createFileRoute("/")({
       readMetaAbBucket(),
       context.queryClient.ensureQueryData(newThisWeekQueryOptions("Men")),
       context.queryClient.ensureQueryData(newThisWeekQueryOptions("Women")),
+      context.queryClient.ensureQueryData(homePageCollectionQueryOptions()),
     ]);
     const firstImg =
       (menRail as any)?.[0]?.node?.images?.edges?.[0]?.node?.url ?? null;
