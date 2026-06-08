@@ -333,8 +333,20 @@ export function VaultLockerOverlay() {
               </>
             )}
             {phase === "securing" && (
-              <span style={{ animation: "vaultTickerIn 240ms ease-out both" }}>
-                Engaging locker mechanism…
+              <span
+                className="inline-flex items-center gap-2"
+                key={`securing-${securingStep}`}
+                style={{ animation: "vaultTickerIn 320ms cubic-bezier(.2,.7,.2,1) both" }}
+              >
+                <span
+                  className="inline-block w-1.5 h-1.5 rounded-full"
+                  style={{
+                    background: "#8a8580",
+                    animation: "vaultPulse 0.9s ease-in-out infinite",
+                  }}
+                  aria-hidden
+                />
+                {SECURING_STATUSES[securingStep]}…
               </span>
             )}
             {phase === "secured" && (
