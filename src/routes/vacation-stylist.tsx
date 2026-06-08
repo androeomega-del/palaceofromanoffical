@@ -352,6 +352,17 @@ function VacationStylistPage() {
           </div>
         </section>
       )}
+      <style>{`
+        @keyframes vacationErrorIn {
+          from { opacity: 0; transform: translateY(-2px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes vacationBorderPulse {
+          0%, 100% { border-bottom-color: rgba(60,60,60,0.25); }
+          50%      { border-bottom-color: rgba(60,60,60,0.75); }
+        }
+      `}</style>
     </main>
+
   );
 }
