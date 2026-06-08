@@ -1,10 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { fetchHomepageAndCheck } from "@/lib/seo-health";
+import { checkWebhookSecret } from "@/lib/webhook-secret";
 
 export const Route = createFileRoute("/api/public/seo-health")({
   server: {
     handlers: {
-      GET: async () => {
+      GET: async ({ request }) => {
+        const unauthorized = checkWebhookSecret(request);
+        if (unauthorized) return unauthorized;
         try {
           const result = await fetchHomepageAndCheck();
           return new Response(JSON.stringify(result, null, 2), {
