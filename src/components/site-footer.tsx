@@ -89,6 +89,7 @@ export function SiteFooter() {
 
           <div className="flex flex-col gap-3">
             <h5 className="text-[10px] uppercase tracking-[0.25em] font-semibold mb-1">Editorials</h5>
+            <Link to="/journal" className="text-sm text-muted-foreground hover:text-ink transition-colors">All Editorials</Link>
             <Link to="/editorial/resort-2026" className="text-sm text-muted-foreground hover:text-ink transition-colors">Resort 2026</Link>
             <Link to="/editorial/may-2026" className="text-sm text-muted-foreground hover:text-ink transition-colors">May 2026</Link>
             <Link to="/editorial/summer-edit" className="text-sm text-muted-foreground hover:text-ink transition-colors">Summer Edit</Link>
@@ -102,8 +103,7 @@ export function SiteFooter() {
           </div>
 
           <div className="flex flex-col gap-3">
-            <h5 className="text-[10px] uppercase tracking-[0.25em] font-semibold mb-1">The Journal</h5>
-            <Link to="/journal" className="text-sm text-muted-foreground hover:text-ink transition-colors">All Articles</Link>
+            <h5 className="text-[10px] uppercase tracking-[0.25em] font-semibold mb-1">Craftsmanship &amp; Style Notes</h5>
             <Link to="/journal/craftsmanship/spot-real-italian-leather" className="text-sm text-muted-foreground hover:text-ink transition-colors">Spot Real Italian Leather</Link>
             <Link to="/journal/craftsmanship/caring-for-fine-leather" className="text-sm text-muted-foreground hover:text-ink transition-colors">Caring for Fine Leather</Link>
             <Link to="/journal/craftsmanship/leather-quality-guide" className="text-sm text-muted-foreground hover:text-ink transition-colors">Leather Quality Guide</Link>

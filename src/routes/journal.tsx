@@ -138,11 +138,19 @@ function JournalPage() {
     tag: "Craftsmanship",
   }));
 
-  // Live Shopify articles + craftsmanship guides; fall back to the curated
-  // editorials if Shopify returns nothing so the page never looks empty.
-  const baseEntries: JournalEntry[] =
-    shopifyEntries.length > 0 ? shopifyEntries : STATIC_ENTRIES;
-  const allEntries: JournalEntry[] = [...craftsmanshipEntries, ...baseEntries];
+  // Unified editorial stream: the curated in-house editorials, the
+  // craftsmanship guides, and any live Shopify articles all surface in
+  // one place — every entry is treated as an editorial.
+  const seen = new Set<string>();
+  const allEntries: JournalEntry[] = [
+    ...STATIC_ENTRIES,
+    ...craftsmanshipEntries,
+    ...shopifyEntries,
+  ].filter((e) => {
+    if (seen.has(e.to)) return false;
+    seen.add(e.to);
+    return true;
+  });
 
   const [showAll, setShowAll] = useState(false);
   const [featured, ...rest] = allEntries;
@@ -160,13 +168,13 @@ function JournalPage() {
   return (
     <main className="bg-canvas text-ink">
       <section className="max-w-screen-2xl mx-auto px-6 pt-20 md:pt-28 pb-12 md:pb-16">
-        <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-4">The Journal</p>
+        <p className="text-[10px] uppercase tracking-[0.4em] text-bronze mb-4">Editorials</p>
         <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl leading-[0.95] tracking-tight max-w-4xl text-balance">
           Editorials, house notes and seasonal studies.
         </h1>
         <p className="mt-8 max-w-xl text-sm md:text-base text-ink/70 leading-relaxed">
-          A slow record of how the season is being worn — and a quieter way to shop the
-          pieces we keep returning to.
+          Every story we publish — seasonal editorials, craftsmanship guides and journal notes —
+          gathered in one quiet record of how the season is being worn.
         </p>
       </section>
 
