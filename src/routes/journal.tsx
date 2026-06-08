@@ -138,11 +138,19 @@ function JournalPage() {
     tag: "Craftsmanship",
   }));
 
-  // Live Shopify articles + craftsmanship guides; fall back to the curated
-  // editorials if Shopify returns nothing so the page never looks empty.
-  const baseEntries: JournalEntry[] =
-    shopifyEntries.length > 0 ? shopifyEntries : STATIC_ENTRIES;
-  const allEntries: JournalEntry[] = [...craftsmanshipEntries, ...baseEntries];
+  // Unified editorial stream: the curated in-house editorials, the
+  // craftsmanship guides, and any live Shopify articles all surface in
+  // one place — every entry is treated as an editorial.
+  const seen = new Set<string>();
+  const allEntries: JournalEntry[] = [
+    ...STATIC_ENTRIES,
+    ...craftsmanshipEntries,
+    ...shopifyEntries,
+  ].filter((e) => {
+    if (seen.has(e.to)) return false;
+    seen.add(e.to);
+    return true;
+  });
 
   const [showAll, setShowAll] = useState(false);
   const [featured, ...rest] = allEntries;
