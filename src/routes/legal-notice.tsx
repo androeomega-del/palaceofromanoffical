@@ -64,7 +64,7 @@ function LegalNoticePage() {
           </ul>
           <p className="mt-4 text-sm text-ink/70">
             <span className="text-muted-foreground">Registered business address:</span>{" "}
-            Palace of Roman, 8605 Santa Monica Blvd PMB 610211, West Hollywood, California 90069-4109, US
+            Palace of Roman, 8605 Santa Monica Blvd, West Hollywood, California 90069, US
           </p>
         </section>
 

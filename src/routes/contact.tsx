@@ -198,8 +198,8 @@ function ContactPage() {
             <div>
               <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">Registered address</p>
               <p className="text-ink/80 text-xs leading-relaxed">
-                8605 Santa Monica Blvd PMB 610211<br/>
-                West Hollywood, CA 90069-4109, US
+                8605 Santa Monica Blvd<br/>
+                West Hollywood, CA 90069, US
               </p>
             </div>
           </div>
