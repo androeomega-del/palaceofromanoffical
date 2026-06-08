@@ -523,3 +523,378 @@ export function ConciergeDrawer({ open, onClose }: ConciergeDrawerProps) {
     </div>
   );
 }
+
+/* ============================================================
+ * IntakeWizard — three-step gated onboarding before chat starts.
+ * Step 1: dept (Womenswear / Menswear)
+ * Step 2: email + marketing opt-in
+ * Step 3: preferences (vibe, categories, budget)
+ * ========================================================== */
+
+interface IntakeWizardProps {
+  step: Step;
+  dept: Dept | null;
+  email: string;
+  optIn: boolean;
+  emailError: string | null;
+  vibes: string[];
+  categories: string[];
+  priceBand: string;
+  onChooseDept: (d: Dept) => void;
+  onBack: () => void;
+  onEmailChange: (v: string) => void;
+  onOptInChange: (v: boolean) => void;
+  onSubmitEmail: (e: React.FormEvent) => void;
+  onToggleVibe: (v: string) => void;
+  onToggleCategory: (v: string) => void;
+  onPriceBand: (v: string) => void;
+  onFinish: () => void;
+}
+
+function IntakeWizard(props: IntakeWizardProps) {
+  const {
+    step,
+    dept,
+    email,
+    optIn,
+    emailError,
+    vibes,
+    categories,
+    priceBand,
+    onChooseDept,
+    onBack,
+    onEmailChange,
+    onOptInChange,
+    onSubmitEmail,
+    onToggleVibe,
+    onToggleCategory,
+    onPriceBand,
+    onFinish,
+  } = props;
+
+  const stepNumber = step === "dept" ? 1 : step === "email" ? 2 : 3;
+
+  return (
+    <div className="flex-1 overflow-y-auto px-7 py-7" style={{ fontFamily: fontSans }}>
+      {/* Stepper */}
+      <div className="flex items-center gap-2 mb-7">
+        {[1, 2, 3].map((n) => (
+          <div key={n} className="flex items-center gap-2">
+            <span
+              className="text-[10px] tracking-[0.3em] uppercase"
+              style={{
+                color: n <= stepNumber ? palette.sand : "rgba(244,241,236,0.3)",
+              }}
+            >
+              0{n}
+            </span>
+            {n < 3 && (
+              <span
+                className="block w-6 h-px"
+                style={{
+                  background:
+                    n < stepNumber ? palette.sand : "rgba(244,241,236,0.15)",
+                }}
+              />
+            )}
+          </div>
+        ))}
+      </div>
+
+      {step === "dept" && (
+        <div className="animate-[studioFade_.45s_ease-out_both]">
+          <p
+            className="text-[9px] uppercase tracking-[0.4em] mb-3"
+            style={{ color: palette.sand }}
+          >
+            Step 01 · Department
+          </p>
+          <h3
+            className="text-[26px] leading-tight mb-2"
+            style={{ fontFamily: fontSerif, fontWeight: 300, letterSpacing: "-0.01em" }}
+          >
+            Where shall we begin?
+          </h3>
+          <p
+            className="text-[13px] leading-relaxed mb-7"
+            style={{ color: "rgba(244,241,236,0.65)", fontWeight: 300 }}
+          >
+            Choose the collection you'd like the concierge to focus on. You can
+            switch at any time.
+          </p>
+          <div className="grid grid-cols-1 gap-3">
+            {(
+              [
+                { id: "women" as const, label: "Womenswear", note: "Ready-to-wear, evening, accessories" },
+                { id: "men" as const, label: "Menswear", note: "Tailoring, knitwear, footwear" },
+              ]
+            ).map((opt) => (
+              <button
+                key={opt.id}
+                onClick={() => onChooseDept(opt.id)}
+                className="w-full text-left px-5 py-5 transition-all duration-300"
+                style={{
+                  background: "#121214",
+                  border: "1px solid rgba(244,241,236,0.12)",
+                  color: palette.offwhite,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = palette.sand;
+                  e.currentTarget.style.background = "#16161A";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(244,241,236,0.12)";
+                  e.currentTarget.style.background = "#121214";
+                }}
+              >
+                <p
+                  className="text-[15px]"
+                  style={{ fontFamily: fontSerif, fontWeight: 400 }}
+                >
+                  {opt.label}
+                </p>
+                <p
+                  className="text-[11px] mt-1 uppercase tracking-[0.22em]"
+                  style={{ color: "rgba(244,241,236,0.5)" }}
+                >
+                  {opt.note}
+                </p>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {step === "email" && (
+        <form
+          onSubmit={onSubmitEmail}
+          className="animate-[studioFade_.45s_ease-out_both]"
+        >
+          <p
+            className="text-[9px] uppercase tracking-[0.4em] mb-3"
+            style={{ color: palette.sand }}
+          >
+            Step 02 · Your Email
+          </p>
+          <h3
+            className="text-[26px] leading-tight mb-2"
+            style={{ fontFamily: fontSerif, fontWeight: 300, letterSpacing: "-0.01em" }}
+          >
+            Save your selections.
+          </h3>
+          <p
+            className="text-[13px] leading-relaxed mb-6"
+            style={{ color: "rgba(244,241,236,0.65)", fontWeight: 300 }}
+          >
+            We use your email to remember your {dept === "men" ? "menswear" : "womenswear"} curation
+            and quietly refine recommendations as your taste comes into view.
+          </p>
+
+          <label
+            className="block text-[10px] uppercase tracking-[0.3em] mb-2"
+            style={{ color: "rgba(244,241,236,0.55)" }}
+            htmlFor="concierge-email"
+          >
+            Email address
+          </label>
+          <input
+            id="concierge-email"
+            type="email"
+            required
+            autoComplete="email"
+            inputMode="email"
+            value={email}
+            onChange={(e) => onEmailChange(e.target.value)}
+            placeholder="you@atelier.com"
+            className="w-full text-sm py-3 px-4 outline-none transition-colors duration-300"
+            style={{
+              background: "#121214",
+              border: `1px solid ${emailError ? "#b04a4a" : "rgba(244,241,236,0.1)"}`,
+              color: palette.offwhite,
+              fontWeight: 300,
+            }}
+          />
+          {emailError && (
+            <p className="mt-2 text-[11px]" style={{ color: "#e3a3a3" }}>
+              {emailError}
+            </p>
+          )}
+
+          <label className="mt-5 flex items-start gap-3 cursor-pointer">
+            <span
+              className="mt-0.5 flex-shrink-0 w-4 h-4 flex items-center justify-center"
+              style={{
+                background: optIn ? palette.sand : "transparent",
+                border: `1px solid ${optIn ? palette.sand : "rgba(244,241,236,0.3)"}`,
+              }}
+            >
+              {optIn && <Check className="w-3 h-3" strokeWidth={2.5} style={{ color: palette.obsidian }} />}
+            </span>
+            <input
+              type="checkbox"
+              className="sr-only"
+              checked={optIn}
+              onChange={(e) => onOptInChange(e.target.checked)}
+            />
+            <span
+              className="text-[12px] leading-relaxed"
+              style={{ color: "rgba(244,241,236,0.7)", fontWeight: 300 }}
+            >
+              Send me occasional notes on exclusive drops, private sales, and
+              boutique-only releases. (Optional · unsubscribe anytime.)
+            </span>
+          </label>
+
+          <div className="mt-7 flex items-center justify-between gap-3">
+            <button
+              type="button"
+              onClick={onBack}
+              className="text-[10px] uppercase tracking-[0.32em] pb-0.5 border-b transition-opacity hover:opacity-70"
+              style={{ color: palette.offwhite, borderColor: "rgba(244,241,236,0.25)" }}
+            >
+              ← Back
+            </button>
+            <button
+              type="submit"
+              className="px-6 py-3 text-[10px] uppercase tracking-[0.32em] transition-opacity hover:opacity-90"
+              style={{ background: palette.sand, color: palette.obsidian }}
+            >
+              Continue
+            </button>
+          </div>
+        </form>
+      )}
+
+      {step === "preferences" && (
+        <div className="animate-[studioFade_.45s_ease-out_both]">
+          <p
+            className="text-[9px] uppercase tracking-[0.4em] mb-3"
+            style={{ color: palette.sand }}
+          >
+            Step 03 · Your Taste
+          </p>
+          <h3
+            className="text-[26px] leading-tight mb-2"
+            style={{ fontFamily: fontSerif, fontWeight: 300, letterSpacing: "-0.01em" }}
+          >
+            Tell us what you love.
+          </h3>
+          <p
+            className="text-[13px] leading-relaxed mb-6"
+            style={{ color: "rgba(244,241,236,0.65)", fontWeight: 300 }}
+          >
+            Pick anything that resonates — the more you share, the more precise
+            the curation. All optional.
+          </p>
+
+          <PreferenceGroup
+            label="Aesthetic"
+            options={VIBE_OPTIONS as unknown as string[]}
+            selected={vibes}
+            onToggle={onToggleVibe}
+          />
+
+          <PreferenceGroup
+            label="Categories of interest"
+            options={CATEGORY_OPTIONS as unknown as string[]}
+            selected={categories}
+            onToggle={onToggleCategory}
+          />
+
+          <div className="mb-6">
+            <p
+              className="text-[10px] uppercase tracking-[0.3em] mb-3"
+              style={{ color: "rgba(244,241,236,0.55)" }}
+            >
+              Typical budget per piece
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {PRICE_OPTIONS.map((p) => {
+                const active = priceBand === p;
+                return (
+                  <button
+                    key={p}
+                    type="button"
+                    onClick={() => onPriceBand(active ? "" : p)}
+                    className="px-3.5 py-2 text-[11px] transition-all duration-200"
+                    style={{
+                      background: active ? palette.sand : "transparent",
+                      color: active ? palette.obsidian : palette.offwhite,
+                      border: `1px solid ${active ? palette.sand : "rgba(244,241,236,0.2)"}`,
+                      fontWeight: 300,
+                    }}
+                  >
+                    {p}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between gap-3">
+            <button
+              type="button"
+              onClick={onBack}
+              className="text-[10px] uppercase tracking-[0.32em] pb-0.5 border-b transition-opacity hover:opacity-70"
+              style={{ color: palette.offwhite, borderColor: "rgba(244,241,236,0.25)" }}
+            >
+              ← Back
+            </button>
+            <button
+              type="button"
+              onClick={onFinish}
+              className="px-6 py-3 text-[10px] uppercase tracking-[0.32em] transition-opacity hover:opacity-90"
+              style={{ background: palette.sand, color: palette.obsidian }}
+            >
+              Curate my selection →
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PreferenceGroup({
+  label,
+  options,
+  selected,
+  onToggle,
+}: {
+  label: string;
+  options: string[];
+  selected: string[];
+  onToggle: (v: string) => void;
+}) {
+  return (
+    <div className="mb-6">
+      <p
+        className="text-[10px] uppercase tracking-[0.3em] mb-3"
+        style={{ color: "rgba(244,241,236,0.55)" }}
+      >
+        {label}
+      </p>
+      <div className="flex flex-wrap gap-2">
+        {options.map((opt) => {
+          const active = selected.includes(opt);
+          return (
+            <button
+              key={opt}
+              type="button"
+              onClick={() => onToggle(opt)}
+              className="px-3.5 py-2 text-[11px] transition-all duration-200"
+              style={{
+                background: active ? palette.sand : "transparent",
+                color: active ? palette.obsidian : palette.offwhite,
+                border: `1px solid ${active ? palette.sand : "rgba(244,241,236,0.2)"}`,
+                fontWeight: 300,
+              }}
+            >
+              {opt}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
