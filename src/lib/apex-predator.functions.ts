@@ -866,18 +866,20 @@ export const deployPatchToShopify = createServerFn({ method: "POST" })
     const product = lookup.products?.[0];
     if (!product) throw new Error(`No Shopify product found for handle "${handle}".`);
 
-    // 2. PUT update — title (H1), global title_tag and description_tag
+    // 2. PUT update — overwrite the primary visible H1 title and body_html
+    //    description directly on the product. No metafield arrays — we want
+    //    the PDP itself to refresh, not just search-engine metadata.
     await adminRest(`/products/${product.id}.json`, {
       method: "PUT",
       body: JSON.stringify({
         product: {
           id: product.id,
           title: data.newH1,
-          metafields_global_title_tag: data.newTitle,
-          metafields_global_description_tag: data.newMetaDescription,
+          body_html: `<p>${data.newMetaDescription}</p>`,
         },
       }),
     });
+
 
     return {
       ok: true,
