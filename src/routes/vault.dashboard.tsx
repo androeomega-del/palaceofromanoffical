@@ -561,6 +561,11 @@ function DispatchView({
           Payment finalised on the secure dispatch channel
         </p>
       </div>
+    </section>
+  );
+}
+
+
 
 function Field({
   label,
