@@ -153,7 +153,10 @@ export function PdpProvenanceTabs({
               title="Buyer-Protected Checkout"
               body="Payments are processed through globally regulated, buyer-protected gateways with bank-grade encryption and full chargeback rights."
             />
-          </ul>
+            <ProvenanceRow
+              title="14-Day Returns & Refunds"
+              body={"Unworn, tagged pieces in original packaging may be returned within 14 days of delivery. A reason is required to initiate the return, and the parcel must travel with UPS, FedEx or DHL — returns sent via regular postal services will be declined. Each return is inspected on arrival; once approved, the refund is processed to the original payment method. Used or worn items are not eligible and will be shipped back to you."}
+            />
 
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1 text-[10px] uppercase tracking-[0.28em] text-[var(--studio-muted)]">
             <span className="font-semibold text-[var(--studio-ink)]/70">Couriers</span>
