@@ -195,6 +195,20 @@ export function SiteFooter() {
         </div>
 
 
+        {/* ───── Registered address & contact (Merchant Center transparency) ───── */}
+        <div className="flex flex-col md:flex-row gap-4 md:gap-10 justify-between items-start md:items-center py-6 border-t border-ink/10 text-[11px] text-muted-foreground">
+          <p className="not-italic">
+            <span className="text-ink/80 font-medium">Palace of Roman</span> · 8605 Santa Monica Blvd, West Hollywood, CA 90069, US
+          </p>
+          <p className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <a href="tel:+12139914069" className="hover:text-ink transition-colors">+1 (213) 991-4069</a>
+            <span className="opacity-30">·</span>
+            <a href="mailto:support@palaceofromanofficial.com" className="hover:text-ink transition-colors">support@palaceofromanofficial.com</a>
+            <span className="opacity-30">·</span>
+            <span>Mon–Sat, 9–6 PT</span>
+          </p>
+        </div>
+
         {/* ───── Legal / social bottom bar ───── */}
         <div className="flex flex-col md:flex-row gap-4 justify-between items-center pt-6 mt-2 border-t border-ink/5 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
           <p>&copy; {COPYRIGHT_YEAR} Palace of Roman. All rights reserved.</p>
