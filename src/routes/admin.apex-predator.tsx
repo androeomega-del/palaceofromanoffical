@@ -17,11 +17,18 @@ import {
   generateStrikePlan,
   generateHighIntentSeoPatch,
   deployPatchToShopify,
+  listBulkOvertakeTargets,
+  startBulkOvertake,
+  executeBulkCatalogOvertake,
+  getBulkOvertakeStatus,
+  BULK_OVERTAKE_BATCH_SIZE,
+  type BulkOvertakeTarget,
   type ContentBlueprint,
   type StrikePlan,
   type HighIntentSeoPatch,
   type StrikingRow,
 } from "@/lib/apex-predator.functions";
+
 
 export const Route = createFileRoute("/admin/apex-predator")({
   ssr: false,
@@ -146,7 +153,13 @@ function ApexPredatorTerminal() {
         </div>
       </div>
 
+      {/* GLOBAL RE-INDEX CAMPAIGN — top-of-grid control card */}
+      <div style={{ maxWidth: 1400, margin: "0 auto", padding: "16px 24px 0" }}>
+        <BulkOvertakeControl />
+      </div>
+
       <div style={{ display: "grid", gridTemplateColumns: "180px 1fr", maxWidth: 1400, margin: "0 auto" }}>
+
         {/* Module nav */}
         <nav style={{ borderRight: `1px solid ${T.border}`, padding: "24px 0", minHeight: "calc(100vh - 41px)" }}>
           {[
@@ -905,6 +918,171 @@ function Banner({ color, children }: { color: string; children: React.ReactNode 
   return (
     <div style={{ display: "flex", gap: 8, alignItems: "center", padding: "8px 12px", border: `1px solid ${color}`, color, marginBottom: 12, fontSize: 11 }}>
       <AlertTriangle size={12} /> {children}
+    </div>
+  );
+}
+
+// =============================================================
+// GLOBAL RE-INDEX CAMPAIGN — bulk catalog overtake control
+// =============================================================
+function BulkOvertakeControl() {
+  const queryClient = useQueryClient();
+  const [running, setRunning] = useState(false);
+  const [batchIndex, setBatchIndex] = useState(0);
+  const [totalBatches, setTotalBatches] = useState(0);
+  const [errors, setErrors] = useState(0);
+  const [lastError, setLastError] = useState<string | null>(null);
+  const [phase, setPhase] = useState<"idle" | "loading" | "processing" | "done" | "error">("idle");
+
+  const status = useQuery({
+    queryKey: ["apex", "bulk-overtake", "status"],
+    queryFn: () => callAdminServerFn(getBulkOvertakeStatus),
+    refetchInterval: running ? 4_000 : false,
+  });
+
+  const triggerBulkOvertake = useCallback(async () => {
+    if (running) return;
+    const confirmGo =
+      typeof window !== "undefined"
+        ? window.confirm(
+            "GLOBAL RE-INDEX CAMPAIGN\n\nThis will rewrite SEO + descriptions on every active product in the catalog. Continue?",
+          )
+        : true;
+    if (!confirmGo) return;
+
+    setRunning(true);
+    setPhase("loading");
+    setErrors(0);
+    setLastError(null);
+
+    try {
+      const { targets, totalBatches: tb } = await callAdminServerFn(listBulkOvertakeTargets);
+      setTotalBatches(tb);
+      setBatchIndex(0);
+      if (!targets.length) {
+        toast.warning("No active products found.");
+        setPhase("idle");
+        setRunning(false);
+        return;
+      }
+
+      await callAdminServerFn(startBulkOvertake, { data: { total: targets.length } });
+      setPhase("processing");
+
+      const batches: BulkOvertakeTarget[][] = [];
+      for (let i = 0; i < targets.length; i += BULK_OVERTAKE_BATCH_SIZE) {
+        batches.push(targets.slice(i, i + BULK_OVERTAKE_BATCH_SIZE));
+      }
+
+      let totalErrors = 0;
+      for (let i = 0; i < batches.length; i++) {
+        const batch = batches[i];
+        try {
+          const res = await callAdminServerFn(executeBulkCatalogOvertake, {
+            data: {
+              items: batch.map((t) => ({ productId: t.productId, primaryKeyword: t.primaryKeyword })),
+              batchIndex: i,
+              totalBatches: batches.length,
+              finalBatch: i === batches.length - 1,
+            },
+          });
+          totalErrors += res.errors;
+          setErrors(totalErrors);
+
+        } catch (err) {
+          totalErrors += batch.length;
+          setErrors(totalErrors);
+          setLastError((err as Error).message);
+        }
+        setBatchIndex(i + 1);
+        void status.refetch();
+      }
+
+      setPhase("done");
+      toast.success(`Overtake complete: ${batches.length} batches, ${totalErrors} errors`);
+    } catch (err) {
+      setPhase("error");
+      setLastError((err as Error).message);
+      toast.error(`Overtake failed: ${(err as Error).message}`);
+    } finally {
+      setRunning(false);
+      void queryClient.invalidateQueries({ queryKey: ["apex", "bulk-overtake", "status"] });
+    }
+  }, [running, queryClient, status]);
+
+  const progressPct = totalBatches > 0 ? Math.round((batchIndex / totalBatches) * 100) : 0;
+  const live = status.data;
+
+  return (
+    <div
+      style={{
+        border: `1px solid ${T.border}`,
+        background: T.surface,
+        padding: 20,
+        boxShadow: "0 6px 24px rgba(0,0,0,0.35)",
+        fontFamily: T.mono,
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+        <div>
+          <div style={{ fontSize: 11, color: T.amber, letterSpacing: "0.18em", fontWeight: 700 }}>
+            ⚠ GLOBAL RE-INDEX CAMPAIGN
+          </div>
+          <div style={{ fontSize: 12, color: T.muted, marginTop: 4 }}>
+            Runs <code style={{ color: T.neon }}>updatelistingsSEO</code> across every active product —{" "}
+            <span style={{ color: T.ink }}>{BULK_OVERTAKE_BATCH_SIZE}</span> per batch · 2s cooldown · Shopify + Semrush rate-limit safe.
+          </div>
+        </div>
+        <button
+          onClick={() => triggerBulkOvertake()}
+          disabled={running}
+          className="px-6 py-3 bg-[#00ff00] text-black font-mono text-sm font-bold uppercase tracking-widest rounded shadow-lg hover:bg-[#00cc00] disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {running ? (
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+              <Loader2 size={14} className="animate-spin" /> RUNNING…
+            </span>
+          ) : (
+            "⚠️ INITIALIZE 5K CATALOG OVERTAKE"
+          )}
+        </button>
+      </div>
+
+      {(running || phase === "done" || phase === "error" || (live && live.status !== "idle")) && (
+        <div style={{ marginTop: 16 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: T.muted, marginBottom: 6 }}>
+            <span>
+              {phase === "loading" && "Enumerating catalog…"}
+              {phase === "processing" && `Processing Batch ${batchIndex} of ${totalBatches}…`}
+              {phase === "done" && `Done — ${batchIndex}/${totalBatches} batches`}
+              {phase === "error" && "Halted — see error below"}
+              {phase === "idle" && live && live.status !== "idle" && `Last run: ${live.status}`}
+            </span>
+            <span style={{ color: T.ink }}>{progressPct}%</span>
+          </div>
+          <div style={{ height: 8, background: T.grid, borderRadius: 4, overflow: "hidden" }}>
+            <div
+              style={{
+                width: `${progressPct}%`,
+                height: "100%",
+                background: phase === "error" ? T.red : T.neon,
+                transition: "width 250ms ease",
+              }}
+            />
+          </div>
+          <div style={{ marginTop: 8, fontSize: 10, color: T.muted, display: "flex", gap: 16, flexWrap: "wrap" }}>
+            <span>SEEN: <span style={{ color: T.ink }}>{live?.seen ?? 0}</span> / {live?.total ?? totalBatches * BULK_OVERTAKE_BATCH_SIZE}</span>
+            <span>UPDATED: <span style={{ color: T.neon }}>{live?.updated ?? 0}</span></span>
+            <span>ERRORS: <span style={{ color: errors > 0 ? T.red : T.muted }}>{errors || live?.errors || 0}</span></span>
+          </div>
+          {(lastError || live?.lastError) && (
+            <div style={{ marginTop: 8, padding: 8, border: `1px solid ${T.red}`, color: T.red, fontSize: 10 }}>
+              <AlertTriangle size={10} style={{ display: "inline", marginRight: 4 }} />
+              {lastError || live?.lastError}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
