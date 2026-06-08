@@ -247,9 +247,7 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
               >
                 {isLoading || isSyncing
                   ? <Loader2 className="w-4 h-4 animate-spin" />
-                  : skipEmail
-                    ? "Continue Without Email"
-                    : "Begin Your Order"}
+                  : "Begin Your Order"}
               </Button>
 
               <p className="text-[10px] text-center text-muted-foreground">
