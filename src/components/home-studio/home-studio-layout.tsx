@@ -82,19 +82,35 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
                 Every item is authenticated, chosen one at a time, and
                 delivered duties-cleared to your door.
               </p>
+              <div className="mt-10 flex flex-col sm:flex-row sm:items-center gap-x-8 gap-y-5">
+                <Link
+                  to="/women"
+                  aria-label="Shop the women's edit"
+                  className="group inline-flex items-center justify-between sm:justify-start gap-3 pb-2 text-[11px] uppercase tracking-[0.32em] border-b transition-all duration-500 sm:hover:gap-5"
+                  style={{ color: palette.offwhite, borderColor: palette.offwhite, fontFamily: fontSans }}
+                >
+                  Shop Womenswear
+                  <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" strokeWidth={1.25} />
+                </Link>
+                <Link
+                  to="/men"
+                  aria-label="Shop the men's edit"
+                  className="group inline-flex items-center justify-between sm:justify-start gap-3 pb-2 text-[11px] uppercase tracking-[0.32em] border-b transition-all duration-500 sm:hover:gap-5"
+                  style={{ color: palette.offwhite, borderColor: palette.offwhite, fontFamily: fontSans }}
+                >
+                  Shop Menswear
+                  <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" strokeWidth={1.25} />
+                </Link>
+              </div>
               <button
                 onClick={() => setConciergeOpen(true)}
                 aria-label="Open personal concierge styling service"
-                className="group inline-flex items-center gap-3 mt-10 pb-2 text-[11px] uppercase tracking-[0.32em] border-b transition-all duration-500 hover:gap-5"
-                style={{
-                  color: palette.offwhite,
-                  borderColor: palette.sand,
-                  fontFamily: fontSans,
-                }}
+                className="group inline-flex items-center gap-3 mt-6 pb-1 text-[10px] uppercase tracking-[0.32em] transition-all duration-500 hover:gap-5"
+                style={{ color: palette.sand, fontFamily: fontSans }}
               >
-                Begin with the concierge
+                Or begin with the concierge
                 <ArrowUpRight
-                  className="w-3.5 h-3.5 transition-transform duration-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                  className="w-3 h-3 transition-transform duration-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
                   strokeWidth={1.25}
                 />
               </button>
