@@ -94,12 +94,12 @@ export function buildPdpFaq(input: {
       a: `Yes. Every ${vendor || "piece"} sold at Palace of Roman is sourced through our network of authorised boutiques and distributors and is shipped with its original packaging, brand tags and any accompanying documentation. Each order is backed by our 90-day authenticity guarantee.`,
     },
     {
-      q: `Where does this ${title || "piece"} ship from?`,
-      a: `This piece ships from ${madeIn === "the maison's authorised European workshops" ? "our European boutique-network partners" : madeIn.replace(/^Made in /, "")}, with handling in 1–2 business days and worldwide express delivery in 3–7 business days. Tracking is provided on dispatch.`,
+      q: `Where does this ${title || "piece"} ship from and how fast?`,
+      a: `This piece ships from ${madeIn === "the maison's authorised European workshops" ? "our European boutique-network partners" : madeIn.replace(/^Made in /, "")}. Orders are processed in 24–48 hours and dispatched fully insured via UPS, FedEx or DHL — 1–3 business days within the EU, 5–7 business days everywhere else. A live tracking link is sent the moment the parcel leaves the warehouse.`,
     },
     {
-      q: `What is the return window?`,
-      a: `Unworn pieces with original tags can be returned within 14 days of delivery for a full refund. Returns are free worldwide — initiate yours from your account or contact the concierge.`,
+      q: `What is the return and refund policy?`,
+      a: `Unworn, tagged pieces in original packaging can be returned within 14 days of delivery. A reason is required to initiate the return, and the parcel must travel with UPS, FedEx or DHL — returns sent via regular postal services will be declined. Every returned item is inspected on arrival; once approved, the refund is processed back to the original payment method. Used or worn pieces are not eligible and will be shipped back to you.`,
     },
     {
       q: `How does ${vendor || "this maison's"} sizing run?`,
