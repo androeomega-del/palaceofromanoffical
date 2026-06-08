@@ -73,22 +73,26 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
               className="text-[15vw] md:text-[8.5vw] leading-[0.92] font-light tracking-[-0.02em] text-balance"
               style={{ fontWeight: 300 }}
             >
-              The quiet
+              Palace of Roman
               <br />
-              <em className="italic" style={{ color: palette.sand }}>art</em> of
+              The quiet <em className="italic" style={{ color: palette.sand }}>art</em> of
               <br />
-              dressing.
+              luxury fashion.
             </h1>
             <div className="mt-14 md:mt-20 max-w-md">
               <p
                 className="text-base md:text-lg leading-relaxed"
                 style={{ color: palette.muted, fontFamily: fontSans, fontWeight: 300 }}
               >
-                A curated season of pieces from a global network of authorised
-                boutiques — chosen one at a time, delivered with duties cleared.
+                A curated multi-brand luxury fashion boutique sourcing
+                current-season pieces directly from a global network of
+                authorised European maisons and independent distributors.
+                Every item is authenticated, chosen one at a time, and
+                delivered duties-cleared to your door.
               </p>
               <button
                 onClick={() => setConciergeOpen(true)}
+                aria-label="Open personal concierge styling service"
                 className="group inline-flex items-center gap-3 mt-10 pb-2 text-[11px] uppercase tracking-[0.32em] border-b transition-all duration-500 hover:gap-5"
                 style={{
                   color: palette.offwhite,
