@@ -1217,15 +1217,23 @@ function ProductView({
                 onClick={() => {
                   const imageUrl = product.images?.edges?.[0]?.node?.url ?? null;
                   const priceLabel = formatPrice(currentPrice);
-                  useVacationTrunkStore.getState().openTrunk({
-                    id: selectedVariant?.id ?? product.id,
-                    handle: product.handle,
-                    title: product.title,
-                    vendor: product.vendor ?? null,
-                    imageUrl,
-                    priceLabel,
-                    variantTitle: selectedVariant?.title ?? null,
-                  });
+                  const qa = selectedVariant?.quantityAvailable;
+                  const lowStock = typeof qa === "number" && qa > 0 && qa <= 1;
+                  const variantId = selectedVariant?.id ?? product.id;
+                  const outOfStock = !!(selectedVariant && !selectedVariant.availableForSale);
+                  useVacationTrunkStore.getState().openTrunk(
+                    {
+                      id: variantId,
+                      handle: product.handle,
+                      title: product.title,
+                      vendor: product.vendor ?? null,
+                      imageUrl,
+                      priceLabel,
+                      variantTitle: selectedVariant?.title ?? null,
+                      outOfStock,
+                    },
+                    { lowStock },
+                  );
                 }}
                 className="mt-3 w-full h-14 inline-flex items-center justify-center gap-2 text-[10.5px] uppercase tracking-[0.32em] border transition-colors"
                 style={{
@@ -1240,14 +1248,29 @@ function ProductView({
 
 
               {selectedVariant && !selectedVariant.availableForSale && (
-                <NotifyMeForm
-                  variantGid={selectedVariant.id}
-                  productHandle={product.handle}
-                  productTitle={product.title}
-                  variantTitle={selectedVariant.title}
-                  imageUrl={product.images?.edges?.[0]?.node?.url ?? null}
-                  priceUsd={selectedVariant.price?.amount ?? null}
-                />
+                <>
+                  {/* Vault Release overlay — shown when the variant is in the
+                      visitor's (still unverified) cart and goes 0-stock. */}
+                  {useCartStore.getState().items.some((i) => i.variantId === selectedVariant.id) ? (
+                    <VaultReleaseOverlay
+                      variantGid={selectedVariant.id}
+                      productHandle={product.handle}
+                      productTitle={product.title}
+                      variantTitle={selectedVariant.title}
+                      imageUrl={product.images?.edges?.[0]?.node?.url ?? null}
+                      priceUsd={selectedVariant.price?.amount ?? null}
+                    />
+                  ) : (
+                    <NotifyMeForm
+                      variantGid={selectedVariant.id}
+                      productHandle={product.handle}
+                      productTitle={product.title}
+                      variantTitle={selectedVariant.title}
+                      imageUrl={product.images?.edges?.[0]?.node?.url ?? null}
+                      priceUsd={selectedVariant.price?.amount ?? null}
+                    />
+                  )}
+                </>
               )}
 
               {/* Trust anchor — interactive, opens shipping/returns sheet. Full-width, flush under CTA row. */}
