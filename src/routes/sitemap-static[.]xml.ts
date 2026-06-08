@@ -89,6 +89,11 @@ const STATIC_ROUTES: UrlEntry[] = [
   { path: "/men/ss26", changefreq: "weekly", priority: "0.7" },
   { path: "/vacation-stylist", changefreq: "monthly", priority: "0.6" },
   { path: "/trends/section-samples", changefreq: "monthly", priority: "0.3" },
+  // City landing pages — conversion landers, also indexable.
+  { path: "/designer-fashion-new-york", changefreq: "monthly", priority: "0.7" },
+  { path: "/designer-fashion-los-angeles", changefreq: "monthly", priority: "0.7" },
+  { path: "/designer-fashion-miami", changefreq: "monthly", priority: "0.7" },
+  { path: "/designer-fashion-san-francisco", changefreq: "monthly", priority: "0.7" },
 ];
 
 export const Route = createFileRoute("/sitemap-static.xml")({

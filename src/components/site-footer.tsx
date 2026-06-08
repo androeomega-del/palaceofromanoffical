@@ -129,6 +129,23 @@ export function SiteFooter() {
           </div>
         </div>
 
+        {/* ───── Shop by City (paid-traffic landers, also indexable) ───── */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10 pt-4 pb-12 border-t border-ink/5">
+          <div className="md:col-span-1 flex flex-col gap-2">
+            <h5 className="text-[10px] uppercase tracking-[0.25em] font-semibold mb-1">Shop By City</h5>
+            <p className="text-[11px] text-muted-foreground leading-relaxed">
+              Authenticated luxury, expressly delivered across the US.
+            </p>
+          </div>
+          <Link to="/designer-fashion-new-york" className="text-sm text-muted-foreground hover:text-ink transition-colors self-end">Designer Fashion New York</Link>
+          <Link to="/designer-fashion-los-angeles" className="text-sm text-muted-foreground hover:text-ink transition-colors self-end">Designer Fashion Los Angeles</Link>
+          <div className="flex flex-col gap-3">
+            <Link to="/designer-fashion-miami" className="text-sm text-muted-foreground hover:text-ink transition-colors">Designer Fashion Miami</Link>
+            <Link to="/designer-fashion-san-francisco" className="text-sm text-muted-foreground hover:text-ink transition-colors">Designer Fashion San Francisco</Link>
+          </div>
+        </div>
+
+
         {/* ───── Trust & support bar ───── */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 py-12 border-t border-ink/10">
           <Link to="/shipping-returns" className="group flex flex-col gap-2 hover:text-ink transition-colors">
