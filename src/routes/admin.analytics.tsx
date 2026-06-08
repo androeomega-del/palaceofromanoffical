@@ -1,47 +1,50 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { adminBeforeLoad } from "@/lib/admin-route-guard";
-import { getCartAnalytics } from "@/lib/cart-analytics.functions";
+import { getAnalyticsDashboard, type AnalyticsDashboard } from "@/lib/analytics-dashboard.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, ArrowLeft } from "lucide-react";
+import { ArrowLeft, RefreshCw, Activity } from "lucide-react";
 
-// Explicitly attach the bearer token to bypass any cold-load race in the
-// global attachSupabaseAuth middleware (seen on mobile Safari where the
-// Supabase client hasn't restored the session from storage before useQuery
-// fires its first RPC, causing "Unauthorized: No authorization header").
-async function fetchCartAnalytics() {
+const RANGES = [
+  { label: "1D", days: 1 },
+  { label: "7D", days: 7 },
+  { label: "30D", days: 30 },
+  { label: "90D", days: 90 },
+  { label: "1Y", days: 365 },
+];
+
+async function fetchDashboard(days: number): Promise<AnalyticsDashboard> {
   const { data } = await supabase.auth.getSession();
   const token = data.session?.access_token;
-  return getCartAnalytics({
+  return getAnalyticsDashboard({
+    data: { days },
     headers: token ? { Authorization: `Bearer ${token}` } : {},
   });
 }
 
-/**
- * Render local-timezone time only after hydration to avoid React #418
- * (server worker is UTC, client is the user's TZ → text mismatch).
- */
-function LocalTime({ iso }: { iso: string }) {
-  const [text, setText] = useState<string>("");
-  useEffect(() => {
-    setText(new Date(iso).toLocaleTimeString());
-  }, [iso]);
-  return <span suppressHydrationWarning>{text}</span>;
-}
-
 export const Route = createFileRoute("/admin/analytics")({
-  // Admin-only, auth-gated page — skip SSR entirely so server and client
-  // can never diverge (no prerender of a logged-out shell, no hydration
-  // mismatch from session/timezone/data state).
   ssr: false,
   beforeLoad: adminBeforeLoad,
   component: AdminAnalytics,
   head: () => ({
     meta: [
-      { title: "Cart Analytics — Palace of Roman" },
+      { title: "Live Analytics — Palace of Roman" },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),
@@ -54,53 +57,32 @@ const usd = (n: number) =>
     currency: "USD",
     maximumFractionDigits: 0,
   }).format(n);
-const usd2 = (n: number) =>
-  new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 2,
-  }).format(n);
 
-function Stat({ label, value, hint }: { label: string; value: string; hint?: string }) {
+function Stat({
+  label,
+  value,
+  hint,
+  accent,
+}: {
+  label: string;
+  value: string;
+  hint?: string;
+  accent?: boolean;
+}) {
   return (
-    <Card className="p-6">
+    <Card className={`p-5 ${accent ? "border-bronze/40 bg-bronze/[0.03]" : ""}`}>
       <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">{label}</div>
-      <div className="mt-3 font-serif text-3xl md:text-4xl tabular-nums">{value}</div>
-      {hint ? <div className="mt-1 text-xs text-muted-foreground">{hint}</div> : null}
+      <div className="mt-2 font-serif text-2xl md:text-3xl tabular-nums">{value}</div>
+      {hint ? <div className="mt-1 text-[11px] text-muted-foreground">{hint}</div> : null}
     </Card>
   );
 }
 
-function FunnelBar({
-  label,
-  count,
-  pct,
-  dropoff,
-}: {
-  label: string;
-  count: number;
-  pct: number;
-  dropoff?: number;
-}) {
+function SectionTitle({ children, hint }: { children: React.ReactNode; hint?: string }) {
   return (
-    <div>
-      <div className="flex items-baseline justify-between text-xs mb-1.5">
-        <span className="uppercase tracking-[0.2em] text-muted-foreground">{label}</span>
-        <span className="tabular-nums">
-          {fmt(count)} <span className="text-muted-foreground">· {pct}%</span>
-        </span>
-      </div>
-      <div className="h-3 rounded-sm bg-ink/5 overflow-hidden">
-        <div
-          className="h-full bg-bronze transition-all"
-          style={{ width: `${Math.max(2, pct)}%` }}
-        />
-      </div>
-      {dropoff !== undefined && dropoff > 0 ? (
-        <div className="text-[10px] text-muted-foreground mt-1">
-          −{dropoff}% drop-off from previous stage
-        </div>
-      ) : null}
+    <div className="mb-4">
+      <h2 className="font-serif text-xl tracking-tight">{children}</h2>
+      {hint ? <p className="text-xs text-muted-foreground mt-0.5">{hint}</p> : null}
     </div>
   );
 }
@@ -123,55 +105,75 @@ function useSessionReady() {
   return ready;
 }
 
+/**
+ * Subscribes to realtime inserts on pageviews/cart_events and bumps a
+ * counter the dashboard can use to pulse a "Live" badge + refetch.
+ */
+function useLivePulse(onTick: () => void) {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    const ch = supabase
+      .channel("admin-analytics-live")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "pageviews" },
+        () => {
+          setCount((c) => c + 1);
+          onTick();
+        },
+      )
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "cart_events" },
+        () => {
+          setCount((c) => c + 1);
+          onTick();
+        },
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(ch);
+    };
+  }, [onTick]);
+  return count;
+}
+
 function AdminAnalytics() {
   const sessionReady = useSessionReady();
+  const [days, setDays] = useState(30);
+
   const { data, isLoading, isFetching, error, refetch } = useQuery({
-    queryKey: ["admin", "cart-analytics"],
-    queryFn: fetchCartAnalytics,
-    // Gate the query until the Supabase session is fully restored — prevents
-    // the cold-load 401 on mobile Safari before storage hydrates.
+    queryKey: ["admin", "analytics-dashboard", days],
+    queryFn: () => fetchDashboard(days),
     enabled: sessionReady,
     refetchInterval: 30_000,
     staleTime: 15_000,
-    retry: (failureCount, err) => {
+    retry: (n, err) => {
       const msg = (err as Error)?.message ?? "";
       if (/unauthor|forbidden|401|403/i.test(msg)) return false;
-      return failureCount < 4;
+      return n < 3;
     },
-    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 15_000),
   });
 
-  const maxActivity = Math.max(
-    1,
-    ...(data?.buckets ?? []).map(
-      (b) => b.add_to_cart + b.remove_from_cart + b.checkout_started + b.reached_checkout,
-    ),
+  // Throttle realtime-triggered refetches to once every 5s
+  const [lastLive, setLastLive] = useState(0);
+  const tick = useMemo(
+    () => () => {
+      const now = Date.now();
+      if (now - lastLive > 5000) {
+        setLastLive(now);
+        refetch();
+      }
+    },
+    [lastLive, refetch],
   );
-  const maxRevenue = Math.max(1, ...(data?.buckets ?? []).map((b) => b.revenue));
-
-  const funnel = data
-    ? (() => {
-        const adds = data.totals.add_to_cart;
-        const co = data.totals.checkout_started;
-        const reached = data.totals.reached_checkout;
-        const base = Math.max(adds, 1);
-        const addsPct = 100;
-        const coPct = Math.round((co / base) * 100);
-        const reachedPct = Math.round((reached / base) * 100);
-        return {
-          stages: [
-            { label: "Add to Cart", count: adds, pct: addsPct, dropoff: 0 },
-            { label: "Checkout Started", count: co, pct: coPct, dropoff: addsPct - coPct },
-            { label: "Reached Checkout", count: reached, pct: reachedPct, dropoff: coPct - reachedPct },
-          ],
-        };
-      })()
-    : null;
+  const liveCount = useLivePulse(tick);
 
   return (
-    <main className="min-h-screen bg-canvas px-6 py-12 md:py-16">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex items-end justify-between mb-10 gap-4 flex-wrap">
+    <main className="min-h-screen bg-canvas px-4 md:px-6 py-8 md:py-12">
+      <div className="max-w-7xl mx-auto">
+        {/* Top bar */}
+        <div className="flex items-end justify-between mb-8 gap-4 flex-wrap">
           <div>
             <Link
               to="/admin"
@@ -180,11 +182,33 @@ function AdminAnalytics() {
               <ArrowLeft className="h-3 w-3" />
               Admin
             </Link>
-            <h1 className="font-serif text-4xl md:text-5xl">Cart Analytics</h1>
-            <p className="mt-2 text-sm text-muted-foreground">Last 30 days · refreshes every 30s</p>
+            <h1 className="font-serif text-3xl md:text-5xl">Live Analytics</h1>
+            <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
+              <span className="inline-flex items-center gap-1.5">
+                <Activity className="h-3 w-3 text-emerald-600 animate-pulse" />
+                Realtime · {fmt(liveCount)} events this session
+              </span>
+              <span>·</span>
+              <span>Auto-refresh 30s</span>
+            </div>
           </div>
-          <div className="flex gap-3">
-            <Button size="sm" onClick={() => refetch()} disabled={isFetching}>
+          <div className="flex items-center gap-2">
+            <div className="inline-flex rounded-md border border-border overflow-hidden">
+              {RANGES.map((r) => (
+                <button
+                  key={r.days}
+                  onClick={() => setDays(r.days)}
+                  className={`px-3 py-1.5 text-xs uppercase tracking-[0.18em] transition-colors ${
+                    days === r.days
+                      ? "bg-ink text-canvas"
+                      : "bg-transparent text-muted-foreground hover:bg-ink/5"
+                  }`}
+                >
+                  {r.label}
+                </button>
+              ))}
+            </div>
+            <Button size="sm" variant="outline" onClick={() => refetch()} disabled={isFetching}>
               <RefreshCw className={`h-4 w-4 mr-2 ${isFetching ? "animate-spin" : ""}`} />
               Refresh
             </Button>
@@ -198,261 +222,294 @@ function AdminAnalytics() {
             </p>
           </Card>
         ) : isLoading || !data ? (
-          <p className="text-sm text-muted-foreground">Loading…</p>
+          <Card className="p-10 text-center text-sm text-muted-foreground">Loading analytics…</Card>
         ) : (
-          <>
-            {/* Headline KPIs */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-10">
-              <Stat label="Est. Revenue" value={usd(data.totals.estimated_gmv)} hint="reached checkout" />
-              <Stat
-                label="Avg Order Value"
-                value={usd2(data.totals.avg_order_value)}
-                hint={`${fmt(data.totals.reached_checkout)} orders`}
-              />
-              <Stat
-                label="Conversion"
-                value={`${data.totals.overall_conversion_rate}%`}
-                hint="reached / adds"
-              />
-              <Stat
-                label="Abandonment"
-                value={`${data.totals.abandonment_rate}%`}
-                hint="adds without reach"
-              />
-              <Stat label="Add to Cart" value={fmt(data.totals.add_to_cart)} />
-              <Stat label="Checkout Clicks" value={fmt(data.totals.checkout_started)} />
-              <Stat label="Reached Checkout" value={fmt(data.totals.reached_checkout)} />
-              <Stat label="Sessions" value={fmt(data.totals.unique_sessions)} hint="unique with cart" />
-            </div>
-
-            {/* Funnel */}
-            <Card className="p-6 mb-10">
-              <h2 className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-6">
-                Conversion Funnel
-              </h2>
-              <div className="space-y-5">
-                {funnel?.stages.map((s) => (
-                  <FunnelBar key={s.label} {...s} />
-                ))}
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-8 pt-6 border-t border-ink/5">
-                <div>
-                  <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
-                    Cart → Checkout
-                  </div>
-                  <div className="font-serif text-2xl tabular-nums mt-1">
-                    {data.totals.cart_to_checkout_rate}%
-                  </div>
-                </div>
-                <div>
-                  <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
-                    Checkout → Reached
-                  </div>
-                  <div className="font-serif text-2xl tabular-nums mt-1">
-                    {data.totals.checkout_to_reached_rate}%
-                  </div>
-                </div>
-                <div>
-                  <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
-                    Removed from Cart
-                  </div>
-                  <div className="font-serif text-2xl tabular-nums mt-1">
-                    {fmt(data.totals.remove_from_cart)}
-                  </div>
-                </div>
-              </div>
-            </Card>
-
-            {/* Daily revenue */}
-            <Card className="p-6 mb-10">
-              <div className="flex items-baseline justify-between mb-6">
-                <h2 className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-                  Daily Revenue
-                </h2>
-                <span className="text-xs text-muted-foreground">
-                  Peak: {usd(maxRevenue)}
-                </span>
-              </div>
-              <div className="flex items-end gap-1 h-40">
-                {data.buckets.map((b) => {
-                  const h = (b.revenue / maxRevenue) * 100;
-                  return (
-                    <div
-                      key={b.date}
-                      className="flex-1 flex flex-col items-center justify-end"
-                      title={`${b.date}: ${usd(b.revenue)}`}
-                    >
-                      <div
-                        className="w-full bg-bronze/80 hover:bg-bronze transition-colors rounded-sm min-h-[2px]"
-                        style={{ height: `${h}%` }}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-              <div className="flex justify-between text-[10px] text-muted-foreground mt-2">
-                <span>{data.buckets[0]?.date}</span>
-                <span>{data.buckets[data.buckets.length - 1]?.date}</span>
-              </div>
-            </Card>
-
-            {/* Daily activity */}
-            <Card className="p-6 mb-10">
-              <h2 className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-6">
-                Daily Activity
-              </h2>
-              <div className="flex items-end gap-1 h-40">
-                {data.buckets.map((b) => {
-                  const total =
-                    b.add_to_cart + b.remove_from_cart + b.checkout_started + b.reached_checkout;
-                  const h = (total / maxActivity) * 100;
-                  return (
-                    <div
-                      key={b.date}
-                      className="flex-1 flex flex-col items-center justify-end"
-                      title={`${b.date}\nAdds: ${b.add_to_cart}\nRemoves: ${b.remove_from_cart}\nCheckout clicks: ${b.checkout_started}\nReached checkout: ${b.reached_checkout}`}
-                    >
-                      <div
-                        className="w-full bg-ink/70 hover:bg-ink transition-colors rounded-sm min-h-[2px]"
-                        style={{ height: `${h}%` }}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-              <div className="flex justify-between text-[10px] text-muted-foreground mt-2">
-                <span>{data.buckets[0]?.date}</span>
-                <span>{data.buckets[data.buckets.length - 1]?.date}</span>
-              </div>
-            </Card>
-
-            {/* Top products + Top removed */}
-            <div className="grid lg:grid-cols-2 gap-6 mb-10">
-              <Card className="p-6">
-                <h2 className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-4">
-                  Top Products
-                </h2>
-                {data.top_products.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No add-to-cart events yet.</p>
-                ) : (
-                  <table className="w-full text-sm">
-                    <thead className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                      <tr>
-                        <th className="text-left font-medium py-2">Product</th>
-                        <th className="text-right font-medium py-2">Adds</th>
-                        <th className="text-right font-medium py-2">Reached</th>
-                        <th className="text-right font-medium py-2">Revenue</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {data.top_products.map((p) => (
-                        <tr key={p.product_handle} className="border-t border-ink/5">
-                          <td className="py-3 pr-3">
-                            <a
-                              href={`/product/${p.product_handle}`}
-                              className="hover:text-bronze line-clamp-1"
-                              target="_blank"
-                              rel="noreferrer"
-                            >
-                              {p.product_title || p.product_handle}
-                            </a>
-                          </td>
-                          <td className="py-3 text-right tabular-nums">{p.adds}</td>
-                          <td className="py-3 text-right tabular-nums text-bronze">{p.reached}</td>
-                          <td className="py-3 text-right tabular-nums">{usd(p.revenue)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
-              </Card>
-
-              <Card className="p-6">
-                <h2 className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-4">
-                  Top Removed
-                </h2>
-                {data.top_removed.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No removals yet.</p>
-                ) : (
-                  <table className="w-full text-sm">
-                    <thead className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                      <tr>
-                        <th className="text-left font-medium py-2">Product</th>
-                        <th className="text-right font-medium py-2">Removes</th>
-                        <th className="text-right font-medium py-2">Adds</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {data.top_removed.map((p) => (
-                        <tr key={p.product_handle} className="border-t border-ink/5">
-                          <td className="py-3 pr-3">
-                            <a
-                              href={`/product/${p.product_handle}`}
-                              className="hover:text-bronze line-clamp-1"
-                              target="_blank"
-                              rel="noreferrer"
-                            >
-                              {p.product_title || p.product_handle}
-                            </a>
-                          </td>
-                          <td className="py-3 text-right tabular-nums text-destructive">
-                            {p.removes}
-                          </td>
-                          <td className="py-3 text-right tabular-nums text-muted-foreground">
-                            {p.adds}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
-              </Card>
-            </div>
-
-            {/* Recent events */}
-            <Card className="p-6">
-              <h2 className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-4">
-                Recent Events
-              </h2>
-              {data.recent.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No events yet.</p>
-              ) : (
-                <ul className="space-y-3 text-sm">
-                  {data.recent.map((r) => (
-                    <li
-                      key={r.id}
-                      className="flex items-center justify-between gap-3 border-b border-ink/5 pb-2 last:border-0"
-                    >
-                      <div className="min-w-0">
-                        <span
-                          className={`inline-block text-[9px] uppercase tracking-[0.2em] px-2 py-0.5 rounded mr-2 ${
-                            r.event_type === "reached_checkout"
-                              ? "bg-bronze/25 text-bronze"
-                              : r.event_type === "checkout_started"
-                              ? "bg-bronze/10 text-bronze"
-                              : r.event_type === "add_to_cart"
-                              ? "bg-ink/5 text-ink"
-                              : "bg-destructive/10 text-destructive"
-                          }`}
-                        >
-                          {r.event_type.replace(/_/g, " ")}
-                        </span>
-                        <span className="text-ink/80 truncate">
-                          {r.product_title || r.product_handle || "—"}
-                        </span>
-                      </div>
-                      <div className="text-[11px] text-muted-foreground tabular-nums whitespace-nowrap">
-                        {r.price_usd != null ? usd2(r.price_usd) : ""} ·{" "}
-                        <LocalTime iso={r.created_at} />
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </Card>
-          </>
+          <DashboardBody data={data} />
         )}
       </div>
     </main>
+  );
+}
+
+function DashboardBody({ data }: { data: AnalyticsDashboard }) {
+  const { kpis } = data;
+  return (
+    <div className="space-y-10">
+      {/* ===== KPIs ===== */}
+      <section>
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+          <Stat label="Pageviews" value={fmt(kpis.pageviews)} accent />
+          <Stat label="Visitors" value={fmt(kpis.visitors)} accent />
+          <Stat label="Add to Cart" value={fmt(kpis.add_to_cart)} hint={`${kpis.atc_rate}% of visitors`} />
+          <Stat
+            label="Reached Checkout"
+            value={fmt(kpis.reached_checkout)}
+            hint={`${kpis.conversion_rate}% conv.`}
+          />
+          <Stat label="Est. GMV" value={usd(kpis.estimated_gmv)} hint="At-cart value" />
+          <Stat
+            label="Abandonment"
+            value={`${kpis.abandonment_rate}%`}
+            hint={`${fmt(kpis.add_to_cart - kpis.reached_checkout)} lost carts`}
+          />
+        </div>
+      </section>
+
+      {/* ===== Traffic + Conversions chart ===== */}
+      <section>
+        <SectionTitle hint="Daily pageviews and unique visitors over the selected window.">
+          Traffic
+        </SectionTitle>
+        <Card className="p-4">
+          <div className="h-72">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={data.daily}>
+                <defs>
+                  <linearGradient id="g-pv" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="hsl(var(--bronze, 30 40% 45%))" stopOpacity={0.4} />
+                    <stop offset="95%" stopColor="hsl(var(--bronze, 30 40% 45%))" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="g-v" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#0f766e" stopOpacity={0.35} />
+                    <stop offset="95%" stopColor="#0f766e" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                <XAxis dataKey="date" tick={{ fontSize: 10 }} tickFormatter={(v) => v.slice(5)} />
+                <YAxis tick={{ fontSize: 10 }} />
+                <Tooltip />
+                <Area
+                  type="monotone"
+                  dataKey="pageviews"
+                  stroke="hsl(var(--bronze, 30 40% 45%))"
+                  fill="url(#g-pv)"
+                  strokeWidth={2}
+                  name="Pageviews"
+                />
+                <Area
+                  type="monotone"
+                  dataKey="visitors"
+                  stroke="#0f766e"
+                  fill="url(#g-v)"
+                  strokeWidth={2}
+                  name="Visitors"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+      </section>
+
+      {/* ===== Funnel + Landing pages ===== */}
+      <section className="grid lg:grid-cols-2 gap-6">
+        <Card className="p-5">
+          <SectionTitle hint="From first visit through reaching the Shopify checkout.">
+            Conversion Funnel
+          </SectionTitle>
+          <div className="space-y-4">
+            {data.funnel.map((f) => (
+              <div key={f.stage}>
+                <div className="flex items-baseline justify-between text-xs mb-1.5">
+                  <span className="uppercase tracking-[0.2em] text-muted-foreground">{f.stage}</span>
+                  <span className="tabular-nums">
+                    {fmt(f.count)} <span className="text-muted-foreground">· {f.pct}%</span>
+                  </span>
+                </div>
+                <div className="h-3 rounded-sm bg-ink/5 overflow-hidden">
+                  <div
+                    className="h-full bg-bronze transition-all"
+                    style={{ width: `${Math.max(2, f.pct)}%` }}
+                  />
+                </div>
+                {f.dropoff > 0 ? (
+                  <div className="text-[10px] text-muted-foreground mt-1">
+                    −{f.dropoff}% drop-off from previous stage
+                  </div>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        <Card className="p-5">
+          <SectionTitle hint="Most-viewed URLs in the selected window.">Top Landing Pages</SectionTitle>
+          {data.topLandingPages.length === 0 ? (
+            <p className="text-xs text-muted-foreground">
+              No pageview data yet — the beacon starts logging from now.
+            </p>
+          ) : (
+            <div className="space-y-2">
+              {data.topLandingPages.slice(0, 10).map((p) => {
+                const max = data.topLandingPages[0].pageviews || 1;
+                const pct = (p.pageviews / max) * 100;
+                return (
+                  <div key={p.path}>
+                    <div className="flex items-baseline justify-between text-xs gap-3">
+                      <span className="truncate font-mono">{p.path}</span>
+                      <span className="tabular-nums shrink-0">
+                        {fmt(p.pageviews)} <span className="text-muted-foreground">· {fmt(p.visitors)}u</span>
+                      </span>
+                    </div>
+                    <div className="h-1.5 mt-1 rounded-sm bg-ink/5 overflow-hidden">
+                      <div className="h-full bg-ink/40" style={{ width: `${Math.max(2, pct)}%` }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </Card>
+      </section>
+
+      {/* ===== Cart activity chart ===== */}
+      <section>
+        <SectionTitle hint="Add-to-cart, checkout starts, and checkouts reached per day.">
+          Cart Activity
+        </SectionTitle>
+        <Card className="p-4">
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={data.daily}>
+                <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                <XAxis dataKey="date" tick={{ fontSize: 10 }} tickFormatter={(v) => v.slice(5)} />
+                <YAxis tick={{ fontSize: 10 }} />
+                <Tooltip />
+                <Bar dataKey="add_to_cart" fill="#b08968" name="Add to Cart" />
+                <Bar dataKey="checkout_started" fill="#7c6f57" name="Checkout Started" />
+                <Bar dataKey="reached_checkout" fill="#0f766e" name="Reached Checkout" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+      </section>
+
+      {/* ===== Email engagement ===== */}
+      <section>
+        <SectionTitle hint="Sends, opens and clicks across all transactional + marketing templates.">
+          Email & Campaigns
+        </SectionTitle>
+        <div className="grid md:grid-cols-4 gap-3 mb-4">
+          <Stat label="Sent" value={fmt(data.email.sent)} hint={`${fmt(data.email.failed)} failed`} />
+          <Stat label="Opens" value={fmt(data.email.opened)} hint={`${data.email.open_rate}% open rate`} />
+          <Stat
+            label="Clicks"
+            value={fmt(data.email.clicked)}
+            hint={`${data.email.click_rate}% click rate`}
+          />
+          <Stat label="CTOR" value={`${data.email.ctor}%`} hint="Clicks ÷ Opens" />
+        </div>
+        <div className="grid lg:grid-cols-3 gap-6">
+          <Card className="p-4 lg:col-span-2">
+            <div className="h-56">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={data.email.daily}>
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                  <XAxis dataKey="date" tick={{ fontSize: 10 }} tickFormatter={(v) => v.slice(5)} />
+                  <YAxis tick={{ fontSize: 10 }} />
+                  <Tooltip />
+                  <Line type="monotone" dataKey="sent" stroke="#7c6f57" strokeWidth={2} dot={false} name="Sent" />
+                  <Line
+                    type="monotone"
+                    dataKey="opened"
+                    stroke="#b08968"
+                    strokeWidth={2}
+                    dot={false}
+                    name="Opened"
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="clicked"
+                    stroke="#0f766e"
+                    strokeWidth={2}
+                    dot={false}
+                    name="Clicked"
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </Card>
+          <Card className="p-5">
+            <SectionTitle>By Template</SectionTitle>
+            {data.email.byTemplate.length === 0 ? (
+              <p className="text-xs text-muted-foreground">No email activity in this window.</p>
+            ) : (
+              <div className="space-y-2 text-xs">
+                {data.email.byTemplate.slice(0, 8).map((t) => (
+                  <div key={t.template} className="flex items-baseline justify-between gap-3">
+                    <span className="truncate font-mono">{t.template}</span>
+                    <span className="tabular-nums text-muted-foreground shrink-0">
+                      {fmt(t.sent)}s · {fmt(t.opened)}o · {fmt(t.clicked)}c
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+        </div>
+      </section>
+
+      {/* ===== Subscribers + Referrers ===== */}
+      <section className="grid lg:grid-cols-2 gap-6">
+        <Card className="p-5">
+          <SectionTitle hint={`${fmt(data.subscribers.new_in_window)} new in this window`}>
+            Newsletter Growth
+          </SectionTitle>
+          <div className="grid grid-cols-3 gap-3 mb-3">
+            <Stat label="Total" value={fmt(data.subscribers.total)} />
+            <Stat label="Opted In" value={fmt(data.subscribers.opted_in)} hint={`${data.subscribers.opt_in_rate}%`} />
+            <Stat label="New" value={fmt(data.subscribers.new_in_window)} />
+          </div>
+          <div className="h-40">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={data.subscribers.daily}>
+                <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                <XAxis dataKey="date" tick={{ fontSize: 10 }} tickFormatter={(v) => v.slice(5)} />
+                <YAxis tick={{ fontSize: 10 }} />
+                <Tooltip />
+                <Area
+                  type="monotone"
+                  dataKey="subs"
+                  stroke="#0f766e"
+                  fill="#0f766e"
+                  fillOpacity={0.2}
+                  strokeWidth={2}
+                  name="New subscribers"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+
+        <Card className="p-5">
+          <SectionTitle hint="Where visitors arrived from (excluding direct).">Top Referrers</SectionTitle>
+          {data.topReferrers.length === 0 ? (
+            <p className="text-xs text-muted-foreground">No external referrers logged yet.</p>
+          ) : (
+            <div className="space-y-2">
+              {data.topReferrers.map((r) => {
+                const max = data.topReferrers[0].count || 1;
+                const pct = (r.count / max) * 100;
+                return (
+                  <div key={r.referrer}>
+                    <div className="flex items-baseline justify-between text-xs">
+                      <span className="truncate">{r.referrer}</span>
+                      <span className="tabular-nums">{fmt(r.count)}</span>
+                    </div>
+                    <div className="h-1.5 mt-1 rounded-sm bg-ink/5 overflow-hidden">
+                      <div className="h-full bg-ink/40" style={{ width: `${Math.max(2, pct)}%` }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </Card>
+      </section>
+
+      <p className="text-[10px] text-muted-foreground text-center pt-4">
+        Generated {new Date(data.generatedAt).toLocaleString()} · window: {data.windowDays} day
+        {data.windowDays === 1 ? "" : "s"}
+      </p>
+    </div>
   );
 }

@@ -753,30 +753,45 @@ export type Database = {
       email_dispatch_log: {
         Row: {
           cart_id: string | null
+          clicked_at: string | null
+          clicked_count: number
           created_at: string
           error_message: string | null
           id: string
+          last_click_url: string | null
           metadata: Json | null
+          opened_at: string | null
+          opened_count: number
           recipient_email: string
           status: string
           template_name: string
         }
         Insert: {
           cart_id?: string | null
+          clicked_at?: string | null
+          clicked_count?: number
           created_at?: string
           error_message?: string | null
           id?: string
+          last_click_url?: string | null
           metadata?: Json | null
+          opened_at?: string | null
+          opened_count?: number
           recipient_email: string
           status: string
           template_name: string
         }
         Update: {
           cart_id?: string | null
+          clicked_at?: string | null
+          clicked_count?: number
           created_at?: string
           error_message?: string | null
           id?: string
+          last_click_url?: string | null
           metadata?: Json | null
+          opened_at?: string | null
+          opened_count?: number
           recipient_email?: string
           status?: string
           template_name?: string
@@ -1496,6 +1511,39 @@ export type Database = {
           order_id?: string
           recipient_email?: string | null
           sent_at?: string
+        }
+        Relationships: []
+      }
+      pageviews: {
+        Row: {
+          country: string | null
+          created_at: string
+          id: number
+          is_bot: boolean
+          path: string
+          referrer: string | null
+          session_id: string
+          user_agent: string | null
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string
+          id?: number
+          is_bot?: boolean
+          path: string
+          referrer?: string | null
+          session_id: string
+          user_agent?: string | null
+        }
+        Update: {
+          country?: string | null
+          created_at?: string
+          id?: number
+          is_bot?: boolean
+          path?: string
+          referrer?: string | null
+          session_id?: string
+          user_agent?: string | null
         }
         Relationships: []
       }
