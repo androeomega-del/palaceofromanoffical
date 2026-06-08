@@ -9,6 +9,7 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { formatPrice } from "@/lib/shopify";
+import { formatLuxuryTitle } from "@/utils/productHelpers";
 import { palette, fontSans } from "./palette";
 
 interface ProductNode {
