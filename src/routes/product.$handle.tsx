@@ -180,7 +180,10 @@ export const Route = createFileRoute("/product/$handle")({
         : `${p.title}${p.productType ? ` — Authentic ${p.productType}` : ""}`;
     }
 
-    const parsedComp = parseComposition(p.description || "");
+    const seoTitleOverride = p.seo?.title?.trim() || null;
+    const seoDescriptionOverride = p.seo?.description?.trim() || null;
+    const productDescription = p.descriptionHtml || p.description || "";
+    const parsedComp = parseComposition(productDescription);
     const descPieces: string[] = [];
     if (companionBrands.length >= 1) {
       const styledWith = companionBrands.length === 2
@@ -337,11 +340,11 @@ export const Route = createFileRoute("/product/$handle")({
       cleanTitle: formatLuxuryTitle(p.title, p.vendor || ""),
       brandName: p.vendor || "",
       categoryName: p.productType || "Luxury Apparel",
-      rawDescription: p.description || "",
+      rawDescription: productDescription,
     });
-    const seoTitle = pageTitle(luxuryMeta.seoMetaTitle.replace(/ \| Palace of Roman$/, ""));
+    const seoTitle = seoTitleOverride || pageTitle(luxuryMeta.seoMetaTitle.replace(/ \| Palace of Roman$/, ""));
     const ogTitle = luxuryMeta.socialOgTitle || pageTitle(titleMain);
-    const indexerDesc = metaDescription(luxuryMeta.seoMetaDescription);
+    const indexerDesc = seoDescriptionOverride ? metaDescription(seoDescriptionOverride) : metaDescription(luxuryMeta.seoMetaDescription);
     // Preserve companion-bundle long-tail copy when present; otherwise use indexer desc.
     const finalDesc = companionBrands.length >= 1 ? desc : indexerDesc;
 
@@ -421,7 +424,7 @@ export const Route = createFileRoute("/product/$handle")({
           "@type": "Product",
           "@id": url + "#product",
           name: p.title,
-          description: metaDescription(p.description, 5000),
+          description: metaDescription(productDescription, 5000),
           sku: variants[0]?.id,
           mpn: p.handle,
           productID: p.id,
