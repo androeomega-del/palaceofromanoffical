@@ -67,24 +67,34 @@ function AboutPage() {
       heroImage={img(7)}
       heroAlt="A studio still life from the current edit"
     >
-      {/* Origin */}
+      {/* Origin — sourcing narrative */}
       <section className="grid md:grid-cols-12 gap-10 md:gap-16 items-center mb-32">
         <div className="md:col-span-7 order-2 md:order-1">
-          <p className="text-[10px] uppercase tracking-[0.35em] text-bronze mb-4">Origin</p>
+          <p className="text-[10px] uppercase tracking-[0.35em] text-bronze mb-4">How we operate</p>
           <h2 className="font-serif text-3xl md:text-4xl tracking-tight mb-6 text-balance">
-            An independent boutique, in service of the considered wardrobe.
+            A modern house, built for the modern collector.
           </h2>
           <p className="text-[15px] leading-[1.8] text-ink/80 mb-4">
-            Palace of Roman was founded on a single conviction: that the great houses of the season deserved a setting
-            as edited as the work itself. Not a department store. Not a marketplace. A boutique — assembled by hand,
-            presented in studio light, and offered to a small audience who already know what they are looking for.
+            Palace of Roman is a digital-first maison — a quiet evolution of the traditional luxury model. In place
+            of a single flagship and a fixed buying calendar, we operate through a seamless digital architecture
+            connected directly to a network of authorised European distributors, brand licensees, and tier-one
+            supply partners. The result is a private window into the same European vaults that supply the
+            continent's most established boutiques — opened, for the first time, to a global clientele on their
+            own terms.
+          </p>
+          <p className="text-[15px] leading-[1.8] text-ink/80 mb-4">
+            Because our edit moves through the same authorised channels as the houses' own retail partners,
+            new-season pieces are secured at the moment of release — not weeks later, and never through secondary
+            markets. When a collection lands in Milan, Paris, or Florence, it lands with us. There is no waiting
+            list, no intermediary mark-up, and no compromise on provenance: every piece is current-season, fully
+            authenticated, and offered the moment it becomes available.
           </p>
           <p className="text-[15px] leading-[1.8] text-ink/80">
-            We carry tailoring, footwear, fine leather and house codes from the maisons we believe in. Palace of Roman
-            partners with a network of authorised boutiques and distributors around the world to offer pieces from
-            Gucci, Versace, Balenciaga, Dior, Prada, Saint Laurent and the wider catalogue. Every piece is 100%
-            authentic, sourced from the brands or their authorised distributors, and shipped sealed in its original
-            packaging.
+            We do not maintain editorial offices, flagship leases, or celebrity campaigns — and we do not ask our
+            clients to underwrite them. Every resource is returned to the parts of the experience that genuinely
+            matter: flawless global logistics, rigorous authentication, fully insured express transit, and a
+            private concierge that answers personally. The reduction in price you see against traditional retail
+            is not a discount. It is the absence of overhead — passed, in full, to you.
           </p>
         </div>
         <div className="md:col-span-5 order-1 md:order-2">
