@@ -798,6 +798,54 @@ export type Database = {
         }
         Relationships: []
       }
+      funnel_leads: {
+        Row: {
+          created_at: string
+          departure_date: string | null
+          email: string
+          funnel_source: Database["public"]["Enums"]["funnel_source"]
+          id: string
+          is_verified: boolean
+          metadata: Json
+          notes: string | null
+          product_handle: string | null
+          reminder_trigger_date: string | null
+          updated_at: string
+          verification_token: string
+          verified_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          departure_date?: string | null
+          email: string
+          funnel_source: Database["public"]["Enums"]["funnel_source"]
+          id?: string
+          is_verified?: boolean
+          metadata?: Json
+          notes?: string | null
+          product_handle?: string | null
+          reminder_trigger_date?: string | null
+          updated_at?: string
+          verification_token?: string
+          verified_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          departure_date?: string | null
+          email?: string
+          funnel_source?: Database["public"]["Enums"]["funnel_source"]
+          id?: string
+          is_verified?: boolean
+          metadata?: Json
+          notes?: string | null
+          product_handle?: string | null
+          reminder_trigger_date?: string | null
+          updated_at?: string
+          verification_token?: string
+          verified_at?: string | null
+        }
+        Relationships: []
+      }
       growth_jobs: {
         Row: {
           attempts: number
@@ -2017,6 +2065,42 @@ export type Database = {
       }
     }
     Views: {
+      funnel_leads_reminder_window: {
+        Row: {
+          created_at: string | null
+          departure_date: string | null
+          email: string | null
+          funnel_source: Database["public"]["Enums"]["funnel_source"] | null
+          id: string | null
+          metadata: Json | null
+          product_handle: string | null
+          reminder_trigger_date: string | null
+          verified_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          departure_date?: string | null
+          email?: string | null
+          funnel_source?: Database["public"]["Enums"]["funnel_source"] | null
+          id?: string | null
+          metadata?: Json | null
+          product_handle?: string | null
+          reminder_trigger_date?: string | null
+          verified_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          departure_date?: string | null
+          email?: string | null
+          funnel_source?: Database["public"]["Enums"]["funnel_source"] | null
+          id?: string | null
+          metadata?: Json | null
+          product_handle?: string | null
+          reminder_trigger_date?: string | null
+          verified_at?: string | null
+        }
+        Relationships: []
+      }
       product_reviews_public: {
         Row: {
           approved_at: string | null
@@ -2123,6 +2207,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      funnel_source: "Checkout_Vault" | "Vacation_Stylist"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2251,6 +2336,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      funnel_source: ["Checkout_Vault", "Vacation_Stylist"],
     },
   },
 } as const
