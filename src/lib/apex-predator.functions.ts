@@ -1290,3 +1290,249 @@ export const updatelistingsSEO = createServerFn({ method: "POST" })
       .parse(d),
   )
   .handler(async ({ data }) => _runUpdateListingsSeo(data.productId, data.primaryKeyword));
+
+// =================================================================
+// Bulk Catalog Overtake — controller for running `updatelistingsSEO`
+// across the entire active Shopify catalog in safe rate-limited batches.
+//
+// Architecture (Worker-safe):
+//   1. UI calls `listBulkOvertakeTargets` once to enumerate all products
+//      via paginated Admin GraphQL (id + vendor + handle + title).
+//   2. UI calls `startBulkOvertake` to mark the job running in
+//      public.backfill_status (id = BULK_OVERTAKE_JOB_ID).
+//   3. UI walks the targets client-side in slices of 25, calling
+//      `executeBulkCatalogOvertake` once per batch. Each batch runs the
+//      products concurrently with Promise.allSettled, then awaits 2000 ms
+//      before resolving — guaranteeing Shopify/Semrush throttling headroom.
+//   4. UI polls (or reads return value of) `getBulkOvertakeStatus` for the
+//      progress bar.
+//
+// This split keeps every individual request well inside the Cloudflare
+// Worker CPU budget while letting the orchestrator track a multi-hour
+// re-indexing campaign without dropping state.
+// =================================================================
+
+export const BULK_OVERTAKE_JOB_ID = "apex-bulk-overtake";
+export const BULK_OVERTAKE_BATCH_SIZE = 25;
+export const BULK_OVERTAKE_COOLDOWN_MS = 2000;
+
+export type BulkOvertakeTarget = {
+  productId: string;     // Shopify GID
+  primaryKeyword: string; // vendor (or title fallback) — drives Semrush + GSC lookups
+  vendor: string | null;
+  handle: string;
+  title: string;
+};
+
+const BULK_TARGETS_PAGE_GQL = /* GraphQL */ `
+  query ApexBulkTargets($cursor: String) {
+    products(first: 250, after: $cursor, query: "status:active") {
+      pageInfo { hasNextPage endCursor }
+      edges { node { id handle title vendor } }
+    }
+  }
+`;
+
+/** Enumerate every active Shopify product (id, vendor, handle, title). */
+export const listBulkOvertakeTargets = createServerFn({ method: "GET" })
+  .middleware([requireAdmin])
+  .handler(async (): Promise<{ targets: BulkOvertakeTarget[]; totalBatches: number }> => {
+    const targets: BulkOvertakeTarget[] = [];
+    let cursor: string | null = null;
+    // Hard ceiling to protect the Worker from a runaway loop.
+    for (let page = 0; page < 40; page++) {
+      const data = await adminGql<{
+        products: {
+          pageInfo: { hasNextPage: boolean; endCursor: string | null };
+          edges: Array<{ node: { id: string; handle: string; title: string; vendor: string | null } }>;
+        };
+      }>(BULK_TARGETS_PAGE_GQL, { cursor });
+      for (const { node } of data.products.edges) {
+        const vendor = (node.vendor ?? "").trim();
+        const title = (node.title ?? "").trim();
+        targets.push({
+          productId: node.id,
+          primaryKeyword: vendor || title,
+          vendor: vendor || null,
+          handle: node.handle,
+          title,
+        });
+      }
+      if (!data.products.pageInfo.hasNextPage) break;
+      cursor = data.products.pageInfo.endCursor;
+    }
+    const totalBatches = Math.ceil(targets.length / BULK_OVERTAKE_BATCH_SIZE);
+    return { targets, totalBatches };
+  });
+
+async function writeBulkStatus(patch: {
+  status?: "idle" | "running" | "done" | "error";
+  total?: number;
+  seen?: number;
+  updated?: number;
+  errors?: number;
+  lastError?: string | null;
+  started?: boolean;
+  finished?: boolean;
+}) {
+  const nowIso = new Date().toISOString();
+  // Read current row first so per-batch deltas accumulate.
+  const { data: existing } = await supabaseAdmin
+    .from("backfill_status")
+    .select("total_products,total_seen,products_type_updated,errors,started_at")
+    .eq("id", BULK_OVERTAKE_JOB_ID)
+    .maybeSingle();
+
+  const row = {
+    id: BULK_OVERTAKE_JOB_ID,
+    total_products: patch.total ?? existing?.total_products ?? 0,
+    total_seen: (existing?.total_seen ?? 0) + (patch.seen ?? 0),
+    products_type_updated:
+      (existing?.products_type_updated ?? 0) + (patch.updated ?? 0),
+    variants_barcoded: 0,
+    errors: (existing?.errors ?? 0) + (patch.errors ?? 0),
+    last_error: patch.lastError ?? null,
+    status: patch.status ?? "running",
+    started_at: patch.started ? nowIso : existing?.started_at ?? nowIso,
+    updated_at: nowIso,
+    finished_at: patch.finished ? nowIso : null,
+    cursor: null as string | null,
+  };
+  await supabaseAdmin.from("backfill_status").upsert(row, { onConflict: "id" });
+}
+
+/** Mark a fresh job started — resets counters. */
+export const startBulkOvertake = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((d: unknown) =>
+    z.object({ total: z.number().int().min(0).max(20_000) }).parse(d),
+  )
+  .handler(async ({ data }) => {
+    await supabaseAdmin
+      .from("backfill_status")
+      .upsert(
+        {
+          id: BULK_OVERTAKE_JOB_ID,
+          total_products: data.total,
+          total_seen: 0,
+          products_type_updated: 0,
+          variants_barcoded: 0,
+          errors: 0,
+          last_error: null,
+          status: "running",
+          started_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          finished_at: null,
+          cursor: null,
+        },
+        { onConflict: "id" },
+      );
+    return { ok: true };
+  });
+
+/**
+ * Process ONE batch of up to 25 products. Runs `_runUpdateListingsSeo`
+ * concurrently with Promise.allSettled, then awaits the mandatory 2s
+ * cooldown so we never burn through Shopify / Semrush rate limits.
+ */
+export const executeBulkCatalogOvertake = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((d: unknown) =>
+    z
+      .object({
+        items: z
+          .array(
+            z.object({
+              productId: z.string().min(1),
+              primaryKeyword: z.string().min(1).max(160),
+            }),
+          )
+          .min(1)
+          .max(BULK_OVERTAKE_BATCH_SIZE),
+        batchIndex: z.number().int().min(0),
+        totalBatches: z.number().int().min(1),
+        finalBatch: z.boolean().optional(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data }) => {
+    const results = await Promise.allSettled(
+      data.items.map((it) =>
+        _runUpdateListingsSeo(it.productId, it.primaryKeyword),
+      ),
+    );
+
+    let updated = 0;
+    let errors = 0;
+    let lastError: string | null = null;
+    const perItem: Array<{ productId: string; ok: boolean; error?: string }> = [];
+    for (let i = 0; i < results.length; i++) {
+      const r = results[i];
+      const productId = data.items[i].productId;
+      if (r.status === "fulfilled") {
+        updated++;
+        perItem.push({ productId, ok: true });
+      } else {
+        errors++;
+        const msg = (r.reason as Error)?.message || String(r.reason);
+        lastError = `${productId}: ${msg}`;
+        perItem.push({ productId, ok: false, error: msg });
+      }
+    }
+
+    await writeBulkStatus({
+      status: data.finalBatch ? "done" : "running",
+      seen: data.items.length,
+      updated,
+      errors,
+      lastError,
+      finished: data.finalBatch === true,
+    });
+
+    // Mandatory cooldown: keeps Shopify Admin (40 req/s leaky bucket) and
+    // Semrush keyword endpoints comfortably under throttle.
+    await new Promise((resolve) => setTimeout(resolve, BULK_OVERTAKE_COOLDOWN_MS));
+
+    return {
+      ok: true,
+      batchIndex: data.batchIndex,
+      totalBatches: data.totalBatches,
+      processed: data.items.length,
+      updated,
+      errors,
+      perItem,
+    };
+  });
+
+/** Read the current bulk-overtake progress row. */
+export const getBulkOvertakeStatus = createServerFn({ method: "GET" })
+  .middleware([requireAdmin])
+  .handler(async () => {
+    const { data } = await supabaseAdmin
+      .from("backfill_status")
+      .select("*")
+      .eq("id", BULK_OVERTAKE_JOB_ID)
+      .maybeSingle();
+    if (!data) {
+      return {
+        status: "idle" as const,
+        total: 0,
+        seen: 0,
+        updated: 0,
+        errors: 0,
+        lastError: null as string | null,
+        startedAt: null as string | null,
+        finishedAt: null as string | null,
+      };
+    }
+    return {
+      status: (data.status as "idle" | "running" | "done" | "error") ?? "idle",
+      total: data.total_products ?? 0,
+      seen: data.total_seen ?? 0,
+      updated: data.products_type_updated ?? 0,
+      errors: data.errors ?? 0,
+      lastError: data.last_error ?? null,
+      startedAt: data.started_at ?? null,
+      finishedAt: data.finished_at ?? null,
+    };
+  });
