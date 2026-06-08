@@ -390,6 +390,16 @@ export function VaultLockerOverlay() {
           from { opacity: 0; transform: translateY(16px) scale(0.985); }
           to   { opacity: 1; transform: translateY(0)    scale(1); }
         }
+        @keyframes vaultSheetIn {
+          from { opacity: 0; transform: translateY(100%); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @media (min-width: 640px) {
+          @keyframes vaultSheetIn {
+            from { opacity: 0; transform: translateY(16px) scale(0.985); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+          }
+        }
         @keyframes vaultTickerIn {
           from { opacity: 0; transform: translateY(4px); }
           to   { opacity: 1; transform: translateY(0); }
