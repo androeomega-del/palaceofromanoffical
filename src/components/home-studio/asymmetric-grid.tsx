@@ -117,7 +117,7 @@ export function AsymmetricGrid({ menProducts, womenProducts }: AsymmetricGridPro
                   {img && (
                     <img
                       src={img.url}
-                      alt={img.altText ?? p.node.title}
+                      alt={img.altText ?? (p.node.vendor ? `${p.node.title} by ${p.node.vendor}` : p.node.title)}
                       className="absolute inset-0 w-full h-full object-cover"
                       loading={idx < 2 ? "eager" : "lazy"}
                       decoding={idx === 0 ? "sync" : "async"}

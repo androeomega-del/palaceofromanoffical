@@ -106,7 +106,7 @@ function HomeErrorComponent({ error, reset }: { error: Error; reset: () => void 
         <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-6">
           Something interrupted the boutique
         </p>
-        <h1 className="text-4xl font-serif mb-6">We couldn't load the homepage</h1>
+        <h2 className="text-4xl font-serif mb-6">We couldn't load the homepage</h2>
         <p className="text-sm text-muted-foreground mb-10">
           A passing glitch — please try again, or browse the boutique while we tidy up.
         </p>
