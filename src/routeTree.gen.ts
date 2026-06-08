@@ -17,6 +17,8 @@ import { Route as StyleQuizRouteImport } from './routes/style-quiz'
 import { Route as StudioRouteImport } from './routes/studio'
 import { Route as SourcingArchitectureRouteImport } from './routes/sourcing-architecture'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SitemapStaticDotxmlRouteImport } from './routes/sitemap-static[.]xml'
+import { Route as SitemapProductsDotxmlRouteImport } from './routes/sitemap-products[.]xml'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ShippingReturnsRouteImport } from './routes/shipping-returns'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
@@ -199,6 +201,16 @@ const SourcingArchitectureRoute = SourcingArchitectureRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapStaticDotxmlRoute = SitemapStaticDotxmlRouteImport.update({
+  id: '/sitemap-static.xml',
+  path: '/sitemap-static.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapProductsDotxmlRoute = SitemapProductsDotxmlRouteImport.update({
+  id: '/sitemap-products.xml',
+  path: '/sitemap-products.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ShopRoute = ShopRouteImport.update({
@@ -985,6 +997,8 @@ export interface FileRoutesByFullPath {
   '/robots.txt': typeof RobotsDottxtRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
+  '/sitemap-products.xml': typeof SitemapProductsDotxmlRoute
+  '/sitemap-static.xml': typeof SitemapStaticDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sourcing-architecture': typeof SourcingArchitectureRoute
   '/studio': typeof StudioRoute
@@ -1136,6 +1150,8 @@ export interface FileRoutesByTo {
   '/robots.txt': typeof RobotsDottxtRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
+  '/sitemap-products.xml': typeof SitemapProductsDotxmlRoute
+  '/sitemap-static.xml': typeof SitemapStaticDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sourcing-architecture': typeof SourcingArchitectureRoute
   '/studio': typeof StudioRoute
@@ -1289,6 +1305,8 @@ export interface FileRoutesById {
   '/robots.txt': typeof RobotsDottxtRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRoute
+  '/sitemap-products.xml': typeof SitemapProductsDotxmlRoute
+  '/sitemap-static.xml': typeof SitemapStaticDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sourcing-architecture': typeof SourcingArchitectureRoute
   '/studio': typeof StudioRoute
@@ -1444,6 +1462,8 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/shipping-returns'
     | '/shop'
+    | '/sitemap-products.xml'
+    | '/sitemap-static.xml'
     | '/sitemap.xml'
     | '/sourcing-architecture'
     | '/studio'
@@ -1595,6 +1615,8 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/shipping-returns'
     | '/shop'
+    | '/sitemap-products.xml'
+    | '/sitemap-static.xml'
     | '/sitemap.xml'
     | '/sourcing-architecture'
     | '/studio'
@@ -1747,6 +1769,8 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/shipping-returns'
     | '/shop'
+    | '/sitemap-products.xml'
+    | '/sitemap-static.xml'
     | '/sitemap.xml'
     | '/sourcing-architecture'
     | '/studio'
@@ -1901,6 +1925,8 @@ export interface RootRouteChildren {
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   ShippingReturnsRoute: typeof ShippingReturnsRoute
   ShopRoute: typeof ShopRoute
+  SitemapProductsDotxmlRoute: typeof SitemapProductsDotxmlRoute
+  SitemapStaticDotxmlRoute: typeof SitemapStaticDotxmlRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SourcingArchitectureRoute: typeof SourcingArchitectureRoute
   StudioRoute: typeof StudioRoute
@@ -2062,6 +2088,20 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap-static.xml': {
+      id: '/sitemap-static.xml'
+      path: '/sitemap-static.xml'
+      fullPath: '/sitemap-static.xml'
+      preLoaderRoute: typeof SitemapStaticDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap-products.xml': {
+      id: '/sitemap-products.xml'
+      path: '/sitemap-products.xml'
+      fullPath: '/sitemap-products.xml'
+      preLoaderRoute: typeof SitemapProductsDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/shop': {
@@ -3212,6 +3252,8 @@ const rootRouteChildren: RootRouteChildren = {
   RobotsDottxtRoute: RobotsDottxtRoute,
   ShippingReturnsRoute: ShippingReturnsRoute,
   ShopRoute: ShopRoute,
+  SitemapProductsDotxmlRoute: SitemapProductsDotxmlRoute,
+  SitemapStaticDotxmlRoute: SitemapStaticDotxmlRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SourcingArchitectureRoute: SourcingArchitectureRoute,
   StudioRoute: StudioRoute,
