@@ -81,7 +81,6 @@ export const Route = createFileRoute("/preloved/")({
  * the master hub view. Per-condition pages use the route slug directly. */
 function inferConditionLabel(title: string): string {
   const t = title.toLowerCase();
-  if (t.includes("new with tag") || t.includes("nwt")) return "New with Tags";
   if (t.includes("pristine")) return "Pristine";
   if (t.includes("excellent")) return "Excellent";
   return "Preloved";
