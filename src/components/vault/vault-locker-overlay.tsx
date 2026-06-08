@@ -49,6 +49,7 @@ export function VaultLockerOverlay() {
   const [email, setEmail] = useState("");
   const [phase, setPhase] = useState<"idle" | "securing" | "secured">("idle");
   const [tickerIdx, setTickerIdx] = useState(0);
+  const [securingStep, setSecuringStep] = useState(0);
   const [showError, setShowError] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
