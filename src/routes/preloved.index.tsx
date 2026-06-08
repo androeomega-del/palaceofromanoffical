@@ -109,8 +109,8 @@ function PrelovedHubPage() {
             bar as our new-season edit: authenticated pre-owned designer
             handbags, ready-to-wear, footwear, and accessories from Gucci,
             Prada, Saint Laurent, Bottega Veneta, Loewe and the houses our
-            clients return for. Each item is graded Pristine, Excellent, or
-            New with Tags, photographed in natural light, and shipped with
+            clients return for. Each item is graded Pristine or Excellent,
+            photographed in natural light, and shipped with
             full provenance documentation through our global boutique network.
           </p>
         </div>
