@@ -504,8 +504,23 @@ export function VaultLockerOverlay() {
         }
         @keyframes vaultPulse {
           0%, 100% { opacity: 0.35; transform: scale(0.9); }
-
           50%      { opacity: 1;    transform: scale(1.1); }
+        }
+        @keyframes vaultProgress {
+          0%   { transform: translateX(-100%); }
+          100% { transform: translateX(350%); }
+        }
+        @keyframes vaultSuccessIn {
+          from { opacity: 0; transform: scale(0.96); }
+          to   { opacity: 1; transform: scale(1); }
+        }
+        @keyframes vaultCheckRing {
+          from { transform: scale(0.6); opacity: 0; }
+          to   { transform: scale(1);   opacity: 1; }
+        }
+        @keyframes vaultCheckIn {
+          from { opacity: 0; transform: scale(0.5); }
+          to   { opacity: 1; transform: scale(1); }
         }
       `}</style>
     </div>
