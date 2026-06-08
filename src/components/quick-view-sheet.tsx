@@ -64,6 +64,8 @@ export function QuickViewSheet({
       return;
     }
     if (!matchedVariant.availableForSale) return;
+    const { ensureVaultUnlocked } = await import("@/lib/vault-gate");
+    if (!(await ensureVaultUnlocked(p.title))) return;
     setAdding(true);
     try {
       const ok = await addItem({

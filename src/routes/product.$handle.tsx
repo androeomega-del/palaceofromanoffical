@@ -792,6 +792,8 @@ function ProductView({
       toast.error("This variant is currently unavailable.");
       return;
     }
+    const { ensureVaultUnlocked } = await import("@/lib/vault-gate");
+    if (!(await ensureVaultUnlocked(product.title))) return;
     const added = await addItem({
       product: { node: product },
       variantId: selectedVariant.id,
@@ -1632,6 +1634,8 @@ function CuratedLookBundle({
 
   const handleAddEntireLook = async () => {
     if (bundleLoading) return;
+    const { ensureVaultUnlocked } = await import("@/lib/vault-gate");
+    if (!(await ensureVaultUnlocked(`The Look — ${anchor.title}`))) return;
     setBundleLoading(true);
     try {
       const anchorVariant =
