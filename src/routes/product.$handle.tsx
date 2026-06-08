@@ -27,6 +27,7 @@ import { toast } from "sonner";
 import { ProductCard } from "@/components/product-card";
 import AIRecommendations from "@/components/ai-recommendations";
 import { PdpAuthenticityStrip } from "@/components/pdp-authenticity-strip";
+import { PdpProvenanceTabs } from "@/components/pdp-provenance-tabs";
 import { PdpShippingSheet } from "@/components/pdp-shipping-sheet";
 import { YelpTrustBadge } from "@/components/yelp-trust-badge";
 import { GbpTrustBadge } from "@/components/gbp-trust-badge";
@@ -1138,6 +1139,9 @@ function ProductView({
 
               {/* Trust anchor — interactive, opens shipping/returns sheet. Full-width, flush under CTA row. */}
               <PdpShippingSheet />
+
+              {/* Provenance + logistics tabs — directly under CTA */}
+              <PdpProvenanceTabs />
             </div>
 
             {/* Delivery badge — uses zip from location store */}
