@@ -4,8 +4,7 @@
  * Emits a ProductCollection-style ItemList of Product nodes + a
  * BreadcrumbList for the Preloved hub and per-condition leaves. Each
  * Product carries an Offer with the correct schema.org itemCondition enum
- * (UsedCondition for Preloved/Pristine/Excellent, NewCondition for items
- * sold "New with tags").
+ * (UsedCondition for Preloved/Pristine/Excellent).
  *
  * All strings round-trip through JSON.stringify so escaping is handled by
  * the serializer — never embed user-supplied strings in template literals.
@@ -19,17 +18,13 @@ import {
 
 /** schema.org canonical enum URLs (not the bare /schema.org root). */
 const USED_CONDITION = "https://schema.org/UsedCondition";
-const NEW_CONDITION = "https://schema.org/NewCondition";
 
 /**
  * Pick the schema.org itemCondition for a product based on its title
  * (the only condition signal exposed on ShopifyProductNode without the
- * `tags` field on the storefront fragment). "New with tags" / "NWT" →
- * NewCondition; everything else in the preloved edit → UsedCondition.
+ * `tags` field on the storefront fragment).
  */
-function itemConditionFor(title: string): string {
-  const t = (title ?? "").toLowerCase();
-  if (t.includes("new with tag") || /\bnwt\b/.test(t)) return NEW_CONDITION;
+function itemConditionFor(_title: string): string {
   return USED_CONDITION;
 }
 
@@ -105,7 +100,7 @@ export function buildPrelovedHubJsonLd(
       url,
       name: `Authentic Preloved Luxury Designer Fashion | ${SITE_NAME} Official`,
       description:
-        "Curated pre-owned designer fashion authenticated by Palace of Roman — Pristine, Excellent, and New with Tags condition grades.",
+        "Curated pre-owned designer fashion authenticated by Palace of Roman — Pristine and Excellent condition grades.",
     },
     itemList(url, "Preloved Designer Fashion", products),
     breadcrumbList([
