@@ -9,6 +9,7 @@ import { captureAbandonedCart } from "@/lib/abandoned-cart.functions";
 
 const EMAIL_KEY = "por-customer-email";
 const SESSION_KEY = "por-analytics-session";
+const MARKETING_OPT_IN_KEY = "por-customer-marketing-opt-in";
 
 export function rememberCustomerEmail(email: string) {
   if (typeof window === "undefined") return;
@@ -25,6 +26,24 @@ export function getCustomerEmail(): string | null {
     return localStorage.getItem(EMAIL_KEY);
   } catch {
     return null;
+  }
+}
+
+export function rememberMarketingOptIn(optIn: boolean) {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(MARKETING_OPT_IN_KEY, optIn ? "1" : "0");
+  } catch {
+    /* ignore */
+  }
+}
+
+export function getMarketingOptIn(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return localStorage.getItem(MARKETING_OPT_IN_KEY) === "1";
+  } catch {
+    return false;
   }
 }
 
