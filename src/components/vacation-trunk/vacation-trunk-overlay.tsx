@@ -384,6 +384,37 @@ export function VacationTrunkOverlay() {
               )}
             </div>
 
+
+            {/* Competing Allocation banner */}
+            {lowStock && (
+              <div
+                role="status"
+                className="mt-7 border px-4 py-3 flex items-start gap-3"
+                style={{
+                  borderColor: "rgba(10,10,10,0.18)",
+                  background: "rgba(10,10,10,0.025)",
+                  animation: "trunkTickerIn 360ms cubic-bezier(.2,.7,.2,1) both",
+                }}
+              >
+                <span
+                  className="inline-block w-1 h-1 rounded-full mt-2 shrink-0"
+                  style={{
+                    background: "rgba(10,10,10,0.55)",
+                    animation: "trunkPulse 1.6s ease-in-out infinite",
+                  }}
+                  aria-hidden
+                />
+                <p
+                  className="text-[10.5px] uppercase tracking-[0.22em] leading-relaxed"
+                  style={{ color: "rgba(10,10,10,0.6)" }}
+                >
+                  Notice: Due to restricted designer pipelines, this piece is
+                  currently undergoing a live allocation check. Complete your
+                  email verification to hold temporary priority access.
+                </p>
+              </div>
+            )}
+
             {/* Form */}
             <form id="vacation-trunk-form" onSubmit={handleSubmit} className="mt-8" noValidate>
               {/* Email */}
