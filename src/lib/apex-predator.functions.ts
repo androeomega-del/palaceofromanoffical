@@ -1340,14 +1340,14 @@ export const listBulkOvertakeTargets = createServerFn({ method: "GET" })
     const targets: BulkOvertakeTarget[] = [];
     let cursor: string | null = null;
     // Hard ceiling to protect the Worker from a runaway loop.
-    for (let page = 0; page < 40; page++) {
-      const data = await adminGql<{
+    for (let pageNum = 0; pageNum < 40; pageNum++) {
+      const pageData: {
         products: {
           pageInfo: { hasNextPage: boolean; endCursor: string | null };
           edges: Array<{ node: { id: string; handle: string; title: string; vendor: string | null } }>;
         };
-      }>(BULK_TARGETS_PAGE_GQL, { cursor });
-      for (const { node } of data.products.edges) {
+      } = await adminGql(BULK_TARGETS_PAGE_GQL, { cursor });
+      for (const { node } of pageData.products.edges) {
         const vendor = (node.vendor ?? "").trim();
         const title = (node.title ?? "").trim();
         targets.push({
@@ -1358,9 +1358,10 @@ export const listBulkOvertakeTargets = createServerFn({ method: "GET" })
           title,
         });
       }
-      if (!data.products.pageInfo.hasNextPage) break;
-      cursor = data.products.pageInfo.endCursor;
+      if (!pageData.products.pageInfo.hasNextPage) break;
+      cursor = pageData.products.pageInfo.endCursor;
     }
+
     const totalBatches = Math.ceil(targets.length / BULK_OVERTAKE_BATCH_SIZE);
     return { targets, totalBatches };
   });
