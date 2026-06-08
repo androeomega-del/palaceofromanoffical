@@ -200,15 +200,21 @@ function ShippingReturnsPage() {
             <AccordionTrigger className="text-base font-serif">Returns — within 14 days of delivery</AccordionTrigger>
             <AccordionContent className="text-[15px] leading-[1.75] text-ink/85 space-y-3">
               <p>
-                We accept returns within fourteen days of the day your parcel is delivered. Pieces must be unworn, with
-                all original tags attached, in their original packaging. To open a return, write to{" "}
+                Returns must be <strong className="text-ink font-medium">shipped back within 14 days</strong> of
+                the day your parcel is delivered. Pieces must be unworn and unused, with all original tags
+                attached and in their original packaging.
+              </p>
+              <p>
+                <strong className="text-ink font-medium">A reason must be provided</strong> to initiate the return
+                process. Write to{" "}
                 <Link to="/contact" className="underline decoration-bronze/60 underline-offset-4">our concierge</Link>{" "}
                 with your order number and the reason for return; we will issue the correct return address and
                 instructions for the warehouse that fulfilled your order.
               </p>
               <p>
-                Returns must travel with UPS, FedEx or DHL and a live tracking number — regular postal services cannot
-                be accepted and parcels sent that way will be declined.
+                Returns must travel with <strong className="text-ink font-medium">UPS, FedEx or DHL</strong> and a
+                live tracking number. We do not accept returns sent via regular postal services — such returns
+                will be declined on arrival.
               </p>
               <p>
                 <strong className="text-ink font-medium">Return shipping cost:</strong> the customer pays return
@@ -219,6 +225,28 @@ function ShippingReturnsPage() {
               <p className="text-sm text-muted-foreground">
                 Sending a return to the wrong warehouse incurs a 20% restocking fee, as it adds significant handling
                 and freight cost. We will confirm the correct address before you ship.
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="refunds">
+            <AccordionTrigger className="text-base font-serif">Refunds — inspection and processing</AccordionTrigger>
+            <AccordionContent className="text-[15px] leading-[1.75] text-ink/85 space-y-3">
+              <p>
+                Once your return is delivered back to the warehouse, all items are{" "}
+                <strong className="text-ink font-medium">subject to inspection before any refund is issued</strong>.
+                If the pieces are unworn, unused and in their original condition with tags attached, the refund is
+                processed to your original method of payment.
+              </p>
+              <p>
+                <strong className="text-ink font-medium">Used or worn items will not be refunded.</strong> Items
+                that fail inspection — including pieces that show signs of wear, missing tags, damage,
+                alterations, fragrance, or marks — will be shipped back to you at no further cost.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Inspection is typically completed within 3–5 business days of the return arriving at the
+                warehouse. Once approved, the refund is issued the same day; depending on your bank or card
+                issuer, the funds may take a further 5–10 business days to appear on your statement.
               </p>
             </AccordionContent>
           </AccordionItem>
