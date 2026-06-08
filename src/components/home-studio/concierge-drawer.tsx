@@ -74,11 +74,34 @@ const GREETING_FOR = (dept: Dept, name?: string): ChatTurn => ({
 });
 
 
+const INTAKE_DONE_KEY = "por-concierge-intake-v1";
+
+type IntakePayload = {
+  dept: Dept;
+  email: string;
+  vibes: string[];
+  categories: string[];
+  priceBand: string;
+};
+
 export function ConciergeDrawer({ open, onClose }: ConciergeDrawerProps) {
-  const [messages, setMessages] = useState<ChatTurn[]>([GREETING]);
+  const [messages, setMessages] = useState<ChatTurn[]>([]);
   const [input, setInput] = useState("");
   const chatEndRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
+
+  // Intake wizard state — drives the gated flow before the chat.
+  const [step, setStep] = useState<Step>("dept");
+  const [dept, setDept] = useState<Dept | null>(null);
+  const [email, setEmail] = useState("");
+  const [optIn, setOptIn] = useState(true);
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [vibes, setVibes] = useState<string[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [priceBand, setPriceBand] = useState<string>("");
+
+  const toggleIn = (list: string[], v: string) =>
+    list.includes(v) ? list.filter((x) => x !== v) : [...list, v];
 
   const chat = useMutation({
     mutationFn: async (history: ChatTurn[]) =>
@@ -106,22 +129,52 @@ export function ConciergeDrawer({ open, onClose }: ConciergeDrawerProps) {
     },
   });
 
+  // On open: restore prior intake if completed this session, else start wizard.
+  useEffect(() => {
+    if (!open) return;
+    if (typeof window === "undefined") return;
+    try {
+      const raw = sessionStorage.getItem(INTAKE_DONE_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw) as IntakePayload;
+        if (saved.dept && saved.email) {
+          setDept(saved.dept);
+          setEmail(saved.email);
+          setStep("chat");
+          if (messages.length === 0) {
+            const name = saved.email.split("@")[0]?.split(/[._-]/)[0];
+            const niceName = name
+              ? name.charAt(0).toUpperCase() + name.slice(1)
+              : undefined;
+            setMessages([GREETING_FOR(saved.dept, niceName)]);
+          }
+          return;
+        }
+      }
+      const savedEmail = getCustomerEmail();
+      if (savedEmail) setEmail(savedEmail);
+    } catch {
+      /* ignore */
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
   useEffect(() => {
     if (!open) return;
     const prevOverflow = document.body.style.overflow;
     const prevPadding = document.body.style.paddingRight;
-    // Compensate for the disappearing scrollbar so the page behind the
-    // drawer doesn't reflow on open — zero layout shift.
     const sbw = window.innerWidth - document.documentElement.clientWidth;
     document.body.style.overflow = "hidden";
     if (sbw > 0) document.body.style.paddingRight = `${sbw}px`;
-    const t = setTimeout(() => inputRef.current?.focus(), 200);
+    const t = setTimeout(() => {
+      if (step === "chat") inputRef.current?.focus();
+    }, 200);
     return () => {
       document.body.style.overflow = prevOverflow;
       document.body.style.paddingRight = prevPadding;
       clearTimeout(t);
     };
-  }, [open]);
+  }, [open, step]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -141,9 +194,54 @@ export function ConciergeDrawer({ open, onClose }: ConciergeDrawerProps) {
     sendText(input);
   };
 
+  const submitIntakeEmail = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = email.trim().toLowerCase();
+    if (!EMAIL_RE.test(trimmed)) {
+      setEmailError("Please enter a valid email address.");
+      return;
+    }
+    setEmailError(null);
+    setEmail(trimmed);
+    rememberCustomerEmail(trimmed);
+    rememberMarketingOptIn(optIn);
+    setStep("preferences");
+  };
+
+  const finishIntake = () => {
+    if (!dept) return;
+    try {
+      sessionStorage.setItem(
+        INTAKE_DONE_KEY,
+        JSON.stringify({ dept, email, vibes, categories, priceBand } satisfies IntakePayload),
+      );
+    } catch {
+      /* ignore */
+    }
+    const name = email.split("@")[0]?.split(/[._-]/)[0];
+    const niceName = name ? name.charAt(0).toUpperCase() + name.slice(1) : undefined;
+    const greeting = GREETING_FOR(dept, niceName);
+
+    // Synthesize an opening user message that gives the model the full
+    // intake context, so the first assistant reply already returns curated
+    // picks aligned with the shopper's taste.
+    const summaryBits: string[] = [];
+    summaryBits.push(`I'm shopping ${dept === "women" ? "womenswear" : "menswear"}.`);
+    if (vibes.length) summaryBits.push(`Aesthetic: ${vibes.join(", ")}.`);
+    if (categories.length) summaryBits.push(`Most interested in: ${categories.join(", ")}.`);
+    if (priceBand) summaryBits.push(`Budget: ${priceBand}.`);
+    summaryBits.push(
+      "Please suggest a curated starter selection of 3–4 pieces from the boutique that match.",
+    );
+    const kickoff = summaryBits.join(" ");
+
+    setMessages([greeting, { role: "user", text: kickoff }]);
+    setStep("chat");
+    chat.mutate([greeting, { role: "user", text: kickoff }]);
+  };
+
   if (!open) return null;
 
-  const showSuggestions = messages.length === 1 && !chat.isPending;
 
   return (
     <div className="fixed inset-0 z-[60]" role="dialog" aria-label="Personal styling concierge">
