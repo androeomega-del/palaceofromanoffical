@@ -108,7 +108,7 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
                 className="group inline-flex items-center gap-3 mt-6 pb-1 text-[10px] uppercase tracking-[0.32em] transition-all duration-500 hover:gap-5"
                 style={{ color: palette.sand, fontFamily: fontSans }}
               >
-                Or begin with the concierge
+                OR BEGIN WITH THE CONCIERGE
                 <ArrowUpRight
                   className="w-3 h-3 transition-transform duration-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
                   strokeWidth={1.25}
