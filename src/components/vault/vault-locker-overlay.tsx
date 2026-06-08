@@ -31,6 +31,15 @@ const TICKER_PHRASES = [
   "Reserving private client locker",
 ];
 
+// Three-stage status ticker shown while the submit button is in its loading state.
+const SECURING_STATUSES = [
+  "Verifying limited allocation availability",
+  "Securing item to private customer locker",
+  "Locking logistics pipeline",
+];
+const SECURING_STEP_MS = 700;
+const SECURING_TOTAL_MS = SECURING_STEP_MS * SECURING_STATUSES.length; // 2100ms
+
 export function VaultLockerOverlay() {
   const open = useVaultGateStore((s) => s.open);
   const label = useVaultGateStore((s) => s.label);
