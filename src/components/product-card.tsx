@@ -12,6 +12,7 @@ import { useInteractionStore } from "@/stores/interaction-store";
 import { QuickViewSheet } from "@/components/quick-view-sheet";
 import { PriceTag } from "@/components/price-tag";
 import { buildProductAlt, buildLuxuryListingAlt } from "@/lib/product-alt";
+import { formatLuxuryTitle } from "@/lib/format-luxury-title";
 
 
 export type SuppressedBadge = "markdown" | "scarcity";
@@ -655,7 +656,7 @@ export function ProductCard({
 
       </div>
       <p className="text-[10px] uppercase tracking-[0.18em] mb-1.5 text-muted-foreground">{p.vendor}</p>
-      <h3 className="text-[13px] md:text-sm font-medium leading-snug line-clamp-2 text-balance group-hover:underline underline-offset-4 decoration-ink/30">{p.title}</h3>
+      <h3 className="text-[13px] md:text-sm font-medium leading-snug line-clamp-2 text-balance group-hover:underline underline-offset-4 decoration-ink/30">{formatLuxuryTitle(p.title, p.vendor)}</h3>
       <div className="flex items-baseline gap-2.5 mt-2">
         <PriceTag money={price} className="text-sm" />
       </div>

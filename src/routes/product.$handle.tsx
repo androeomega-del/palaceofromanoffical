@@ -1020,7 +1020,7 @@ function ProductView({
                 Palace of Roman — {product.vendor}
               </Link>
               <h1 className="font-serif text-4xl md:text-5xl lg:text-[3.4rem] leading-[1.05] tracking-tight text-balance">
-                {product.title}
+                {formatLuxuryTitle(product.title, product.vendor)}
               </h1>
               <div className="flex items-baseline gap-4 pt-1">
                 <span className="font-serif text-3xl font-light">{formatPrice(currentPrice)}</span>
