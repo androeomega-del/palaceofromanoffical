@@ -9,12 +9,17 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useMutation } from "@tanstack/react-query";
-import { X, ArrowUp, ArrowUpRight } from "lucide-react";
+import { X, ArrowUp, ArrowUpRight, Check } from "lucide-react";
 import {
   conciergeChat,
   type ConciergeChatProduct,
 } from "@/lib/ai-concierge.functions";
 import { formatPrice } from "@/lib/shopify";
+import {
+  rememberCustomerEmail,
+  rememberMarketingOptIn,
+  getCustomerEmail,
+} from "@/lib/abandoned-cart-capture";
 import { palette, fontSans, fontSerif } from "./palette";
 
 interface ConciergeDrawerProps {
@@ -28,17 +33,46 @@ type ChatTurn = {
   products?: ConciergeChatProduct[];
 };
 
-const GREETING: ChatTurn = {
+type Dept = "women" | "men";
+type Step = "dept" | "email" | "preferences" | "chat";
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const VIBE_OPTIONS = [
+  "Quiet luxury",
+  "Statement & bold",
+  "Tailored & polished",
+  "Relaxed weekend",
+  "Evening & occasion",
+  "Resort & travel",
+] as const;
+
+const CATEGORY_OPTIONS = [
+  "Outerwear",
+  "Tailoring",
+  "Knitwear",
+  "Dresses",
+  "Denim",
+  "Footwear",
+  "Bags",
+  "Accessories",
+] as const;
+
+const PRICE_OPTIONS = [
+  "Under $500",
+  "$500 – $1,500",
+  "$1,500 – $5,000",
+  "No ceiling",
+] as const;
+
+const GREETING_FOR = (dept: Dept, name?: string): ChatTurn => ({
   role: "assistant",
   text:
-    "Good day. I'm your Palace of Roman concierge — here to advise on collections, fit, and styling. What may I help you find?",
-};
+    `${name ? `${name}, welcome` : "Welcome"} — I'll be curating ${
+      dept === "women" ? "womenswear" : "menswear"
+    } selections tailored to your taste. Tell me about an upcoming occasion, a piece you're chasing, or a brand you love — and I'll respond with pieces from the boutique.`,
+});
 
-const SUGGESTED_PROMPTS = [
-  "Curate an understated evening uniform.",
-  "What's arriving this week worth considering?",
-  "Help me build a quiet capsule for travel.",
-];
 
 export function ConciergeDrawer({ open, onClose }: ConciergeDrawerProps) {
   const [messages, setMessages] = useState<ChatTurn[]>([GREETING]);
