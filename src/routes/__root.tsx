@@ -427,6 +427,7 @@ function RouteAwareRuntime() {
       <ClientOnlyToaster />
       <ClientOnlyConcierge />
       <VaultLockerOverlay />
+      <VacationTrunkOverlay />
     </>
   );
 }
