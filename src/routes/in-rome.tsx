@@ -91,8 +91,10 @@ function InRomeHub() {
           <p className="text-sm text-muted-foreground leading-relaxed max-w-[68ch]">
             Each page below is a live edit of the maison's pieces currently in stock at{" "}
             {SITE_NAME}, with the silhouettes most frequently searched alongside the
-            house name in Rome. Authenticity is guaranteed; duties are pre-cleared for
-            EU and US destinations.
+            house name in Rome. Every piece is covered by our{" "}
+            <Link to="/authentication" className="underline decoration-bronze/60 underline-offset-4 hover:text-bronze">
+              90-day independent-authentication policy
+            </Link>; duties are pre-cleared for EU and US destinations.
           </p>
         </div>
       </section>

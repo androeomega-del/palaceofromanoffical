@@ -221,6 +221,11 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
                 </span>
               </div>
 
+              {/* Charge-currency disclosure — required for Merchant Center misrepresentation compliance */}
+              <p className="text-[10px] text-center text-muted-foreground -mt-1">
+                All orders are charged in USD at checkout.
+              </p>
+
               {/* Trust micro-strip — placed ABOVE the CTA so it's always visible alongside the button */}
               <ul className="grid grid-cols-4 gap-2 text-[9px] uppercase tracking-[0.15em] text-muted-foreground border-y border-ink/10 py-2.5">
                 <li className="flex items-center justify-center gap-1.5 text-center">

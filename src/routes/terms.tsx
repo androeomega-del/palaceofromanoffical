@@ -67,9 +67,9 @@ function TermsPage() {
         <section>
           <SectionTitle kicker="04">Payment</SectionTitle>
           <p>
-            We accept all major credit and debit cards, Apple Pay, Google Pay, Klarna and bank transfer for orders above
-            $10,000. Payment is processed at the moment your order is confirmed; we do not store full card numbers on our
-            systems.
+            We accept Visa, Mastercard, American Express, Apple Pay, Google Pay, Shop Pay and Klarna through our Shopify
+            checkout. All orders are charged in U.S. dollars. Payment is captured at the moment your order is confirmed;
+            we do not store full card numbers on our systems.
           </p>
         </section>
 

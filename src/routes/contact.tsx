@@ -195,11 +195,11 @@ function ContactPage() {
               >
                 +1 (213) 991-4069
               </a>
-              <p className="text-ink/60 text-xs mt-1">Mon–Sat, 9–6 PT</p>
+              <p className="text-ink/60 text-xs mt-1">Open 24/7 to serve our global partner network</p>
             </div>
             <div>
               <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">Reply time</p>
-              <p className="text-ink/80">Within 24 hours<br/>Mon–Sat</p>
+              <p className="text-ink/80">Within 24 hours<br/>Every day</p>
             </div>
             <div>
               <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-2">Registered address</p>

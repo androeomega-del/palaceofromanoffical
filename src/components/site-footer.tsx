@@ -178,7 +178,7 @@ export function SiteFooter() {
           </Link>
           <Link to="/contact" className="group flex flex-col gap-2 hover:text-ink transition-colors">
             <span className="text-[10px] uppercase tracking-[0.25em] font-semibold">Concierge</span>
-            <span className="text-sm text-muted-foreground group-hover:text-ink/80 transition-colors leading-relaxed">Personal styling and sourcing — replies within 24 hours, Mon–Sat.</span>
+            <span className="text-sm text-muted-foreground group-hover:text-ink/80 transition-colors leading-relaxed">Personal styling and sourcing — concierge open 24/7, replies within 24 hours.</span>
           </Link>
         </div>
 
@@ -190,6 +190,7 @@ export function SiteFooter() {
           <span>Mastercard</span><span className="opacity-30">·</span>
           <span>Amex</span><span className="opacity-30">·</span>
           <span>Apple Pay</span><span className="opacity-30">·</span>
+          <span>Google Pay</span><span className="opacity-30">·</span>
           <span>Shop Pay</span><span className="opacity-30">·</span>
           <span>Klarna</span>
         </div>
@@ -205,7 +206,7 @@ export function SiteFooter() {
             <span className="opacity-30">·</span>
             <a href="mailto:support@palaceofromanofficial.com" className="hover:text-ink transition-colors">support@palaceofromanofficial.com</a>
             <span className="opacity-30">·</span>
-            <span>Mon–Sat, 9–6 PT</span>
+            <span>Open 24/7 · Worldwide</span>
           </p>
         </div>
 
