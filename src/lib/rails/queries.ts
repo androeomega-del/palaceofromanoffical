@@ -53,7 +53,7 @@ export const newThisWeekQueryOptions = (dept: Dept) => {
       railCached(key, 60_000, () =>
         fetchProducts({
           first: 6,
-          query: `tag:${dept}`,
+          query: `tag:${dept} AND available_for_sale:true`,
           sortKey: "CREATED_AT",
           reverse: true,
         }),
@@ -70,7 +70,7 @@ export const bestSellersQueryOptions = (dept: Dept) => {
       railCached(key, 60_000, () =>
         fetchProducts({
           first: 4,
-          query: `tag:${dept}`,
+          query: `tag:${dept} AND available_for_sale:true`,
           sortKey: "BEST_SELLING",
         }),
       ),
@@ -84,6 +84,8 @@ export const bestSellersQueryOptions = (dept: Dept) => {
  * search syntax rather than `collection.products` so unpublished-to-
  * storefront-channel collections still surface their products on the
  * homepage. Sorted BEST_SELLING for an editorial-feeling hand-picked feel.
+ * Gated to `available_for_sale:true` so the homepage never surfaces a sold-
+ * out tile.
  */
 export const homePageCollectionQueryOptions = () => {
   const key = `rail-home-page-collection:${marketKey()}`;
@@ -93,7 +95,7 @@ export const homePageCollectionQueryOptions = () => {
       railCached(key, 60_000, () =>
         fetchProducts({
           first: 8,
-          query: "collection:home-page",
+          query: "collection:home-page AND available_for_sale:true",
           sortKey: "BEST_SELLING",
         }),
       ),

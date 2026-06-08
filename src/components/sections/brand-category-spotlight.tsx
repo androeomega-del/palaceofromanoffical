@@ -25,7 +25,7 @@ export function BrandCategorySpotlight({ vendorSlug, spotlight }: Props) {
     queryFn: () =>
       fetchProducts({
         first: 4,
-        query: `vendor:"${brand}" AND ${categoryQuery} AND tag:Men`,
+        query: `vendor:"${brand}" AND ${categoryQuery} AND tag:Men AND available_for_sale:true`,
         sortKey: "BEST_SELLING",
       }),
     staleTime: 10 * 60_000,

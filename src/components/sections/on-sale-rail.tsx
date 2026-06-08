@@ -23,7 +23,7 @@ export function OnSaleRail({
   dept?: "Women" | "Men";
   ctaTo?: string;
 }) {
-  const query = `tag:${dept}`;
+  const query = `tag:${dept} AND available_for_sale:true`;
   const { data, isLoading } = useQuery({
     queryKey: ["section-on-sale", dept],
     queryFn: async () => {
