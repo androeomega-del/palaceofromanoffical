@@ -356,8 +356,17 @@ export function VaultLockerOverlay() {
           from { opacity: 0; transform: translateY(4px); }
           to   { opacity: 1; transform: translateY(0); }
         }
+        @keyframes vaultErrorIn {
+          from { opacity: 0; transform: translateY(-2px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes vaultBorderPulse {
+          0%, 100% { border-bottom-color: rgba(244,241,236,0.25); }
+          50%      { border-bottom-color: rgba(138,133,128,0.85); }
+        }
         @keyframes vaultPulse {
           0%, 100% { opacity: 0.35; transform: scale(0.9); }
+
           50%      { opacity: 1;    transform: scale(1.1); }
         }
       `}</style>
