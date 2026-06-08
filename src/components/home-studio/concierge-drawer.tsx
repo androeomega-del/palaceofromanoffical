@@ -321,211 +321,204 @@ export function ConciergeDrawer({ open, onClose }: ConciergeDrawerProps) {
           ))}
         </nav>
 
-        {/* Transcript */}
-        <div className="flex-1 overflow-y-auto px-7 py-7 space-y-7">
-          {messages.map((msg, idx) => (
-            <div key={idx}>
-              <p
-                className="text-[9px] uppercase tracking-[0.4em] mb-2"
-                style={{
-                  color: msg.role === "user" ? "rgba(244,241,236,0.45)" : palette.sand,
-                  fontFamily: fontSans,
-                }}
-              >
-                {msg.role === "user" ? "Client" : "Concierge"}
-              </p>
-              <p
-                className="text-[15px] leading-relaxed whitespace-pre-wrap"
-                style={{
-                  fontFamily: msg.role === "user" ? fontSans : fontSerif,
-                  fontWeight: msg.role === "user" ? 300 : 400,
-                  color: palette.offwhite,
-                }}
-              >
-                {msg.text}
-              </p>
-
-              {/* Inline product cards (verified handles only, server-resolved) */}
-              {msg.products && msg.products.length > 0 && (
-                <ul className="mt-5 space-y-3">
-                  {msg.products.map((p) => (
-                    <li key={p.handle}>
-                      <Link
-                        to="/product/$handle"
-                        params={{ handle: p.handle }}
-                        onClick={onClose}
-                        className="group grid grid-cols-[88px_1fr] gap-4 transition-opacity hover:opacity-90"
-                      >
-                        <div
-                          className="aspect-[4/5] overflow-hidden"
-                          style={{ background: "rgba(244,241,236,0.04)" }}
-                        >
-                          {p.imageUrl && (
-                            <img
-                              src={p.imageUrl}
-                              alt={p.imageAlt ?? p.title}
-                              loading="lazy"
-                              className="w-full h-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-[1.05]"
-                            />
-                          )}
-                        </div>
-                        <div style={{ fontFamily: fontSans }}>
-                          <p
-                            className="text-[9px] uppercase tracking-[0.3em]"
-                            style={{ color: palette.sand }}
-                          >
-                            {p.vendor}
-                          </p>
-                          <p
-                            className="text-[13px] leading-snug mt-1.5 line-clamp-2"
-                            style={{ fontWeight: 300, color: palette.offwhite }}
-                          >
-                            {p.title}
-                          </p>
-                          <p
-                            className="text-[11px] mt-1.5"
-                            style={{ color: "rgba(244,241,236,0.7)" }}
-                          >
-                            {formatPrice(p.price)}
-                          </p>
-                          <span
-                            className="mt-3 inline-flex items-center gap-1 text-[9px] uppercase tracking-[0.32em] pb-0.5 border-b"
-                            style={{
-                              color: palette.sand,
-                              borderColor: "rgba(217,207,193,0.4)",
-                            }}
-                          >
-                            View piece
-                            <ArrowUpRight className="w-2.5 h-2.5" strokeWidth={1.5} />
-                          </span>
-                        </div>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          ))}
-
-          {/* Suggested prompts (only on the initial greeting) */}
-          {showSuggestions && (
-            <div className="pt-2">
-              <p
-                className="text-[9px] uppercase tracking-[0.4em] mb-3"
-                style={{ color: "rgba(244,241,236,0.45)", fontFamily: fontSans }}
-              >
-                Suggested inquiries
-              </p>
-              <div className="space-y-2">
-                {SUGGESTED_PROMPTS.map((prompt, i) => (
-                  <button
-                    key={prompt}
-                    onClick={() => sendText(prompt)}
-                    className="w-full text-left text-[13px] py-3 px-4 transition-all duration-300 animate-[studioFade_.5s_ease-out_both]"
+        {step !== "chat" ? (
+          <IntakeWizard
+            step={step}
+            dept={dept}
+            email={email}
+            optIn={optIn}
+            emailError={emailError}
+            vibes={vibes}
+            categories={categories}
+            priceBand={priceBand}
+            onChooseDept={(d) => {
+              setDept(d);
+              setStep("email");
+            }}
+            onBack={() => {
+              if (step === "email") setStep("dept");
+              else if (step === "preferences") setStep("email");
+            }}
+            onEmailChange={(v) => {
+              setEmail(v);
+              if (emailError) setEmailError(null);
+            }}
+            onOptInChange={setOptIn}
+            onSubmitEmail={submitIntakeEmail}
+            onToggleVibe={(v) => setVibes((p) => toggleIn(p, v))}
+            onToggleCategory={(v) => setCategories((p) => toggleIn(p, v))}
+            onPriceBand={setPriceBand}
+            onFinish={finishIntake}
+          />
+        ) : (
+          <>
+            {/* Transcript */}
+            <div className="flex-1 overflow-y-auto px-7 py-7 space-y-7">
+              {messages.map((msg, idx) => (
+                <div key={idx}>
+                  <p
+                    className="text-[9px] uppercase tracking-[0.4em] mb-2"
                     style={{
-                      background: "#121214",
-                      border: "1px solid rgba(244,241,236,0.1)",
-                      color: palette.offwhite,
+                      color: msg.role === "user" ? "rgba(244,241,236,0.45)" : palette.sand,
                       fontFamily: fontSans,
-                      fontWeight: 300,
-                      animationDelay: `${120 + i * 90}ms`,
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = palette.sand;
-                      e.currentTarget.style.background = "#16161A";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = "rgba(244,241,236,0.1)";
-                      e.currentTarget.style.background = "#121214";
                     }}
                   >
-                    {prompt}
-                  </button>
-                ))}
+                    {msg.role === "user" ? "Client" : "Concierge"}
+                  </p>
+                  <p
+                    className="text-[15px] leading-relaxed whitespace-pre-wrap"
+                    style={{
+                      fontFamily: msg.role === "user" ? fontSans : fontSerif,
+                      fontWeight: msg.role === "user" ? 300 : 400,
+                      color: palette.offwhite,
+                    }}
+                  >
+                    {msg.text}
+                  </p>
+
+                  {msg.products && msg.products.length > 0 && (
+                    <ul className="mt-5 space-y-3">
+                      {msg.products.map((p) => (
+                        <li key={p.handle}>
+                          <Link
+                            to="/product/$handle"
+                            params={{ handle: p.handle }}
+                            onClick={onClose}
+                            className="group grid grid-cols-[88px_1fr] gap-4 transition-opacity hover:opacity-90"
+                          >
+                            <div
+                              className="aspect-[4/5] overflow-hidden"
+                              style={{ background: "rgba(244,241,236,0.04)" }}
+                            >
+                              {p.imageUrl && (
+                                <img
+                                  src={p.imageUrl}
+                                  alt={p.imageAlt ?? p.title}
+                                  loading="lazy"
+                                  className="w-full h-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-[1.05]"
+                                />
+                              )}
+                            </div>
+                            <div style={{ fontFamily: fontSans }}>
+                              <p
+                                className="text-[9px] uppercase tracking-[0.3em]"
+                                style={{ color: palette.sand }}
+                              >
+                                {p.vendor}
+                              </p>
+                              <p
+                                className="text-[13px] leading-snug mt-1.5 line-clamp-2"
+                                style={{ fontWeight: 300, color: palette.offwhite }}
+                              >
+                                {p.title}
+                              </p>
+                              <p
+                                className="text-[11px] mt-1.5"
+                                style={{ color: "rgba(244,241,236,0.7)" }}
+                              >
+                                {formatPrice(p.price)}
+                              </p>
+                              <span
+                                className="mt-3 inline-flex items-center gap-1 text-[9px] uppercase tracking-[0.32em] pb-0.5 border-b"
+                                style={{
+                                  color: palette.sand,
+                                  borderColor: "rgba(217,207,193,0.4)",
+                                }}
+                              >
+                                View piece
+                                <ArrowUpRight className="w-2.5 h-2.5" strokeWidth={1.5} />
+                              </span>
+                            </div>
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ))}
+
+              {chat.isPending && (
+                <div
+                  className="flex items-center gap-3 animate-[studioFade_.3s_ease-out_both]"
+                  aria-live="polite"
+                  aria-label="Concierge is composing a reply"
+                >
+                  <p
+                    className="text-[9px] uppercase tracking-[0.4em]"
+                    style={{ color: palette.sand, fontFamily: fontSans }}
+                  >
+                    Concierge
+                  </p>
+                  <span className="flex items-end gap-1.5 h-3" aria-hidden="true">
+                    <span
+                      className="w-1.5 h-1.5 rounded-full animate-[conciergeDot_1.2s_ease-in-out_infinite]"
+                      style={{ background: palette.sand, animationDelay: "0ms" }}
+                    />
+                    <span
+                      className="w-1.5 h-1.5 rounded-full animate-[conciergeDot_1.2s_ease-in-out_infinite]"
+                      style={{ background: palette.sand, animationDelay: "180ms" }}
+                    />
+                    <span
+                      className="w-1.5 h-1.5 rounded-full animate-[conciergeDot_1.2s_ease-in-out_infinite]"
+                      style={{ background: palette.sand, animationDelay: "360ms" }}
+                    />
+                  </span>
+                </div>
+              )}
+              <div ref={chatEndRef} />
+            </div>
+
+            {/* Composer */}
+            <form
+              onSubmit={handleSubmit}
+              className="px-7 py-5"
+              style={{ borderTop: "1px solid rgba(244,241,236,0.08)" }}
+            >
+              <div className="relative">
+                <textarea
+                  ref={inputRef}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      sendText(input);
+                    }
+                  }}
+                  rows={2}
+                  placeholder="Inquire about collections, fits, or styling…"
+                  disabled={chat.isPending}
+                  className="w-full resize-none text-sm py-3.5 pl-4 pr-12 outline-none transition-colors duration-300 disabled:opacity-60"
+                  style={{
+                    background: "#121214",
+                    border: "1px solid rgba(244,241,236,0.1)",
+                    color: palette.offwhite,
+                    fontFamily: fontSans,
+                    fontWeight: 300,
+                    letterSpacing: "0.005em",
+                  }}
+                  onFocus={(e) => (e.currentTarget.style.borderColor = palette.sand)}
+                  onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(244,241,236,0.1)")}
+                />
+                <button
+                  type="submit"
+                  disabled={!input.trim() || chat.isPending}
+                  aria-label="Send message"
+                  className="absolute right-2.5 bottom-2.5 p-2 transition-all duration-300 disabled:opacity-30 hover:opacity-80"
+                  style={{ color: palette.obsidian, background: palette.sand }}
+                >
+                  <ArrowUp className="w-4 h-4" strokeWidth={1.5} />
+                </button>
               </div>
-            </div>
-          )}
-
-          {chat.isPending && (
-            <div
-              className="flex items-center gap-3 animate-[studioFade_.3s_ease-out_both]"
-              aria-live="polite"
-              aria-label="Concierge is composing a reply"
-            >
               <p
-                className="text-[9px] uppercase tracking-[0.4em]"
-                style={{ color: palette.sand, fontFamily: fontSans }}
+                className="mt-3 text-[9px] uppercase tracking-[0.35em]"
+                style={{ color: "rgba(244,241,236,0.4)", fontFamily: fontSans }}
               >
-                Concierge
+                Curated live · Palace of Roman
               </p>
-              <span className="flex items-end gap-1.5 h-3" aria-hidden="true">
-                <span
-                  className="w-1.5 h-1.5 rounded-full animate-[conciergeDot_1.2s_ease-in-out_infinite]"
-                  style={{ background: palette.sand, animationDelay: "0ms" }}
-                />
-                <span
-                  className="w-1.5 h-1.5 rounded-full animate-[conciergeDot_1.2s_ease-in-out_infinite]"
-                  style={{ background: palette.sand, animationDelay: "180ms" }}
-                />
-                <span
-                  className="w-1.5 h-1.5 rounded-full animate-[conciergeDot_1.2s_ease-in-out_infinite]"
-                  style={{ background: palette.sand, animationDelay: "360ms" }}
-                />
-              </span>
-            </div>
-          )}
-          <div ref={chatEndRef} />
-        </div>
-
-        {/* Composer */}
-        <form
-          onSubmit={handleSubmit}
-          className="px-7 py-5"
-          style={{ borderTop: "1px solid rgba(244,241,236,0.08)" }}
-        >
-          <div className="relative">
-            <textarea
-              ref={inputRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  sendText(input);
-                }
-              }}
-              rows={2}
-              placeholder="Inquire about collections, fits, or styling…"
-              disabled={chat.isPending}
-              className="w-full resize-none text-sm py-3.5 pl-4 pr-12 outline-none transition-colors duration-300 disabled:opacity-60"
-              style={{
-                background: "#121214",
-                border: "1px solid rgba(244,241,236,0.1)",
-                color: palette.offwhite,
-                fontFamily: fontSans,
-                fontWeight: 300,
-                letterSpacing: "0.005em",
-              }}
-              onFocus={(e) => (e.currentTarget.style.borderColor = palette.sand)}
-              onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(244,241,236,0.1)")}
-            />
-            <button
-              type="submit"
-              disabled={!input.trim() || chat.isPending}
-              aria-label="Send message"
-              className="absolute right-2.5 bottom-2.5 p-2 transition-all duration-300 disabled:opacity-30 hover:opacity-80"
-              style={{ color: palette.obsidian, background: palette.sand }}
-            >
-              <ArrowUp className="w-4 h-4" strokeWidth={1.5} />
-            </button>
-          </div>
-          <p
-            className="mt-3 text-[9px] uppercase tracking-[0.35em]"
-            style={{ color: "rgba(244,241,236,0.4)", fontFamily: fontSans }}
-          >
-            Curated live · Palace of Roman
-          </p>
-        </form>
+            </form>
+          </>
+        )}
       </aside>
     </div>
   );
