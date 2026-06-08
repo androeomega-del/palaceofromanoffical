@@ -265,7 +265,13 @@ const PRODUCT_FRAGMENT = `
       { namespace: "custom", key: "composition" },
       { namespace: "custom", key: "care_instructions" },
       { namespace: "custom", key: "origin" },
-      { namespace: "custom", key: "fabric" }
+      { namespace: "custom", key: "fabric" },
+      { namespace: "custom", key: "factory_tags" },
+      { namespace: "custom", key: "serial_card" },
+      { namespace: "custom", key: "packaging_notes" },
+      { namespace: "custom", key: "authenticity_documents" },
+      { namespace: "custom", key: "dispatch_origin" },
+      { namespace: "custom", key: "transit_window" }
     ]) { namespace key value type }
     lookReferences: metafield(namespace: "custom", key: "look_products") {
       references(first: 8) {

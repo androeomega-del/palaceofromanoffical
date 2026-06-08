@@ -1141,7 +1141,7 @@ function ProductView({
               <PdpShippingSheet />
 
               {/* Provenance + logistics tabs — directly under CTA */}
-              <PdpProvenanceTabs />
+              <PdpProvenanceTabs metafields={product.metafields} />
             </div>
 
             {/* Delivery badge — uses zip from location store */}
