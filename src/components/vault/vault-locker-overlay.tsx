@@ -31,6 +31,15 @@ const TICKER_PHRASES = [
   "Reserving private client locker",
 ];
 
+// Three-stage status ticker shown while the submit button is in its loading state.
+const SECURING_STATUSES = [
+  "Verifying limited allocation availability",
+  "Securing item to private customer locker",
+  "Locking logistics pipeline",
+];
+const SECURING_STEP_MS = 700;
+const SECURING_TOTAL_MS = SECURING_STEP_MS * SECURING_STATUSES.length; // 2100ms
+
 export function VaultLockerOverlay() {
   const open = useVaultGateStore((s) => s.open);
   const label = useVaultGateStore((s) => s.label);
@@ -40,6 +49,7 @@ export function VaultLockerOverlay() {
   const [email, setEmail] = useState("");
   const [phase, setPhase] = useState<"idle" | "securing" | "secured">("idle");
   const [tickerIdx, setTickerIdx] = useState(0);
+  const [securingStep, setSecuringStep] = useState(0);
   const [showError, setShowError] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -50,6 +60,7 @@ export function VaultLockerOverlay() {
       setEmail("");
       setPhase("idle");
       setTickerIdx(0);
+      setSecuringStep(0);
       setShowError(false);
       // Defer focus until after the entrance animation
       const id = window.setTimeout(() => inputRef.current?.focus(), 280);
@@ -66,6 +77,20 @@ export function VaultLockerOverlay() {
     }, 1400);
     return () => window.clearInterval(id);
   }, [open, phase, email.length]);
+
+  // Cycle through the three luxury-security status lines while the submit
+  // button is in its loading state.
+  useEffect(() => {
+    if (phase !== "securing") return;
+    setSecuringStep(0);
+    const id = window.setInterval(() => {
+      setSecuringStep((i) =>
+        i < SECURING_STATUSES.length - 1 ? i + 1 : i,
+      );
+    }, SECURING_STEP_MS);
+    return () => window.clearInterval(id);
+  }, [phase]);
+
 
   // Lock background scroll while the overlay is open
   useEffect(() => {
@@ -116,8 +141,10 @@ export function VaultLockerOverlay() {
       // Best-effort — never block checkout
     }
     // Brief secure-sequence animation, then resolve the gate promise
-    window.setTimeout(() => setPhase("secured"), 700);
-    window.setTimeout(() => confirmUnlock(), 1500);
+    // Play the three-status sequence, then transition to "secured",
+    // then resolve the gate promise.
+    window.setTimeout(() => setPhase("secured"), SECURING_TOTAL_MS);
+    window.setTimeout(() => confirmUnlock(), SECURING_TOTAL_MS + 800);
   };
 
 
@@ -306,8 +333,20 @@ export function VaultLockerOverlay() {
               </>
             )}
             {phase === "securing" && (
-              <span style={{ animation: "vaultTickerIn 240ms ease-out both" }}>
-                Engaging locker mechanism…
+              <span
+                className="inline-flex items-center gap-2"
+                key={`securing-${securingStep}`}
+                style={{ animation: "vaultTickerIn 320ms cubic-bezier(.2,.7,.2,1) both" }}
+              >
+                <span
+                  className="inline-block w-1.5 h-1.5 rounded-full"
+                  style={{
+                    background: "#8a8580",
+                    animation: "vaultPulse 0.9s ease-in-out infinite",
+                  }}
+                  aria-hidden
+                />
+                {SECURING_STATUSES[securingStep]}…
               </span>
             )}
             {phase === "secured" && (
@@ -346,37 +385,88 @@ export function VaultLockerOverlay() {
             type="submit"
             form="vault-locker-form"
             disabled={!isValid || phase !== "idle"}
-            className="w-full inline-flex items-center justify-center gap-3 text-[11px] uppercase tracking-[0.32em] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            className="relative w-full inline-flex items-center justify-center gap-3 text-[11px] uppercase tracking-[0.32em] transition-all disabled:cursor-not-allowed overflow-hidden"
             style={{
               minHeight: 56,
               background: "#f4f1ec",
               color: "#0a0a0a",
               letterSpacing: "0.32em",
+              opacity: phase === "idle" && !isValid ? 0.4 : 1,
             }}
           >
-            {phase === "secured" ? (
-              <>
-                <Check className="w-3.5 h-3.5" strokeWidth={2} />
-                Vault Secured
-              </>
-            ) : phase === "securing" ? (
-              <>
+            {/* Idle label — fades out the moment securing begins */}
+            <span
+              className="inline-flex items-center justify-center gap-3"
+              style={{
+                opacity: phase === "idle" ? 1 : 0,
+                transform: phase === "idle" ? "translateY(0)" : "translateY(-4px)",
+                transition: "opacity 240ms ease-out, transform 240ms ease-out",
+                pointerEvents: phase === "idle" ? "auto" : "none",
+              }}
+            >
+              <Lock className="w-3.5 h-3.5" strokeWidth={1.5} />
+              Generate Verification Link
+            </span>
+
+            {/* Securing state — horizontal monochrome progress bar */}
+            {phase === "securing" && (
+              <span
+                aria-hidden
+                className="absolute inset-0 flex items-center justify-center px-6"
+                style={{ animation: "vaultTickerIn 220ms ease-out both" }}
+              >
                 <span
-                  className="inline-block w-2 h-2 rounded-full"
+                  className="relative block w-full overflow-hidden"
                   style={{
-                    background: "#0a0a0a",
-                    animation: "vaultPulse 0.8s ease-in-out infinite",
+                    height: 2,
+                    background: "rgba(10,10,10,0.08)",
                   }}
-                  aria-hidden
-                />
-                Securing
-              </>
-            ) : (
-              <>
-                <Lock className="w-3.5 h-3.5" strokeWidth={1.5} />
-                Generate Verification Link
-              </>
+                >
+                  <span
+                    className="absolute inset-y-0 left-0"
+                    style={{
+                      width: "40%",
+                      background: "linear-gradient(90deg, transparent, #8a8580 50%, transparent)",
+                      animation: "vaultProgress 1.1s cubic-bezier(.4,.0,.2,1) infinite",
+                    }}
+                  />
+                </span>
+              </span>
             )}
+
+            {/* Success — checkmark draws in and softly settles */}
+            {phase === "secured" && (
+              <span
+                className="absolute inset-0 inline-flex items-center justify-center gap-2"
+                style={{ animation: "vaultSuccessIn 360ms cubic-bezier(.2,.7,.2,1) both" }}
+              >
+                <span
+                  className="inline-flex items-center justify-center rounded-full"
+                  style={{
+                    width: 22,
+                    height: 22,
+                    border: "1px solid #0a0a0a",
+                    animation: "vaultCheckRing 420ms cubic-bezier(.2,.7,.2,1) both",
+                  }}
+                >
+                  <Check
+                    className="w-3 h-3"
+                    strokeWidth={2.2}
+                    style={{ animation: "vaultCheckIn 320ms 120ms cubic-bezier(.2,.7,.2,1) both" }}
+                  />
+                </span>
+                Vault Secured
+              </span>
+            )}
+
+            {/* Screen-reader live announcement */}
+            <span className="sr-only" aria-live="polite">
+              {phase === "securing"
+                ? SECURING_STATUSES[securingStep]
+                : phase === "secured"
+                ? "Vault secured"
+                : ""}
+            </span>
           </button>
         </div>
       </div>
@@ -414,8 +504,23 @@ export function VaultLockerOverlay() {
         }
         @keyframes vaultPulse {
           0%, 100% { opacity: 0.35; transform: scale(0.9); }
-
           50%      { opacity: 1;    transform: scale(1.1); }
+        }
+        @keyframes vaultProgress {
+          0%   { transform: translateX(-100%); }
+          100% { transform: translateX(350%); }
+        }
+        @keyframes vaultSuccessIn {
+          from { opacity: 0; transform: scale(0.96); }
+          to   { opacity: 1; transform: scale(1); }
+        }
+        @keyframes vaultCheckRing {
+          from { transform: scale(0.6); opacity: 0; }
+          to   { transform: scale(1);   opacity: 1; }
+        }
+        @keyframes vaultCheckIn {
+          from { opacity: 0; transform: scale(0.5); }
+          to   { opacity: 1; transform: scale(1); }
         }
       `}</style>
     </div>
