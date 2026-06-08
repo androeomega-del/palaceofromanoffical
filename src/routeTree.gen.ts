@@ -169,6 +169,8 @@ import { Route as ApiPublicCronDailyTaskRemindersRouteImport } from './routes/ap
 import { Route as ApiPublicCronBackInStockNotifyRouteImport } from './routes/api/public/cron/back-in-stock-notify'
 import { Route as ApiPublicCronAbandonedCartRecoveryRouteImport } from './routes/api/public/cron/abandoned-cart-recovery'
 import { Route as ApiPublicAiRecommendationsRouteImport } from './routes/api/public/ai.recommendations'
+import { Route as ApiPublicEOIdDotpngRouteImport } from './routes/api/public/e.o.$id[.]png'
+import { Route as ApiPublicECIdRouteImport } from './routes/api/public/e.c.$id'
 
 const WishlistRoute = WishlistRouteImport.update({
   id: '/wishlist',
@@ -1016,6 +1018,16 @@ const ApiPublicAiRecommendationsRoute =
     path: '/api/public/ai/recommendations',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicEOIdDotpngRoute = ApiPublicEOIdDotpngRouteImport.update({
+  id: '/api/public/e/o/$id.png',
+  path: '/api/public/e/o/$id.png',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicECIdRoute = ApiPublicECIdRouteImport.update({
+  id: '/api/public/e/c/$id',
+  path: '/api/public/e/c/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -1178,6 +1190,8 @@ export interface FileRoutesByFullPath {
   '/apps/seo-sitemaps/mwuwqi-vy/articles-sitemap.xml': typeof AppsSeoSitemapsMwuwqiVyArticlesSitemapDotxmlRoute
   '/apps/seo-sitemaps/mwuwqi-vy/images-sitemap.xml': typeof AppsSeoSitemapsMwuwqiVyImagesSitemapDotxmlRoute
   '/apps/seo-sitemaps/mwuwqi-vy/pages-sitemap.xml': typeof AppsSeoSitemapsMwuwqiVyPagesSitemapDotxmlRoute
+  '/api/public/e/c/$id': typeof ApiPublicECIdRoute
+  '/api/public/e/o/$id.png': typeof ApiPublicEOIdDotpngRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -1337,6 +1351,8 @@ export interface FileRoutesByTo {
   '/apps/seo-sitemaps/mwuwqi-vy/articles-sitemap.xml': typeof AppsSeoSitemapsMwuwqiVyArticlesSitemapDotxmlRoute
   '/apps/seo-sitemaps/mwuwqi-vy/images-sitemap.xml': typeof AppsSeoSitemapsMwuwqiVyImagesSitemapDotxmlRoute
   '/apps/seo-sitemaps/mwuwqi-vy/pages-sitemap.xml': typeof AppsSeoSitemapsMwuwqiVyPagesSitemapDotxmlRoute
+  '/api/public/e/c/$id': typeof ApiPublicECIdRoute
+  '/api/public/e/o/$id.png': typeof ApiPublicEOIdDotpngRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -1500,6 +1516,8 @@ export interface FileRoutesById {
   '/apps/seo-sitemaps/mwuwqi-vy/articles-sitemap.xml': typeof AppsSeoSitemapsMwuwqiVyArticlesSitemapDotxmlRoute
   '/apps/seo-sitemaps/mwuwqi-vy/images-sitemap.xml': typeof AppsSeoSitemapsMwuwqiVyImagesSitemapDotxmlRoute
   '/apps/seo-sitemaps/mwuwqi-vy/pages-sitemap.xml': typeof AppsSeoSitemapsMwuwqiVyPagesSitemapDotxmlRoute
+  '/api/public/e/c/$id': typeof ApiPublicECIdRoute
+  '/api/public/e/o/$id.png': typeof ApiPublicEOIdDotpngRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -1664,6 +1682,8 @@ export interface FileRouteTypes {
     | '/apps/seo-sitemaps/mwuwqi-vy/articles-sitemap.xml'
     | '/apps/seo-sitemaps/mwuwqi-vy/images-sitemap.xml'
     | '/apps/seo-sitemaps/mwuwqi-vy/pages-sitemap.xml'
+    | '/api/public/e/c/$id'
+    | '/api/public/e/o/$id.png'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -1823,6 +1843,8 @@ export interface FileRouteTypes {
     | '/apps/seo-sitemaps/mwuwqi-vy/articles-sitemap.xml'
     | '/apps/seo-sitemaps/mwuwqi-vy/images-sitemap.xml'
     | '/apps/seo-sitemaps/mwuwqi-vy/pages-sitemap.xml'
+    | '/api/public/e/c/$id'
+    | '/api/public/e/o/$id.png'
   id:
     | '__root__'
     | '/'
@@ -1985,6 +2007,8 @@ export interface FileRouteTypes {
     | '/apps/seo-sitemaps/mwuwqi-vy/articles-sitemap.xml'
     | '/apps/seo-sitemaps/mwuwqi-vy/images-sitemap.xml'
     | '/apps/seo-sitemaps/mwuwqi-vy/pages-sitemap.xml'
+    | '/api/public/e/c/$id'
+    | '/api/public/e/o/$id.png'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -2127,6 +2151,8 @@ export interface RootRouteChildren {
   AppsSeoSitemapsMwuwqiVyArticlesSitemapDotxmlRoute: typeof AppsSeoSitemapsMwuwqiVyArticlesSitemapDotxmlRoute
   AppsSeoSitemapsMwuwqiVyImagesSitemapDotxmlRoute: typeof AppsSeoSitemapsMwuwqiVyImagesSitemapDotxmlRoute
   AppsSeoSitemapsMwuwqiVyPagesSitemapDotxmlRoute: typeof AppsSeoSitemapsMwuwqiVyPagesSitemapDotxmlRoute
+  ApiPublicECIdRoute: typeof ApiPublicECIdRoute
+  ApiPublicEOIdDotpngRoute: typeof ApiPublicEOIdDotpngRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -3251,6 +3277,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicAiRecommendationsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/e/o/$id.png': {
+      id: '/api/public/e/o/$id.png'
+      path: '/api/public/e/o/$id.png'
+      fullPath: '/api/public/e/o/$id.png'
+      preLoaderRoute: typeof ApiPublicEOIdDotpngRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/e/c/$id': {
+      id: '/api/public/e/c/$id'
+      path: '/api/public/e/c/$id'
+      fullPath: '/api/public/e/c/$id'
+      preLoaderRoute: typeof ApiPublicECIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -3520,6 +3560,8 @@ const rootRouteChildren: RootRouteChildren = {
     AppsSeoSitemapsMwuwqiVyImagesSitemapDotxmlRoute,
   AppsSeoSitemapsMwuwqiVyPagesSitemapDotxmlRoute:
     AppsSeoSitemapsMwuwqiVyPagesSitemapDotxmlRoute,
+  ApiPublicECIdRoute: ApiPublicECIdRoute,
+  ApiPublicEOIdDotpngRoute: ApiPublicEOIdDotpngRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
