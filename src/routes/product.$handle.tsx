@@ -47,6 +47,7 @@ import {
 import { SizeFitGuide } from "@/components/product/size-fit-guide";
 import { PdpJournalLinks } from "@/components/pdp-journal-links";
 import { NotifyMeForm } from "@/components/atelier/notify-me-form";
+import { VaultReleaseOverlay } from "@/components/vault/vault-release-overlay";
 import { RecentlyViewedRail } from "@/components/recently-viewed-rail";
 import { ImageLightbox } from "@/components/product/image-lightbox";
 import { parseComposition, hasCompositionInfo } from "@/lib/product-composition";
