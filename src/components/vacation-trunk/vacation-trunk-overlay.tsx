@@ -52,6 +52,7 @@ function resolveDepartureDate(monthIdx: number, day: number): Date {
 export function VacationTrunkOverlay() {
   const open = useVacationTrunkStore((s) => s.open);
   const items = useVacationTrunkStore((s) => s.items);
+  const lowStock = useVacationTrunkStore((s) => s.lowStock);
   const closeTrunk = useVacationTrunkStore((s) => s.closeTrunk);
   const removeItem = useVacationTrunkStore((s) => s.removeItem);
 
