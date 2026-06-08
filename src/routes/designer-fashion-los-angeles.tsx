@@ -21,7 +21,7 @@ const FAQS: CityFAQ[] = [
   { q: "What brands do you carry?", a: "Around one hundred maisons — including Versace, Prada, Gucci, Dolce & Gabbana, Bottega Veneta, Brunello Cucinelli, Saint Laurent, Fendi, Tom Ford, Loro Piana, Roberto Cavalli, Moncler and more. Browse the full list under Designers A–Z." },
 ];
 
-export const Route = createFileRoute(PATH)({
+export const Route = createFileRoute("/designer-fashion-los-angeles")({
   head: () => ({
     meta: [
       { title: TITLE },

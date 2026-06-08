@@ -21,7 +21,7 @@ const FAQS: CityFAQ[] = [
   { q: "Concierge service?", a: "Yes — message the concierge for sourcing, sizing, or styling. Replies within 24 hours, Monday to Saturday." },
 ];
 
-export const Route = createFileRoute(PATH)({
+export const Route = createFileRoute("/designer-fashion-miami")({
   head: () => ({
     meta: [
       { title: TITLE },

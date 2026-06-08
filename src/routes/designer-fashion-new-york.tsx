@@ -21,7 +21,7 @@ const FAQS: CityFAQ[] = [
   { q: "Why is the price what it is?", a: "These are current-season luxury pieces from the maison's authorised distribution. We don't carry counterfeits, super-fakes, or grey-market goods — and our pricing reflects the same European retail bands you'd see at the maison's own boutique, minus the on-the-ground markup." },
 ];
 
-export const Route = createFileRoute(PATH)({
+export const Route = createFileRoute("/designer-fashion-new-york")({
   head: () => ({
     meta: [
       { title: TITLE },
