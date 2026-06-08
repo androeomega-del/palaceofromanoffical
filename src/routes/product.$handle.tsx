@@ -837,6 +837,70 @@ function ProductView({
     .filter((e) => e.node.handle !== product.handle && e.node.vendor !== product.vendor)
     .slice(0, 40);
 
+  // ── Capsule pool — fetch a deep bench of items per level-one category tag
+  // (jackets, coats, accessories, shorts, etc.) so every slot in the
+  // Capsule Builder has a plethora of options regardless of the seed product.
+  // Each query is keyed independently so they cache across PDPs and run in
+  // parallel without blocking render.
+  const capsuleTopQ = useQuery({
+    queryKey: ["capsule-pool", "top"],
+    queryFn: () => fetchProducts({ first: 50, query: "(tag:tops OR tag:shirts OR tag:knitwear OR tag:sweaters OR tag:polos OR tag:t-shirts)" }),
+    staleTime: 5 * 60 * 1000,
+  });
+  const capsuleBottomQ = useQuery({
+    queryKey: ["capsule-pool", "bottom"],
+    queryFn: () => fetchProducts({ first: 50, query: "(tag:bottoms OR tag:pants OR tag:trousers OR tag:shorts OR tag:skirts OR tag:jeans OR tag:denim)" }),
+    staleTime: 5 * 60 * 1000,
+  });
+  const capsuleOuterwearQ = useQuery({
+    queryKey: ["capsule-pool", "outerwear"],
+    queryFn: () => fetchProducts({ first: 50, query: "(tag:outerwear OR tag:jackets OR tag:coats OR tag:blazers)" }),
+    staleTime: 5 * 60 * 1000,
+  });
+  const capsuleFootwearQ = useQuery({
+    queryKey: ["capsule-pool", "footwear"],
+    queryFn: () => fetchProducts({ first: 50, query: "(tag:footwear OR tag:shoes OR tag:sneakers OR tag:loafers OR tag:boots OR tag:sandals OR tag:heels)" }),
+    staleTime: 5 * 60 * 1000,
+  });
+  const capsuleAccessoryQ = useQuery({
+    queryKey: ["capsule-pool", "accessory"],
+    queryFn: () => fetchProducts({ first: 50, query: "(tag:accessories OR tag:bags OR tag:handbags OR tag:belts OR tag:sunglasses OR tag:scarves OR tag:hats OR tag:jewelry OR tag:wallets)" }),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // De-duplicate by handle when merging — vendor/category pools frequently
+  // overlap (e.g. "Gucci loafers" appear in both vendor and footwear pools).
+  const capsulePool = useMemo(() => {
+    const seen = new Set<string>([product.handle]);
+    const out: ShopifyProductNode[] = [];
+    const push = (edges: Array<{ node: ShopifyProductNode }> | undefined) => {
+      if (!edges) return;
+      for (const e of edges) {
+        if (seen.has(e.node.handle)) continue;
+        seen.add(e.node.handle);
+        out.push(e.node);
+      }
+    };
+    push(related.map((e) => ({ node: e.node })));
+    push(styleItWith.map((e) => ({ node: e.node })));
+    push(capsuleTopQ.data);
+    push(capsuleBottomQ.data);
+    push(capsuleOuterwearQ.data);
+    push(capsuleFootwearQ.data);
+    push(capsuleAccessoryQ.data);
+    return out;
+  }, [
+    product.handle,
+    related,
+    styleItWith,
+    capsuleTopQ.data,
+    capsuleBottomQ.data,
+    capsuleOuterwearQ.data,
+    capsuleFootwearQ.data,
+    capsuleAccessoryQ.data,
+  ]);
+
+
   // ── Auto "The Look" — AI fallback when `custom.look_products` is empty.
   // Pulls Shopify's COMPLEMENTARY recommendations first (cross-category by
   // design), then enforces our own no-duplicate-category / vendor-diversity
@@ -1326,11 +1390,9 @@ function ProductView({
             seedProduct={product}
             seedVariantId={selectedVariant?.id}
             seedKind={classifyCapsuleKind(product.productType)}
-            candidatePool={[
-              ...related.map((e) => e.node),
-              ...styleItWith.map((e) => e.node),
-            ]}
+            candidatePool={capsulePool}
           />
+
         </div>
 
         {/* ===== More from vendor ===== */}
