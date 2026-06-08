@@ -251,7 +251,7 @@ function JustLanded() {
     queryFn: () =>
       fetchProducts({
         first: 60,
-        query: 'tag:Women AND tag:"New with tags"',
+        query: 'tag:Women',
         sortKey: "CREATED_AT",
         reverse: true,
       }),

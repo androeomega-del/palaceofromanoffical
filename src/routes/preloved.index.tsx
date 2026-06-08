@@ -3,8 +3,8 @@
  *
  * Server-rendered authority page for our pre-owned luxury edit. Loader
  * primes a 60s-cached Storefront read covering the full preloved tag
- * matrix (Preloved / Pristine / Excellent / New with tags) so cold loads
- * stream real /product/$handle anchors with a flawless CLS profile.
+ * matrix (Preloved / Pristine / Excellent) so cold loads stream real
+ * /product/$handle anchors with a flawless CLS profile.
  */
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -21,7 +21,7 @@ import { buildPrelovedHubJsonLd } from "@/lib/preloved-jsonld";
 
 const HUB_TITLE = "Authentic Preloved Luxury Designer Fashion | Palace of Roman Official";
 const HUB_DESC =
-  "Curated pre-owned designer fashion from Gucci, Prada, Saint Laurent and beyond. Every piece authenticated and condition-graded by Palace of Roman's pre-owned atelier — Pristine, Excellent, and New with Tags.";
+  "Curated pre-owned designer fashion from Gucci, Prada, Saint Laurent and beyond. Every piece authenticated and condition-graded by Palace of Roman's pre-owned atelier — Pristine and Excellent.";
 
 export const Route = createFileRoute("/preloved/")({
   head: ({ loaderData }: { loaderData?: PrelovedPage }) => {
@@ -81,7 +81,6 @@ export const Route = createFileRoute("/preloved/")({
  * the master hub view. Per-condition pages use the route slug directly. */
 function inferConditionLabel(title: string): string {
   const t = title.toLowerCase();
-  if (t.includes("new with tag") || t.includes("nwt")) return "New with Tags";
   if (t.includes("pristine")) return "Pristine";
   if (t.includes("excellent")) return "Excellent";
   return "Preloved";
@@ -110,8 +109,8 @@ function PrelovedHubPage() {
             bar as our new-season edit: authenticated pre-owned designer
             handbags, ready-to-wear, footwear, and accessories from Gucci,
             Prada, Saint Laurent, Bottega Veneta, Loewe and the houses our
-            clients return for. Each item is graded Pristine, Excellent, or
-            New with Tags, photographed in natural light, and shipped with
+            clients return for. Each item is graded Pristine or Excellent,
+            photographed in natural light, and shipped with
             full provenance documentation through our global boutique network.
           </p>
         </div>

@@ -118,7 +118,6 @@ export function SiteFooter() {
             <Link to="/preloved" className="text-sm text-muted-foreground hover:text-ink transition-colors">The Preloved Edit</Link>
             <Link to="/preloved/$condition" params={{ condition: "pristine" }} className="text-sm text-muted-foreground hover:text-ink transition-colors">Pristine Condition</Link>
             <Link to="/preloved/$condition" params={{ condition: "excellent" }} className="text-sm text-muted-foreground hover:text-ink transition-colors">Excellent Condition</Link>
-            <Link to="/preloved/$condition" params={{ condition: "new-with-tags" }} className="text-sm text-muted-foreground hover:text-ink transition-colors">New with Tags</Link>
             <Link to="/trends/tom-ford-essentials" className="text-sm text-muted-foreground hover:text-ink transition-colors">Tom Ford Essentials</Link>
             <Link to="/trends/dolce-gabbana-icons" className="text-sm text-muted-foreground hover:text-ink transition-colors">Dolce &amp; Gabbana Icons</Link>
             <Link to="/trends/pucci-eyewear" className="text-sm text-muted-foreground hover:text-ink transition-colors">Pucci Eyewear</Link>

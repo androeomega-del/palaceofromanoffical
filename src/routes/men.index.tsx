@@ -258,7 +258,7 @@ function NewInThisWeek() {
     queryFn: () =>
       fetchProducts({
         first: 60,
-        query: 'tag:Men AND tag:"New with tags"',
+        query: 'tag:Men',
         sortKey: "CREATED_AT",
         reverse: true,
       }),

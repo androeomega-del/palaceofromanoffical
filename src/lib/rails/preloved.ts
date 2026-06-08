@@ -2,8 +2,8 @@
  * Preloved (pre-owned) inventory query options.
  *
  * Wraps a Storefront `products` query filtered to our pre-owned tag matrix
- * (`Preloved`, `Pristine`, `Excellent`, `New with tags`) and primes the
- * exact TanStack Query cache the page components read.
+ * (`Preloved`, `Pristine`, `Excellent`) and primes the exact TanStack Query
+ * cache the page components read.
  *
  * Server reads are cached for 60s via `cached()` so high-frequency crawl
  * passes share a single upstream Storefront request per market.
@@ -16,22 +16,20 @@ import { fetchProductsPage, type ShopifyProductNode } from "@/lib/shopify";
 import { useMarketStore } from "@/stores/market-store";
 import { cached } from "@/lib/server-cache";
 
-export type PrelovedCondition = "pristine" | "excellent" | "new-with-tags";
+export type PrelovedCondition = "pristine" | "excellent";
 
 export const PRELOVED_CONDITIONS: PrelovedCondition[] = [
   "pristine",
   "excellent",
-  "new-with-tags",
 ];
 
 export const PRELOVED_CONDITION_LABEL: Record<PrelovedCondition, string> = {
   pristine: "Pristine",
   excellent: "Excellent",
-  "new-with-tags": "New with Tags",
 };
 
-/** All four tags participating in the pre-owned merchandising matrix. */
-const ALL_PRELOVED_TAGS = ["Preloved", "Pristine", "Excellent", "New with tags"];
+/** All tags participating in the pre-owned merchandising matrix. */
+const ALL_PRELOVED_TAGS = ["Preloved", "Pristine", "Excellent"];
 
 function marketKey() {
   const m = useMarketStore.getState().market;

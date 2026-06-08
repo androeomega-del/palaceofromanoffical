@@ -1,10 +1,10 @@
 /**
  * /preloved/$condition — dynamic per-condition preloved page.
  *
- * Slugs: pristine | excellent | new-with-tags. Anything else throws
- * notFound() so search engines see a clean 404 rather than an empty grid.
- * Loader primes a 60s-cached Storefront read scoped to (Preloved AND
- * <condition>), keyed by market for TTFB consistency.
+ * Slugs: pristine | excellent. Anything else throws notFound() so search
+ * engines see a clean 404 rather than an empty grid. Loader primes a
+ * 60s-cached Storefront read scoped to (Preloved AND <condition>),
+ * keyed by market for TTFB consistency.
  */
 import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
