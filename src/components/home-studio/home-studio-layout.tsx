@@ -165,6 +165,19 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
         <AsymmetricGrid menProducts={menProducts} womenProducts={womenProducts} />
       </section>
 
+      {/* ───── Shopify "Home page" collection — merchant-curated feature rail ───── */}
+      <div className="bg-canvas text-ink">
+        <ProductRail
+          queryOptions={homePageCollectionQueryOptions()}
+          eyebrow="The Home Page Edit"
+          title="Curated for the season"
+          ctaTo="/collections/home-page"
+          ctaLabel="Explore the edit"
+          surface="rail:home-page-collection"
+          columns={4}
+        />
+      </div>
+
       {/* ───── Standalone-only draft footer (real SiteFooter handles `/`) ───── */}
       {isStandalone && (
         <footer
