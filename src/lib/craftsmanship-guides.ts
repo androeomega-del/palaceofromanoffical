@@ -40,6 +40,24 @@ export const CRAFTSMANSHIP_GUIDES: CraftsmanshipGuide[] = [
     readingMinutes: 8,
   },
   {
+    slug: "understanding-the-made-in-italy-label",
+    to: "/journal/craftsmanship/understanding-the-made-in-italy-label",
+    title: "Understanding the Made in Italy Label — A Buyer's Reference",
+    excerpt:
+      "The legal definition behind authentic Italian luxury manufacturing — what the Made in Italy mark requires, who enforces it, and how to read it before you spend.",
+    publishedAt: "2026-06-08T09:00:00Z",
+    readingMinutes: 7,
+  },
+  {
+    slug: "the-art-of-italian-leather-tanning",
+    to: "/journal/craftsmanship/the-art-of-italian-leather-tanning",
+    title: "The Art of Italian Leather Tanning — Vegetable, Chrome, and the Tuscan Tradition",
+    excerpt:
+      "Inside the centuries-old Tuscan tanning tradition — vegetable vs chrome tanning, the Pelle Conciata al Vegetale consortium, and why the right tannery defines a wallet's next thirty years.",
+    publishedAt: "2026-06-08T09:00:00Z",
+    readingMinutes: 9,
+  },
+  {
     slug: "leather-quality-guide",
     to: "/journal/craftsmanship/leather-quality-guide",
     title: "Full-Grain vs Top-Grain Leather — The Wallet Buyer's Guide",
