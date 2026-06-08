@@ -78,6 +78,20 @@ export function VaultLockerOverlay() {
     return () => window.clearInterval(id);
   }, [open, phase, email.length]);
 
+  // Cycle through the three luxury-security status lines while the submit
+  // button is in its loading state.
+  useEffect(() => {
+    if (phase !== "securing") return;
+    setSecuringStep(0);
+    const id = window.setInterval(() => {
+      setSecuringStep((i) =>
+        i < SECURING_STATUSES.length - 1 ? i + 1 : i,
+      );
+    }, SECURING_STEP_MS);
+    return () => window.clearInterval(id);
+  }, [phase]);
+
+
   // Lock background scroll while the overlay is open
   useEffect(() => {
     if (!open) return;
