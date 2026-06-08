@@ -117,9 +117,9 @@ function ShippingReturnsPage() {
           <p className="mt-2 text-xs text-muted-foreground leading-relaxed">From the day your parcel is delivered</p>
         </div>
         <div className="bg-canvas p-8 text-center">
-          <p className="font-serif text-5xl md:text-6xl tracking-tight text-ink leading-none">3–5</p>
-          <p className="mt-3 text-[10px] uppercase tracking-[0.3em] text-bronze font-semibold">Day Express</p>
-          <p className="mt-2 text-xs text-muted-foreground leading-relaxed">Insured, tracked worldwide delivery</p>
+          <p className="font-serif text-5xl md:text-6xl tracking-tight text-ink leading-none">1–3</p>
+          <p className="mt-3 text-[10px] uppercase tracking-[0.3em] text-bronze font-semibold">Day EU Delivery</p>
+          <p className="mt-2 text-xs text-muted-foreground leading-relaxed">5–7 business days rest of world, fully insured</p>
         </div>
         <div className="bg-canvas p-8 text-center">
           <p className="font-serif text-5xl md:text-6xl tracking-tight text-ink leading-none">100%</p>
