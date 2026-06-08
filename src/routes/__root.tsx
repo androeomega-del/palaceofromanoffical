@@ -335,6 +335,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           logo: "https://palaceofromanofficial.com/brand/logo-wordmark.png",
           description: "Curated multi-brand luxury fashion boutique. Authentic designer pieces from a global network of authorised partners.",
           email: "support@palaceofromanofficial.com",
+          telephone: "+1-213-991-4069",
           priceRange: "$$$$",
           address: {
             "@type": "PostalAddress",
