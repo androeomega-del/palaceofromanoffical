@@ -135,6 +135,9 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
         </div>
       </section>
 
+      {/* ───── Studio Verification — provenance banner ───── */}
+      <StudioVerificationBanner />
+
       {/* ───── Editorial asymmetric grid ───── */}
       <section className="px-6 md:px-14 pb-24 md:pb-40">
         <div className="flex items-end justify-between mb-12 md:mb-20">
