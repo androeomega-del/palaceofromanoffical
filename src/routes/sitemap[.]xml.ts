@@ -168,12 +168,13 @@ function renderUrl(
   loc: string,
   opts: { lastmod?: string; changefreq?: string; priority?: string; imageBlocks?: string } = {},
 ): string {
+  // Per Google guidance + the user's SEO playbook: omit <priority> and
+  // <changefreq> entirely — both are ignored and add noise. Keep <lastmod>
+  // only when it reflects actual content-update time.
   return [
     `  <url>`,
     `    <loc>${xmlEscape(loc)}</loc>`,
     opts.lastmod ? `    <lastmod>${opts.lastmod}</lastmod>` : null,
-    opts.changefreq ? `    <changefreq>${opts.changefreq}</changefreq>` : null,
-    opts.priority ? `    <priority>${opts.priority}</priority>` : null,
     opts.imageBlocks || null,
     `  </url>`,
   ]

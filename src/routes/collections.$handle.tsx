@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate, useRouter, redirect, stripSearchParams } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useRouter, redirect, stripSearchParams, notFound } from "@tanstack/react-router";
 import { collectionFirstPageQueryOptions } from "@/lib/rails/collection-first-page";
 import { canonicalCollectionHandle } from "@/lib/collection-canonical";
 import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
@@ -175,22 +175,48 @@ export const Route = createFileRoute("/collections/$handle")({
     const [sortKey, reverseStr] = effectiveSort.split("-");
     const reverse = reverseStr === "true";
 
-    const [collectionRes, abRes] = await Promise.all([
-      fetchCollection(params.handle, 1).catch(() => null),
+    // Distinguish "handle does not exist" (null) from network error (thrown).
+    // Only the former should produce an HTTP 404 — transient errors must
+    // not be cached by Google as a Soft 404.
+    let collectionRes: Awaited<ReturnType<typeof fetchCollection>> | null = null;
+    let collectionFetchFailed = false;
+    const [collectionSettled, abRes] = await Promise.all([
+      fetchCollection(params.handle, 1).then(
+        (r) => ({ ok: true as const, value: r }),
+        () => ({ ok: false as const, value: null }),
+      ),
       readMetaAbBucket().catch(() => ({ bucket: 0 as MetaBucket })),
-      // Prime page-1 grid into the same InfiniteData entry the component
-      // subscribes to. .catch keeps the page rendering on Shopify hiccups;
-      // the client query will retry naturally.
       context.queryClient
         .ensureInfiniteQueryData(
           collectionFirstPageQueryOptions({ handle: params.handle, sortKey, reverse }),
         )
         .catch(() => null),
     ]);
+    collectionRes = collectionSettled.value;
+    collectionFetchFailed = !collectionSettled.ok;
+    if (!collectionRes && !collectionFetchFailed) {
+      // Real HTTP 404 for unknown/retired collection handles — avoids Soft 404.
+      if (typeof window === "undefined") {
+        try {
+          const { setResponseStatus } = await import("@tanstack/react-start/server");
+          setResponseStatus(404);
+        } catch {}
+      }
+      throw notFound();
+    }
+    if (!collectionRes) {
+      // Transient Storefront error — render a safe shell, do NOT 404.
+      return {
+        title: titleizeHandle(params.handle),
+        description: "",
+        image: null,
+        abBucket: abRes.bucket,
+      };
+    }
     return {
-      title: collectionRes?.title ?? titleizeHandle(params.handle),
-      description: collectionRes?.description ?? "",
-      image: collectionRes?.image?.url ?? null,
+      title: collectionRes.title ?? titleizeHandle(params.handle),
+      description: collectionRes.description ?? "",
+      image: collectionRes.image?.url ?? null,
       abBucket: abRes.bucket,
     };
   },
