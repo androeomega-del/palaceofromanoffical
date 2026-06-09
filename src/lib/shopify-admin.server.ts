@@ -1,6 +1,6 @@
-// Server-only Shopify Admin API client using the Client Credentials Grant.
-// Exchanges the admin app client id + shpss client secret for a short-lived
-// Admin API token and caches it in memory until ~60s before expiry.
+// Server-only Shopify Admin API client.
+// Prefers the stored full-permission Admin API access token. Falls back to the
+// Client Credentials Grant only when the direct Admin token is not configured.
 //
 // Usage:
 //   import { adminGraphql } from "@/lib/shopify-admin.server";
@@ -10,6 +10,15 @@ const API_VERSION = "2025-07";
 
 type CachedToken = { token: string; expiresAt: number };
 let cached: CachedToken | null = null;
+
+function directAdminAccessToken(): string | null {
+  const token =
+    process.env.SHOPIFY_ACCESS_TOKEN ??
+    process.env.SHOPIFY_ADMIN_ACCESS_TOKEN ??
+    process.env.NEW_ADMIN ??
+    process.env.SHOPIFY_ADMIN_TOKEN;
+  return token?.trim() || null;
+}
 
 function shopDomain(): string {
   const d = process.env.SHOPIFY_STORE_DOMAIN;
@@ -38,6 +47,9 @@ function adminOAuthCredentials(): { clientId: string; clientSecret: string } {
  *   body: { client_id, client_secret, grant_type: "client_credentials" }
  */
 export async function getAdminAccessToken(): Promise<string> {
+  const directToken = directAdminAccessToken();
+  if (directToken) return directToken;
+
   const now = Date.now();
   if (cached && cached.expiresAt - 60_000 > now) return cached.token;
 
