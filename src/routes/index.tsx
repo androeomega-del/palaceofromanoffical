@@ -23,15 +23,19 @@ const HOME_DESC =
 export const Route = createFileRoute("/")({
   loader: async ({ context }): Promise<{ abBucket: MetaBucket }> => {
     const { bucket } = await readMetaAbBucket();
-    // Prime homepage collection rails so cards render on first paint instead
-    // of waiting on post-hydration client fetches. Fire-and-forget so SSR is
-    // never blocked on Shopify latency.
-    void context.queryClient.prefetchQuery(
-      collectionRailQueryOptions("the-riviera-edit", 8),
-    );
-    void context.queryClient.prefetchQuery(
-      collectionRailQueryOptions("coastal-essentials", 8),
-    );
+    // Prime homepage collection rails + editorial-split lead images so the
+    // first paint shows real product imagery instead of empty containers.
+    // Fire-and-forget — never block SSR on Shopify latency.
+    for (const handle of [
+      "the-riviera-edit",
+      "coastal-essentials",
+      "womens-dresses",
+      "new-arrivals",
+      "suits",
+      "mens-loafers",
+    ]) {
+      void context.queryClient.prefetchQuery(collectionRailQueryOptions(handle, 8));
+    }
     return { abBucket: bucket };
   },
   head: ({ loaderData }) => {
