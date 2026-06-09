@@ -37,7 +37,7 @@ export const Route = createFileRoute("/")({
             .ensureQueryData(collectionRailQueryOptions(handle, 8))
             .catch((err) => console.error(`[home loader] rail ${handle} prefetch failed:`, err)),
       ),
-      ...["new-arrivals", "suits", "mens-shirts"].map((handle) =>
+      ...["new-arrivals", "suits", "mens-shirts", "the-riviera-edit", "coastal-essentials", "womens-dresses"].map((handle) =>
         context.queryClient
           .ensureQueryData(collectionHeroImageQueryOptions(handle))
           .catch((err) => console.error(`[home loader] tile hero ${handle} prefetch failed:`, err)),
