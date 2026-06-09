@@ -131,7 +131,7 @@ Return JSON with this shape:
     try {
       result = await callAi({
         module: "editorial",
-        model: "google/gemini-2.5-pro",
+        model: "google/gemini-2.5-flash-lite",
         system: PALACE_BRAND_VOICE,
         user: userPrompt,
         json: true,
