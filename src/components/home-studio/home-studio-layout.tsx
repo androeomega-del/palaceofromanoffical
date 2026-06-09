@@ -411,10 +411,10 @@ function EditorialTile({ handle, title }: { handle: string; title: string }) {
 }
 
 function WomenswearBlock() {
-  const { data, isLoading } = useQuery(collectionRailQueryOptions("womens-dresses", 8));
+  const { data } = useQuery(collectionRailQueryOptions("womens-dresses", 8));
   const lead = data?.[0]?.node.images?.edges?.[0]?.node;
 
-  if (!isLoading && (!data || data.length === 0)) return null;
+
 
   return (
     <section className="relative w-full bg-black overflow-hidden">
