@@ -216,7 +216,7 @@ export const Route = createFileRoute("/sitemap.xml")({
 
         // Collections
         try {
-          const collections = await fetchCollections(500);
+          const collections = (await withTimeout(fetchCollections(500), 15_000, [])) ?? [];
           const seen = new Set<string>();
           for (const c of collections) {
             // Skip empty collections — Google flags them as Soft 404.
