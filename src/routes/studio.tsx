@@ -20,8 +20,10 @@ export const Route = createFileRoute("/studio")({
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),
-  loader: async ({ context }) => {
-    await context.queryClient.ensureQueryData(newThisWeekQueryOptions("Women"));
+  loader: ({ context }) => {
+    // Non-blocking prime — the rail renders its own skeleton until products
+    // arrive, so a slow Storefront read never hangs the page.
+    void context.queryClient.prefetchQuery(newThisWeekQueryOptions("Women"));
     return null;
   },
   component: StudioPage,
