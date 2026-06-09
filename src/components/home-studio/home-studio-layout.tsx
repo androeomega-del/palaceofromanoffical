@@ -313,10 +313,9 @@ function EditorialSplit({
   ctaLabel: string;
   ctaTo: string;
 }) {
-  const { data, isLoading } = useQuery(collectionRailQueryOptions(handle, 8));
+  const { data } = useQuery(collectionRailQueryOptions(handle, 8));
   const lead = data?.[0]?.node.images?.edges?.[0]?.node;
 
-  if (!isLoading && (!data || data.length === 0)) return null;
 
   return (
     <section className="bg-ink">
