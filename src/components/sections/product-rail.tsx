@@ -53,6 +53,9 @@ export interface ProductRailProps {
   /** Suppress the eyebrow + title header. Use when the rail follows an
    *  editorial split block that already provides the section heading. */
   headless?: boolean;
+  /** Visual tone. "dark" inverts background + text for noir layouts. */
+  tone?: "light" | "dark";
+
 }
 
 export function ProductRail({
