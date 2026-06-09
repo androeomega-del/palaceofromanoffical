@@ -341,9 +341,13 @@ export function CapsuleBuilder({
     ),
   );
 
-  // Re-seed only when the PDP product itself changes. Depending on the full
-  // product object can re-fill a slot immediately after a shopper clears it.
+  const lastSeedHandleRef = React.useRef(seedProduct.handle);
+
+  // Re-seed only when the PDP product itself changes. The mount pass must not
+  // re-fill a slot immediately after a shopper clears the seeded item.
   React.useEffect(() => {
+    if (lastSeedHandleRef.current === seedProduct.handle) return;
+    lastSeedHandleRef.current = seedProduct.handle;
     setSlots(
       SLOT_ORDER.map((kind) =>
         kind === seedKind
