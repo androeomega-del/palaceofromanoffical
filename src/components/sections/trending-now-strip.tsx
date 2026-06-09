@@ -39,7 +39,7 @@ export function TrendingNowStrip({
             {eyebrow}
           </h2>
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
+        <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 -mx-5 px-5 md:mx-0 md:px-0 md:pb-0 md:overflow-visible md:snap-none md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {tiles.map((t, i) => (
             <Link
               key={t.to}
@@ -52,7 +52,7 @@ export function TrendingNowStrip({
                   position: i,
                 })
               }
-              className="group relative block aspect-[3/4] overflow-hidden bg-ink/5"
+              className="group relative block aspect-[3/4] overflow-hidden bg-ink/5 shrink-0 basis-[72%] snap-start md:basis-auto md:shrink"
             >
               <img
                 src={imgForKey(t.imageKey)}
