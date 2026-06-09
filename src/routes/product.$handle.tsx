@@ -1458,7 +1458,7 @@ function ProductView({
           <CapsuleBuilder
             seedProduct={product}
             seedVariantId={selectedVariant?.id}
-            seedKind={classifyCapsuleKind(product.productType)}
+            seedKind={classifyCapsuleKind(product)}
             candidatePool={capsulePool}
           />
 
