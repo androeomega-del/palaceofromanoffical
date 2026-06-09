@@ -136,8 +136,12 @@ export async function getAdminAccessToken(): Promise<string> {
   });
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    throw new Error(`Shopify client_credentials grant failed ${res.status}: ${text.slice(0, 240)}`);
+    const summary = lastAttempts.length
+      ? ` Direct tokens also rejected: ${lastAttempts.map((a) => `${a.name}→${a.status}`).join(", ")}.`
+      : "";
+    throw new Error(`Shopify client_credentials grant failed ${res.status}: ${text.slice(0, 240)}.${summary}`);
   }
+
   const data = (await res.json()) as {
     access_token: string;
     expires_in?: number;
