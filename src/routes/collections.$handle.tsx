@@ -180,7 +180,7 @@ export const Route = createFileRoute("/collections/$handle")({
     // not be cached by Google as a Soft 404.
     let collectionRes: Awaited<ReturnType<typeof fetchCollection>> | null = null;
     let collectionFetchFailed = false;
-    const [collectionSettled, abRes] = await Promise.all([
+    const [collectionSettled, abRes, firstPage] = await Promise.all([
       fetchCollection(params.handle, 1).then(
         (r) => ({ ok: true as const, value: r }),
         () => ({ ok: false as const, value: null }),
@@ -198,6 +198,11 @@ export const Route = createFileRoute("/collections/$handle")({
       // throw notFound() — TanStack Start renders notFoundComponent with HTTP 404.
       throw notFound();
     }
+    // Determine emptiness from the loaded first page so we can noindex
+    // empty PLPs (Google was flagging them as Soft 404 / thin content).
+    const firstPageEdges =
+      (firstPage as { pages?: Array<{ edges?: unknown[] }> } | null)?.pages?.[0]?.edges ?? [];
+    const isEmpty = Array.isArray(firstPageEdges) && firstPageEdges.length === 0;
     if (!collectionRes) {
       // Transient Storefront error — render a safe shell, do NOT 404.
       return {
@@ -205,6 +210,7 @@ export const Route = createFileRoute("/collections/$handle")({
         description: "",
         image: null,
         abBucket: abRes.bucket,
+        isEmpty,
       };
     }
     return {
@@ -212,6 +218,7 @@ export const Route = createFileRoute("/collections/$handle")({
       description: collectionRes.description ?? "",
       image: collectionRes.image?.url ?? null,
       abBucket: abRes.bucket,
+      isEmpty,
     };
   },
   head: ({ params, loaderData }) => {
@@ -240,7 +247,13 @@ export const Route = createFileRoute("/collections/$handle")({
       { property: "og:url", content: url },
       { property: "og:type", content: "website" },
     ];
-    if (robots) meta.push({ name: "robots", content: robots });
+    if (loaderData?.isEmpty) {
+      // Empty PLP — keep crawlable but exclude from the index to avoid
+      // Soft 404 / thin-content flags. Drop any A/B robots variant.
+      const i = meta.findIndex((m) => m.name === "robots");
+      const tag = { name: "robots", content: "noindex, follow" };
+      if (i >= 0) meta[i] = tag; else meta.push(tag);
+    } else if (robots) meta.push({ name: "robots", content: robots });
     if (loaderData?.image) {
       meta.push({ property: "og:image", content: loaderData.image });
       meta.push({ name: "twitter:image", content: loaderData.image });
