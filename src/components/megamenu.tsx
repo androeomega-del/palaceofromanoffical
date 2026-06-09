@@ -128,9 +128,18 @@ export function DesktopMegamenu() {
   }, [liveCollections, liveHandles, menuSource]);
 
 
-  const triggerKeys = useMemo(
-    () => [...departments.map((d) => d.key as string), "vacation", "best-sellers", "brands"],
+  // Final top-level order: Men, Women, Brands, Vacation.
+  const orderedDepartments = useMemo(
+    () =>
+      [...departments].sort((a, b) => {
+        const rank = (k: string) => (k === "men" ? 0 : k === "women" ? 1 : 2);
+        return rank(a.key) - rank(b.key);
+      }),
     [departments],
+  );
+  const triggerKeys = useMemo(
+    () => [...orderedDepartments.map((d) => d.key as string), "brands", "vacation"],
+    [orderedDepartments],
   );
 
   const openNow = useCallback((key: string) => {
@@ -211,7 +220,7 @@ export function DesktopMegamenu() {
       onMouseLeave={scheduleClose}
       onBlur={onWrapperBlur}
     >
-      {departments.map((dept) => {
+      {orderedDepartments.map((dept) => {
         const isOpen = openKey === dept.key;
         return (
           <MegaTrigger
@@ -228,22 +237,6 @@ export function DesktopMegamenu() {
           />
         );
       })}
-      <VacationTrigger
-        isOpen={openKey === "vacation"}
-        onOpen={() => openNow("vacation")}
-        onScheduleClose={scheduleClose}
-        onCloseAndFocus={() => closeAndFocusTrigger("vacation")}
-        onArrow={(e) => onTriggerArrow(e, "vacation")}
-        registerTrigger={registerTrigger("vacation")}
-      />
-      <BestSellersTrigger
-        isOpen={openKey === "best-sellers"}
-        onOpen={() => openNow("best-sellers")}
-        onScheduleClose={scheduleClose}
-        onCloseAndFocus={() => closeAndFocusTrigger("best-sellers")}
-        onArrow={(e) => onTriggerArrow(e, "best-sellers")}
-        registerTrigger={registerTrigger("best-sellers")}
-      />
       <BrandsTrigger
         isOpen={openKey === "brands"}
         onOpen={() => openNow("brands")}
@@ -253,13 +246,14 @@ export function DesktopMegamenu() {
         registerTrigger={registerTrigger("brands")}
         liveCollections={liveCollections ?? []}
       />
-      <Link
-        to="/swim"
-        className={TRIGGER_CLASS + " font-serif italic text-[var(--sea)]"}
-        role="menuitem"
-      >
-        Swim
-      </Link>
+      <VacationTrigger
+        isOpen={openKey === "vacation"}
+        onOpen={() => openNow("vacation")}
+        onScheduleClose={scheduleClose}
+        onCloseAndFocus={() => closeAndFocusTrigger("vacation")}
+        onArrow={(e) => onTriggerArrow(e, "vacation")}
+        registerTrigger={registerTrigger("vacation")}
+      />
     </div>
   );
 }
