@@ -10,6 +10,7 @@ import { spotlightFor } from "@/lib/brand-seo-categories";
 import { buildBrandFaq } from "@/lib/brand-faq";
 import { BrandCategorySpotlight } from "@/components/sections/brand-category-spotlight";
 import { cdnImage } from "@/lib/cdn-image";
+import { withTimeout } from "@/lib/with-timeout";
 
 type SortKey = SortValue;
 const SORT_KEYS: SortKey[] = SORT_OPTIONS.map((o) => o.value);
