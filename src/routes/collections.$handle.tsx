@@ -175,17 +175,25 @@ export const Route = createFileRoute("/collections/$handle")({
     const [sortKey, reverseStr] = effectiveSort.split("-");
     const reverse = reverseStr === "true";
 
-    const [collectionRes, abRes] = await Promise.all([
-      fetchCollection(params.handle, 1).catch(() => null),
+    // Distinguish "handle does not exist" (null) from network error (thrown).
+    // Only the former should produce an HTTP 404 — transient errors must
+    // not be cached by Google as a Soft 404.
+    let collectionRes: Awaited<ReturnType<typeof fetchCollection>> | null = null;
+    let collectionFetchFailed = false;
+    const [collectionSettled, abRes] = await Promise.all([
+      fetchCollection(params.handle, 1).then(
+        (r) => ({ ok: true as const, value: r }),
+        () => ({ ok: false as const, value: null }),
+      ),
       readMetaAbBucket().catch(() => ({ bucket: 0 as MetaBucket })),
-      // Prime page-1 grid into the same InfiniteData entry the component
-      // subscribes to. .catch keeps the page rendering on Shopify hiccups;
-      // the client query will retry naturally.
       context.queryClient
         .ensureInfiniteQueryData(
           collectionFirstPageQueryOptions({ handle: params.handle, sortKey, reverse }),
         )
         .catch(() => null),
+    ]);
+    collectionRes = collectionSettled.value;
+    collectionFetchFailed = !collectionSettled.ok;
     ]);
     if (!collectionRes) {
       // Real HTTP 404 for unknown/retired collection handles — avoids Soft 404.
