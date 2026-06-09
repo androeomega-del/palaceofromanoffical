@@ -258,7 +258,7 @@ export const Route = createFileRoute("/sitemap.xml")({
 
             urls.push(
               renderUrl(`${SITE_URL}/product/${p.handle}`, {
-                lastmod: p.updatedAt,
+                lastmod: formatSitemapDate(p.updatedAt),
                 changefreq: "weekly",
                 priority: "0.7",
                 imageBlocks,
@@ -291,7 +291,7 @@ export const Route = createFileRoute("/sitemap.xml")({
           for (const d of destinations) {
             urls.push(
               renderUrl(`${SITE_URL}/vacation-stylist/${d.slug}`, {
-                lastmod: d.updatedAt,
+                lastmod: formatSitemapDate(d.updatedAt),
                 changefreq: "weekly",
                 priority: "0.7",
               }),
