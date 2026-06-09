@@ -34,7 +34,7 @@ export async function fetchCollectionHeroImage(handle: string): Promise<Collecti
     } | null;
   }>(QUERY, { handle });
 
-  const col = res?.collection;
+  const col = res?.data?.collection;
   if (!col) {
     // eslint-disable-next-line no-console
     console.warn(`[collection-hero-image] collection "${handle}" returned null`);
