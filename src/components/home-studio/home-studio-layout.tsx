@@ -314,7 +314,9 @@ function EditorialSplit({
   ctaTo: string;
 }) {
   const { data } = useQuery(collectionRailQueryOptions(handle, 8));
-  const lead = data?.[0]?.node.images?.edges?.[0]?.node;
+  const { data: heroFallback } = useQuery(collectionHeroImageQueryOptions(handle));
+  const railLead = data?.[0]?.node.images?.edges?.[0]?.node;
+  const lead = railLead ?? (heroFallback ? { url: heroFallback.url, altText: heroFallback.altText } : undefined);
 
 
   return (
