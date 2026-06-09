@@ -223,7 +223,7 @@ export const Route = createFileRoute("/sitemap.xml")({
             seen.add(canonical);
             urls.push(
               renderUrl(`${SITE_URL}/collections/${canonical}`, {
-                lastmod: c.updatedAt,
+                lastmod: formatSitemapDate(c.updatedAt),
                 changefreq: "daily",
                 priority: "0.8",
               }),
