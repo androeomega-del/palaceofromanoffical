@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, ErrorComponent } from "@tanstack/react-router";
 import {
   LandingCollectionPage,
   faqJsonLd,
@@ -6,6 +6,7 @@ import {
   type LandingFAQ,
 } from "@/components/landing-collection-page";
 import { routeHead, SITE_NAME, SITE_URL } from "@/lib/seo";
+import { landingCollectionQueryOptions } from "@/lib/landing-collection.functions";
 
 const PATH = "/collections/designer-crossbody-bags";
 const H1 = "Designer Crossbody Bags";
@@ -36,6 +37,8 @@ const FAQS: LandingFAQ[] = [
   },
 ];
 
+const LANDING_QO = landingCollectionQueryOptions({ query: "crossbody", first: 12 });
+
 export const Route = createFileRoute("/collections/designer-crossbody-bags")({
   head: () => {
     const rh = routeHead({ path: PATH, title: TITLE, description: DESC, type: "website" });
@@ -48,6 +51,12 @@ export const Route = createFileRoute("/collections/designer-crossbody-bags")({
       ],
     };
   },
+  loader: ({ context }) => (context.queryClient.prefetchQuery(LANDING_QO), undefined),
+
+  errorComponent: ErrorComponent,
+
+  notFoundComponent: () => <div className="p-12 text-center text-ink/70">Collection not found.</div>,
+
   component: Page,
 });
 
@@ -90,6 +99,7 @@ function Page() {
         </>
       }
       shopifyQuery="crossbody"
+      queryOptions={LANDING_QO}
       faqs={FAQS}
       relatedGuides={[
         { to: "/collections/italian-leather-handbags", label: "Italian Leather Handbags" },
