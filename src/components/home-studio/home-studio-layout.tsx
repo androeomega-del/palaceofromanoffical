@@ -240,12 +240,14 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
       <section className="bg-black border-y border-canvas/10">
         <div className="max-w-3xl mx-auto px-6 md:px-14 py-section-sm md:py-32 text-center">
           <h2 className="font-serif font-light text-[8vw] md:text-[3vw] leading-[1.1] tracking-[-0.01em] text-balance mb-7 text-canvas">
-            A human on the other end.
+            The Concierge never sleeps.
           </h2>
           <p className="text-sm md:text-base leading-[1.75] font-light text-canvas/75 mb-10 mx-auto max-w-xl">
-            Tell the Concierge what you're dressing for — a late dinner in
-            Taormina, a night you've been planning, someone worth the effort —
-            and receive a considered edit within a day.
+            Our concierge is AI — advanced, discreet, and fluent in every
+            piece in the house. Tell it what you're dressing for — a late
+            dinner in Taormina, a night you've been planning, someone worth
+            the effort — and receive a considered edit in moments, at any
+            hour.
           </p>
           <button
             type="button"
