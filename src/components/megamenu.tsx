@@ -867,12 +867,12 @@ function VacationPanel({
               <ul className="flex flex-col gap-2.5">
                 {col.items.map((it) => (
                   <li key={it.label + it.to}>
-                    <a
-                      href={it.to}
+                    <Link
+                      to={it.to}
                       className="text-[13px] font-light text-ink/75 hover:text-ink transition-colors inline-block normal-case tracking-normal leading-relaxed"
                     >
                       {it.label}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
