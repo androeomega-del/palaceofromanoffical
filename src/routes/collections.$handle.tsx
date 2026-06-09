@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate, useRouter, redirect, stripSearchParams } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useRouter, redirect, stripSearchParams, notFound } from "@tanstack/react-router";
 import { collectionFirstPageQueryOptions } from "@/lib/rails/collection-first-page";
 import { canonicalCollectionHandle } from "@/lib/collection-canonical";
 import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
