@@ -94,7 +94,6 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
                 </button>
               </div>
               <div className="mt-6 flex flex-col sm:flex-row sm:items-center gap-x-6 gap-y-3 text-[10px] uppercase tracking-[0.32em]" style={{ color: palette.sand, fontFamily: fontSans }}>
-                <span>Or</span>
                 <Link
                   to="/women"
                   aria-label="Shop the women's edit"
