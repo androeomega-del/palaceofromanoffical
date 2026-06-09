@@ -1,13 +1,10 @@
 /**
- * StudioVerificationBanner — editorial provenance statement
+ * StudioVerificationBanner — "Sourcing" statement
  *
- * Wide-set editorial layout. Right column carries a staggered four-image
- * studio drop pulled from the June bucket; a full-bleed contact-sheet
- * marquee below the body cycles through all 30 frames as a quiet visual
- * proof of the in-studio handling described in the body copy.
- *
- * Images are CDN-hosted (`@/assets/june/*.png.asset.json`) so the heavy
- * PNGs never touch the repo and load lazily.
+ * Editorial direct-from-Europe positioning. Replaces the prior
+ * "Verified Physical Provenance" block. The full-bleed contact-sheet
+ * marquee remains as the supporting visual; it carries no in-house
+ * studio claim — purely a visual rhythm of curated pieces.
  */
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
