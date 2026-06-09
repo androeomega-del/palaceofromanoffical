@@ -345,6 +345,38 @@ export function CapsuleBuilder({
 
   const lastSeedHandleRef = React.useRef(seedProduct.handle);
 
+  // Fire a single capsule_view per seeded product so we can measure how often
+  // the builder is rendered vs. how often shoppers interact with it.
+  // Also flag a mismatch event when the auto-classified slot for the seed
+  // product disagrees with the slot it was placed into (e.g. shoes seeded
+  // as "Top" because productType was empty).
+  React.useEffect(() => {
+    const tags = (seedProduct as unknown as { tags?: string[] }).tags;
+    const classified = classifyKind(
+      seedProduct.productType,
+      tags,
+      seedProduct.title,
+      seedProduct.handle,
+    );
+    trackCapsuleEvent({
+      event: "capsule_view",
+      handle: seedProduct.handle,
+      slot: seedKind,
+      vendor: seedProduct.vendor ?? null,
+      productType: seedProduct.productType ?? null,
+    });
+    if (classified && classified !== seedKind) {
+      trackCapsuleEvent({
+        event: "capsule_mismatch",
+        handle: seedProduct.handle,
+        slot: seedKind,
+        vendor: seedProduct.vendor ?? null,
+        productType: `seed:${classified}->${seedKind}`,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [seedProduct.handle]);
+
   // Re-seed only when the PDP product itself changes. The mount pass must not
   // re-fill a slot immediately after a shopper clears the seeded item.
   React.useEffect(() => {
@@ -358,6 +390,7 @@ export function CapsuleBuilder({
       ),
     );
   }, [seedProduct.handle, seedKind]);
+
 
   const [openKind, setOpenKind] = React.useState<CapsuleSlotKind | null>(null);
 
