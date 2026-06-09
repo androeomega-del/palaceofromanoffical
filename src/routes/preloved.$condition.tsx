@@ -125,8 +125,8 @@ function PrelovedConditionPage() {
   const params = Route.useParams();
   const condition = params.condition as PrelovedCondition;
   const label = PRELOVED_CONDITION_LABEL[condition];
-  const { data } = useSuspenseQuery(prelovedConditionQueryOptions(condition));
-  const products = data?.edges ?? [];
+  const { data, isLoading } = useQuery(prelovedConditionQueryOptions(condition));
+  const products: PrelovedPage["edges"] = data?.edges ?? [];
 
   const h1 = `Pristine & Excellent Condition Preloved ${label} | Palace of Roman`;
   const badge = label.toUpperCase();
