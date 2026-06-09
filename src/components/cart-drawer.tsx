@@ -9,6 +9,7 @@ import { trackCartEvent } from "@/lib/cart-analytics";
 import { CartFbt } from "@/components/cart-fbt";
 import { CartEmailCapture, type CartEmailCaptureHandle } from "@/components/atelier/cart-email-capture";
 import { VipPriorityAccess } from "@/components/atelier/vip-priority-access";
+import { ExpressCheckoutButtons } from "@/components/express-checkout-buttons";
 
 
 
