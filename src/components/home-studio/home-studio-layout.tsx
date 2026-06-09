@@ -95,7 +95,7 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
             <div className="max-w-screen-2xl mx-auto">
               <div className="max-w-3xl text-canvas">
                 <h1 className="font-serif font-light tracking-[-0.015em] text-balance text-[12vw] md:text-[5.5vw] leading-[0.95]">
-                  The coast, <em className="italic">after</em> dark.
+                  Dress for <em className="italic">after</em> dark.
                 </h1>
                 <p className="mt-6 md:mt-8 max-w-xl text-base md:text-lg leading-relaxed font-light text-canvas/85">
                   Silk that catches candlelight, linen undone by evening —
