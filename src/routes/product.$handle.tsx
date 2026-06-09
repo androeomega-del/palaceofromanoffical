@@ -79,13 +79,7 @@ export const Route = createFileRoute("/product/$handle")({
       productByHandleQueryOptions(params.handle),
     );
     if (!p) {
-      // Return a real HTTP 404 so Google doesn't classify retired PDPs as Soft 404.
-      if (typeof window === "undefined") {
-        try {
-          const { setSsrStatus } = await import("@/lib/set-response-status.server");
-          setSsrStatus(404);
-        } catch {}
-      }
+      // throw notFound() — TanStack Start renders notFoundComponent with HTTP 404.
       throw notFound();
     }
 
