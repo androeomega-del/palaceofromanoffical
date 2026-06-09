@@ -26,15 +26,23 @@ export const getLandingCollectionProducts = createServerFn({ method: "GET" })
   .handler(async ({ data }): Promise<ShopifyProduct[]> => {
     const first = data.first ?? 12;
     const key = `landing:${data.query}:${first}`;
+    // 10-minute in-memory cache; cold edge hits race a 6s timeout so SSR
+    // never hangs if Shopify Storefront is slow — empty array hydrates and
+    // the next request refreshes.
     return cached(
       key,
-      async () =>
-        (await fetchProducts({
+      async () => {
+        const fetchP = fetchProducts({
           first,
           query: data.query,
           sortKey: "BEST_SELLING",
-        })) as ShopifyProduct[],
-      60_000,
+        }) as Promise<ShopifyProduct[]>;
+        const timeoutP = new Promise<ShopifyProduct[]>((resolve) =>
+          setTimeout(() => resolve([]), 6_000),
+        );
+        return Promise.race([fetchP, timeoutP]);
+      },
+      10 * 60_000,
     );
   });
 
@@ -43,6 +51,6 @@ export const landingCollectionQueryOptions = (args: { query: string; first?: num
   return queryOptions({
     queryKey: ["landing", args.query, first] as const,
     queryFn: () => getLandingCollectionProducts({ data: { query: args.query, first } }),
-    staleTime: 60_000,
+    staleTime: 10 * 60_000,
   });
 };
