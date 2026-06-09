@@ -12,10 +12,15 @@ type CachedToken = { token: string; expiresAt: number };
 let cached: CachedToken | null = null;
 
 function directAdminAccessToken(): string | null {
+  // Priority: user's newest full-permission token first.
+  // GraphQL_TOKEN is the current Admin API access token; GRAPHQL_ID + REFRESH_TOKEN
+  // are the companion app id / refresh token from the same OAuth install.
   const token =
+    process.env.GraphQL_TOKEN ??
+    process.env.GRAPHQL_TOKEN ??
+    process.env.NEW_ADMIN ??
     process.env.SHOPIFY_ACCESS_TOKEN ??
     process.env.SHOPIFY_ADMIN_ACCESS_TOKEN ??
-    process.env.NEW_ADMIN ??
     process.env.SHOPIFY_ADMIN_TOKEN;
   return token?.trim() || null;
 }
