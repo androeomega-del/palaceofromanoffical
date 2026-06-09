@@ -313,10 +313,9 @@ function EditorialSplit({
   ctaLabel: string;
   ctaTo: string;
 }) {
-  const { data, isLoading } = useQuery(collectionRailQueryOptions(handle, 8));
+  const { data } = useQuery(collectionRailQueryOptions(handle, 8));
   const lead = data?.[0]?.node.images?.edges?.[0]?.node;
 
-  if (!isLoading && (!data || data.length === 0)) return null;
 
   return (
     <section className="bg-ink">
@@ -369,7 +368,7 @@ function EditorialSplit({
 }
 
 function EditorialTile({ handle, title }: { handle: string; title: string }) {
-  const { data: hero, isLoading } = useQuery(collectionHeroImageQueryOptions(handle));
+  const { data: hero } = useQuery(collectionHeroImageQueryOptions(handle));
 
   return (
     <Link
@@ -379,10 +378,7 @@ function EditorialTile({ handle, title }: { handle: string; title: string }) {
       aria-label={title}
     >
       <div className="relative w-full bg-black" style={{ aspectRatio: "3 / 4" }}>
-        {isLoading && !hero && (
-          <Skeleton className="absolute inset-0 w-full h-full !rounded-none bg-canvas/5" />
-        )}
-        {hero?.url && (
+        {hero?.url ? (
           <img
             src={hero.url}
             alt={hero.altText ?? title}
@@ -391,7 +387,10 @@ function EditorialTile({ handle, title }: { handle: string; title: string }) {
             loading="lazy"
             decoding="async"
           />
+        ) : (
+          <Skeleton className="absolute inset-0 w-full h-full !rounded-none bg-canvas/5" />
         )}
+
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -412,10 +411,10 @@ function EditorialTile({ handle, title }: { handle: string; title: string }) {
 }
 
 function WomenswearBlock() {
-  const { data, isLoading } = useQuery(collectionRailQueryOptions("womens-dresses", 8));
+  const { data } = useQuery(collectionRailQueryOptions("womens-dresses", 8));
   const lead = data?.[0]?.node.images?.edges?.[0]?.node;
 
-  if (!isLoading && (!data || data.length === 0)) return null;
+
 
   return (
     <section className="relative w-full bg-black overflow-hidden">

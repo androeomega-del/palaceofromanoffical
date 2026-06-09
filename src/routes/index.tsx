@@ -26,26 +26,23 @@ export const Route = createFileRoute("/")({
   loader: async ({ context }): Promise<{ abBucket: MetaBucket }> => {
     const { bucket } = await readMetaAbBucket();
     // Prime homepage collection rails + editorial-split lead images so the
-    // first paint shows real product imagery instead of empty containers.
-    // Fire-and-forget — never block SSR on Shopify latency.
-    for (const handle of [
-      "the-riviera-edit",
-      "coastal-essentials",
-      "womens-dresses",
-      "new-arrivals",
-      "suits",
-      "mens-shirts",
-    ]) {
-      void context.queryClient.prefetchQuery(collectionRailQueryOptions(handle, 8));
-    }
-    // Await tile hero images so SSR ships <img> tags (small payload, fast).
-    await Promise.all(
-      ["new-arrivals", "suits", "mens-shirts"].map((handle) =>
-        context.queryClient.ensureQueryData(collectionHeroImageQueryOptions(handle)),
+    // first paint is consistent between SSR and client hydration. We AWAIT
+    // every query the homepage subscribes to — fire-and-forget prefetches
+    // caused React #418 hydration mismatches because the rail components
+    // conditionally render based on `isLoading`/`data.length`.
+    await Promise.all([
+      ...["the-riviera-edit", "coastal-essentials", "womens-dresses", "new-arrivals", "suits", "mens-shirts"].map(
+        (handle) =>
+          context.queryClient
+            .ensureQueryData(collectionRailQueryOptions(handle, 8))
+            .catch((err) => console.error(`[home loader] rail ${handle} prefetch failed:`, err)),
       ),
-    ).catch((err) => {
-      console.error("[home loader] tile hero prefetch failed:", err);
-    });
+      ...["new-arrivals", "suits", "mens-shirts"].map((handle) =>
+        context.queryClient
+          .ensureQueryData(collectionHeroImageQueryOptions(handle))
+          .catch((err) => console.error(`[home loader] tile hero ${handle} prefetch failed:`, err)),
+      ),
+    ]);
 
     return { abBucket: bucket };
   },
