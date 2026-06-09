@@ -1,38 +1,52 @@
 /**
- * HomeStudioLayout — the obsidian/sand editorial homepage layer.
+ * HomeStudioLayout — editorial-luxury homepage repositioned around
+ * men's resort & coastal fashion, womenswear secondary.
  *
- * Two variants:
- *  - `embedded` (default, used by `/`): renders inside the real SiteHeader/
- *    SiteFooter chrome. Does NOT suppress global chrome — cart, search,
- *    account, and nav remain functional.
- *  - `standalone` (used by `/studio`): suppresses SiteHeader/SiteFooter
- *    via useChromeStore and renders its own StudioHeader + draft footer.
+ * Light canvas, oversized imagery, restrained type. Uses existing
+ * design tokens (canvas / ink / bronze-deep / sand), ProductRail
+ * primitive, and the existing concierge drawer.
  *
- * Concierge drawer is wired to the existing `fetchConciergePicks` serverFn.
+ * Variant prop is kept for the /studio route's standalone preview.
  */
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { ArrowUpRight } from "lucide-react";
 import { useChromeStore } from "@/stores/chrome-store";
 
 import { ConciergeDrawer } from "./concierge-drawer";
 import { PalaceHeader } from "./palace-header";
-import { StudioVerificationBanner } from "./studio-verification-banner";
-import { palette, fontSans, fontSerif } from "./palette";
 import { ProductRail } from "@/components/sections/product-rail";
 import { collectionRailQueryOptions } from "@/lib/rails/queries";
+import { vendorSlug } from "@/lib/nav-config";
 import heroImage from "@/assets/home-hero.jpg";
-import heroVideoAsset from "@/assets/hero-cinematic.mp4.asset.json";
 
 interface HomeStudioLayoutProps {
   variant?: "embedded" | "standalone";
 }
 
+const BRANDS = [
+  "Dolce & Gabbana",
+  "Brunello Cucinelli",
+  "Saint Laurent",
+  "Versace",
+  "Gucci",
+  "Prada",
+  "Balenciaga",
+  "Fendi",
+] as const;
+
+// Hand-curated tile list — collection handles are real, copy is verbatim.
+const TILES = [
+  { handle: "new-arrivals", title: "New In" },
+  { handle: "suits", title: "Tailoring for Warm Latitudes" },
+  { handle: "mens-loafers", title: "The Loafer Edit" },
+] as const;
+
 export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps) {
   const setSuppressed = useChromeStore((s) => s.setSuppressed);
   const isStandalone = variant === "standalone";
 
-  // Only the standalone (/studio) variant suppresses real site chrome.
   useEffect(() => {
     if (!isStandalone) return;
     setSuppressed({ header: true, footer: true });
@@ -42,127 +56,114 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
   const [conciergeOpen, setConciergeOpen] = useState(false);
 
   return (
-    <div
-      className="w-full font-serif"
-      style={{
-        background: palette.obsidian,
-        color: palette.offwhite,
-        fontFamily: fontSerif,
-      }}
-    >
+    <div className="w-full bg-canvas text-ink">
       {isStandalone && <PalaceHeader onOpenConcierge={() => setConciergeOpen(true)} />}
 
-      {/* ───── Hero (asymmetric split — text left, cinematic loop right) ───── */}
-      <section className="relative px-6 md:px-14 pt-16 md:pt-28 pb-24 md:pb-40 animate-[studioFade_1.2s_ease-out_both]">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-14 items-center">
-          {/* Left column — text block (unchanged copy) */}
-          <div className="md:col-span-7">
-            <p
-              className="text-[10px] md:text-[11px] tracking-[0.45em] uppercase mb-10"
-              style={{ color: palette.sand, fontFamily: fontSans }}
-            >
-              Palace of Roman — {isStandalone ? "Studio" : "The Edit"}
-            </p>
-            <h1
-              className="text-[15vw] md:text-[8.5vw] leading-[0.92] font-light tracking-[-0.02em] text-balance"
-              style={{ fontWeight: 300 }}
-            >
-              The quiet <em className="italic" style={{ color: palette.sand }}>art</em> of
-              <br />
-              luxury fashion.
-            </h1>
-            <div className="mt-14 md:mt-20 max-w-md">
-              <p
-                className="text-base md:text-lg leading-relaxed"
-                style={{ color: palette.muted, fontFamily: fontSans, fontWeight: 300 }}
-              >
-                A curated boutique for the coast — linen, silk, and sun-built
-                tailoring from Dolce &amp; Gabbana, Brunello Cucinelli, Saint Laurent, and the
-                maisons of the Mediterranean. New, current-season, shipped
-                worldwide from Europe.
-              </p>
-              <div className="mt-10 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
-                <Link
-                  to="/men"
-                  aria-label="Shop the men's edit"
-                  className="group inline-flex items-center justify-center gap-3 px-7 py-3 text-[11px] uppercase tracking-[0.32em] transition-all duration-500 sm:hover:gap-5"
-                  style={{
-                    background: palette.offwhite,
-                    color: palette.obsidian,
-                    fontFamily: fontSans,
-                  }}
-                >
-                  Shop Menswear
-                  <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" strokeWidth={1.25} />
-                </Link>
-                <Link
-                  to="/women"
-                  aria-label="Shop the women's edit"
-                  className="group inline-flex items-center justify-center gap-3 px-7 py-3 text-[11px] uppercase tracking-[0.32em] border transition-all duration-500 sm:hover:gap-5"
-                  style={{
-                    color: palette.offwhite,
-                    borderColor: palette.offwhite,
-                    background: "transparent",
-                    fontFamily: fontSans,
-                  }}
-                >
-                  Shop Womenswear
-                  <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" strokeWidth={1.25} />
-                </Link>
-              </div>
-              <div className="mt-6">
-                <button
-                  onClick={() => setConciergeOpen(true)}
-                  aria-label="Open personal concierge styling service"
-                  className="group inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.28em] transition-opacity hover:opacity-80"
-                  style={{ color: palette.sand, fontFamily: fontSans }}
-                >
-                  Or begin with the Concierge
-                  <ArrowUpRight className="w-3 h-3 transition-transform duration-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" strokeWidth={1.25} />
-                </button>
-              </div>
-            </div>
-          </div>
+      {/* ───────────── Section 1 — Hero ───────────── */}
+      <section className="relative w-full overflow-hidden bg-canvas-raised" style={{ contain: "layout" }}>
+        <div className="relative w-full" style={{ aspectRatio: "16 / 9", minHeight: "70vh" }}>
+          <img
+            src={heroImage}
+            alt="Coastal Mediterranean editorial — linen and sea light"
+            className="absolute inset-0 w-full h-full object-cover home-hero-img"
+            fetchPriority="high"
+            decoding="async"
+          />
+          {/* Soft bottom scrim for legibility, restrained */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{ background: "linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 38%, rgba(0,0,0,0) 70%)" }}
+            aria-hidden="true"
+          />
 
-          {/* Right column — vertical cinematic loop. Aspect ratio + contain:layout
-              reserve the box at SSR so CLS stays 0. Poster falls back to the
-              existing home-hero asset until the .mp4 is uploaded. */}
-          <div className="md:col-span-5">
-            <div
-              className="relative w-full overflow-hidden bg-black/40"
-              style={{ aspectRatio: "3 / 4", contain: "layout" }}
-            >
-              <video
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="auto"
-                poster={heroImage}
-                aria-hidden="true"
-                className="absolute inset-0 w-full h-full object-cover"
-              >
-                <source src={heroVideoAsset.url} type="video/mp4" />
-              </video>
+          <div className="absolute inset-x-0 bottom-0 px-6 md:px-14 pb-12 md:pb-20">
+            <div className="max-w-screen-2xl mx-auto">
+              <div className="max-w-3xl text-white">
+                <h1
+                  className="font-serif font-light tracking-[-0.015em] text-balance text-[12vw] md:text-[5.5vw] leading-[0.95]"
+                >
+                  The quiet <em className="italic">art</em> of coastal luxury.
+                </h1>
+                <p className="mt-6 md:mt-8 max-w-xl text-base md:text-lg leading-relaxed font-light text-white/85">
+                  Linen, silk, and sun-built tailoring from Dolce &amp; Gabbana,
+                  Brunello Cucinelli, Saint Laurent, and the maisons of the
+                  Mediterranean — new, current-season, shipped worldwide from
+                  Europe.
+                </p>
+                <div className="mt-8 md:mt-10 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+                  <Link
+                    to="/men"
+                    className="inline-flex items-center justify-center gap-3 px-7 py-3 bg-white text-ink text-[11px] uppercase tracking-[0.32em] transition-opacity hover:opacity-90"
+                  >
+                    Shop Menswear
+                    <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={1.25} />
+                  </Link>
+                  <Link
+                    to="/women"
+                    className="inline-flex items-center justify-center gap-3 px-7 py-3 border border-white text-white text-[11px] uppercase tracking-[0.32em] transition-colors hover:bg-white hover:text-ink"
+                  >
+                    Shop Womenswear
+                    <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={1.25} />
+                  </Link>
+                </div>
+                <div className="mt-5">
+                  <button
+                    onClick={() => setConciergeOpen(true)}
+                    className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.28em] text-white/80 hover:text-white transition-colors"
+                  >
+                    Or begin with the Concierge
+                    <ArrowUpRight className="w-3 h-3" strokeWidth={1.25} />
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ───── Sourcing — direct-from-Europe statement ───── */}
-      <StudioVerificationBanner />
+      {/* ───────────── Section 2 — Brand line ───────────── */}
+      <section className="border-y border-ink/8 bg-canvas">
+        <div className="max-w-screen-2xl mx-auto px-6 md:px-14 py-7 md:py-8">
+          <div className="flex md:justify-center gap-x-8 md:gap-x-12 overflow-x-auto md:overflow-visible whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {BRANDS.map((b, i) => (
+              <Link
+                key={b}
+                to="/brand/$vendor"
+                params={{ vendor: vendorSlug(b) }}
+                className="text-[10px] md:text-[11px] uppercase tracking-[0.32em] text-bronze-deep hover:text-ink transition-colors shrink-0"
+              >
+                {b}
+                {i < BRANDS.length - 1 && (
+                  <span aria-hidden="true" className="ml-8 md:ml-12 text-ink/30">·</span>
+                )}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
 
-      {/* ───── Occasion-led editorial rails ───── */}
-      <ProductRail
-        surface="rail:home-riviera-edit"
-        queryOptions={collectionRailQueryOptions("the-riviera-edit", 8)}
+      {/* ───────────── Section 3 — The Riviera Edit ───────────── */}
+      <EditorialSplit
+        handle="the-riviera-edit"
         eyebrow="The Riviera Edit"
-        title="Linen, silk polos, and the colors of the Amalfi coast."
+        headline="Linen for harbors, silk for evenings."
+        body="A cross-category edit of Mediterranean summer — drawstring linen, silk polos, sailing sneakers, and the colors of the Amalfi coast."
+        ctaLabel="Shop the edit"
         ctaTo="/collections/the-riviera-edit"
-        ctaLabel="Shop The Riviera Edit"
       />
       <ProductRail
-        surface="rail:home-coastal-essentials"
+        surface="rail:home-riviera"
+        queryOptions={collectionRailQueryOptions("the-riviera-edit", 8)}
+        eyebrow=""
+        title=""
+        ctaTo="/collections/the-riviera-edit"
+        ctaLabel="Shop The Riviera Edit"
+        headless
+      />
+
+      {/* ───────────── Section 4 — Coastal Essentials ───────────── */}
+      <ProductRail
+        surface="rail:home-coastal"
         queryOptions={collectionRailQueryOptions("coastal-essentials", 8)}
         eyebrow="Coastal Essentials"
         title="Swim, slides, and the pieces that live in a weekend bag."
@@ -170,23 +171,101 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
         ctaLabel="Shop Coastal Essentials"
       />
 
-      {/* ───── Standalone-only draft footer (real SiteFooter handles `/`) ───── */}
+      {/* ───────────── Section 5 — Sourcing ───────────── */}
+      <section className="bg-canvas-raised">
+        <div className="max-w-3xl mx-auto px-6 md:px-14 py-section-sm md:py-24 text-center">
+          <p className="text-[10px] md:text-[11px] uppercase tracking-[0.45em] text-bronze-deep mb-7">
+            Sourcing
+          </p>
+          <h2 className="font-serif font-light text-[8vw] md:text-[3.2vw] leading-[1.1] tracking-[-0.01em] text-balance mb-7 text-ink">
+            Direct from Europe. Never secondary market.
+          </h2>
+          <p className="text-sm md:text-base leading-[1.75] font-light text-bronze-deep mb-10 mx-auto max-w-xl">
+            Every piece at Palace of Roman is new, unworn, and current or
+            recent season — sourced through established European distribution
+            partners and shipped to you in original packaging, with tags and
+            authenticity cards where the maison provides them. No consignment.
+            No pre-owned. No gray-market resale chains. One piece, one owner:
+            you.
+          </p>
+          <Link
+            to="/sourcing-architecture"
+            className="inline-flex items-center gap-3 pb-2 text-[11px] uppercase tracking-[0.32em] border-b border-bronze text-ink hover:gap-5 transition-all duration-500"
+          >
+            Read how we source
+            <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={1.25} />
+          </Link>
+        </div>
+      </section>
+
+      {/* ───────────── Section 6 — Three editorial tiles ───────────── */}
+      <section className="bg-canvas">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-ink/8">
+          {TILES.map((t) => (
+            <EditorialTile key={t.handle} handle={t.handle} title={t.title} />
+          ))}
+        </div>
+      </section>
+
+      {/* ───────────── Section 7 — Womenswear ───────────── */}
+      <WomenswearBlock />
+      <ProductRail
+        surface="rail:home-womens"
+        queryOptions={collectionRailQueryOptions("womens-dresses", 8)}
+        eyebrow=""
+        title=""
+        ctaTo="/women"
+        ctaLabel="Shop Womenswear"
+        headless
+      />
+
+      {/* ───────────── Section 8 — Concierge band ───────────── */}
+      <section className="bg-canvas-raised border-y border-ink/8">
+        <div className="max-w-3xl mx-auto px-6 md:px-14 py-section-sm md:py-28 text-center">
+          <h2 className="font-serif font-light text-[8vw] md:text-[3vw] leading-[1.1] tracking-[-0.01em] text-balance mb-7 text-ink">
+            A human on the other end.
+          </h2>
+          <p className="text-sm md:text-base leading-[1.75] font-light text-bronze-deep mb-10 mx-auto max-w-xl">
+            Tell the Concierge what you're dressing for — a wedding in Positano,
+            a week on the water, a season in the sun — and receive a considered
+            edit within a day.
+          </p>
+          <button
+            onClick={() => setConciergeOpen(true)}
+            className="inline-flex items-center gap-3 pb-2 text-[11px] uppercase tracking-[0.32em] border-b border-bronze text-ink hover:gap-5 transition-all duration-500"
+          >
+            Begin with the Concierge
+            <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={1.25} />
+          </button>
+        </div>
+      </section>
+
+      {/* ───────────── Section 9 — Trust strip ───────────── */}
+      <section className="bg-canvas border-t border-ink/8">
+        <div className="max-w-screen-2xl mx-auto px-6 md:px-14 py-8 md:py-10">
+          <ul className="flex flex-col md:flex-row md:items-center md:justify-center gap-4 md:gap-12 text-center">
+            {[
+              "Express worldwide shipping from Europe",
+              "New & current-season, original packaging",
+              "Secure checkout",
+            ].map((item) => (
+              <li
+                key={item}
+                className="text-[10px] md:text-[11px] uppercase tracking-[0.32em] text-bronze-deep"
+              >
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
       {isStandalone && (
-        <footer
-          className="px-6 md:px-14 py-10 border-t flex flex-col md:flex-row md:items-center md:justify-between gap-4"
-          style={{
-            borderColor: "rgba(244,241,236,0.08)",
-            fontFamily: fontSans,
-          }}
-        >
-          <span className="text-[10px] uppercase tracking-[0.32em]" style={{ color: palette.muted }}>
+        <footer className="px-6 md:px-14 py-10 border-t border-ink/8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <span className="text-[10px] uppercase tracking-[0.32em] text-bronze-deep">
             Palace of Roman — Studio draft
           </span>
-          <Link
-            to="/"
-            className="text-[10px] uppercase tracking-[0.32em] transition-colors hover:opacity-100"
-            style={{ color: palette.sand, opacity: 0.85 }}
-          >
+          <Link to="/" className="text-[10px] uppercase tracking-[0.32em] text-bronze-deep hover:text-ink transition-colors">
             ← Return to the live boutique
           </Link>
         </footer>
@@ -195,26 +274,164 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
       <ConciergeDrawer open={conciergeOpen} onClose={() => setConciergeOpen(false)} />
 
       <style>{`
-        @keyframes studioFade {
-          from { opacity: 0; transform: translateY(12px); }
-          to   { opacity: 1; transform: translateY(0); }
+        @keyframes homeHeroScale {
+          from { transform: scale(1); }
+          to   { transform: scale(1.04); }
         }
-        @keyframes studioScale {
-          from { opacity: 0; transform: scale(0.985); }
-          to   { opacity: 1; transform: scale(1); }
+        .home-hero-img {
+          animation: homeHeroScale 18s ease-out forwards;
+          will-change: transform;
         }
-        @keyframes studioDrawerIn {
-          from { opacity: 0; transform: translateX(-24px); }
-          to   { opacity: 1; transform: translateX(0); }
+        @media (prefers-reduced-motion: reduce) {
+          .home-hero-img { animation: none; }
         }
-        @keyframes conciergeDot {
-          0%, 80%, 100% { transform: translateY(0); opacity: 0.35; }
-          40%           { transform: translateY(-3px); opacity: 1; }
-        }
-        .studio-tile { animation: studioScale 1.4s cubic-bezier(.2,.7,.2,1) both; }
-        .studio-tile img { transition: transform 1.6s cubic-bezier(.2,.7,.2,1), opacity .8s ease; will-change: transform; }
-        .studio-tile:hover img { transform: scale(1.06); }
       `}</style>
     </div>
+  );
+}
+
+// ───────────────────────── Sub-components ─────────────────────────
+
+function EditorialSplit({
+  handle,
+  eyebrow,
+  headline,
+  body,
+  ctaLabel,
+  ctaTo,
+}: {
+  handle: string;
+  eyebrow: string;
+  headline: string;
+  body: string;
+  ctaLabel: string;
+  ctaTo: string;
+}) {
+  const { data, isLoading } = useQuery(collectionRailQueryOptions(handle, 8));
+  const lead = data?.[0]?.node.images?.edges?.[0]?.node;
+
+  // Hide silently when the collection is genuinely empty.
+  if (!isLoading && (!data || data.length === 0)) return null;
+
+  return (
+    <section className="bg-canvas">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-0 md:gap-0">
+        <div className="md:col-span-7 relative bg-canvas-raised">
+          <div className="relative w-full" style={{ aspectRatio: "4 / 5" }}>
+            {lead && (
+              <img
+                src={lead.url}
+                alt={lead.altText ?? headline}
+                className="absolute inset-0 w-full h-full object-cover"
+                loading="lazy"
+                decoding="async"
+              />
+            )}
+          </div>
+        </div>
+        <div className="md:col-span-5 flex items-center px-6 md:px-14 py-14 md:py-0">
+          <div className="max-w-md">
+            <p className="text-[10px] md:text-[11px] uppercase tracking-[0.45em] text-bronze-deep mb-6">
+              {eyebrow}
+            </p>
+            <h2 className="font-serif font-light text-[8vw] md:text-[3vw] leading-[1.05] tracking-[-0.01em] text-balance mb-6 text-ink">
+              {headline}
+            </h2>
+            <p className="text-sm md:text-base leading-[1.75] font-light text-bronze-deep mb-8">
+              {body}
+            </p>
+            <Link
+              to={ctaTo}
+              className="inline-flex items-center gap-3 pb-2 text-[11px] uppercase tracking-[0.32em] border-b border-bronze text-ink hover:gap-5 transition-all duration-500"
+            >
+              {ctaLabel}
+              <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={1.25} />
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function EditorialTile({ handle, title }: { handle: string; title: string }) {
+  const { data, isLoading } = useQuery(collectionRailQueryOptions(handle, 4));
+  const lead = data?.[0]?.node.images?.edges?.[0]?.node;
+
+  if (!isLoading && (!data || data.length === 0)) return null;
+
+  return (
+    <Link
+      to="/collections/$handle"
+      params={{ handle }}
+      className="group relative block bg-canvas-raised overflow-hidden"
+    >
+      <div className="relative w-full" style={{ aspectRatio: "3 / 4" }}>
+        {lead && (
+          <img
+            src={lead.url}
+            alt={lead.altText ?? title}
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1600ms] ease-out group-hover:scale-[1.04]"
+            loading="lazy"
+            decoding="async"
+          />
+        )}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: "linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0) 100%)" }}
+          aria-hidden="true"
+        />
+        <div className="absolute inset-x-0 bottom-0 px-6 py-7">
+          <h3 className="text-[11px] md:text-[12px] uppercase tracking-[0.32em] text-white">
+            {title}
+          </h3>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+function WomenswearBlock() {
+  const { data, isLoading } = useQuery(collectionRailQueryOptions("womens-dresses", 8));
+  const lead = data?.[0]?.node.images?.edges?.[0]?.node;
+
+  if (!isLoading && (!data || data.length === 0)) return null;
+
+  return (
+    <section className="relative w-full bg-canvas-raised overflow-hidden">
+      <div className="relative w-full" style={{ aspectRatio: "16 / 9", minHeight: "60vh" }}>
+        {lead && (
+          <img
+            src={lead.url}
+            alt={lead.altText ?? "Womenswear — silk prints and sea light"}
+            className="absolute inset-0 w-full h-full object-cover"
+            loading="lazy"
+            decoding="async"
+          />
+        )}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: "linear-gradient(to right, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 55%, rgba(0,0,0,0) 100%)" }}
+          aria-hidden="true"
+        />
+        <div className="absolute inset-y-0 left-0 flex items-center px-6 md:px-14">
+          <div className="max-w-md text-white">
+            <p className="text-[10px] md:text-[11px] uppercase tracking-[0.45em] text-white/75 mb-6">
+              Womenswear
+            </p>
+            <h2 className="font-serif font-light text-[10vw] md:text-[4vw] leading-[1.0] tracking-[-0.01em] text-balance mb-8">
+              Silk prints and sea light.
+            </h2>
+            <Link
+              to="/women"
+              className="inline-flex items-center gap-3 px-7 py-3 border border-white text-white text-[11px] uppercase tracking-[0.32em] hover:bg-white hover:text-ink transition-colors"
+            >
+              Shop Womenswear
+              <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={1.25} />
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
