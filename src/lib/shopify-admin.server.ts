@@ -123,7 +123,9 @@ export async function getAdminAccessToken(): Promise<string> {
   }
   const { clientId, clientSecret } = oauthCreds;
 
+  const url = `https://${shopDomain()}/admin/oauth/access_token`;
   const res = await fetch(url, {
+
     method: "POST",
     headers: { "Content-Type": "application/json", Accept: "application/json" },
     body: JSON.stringify({
