@@ -95,16 +95,34 @@ export async function getAdminAccessToken(): Promise<string> {
   if (cached && cached.expiresAt - 60_000 > now) return cached.token;
 
   const directTokens = directAdminAccessTokens();
+  lastAttempts = [];
   for (const candidate of directTokens) {
-    if (await verifyAdminToken(candidate)) {
+    const result = await verifyAdminToken(candidate);
+    lastAttempts.push({ name: candidate.name, status: result.status, body: result.body });
+    if (result.ok) {
       cached = { token: candidate.token, expiresAt: now + 55 * 60_000 };
       return cached.token;
     }
   }
 
-  const { clientId, clientSecret } = adminOAuthCredentials();
+  // All direct tokens failed — try OAuth client_credentials fallback. If that
+  // also fails, surface exactly which secrets were rejected so the user can
+  // delete the bad one and replace it.
+  let oauthCreds: { clientId: string; clientSecret: string };
+  try {
+    oauthCreds = adminOAuthCredentials();
+  } catch (e) {
+    const summary = lastAttempts.length
+      ? `Tried tokens (all rejected by Shopify): ${lastAttempts.map((a) => `${a.name}→${a.status}`).join(", ")}.`
+      : "No Admin tokens are configured.";
+    throw new Error(
+      `Shopify Admin auth failed. ${summary} ` +
+        `Fix: delete the rejected secret(s) above and add a fresh Admin API access token from your installed custom app ` +
+        `(Shopify Admin → Apps → Develop apps → your app → API credentials → Admin API access token).`,
+    );
+  }
+  const { clientId, clientSecret } = oauthCreds;
 
-  const url = `https://${shopDomain()}/admin/oauth/access_token`;
   const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json", Accept: "application/json" },
