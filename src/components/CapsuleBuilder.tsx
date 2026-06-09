@@ -505,8 +505,19 @@ export function CapsuleBuilder({
           };
         });
         await dispatchShare({ data: { email, pieces } });
+        for (const s of filled) {
+          trackCapsuleEvent({
+            event: "capsule_share",
+            handle: s.product.handle,
+            slot: s.kind,
+            vendor: s.product.vendor ?? null,
+            productType: s.product.productType ?? null,
+            position: filled.length,
+          });
+        }
         setShareStatus("sent");
         toast.success("Lookbook dispatched to your inbox");
+
       } catch (err) {
         console.error("[capsule-share] dispatch failed", err);
         shareSentForRef.current = null;
