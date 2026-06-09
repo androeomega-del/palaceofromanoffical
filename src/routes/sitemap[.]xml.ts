@@ -290,7 +290,7 @@ export const Route = createFileRoute("/sitemap.xml")({
 
         // Vacation destinations
         try {
-          const destinations = await fetchActiveDestinations();
+          const destinations = (await withTimeout(fetchActiveDestinations(), 8_000, [])) ?? [];
           for (const d of destinations) {
             urls.push(
               renderUrl(`${SITE_URL}/vacation-stylist/${d.slug}`, {
