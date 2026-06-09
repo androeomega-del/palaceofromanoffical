@@ -198,8 +198,8 @@ export const Route = createFileRoute("/collections/$handle")({
       // Real HTTP 404 for unknown/retired collection handles — avoids Soft 404.
       if (typeof window === "undefined") {
         try {
-          const { setResponseStatus } = await import("@tanstack/react-start/server");
-          setResponseStatus(404);
+          const { setSsrStatus } = await import("@/lib/set-response-status.server");
+          setSsrStatus(404);
         } catch {}
       }
       throw notFound();
