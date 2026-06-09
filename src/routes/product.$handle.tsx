@@ -78,7 +78,16 @@ export const Route = createFileRoute("/product/$handle")({
     const p = await context.queryClient.ensureQueryData(
       productByHandleQueryOptions(params.handle),
     );
-    if (!p) throw notFound();
+    if (!p) {
+      // Return a real HTTP 404 so Google doesn't classify retired PDPs as Soft 404.
+      if (typeof window === "undefined") {
+        try {
+          const { setResponseStatus } = await import("@tanstack/react-start/server");
+          setResponseStatus(404);
+        } catch {}
+      }
+      throw notFound();
+    }
 
     // Resolve "Shop the Look" companions for SEO meta + JSON-LD.
     // Priority: stylist-curated `custom.look_products` metafield, else
