@@ -872,7 +872,12 @@ function ProductView({
   });
   const capsuleOuterwearQ = useQuery({
     queryKey: ["capsule-pool", "outerwear"],
-    queryFn: () => fetchProducts({ first: 50, query: "(tag:outerwear OR tag:jackets OR tag:coats OR tag:blazers)" }),
+    queryFn: () => fetchProducts({ first: 50, query: "(tag:outerwear OR tag:jackets OR tag:coats OR tag:blazers OR tag:hats OR tag:caps OR tag:beanies OR product_type:Hats OR product_type:Hat)" }),
+    staleTime: 5 * 60 * 1000,
+  });
+  const capsuleHeadwearQ = useQuery({
+    queryKey: ["capsule-pool", "headwear"],
+    queryFn: () => fetchProducts({ first: 50, query: "(tag:hats OR tag:hat OR tag:caps OR tag:cap OR tag:beanies OR tag:beanie OR tag:visors OR tag:visor OR product_type:Hats OR product_type:Hat)" }),
     staleTime: 5 * 60 * 1000,
   });
   const capsuleFootwearQ = useQuery({
@@ -904,6 +909,7 @@ function ProductView({
     push(capsuleTopQ.data);
     push(capsuleBottomQ.data);
     push(capsuleOuterwearQ.data);
+    push(capsuleHeadwearQ.data);
     push(capsuleFootwearQ.data);
     push(capsuleAccessoryQ.data);
     return out;
@@ -914,6 +920,7 @@ function ProductView({
     capsuleTopQ.data,
     capsuleBottomQ.data,
     capsuleOuterwearQ.data,
+    capsuleHeadwearQ.data,
     capsuleFootwearQ.data,
     capsuleAccessoryQ.data,
   ]);
