@@ -60,9 +60,11 @@ export function JournalShopRail({ sources, eyebrow = "From the catalog" }: { sou
                 Shop all →
               </Link>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 -mx-5 px-5 md:mx-0 md:px-0 md:pb-0 md:overflow-visible md:snap-none md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {group.products.map((p) => (
-                <ProductCard key={p.node.id} product={p} />
+                <div key={p.node.id} className="shrink-0 basis-[72%] snap-start md:basis-auto md:shrink">
+                  <ProductCard product={p} />
+                </div>
               ))}
             </div>
           </div>

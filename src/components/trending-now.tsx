@@ -61,21 +61,23 @@ export function TrendingNowRail() {
         </div>
         {(() => {
           const items = data.products.slice(0, 8);
-          // Match grid columns to supply so we never render blank slots in
-          // a 4-up row. NAP/MR PORTER shrink to match available pieces.
+          // Mobile = horizontal swipe rail. Desktop = grid sized to supply
+          // so we never render blank slots in a 4-up row.
           const cols =
             items.length >= 4
-              ? "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+              ? "md:grid-cols-3 lg:grid-cols-4"
               : items.length === 3
-              ? "grid-cols-1 sm:grid-cols-3"
-              : "grid-cols-1 sm:grid-cols-2";
+              ? "sm:grid-cols-3"
+              : "sm:grid-cols-2";
           return (
             <div
-              className={`grid ${cols} gap-x-6 gap-y-12`}
+              className={`flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 -mx-6 px-6 md:mx-0 md:px-0 md:pb-0 md:overflow-visible md:snap-none md:grid ${cols} md:gap-x-6 md:gap-y-12 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden`}
               data-testid="trending-grid"
             >
               {items.map((p) => (
-                <ProductCard key={p.node.id} product={p} />
+                <div key={p.node.id} className="shrink-0 basis-[72%] snap-start md:basis-auto md:shrink">
+                  <ProductCard product={p} />
+                </div>
               ))}
             </div>
           );

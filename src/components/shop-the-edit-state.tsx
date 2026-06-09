@@ -8,15 +8,19 @@ import { Link } from "@tanstack/react-router";
 
 export function ShopTheEditSkeleton({
   count = 8,
-  columns = "grid-cols-2 lg:grid-cols-4",
+  columns = "md:grid-cols-2 lg:grid-cols-4",
 }: {
   count?: number;
   columns?: string;
 }) {
   return (
-    <div className={`grid ${columns} gap-x-6 gap-y-14`} aria-busy="true" aria-live="polite">
+    <div
+      className={`flex gap-x-4 overflow-x-auto snap-x snap-mandatory pb-2 -mx-5 px-5 md:mx-0 md:px-0 md:pb-0 md:overflow-visible md:snap-none md:grid ${columns} md:gap-x-6 md:gap-y-14 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden`}
+      aria-busy="true"
+      aria-live="polite"
+    >
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i}>
+        <div key={i} className="shrink-0 basis-[72%] snap-start md:basis-auto md:shrink">
           <div className="w-full aspect-[3/4] por-shimmer mb-5" />
           <div className="h-2 w-16 por-shimmer mb-2" />
           <div className="h-3 w-3/4 por-shimmer" />

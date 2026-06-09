@@ -115,9 +115,9 @@ function Body({
           </Link>
         </div>
         {isLoading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 -mx-6 px-6 md:mx-0 md:px-0 md:pb-0 md:overflow-visible md:snap-none md:grid md:grid-cols-3 lg:grid-cols-4 md:gap-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="aspect-[3/4] bg-ink/5 animate-pulse" />
+              <div key={i} className="aspect-[3/4] bg-ink/5 animate-pulse shrink-0 basis-[72%] snap-start md:basis-auto md:shrink" />
             ))}
           </div>
         ) : (data ?? []).length === 0 ? (
@@ -129,9 +129,11 @@ function Body({
             .
           </p>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 -mx-6 px-6 md:mx-0 md:px-0 md:pb-0 md:overflow-visible md:snap-none md:grid md:grid-cols-3 lg:grid-cols-4 md:gap-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {(data ?? []).map((p) => (
-              <ProductCard key={p.node.id} product={p} />
+              <div key={p.node.id} className="shrink-0 basis-[72%] snap-start md:basis-auto md:shrink">
+                <ProductCard product={p} />
+              </div>
             ))}
           </div>
         )}
