@@ -8,9 +8,11 @@ import {
 import { useWishlistStore } from "@/stores/wishlist-store";
 import { useRecentlyViewedStore } from "@/stores/recently-viewed-store";
 import { useInteractionStore } from "@/stores/interaction-store";
+import { useConciergeStore } from "@/stores/concierge-store";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice } from "@/lib/shopify";
 import { brandFromSlug } from "@/lib/brand-heritage";
+
 
 type PageContext = {
   pageType: "home" | "product" | "brand" | "collection" | "shop" | "other";
