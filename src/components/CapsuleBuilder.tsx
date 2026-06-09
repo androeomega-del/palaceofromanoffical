@@ -211,7 +211,7 @@ function classifyOuterwearSub(
  * picker shows "No companion pieces available for this slot."
  * Returns null when no taxonomy matches.
  */
-function classifyKind(
+export function classifyKind(
   productType: string | undefined | null,
   tags?: string[] | null,
   title?: string | null,

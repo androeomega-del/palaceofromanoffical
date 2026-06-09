@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound, useLocation } from "@tanstack/react-router";
 import { formatLuxuryTitle } from "@/lib/format-luxury-title";
-import { CapsuleBuilder, type CapsuleSlotKind } from "@/components/CapsuleBuilder";
+import { CapsuleBuilder, classifyKind as classifyCapsuleSlot, type CapsuleSlotKind } from "@/components/CapsuleBuilder";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState, useMemo } from "react";
 
@@ -649,14 +649,23 @@ function layeringKey(product: { title: string; productType?: string }): Layering
   return null;
 }
 
-function classifyCapsuleKind(productType: string): CapsuleSlotKind {
-  const t = productType.toLowerCase();
-  if (/shoe|sneaker|boot|loafer|sandal|slipper|heel|oxford|derby|brogue|espadrille|mule|pump|flip.flop|slide|clog/.test(t)) return "Footwear";
-  if (/pant|trouser|jean|short|skirt|legging|sweatpant|chino|slack|brief|boxer|swim|trunk|jogger/.test(t)) return "Bottom";
-  if (/jacket|coat|blazer|overcoat|parka|trench|bomber|windbreaker|anorak|cape|cardigan|sweater|hoodie|sweatshirt|knitwear|fleece|gilet|pullover|turtleneck|poncho/.test(t)) return "Outerwear";
-  if (/bag|belt|tie|scarf|hat|cap|glove|watch|jewelry|jewellery|necklace|bracelet|ring|earring|sunglass|wallet|card holder|keyring|pocket square|cufflink|brooch|headband|umbrella|phone case|strap|mask|lanyard|accessory/.test(t)) return "Accessory";
-  if (/shirt|t-shirt|tee|polo|top|blouse|tank|camisole|bodysuit|tunic|henley|vest/.test(t)) return "Top";
-  return "Top";
+function classifyCapsuleKind(product: {
+  productType?: string | null;
+  tags?: string[] | null;
+  title?: string | null;
+  handle?: string | null;
+}): CapsuleSlotKind {
+  // Use the canonical taxonomy from CapsuleBuilder so seed classification
+  // matches the picker's slot routing exactly (productType is frequently
+  // empty on imported catalogs — tags/title/handle carry the category).
+  return (
+    classifyCapsuleSlot(
+      product.productType ?? "",
+      product.tags ?? [],
+      product.title ?? "",
+      product.handle ?? "",
+    ) ?? "Top"
+  );
 }
 
 // Auto "The Look" helpers are centralised in @/lib/look-bundle so the
@@ -1449,7 +1458,7 @@ function ProductView({
           <CapsuleBuilder
             seedProduct={product}
             seedVariantId={selectedVariant?.id}
-            seedKind={classifyCapsuleKind(product.productType)}
+            seedKind={classifyCapsuleKind(product)}
             candidatePool={capsulePool}
           />
 
