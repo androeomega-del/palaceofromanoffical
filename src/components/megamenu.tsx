@@ -998,13 +998,13 @@ export function MobileMegamenu() {
               {col.heading}
             </p>
             {col.items.map((it) => (
-              <a
+              <Link
                 key={it.label + it.to}
-                href={it.to}
+                to={it.to}
                 className="text-[14px] text-ink/85 hover:text-bronze py-1"
               >
                 {it.label}
-              </a>
+              </Link>
             ))}
           </div>
         ))}
