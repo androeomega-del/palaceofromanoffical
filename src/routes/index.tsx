@@ -15,6 +15,7 @@ import heroImage from "@/assets/home-hero.jpg";
 import { readMetaAbBucket } from "@/lib/meta-ab.functions";
 import { seoMetaForBucket, type MetaBucket } from "@/lib/meta-ab";
 import { collectionRailQueryOptions } from "@/lib/rails/queries";
+import { collectionHeroImageQueryOptions } from "@/lib/collection-hero-image";
 
 const HOME_TITLE = "Palace of Roman | Designer Evening & Resort Fashion";
 const HOME_DESC =
@@ -37,6 +38,14 @@ export const Route = createFileRoute("/")({
     ]) {
       void context.queryClient.prefetchQuery(collectionRailQueryOptions(handle, 8));
     }
+    // Await tile hero images so SSR ships <img> tags (small payload, fast).
+    await Promise.all(
+      ["new-arrivals", "suits", "mens-shirts"].map((handle) =>
+        context.queryClient.ensureQueryData(collectionHeroImageQueryOptions(handle)),
+      ),
+    ).catch((err) => {
+      console.error("[home loader] tile hero prefetch failed:", err);
+    });
 
     return { abBucket: bucket };
   },
