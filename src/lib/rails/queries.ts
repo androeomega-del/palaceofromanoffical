@@ -17,7 +17,7 @@
  * `storefrontApiRequest`, so we only need the key to vary here.
  */
 import { queryOptions } from "@tanstack/react-query";
-import { fetchProducts } from "@/lib/shopify";
+import { fetchProducts, fetchCollectionFiltered, type ShopifyProduct } from "@/lib/shopify";
 import { useMarketStore } from "@/stores/market-store";
 import { cached } from "@/lib/server-cache";
 
