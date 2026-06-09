@@ -14,14 +14,24 @@ import { HomeStudioLayout } from "@/components/home-studio/home-studio-layout";
 import heroImage from "@/assets/home-hero.jpg";
 import { readMetaAbBucket } from "@/lib/meta-ab.functions";
 import { seoMetaForBucket, type MetaBucket } from "@/lib/meta-ab";
+import { collectionRailQueryOptions } from "@/lib/rails/queries";
 
 const HOME_TITLE = "Palace of Roman | Men's Luxury Resort & Coastal Fashion";
 const HOME_DESC =
   "Curated luxury resort wear for men — linen, swim, and coastal tailoring from Dolce & Gabbana, Pucci, Loro Piana and more. New, current-season, shipped worldwide from Europe.";
 
 export const Route = createFileRoute("/")({
-  loader: async (): Promise<{ abBucket: MetaBucket }> => {
+  loader: async ({ context }): Promise<{ abBucket: MetaBucket }> => {
     const { bucket } = await readMetaAbBucket();
+    // Prime homepage collection rails so cards render on first paint instead
+    // of waiting on post-hydration client fetches. Fire-and-forget so SSR is
+    // never blocked on Shopify latency.
+    void context.queryClient.prefetchQuery(
+      collectionRailQueryOptions("the-riviera-edit", 8),
+    );
+    void context.queryClient.prefetchQuery(
+      collectionRailQueryOptions("coastal-essentials", 8),
+    );
     return { abBucket: bucket };
   },
   head: ({ loaderData }) => {
