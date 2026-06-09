@@ -151,8 +151,26 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
         </div>
       </section>
 
-      {/* ───── Studio Verification — provenance banner ───── */}
+      {/* ───── Sourcing — direct-from-Europe statement ───── */}
       <StudioVerificationBanner />
+
+      {/* ───── Occasion-led editorial rails ───── */}
+      <ProductRail
+        surface="rail:home-riviera-edit"
+        queryOptions={collectionRailQueryOptions("the-riviera-edit", 8)}
+        eyebrow="The Riviera Edit"
+        title="Linen, silk polos, and the colors of the Amalfi coast."
+        ctaTo="/collections/the-riviera-edit"
+        ctaLabel="Shop The Riviera Edit"
+      />
+      <ProductRail
+        surface="rail:home-coastal-essentials"
+        queryOptions={collectionRailQueryOptions("coastal-essentials", 8)}
+        eyebrow="Coastal Essentials"
+        title="Swim, slides, and the pieces that live in a weekend bag."
+        ctaTo="/collections/coastal-essentials"
+        ctaLabel="Shop Coastal Essentials"
+      />
 
       {/* ───── Standalone-only draft footer (real SiteFooter handles `/`) ───── */}
       {isStandalone && (
