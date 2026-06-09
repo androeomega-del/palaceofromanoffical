@@ -126,7 +126,7 @@ export function DesktopCategoryRail() {
     .map((col) => ({
       heading: col.heading,
       items: liveHandles
-        ? col.items.filter((it) => liveHandles.has(it.handle))
+        ? col.items.filter((it) => !it.handle || liveHandles.has(it.handle))
         : col.items,
     }))
     .filter((col) => col.items.length > 0);
