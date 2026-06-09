@@ -957,16 +957,31 @@ function CollectionPage() {
               </div>
             ) : edges.length === 0 ? (
               <div className="py-20 text-center" style={{ contain: "layout", minHeight: "60vh" }}>
-                <p className="text-sm text-muted-foreground mb-6">
-                  No pieces match the current filters.
-                </p>
-                {(selections.length > 0 || priceRange) && (
-                  <button
-                    onClick={clearAll}
-                    className="text-[11px] uppercase tracking-[0.25em] border-b border-ink pb-1 hover:text-bronze hover:border-bronze"
-                  >
-                    Clear All Filters
-                  </button>
+                {(selections.length > 0 || priceRange) ? (
+                  <>
+                    <p className="text-sm text-bronze-deep mb-6">
+                      No pieces match the current filters.
+                    </p>
+                    <button
+                      onClick={clearAll}
+                      className="text-[11px] uppercase tracking-[0.25em] border-b border-ink pb-1 hover:text-bronze hover:border-bronze"
+                    >
+                      Clear All Filters
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-sm text-bronze-deep mb-6">
+                      This edit is currently empty.
+                    </p>
+                    <Link
+                      to="/collections/$handle"
+                      params={{ handle: "all-products" }}
+                      className="text-[11px] uppercase tracking-[0.25em] border-b border-ink pb-1 hover:text-bronze hover:border-bronze"
+                    >
+                      Browse all products
+                    </Link>
+                  </>
                 )}
               </div>
             ) : (
