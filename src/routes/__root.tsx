@@ -23,6 +23,7 @@ import { VaultLockerOverlay } from "@/components/vault/vault-locker-overlay";
 import { VacationTrunkOverlay } from "@/components/vacation-trunk/vacation-trunk-overlay";
 import { installHydrationMonitor } from "@/lib/hydration-monitor";
 import { useChromeStore } from "@/stores/chrome-store";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 // Side-effect: patch console.error on the client to capture hydration
 // mismatch warnings with timestamps + component names. No-op on the server.
@@ -428,6 +429,7 @@ function RouteAwareRuntime() {
       <ClientOnlyConcierge />
       <VaultLockerOverlay />
       <VacationTrunkOverlay />
+      <ThemeToggle />
     </>
   );
 }
