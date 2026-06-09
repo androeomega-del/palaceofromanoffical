@@ -368,7 +368,7 @@ function EditorialSplit({
 }
 
 function EditorialTile({ handle, title }: { handle: string; title: string }) {
-  const { data: hero, isLoading } = useQuery(collectionHeroImageQueryOptions(handle));
+  const { data: hero } = useQuery(collectionHeroImageQueryOptions(handle));
 
   return (
     <Link
@@ -378,10 +378,7 @@ function EditorialTile({ handle, title }: { handle: string; title: string }) {
       aria-label={title}
     >
       <div className="relative w-full bg-black" style={{ aspectRatio: "3 / 4" }}>
-        {isLoading && !hero && (
-          <Skeleton className="absolute inset-0 w-full h-full !rounded-none bg-canvas/5" />
-        )}
-        {hero?.url && (
+        {hero?.url ? (
           <img
             src={hero.url}
             alt={hero.altText ?? title}
@@ -390,7 +387,10 @@ function EditorialTile({ handle, title }: { handle: string; title: string }) {
             loading="lazy"
             decoding="async"
           />
+        ) : (
+          <Skeleton className="absolute inset-0 w-full h-full !rounded-none bg-canvas/5" />
         )}
+
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
