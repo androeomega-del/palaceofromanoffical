@@ -70,10 +70,12 @@ export const Route = createFileRoute("/")({
 
 
 function HomePage() {
-  const { abBucket } = Route.useLoaderData();
-  useMetaAb("home", abBucket, { a: pickHomeMeta(0), b: pickHomeMeta(1) });
+  // Meta A/B intentionally bypassed on `/` — title/description are locked
+  // to the niche-repositioning copy. Bucket still loaded for parity with
+  // other surfaces (canonical/robots resolution).
   return <HomeStudioLayout variant="embedded" />;
 }
+
 
 function HomeErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error("[home] runtime error:", error);
