@@ -20,6 +20,7 @@ const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
 // actual gateway invoices. Conservative on the high side to keep us under cap.
 const MODEL_PRICING: Record<string, { in: number; out: number }> = {
   "google/gemini-2.5-flash-lite": { in: 0.075, out: 0.3 },
+  "google/gemini-3.1-flash-lite-preview": { in: 0.15, out: 0.6 },
   "google/gemini-2.5-flash": { in: 0.3, out: 2.5 },
   "google/gemini-3-flash-preview": { in: 0.3, out: 2.5 },
   "google/gemini-2.5-pro": { in: 1.25, out: 10 },
@@ -61,7 +62,7 @@ export async function getMonthlySpendUsd(): Promise<number> {
 }
 
 function estimateCostUsd(model: string, inTokens: number, outTokens: number) {
-  const p = MODEL_PRICING[model] ?? MODEL_PRICING["google/gemini-2.5-flash"];
+  const p = MODEL_PRICING[model] ?? MODEL_PRICING["google/gemini-2.5-flash-lite"];
   return (inTokens / 1_000_000) * p.in + (outTokens / 1_000_000) * p.out;
 }
 
@@ -86,7 +87,7 @@ export type AiCallResult = {
 };
 
 export async function callAi(opts: AiCallOptions): Promise<AiCallResult> {
-  const model = opts.model ?? "google/gemini-2.5-flash";
+  const model = opts.model ?? "google/gemini-2.5-flash-lite";
 
   // Pre-flight budget check using a conservative estimate (1500 in, max out)
   const estIn = Math.ceil((opts.system.length + opts.user.length) / 4);
