@@ -11,18 +11,47 @@ const API_VERSION = "2025-07";
 type CachedToken = { token: string; expiresAt: number };
 let cached: CachedToken | null = null;
 
-function directAdminAccessToken(): string | null {
-  // Priority: user's newest full-permission token first.
-  // GraphQL_TOKEN is the current Admin API access token; GRAPHQL_ID + REFRESH_TOKEN
-  // are the companion app id / refresh token from the same OAuth install.
-  const token =
-    process.env.GraphQL_TOKEN ??
-    process.env.GRAPHQL_TOKEN ??
-    process.env.NEW_ADMIN ??
-    process.env.SHOPIFY_ACCESS_TOKEN ??
-    process.env.SHOPIFY_ADMIN_ACCESS_TOKEN ??
-    process.env.SHOPIFY_ADMIN_TOKEN;
-  return token?.trim() || null;
+type TokenCandidate = { name: string; token: string };
+
+function normalizeAdminToken(raw: string | undefined): string | null {
+  const token = raw?.trim().replace(/^['"]|['"]$/g, "").replace(/^Bearer\s+/i, "");
+  return token || null;
+}
+
+function directAdminAccessTokens(): TokenCandidate[] {
+  // Priority: user's newest full-permission token first. GRAPHQL_ID + REFRESH_TOKEN
+  // are companion OAuth credentials, not values Shopify accepts in X-Shopify-Access-Token.
+  const entries: Array<[string, string | undefined]> = [
+    ["GraphQL_TOKEN", process.env.GraphQL_TOKEN],
+    ["GRAPHQL_TOKEN", process.env.GRAPHQL_TOKEN],
+    ["NEW_ADMIN", process.env.NEW_ADMIN],
+    ["SHOPIFY_ACCESS_TOKEN", process.env.SHOPIFY_ACCESS_TOKEN],
+    ["SHOPIFY_ADMIN_ACCESS_TOKEN", process.env.SHOPIFY_ADMIN_ACCESS_TOKEN],
+    ["SHOPIFY_ADMIN_TOKEN", process.env.SHOPIFY_ADMIN_TOKEN],
+  ];
+
+  const seen = new Set<string>();
+  return entries.flatMap(([name, raw]) => {
+    const token = normalizeAdminToken(raw);
+    if (!token || seen.has(token)) return [];
+    seen.add(token);
+    return [{ name, token }];
+  });
+}
+
+async function verifyAdminToken(candidate: TokenCandidate): Promise<boolean> {
+  const res = await fetch(`https://${shopDomain()}/admin/api/${API_VERSION}/graphql.json`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Shopify-Access-Token": candidate.token,
+    },
+    body: JSON.stringify({ query: "query AdminTokenProbe { shop { id } }" }),
+  });
+  if (res.ok) return true;
+  const text = await res.text().catch(() => "");
+  console.warn(`[shopify-admin] ${candidate.name} rejected during token probe: ${res.status} ${text.slice(0, 160)}`);
+  return false;
 }
 
 function shopDomain(): string {
@@ -52,11 +81,16 @@ function adminOAuthCredentials(): { clientId: string; clientSecret: string } {
  *   body: { client_id, client_secret, grant_type: "client_credentials" }
  */
 export async function getAdminAccessToken(): Promise<string> {
-  const directToken = directAdminAccessToken();
-  if (directToken) return directToken;
-
   const now = Date.now();
   if (cached && cached.expiresAt - 60_000 > now) return cached.token;
+
+  const directTokens = directAdminAccessTokens();
+  for (const candidate of directTokens) {
+    if (await verifyAdminToken(candidate)) {
+      cached = { token: candidate.token, expiresAt: now + 55 * 60_000 };
+      return cached.token;
+    }
+  }
 
   const { clientId, clientSecret } = adminOAuthCredentials();
 
