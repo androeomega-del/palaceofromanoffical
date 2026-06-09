@@ -67,8 +67,6 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
               className="text-[15vw] md:text-[8.5vw] leading-[0.92] font-light tracking-[-0.02em] text-balance"
               style={{ fontWeight: 300 }}
             >
-              Palace of Roman
-              <br />
               The quiet <em className="italic" style={{ color: palette.sand }}>art</em> of
               <br />
               luxury fashion.
