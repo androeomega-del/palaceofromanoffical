@@ -297,14 +297,23 @@ function CategoryPanel({
             {chunks.map((c, i) => (
               <ul key={i} className="flex flex-col gap-2.5">
                 {c.map((it) => (
-                  <li key={it.handle}>
-                    <Link
-                      to="/collections/$handle"
-                      params={{ handle: it.handle }}
-                      className="text-[13px] font-light text-ink/75 hover:text-ink transition-colors inline-block normal-case tracking-normal leading-relaxed"
-                    >
-                      {it.label}
-                    </Link>
+                  <li key={it.to ?? it.handle ?? it.label}>
+                    {it.to ? (
+                      <Link
+                        to={it.to}
+                        className="text-[13px] font-light text-ink/75 hover:text-ink transition-colors inline-block normal-case tracking-normal leading-relaxed"
+                      >
+                        {it.label}
+                      </Link>
+                    ) : (
+                      <Link
+                        to="/collections/$handle"
+                        params={{ handle: it.handle! }}
+                        className="text-[13px] font-light text-ink/75 hover:text-ink transition-colors inline-block normal-case tracking-normal leading-relaxed"
+                      >
+                        {it.label}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>
