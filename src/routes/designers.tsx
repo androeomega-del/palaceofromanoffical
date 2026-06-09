@@ -11,6 +11,9 @@ import { useMemo } from "react";
 import { fetchProducts } from "@/lib/shopify";
 import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
 
+type VendorEntry = { name: string; count: number };
+type LoaderData = { grouped: Record<string, VendorEntry[]>; totalVendors: number };
+
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
 function vendorHandle(v: string) {
