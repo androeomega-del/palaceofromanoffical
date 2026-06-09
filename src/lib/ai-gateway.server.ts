@@ -62,7 +62,7 @@ export async function getMonthlySpendUsd(): Promise<number> {
 }
 
 function estimateCostUsd(model: string, inTokens: number, outTokens: number) {
-  const p = MODEL_PRICING[model] ?? MODEL_PRICING["google/gemini-2.5-flash-lite"];
+  const p = MODEL_PRICING[model] ?? MODEL_PRICING["google/gemini-2.5-pro"];
   return (inTokens / 1_000_000) * p.in + (outTokens / 1_000_000) * p.out;
 }
 
@@ -87,7 +87,7 @@ export type AiCallResult = {
 };
 
 export async function callAi(opts: AiCallOptions): Promise<AiCallResult> {
-  const model = opts.model ?? "google/gemini-2.5-flash-lite";
+  const model = opts.model ?? "google/gemini-2.5-pro";
 
   // Pre-flight budget check using a conservative estimate (1500 in, max out)
   const estIn = Math.ceil((opts.system.length + opts.user.length) / 4);

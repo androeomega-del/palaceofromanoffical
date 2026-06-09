@@ -4,7 +4,7 @@
 const EMERGENT_PROXY = "https://integrations.emergentagent.com/llm/v1/chat/completions";
 const LOVABLE_GATEWAY = "https://ai.gateway.lovable.dev/v1/chat/completions";
 const DEFAULT_EMERGENT_MODEL = "claude-sonnet-4-5-20250929";
-const DEFAULT_LOVABLE_MODEL = "google/gemini-2.5-flash-lite";
+const DEFAULT_LOVABLE_MODEL = "google/gemini-2.5-pro";
 
 type ChatMessage = { role: "system" | "user" | "assistant"; content: string };
 

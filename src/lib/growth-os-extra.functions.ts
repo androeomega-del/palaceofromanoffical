@@ -117,7 +117,7 @@ Return strict JSON:
     try {
       result = await callAi({
         module: "lifecycle",
-        model: "google/gemini-2.5-flash-lite",
+        model: "google/gemini-2.5-pro",
         system: PALACE_BRAND_VOICE,
         user: userPrompt,
         json: true,
@@ -197,7 +197,7 @@ Return strict JSON:
     try {
       result = await callAi({
         module: "ugc",
-        model: "google/gemini-2.5-flash-lite",
+        model: "google/gemini-2.5-pro",
         system: PALACE_BRAND_VOICE,
         user: userPrompt,
         json: true,
@@ -305,7 +305,7 @@ Rules:
     try {
       result = await callAi({
         module: "seo",
-        model: "google/gemini-2.5-flash-lite",
+        model: "google/gemini-2.5-pro",
         system: PALACE_BRAND_VOICE,
         user: userPrompt,
         json: true,
@@ -381,7 +381,7 @@ Rules:
     try {
       result = await callAi({
         module: "ads",
-        model: "google/gemini-2.5-flash-lite",
+        model: "google/gemini-2.5-pro",
         system: PALACE_BRAND_VOICE,
         user: userPrompt,
         json: true,
