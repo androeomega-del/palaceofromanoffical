@@ -133,11 +133,13 @@ export async function adminGraphql<T = unknown>(
  * stricter than the Storefront cache. Returns a Set of handles whose tracked
  * inventory is currently > 0 (or whose variants are explicitly available).
  */
-export async function fetchInStockHandles(opts: {
-  vendor?: string;
-  productType?: string;
-  first?: number;
-} = {}): Promise<Set<string>> {
+export async function fetchInStockHandles(
+  opts: {
+    vendor?: string;
+    productType?: string;
+    first?: number;
+  } = {},
+): Promise<Set<string>> {
   const parts: string[] = ["status:active"];
   if (opts.vendor) parts.push(`vendor:"${opts.vendor.replace(/"/g, '\\"')}"`);
   if (opts.productType) parts.push(`product_type:"${opts.productType.replace(/"/g, '\\"')}"`);
@@ -157,9 +159,7 @@ export async function fetchInStockHandles(opts: {
       products: { edges: Array<{ node: { handle: string; totalInventory: number | null } }> };
     }>(GQL, { first: Math.min(opts.first ?? 100, 250), query });
     return new Set(
-      data.products.edges
-        .filter((e) => (e.node.totalInventory ?? 0) > 0)
-        .map((e) => e.node.handle),
+      data.products.edges.filter((e) => (e.node.totalInventory ?? 0) > 0).map((e) => e.node.handle),
     );
   } catch (err) {
     console.error("[shopify-admin] fetchInStockHandles failed:", err);
