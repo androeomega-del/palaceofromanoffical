@@ -41,8 +41,8 @@ function Primed(props: {
   faqs: LandingFAQ[]; relatedGuides: LandingRelatedGuide[];
   queryOptions: LandingQueryOptions;
 }) {
-  const { data } = useSuspenseQuery(props.queryOptions);
-  return <Body {...props} data={data as ShopifyProduct[]} isLoading={false} />;
+  const { data, isLoading } = useQuery(props.queryOptions);
+  return <Body {...props} data={data as ShopifyProduct[] | undefined} isLoading={isLoading} />;
 }
 
 function Legacy(props: {
