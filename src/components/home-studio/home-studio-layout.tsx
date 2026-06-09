@@ -78,43 +78,50 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
                 className="text-base md:text-lg leading-relaxed"
                 style={{ color: palette.muted, fontFamily: fontSans, fontWeight: 300 }}
               >
-                A curated multi-brand luxury fashion boutique sourcing
-                current-season pieces directly from a global network of
-                authorised European maisons and independent distributors.
-                Every item is authenticated, chosen one at a time, and
-                delivered duties-cleared to your door.
+                A curated boutique for the coast — linen, silk, and sun-built
+                tailoring from Dolce &amp; Gabbana, Pucci, Loro Piana, and the
+                maisons of the Mediterranean. New, current-season, shipped
+                worldwide from Europe.
               </p>
-              <div className="mt-10 flex flex-col sm:flex-row sm:items-center gap-x-8 gap-y-5">
-                <button
-                  onClick={() => setConciergeOpen(true)}
-                  aria-label="Open personal concierge styling service"
-                  className="group inline-flex items-center justify-between sm:justify-start gap-3 pb-2 text-[11px] uppercase tracking-[0.32em] border-b transition-all duration-500 sm:hover:gap-5"
-                  style={{ color: palette.offwhite, borderColor: palette.offwhite, fontFamily: fontSans }}
-                >
-                  Begin With The Concierge
-                  <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" strokeWidth={1.25} />
-                </button>
-              </div>
-              <div className="mt-6 flex flex-col sm:flex-row sm:items-center gap-x-6 gap-y-3 text-[10px] uppercase tracking-[0.32em]" style={{ color: palette.sand, fontFamily: fontSans }}>
-                <Link
-                  to="/women"
-                  aria-label="Shop the women's edit"
-                  className="group inline-flex items-center gap-2 pb-1 border-b transition-all duration-500 hover:gap-4"
-                  style={{ color: palette.sand, borderColor: "rgba(212,184,150,0.4)" }}
-                >
-                  Shop Womenswear
-                  <ArrowUpRight className="w-3 h-3 transition-transform duration-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" strokeWidth={1.25} />
-                </Link>
-                
+              <div className="mt-10 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                 <Link
                   to="/men"
                   aria-label="Shop the men's edit"
-                  className="group inline-flex items-center gap-2 pb-1 border-b transition-all duration-500 hover:gap-4"
-                  style={{ color: palette.sand, borderColor: "rgba(212,184,150,0.4)" }}
+                  className="group inline-flex items-center justify-center gap-3 px-7 py-3 text-[11px] uppercase tracking-[0.32em] transition-all duration-500 sm:hover:gap-5"
+                  style={{
+                    background: palette.offwhite,
+                    color: palette.obsidian,
+                    fontFamily: fontSans,
+                  }}
                 >
                   Shop Menswear
-                  <ArrowUpRight className="w-3 h-3 transition-transform duration-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" strokeWidth={1.25} />
+                  <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" strokeWidth={1.25} />
                 </Link>
+                <Link
+                  to="/women"
+                  aria-label="Shop the women's edit"
+                  className="group inline-flex items-center justify-center gap-3 px-7 py-3 text-[11px] uppercase tracking-[0.32em] border transition-all duration-500 sm:hover:gap-5"
+                  style={{
+                    color: palette.offwhite,
+                    borderColor: palette.offwhite,
+                    background: "transparent",
+                    fontFamily: fontSans,
+                  }}
+                >
+                  Shop Womenswear
+                  <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" strokeWidth={1.25} />
+                </Link>
+              </div>
+              <div className="mt-6">
+                <button
+                  onClick={() => setConciergeOpen(true)}
+                  aria-label="Open personal concierge styling service"
+                  className="group inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.28em] transition-opacity hover:opacity-80"
+                  style={{ color: palette.sand, fontFamily: fontSans }}
+                >
+                  Or begin with the Concierge
+                  <ArrowUpRight className="w-3 h-3 transition-transform duration-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" strokeWidth={1.25} />
+                </button>
               </div>
             </div>
           </div>
