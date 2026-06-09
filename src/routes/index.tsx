@@ -16,9 +16,10 @@ import { readMetaAbBucket } from "@/lib/meta-ab.functions";
 import { seoMetaForBucket, type MetaBucket } from "@/lib/meta-ab";
 import { collectionRailQueryOptions } from "@/lib/rails/queries";
 
-const HOME_TITLE = "Palace of Roman | Men's Luxury Resort & Coastal Fashion";
+const HOME_TITLE = "Palace of Roman | Designer Evening & Resort Fashion";
 const HOME_DESC =
-  "Curated luxury resort wear for men — linen, swim, and coastal tailoring from Dolce & Gabbana, Brunello Cucinelli, Saint Laurent and more. New, current-season, shipped worldwide from Europe.";
+  "Luxury fashion for after dark — silk, evening tailoring, swim, and resort pieces from Dolce & Gabbana, Saint Laurent, Versace and more. New, current-season, shipped worldwide from Europe.";
+
 
 export const Route = createFileRoute("/")({
   loader: async ({ context }): Promise<{ abBucket: MetaBucket }> => {
@@ -32,10 +33,11 @@ export const Route = createFileRoute("/")({
       "womens-dresses",
       "new-arrivals",
       "suits",
-      "mens-loafers",
+      "mens-shirts",
     ]) {
       void context.queryClient.prefetchQuery(collectionRailQueryOptions(handle, 8));
     }
+
     return { abBucket: bucket };
   },
   head: ({ loaderData }) => {
