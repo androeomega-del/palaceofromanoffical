@@ -42,6 +42,7 @@ export function trackCartEvent(p: TrackPayload): void {
     variant_title: trim(p.variant_title ?? null, 255),
     price_usd: p.price_usd != null ? Math.max(0, Math.min(1000000, Number(p.price_usd))) : null,
     quantity: Math.max(1, Math.min(100, p.quantity ?? 1)),
+    payment_method: trim(p.payment_method ?? null, 50),
     session_id: getSessionId(),
     page_path: trim(window.location.pathname, 500),
     user_agent: trim(navigator.userAgent, 500),
