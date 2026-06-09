@@ -40,6 +40,7 @@ export const Route = createFileRoute("/")({
     if (robots) meta.push({ name: "robots", content: robots });
     const links: Array<Record<string, string>> = [
       { rel: "canonical", href: canonical },
+      { rel: "preload", as: "image", href: heroImage, fetchpriority: "high" },
     ];
     return {
       meta,
