@@ -104,14 +104,23 @@ export function enqueueInteractionEvent(input: {
     | "scarcity_click"
     | "scarcity_cart"
     | "rail_impression"
-    | "rail_tap";
+    | "rail_tap"
+    | "capsule_view"
+    | "capsule_open"
+    | "capsule_add"
+    | "capsule_remove"
+    | "capsule_swap"
+    | "capsule_mismatch"
+    | "capsule_checkout"
+    | "capsule_share";
   vendor?: string;
   productType?: string;
-  /** Rail surface id (e.g. `rail:best-sellers`). Optional — only set on rail-originated events. */
+  /** Rail surface id (e.g. `rail:best-sellers`) or capsule slot (e.g. `capsule:top`). */
   surface?: string;
   /** 0-indexed slot within the rail. Optional. */
   position?: number;
 }): void {
+
   if (typeof window === "undefined") return;
   if (!input.handle) return;
   setup();
