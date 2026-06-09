@@ -880,8 +880,8 @@ function VacationPanel({
           ))}
         </div>
 
-        <a
-          href={VACATION_FEATURE.to}
+        <Link
+          to={VACATION_FEATURE.to}
           className="group relative block aspect-[4/5] overflow-hidden bg-muted"
         >
           <img
@@ -902,7 +902,7 @@ function VacationPanel({
               {VACATION_FEATURE.cta}
             </span>
           </div>
-        </a>
+        </Link>
       </div>
     </div>
   );
