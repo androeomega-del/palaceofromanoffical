@@ -31,6 +31,8 @@ import {
 import { useCartStore } from "@/stores/cart-store";
 import { useServerFn } from "@tanstack/react-start";
 import { shareCapsuleLookbook } from "@/lib/capsule-lookbook.functions";
+import { trackCapsuleEvent } from "@/lib/capsule-analytics";
+
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -343,6 +345,38 @@ export function CapsuleBuilder({
 
   const lastSeedHandleRef = React.useRef(seedProduct.handle);
 
+  // Fire a single capsule_view per seeded product so we can measure how often
+  // the builder is rendered vs. how often shoppers interact with it.
+  // Also flag a mismatch event when the auto-classified slot for the seed
+  // product disagrees with the slot it was placed into (e.g. shoes seeded
+  // as "Top" because productType was empty).
+  React.useEffect(() => {
+    const tags = (seedProduct as unknown as { tags?: string[] }).tags;
+    const classified = classifyKind(
+      seedProduct.productType,
+      tags,
+      seedProduct.title,
+      seedProduct.handle,
+    );
+    trackCapsuleEvent({
+      event: "capsule_view",
+      handle: seedProduct.handle,
+      slot: seedKind,
+      vendor: seedProduct.vendor ?? null,
+      productType: seedProduct.productType ?? null,
+    });
+    if (classified && classified !== seedKind) {
+      trackCapsuleEvent({
+        event: "capsule_mismatch",
+        handle: seedProduct.handle,
+        slot: seedKind,
+        vendor: seedProduct.vendor ?? null,
+        productType: `seed:${classified}->${seedKind}`,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [seedProduct.handle]);
+
   // Re-seed only when the PDP product itself changes. The mount pass must not
   // re-fill a slot immediately after a shopper clears the seeded item.
   React.useEffect(() => {
@@ -356,6 +390,7 @@ export function CapsuleBuilder({
       ),
     );
   }, [seedProduct.handle, seedKind]);
+
 
   const [openKind, setOpenKind] = React.useState<CapsuleSlotKind | null>(null);
 
@@ -383,22 +418,49 @@ export function CapsuleBuilder({
   const handleSelect = React.useCallback(
     (product: ShopifyProductNode) => {
       const tags = (product as unknown as { tags?: string[] }).tags;
-      const targetKind =
-        classifyKind(product.productType, tags, product.title, product.handle) ?? openKind;
+      const classified = classifyKind(
+        product.productType,
+        tags,
+        product.title,
+        product.handle,
+      );
+      const targetKind = classified ?? openKind;
       if (!targetKind) return;
       const variantId =
         product.variants?.edges?.find((e) => e.node.availableForSale)?.node.id ??
         product.variants?.edges?.[0]?.node.id ??
         null;
-      setSlots((prev) =>
-        prev.map((s) =>
+
+      // Detect swap (slot already filled) vs. fresh add, and mismatch
+      // (picker was opened for slot X but product auto-routed to Y).
+      setSlots((prev) => {
+        const previous = prev.find((s) => s.kind === targetKind);
+        const wasFilled = Boolean(previous?.product);
+        trackCapsuleEvent({
+          event: wasFilled ? "capsule_swap" : "capsule_add",
+          handle: product.handle,
+          slot: targetKind,
+          vendor: product.vendor ?? null,
+          productType: product.productType ?? null,
+        });
+        if (openKind && classified && classified !== openKind) {
+          trackCapsuleEvent({
+            event: "capsule_mismatch",
+            handle: product.handle,
+            slot: openKind,
+            vendor: product.vendor ?? null,
+            productType: `pick:${openKind}->${classified}`,
+          });
+        }
+        return prev.map((s) =>
           s.kind === targetKind ? { ...s, product, variantId } : s,
-        ),
-      );
+        );
+      });
       setOpenKind(null);
     },
     [openKind],
   );
+
 
   const addItem = useCartStore((s) => s.addItem);
   const openDrawer = useCartStore((s) => s.openDrawer);
@@ -443,8 +505,19 @@ export function CapsuleBuilder({
           };
         });
         await dispatchShare({ data: { email, pieces } });
+        for (const s of filled) {
+          trackCapsuleEvent({
+            event: "capsule_share",
+            handle: s.product.handle,
+            slot: s.kind,
+            vendor: s.product.vendor ?? null,
+            productType: s.product.productType ?? null,
+            position: filled.length,
+          });
+        }
         setShareStatus("sent");
         toast.success("Lookbook dispatched to your inbox");
+
       } catch (err) {
         console.error("[capsule-share] dispatch failed", err);
         shareSentForRef.current = null;
@@ -512,6 +585,14 @@ export function CapsuleBuilder({
           quantity: 1,
           selectedOptions: variantNode.selectedOptions ?? [],
         });
+        trackCapsuleEvent({
+          event: "capsule_checkout",
+          handle: product.handle,
+          slot: slot.kind,
+          vendor: product.vendor ?? null,
+          productType: product.productType ?? null,
+          position: unique.length,
+        });
       }
       openDrawer();
       toast.success(`${unique.length} item${unique.length === 1 ? "" : "s"} added to your bag`);
@@ -519,6 +600,7 @@ export function CapsuleBuilder({
       setIsBundling(false);
     }
   }, [slots, addItem, openDrawer, isBundling]);
+
 
   return (
     <section
@@ -546,16 +628,35 @@ export function CapsuleBuilder({
           <SlotTile
             key={slot.kind}
             slot={slot}
-            onClick={() => setOpenKind(slot.kind)}
-            onClear={() =>
+            onClick={() => {
+              trackCapsuleEvent({
+                event: "capsule_open",
+                handle: slot.product?.handle || `empty:${slot.kind.toLowerCase()}`,
+                slot: slot.kind,
+                vendor: slot.product?.vendor ?? null,
+                productType: slot.product?.productType ?? null,
+              });
+              setOpenKind(slot.kind);
+            }}
+            onClear={() => {
+              if (slot.product) {
+                trackCapsuleEvent({
+                  event: "capsule_remove",
+                  handle: slot.product.handle,
+                  slot: slot.kind,
+                  vendor: slot.product.vendor ?? null,
+                  productType: slot.product.productType ?? null,
+                });
+              }
               setSlots((prev) =>
                 prev.map((s) =>
                   s.kind === slot.kind ? { ...s, product: null, variantId: null } : s,
                 ),
-              )
-            }
+              );
+            }}
           />
         ))}
+
       </div>
 
       <div className="mt-5 flex flex-col gap-3 sm:mt-6 sm:flex-row sm:items-center sm:justify-between">
