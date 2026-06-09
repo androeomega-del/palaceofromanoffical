@@ -87,18 +87,25 @@ export function ProductRail({
           </h2>
         </header>
 
-        <div className={`grid grid-cols-2 ${gridCols} gap-x-3 gap-y-8 md:gap-x-5`}>
+        <div
+          className={`flex gap-x-3 overflow-x-auto snap-x snap-mandatory pb-2 -mx-5 px-5 md:mx-0 md:px-0 md:pb-0 md:overflow-visible md:snap-none md:grid md:grid-cols-2 ${gridCols} md:gap-x-5 md:gap-y-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden`}
+        >
           {isLoading
             ? Array.from({ length: skeletonCount }).map((_, i) => (
                 <div
                   key={i}
-                  className="bg-ink/5 animate-pulse"
+                  className="bg-ink/5 animate-pulse shrink-0 basis-[72%] snap-start md:basis-auto md:shrink"
                   style={{ aspectRatio: skeletonAspect.replace("/", " / ") }}
                   aria-hidden="true"
                 />
               ))
             : data?.map((p, i) => (
-                <ProductCard key={p.node.id} product={p} surface={surface} position={i} />
+                <div
+                  key={p.node.id}
+                  className="shrink-0 basis-[72%] snap-start md:basis-auto md:shrink"
+                >
+                  <ProductCard product={p} surface={surface} position={i} />
+                </div>
               ))}
         </div>
 
