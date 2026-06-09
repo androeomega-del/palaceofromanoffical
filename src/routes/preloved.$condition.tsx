@@ -69,10 +69,19 @@ export const Route = createFileRoute("/preloved/$condition")({
       ],
     };
   },
-  loader: ({ context, params }) =>
-    context.queryClient.ensureQueryData(
+  loader: async ({ context, params }): Promise<PrelovedPage | undefined> => {
+    const dataP = context.queryClient.ensureQueryData(
       prelovedConditionQueryOptions(params.condition as PrelovedCondition),
-    ),
+    );
+    const timeoutP = new Promise<undefined>((resolve) =>
+      setTimeout(() => resolve(undefined), 6_000),
+    );
+    try {
+      return (await Promise.race([dataP, timeoutP])) ?? undefined;
+    } catch {
+      return undefined;
+    }
+  },
   component: PrelovedConditionPage,
   errorComponent: ({ error, reset }) => {
     const router = useRouter();
