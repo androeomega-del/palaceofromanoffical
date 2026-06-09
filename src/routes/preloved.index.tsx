@@ -45,8 +45,20 @@ export const Route = createFileRoute("/preloved/")({
       ],
     };
   },
-  loader: ({ context }) => {
-    void context.queryClient.prefetchQuery(prelovedHubQueryOptions());
+  // Race the cache prime against a 6s timeout so cold edges never hang on
+  // a slow Storefront read. On timeout, loaderData is undefined (JSON-LD
+  // omits products), the page SSRs with the skeleton, and useQuery hydrates
+  // the grid client-side from the background fetch.
+  loader: async ({ context }): Promise<PrelovedPage | undefined> => {
+    const dataP = context.queryClient.ensureQueryData(prelovedHubQueryOptions());
+    const timeoutP = new Promise<undefined>((resolve) =>
+      setTimeout(() => resolve(undefined), 6_000),
+    );
+    try {
+      return (await Promise.race([dataP, timeoutP])) ?? undefined;
+    } catch {
+      return undefined;
+    }
   },
   component: PrelovedHubPage,
   errorComponent: ({ error, reset }) => {
