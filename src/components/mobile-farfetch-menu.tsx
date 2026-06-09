@@ -258,7 +258,7 @@ export function MobileFarfetchMenu({ onClose }: { onClose: () => void }) {
         </li>
         {activeDept?.columns.map((col) => {
           const items = liveHandles
-            ? col.items.filter((it) => liveHandles.has(it.handle))
+            ? col.items.filter((it) => !it.handle || liveHandles.has(it.handle))
             : col.items;
           if (items.length === 0) return null;
           return (
