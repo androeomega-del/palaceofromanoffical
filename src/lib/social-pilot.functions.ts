@@ -113,7 +113,7 @@ Rules:
       result = await callAi({
         module: "social_pilot",
         // gemini-2.5-flash-lite is the cheapest tier: fast JSON, good copywriting
-        model: "google/gemini-2.5-flash-lite",
+        model: "google/gemini-2.5-pro",
         system: PALACE_BRAND_VOICE,
         user: userPrompt,
         json: true,

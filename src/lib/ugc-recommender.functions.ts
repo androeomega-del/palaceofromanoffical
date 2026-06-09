@@ -209,7 +209,7 @@ export const generateUgcIdeas = createServerFn({ method: "POST" })
       try {
         const res = await callAi({
           module: "ugc_recommender",
-        model: "google/gemini-2.5-flash-lite",
+        model: "google/gemini-2.5-pro",
           system: PALACE_BRAND_VOICE,
           user: buildPrompt(opp),
           json: true,

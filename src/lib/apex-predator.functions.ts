@@ -374,7 +374,7 @@ export const draftPoacherPitch = createServerFn({ method: "POST" })
     try {
       const res = await callAi({
         module: "apex/poacher",
-        model: "google/gemini-2.5-flash-lite",
+        model: "google/gemini-2.5-pro",
         system: sys,
         user,
         json: true,
@@ -392,7 +392,7 @@ export const draftPoacherPitch = createServerFn({ method: "POST" })
           pitch_subject: subject,
           pitch_body: body,
           pitch_generated_at: new Date().toISOString(),
-          pitch_model: "google/gemini-2.5-flash-lite",
+          pitch_model: "google/gemini-2.5-pro",
           status: "pitch_drafted",
         })
         .eq("id", row.id);
@@ -431,7 +431,7 @@ export const draftPoacherPitchInline = createServerFn({ method: "POST" })
     try {
       const res = await callAi({
         module: "apex/poacher-sandbox",
-        model: "google/gemini-2.5-flash-lite",
+        model: "google/gemini-2.5-pro",
         system: sys,
         user,
         json: true,
@@ -579,7 +579,7 @@ export const generateContentBlueprint = createServerFn({ method: "POST" })
 
     const res = await callAi({
       module: "apex/hijack-blueprint",
-      model: "google/gemini-2.5-flash-lite",
+      model: "google/gemini-2.5-pro",
       system: sys,
       user,
       json: true,
@@ -715,7 +715,7 @@ export const generateStrikePlan = createServerFn({ method: "POST" })
     const user = `We rank position ${data.position.toFixed(1)} for "${data.query}" with ${data.impressions} monthly impressions and Semrush KD ${data.kd}. Page: ${data.page || "(unknown — pick the most relevant Palace of Roman URL)"}.\n\nCTR lift opportunity to top 3: +${(ctrLiftToTop3(data.position) * 100).toFixed(1)}%.\n\nReturn JSON with EXACTLY:\n{\n  "newTitle": string (<= 60 chars, includes the target query naturally),\n  "newMetaDescription": string (<= 155 chars, action-forward, ends with a soft CTA),\n  "newH1": string (<= 70 chars),\n  "internalLinkSources": [{ "fromPath": string (Palace of Roman URL path like "/collections/gucci-handbags"), "anchorText": string }] (exactly 3),\n  "rationale": string (2 sentences explaining the on-page fix that will push this to top 3)\n}`;
     const res = await callAi({
       module: "apex/strike-plan",
-      model: "google/gemini-2.5-flash-lite",
+      model: "google/gemini-2.5-pro",
       system: sys,
       user,
       json: true,
@@ -794,7 +794,7 @@ Return JSON with EXACTLY these keys:
 
     const res = await callAi({
       module: "apex/high-intent-patch",
-      model: "google/gemini-2.5-flash-lite",
+      model: "google/gemini-2.5-pro",
       system: sys,
       user,
       json: true,
@@ -1135,7 +1135,7 @@ export const generateLuxurySeoForProduct = createServerFn({ method: "POST" })
     try {
       const result = await callAi({
         module: "apex/luxury-seo",
-        model: "google/gemini-2.5-flash-lite",
+        model: "google/gemini-2.5-pro",
         system: HIGH_ADVANTAGE_SEO_PROMPT_SYSTEM,
         user: JSON.stringify(userPayload, null, 2),
         json: true,
