@@ -15,6 +15,7 @@ import heroImage from "@/assets/home-hero.jpg";
 import { readMetaAbBucket } from "@/lib/meta-ab.functions";
 import { seoMetaForBucket, type MetaBucket } from "@/lib/meta-ab";
 import { collectionRailQueryOptions } from "@/lib/rails/queries";
+import { collectionHeroImageQueryOptions } from "@/lib/collection-hero-image";
 
 const HOME_TITLE = "Palace of Roman | Designer Evening & Resort Fashion";
 const HOME_DESC =
