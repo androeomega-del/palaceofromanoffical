@@ -31,6 +31,8 @@ import {
 import { useCartStore } from "@/stores/cart-store";
 import { useServerFn } from "@tanstack/react-start";
 import { shareCapsuleLookbook } from "@/lib/capsule-lookbook.functions";
+import { trackCapsuleEvent } from "@/lib/capsule-analytics";
+
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
