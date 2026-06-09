@@ -53,4 +53,6 @@ export const collectionHeroImageQueryOptions = (handle: string) =>
     queryKey: ["collection-hero-image", handle] as const,
     queryFn: () => fetchCollectionHeroImage(handle),
     staleTime: 10 * 60_000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
