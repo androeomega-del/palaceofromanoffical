@@ -1,6 +1,6 @@
-// Server-only Shopify Admin API client using the Client Credentials Grant.
-// Exchanges the admin app client id + shpss client secret for a short-lived
-// Admin API token and caches it in memory until ~60s before expiry.
+// Server-only Shopify Admin API client.
+// Prefers the stored full-permission Admin API access token. Falls back to the
+// Client Credentials Grant only when the direct Admin token is not configured.
 //
 // Usage:
 //   import { adminGraphql } from "@/lib/shopify-admin.server";
@@ -10,6 +10,15 @@ const API_VERSION = "2025-07";
 
 type CachedToken = { token: string; expiresAt: number };
 let cached: CachedToken | null = null;
+
+function directAdminAccessToken(): string | null {
+  const token =
+    process.env.SHOPIFY_ACCESS_TOKEN ??
+    process.env.SHOPIFY_ADMIN_ACCESS_TOKEN ??
+    process.env.NEW_ADMIN ??
+    process.env.SHOPIFY_ADMIN_TOKEN;
+  return token?.trim() || null;
+}
 
 function shopDomain(): string {
   const d = process.env.SHOPIFY_STORE_DOMAIN;
@@ -38,6 +47,9 @@ function adminOAuthCredentials(): { clientId: string; clientSecret: string } {
  *   body: { client_id, client_secret, grant_type: "client_credentials" }
  */
 export async function getAdminAccessToken(): Promise<string> {
+  const directToken = directAdminAccessToken();
+  if (directToken) return directToken;
+
   const now = Date.now();
   if (cached && cached.expiresAt - 60_000 > now) return cached.token;
 
@@ -70,24 +82,18 @@ export async function getAdminAccessToken(): Promise<string> {
 }
 
 /** Run an Admin REST request with the cached client-credentials token. */
-export async function adminRest<T = unknown>(
-  path: string,
-  init: RequestInit = {},
-): Promise<T> {
+export async function adminRest<T = unknown>(path: string, init: RequestInit = {}): Promise<T> {
   const token = await getAdminAccessToken();
   const cleanedPath = path.startsWith("/") ? path : `/${path}`;
-  const res = await fetch(
-    `https://${shopDomain()}/admin/api/${API_VERSION}${cleanedPath}`,
-    {
-      ...init,
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "X-Shopify-Access-Token": token,
-        ...(init.headers ?? {}),
-      },
+  const res = await fetch(`https://${shopDomain()}/admin/api/${API_VERSION}${cleanedPath}`, {
+    ...init,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      "X-Shopify-Access-Token": token,
+      ...(init.headers ?? {}),
     },
-  );
+  });
   if (!res.ok) {
     const text = await res.text().catch(() => "");
     throw new Error(`Shopify Admin REST ${res.status} ${cleanedPath}: ${text.slice(0, 240)}`);
@@ -101,24 +107,23 @@ export async function adminGraphql<T = unknown>(
   variables: Record<string, unknown> = {},
 ): Promise<T> {
   const token = await getAdminAccessToken();
-  const res = await fetch(
-    `https://${shopDomain()}/admin/api/${API_VERSION}/graphql.json`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Shopify-Access-Token": token,
-      },
-      body: JSON.stringify({ query, variables }),
+  const res = await fetch(`https://${shopDomain()}/admin/api/${API_VERSION}/graphql.json`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Shopify-Access-Token": token,
     },
-  );
+    body: JSON.stringify({ query, variables }),
+  });
   if (!res.ok) {
     const text = await res.text().catch(() => "");
     throw new Error(`Shopify Admin GraphQL ${res.status}: ${text.slice(0, 240)}`);
   }
   const json = (await res.json()) as { data?: T; errors?: Array<{ message: string }> };
   if (json.errors?.length) {
-    throw new Error(`Shopify Admin GraphQL errors: ${json.errors.map((e) => e.message).join("; ")}`);
+    throw new Error(
+      `Shopify Admin GraphQL errors: ${json.errors.map((e) => e.message).join("; ")}`,
+    );
   }
   return json.data as T;
 }
@@ -128,11 +133,13 @@ export async function adminGraphql<T = unknown>(
  * stricter than the Storefront cache. Returns a Set of handles whose tracked
  * inventory is currently > 0 (or whose variants are explicitly available).
  */
-export async function fetchInStockHandles(opts: {
-  vendor?: string;
-  productType?: string;
-  first?: number;
-} = {}): Promise<Set<string>> {
+export async function fetchInStockHandles(
+  opts: {
+    vendor?: string;
+    productType?: string;
+    first?: number;
+  } = {},
+): Promise<Set<string>> {
   const parts: string[] = ["status:active"];
   if (opts.vendor) parts.push(`vendor:"${opts.vendor.replace(/"/g, '\\"')}"`);
   if (opts.productType) parts.push(`product_type:"${opts.productType.replace(/"/g, '\\"')}"`);
@@ -152,9 +159,7 @@ export async function fetchInStockHandles(opts: {
       products: { edges: Array<{ node: { handle: string; totalInventory: number | null } }> };
     }>(GQL, { first: Math.min(opts.first ?? 100, 250), query });
     return new Set(
-      data.products.edges
-        .filter((e) => (e.node.totalInventory ?? 0) > 0)
-        .map((e) => e.node.handle),
+      data.products.edges.filter((e) => (e.node.totalInventory ?? 0) > 0).map((e) => e.node.handle),
     );
   } catch (err) {
     console.error("[shopify-admin] fetchInStockHandles failed:", err);
