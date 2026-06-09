@@ -238,7 +238,7 @@ export const Route = createFileRoute("/sitemap.xml")({
 
         // Products + brand vendor pages + inline image entries
         try {
-          const products = await fetchAllProducts();
+          const products = (await withTimeout(fetchAllProducts(), 25_000, [])) ?? [];
           const seenVendors = new Set<string>();
           for (const p of products) {
             const imageBlocks = p.images.length
