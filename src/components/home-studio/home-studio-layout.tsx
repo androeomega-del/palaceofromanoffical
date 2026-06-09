@@ -19,6 +19,8 @@ import { ConciergeDrawer } from "./concierge-drawer";
 import { PalaceHeader } from "./palace-header";
 import { StudioVerificationBanner } from "./studio-verification-banner";
 import { palette, fontSans, fontSerif } from "./palette";
+import { ProductRail } from "@/components/sections/product-rail";
+import { collectionRailQueryOptions } from "@/lib/rails/queries";
 import heroImage from "@/assets/home-hero.jpg";
 import heroVideoAsset from "@/assets/hero-cinematic.mp4.asset.json";
 
