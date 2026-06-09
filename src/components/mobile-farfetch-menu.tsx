@@ -326,8 +326,8 @@ function Row({
 }) {
   return (
     <li>
-      <a
-        href={to}
+      <Link
+        to={to}
         onClick={onClose}
         className={`flex items-center justify-between py-4 ${
           accent
@@ -342,7 +342,7 @@ function Row({
           className={`w-4 h-4 ${accent ? "text-bronze" : "text-ink/40"}`}
           strokeWidth={1.5}
         />
-      </a>
+      </Link>
     </li>
   );
 }

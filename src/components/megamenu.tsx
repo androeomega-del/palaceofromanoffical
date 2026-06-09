@@ -867,12 +867,12 @@ function VacationPanel({
               <ul className="flex flex-col gap-2.5">
                 {col.items.map((it) => (
                   <li key={it.label + it.to}>
-                    <a
-                      href={it.to}
+                    <Link
+                      to={it.to}
                       className="text-[13px] font-light text-ink/75 hover:text-ink transition-colors inline-block normal-case tracking-normal leading-relaxed"
                     >
                       {it.label}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -880,8 +880,8 @@ function VacationPanel({
           ))}
         </div>
 
-        <a
-          href={VACATION_FEATURE.to}
+        <Link
+          to={VACATION_FEATURE.to}
           className="group relative block aspect-[4/5] overflow-hidden bg-muted"
         >
           <img
@@ -902,7 +902,7 @@ function VacationPanel({
               {VACATION_FEATURE.cta}
             </span>
           </div>
-        </a>
+        </Link>
       </div>
     </div>
   );
@@ -998,13 +998,13 @@ export function MobileMegamenu() {
               {col.heading}
             </p>
             {col.items.map((it) => (
-              <a
+              <Link
                 key={it.label + it.to}
-                href={it.to}
+                to={it.to}
                 className="text-[14px] text-ink/85 hover:text-bronze py-1"
               >
                 {it.label}
-              </a>
+              </Link>
             ))}
           </div>
         ))}
