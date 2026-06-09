@@ -7,7 +7,7 @@
  * keyed by market for TTFB consistency.
  */
 import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
   prelovedConditionQueryOptions,
   PRELOVED_CONDITIONS,
@@ -69,10 +69,19 @@ export const Route = createFileRoute("/preloved/$condition")({
       ],
     };
   },
-  loader: ({ context, params }) =>
-    context.queryClient.ensureQueryData(
+  loader: async ({ context, params }): Promise<PrelovedPage | undefined> => {
+    const dataP = context.queryClient.ensureQueryData(
       prelovedConditionQueryOptions(params.condition as PrelovedCondition),
-    ),
+    );
+    const timeoutP = new Promise<undefined>((resolve) =>
+      setTimeout(() => resolve(undefined), 6_000),
+    );
+    try {
+      return (await Promise.race([dataP, timeoutP])) ?? undefined;
+    } catch {
+      return undefined;
+    }
+  },
   component: PrelovedConditionPage,
   errorComponent: ({ error, reset }) => {
     const router = useRouter();
@@ -116,8 +125,8 @@ function PrelovedConditionPage() {
   const params = Route.useParams();
   const condition = params.condition as PrelovedCondition;
   const label = PRELOVED_CONDITION_LABEL[condition];
-  const { data } = useSuspenseQuery(prelovedConditionQueryOptions(condition));
-  const products = data?.edges ?? [];
+  const { data, isLoading } = useQuery(prelovedConditionQueryOptions(condition));
+  const products: PrelovedPage["edges"] = data?.edges ?? [];
 
   const h1 = `Pristine & Excellent Condition Preloved ${label} | Palace of Roman`;
   const badge = label.toUpperCase();
@@ -170,7 +179,22 @@ function PrelovedConditionPage() {
           className="mx-auto max-w-screen-2xl"
           style={{ contain: "layout", minHeight: "60vh" }}
         >
-          {products.length === 0 ? (
+          {isLoading && products.length === 0 ? (
+            <ul
+              className="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3 lg:grid-cols-4"
+              style={{ contain: "layout" }}
+              aria-busy="true"
+              aria-label={`Loading ${label.toLowerCase()} preloved edit`}
+            >
+              {Array.from({ length: 8 }).map((_, i) => (
+                <li key={i} style={{ contain: "layout" }}>
+                  <div className="aspect-[3/4] w-full bg-ink/5 animate-pulse" />
+                  <div className="mt-3 h-3 w-3/4 bg-ink/5 animate-pulse" />
+                  <div className="mt-2 h-3 w-1/3 bg-ink/5 animate-pulse" />
+                </li>
+              ))}
+            </ul>
+          ) : products.length === 0 ? (
             <p className="py-24 text-center text-sm text-ink-muted">
               No {label.toLowerCase()} preloved pieces available right now.
             </p>

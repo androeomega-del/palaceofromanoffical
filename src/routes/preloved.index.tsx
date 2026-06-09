@@ -7,7 +7,7 @@
  * /product/$handle anchors with a flawless CLS profile.
  */
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
   prelovedHubQueryOptions,
   PRELOVED_CONDITIONS,
@@ -45,8 +45,21 @@ export const Route = createFileRoute("/preloved/")({
       ],
     };
   },
-  loader: ({ context }) =>
-    context.queryClient.ensureQueryData(prelovedHubQueryOptions()),
+  // Race the cache prime against a 6s timeout so cold edges never hang on
+  // a slow Storefront read. On timeout, loaderData is undefined (JSON-LD
+  // omits products), the page SSRs with the skeleton, and useQuery hydrates
+  // the grid client-side from the background fetch.
+  loader: async ({ context }): Promise<PrelovedPage | undefined> => {
+    const dataP = context.queryClient.ensureQueryData(prelovedHubQueryOptions());
+    const timeoutP = new Promise<undefined>((resolve) =>
+      setTimeout(() => resolve(undefined), 6_000),
+    );
+    try {
+      return (await Promise.race([dataP, timeoutP])) ?? undefined;
+    } catch {
+      return undefined;
+    }
+  },
   component: PrelovedHubPage,
   errorComponent: ({ error, reset }) => {
     const router = useRouter();
@@ -87,8 +100,8 @@ function inferConditionLabel(title: string): string {
 }
 
 function PrelovedHubPage() {
-  const { data } = useSuspenseQuery(prelovedHubQueryOptions());
-  const products = data?.edges ?? [];
+  const { data, isLoading } = useQuery(prelovedHubQueryOptions());
+  const products: PrelovedPage["edges"] = data?.edges ?? [];
 
   return (
     <main className="bg-canvas text-ink">
@@ -141,7 +154,22 @@ function PrelovedHubPage() {
           className="mx-auto max-w-screen-2xl"
           style={{ contain: "layout", minHeight: "60vh" }}
         >
-          {products.length === 0 ? (
+          {isLoading && products.length === 0 ? (
+            <ul
+              className="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3 lg:grid-cols-4"
+              style={{ contain: "layout" }}
+              aria-busy="true"
+              aria-label="Loading preloved edit"
+            >
+              {Array.from({ length: 8 }).map((_, i) => (
+                <li key={i} style={{ contain: "layout" }}>
+                  <div className="aspect-[3/4] w-full bg-ink/5 animate-pulse" />
+                  <div className="mt-3 h-3 w-3/4 bg-ink/5 animate-pulse" />
+                  <div className="mt-2 h-3 w-1/3 bg-ink/5 animate-pulse" />
+                </li>
+              ))}
+            </ul>
+          ) : products.length === 0 ? (
             <p className="py-24 text-center text-sm text-ink-muted">
               No preloved pieces available right now. Please check back soon.
             </p>
