@@ -98,7 +98,7 @@ const CAPSULE_TAXONOMY: Record<CapsuleSlotKind, string[]> = {
     "Trench", "Shearling", "Parkas", "Parka", "Bombers", "Bomber",
     "Overcoats", "Overcoat", "Capes", "Cape", "Puffer", "Puffers",
     "Vest", "Vests", "Gilet", "Gilets", "Anorak", "Windbreaker",
-    "Down Jacket", "Quilted",
+    "Down Jacket",
     "Hats", "Hat", "Bucket Hats", "Bucket Hat", "Caps", "Cap",
     "Baseball Cap", "Baseball Hat", "Beanie", "Beanies", "Visor", "Visors",
   ],
