@@ -83,10 +83,12 @@ function shopDomain(): string {
 
 function adminOAuthCredentials(): { clientId: string; clientSecret: string } {
   const clientId =
+    process.env.GRAPHQL_ID ??
     process.env.SHOPIFY_ADMIN_API_CLIENT_ID ??
     process.env.SHOPIFY_CUSTOM_APP_CLIENT_ID ??
     process.env.SHOPIFY_CLIENT_ID;
   const clientSecret =
+    process.env.GRAPHQL_KEY ??
     process.env.SHOPIFY_ADMIN_API_SECRET ??
     process.env.SHOPIFY_CUSTOM_APP_CLIENT_SECRET ??
     process.env.SHOPIFY_CLIENT_SECRET;
