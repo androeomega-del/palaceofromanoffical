@@ -82,24 +82,18 @@ export async function getAdminAccessToken(): Promise<string> {
 }
 
 /** Run an Admin REST request with the cached client-credentials token. */
-export async function adminRest<T = unknown>(
-  path: string,
-  init: RequestInit = {},
-): Promise<T> {
+export async function adminRest<T = unknown>(path: string, init: RequestInit = {}): Promise<T> {
   const token = await getAdminAccessToken();
   const cleanedPath = path.startsWith("/") ? path : `/${path}`;
-  const res = await fetch(
-    `https://${shopDomain()}/admin/api/${API_VERSION}${cleanedPath}`,
-    {
-      ...init,
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "X-Shopify-Access-Token": token,
-        ...(init.headers ?? {}),
-      },
+  const res = await fetch(`https://${shopDomain()}/admin/api/${API_VERSION}${cleanedPath}`, {
+    ...init,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      "X-Shopify-Access-Token": token,
+      ...(init.headers ?? {}),
     },
-  );
+  });
   if (!res.ok) {
     const text = await res.text().catch(() => "");
     throw new Error(`Shopify Admin REST ${res.status} ${cleanedPath}: ${text.slice(0, 240)}`);
@@ -113,24 +107,23 @@ export async function adminGraphql<T = unknown>(
   variables: Record<string, unknown> = {},
 ): Promise<T> {
   const token = await getAdminAccessToken();
-  const res = await fetch(
-    `https://${shopDomain()}/admin/api/${API_VERSION}/graphql.json`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Shopify-Access-Token": token,
-      },
-      body: JSON.stringify({ query, variables }),
+  const res = await fetch(`https://${shopDomain()}/admin/api/${API_VERSION}/graphql.json`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Shopify-Access-Token": token,
     },
-  );
+    body: JSON.stringify({ query, variables }),
+  });
   if (!res.ok) {
     const text = await res.text().catch(() => "");
     throw new Error(`Shopify Admin GraphQL ${res.status}: ${text.slice(0, 240)}`);
   }
   const json = (await res.json()) as { data?: T; errors?: Array<{ message: string }> };
   if (json.errors?.length) {
-    throw new Error(`Shopify Admin GraphQL errors: ${json.errors.map((e) => e.message).join("; ")}`);
+    throw new Error(
+      `Shopify Admin GraphQL errors: ${json.errors.map((e) => e.message).join("; ")}`,
+    );
   }
   return json.data as T;
 }
