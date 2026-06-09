@@ -12,6 +12,15 @@ type CachedToken = { token: string; expiresAt: number };
 let cached: CachedToken | null = null;
 
 type TokenCandidate = { name: string; token: string };
+type TokenAttempt = { name: string; status: number; body: string };
+
+// Module-level log of the most recent token-probe attempts so error
+// messages can report exactly which secret(s) Shopify rejected.
+let lastAttempts: TokenAttempt[] = [];
+
+export function getLastTokenAttempts(): TokenAttempt[] {
+  return lastAttempts;
+}
 
 function normalizeAdminToken(raw: string | undefined): string | null {
   const token = raw?.trim().replace(/^['"]|['"]$/g, "").replace(/^Bearer\s+/i, "");
@@ -39,7 +48,7 @@ function directAdminAccessTokens(): TokenCandidate[] {
   });
 }
 
-async function verifyAdminToken(candidate: TokenCandidate): Promise<boolean> {
+async function verifyAdminToken(candidate: TokenCandidate): Promise<{ ok: boolean; status: number; body: string }> {
   const res = await fetch(`https://${shopDomain()}/admin/api/${API_VERSION}/graphql.json`, {
     method: "POST",
     headers: {
@@ -48,11 +57,12 @@ async function verifyAdminToken(candidate: TokenCandidate): Promise<boolean> {
     },
     body: JSON.stringify({ query: "query AdminTokenProbe { shop { id } }" }),
   });
-  if (res.ok) return true;
+  if (res.ok) return { ok: true, status: res.status, body: "" };
   const text = await res.text().catch(() => "");
   console.warn(`[shopify-admin] ${candidate.name} rejected during token probe: ${res.status} ${text.slice(0, 160)}`);
-  return false;
+  return { ok: false, status: res.status, body: text.slice(0, 200) };
 }
+
 
 function shopDomain(): string {
   const d = process.env.SHOPIFY_STORE_DOMAIN;
@@ -85,17 +95,37 @@ export async function getAdminAccessToken(): Promise<string> {
   if (cached && cached.expiresAt - 60_000 > now) return cached.token;
 
   const directTokens = directAdminAccessTokens();
+  lastAttempts = [];
   for (const candidate of directTokens) {
-    if (await verifyAdminToken(candidate)) {
+    const result = await verifyAdminToken(candidate);
+    lastAttempts.push({ name: candidate.name, status: result.status, body: result.body });
+    if (result.ok) {
       cached = { token: candidate.token, expiresAt: now + 55 * 60_000 };
       return cached.token;
     }
   }
 
-  const { clientId, clientSecret } = adminOAuthCredentials();
+  // All direct tokens failed — try OAuth client_credentials fallback. If that
+  // also fails, surface exactly which secrets were rejected so the user can
+  // delete the bad one and replace it.
+  let oauthCreds: { clientId: string; clientSecret: string };
+  try {
+    oauthCreds = adminOAuthCredentials();
+  } catch (e) {
+    const summary = lastAttempts.length
+      ? `Tried tokens (all rejected by Shopify): ${lastAttempts.map((a) => `${a.name}→${a.status}`).join(", ")}.`
+      : "No Admin tokens are configured.";
+    throw new Error(
+      `Shopify Admin auth failed. ${summary} ` +
+        `Fix: delete the rejected secret(s) above and add a fresh Admin API access token from your installed custom app ` +
+        `(Shopify Admin → Apps → Develop apps → your app → API credentials → Admin API access token).`,
+    );
+  }
+  const { clientId, clientSecret } = oauthCreds;
 
   const url = `https://${shopDomain()}/admin/oauth/access_token`;
   const res = await fetch(url, {
+
     method: "POST",
     headers: { "Content-Type": "application/json", Accept: "application/json" },
     body: JSON.stringify({
@@ -106,8 +136,12 @@ export async function getAdminAccessToken(): Promise<string> {
   });
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    throw new Error(`Shopify client_credentials grant failed ${res.status}: ${text.slice(0, 240)}`);
+    const summary = lastAttempts.length
+      ? ` Direct tokens also rejected: ${lastAttempts.map((a) => `${a.name}→${a.status}`).join(", ")}.`
+      : "";
+    throw new Error(`Shopify client_credentials grant failed ${res.status}: ${text.slice(0, 240)}.${summary}`);
   }
+
   const data = (await res.json()) as {
     access_token: string;
     expires_in?: number;
