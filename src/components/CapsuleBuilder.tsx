@@ -418,22 +418,49 @@ export function CapsuleBuilder({
   const handleSelect = React.useCallback(
     (product: ShopifyProductNode) => {
       const tags = (product as unknown as { tags?: string[] }).tags;
-      const targetKind =
-        classifyKind(product.productType, tags, product.title, product.handle) ?? openKind;
+      const classified = classifyKind(
+        product.productType,
+        tags,
+        product.title,
+        product.handle,
+      );
+      const targetKind = classified ?? openKind;
       if (!targetKind) return;
       const variantId =
         product.variants?.edges?.find((e) => e.node.availableForSale)?.node.id ??
         product.variants?.edges?.[0]?.node.id ??
         null;
-      setSlots((prev) =>
-        prev.map((s) =>
+
+      // Detect swap (slot already filled) vs. fresh add, and mismatch
+      // (picker was opened for slot X but product auto-routed to Y).
+      setSlots((prev) => {
+        const previous = prev.find((s) => s.kind === targetKind);
+        const wasFilled = Boolean(previous?.product);
+        trackCapsuleEvent({
+          event: wasFilled ? "capsule_swap" : "capsule_add",
+          handle: product.handle,
+          slot: targetKind,
+          vendor: product.vendor ?? null,
+          productType: product.productType ?? null,
+        });
+        if (openKind && classified && classified !== openKind) {
+          trackCapsuleEvent({
+            event: "capsule_mismatch",
+            handle: product.handle,
+            slot: openKind,
+            vendor: product.vendor ?? null,
+            productType: `pick:${openKind}->${classified}`,
+          });
+        }
+        return prev.map((s) =>
           s.kind === targetKind ? { ...s, product, variantId } : s,
-        ),
-      );
+        );
+      });
       setOpenKind(null);
     },
     [openKind],
   );
+
 
   const addItem = useCartStore((s) => s.addItem);
   const openDrawer = useCartStore((s) => s.openDrawer);
