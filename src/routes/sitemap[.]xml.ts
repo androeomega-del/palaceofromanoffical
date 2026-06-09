@@ -218,6 +218,8 @@ export const Route = createFileRoute("/sitemap.xml")({
           const collections = await fetchCollections(500);
           const seen = new Set<string>();
           for (const c of collections) {
+            // Skip empty collections — Google flags them as Soft 404.
+            if ((c.productCount ?? 0) === 0) continue;
             const canonical = canonicalCollectionHandle(c.handle);
             if (seen.has(canonical)) continue;
             seen.add(canonical);
