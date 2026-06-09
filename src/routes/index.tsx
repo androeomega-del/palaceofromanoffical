@@ -33,10 +33,11 @@ export const Route = createFileRoute("/")({
       "womens-dresses",
       "new-arrivals",
       "suits",
-      "mens-loafers",
+      "mens-shirts",
     ]) {
       void context.queryClient.prefetchQuery(collectionRailQueryOptions(handle, 8));
     }
+
     return { abBucket: bucket };
   },
   head: ({ loaderData }) => {
