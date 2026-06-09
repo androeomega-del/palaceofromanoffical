@@ -13,6 +13,7 @@ import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as VaultRouteImport } from './routes/vault'
 import { Route as VacationStylistRouteImport } from './routes/vacation-stylist'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as T4s0h3c5lhy63dm14kdmbrcpRouteImport } from './routes/t4s0h3c5lhy63dm14kdmbrcp'
 import { Route as SwimRouteImport } from './routes/swim'
 import { Route as StyleQuizRouteImport } from './routes/style-quiz'
 import { Route as StudioRouteImport } from './routes/studio'
@@ -195,6 +196,12 @@ const TermsRoute = TermsRouteImport.update({
   path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
+const T4s0h3c5lhy63dm14kdmbrcpRoute =
+  T4s0h3c5lhy63dm14kdmbrcpRouteImport.update({
+    id: '/t4s0h3c5lhy63dm14kdmbrcp',
+    path: '/t4s0h3c5lhy63dm14kdmbrcp',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const SwimRoute = SwimRouteImport.update({
   id: '/swim',
   path: '/swim',
@@ -1086,6 +1093,7 @@ export interface FileRoutesByFullPath {
   '/studio': typeof StudioRoute
   '/style-quiz': typeof StyleQuizRoute
   '/swim': typeof SwimRouteWithChildren
+  '/t4s0h3c5lhy63dm14kdmbrcp': typeof T4s0h3c5lhy63dm14kdmbrcpRoute
   '/terms': typeof TermsRoute
   '/vacation-stylist': typeof VacationStylistRouteWithChildren
   '/vault': typeof VaultRouteWithChildren
@@ -1251,6 +1259,7 @@ export interface FileRoutesByTo {
   '/studio': typeof StudioRoute
   '/style-quiz': typeof StyleQuizRoute
   '/swim': typeof SwimRouteWithChildren
+  '/t4s0h3c5lhy63dm14kdmbrcp': typeof T4s0h3c5lhy63dm14kdmbrcpRoute
   '/terms': typeof TermsRoute
   '/vacation-stylist': typeof VacationStylistRouteWithChildren
   '/vault': typeof VaultRouteWithChildren
@@ -1418,6 +1427,7 @@ export interface FileRoutesById {
   '/studio': typeof StudioRoute
   '/style-quiz': typeof StyleQuizRoute
   '/swim': typeof SwimRouteWithChildren
+  '/t4s0h3c5lhy63dm14kdmbrcp': typeof T4s0h3c5lhy63dm14kdmbrcpRoute
   '/terms': typeof TermsRoute
   '/vacation-stylist': typeof VacationStylistRouteWithChildren
   '/vault': typeof VaultRouteWithChildren
@@ -1587,6 +1597,7 @@ export interface FileRouteTypes {
     | '/studio'
     | '/style-quiz'
     | '/swim'
+    | '/t4s0h3c5lhy63dm14kdmbrcp'
     | '/terms'
     | '/vacation-stylist'
     | '/vault'
@@ -1752,6 +1763,7 @@ export interface FileRouteTypes {
     | '/studio'
     | '/style-quiz'
     | '/swim'
+    | '/t4s0h3c5lhy63dm14kdmbrcp'
     | '/terms'
     | '/vacation-stylist'
     | '/vault'
@@ -1918,6 +1930,7 @@ export interface FileRouteTypes {
     | '/studio'
     | '/style-quiz'
     | '/swim'
+    | '/t4s0h3c5lhy63dm14kdmbrcp'
     | '/terms'
     | '/vacation-stylist'
     | '/vault'
@@ -2086,6 +2099,7 @@ export interface RootRouteChildren {
   StudioRoute: typeof StudioRoute
   StyleQuizRoute: typeof StyleQuizRoute
   SwimRoute: typeof SwimRouteWithChildren
+  T4s0h3c5lhy63dm14kdmbrcpRoute: typeof T4s0h3c5lhy63dm14kdmbrcpRoute
   TermsRoute: typeof TermsRoute
   VacationStylistRoute: typeof VacationStylistRouteWithChildren
   VaultRoute: typeof VaultRouteWithChildren
@@ -2221,6 +2235,13 @@ declare module '@tanstack/react-router' {
       path: '/terms'
       fullPath: '/terms'
       preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/t4s0h3c5lhy63dm14kdmbrcp': {
+      id: '/t4s0h3c5lhy63dm14kdmbrcp'
+      path: '/t4s0h3c5lhy63dm14kdmbrcp'
+      fullPath: '/t4s0h3c5lhy63dm14kdmbrcp'
+      preLoaderRoute: typeof T4s0h3c5lhy63dm14kdmbrcpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/swim': {
@@ -3518,6 +3539,7 @@ const rootRouteChildren: RootRouteChildren = {
   StudioRoute: StudioRoute,
   StyleQuizRoute: StyleQuizRoute,
   SwimRoute: SwimRouteWithChildren,
+  T4s0h3c5lhy63dm14kdmbrcpRoute: T4s0h3c5lhy63dm14kdmbrcpRoute,
   TermsRoute: TermsRoute,
   VacationStylistRoute: VacationStylistRouteWithChildren,
   VaultRoute: VaultRouteWithChildren,
@@ -3637,13 +3659,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
