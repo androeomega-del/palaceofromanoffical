@@ -38,6 +38,9 @@ export const Route = createFileRoute("/")({
     ]) {
       void context.queryClient.prefetchQuery(collectionRailQueryOptions(handle, 8));
     }
+    for (const handle of ["new-arrivals", "suits", "mens-shirts"]) {
+      void context.queryClient.prefetchQuery(collectionHeroImageQueryOptions(handle));
+    }
 
     return { abBucket: bucket };
   },
