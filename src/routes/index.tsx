@@ -13,8 +13,7 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { HomeStudioLayout } from "@/components/home-studio/home-studio-layout";
 import heroImage from "@/assets/home-hero.jpg";
 import { readMetaAbBucket } from "@/lib/meta-ab.functions";
-import { pickHomeMeta, seoMetaForBucket, type MetaBucket } from "@/lib/meta-ab";
-import { useMetaAb } from "@/hooks/use-meta-ab";
+import { seoMetaForBucket, type MetaBucket } from "@/lib/meta-ab";
 
 const HOME_TITLE = "Palace of Roman | Men's Luxury Resort & Coastal Fashion";
 const HOME_DESC =
