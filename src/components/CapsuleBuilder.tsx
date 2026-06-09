@@ -281,37 +281,48 @@ function SlotTile({
     </>
   );
 
+  if (!filled) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className={cn(baseClass, "cursor-pointer")}
+        style={tileStyle}
+        aria-label={innerLabel}
+      >
+        {content}
+      </button>
+    );
+  }
+
   return (
-    <button
-      type="button"
+    <div
+      role="button"
+      tabIndex={0}
       onClick={onClick}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onClick?.();
+        }
+      }}
       className={cn(baseClass, "cursor-pointer")}
       style={tileStyle}
       aria-label={innerLabel}
     >
       {content}
-      {filled ? (
-        <span
-          role="button"
-          tabIndex={0}
-          aria-label={`Remove ${slot.kind} selection`}
-          onClick={(event) => {
-            event.stopPropagation();
-            onClear?.();
-          }}
-          onKeyDown={(event) => {
-            if (event.key === "Enter" || event.key === " ") {
-              event.preventDefault();
-              event.stopPropagation();
-              onClear?.();
-            }
-          }}
-          className="absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-background/90 text-foreground shadow-sm backdrop-blur transition-colors hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring"
-        >
-          <X className="h-4 w-4" aria-hidden="true" />
-        </span>
-      ) : null}
-    </button>
+      <button
+        type="button"
+        aria-label={`Remove ${slot.kind} selection`}
+        onClick={(event) => {
+          event.stopPropagation();
+          onClear?.();
+        }}
+        className="absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-background/90 text-foreground shadow-sm backdrop-blur transition-colors hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring"
+      >
+        <X className="h-4 w-4" aria-hidden="true" />
+      </button>
+    </div>
   );
 }
 
