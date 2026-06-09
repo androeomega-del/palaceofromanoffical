@@ -415,7 +415,7 @@ function MegaPanel({
         >
           {dept.columns.map((col, colIdx) => {
             const items = liveHandles
-              ? col.items.filter((it) => liveHandles.has(it.handle))
+              ? col.items.filter((it) => !it.handle || liveHandles.has(it.handle))
               : col.items;
             if (items.length === 0) return null;
             return (
@@ -436,14 +436,23 @@ function MegaPanel({
                     </li>
                   )}
                   {items.map((it) => (
-                    <li key={it.handle}>
-                      <Link
-                        to="/collections/$handle"
-                        params={{ handle: it.handle }}
-                        className="text-[13px] font-light text-ink/75 hover:text-ink transition-colors inline-block normal-case tracking-normal leading-relaxed"
-                      >
-                        {it.label}
-                      </Link>
+                    <li key={it.to ?? it.handle ?? it.label}>
+                      {it.to ? (
+                        <Link
+                          to={it.to}
+                          className="text-[13px] font-light text-ink/75 hover:text-ink transition-colors inline-block normal-case tracking-normal leading-relaxed"
+                        >
+                          {it.label}
+                        </Link>
+                      ) : (
+                        <Link
+                          to="/collections/$handle"
+                          params={{ handle: it.handle! }}
+                          className="text-[13px] font-light text-ink/75 hover:text-ink transition-colors inline-block normal-case tracking-normal leading-relaxed"
+                        >
+                          {it.label}
+                        </Link>
+                      )}
                     </li>
                   ))}
                 </ul>
