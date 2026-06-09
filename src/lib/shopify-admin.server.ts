@@ -49,18 +49,29 @@ function directAdminAccessTokens(): TokenCandidate[] {
 }
 
 async function verifyAdminToken(candidate: TokenCandidate): Promise<{ ok: boolean; status: number; body: string }> {
+  // Probe `products` (not `shop`) so tokens missing read_products are
+  // correctly rejected and we fall through to the client_credentials grant
+  // which mints a properly-scoped token.
   const res = await fetch(`https://${shopDomain()}/admin/api/${API_VERSION}/graphql.json`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "X-Shopify-Access-Token": candidate.token,
     },
-    body: JSON.stringify({ query: "query AdminTokenProbe { shop { id } }" }),
+    body: JSON.stringify({ query: "query AdminTokenProbe { products(first: 1) { edges { node { id } } } }" }),
   });
-  if (res.ok) return { ok: true, status: res.status, body: "" };
-  const text = await res.text().catch(() => "");
-  console.warn(`[shopify-admin] ${candidate.name} rejected during token probe: ${res.status} ${text.slice(0, 160)}`);
-  return { ok: false, status: res.status, body: text.slice(0, 200) };
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    console.warn(`[shopify-admin] ${candidate.name} rejected during token probe: ${res.status} ${text.slice(0, 160)}`);
+    return { ok: false, status: res.status, body: text.slice(0, 200) };
+  }
+  const json = (await res.json().catch(() => ({}))) as { errors?: Array<{ message: string; extensions?: { code?: string } }> };
+  if (json.errors?.length) {
+    const msg = json.errors.map((e) => e.message).join("; ");
+    console.warn(`[shopify-admin] ${candidate.name} missing scopes during token probe: ${msg.slice(0, 200)}`);
+    return { ok: false, status: 403, body: msg.slice(0, 200) };
+  }
+  return { ok: true, status: res.status, body: "" };
 }
 
 
