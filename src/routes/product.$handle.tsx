@@ -862,7 +862,7 @@ function ProductView({
   // parallel without blocking render.
   const capsuleTopQ = useQuery({
     queryKey: ["capsule-pool", "top"],
-    queryFn: () => fetchProducts({ first: 50, query: "(tag:tops OR tag:shirts OR tag:knitwear OR tag:sweaters OR tag:polos OR tag:t-shirts)" }),
+    queryFn: () => fetchProducts({ first: 50, query: "(tag:shirts OR tag:knitwear OR tag:sweaters OR tag:polos OR tag:t-shirts OR product_type:Shirts OR product_type:T-Shirts OR product_type:Knitwear OR product_type:Sweaters OR product_type:Polos) -sneakers -shoes -boots -sandals -loafers -heels -shorts -pants -trousers -jeans -skirt" }),
     staleTime: 5 * 60 * 1000,
   });
   const capsuleBottomQ = useQuery({
