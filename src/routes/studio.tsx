@@ -8,7 +8,7 @@
  *  - Asymmetric grid fed by live `newThisWeekQueryOptions` Shopify handles.
  *  - Noindex — draft surface, not a public page.
  */
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, ErrorComponent } from "@tanstack/react-router";
 import { HomeStudioLayout } from "@/components/home-studio/home-studio-layout";
 import { newThisWeekQueryOptions } from "@/lib/rails/queries";
 
@@ -26,6 +26,8 @@ export const Route = createFileRoute("/studio")({
     void context.queryClient.prefetchQuery(newThisWeekQueryOptions("Women"));
     return null;
   },
+  errorComponent: ErrorComponent,
+  notFoundComponent: () => <div className="p-12 text-center">Studio not found.</div>,
   component: StudioPage,
 });
 

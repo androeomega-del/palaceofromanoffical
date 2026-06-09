@@ -18,6 +18,7 @@ import {
   xmlEscape,
   guardCanonicalSitemapHost,
 } from "@/lib/sitemap-xml";
+import { withTimeout } from "@/lib/with-timeout";
 
 const MAX_PRODUCTS = 5000;
 const PRODUCT_PAGE_SIZE = 100;
@@ -215,7 +216,7 @@ export const Route = createFileRoute("/sitemap.xml")({
 
         // Collections
         try {
-          const collections = await fetchCollections(500);
+          const collections = (await withTimeout(fetchCollections(500), 15_000, [])) ?? [];
           const seen = new Set<string>();
           for (const c of collections) {
             // Skip empty collections — Google flags them as Soft 404.
@@ -237,7 +238,7 @@ export const Route = createFileRoute("/sitemap.xml")({
 
         // Products + brand vendor pages + inline image entries
         try {
-          const products = await fetchAllProducts();
+          const products = (await withTimeout(fetchAllProducts(), 25_000, [])) ?? [];
           const seenVendors = new Set<string>();
           for (const p of products) {
             const imageBlocks = p.images.length
@@ -289,7 +290,7 @@ export const Route = createFileRoute("/sitemap.xml")({
 
         // Vacation destinations
         try {
-          const destinations = await fetchActiveDestinations();
+          const destinations = (await withTimeout(fetchActiveDestinations(), 8_000, [])) ?? [];
           for (const d of destinations) {
             urls.push(
               renderUrl(`${SITE_URL}/vacation-stylist/${d.slug}`, {
