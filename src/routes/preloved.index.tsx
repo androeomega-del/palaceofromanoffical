@@ -7,7 +7,7 @@
  * /product/$handle anchors with a flawless CLS profile.
  */
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
   prelovedHubQueryOptions,
   PRELOVED_CONDITIONS,
