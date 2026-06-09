@@ -16,6 +16,10 @@ import { readMetaAbBucket } from "@/lib/meta-ab.functions";
 import { pickHomeMeta, seoMetaForBucket, type MetaBucket } from "@/lib/meta-ab";
 import { useMetaAb } from "@/hooks/use-meta-ab";
 
+const HOME_TITLE = "Palace of Roman | Men's Luxury Resort & Coastal Fashion";
+const HOME_DESC =
+  "Curated luxury resort wear for men — linen, swim, and coastal tailoring from Dolce & Gabbana, Pucci, Loro Piana and more. New, current-season, shipped worldwide from Europe.";
+
 export const Route = createFileRoute("/")({
   loader: async (): Promise<{ abBucket: MetaBucket }> => {
     const { bucket } = await readMetaAbBucket();
@@ -23,18 +27,19 @@ export const Route = createFileRoute("/")({
   },
   head: ({ loaderData }) => {
     const bucket = (loaderData?.abBucket ?? 0) as MetaBucket;
-    const v = pickHomeMeta(bucket);
     const pageUrl = "https://palaceofromanofficial.com/";
     const { canonical, robots } = seoMetaForBucket(bucket, pageUrl);
     const meta: Array<Record<string, string>> = [
-      { title: v.title },
-      { name: "description", content: v.description },
-      { property: "og:title", content: v.title },
-      { property: "og:description", content: v.description },
+      { title: HOME_TITLE },
+      { name: "description", content: HOME_DESC },
+      { property: "og:title", content: HOME_TITLE },
+      { property: "og:description", content: HOME_DESC },
       { property: "og:url", content: pageUrl },
       { property: "og:type", content: "website" },
       { property: "og:image", content: `https://palaceofromanofficial.com${heroImage}` },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: HOME_TITLE },
+      { name: "twitter:description", content: HOME_DESC },
       { name: "twitter:image", content: `https://palaceofromanofficial.com${heroImage}` },
     ];
     if (robots) meta.push({ name: "robots", content: robots });
