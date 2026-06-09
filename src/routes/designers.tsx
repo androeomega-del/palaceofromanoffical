@@ -55,59 +55,64 @@ export const Route = createFileRoute("/designers")({
       "Every luxury house stocked at Palace of Roman, alphabetised. From Bottega Veneta to Versace — discover the maisons defining contemporary luxury.";
     const rh = routeHead({ path: "/designers", title, description: desc });
 
-    const itemListElement = Object.values(loaderData.grouped)
-      .flat()
-      .map((v, i) => ({
-        "@type": "ListItem",
-        position: i + 1,
-        name: v.name,
-        url: `${absoluteUrl("/collections/" + vendorHandle(v.name))}`,
-      }));
+    const scripts: Array<{ type: string; children: string }> = [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          name: title,
+          description: desc,
+          url: absoluteUrl("/designers"),
+          isPartOf: {
+            "@type": "WebSite",
+            name: SITE_NAME,
+            url: absoluteUrl("/"),
+          },
+        }),
+      },
+    ];
+
+    if (loaderData) {
+      const itemListElement = Object.values(loaderData.grouped)
+        .flat()
+        .map((v, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          name: v.name,
+          url: `${absoluteUrl("/collections/" + vendorHandle(v.name))}`,
+        }));
+
+      scripts.push({
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          name: "Designer brands at Palace of Roman",
+          itemListOrder: "https://schema.org/ItemListOrderAscending",
+          numberOfItems: loaderData.totalVendors,
+          itemListElement,
+        }),
+      });
+    }
 
     return {
       meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
       links: rh.links,
-      scripts: [
-        {
-          type: "application/ld+json",
-          children: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "CollectionPage",
-            name: title,
-            description: desc,
-            url: absoluteUrl("/designers"),
-            isPartOf: {
-              "@type": "WebSite",
-              name: SITE_NAME,
-              url: absoluteUrl("/"),
-            },
-          }),
-        },
-        {
-          type: "application/ld+json",
-          children: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "ItemList",
-            name: "Designer brands at Palace of Roman",
-            itemListOrder: "https://schema.org/ItemListOrderAscending",
-            numberOfItems: loaderData.totalVendors,
-            itemListElement,
-          }),
-        },
-      ],
+      scripts,
     };
   },
   component: DesignersPage,
 });
 
 function DesignersPage() {
-  const { grouped, totalVendors } = Route.useLoaderData();
+  const { grouped, totalVendors } = Route.useLoaderData() as LoaderData;
 
   const activeLetters = useMemo(
     () =>
       new Set(
         Object.entries(grouped)
-          .filter(([, list]) => list.length > 0)
+          .filter(([, list]) => (list as VendorEntry[]).length > 0)
           .map(([k]) => k),
       ),
     [grouped],
@@ -166,7 +171,7 @@ function DesignersPage() {
           ) : (
             <div className="space-y-16">
               {["#", ...ALPHABET].map((letter) => {
-                const list = grouped[letter];
+                const list = grouped[letter] as VendorEntry[] | undefined;
                 if (!list || list.length === 0) return null;
                 return (
                   <div
@@ -178,7 +183,7 @@ function DesignersPage() {
                       {letter}
                     </p>
                     <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-3">
-                      {list.map((v) => (
+                      {list.map((v: VendorEntry) => (
                         <li key={v.name}>
                           <Link
                             to="/collections/$handle"
