@@ -15,6 +15,8 @@ import { Link } from "@tanstack/react-router";
 import { Heart, Search, User, ShoppingBag, Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useCartStore } from "@/stores/cart-store";
+import { useConciergeStore } from "@/stores/concierge-store";
+
 import { CartDrawer } from "@/components/cart-drawer";
 import { ReducedMotionToggle } from "@/components/reduced-motion-toggle";
 import {
