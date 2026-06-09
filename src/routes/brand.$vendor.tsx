@@ -10,6 +10,7 @@ import { spotlightFor } from "@/lib/brand-seo-categories";
 import { buildBrandFaq } from "@/lib/brand-faq";
 import { BrandCategorySpotlight } from "@/components/sections/brand-category-spotlight";
 import { cdnImage } from "@/lib/cdn-image";
+import { withTimeout } from "@/lib/with-timeout";
 
 type SortKey = SortValue;
 const SORT_KEYS: SortKey[] = SORT_OPTIONS.map((o) => o.value);
@@ -29,13 +30,20 @@ export const Route = createFileRoute("/brand/$vendor")({
   // stays stable for crawlers regardless of the visitor's chosen sort.
   loader: async ({ params }) => {
     const name = brandFromSlug(params.vendor) ?? unslug(params.vendor);
+    const empty: Array<{ handle: string; title: string; price: string | null; currency: string; available: boolean; image: string | null }> = [];
     try {
-      const page = await fetchProductsPage({
-        first: 20,
-        query: `vendor:"${name}"`,
-        sortKey: "BEST_SELLING",
-        reverse: false,
-      });
+      // 6s race so a slow Storefront read never hangs SSR. The client
+      // useInfiniteQuery below still fetches a fresh page after hydration.
+      const page = await withTimeout(
+        fetchProductsPage({
+          first: 20,
+          query: `vendor:"${name}"`,
+          sortKey: "BEST_SELLING",
+          reverse: false,
+        }),
+        6000,
+      );
+      if (!page) return { items: empty };
       const items = page.edges.map(({ node }) => {
         const money = node.priceRange?.minVariantPrice;
         const image = node.images?.edges?.[0]?.node?.url;
@@ -52,7 +60,7 @@ export const Route = createFileRoute("/brand/$vendor")({
 
       return { items };
     } catch {
-      return { items: [] as Array<{ handle: string; title: string; price: string | null; currency: string; available: boolean; image: string | null }> };
+      return { items: empty };
     }
   },
   head: ({ params, loaderData }) => {

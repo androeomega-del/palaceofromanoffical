@@ -18,6 +18,7 @@ import { readMetaAbBucket } from "@/lib/meta-ab.functions";
 import { pickCollectionMeta, seoMetaForBucket, type MetaBucket } from "@/lib/meta-ab";
 import { useMetaAb } from "@/hooks/use-meta-ab";
 import { absoluteUrl, SITE_URL } from "@/lib/seo";
+import { withTimeout } from "@/lib/with-timeout";
 import { collectionSeo } from "@/lib/collection-seo";
 import {
   CatalogFilters,
@@ -181,16 +182,26 @@ export const Route = createFileRoute("/collections/$handle")({
     let collectionRes: Awaited<ReturnType<typeof fetchCollection>> | null = null;
     let collectionFetchFailed = false;
     const [collectionSettled, abRes, firstPage] = await Promise.all([
-      fetchCollection(params.handle, 1).then(
-        (r) => ({ ok: true as const, value: r }),
-        () => ({ ok: false as const, value: null }),
+      // 6s race so a slow Storefront read never hangs SSR. On timeout we
+      // treat it as a transient error and render the safe shell below
+      // (NOT a 404), so Google never caches a Soft 404 from a cold edge.
+      withTimeout(
+        fetchCollection(params.handle, 1).then(
+          (r) => ({ ok: true as const, value: r }),
+          () => ({ ok: false as const, value: null }),
+        ),
+        6000,
+        { ok: false as const, value: null },
       ),
       readMetaAbBucket().catch(() => ({ bucket: 0 as MetaBucket })),
-      context.queryClient
-        .ensureInfiniteQueryData(
-          collectionFirstPageQueryOptions({ handle: params.handle, sortKey, reverse }),
-        )
-        .catch(() => null),
+      withTimeout(
+        context.queryClient
+          .ensureInfiniteQueryData(
+            collectionFirstPageQueryOptions({ handle: params.handle, sortKey, reverse }),
+          )
+          .catch(() => null),
+        6000,
+      ),
     ]);
     collectionRes = collectionSettled.value;
     collectionFetchFailed = !collectionSettled.ok;
