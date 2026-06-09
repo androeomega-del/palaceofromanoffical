@@ -24,6 +24,7 @@ export interface TrackPayload {
   variant_title?: string | null;
   price_usd?: number | null;
   quantity?: number;
+  payment_method?: string | null;
 }
 
 function trim(s: string | null | undefined, max: number): string | null {
