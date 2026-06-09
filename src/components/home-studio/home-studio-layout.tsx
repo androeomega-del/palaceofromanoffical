@@ -19,6 +19,8 @@ import { useConciergeStore } from "@/stores/concierge-store";
 import { PalaceHeader } from "./palace-header";
 import { ProductRail } from "@/components/sections/product-rail";
 import { collectionRailQueryOptions } from "@/lib/rails/queries";
+import { collectionHeroImageQueryOptions } from "@/lib/collection-hero-image";
+import { Skeleton } from "@/components/ui/skeleton";
 import { vendorSlug } from "@/lib/nav-config";
 import heroPoster from "@/assets/home-hero.jpg";
 import heroVideo from "@/assets/hero-cinematic.mp4.asset.json";
@@ -367,22 +369,23 @@ function EditorialSplit({
 }
 
 function EditorialTile({ handle, title }: { handle: string; title: string }) {
-  const { data, isLoading } = useQuery(collectionRailQueryOptions(handle, 4));
-  const lead = data?.[0]?.node.images?.edges?.[0]?.node;
-
-  if (!isLoading && (!data || data.length === 0)) return null;
+  const { data: hero, isLoading } = useQuery(collectionHeroImageQueryOptions(handle));
 
   return (
     <Link
       to="/collections/$handle"
       params={{ handle }}
-      className="group relative block bg-black overflow-hidden"
+      className="group relative block bg-ink overflow-hidden"
+      aria-label={title}
     >
-      <div className="relative w-full" style={{ aspectRatio: "3 / 4" }}>
-        {lead && (
+      <div className="relative w-full bg-black" style={{ aspectRatio: "3 / 4" }}>
+        {isLoading && !hero && (
+          <Skeleton className="absolute inset-0 w-full h-full !rounded-none bg-canvas/5" />
+        )}
+        {hero?.url && (
           <img
-            src={lead.url}
-            alt={lead.altText ?? title}
+            src={hero.url}
+            alt={hero.altText ?? title}
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1600ms] ease-out group-hover:scale-[1.04]"
             style={{ filter: "brightness(0.72) contrast(1.05) saturate(0.95)" }}
             loading="lazy"
@@ -393,14 +396,15 @@ function EditorialTile({ handle, title }: { handle: string; title: string }) {
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              "linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.2) 55%, rgba(0,0,0,0) 100%)",
+              "linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.25) 55%, rgba(0,0,0,0) 100%)",
           }}
           aria-hidden="true"
         />
-        <div className="absolute inset-x-0 bottom-0 px-6 py-7">
+        <div className="absolute inset-x-0 bottom-0 px-6 py-7 flex items-end justify-between gap-4">
           <h3 className="text-[11px] md:text-[12px] uppercase tracking-[0.32em] text-canvas">
             {title}
           </h3>
+          <ArrowUpRight className="w-4 h-4 text-canvas/80 group-hover:text-bronze transition-colors" strokeWidth={1.25} />
         </div>
       </div>
     </Link>
