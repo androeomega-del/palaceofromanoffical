@@ -574,6 +574,14 @@ export function CapsuleBuilder({
           quantity: 1,
           selectedOptions: variantNode.selectedOptions ?? [],
         });
+        trackCapsuleEvent({
+          event: "capsule_checkout",
+          handle: product.handle,
+          slot: slot.kind,
+          vendor: product.vendor ?? null,
+          productType: product.productType ?? null,
+          position: unique.length,
+        });
       }
       openDrawer();
       toast.success(`${unique.length} item${unique.length === 1 ? "" : "s"} added to your bag`);
@@ -581,6 +589,7 @@ export function CapsuleBuilder({
       setIsBundling(false);
     }
   }, [slots, addItem, openDrawer, isBundling]);
+
 
   return (
     <section
