@@ -45,8 +45,9 @@ export const Route = createFileRoute("/preloved/")({
       ],
     };
   },
-  loader: ({ context }) =>
-    context.queryClient.ensureQueryData(prelovedHubQueryOptions()),
+  loader: ({ context }) => {
+    void context.queryClient.prefetchQuery(prelovedHubQueryOptions());
+  },
   component: PrelovedHubPage,
   errorComponent: ({ error, reset }) => {
     const router = useRouter();
