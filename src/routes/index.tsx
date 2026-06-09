@@ -18,7 +18,7 @@ import { collectionRailQueryOptions } from "@/lib/rails/queries";
 
 const HOME_TITLE = "Palace of Roman | Men's Luxury Resort & Coastal Fashion";
 const HOME_DESC =
-  "Curated luxury resort wear for men — linen, swim, and coastal tailoring from Dolce & Gabbana, Pucci, Loro Piana and more. New, current-season, shipped worldwide from Europe.";
+  "Curated luxury resort wear for men — linen, swim, and coastal tailoring from Dolce & Gabbana, Brunello Cucinelli, Saint Laurent and more. New, current-season, shipped worldwide from Europe.";
 
 export const Route = createFileRoute("/")({
   loader: async ({ context }): Promise<{ abBucket: MetaBucket }> => {
