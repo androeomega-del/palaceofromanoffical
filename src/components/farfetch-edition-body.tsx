@@ -349,9 +349,11 @@ function CategoryQuickLinks() {
             View all →
           </Link>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 md:gap-5">
+        <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 -mx-6 px-6 md:mx-0 md:px-0 md:pb-0 md:overflow-visible md:snap-none md:grid md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 md:gap-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {CATEGORY_TILES.map((tile) => (
-            <CategoryTile key={tile.handle} tile={tile} />
+            <div key={tile.handle} className="shrink-0 basis-[60%] snap-start md:basis-auto md:shrink">
+              <CategoryTile tile={tile} />
+            </div>
           ))}
         </div>
       </div>
