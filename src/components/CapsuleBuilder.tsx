@@ -617,16 +617,35 @@ export function CapsuleBuilder({
           <SlotTile
             key={slot.kind}
             slot={slot}
-            onClick={() => setOpenKind(slot.kind)}
-            onClear={() =>
+            onClick={() => {
+              trackCapsuleEvent({
+                event: "capsule_open",
+                handle: slot.product?.handle || `empty:${slot.kind.toLowerCase()}`,
+                slot: slot.kind,
+                vendor: slot.product?.vendor ?? null,
+                productType: slot.product?.productType ?? null,
+              });
+              setOpenKind(slot.kind);
+            }}
+            onClear={() => {
+              if (slot.product) {
+                trackCapsuleEvent({
+                  event: "capsule_remove",
+                  handle: slot.product.handle,
+                  slot: slot.kind,
+                  vendor: slot.product.vendor ?? null,
+                  productType: slot.product.productType ?? null,
+                });
+              }
               setSlots((prev) =>
                 prev.map((s) =>
                   s.kind === slot.kind ? { ...s, product: null, variantId: null } : s,
                 ),
-              )
-            }
+              );
+            }}
           />
         ))}
+
       </div>
 
       <div className="mt-5 flex flex-col gap-3 sm:mt-6 sm:flex-row sm:items-center sm:justify-between">
