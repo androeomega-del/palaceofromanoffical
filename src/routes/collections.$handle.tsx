@@ -187,10 +187,20 @@ export const Route = createFileRoute("/collections/$handle")({
         )
         .catch(() => null),
     ]);
+    if (!collectionRes) {
+      // Real HTTP 404 for unknown/retired collection handles — avoids Soft 404.
+      if (typeof window === "undefined") {
+        try {
+          const { setResponseStatus } = await import("@tanstack/react-start/server");
+          setResponseStatus(404);
+        } catch {}
+      }
+      throw notFound();
+    }
     return {
-      title: collectionRes?.title ?? titleizeHandle(params.handle),
-      description: collectionRes?.description ?? "",
-      image: collectionRes?.image?.url ?? null,
+      title: collectionRes.title ?? titleizeHandle(params.handle),
+      description: collectionRes.description ?? "",
+      image: collectionRes.image?.url ?? null,
       abBucket: abRes.bucket,
     };
   },
