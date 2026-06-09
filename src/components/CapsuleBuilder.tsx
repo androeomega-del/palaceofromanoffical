@@ -341,7 +341,8 @@ export function CapsuleBuilder({
     ),
   );
 
-  // Re-seed if the host swaps products (PDP route change).
+  // Re-seed only when the PDP product itself changes. Depending on the full
+  // product object can re-fill a slot immediately after a shopper clears it.
   React.useEffect(() => {
     setSlots(
       SLOT_ORDER.map((kind) =>
@@ -350,7 +351,7 @@ export function CapsuleBuilder({
           : { kind, product: null, variantId: null },
       ),
     );
-  }, [seedProduct, seedVariantId, seedKind]);
+  }, [seedProduct.handle, seedKind]);
 
   const [openKind, setOpenKind] = React.useState<CapsuleSlotKind | null>(null);
 
