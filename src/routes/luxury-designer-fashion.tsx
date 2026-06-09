@@ -72,7 +72,7 @@ export const Route = createFileRoute("/luxury-designer-fashion")({
       ],
     };
   },
-  loader: ({ context }) => context.queryClient.ensureQueryData(LANDING_QO),
+  loader: ({ context }) => (context.queryClient.prefetchQuery(LANDING_QO), undefined),
   errorComponent: ErrorComponent,
   notFoundComponent: () => <div className="p-12 text-center text-ink/70">Page not found.</div>,
   component: Page,
