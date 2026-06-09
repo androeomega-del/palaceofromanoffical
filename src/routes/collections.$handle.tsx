@@ -18,6 +18,7 @@ import { readMetaAbBucket } from "@/lib/meta-ab.functions";
 import { pickCollectionMeta, seoMetaForBucket, type MetaBucket } from "@/lib/meta-ab";
 import { useMetaAb } from "@/hooks/use-meta-ab";
 import { absoluteUrl, SITE_URL } from "@/lib/seo";
+import { withTimeout } from "@/lib/with-timeout";
 import { collectionSeo } from "@/lib/collection-seo";
 import {
   CatalogFilters,
