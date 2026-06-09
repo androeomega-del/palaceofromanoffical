@@ -18,6 +18,7 @@ import {
   xmlEscape,
   guardCanonicalSitemapHost,
 } from "@/lib/sitemap-xml";
+import { withTimeout } from "@/lib/with-timeout";
 
 const MAX_PRODUCTS = 5000;
 const PRODUCT_PAGE_SIZE = 100;
