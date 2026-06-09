@@ -123,8 +123,8 @@ const CAPSULE_TAXONOMY: Record<CapsuleSlotKind, string[]> = {
  */
 const TAXONOMY_PRIORITY: CapsuleSlotKind[] = [
   "Footwear",
-  "Accessory",
   "Outerwear",
+  "Accessory",
   "Bottom",
   "Top",
 ];
