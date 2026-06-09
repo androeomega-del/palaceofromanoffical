@@ -195,13 +195,7 @@ export const Route = createFileRoute("/collections/$handle")({
     collectionRes = collectionSettled.value;
     collectionFetchFailed = !collectionSettled.ok;
     if (!collectionRes && !collectionFetchFailed) {
-      // Real HTTP 404 for unknown/retired collection handles — avoids Soft 404.
-      if (typeof window === "undefined") {
-        try {
-          const { setSsrStatus } = await import("@/lib/set-response-status.server");
-          setSsrStatus(404);
-        } catch {}
-      }
+      // throw notFound() — TanStack Start renders notFoundComponent with HTTP 404.
       throw notFound();
     }
     if (!collectionRes) {
