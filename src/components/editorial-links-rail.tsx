@@ -317,33 +317,7 @@ export function EditorialLinksRail({
         </div>
         <div className="flex gap-5 overflow-x-auto snap-x snap-mandatory pb-2 -mx-6 px-6 md:mx-0 md:px-0 md:pb-0 md:overflow-visible md:snap-none md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-7 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {links.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="group block focus:outline-none focus-visible:ring-2 focus-visible:ring-bronze shrink-0 basis-[78%] snap-start md:basis-auto md:shrink"
-            >
-              <div className="relative aspect-[4/5] bg-muted overflow-hidden mb-4">
-                <img
-                  src={link.image ?? imgForKey(link.href)}
-                  alt={link.title}
-                  loading="lazy"
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-ink/30 via-transparent to-transparent" />
-              </div>
-              <p className="text-eyebrow uppercase text-bronze-deep mb-2">
-                {link.kicker}
-              </p>
-              <h3 className="font-serif text-[20px] md:text-[22px] leading-snug text-ink mb-2 group-hover:text-bronze-deep transition-colors">
-                {link.title}
-              </h3>
-              <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
-                {link.dek}
-              </p>
-              <span className="mt-3 inline-block text-cta-sm uppercase text-ink border-b border-bronze/40 pb-0.5 group-hover:text-bronze group-hover:border-bronze transition-colors">
-                Read →
-              </span>
-            </a>
+            <RailCard key={link.href} link={link} />
           ))}
         </div>
       </div>
