@@ -172,6 +172,43 @@
   --ring: var(--sea);
 }
 
+/* Sitewide dark mode — activated by adding `.dark` to <html> via the
+   ThemeToggle. Remaps every global token so the existing Tailwind utilities
+   (bg-canvas, text-ink, border-border, text-muted-foreground, etc.) flip
+   automatically. Mirrors the obsidian skin values but at the :root level so
+   it covers every route, not just PDP/commerce subtrees. */
+:root.dark {
+  --canvas: #0A0A0A;
+  --canvas-raised: #141414;
+  --ink: #F4F1EC;
+  --bronze: #D9CFB8;
+  --bronze-soft: #C7B894;
+  --bronze-deep: #E5DDCB;
+  --sea: oklch(0.72 0.085 230);
+
+  --background: #0A0A0A;
+  --foreground: #F4F1EC;
+  --card: #141414;
+  --card-foreground: #F4F1EC;
+  --popover: #141414;
+  --popover-foreground: #F4F1EC;
+  --primary: #F4F1EC;
+  --primary-foreground: #0A0A0A;
+  --secondary: #1A1A1A;
+  --secondary-foreground: #F4F1EC;
+  --muted: #1F1F1F;
+  --muted-foreground: #A39E93;
+  --accent: var(--bronze);
+  --accent-foreground: #0A0A0A;
+  --destructive: oklch(0.62 0.21 27);
+  --destructive-foreground: #F4F1EC;
+  --border: rgba(244,241,236,0.14);
+  --input: rgba(244,241,236,0.18);
+  --ring: var(--bronze);
+  color-scheme: dark;
+}
+:root.dark ::selection { background: #E5DDCB; color: #0A0A0A; }
+
 @layer base {
   * { border-color: var(--color-border); }
 
