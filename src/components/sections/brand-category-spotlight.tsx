@@ -57,23 +57,27 @@ export function BrandCategorySpotlight({ vendorSlug, spotlight }: Props) {
           </p>
         </header>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-3 gap-y-10 md:gap-x-5">
+        <div className="flex gap-x-3 overflow-x-auto snap-x snap-mandatory pb-2 -mx-6 px-6 md:mx-0 md:px-0 md:pb-0 md:overflow-visible md:snap-none md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-x-5 md:gap-y-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {isLoading
             ? Array.from({ length: 4 }).map((_, i) => (
                 <div
                   key={i}
-                  className="bg-ink/5 animate-pulse"
+                  className="bg-ink/5 animate-pulse shrink-0 basis-[72%] snap-start md:basis-auto md:shrink"
                   style={{ aspectRatio: "3 / 4" }}
                   aria-hidden="true"
                 />
               ))
             : data!.map((p, i) => (
-                <ProductCard
+                <div
                   key={p.node.id}
-                  product={p}
-                  surface={`brand-spotlight:${vendorSlug}`}
-                  position={i}
-                />
+                  className="shrink-0 basis-[72%] snap-start md:basis-auto md:shrink"
+                >
+                  <ProductCard
+                    product={p}
+                    surface={`brand-spotlight:${vendorSlug}`}
+                    position={i}
+                  />
+                </div>
               ))}
         </div>
 
