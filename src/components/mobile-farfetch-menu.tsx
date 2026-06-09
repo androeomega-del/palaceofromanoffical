@@ -135,16 +135,27 @@ export function MobileFarfetchMenu({ onClose }: { onClose: () => void }) {
         <ul className="flex-1 overflow-y-auto px-5 pb-6 divide-y divide-ink/10">
           {drill.kind === "column" &&
             drill.items.map((it) => (
-              <li key={it.handle}>
-                <Link
-                  to="/collections/$handle"
-                  params={{ handle: it.handle }}
-                  onClick={closeAll}
-                  className="flex items-center justify-between py-4 text-[15px] text-ink"
-                >
-                  <span>{it.label}</span>
-                  <ChevronRight className="w-4 h-4 text-ink/40" strokeWidth={1.5} />
-                </Link>
+              <li key={it.to ?? it.handle ?? it.label}>
+                {it.to ? (
+                  <Link
+                    to={it.to}
+                    onClick={closeAll}
+                    className="flex items-center justify-between py-4 text-[15px] text-ink"
+                  >
+                    <span>{it.label}</span>
+                    <ChevronRight className="w-4 h-4 text-ink/40" strokeWidth={1.5} />
+                  </Link>
+                ) : (
+                  <Link
+                    to="/collections/$handle"
+                    params={{ handle: it.handle! }}
+                    onClick={closeAll}
+                    className="flex items-center justify-between py-4 text-[15px] text-ink"
+                  >
+                    <span>{it.label}</span>
+                    <ChevronRight className="w-4 h-4 text-ink/40" strokeWidth={1.5} />
+                  </Link>
+                )}
               </li>
             ))}
           {drill.kind === "brands" &&
