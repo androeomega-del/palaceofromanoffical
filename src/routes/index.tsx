@@ -13,8 +13,11 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { HomeStudioLayout } from "@/components/home-studio/home-studio-layout";
 import heroImage from "@/assets/home-hero.jpg";
 import { readMetaAbBucket } from "@/lib/meta-ab.functions";
-import { pickHomeMeta, seoMetaForBucket, type MetaBucket } from "@/lib/meta-ab";
-import { useMetaAb } from "@/hooks/use-meta-ab";
+import { seoMetaForBucket, type MetaBucket } from "@/lib/meta-ab";
+
+const HOME_TITLE = "Palace of Roman | Men's Luxury Resort & Coastal Fashion";
+const HOME_DESC =
+  "Curated luxury resort wear for men — linen, swim, and coastal tailoring from Dolce & Gabbana, Pucci, Loro Piana and more. New, current-season, shipped worldwide from Europe.";
 
 export const Route = createFileRoute("/")({
   loader: async (): Promise<{ abBucket: MetaBucket }> => {
@@ -23,18 +26,19 @@ export const Route = createFileRoute("/")({
   },
   head: ({ loaderData }) => {
     const bucket = (loaderData?.abBucket ?? 0) as MetaBucket;
-    const v = pickHomeMeta(bucket);
     const pageUrl = "https://palaceofromanofficial.com/";
     const { canonical, robots } = seoMetaForBucket(bucket, pageUrl);
     const meta: Array<Record<string, string>> = [
-      { title: v.title },
-      { name: "description", content: v.description },
-      { property: "og:title", content: v.title },
-      { property: "og:description", content: v.description },
+      { title: HOME_TITLE },
+      { name: "description", content: HOME_DESC },
+      { property: "og:title", content: HOME_TITLE },
+      { property: "og:description", content: HOME_DESC },
       { property: "og:url", content: pageUrl },
       { property: "og:type", content: "website" },
       { property: "og:image", content: `https://palaceofromanofficial.com${heroImage}` },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: HOME_TITLE },
+      { name: "twitter:description", content: HOME_DESC },
       { name: "twitter:image", content: `https://palaceofromanofficial.com${heroImage}` },
     ];
     if (robots) meta.push({ name: "robots", content: robots });
@@ -65,10 +69,12 @@ export const Route = createFileRoute("/")({
 
 
 function HomePage() {
-  const { abBucket } = Route.useLoaderData();
-  useMetaAb("home", abBucket, { a: pickHomeMeta(0), b: pickHomeMeta(1) });
+  // Meta A/B intentionally bypassed on `/` — title/description are locked
+  // to the niche-repositioning copy. Bucket still loaded for parity with
+  // other surfaces (canonical/robots resolution).
   return <HomeStudioLayout variant="embedded" />;
 }
+
 
 function HomeErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error("[home] runtime error:", error);

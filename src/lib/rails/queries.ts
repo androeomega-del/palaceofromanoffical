@@ -17,7 +17,7 @@
  * `storefrontApiRequest`, so we only need the key to vary here.
  */
 import { queryOptions } from "@tanstack/react-query";
-import { fetchProducts } from "@/lib/shopify";
+import { fetchProducts, fetchCollectionFiltered, type ShopifyProduct } from "@/lib/shopify";
 import { useMarketStore } from "@/stores/market-store";
 import { cached } from "@/lib/server-cache";
 
@@ -102,3 +102,27 @@ export const homePageCollectionQueryOptions = () => {
     staleTime: 5 * 60_000,
   });
 };
+
+/**
+ * Collection-by-handle rail — respects Shopify's MANUAL sort so the
+ * merchant-curated order on the storefront matches what ships on the
+ * homepage. Used for editorial rails like "The Riviera Edit" and
+ * "Coastal Essentials" whose ordering is hand-tuned in Shopify admin.
+ */
+export const collectionRailQueryOptions = (handle: string, first = 8) => {
+  const key = `rail-collection:${handle}:${first}:${marketKey()}`;
+  return queryOptions({
+    queryKey: ["rail-collection", handle, first, marketKey()] as const,
+    queryFn: () =>
+      railCached(key, 60_000, async (): Promise<ShopifyProduct[]> => {
+        const res = await fetchCollectionFiltered({
+          handle,
+          first,
+          sortKey: "MANUAL",
+        });
+        return res?.edges ?? [];
+      }),
+    staleTime: 10 * 60_000,
+  });
+};
+

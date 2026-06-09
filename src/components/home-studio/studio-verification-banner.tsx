@@ -1,13 +1,10 @@
 /**
- * StudioVerificationBanner — editorial provenance statement
+ * StudioVerificationBanner — "Sourcing" statement
  *
- * Wide-set editorial layout. Right column carries a staggered four-image
- * studio drop pulled from the June bucket; a full-bleed contact-sheet
- * marquee below the body cycles through all 30 frames as a quiet visual
- * proof of the in-studio handling described in the body copy.
- *
- * Images are CDN-hosted (`@/assets/june/*.png.asset.json`) so the heavy
- * PNGs never touch the repo and load lazily.
+ * Editorial direct-from-Europe positioning. Replaces the prior
+ * "Verified Physical Provenance" block. The full-bleed contact-sheet
+ * marquee remains as the supporting visual; it carries no in-house
+ * studio claim — purely a visual rhythm of curated pieces.
  */
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
@@ -39,30 +36,30 @@ export function StudioVerificationBanner() {
     >
       <div className="px-6 md:px-14 py-20 md:py-28">
         <div className="max-w-3xl mx-auto text-center">
-          <h2
-            className="text-[8vw] md:text-[3.2vw] leading-[1.1] font-light tracking-[0.08em] uppercase mb-6"
-            style={{ fontWeight: 300, fontFamily: fontSerif, textWrap: "balance" }}
-          >
-            Verified Physical Provenance
-          </h2>
-
           <p
             className="text-[10px] md:text-[11px] tracking-[0.45em] uppercase mb-8"
             style={{ color: palette.sand, fontFamily: fontSans }}
           >
-            Beyond the Digital Architecture
+            Sourcing
           </p>
+
+          <h2
+            className="text-[8vw] md:text-[3.2vw] leading-[1.1] font-light tracking-[-0.01em] mb-8"
+            style={{ fontWeight: 300, fontFamily: fontSerif, textWrap: "balance" }}
+          >
+            Direct from Europe. Never secondary market.
+          </h2>
 
           <p
             className="text-sm md:text-base leading-[1.75] mb-10 mx-auto max-w-xl"
             style={{ color: palette.muted, fontFamily: fontSans, fontWeight: 300 }}
           >
-            We do not rely on generic catalog imagery or unverified secondary markets.
-            Every current-season allocation displayed on palaceofromanofficial.com
-            is documented live under our studio architecture. We handle, inspect,
-            and photograph the fine material grains and custom hardware of our
-            inventory firsthand, guaranteeing absolute alignment with European
-            luxury standards before your selection ever departs our distribution hubs.
+            Every piece at Palace of Roman is new, unworn, and current or
+            recent season — sourced through established European distribution
+            partners and shipped to you in original packaging, with tags and
+            authenticity cards where the maison provides them. No consignment.
+            No pre-owned. No gray-market resale chains. One piece, one owner:
+            you.
           </p>
 
           <Link
@@ -74,7 +71,7 @@ export function StudioVerificationBanner() {
               fontFamily: fontSans,
             }}
           >
-            Explore Our Sourcing Protocol
+            Read how we source
             <ArrowUpRight
               className="w-3.5 h-3.5 transition-transform duration-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
               strokeWidth={1.25}
