@@ -33,6 +33,9 @@ import {
 import { getShopifyMenu } from "@/lib/menu-source.functions";
 import { buildDepartmentsFromShopifyMenu } from "@/lib/megamenu-source";
 import { useCustomerStore } from "@/stores/customer-store";
+import { useConciergeStore } from "@/stores/concierge-store";
+import { Sparkles } from "lucide-react";
+
 
 type Tab = "women" | "men";
 
