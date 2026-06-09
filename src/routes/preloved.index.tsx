@@ -100,8 +100,8 @@ function inferConditionLabel(title: string): string {
 }
 
 function PrelovedHubPage() {
-  const { data } = useSuspenseQuery(prelovedHubQueryOptions());
-  const products = data?.edges ?? [];
+  const { data, isLoading } = useQuery(prelovedHubQueryOptions());
+  const products: PrelovedPage["edges"] = data?.edges ?? [];
 
   return (
     <main className="bg-canvas text-ink">
