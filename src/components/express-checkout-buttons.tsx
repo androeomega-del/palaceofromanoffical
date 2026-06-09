@@ -57,7 +57,6 @@ export function ExpressCheckoutButtons({ onCheckout }: ExpressCheckoutButtonsPro
       event_type: "checkout_started",
       quantity: totalItems,
       price_usd: totalAmount,
-      payment_method: method,
     });
     onCheckout();
   };
