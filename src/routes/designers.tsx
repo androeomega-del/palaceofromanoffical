@@ -7,10 +7,12 @@
  * dimmed but kept for layout symmetry.
  */
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { fetchProducts } from "@/lib/shopify";
-import { routeHead } from "@/lib/seo";
+import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
+
+type VendorEntry = { name: string; count: number };
+type LoaderData = { grouped: Record<string, VendorEntry[]>; totalVendors: number };
 
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
@@ -22,33 +24,14 @@ function vendorHandle(v: string) {
 }
 
 export const Route = createFileRoute("/designers")({
-  head: () => {
-    const title = "Designers A–Z — Palace of Roman";
-    const desc =
-      "Every luxury house stocked at Palace of Roman, alphabetised. From Bottega Veneta to Versace — discover the maisons defining contemporary luxury.";
-    const rh = routeHead({ path: "/designers", title, description: desc });
-    return {
-      meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
-      links: rh.links,
-    };
-  },
-  component: DesignersPage,
-});
-
-function DesignersPage() {
-  // One large fetch covers our current catalog (≤ 250 SKUs). When the
-  // catalog grows past Storefront's per-call limit we'll switch to a
-  // dedicated /designers index server function.
-  const q = useQuery({
-    queryKey: ["designers-index"],
-    queryFn: () =>
-      fetchProducts({ first: 250, sortKey: "BEST_SELLING", reverse: false }),
-    staleTime: 5 * 60 * 1000,
-  });
-
-  const grouped = useMemo(() => {
+  loader: async () => {
+    const edges = await fetchProducts({
+      first: 250,
+      sortKey: "BEST_SELLING",
+      reverse: false,
+    });
     const counts = new Map<string, number>();
-    for (const e of q.data ?? []) {
+    for (const e of edges) {
       const v = e.node.vendor?.trim();
       if (!v) continue;
       counts.set(v, (counts.get(v) ?? 0) + 1);
@@ -64,22 +47,75 @@ function DesignersPage() {
       const key = ALPHABET.includes(first) ? first : "#";
       byLetter[key].push(v);
     }
-    return byLetter;
-  }, [q.data]);
+    return { grouped: byLetter, totalVendors: vendors.length };
+  },
+  head: ({ loaderData }) => {
+    const title = "Designers A–Z — Palace of Roman";
+    const desc =
+      "Every luxury house stocked at Palace of Roman, alphabetised. From Bottega Veneta to Versace — discover the maisons defining contemporary luxury.";
+    const rh = routeHead({ path: "/designers", title, description: desc });
+
+    const scripts: Array<{ type: string; children: string }> = [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          name: title,
+          description: desc,
+          url: absoluteUrl("/designers"),
+          isPartOf: {
+            "@type": "WebSite",
+            name: SITE_NAME,
+            url: absoluteUrl("/"),
+          },
+        }),
+      },
+    ];
+
+    if (loaderData) {
+      const itemListElement = Object.values(loaderData.grouped)
+        .flat()
+        .map((v, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          name: v.name,
+          url: `${absoluteUrl("/collections/" + vendorHandle(v.name))}`,
+        }));
+
+      scripts.push({
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          name: "Designer brands at Palace of Roman",
+          itemListOrder: "https://schema.org/ItemListOrderAscending",
+          numberOfItems: loaderData.totalVendors,
+          itemListElement,
+        }),
+      });
+    }
+
+    return {
+      meta: [{ title }, { name: "description", content: desc }, ...rh.meta],
+      links: rh.links,
+      scripts,
+    };
+  },
+  component: DesignersPage,
+});
+
+function DesignersPage() {
+  const { grouped, totalVendors } = Route.useLoaderData() as LoaderData;
 
   const activeLetters = useMemo(
     () =>
       new Set(
         Object.entries(grouped)
-          .filter(([, list]) => list.length > 0)
+          .filter(([, list]) => (list as VendorEntry[]).length > 0)
           .map(([k]) => k),
       ),
     [grouped],
-  );
-
-  const totalVendors = Object.values(grouped).reduce(
-    (acc, list) => acc + list.length,
-    0,
   );
 
   return (
@@ -92,9 +128,9 @@ function DesignersPage() {
           </p>
           <h1 className="font-serif text-4xl md:text-6xl">Designers A–Z</h1>
           <p className="mt-4 text-sm text-muted-foreground max-w-xl leading-relaxed">
-            {q.isLoading
-              ? "Compiling the index…"
-              : `${totalVendors} houses currently stocked. Every piece sourced through our authorised distributor network and shipped with import duties handled on your behalf.`}
+            {totalVendors} houses currently stocked. Every piece sourced
+            through our authorised distributor network and shipped with import
+            duties handled on your behalf.
           </p>
         </div>
       </section>
@@ -128,24 +164,14 @@ function DesignersPage() {
       {/* Letter groups */}
       <section className="px-6 py-16">
         <div className="max-w-screen-2xl mx-auto">
-          {q.isLoading ? (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {Array.from({ length: 12 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="h-6 bg-muted animate-pulse"
-                  style={{ width: `${50 + (i % 4) * 12}%` }}
-                />
-              ))}
-            </div>
-          ) : totalVendors === 0 ? (
+          {totalVendors === 0 ? (
             <p className="text-center py-32 text-sm text-muted-foreground">
               No designers stocked at the moment. Check back shortly.
             </p>
           ) : (
             <div className="space-y-16">
               {["#", ...ALPHABET].map((letter) => {
-                const list = grouped[letter];
+                const list = grouped[letter] as VendorEntry[] | undefined;
                 if (!list || list.length === 0) return null;
                 return (
                   <div
@@ -157,7 +183,7 @@ function DesignersPage() {
                       {letter}
                     </p>
                     <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-3">
-                      {list.map((v) => (
+                      {list.map((v: VendorEntry) => (
                         <li key={v.name}>
                           <Link
                             to="/collections/$handle"
