@@ -19,6 +19,8 @@ import { useConciergeStore } from "@/stores/concierge-store";
 import { PalaceHeader } from "./palace-header";
 import { ProductRail } from "@/components/sections/product-rail";
 import { collectionRailQueryOptions } from "@/lib/rails/queries";
+import { collectionHeroImageQueryOptions } from "@/lib/collection-hero-image";
+import { Skeleton } from "@/components/ui/skeleton";
 import { vendorSlug } from "@/lib/nav-config";
 import heroPoster from "@/assets/home-hero.jpg";
 import heroVideo from "@/assets/hero-cinematic.mp4.asset.json";
