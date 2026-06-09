@@ -201,14 +201,38 @@ export function cityBreadcrumbJsonLd(path: string, label: string) {
 }
 
 export function cityStoreJsonLd(city: string, metro: string, path: string) {
+  const url = `https://palaceofromanofficial.com${path}`;
   return {
     "@context": "https://schema.org",
-    "@type": "OnlineStore",
+    "@type": "LocalBusiness",
+    "@id": `${url}#store`,
     name: "Palace of Roman",
-    url: `https://palaceofromanofficial.com${path}`,
-    description: `Authenticated luxury designer fashion shipped to ${metro}.`,
-    areaServed: { "@type": "City", name: city },
+    url,
+    image: "https://palaceofromanofficial.com/assets/og-default.png",
+    logo: "https://palaceofromanofficial.com/favicon.ico",
+    telephone: "+1-213-991-4069",
+    priceRange: "$$$",
+    description: `Authenticated luxury designer fashion shipped to ${metro}. Online-only boutique based in West Hollywood, California, shipping worldwide.`,
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "West Hollywood",
+      addressRegion: "CA",
+      addressCountry: "US",
+    },
+    areaServed: [
+      { "@type": "City", name: city },
+      { "@type": "State", name: "California" },
+      { "@type": "Country", name: "United States" },
+      { "@type": "Place", name: "Worldwide" },
+    ],
+    hoursAvailable: {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      opens: "00:00",
+      closes: "23:59",
+    },
     paymentAccepted: "Visa, Mastercard, Amex, Apple Pay, Shop Pay, Klarna",
     currenciesAccepted: "USD",
+    sameAs: ["https://share.google/CZeLml2jcRi9MtNqP"],
   };
 }
