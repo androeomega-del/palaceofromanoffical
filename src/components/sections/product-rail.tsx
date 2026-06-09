@@ -50,6 +50,9 @@ export interface ProductRailProps {
    * every rail preset so cross-surface analytics stay consistent from day 1.
    */
   surface: string;
+  /** Suppress the eyebrow + title header. Use when the rail follows an
+   *  editorial split block that already provides the section heading. */
+  headless?: boolean;
 }
 
 export function ProductRail({
@@ -62,6 +65,7 @@ export function ProductRail({
   skeletonAspect = "3/4",
   hideWhenEmpty = true,
   surface,
+  headless = false,
 }: ProductRailProps) {
   const { data, isLoading } = useQuery(queryOptions);
   const railRef = useRailImpression(surface, data?.[0]?.node.handle);
@@ -78,14 +82,16 @@ export function ProductRail({
       className="py-section-sm md:py-16 bg-canvas"
     >
       <div className="max-w-screen-2xl mx-auto px-5 md:px-10">
-        <header className="mb-8">
-          <p className="text-eyebrow uppercase text-bronze-deep">
-            {eyebrow}
-          </p>
-          <h2 className="mt-tight font-serif text-subhead-md md:text-subhead-lg tracking-subhead-open text-ink">
-            {title}
-          </h2>
-        </header>
+        {!headless && (
+          <header className="mb-8">
+            <p className="text-eyebrow uppercase text-bronze-deep">
+              {eyebrow}
+            </p>
+            <h2 className="mt-tight font-serif text-subhead-md md:text-subhead-lg tracking-subhead-open text-ink">
+              {title}
+            </h2>
+          </header>
+        )}
 
         <div
           className={`flex gap-x-3 overflow-x-auto snap-x snap-mandatory pb-2 -mx-5 px-5 md:mx-0 md:px-0 md:pb-0 md:overflow-visible md:snap-none md:grid md:grid-cols-2 ${gridCols} md:gap-x-5 md:gap-y-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden`}
