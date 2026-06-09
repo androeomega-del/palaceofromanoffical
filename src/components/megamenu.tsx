@@ -415,7 +415,7 @@ function MegaPanel({
         >
           {dept.columns.map((col, colIdx) => {
             const items = liveHandles
-              ? col.items.filter((it) => liveHandles.has(it.handle))
+              ? col.items.filter((it) => !it.handle || liveHandles.has(it.handle))
               : col.items;
             if (items.length === 0) return null;
             return (
@@ -436,14 +436,23 @@ function MegaPanel({
                     </li>
                   )}
                   {items.map((it) => (
-                    <li key={it.handle}>
-                      <Link
-                        to="/collections/$handle"
-                        params={{ handle: it.handle }}
-                        className="text-[13px] font-light text-ink/75 hover:text-ink transition-colors inline-block normal-case tracking-normal leading-relaxed"
-                      >
-                        {it.label}
-                      </Link>
+                    <li key={it.to ?? it.handle ?? it.label}>
+                      {it.to ? (
+                        <Link
+                          to={it.to}
+                          className="text-[13px] font-light text-ink/75 hover:text-ink transition-colors inline-block normal-case tracking-normal leading-relaxed"
+                        >
+                          {it.label}
+                        </Link>
+                      ) : (
+                        <Link
+                          to="/collections/$handle"
+                          params={{ handle: it.handle! }}
+                          className="text-[13px] font-light text-ink/75 hover:text-ink transition-colors inline-block normal-case tracking-normal leading-relaxed"
+                        >
+                          {it.label}
+                        </Link>
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -963,7 +972,7 @@ export function MobileMegamenu() {
           </Link>
           {dept.columns.map((col) => {
             const items = liveHandles
-              ? col.items.filter((it) => liveHandles.has(it.handle))
+              ? col.items.filter((it) => !it.handle || liveHandles.has(it.handle))
               : col.items;
             if (items.length === 0) return null;
             return (
@@ -971,16 +980,26 @@ export function MobileMegamenu() {
                 <p className="text-[10px] uppercase tracking-[0.3em] text-bronze mb-1">
                   {col.heading}
                 </p>
-                {items.map((it) => (
-                  <Link
-                    key={it.handle}
-                    to="/collections/$handle"
-                    params={{ handle: it.handle }}
-                    className="text-[14px] text-ink/85 hover:text-bronze py-1"
-                  >
-                    {it.label}
-                  </Link>
-                ))}
+                {items.map((it) =>
+                  it.to ? (
+                    <Link
+                      key={it.to}
+                      to={it.to}
+                      className="text-[14px] text-ink/85 hover:text-bronze py-1"
+                    >
+                      {it.label}
+                    </Link>
+                  ) : (
+                    <Link
+                      key={it.handle}
+                      to="/collections/$handle"
+                      params={{ handle: it.handle! }}
+                      className="text-[14px] text-ink/85 hover:text-bronze py-1"
+                    >
+                      {it.label}
+                    </Link>
+                  ),
+                )}
               </div>
             );
           })}
