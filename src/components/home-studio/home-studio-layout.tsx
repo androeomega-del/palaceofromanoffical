@@ -77,7 +77,7 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
                 style={{ color: palette.muted, fontFamily: fontSans, fontWeight: 300 }}
               >
                 A curated boutique for the coast — linen, silk, and sun-built
-                tailoring from Dolce &amp; Gabbana, Pucci, Loro Piana, and the
+                tailoring from Dolce &amp; Gabbana, Brunello Cucinelli, Saint Laurent, and the
                 maisons of the Mediterranean. New, current-season, shipped
                 worldwide from Europe.
               </p>
