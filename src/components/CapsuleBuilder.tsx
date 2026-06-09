@@ -15,6 +15,7 @@
  * - Strict CSS containment + reserved min-height to prevent CLS.
  */
 import * as React from "react";
+import { X } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import type { ShopifyProductNode } from "@/lib/shopify";
@@ -235,10 +236,12 @@ export function classifyKind(
 
 function SlotTile({
   slot,
-  onClickEmpty,
+  onClick,
+  onClear,
 }: {
   slot: CapsuleSlot;
-  onClickEmpty?: () => void;
+  onClick?: () => void;
+  onClear?: () => void;
 }) {
   const node = slot.product;
   const img = node?.images?.edges?.[0]?.node;
@@ -253,7 +256,7 @@ function SlotTile({
     contain: "layout style",
     aspectRatio: "3 / 4",
   };
-  const innerLabel = `${slot.kind} slot${filled ? "" : " — empty, click to add"}`;
+  const innerLabel = `${slot.kind} slot${filled ? " — selected, tap to change" : " — empty, tap to add"}`;
 
   const content = (
     <>
@@ -278,24 +281,37 @@ function SlotTile({
     </>
   );
 
-  if (!filled) {
-    return (
-      <button
-        type="button"
-        onClick={onClickEmpty}
-        className={baseClass}
-        style={tileStyle}
-        aria-label={innerLabel}
-      >
-        {content}
-      </button>
-    );
-  }
-
   return (
-    <div className={baseClass} style={tileStyle} aria-label={innerLabel}>
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(baseClass, "cursor-pointer")}
+      style={tileStyle}
+      aria-label={innerLabel}
+    >
       {content}
-    </div>
+      {filled ? (
+        <span
+          role="button"
+          tabIndex={0}
+          aria-label={`Remove ${slot.kind} selection`}
+          onClick={(event) => {
+            event.stopPropagation();
+            onClear?.();
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              event.stopPropagation();
+              onClear?.();
+            }
+          }}
+          className="absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-background/90 text-foreground shadow-sm backdrop-blur transition-colors hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring"
+        >
+          <X className="h-4 w-4" aria-hidden="true" />
+        </span>
+      ) : null}
+    </button>
   );
 }
 
@@ -350,13 +366,17 @@ export function CapsuleBuilder({
 
   const handleSelect = React.useCallback(
     (product: ShopifyProductNode) => {
+      const tags = (product as unknown as { tags?: string[] }).tags;
+      const targetKind =
+        classifyKind(product.productType, tags, product.title, product.handle) ?? openKind;
+      if (!targetKind) return;
       const variantId =
         product.variants?.edges?.find((e) => e.node.availableForSale)?.node.id ??
         product.variants?.edges?.[0]?.node.id ??
         null;
       setSlots((prev) =>
         prev.map((s) =>
-          s.kind === openKind ? { ...s, product, variantId } : s,
+          s.kind === targetKind ? { ...s, product, variantId } : s,
         ),
       );
       setOpenKind(null);
@@ -510,7 +530,14 @@ export function CapsuleBuilder({
           <SlotTile
             key={slot.kind}
             slot={slot}
-            onClickEmpty={() => setOpenKind(slot.kind)}
+            onClick={() => setOpenKind(slot.kind)}
+            onClear={() =>
+              setSlots((prev) =>
+                prev.map((s) =>
+                  s.kind === slot.kind ? { ...s, product: null, variantId: null } : s,
+                ),
+              )
+            }
           />
         ))}
       </div>
