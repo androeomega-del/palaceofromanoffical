@@ -9,6 +9,7 @@ import { trackCartEvent } from "@/lib/cart-analytics";
 import { CartFbt } from "@/components/cart-fbt";
 import { CartEmailCapture, type CartEmailCaptureHandle } from "@/components/atelier/cart-email-capture";
 import { VipPriorityAccess } from "@/components/atelier/vip-priority-access";
+import { ExpressCheckoutButtons } from "@/components/express-checkout-buttons";
 
 
 
@@ -204,6 +205,8 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
                   </div>
                 );
               })()}
+
+              <ExpressCheckoutButtons onCheckout={handleCheckout} />
 
               <div className="flex justify-between items-baseline" aria-live="polite">
                 <span className="text-xs uppercase tracking-[0.2em]">Subtotal</span>
