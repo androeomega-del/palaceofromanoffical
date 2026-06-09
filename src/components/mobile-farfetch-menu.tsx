@@ -37,7 +37,7 @@ import { useCustomerStore } from "@/stores/customer-store";
 type Tab = "women" | "men";
 
 type Drill =
-  | { kind: "column"; heading: string; items: { handle: string; label: string }[] }
+  | { kind: "column"; heading: string; items: { handle?: string; to?: string; label: string }[] }
   | { kind: "brands"; items: { vendor: string }[] }
   | null;
 
