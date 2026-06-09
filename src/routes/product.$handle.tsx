@@ -1106,7 +1106,7 @@ function ProductView({
                 params={{ handle: vendorHandle }}
                 className="inline-block text-[10px] uppercase tracking-[0.3em] font-semibold text-[var(--studio-bronze)] hover:text-[var(--studio-ink)] transition-colors"
               >
-                Palace of Roman — {product.vendor}
+                {product.vendor}
               </Link>
               <h1 className="font-serif text-4xl md:text-5xl lg:text-[3.4rem] leading-[1.05] tracking-tight text-balance">
                 {formatLuxuryTitle(product.title, product.vendor)}
