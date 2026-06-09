@@ -12,6 +12,15 @@ type CachedToken = { token: string; expiresAt: number };
 let cached: CachedToken | null = null;
 
 type TokenCandidate = { name: string; token: string };
+type TokenAttempt = { name: string; status: number; body: string };
+
+// Module-level log of the most recent token-probe attempts so error
+// messages can report exactly which secret(s) Shopify rejected.
+let lastAttempts: TokenAttempt[] = [];
+
+export function getLastTokenAttempts(): TokenAttempt[] {
+  return lastAttempts;
+}
 
 function normalizeAdminToken(raw: string | undefined): string | null {
   const token = raw?.trim().replace(/^['"]|['"]$/g, "").replace(/^Bearer\s+/i, "");
@@ -39,7 +48,7 @@ function directAdminAccessTokens(): TokenCandidate[] {
   });
 }
 
-async function verifyAdminToken(candidate: TokenCandidate): Promise<boolean> {
+async function verifyAdminToken(candidate: TokenCandidate): Promise<{ ok: boolean; status: number; body: string }> {
   const res = await fetch(`https://${shopDomain()}/admin/api/${API_VERSION}/graphql.json`, {
     method: "POST",
     headers: {
@@ -48,11 +57,12 @@ async function verifyAdminToken(candidate: TokenCandidate): Promise<boolean> {
     },
     body: JSON.stringify({ query: "query AdminTokenProbe { shop { id } }" }),
   });
-  if (res.ok) return true;
+  if (res.ok) return { ok: true, status: res.status, body: "" };
   const text = await res.text().catch(() => "");
   console.warn(`[shopify-admin] ${candidate.name} rejected during token probe: ${res.status} ${text.slice(0, 160)}`);
-  return false;
+  return { ok: false, status: res.status, body: text.slice(0, 200) };
 }
+
 
 function shopDomain(): string {
   const d = process.env.SHOPIFY_STORE_DOMAIN;
