@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { fetchProducts, type ShopifyProduct } from "@/lib/shopify";
 import { ProductCard } from "@/components/product-card";
 import { SITE_URL } from "@/lib/seo";
@@ -41,8 +41,8 @@ function Primed(props: {
   faqs: LandingFAQ[]; relatedGuides: LandingRelatedGuide[];
   queryOptions: LandingQueryOptions;
 }) {
-  const { data } = useSuspenseQuery(props.queryOptions);
-  return <Body {...props} data={data as ShopifyProduct[]} isLoading={false} />;
+  const { data, isLoading } = useQuery(props.queryOptions);
+  return <Body {...props} data={data as ShopifyProduct[] | undefined} isLoading={isLoading} />;
 }
 
 function Legacy(props: {
