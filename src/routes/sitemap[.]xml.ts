@@ -164,6 +164,18 @@ async function fetchAllProducts(): Promise<ProductRow[]> {
   return out;
 }
 
+function formatSitemapDate(dateStr: string | undefined | null): string | undefined {
+  if (!dateStr) return undefined;
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return undefined;
+    // Strip milliseconds — sitemap lastmod must be YYYY-MM-DDTHH:MM:SSZ
+    return d.toISOString().replace(/\.\d{3}Z$/, "Z");
+  } catch {
+    return undefined;
+  }
+}
+
 function renderUrl(
   loc: string,
   opts: { lastmod?: string; changefreq?: string; priority?: string; imageBlocks?: string } = {},
@@ -211,7 +223,7 @@ export const Route = createFileRoute("/sitemap.xml")({
             seen.add(canonical);
             urls.push(
               renderUrl(`${SITE_URL}/collections/${canonical}`, {
-                lastmod: c.updatedAt,
+                lastmod: formatSitemapDate(c.updatedAt),
                 changefreq: "daily",
                 priority: "0.8",
               }),
@@ -246,7 +258,7 @@ export const Route = createFileRoute("/sitemap.xml")({
 
             urls.push(
               renderUrl(`${SITE_URL}/product/${p.handle}`, {
-                lastmod: p.updatedAt,
+                lastmod: formatSitemapDate(p.updatedAt),
                 changefreq: "weekly",
                 priority: "0.7",
                 imageBlocks,
@@ -279,7 +291,7 @@ export const Route = createFileRoute("/sitemap.xml")({
           for (const d of destinations) {
             urls.push(
               renderUrl(`${SITE_URL}/vacation-stylist/${d.slug}`, {
-                lastmod: d.updatedAt,
+                lastmod: formatSitemapDate(d.updatedAt),
                 changefreq: "weekly",
                 priority: "0.7",
               }),
