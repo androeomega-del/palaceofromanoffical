@@ -117,15 +117,40 @@ export async function adminGraphql<T = unknown>(
   });
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    throw new Error(`Shopify Admin GraphQL ${res.status}: ${text.slice(0, 240)}`);
+    throw new Error(annotateScopeError(`Shopify Admin GraphQL ${res.status}: ${text.slice(0, 240)}`));
   }
   const json = (await res.json()) as { data?: T; errors?: Array<{ message: string }> };
   if (json.errors?.length) {
-    throw new Error(
-      `Shopify Admin GraphQL errors: ${json.errors.map((e) => e.message).join("; ")}`,
-    );
+    const joined = json.errors.map((e) => e.message).join("; ");
+    throw new Error(annotateScopeError(`Shopify Admin GraphQL errors: ${joined}`));
   }
   return json.data as T;
+}
+
+/**
+ * Detect Shopify "Access denied for <field>" scope errors and append a
+ * human-readable remediation hint so the admin UI surfaces the exact fix
+ * (re-install the custom app with the required write scope) instead of a
+ * raw GraphQL message.
+ */
+export function annotateScopeError(message: string): string {
+  const m = /Access denied for (\w+) field.*?Required access:\s*([a-z_,\s]+?)(?:\s*access scope)?(?:["'.\s]|$)/i.exec(
+    message,
+  );
+  if (!m) return message;
+  const field = m[1];
+  const scopes = m[2]
+    .split(/[,\s]+/)
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .join(", ");
+  return (
+    `${message}\n\n` +
+    `→ MISSING SHOPIFY SCOPE for "${field}". The custom app token lacks: ${scopes}.\n` +
+    `Fix (≈60s): Shopify Admin → Settings → Apps and sales channels → Develop apps → open this app → ` +
+    `Configuration → Admin API access scopes → enable ${scopes} → Save → click "Install app" to apply. ` +
+    `No code change is needed — the token cache refreshes on the next call.`
+  );
 }
 
 /**
