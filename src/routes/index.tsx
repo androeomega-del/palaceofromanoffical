@@ -38,9 +38,14 @@ export const Route = createFileRoute("/")({
     ]) {
       void context.queryClient.prefetchQuery(collectionRailQueryOptions(handle, 8));
     }
-    for (const handle of ["new-arrivals", "suits", "mens-shirts"]) {
-      void context.queryClient.prefetchQuery(collectionHeroImageQueryOptions(handle));
-    }
+    // Await tile hero images so SSR ships <img> tags (small payload, fast).
+    await Promise.all(
+      ["new-arrivals", "suits", "mens-shirts"].map((handle) =>
+        context.queryClient.ensureQueryData(collectionHeroImageQueryOptions(handle)),
+      ),
+    ).catch((err) => {
+      console.error("[home loader] tile hero prefetch failed:", err);
+    });
 
     return { abBucket: bucket };
   },
