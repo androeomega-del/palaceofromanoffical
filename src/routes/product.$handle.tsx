@@ -69,14 +69,19 @@ import {
   productAutoLookRecsQueryOptions,
 } from "@/lib/rails/product-detail";
 import { getPdpContextLinks, type PdpContextLinks } from "@/lib/pdp-context-links.functions";
+import { withTimeoutThrow } from "@/lib/with-timeout";
 
 export const Route = createFileRoute("/product/$handle")({
   loader: async ({ params, context }) => {
     // Primary product fetch — routed through the 60s SSR cache and primed
     // into the same React Query cache entry the component subscribes to
     // (`["product", handle]`), so client hydration is a cache hit.
-    const p = await context.queryClient.ensureQueryData(
-      productByHandleQueryOptions(params.handle),
+    // 8s hard timeout: on a true cold-edge stall we surface a clean
+    // errorComponent instead of hanging SSR (Google will retry).
+    const p = await withTimeoutThrow(
+      context.queryClient.ensureQueryData(productByHandleQueryOptions(params.handle)),
+      8000,
+      `product:${params.handle}`,
     );
     if (!p) {
       // throw notFound() — TanStack Start renders notFoundComponent with HTTP 404.
