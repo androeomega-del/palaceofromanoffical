@@ -1,76 +1,38 @@
-# Add real LocalBusiness schema to city landing pages
+## Objective
+Move all headwear (hats, caps, beanies, bucket hats, visors) from the Capsule `Accessory` slot to the `Outerwear` slot so they appear alongside jackets and coats instead of bags and jewelry.
 
-## Confirmed inputs (from you)
+## Background
+The live catalog contains 71+ hat products (bucket hats, baseball caps, beanies) sourced from Jacquemus, Moncler, Prada, Gucci, Balenciaga, Marine Serre, and Liu Jo. Their Shopify data carries terms like `Hats`, `Bucket Hats`, `Caps (Baseball Hat)`, `Beanie`, and `Visor` in productType, tags, and titles. Currently these match the `Accessory` taxonomy keyword `"Hats"`, causing them to populate the Accessory drawer and, when productType is empty, leak into the `Top` seed slot via the weak PDP classifier.
 
-- Base locality: **West Hollywood, California, US** (general area, no street — GBP service-area business)
-- Phone: **+1-213-991-4069**
-- Hours: **Online 24/7**
-- GBP share URL: already saved in `src/lib/social-proof.ts` as `GBP_BUSINESS_URL`
-- sameAs: you've opted not to paste; I'll wire only the verified GBP URL we already have and leave a clearly-marked placeholder array you can extend later
-- Schema choice: **LocalBusiness with service area** — keeps the local SEO signal (matches how Google itself treats your GBP) while truthfully omitting a street address. Service area = California → United States → Worldwide (since you ship globally).
+## Changes
 
-## What gets edited
+### 1. Capsule taxonomy update (`src/components/CapsuleBuilder.tsx`)
+In the `CAPSULE_TAXONOMY` constant:
 
-Single file: `**src/components/city-landing-page.tsx**` → rewrite the existing `cityStoreJsonLd(city, metro, path)` helper.
+- **Remove from `Accessory`:** `"Hats"`
+- **Add to `Outerwear`:** `"Hats"`, `"Hat"`, `"Bucket Hats"`, `"Bucket Hat"`, `"Caps"`, `"Cap"`, `"Baseball Cap"`, `"Baseball Hat"`, `"Beanie"`, `"Beanies"`, `"Visor"`, `"Visors"`
 
-No route files change — all four city pages (`designer-fashion-new-york.tsx`, `-los-angeles.tsx`, `-miami.tsx`, `-san-francisco.tsx`) already call this helper, so they auto-pick up the new output.New JSON-LD shape (per city route)
+No other taxonomy arrays are touched.
 
-```json
-{
-  "@context": "https://schema.org",
-  "@type": "LocalBusiness",
-  "@id": "https://palaceofromanofficial.com<path>#store",
-  "name": "Palace of Roman",
-  "url": "https://palaceofromanofficial.com<path>",
-  "image": "https://palaceofromanofficial.com/assets/og-default.png",
-  "logo":  "https://palaceofromanofficial.com/favicon.ico",
-  "telephone": "+1-213-991-4069",
-  "priceRange": "$$$",
-  "description": "Authenticated luxury designer fashion shipped to <metro>. Online-only boutique based in West Hollywood, California, shipping worldwide.",
-  "address": {
-    "@type": "PostalAddress",
-    "addressLocality": "West Hollywood",
-    "addressRegion": "CA",
-    "addressCountry": "US"
-  },
-  "areaServed": [
-    { "@type": "City",    "name": "<city>" },
-    { "@type": "State",   "name": "California" },
-    { "@type": "Country", "name": "United States" },
-    { "@type": "Place",   "name": "Worldwide" }
-  ],
-  "hoursAvailable": {
-    "@type": "OpeningHoursSpecification",
-    "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
-    "opens":  "00:00",
-    "closes": "23:59"
-  },
-  "paymentAccepted": "Visa, Mastercard, Amex, Apple Pay, Shop Pay, Klarna",
-  "currenciesAccepted": "USD",
-  "sameAs": [
-    "https://share.google/CZeLml2jcRi9MtNqP"
-  ]
-}
-```
+### 2. Pre-ship dry-run verification
+Before committing, run the full catalog (250 products) through the updated `classifyKind` rules and output a summary showing:
+- How many products now map to `Outerwear` (expected: ~71 headwear items)
+- Confirm zero headwear items still map to `Accessory`
+- Confirm zero headwear items fall back to `Top`
 
-Notes:
+If the dry-run reveals any headwear products still misclassified, the taxonomy will be tightened (e.g., adding missing singular/plural forms or brand-specific tag fragments) before shipping.
 
-- `address` carries only locality + region + country (no `streetAddress`, no `postalCode`) — valid PostalAddress, matches your GBP "service area, hide address" setting, and avoids fabricating a storefront.
-- `areaServed` is an array so each city page emits its own city while still asserting CA / US / Worldwide — this is what gives Meta/Google a clean local + international signal without you having to maintain 50 city schemas.
-- `hoursAvailable` reflects "Online 24/7".
-- `priceRange` set to `$$$` (luxury) — tell me if you want `$$$$`.
-- `sameAs` ships with just the GBP share link. When you're ready, paste IG/TikTok/Pinterest URLs and I'll append them in one edit.
+## What is NOT changing
+- `TAXONOMY_PRIORITY` order (Footwear → Accessory → Outerwear → Bottom → Top) — hats simply move from Accessory keywords to Outerwear keywords.
+- Outerwear sub-taxonomy (`OUTERWEAR_SUBTAXONOMY`) — hats will appear in the general Outerwear picker without a dedicated sub-filter.
+- Picker filtering logic, cart store, drawer, checkout, or PDP seed slot wiring.
+- Any non-headwear Accessory keywords (bags, belts, jewelry, scarves, etc.) remain in Accessory.
 
-## Why LocalBusiness (not OnlineStore-only)
+## Files touched
+- `src/components/CapsuleBuilder.tsx` only.
 
-- You already have a verified GBP — Google expects the on-site schema to match it; `LocalBusiness` + service area is the documented pattern for hide-my-address businesses.
-- It preserves local-pack eligibility for "designer fashion West Hollywood / Los Angeles" queries.
-- It does not claim a physical storefront (no streetAddress, no geo), so it stays compliant with your founder-identity constraint.
-
-## Not in scope (call out if you want them next)
-
-- Adding sameAs URLs (need you to paste them)
-- A separate `/west-hollywood` landing page
-- `Organization` schema on the homepage (currently lives in `__root.tsx` / SEO lib — happy to audit in a follow-up)
-
-Reply "go" and I'll switch to build mode and ship the single-file edit.
+## Risks & mitigation
+| Risk | Mitigation |
+|------|------------|
+| False positives (e.g. `"Cap"` matching inside unrelated words) | All taxonomy matching uses `\b...\b` word-boundary regex; standalone `"Cap"` will not match inside `"Capacity"` or `"Escape"`. |
+| Headwear products with empty tags/title still fall back to `Top` | The PDP `classifyKind` (strong classifier, 4-signal) will catch them via handle/title; the dry-run will expose any stragglers. |
