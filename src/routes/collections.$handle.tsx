@@ -194,8 +194,7 @@ export const Route = createFileRoute("/collections/$handle")({
     ]);
     collectionRes = collectionSettled.value;
     collectionFetchFailed = !collectionSettled.ok;
-    ]);
-    if (!collectionRes) {
+    if (!collectionRes && !collectionFetchFailed) {
       // Real HTTP 404 for unknown/retired collection handles — avoids Soft 404.
       if (typeof window === "undefined") {
         try {
@@ -204,6 +203,15 @@ export const Route = createFileRoute("/collections/$handle")({
         } catch {}
       }
       throw notFound();
+    }
+    if (!collectionRes) {
+      // Transient Storefront error — render a safe shell, do NOT 404.
+      return {
+        title: titleizeHandle(params.handle),
+        description: "",
+        image: null,
+        abBucket: abRes.bucket,
+      };
     }
     return {
       title: collectionRes.title ?? titleizeHandle(params.handle),
