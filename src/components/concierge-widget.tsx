@@ -55,8 +55,10 @@ function usePageContext(): PageContext {
  * right now plus their wishlist + recently-viewed signals.
  */
 export function ConciergeWidget() {
-  const [open, setOpen] = useState(false);
+  const open = useConciergeStore((s) => s.open);
+  const setOpen = useConciergeStore((s) => s.setOpen);
   const [seenOnce, setSeenOnce] = useState(false);
+
   // Luxury-tier behaviour: never overlap hero copy or PDP sticky CTAs. Stay
   // hidden until the visitor has scrolled past one viewport (signal of intent
   // to browse) and, on product pages, never compete with the add-to-bag bar.
