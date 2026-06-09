@@ -7,7 +7,7 @@
  * keyed by market for TTFB consistency.
  */
 import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
   prelovedConditionQueryOptions,
   PRELOVED_CONDITIONS,
