@@ -112,8 +112,8 @@ Rules:
     try {
       result = await callAi({
         module: "social_pilot",
-        // gemini-2.5-flash is the sweet spot here: cheap, strong JSON, good copywriting
-        model: "google/gemini-2.5-flash",
+        // gemini-2.5-flash-lite is the cheapest tier: fast JSON, good copywriting
+        model: "google/gemini-2.5-flash-lite",
         system: PALACE_BRAND_VOICE,
         user: userPrompt,
         json: true,
