@@ -247,7 +247,13 @@ export const Route = createFileRoute("/collections/$handle")({
       { property: "og:url", content: url },
       { property: "og:type", content: "website" },
     ];
-    if (robots) meta.push({ name: "robots", content: robots });
+    if (loaderData?.isEmpty) {
+      // Empty PLP — keep crawlable but exclude from the index to avoid
+      // Soft 404 / thin-content flags. Drop any A/B robots variant.
+      const i = meta.findIndex((m) => m.name === "robots");
+      const tag = { name: "robots", content: "noindex, follow" };
+      if (i >= 0) meta[i] = tag; else meta.push(tag);
+    } else if (robots) meta.push({ name: "robots", content: robots });
     if (loaderData?.image) {
       meta.push({ property: "og:image", content: loaderData.image });
       meta.push({ name: "twitter:image", content: loaderData.image });
