@@ -434,6 +434,28 @@ export function ProductCard({
             />
           )}
 
+        {/* Noir-only — bottom gradient scrim + serif italic "View" cue. */}
+        {noir && (
+          <>
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 z-[3] opacity-90"
+              style={{
+                background:
+                  "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.35) 55%, rgba(0,0,0,0) 100%)",
+              }}
+            />
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 z-[4] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+            >
+              <span className="font-serif italic text-white text-[20px] tracking-tight">View</span>
+            </div>
+          </>
+        )}
+
+
+
         {/* Badge priority — Farfetch-style restraint:
             Sold Out → Sale % off → New Season.
             Scarcity / Markdown / New In chips removed per brand direction;
