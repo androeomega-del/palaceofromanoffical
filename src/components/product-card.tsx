@@ -519,7 +519,7 @@ export function ProductCard({
             }}
             aria-label="Quick view"
             title="Quick view"
-            className="hidden md:grid w-9 h-9 place-items-center bg-canvas/85 backdrop-blur-sm hover:bg-ink hover:text-canvas transition-all opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 duration-300"
+            className={`hidden md:grid w-9 h-9 place-items-center backdrop-blur-sm transition-all opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 duration-300 ${noir ? "bg-luxury-dark/70 text-white hover:bg-luxury-gold hover:text-luxury-dark z-[5]" : "bg-canvas/85 hover:bg-ink hover:text-canvas"}`}
           >
             <Eye className="w-4 h-4" strokeWidth={1.5} />
           </button>
