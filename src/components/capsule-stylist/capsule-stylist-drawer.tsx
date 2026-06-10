@@ -299,7 +299,7 @@ export default function CapsuleStylistDrawer() {
       />
 
       {/* Drawer */}
-      <div className="absolute right-0 top-0 h-full w-full max-w-md bg-luxury-dark border-l border-luxury-border text-white flex flex-col animate-luxury-slide-left shadow-2xl">
+      <div className="absolute right-0 top-0 h-full w-full max-w-md luxury-glass-glow text-white flex flex-col animate-luxury-slide-left shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-luxury-border">
           <div>

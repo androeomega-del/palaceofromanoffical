@@ -252,11 +252,9 @@ export function ConciergeDrawer({ open, onClose }: ConciergeDrawerProps) {
         aria-hidden="true"
       />
       <aside
-        className="absolute left-0 top-0 bottom-0 w-full sm:w-[480px] flex flex-col"
+        className="absolute left-0 top-0 bottom-0 w-full sm:w-[480px] flex flex-col luxury-glass-glow"
         style={{
-          background: "#0B0B0C",
           color: palette.offwhite,
-          borderRight: "1px solid rgba(244,241,236,0.08)",
           animation: "studioDrawerIn .55s cubic-bezier(.2,.7,.2,1) both",
         }}
       >

@@ -1,11 +1,22 @@
 /**
- * Shop by Category — four large editorial tiles inserted directly under
- * the hero on the After Dark homepage. Each tile pulls its image from the
- * lead product of an associated collection via the Storefront API; falls
- * back to a dark token block with the label if no image resolves.
+ * Shop by Category — four editorial tiles under the hero on After Dark.
+ *
+ * Image fallback chain (per tile):
+ *   1. Collection-backed tiles (Riviera Edit, Coastal Essentials):
+ *        collection.image  →  first product's featured image  →  noir block
+ *   2. Gender tiles (Menswear, Womenswear): NOT collections — no collection
+ *      image exists. Pull from a representative collection's lead product:
+ *        Menswear    → the-riviera-edit  lead product image
+ *        Womenswear  → womens-dresses    lead product image
+ *      Then noir-block fallback.
+ *   3. Final fallback: bg-noir-panel block with ivory label. A console.warn
+ *      fires so silent image failures are visible.
+ *
+ * Order: Menswear, Womenswear, The Riviera Edit, Coastal Essentials.
  */
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { ArrowUpRight } from "lucide-react";
 
 import { collectionRailQueryOptions } from "@/lib/rails/queries";
@@ -13,25 +24,40 @@ import { collectionHeroImageQueryOptions } from "@/lib/collection-hero-image";
 
 type CategoryTile = {
   label: string;
-  /** Collection handle used purely to resolve a hero image. */
+  /** Collection handle used to resolve a hero image (and first product). */
   imageHandle: string;
-  /** Destination route. */
+  /** Use the collection image as the primary source. False for gender tiles
+   * (which are not collections themselves). */
+  useCollectionImage: boolean;
   to: string;
   params?: Record<string, string>;
 };
 
 const TILES: CategoryTile[] = [
-  { label: "Menswear", imageHandle: "suits", to: "/men" },
-  { label: "Womenswear", imageHandle: "womens-dresses", to: "/women" },
+  // Menswear leads.
+  {
+    label: "Menswear",
+    imageHandle: "the-riviera-edit",
+    useCollectionImage: false,
+    to: "/men",
+  },
+  {
+    label: "Womenswear",
+    imageHandle: "womens-dresses",
+    useCollectionImage: false,
+    to: "/women",
+  },
   {
     label: "The Riviera Edit",
     imageHandle: "the-riviera-edit",
+    useCollectionImage: true,
     to: "/collections/$handle",
     params: { handle: "the-riviera-edit" },
   },
   {
     label: "Coastal Essentials",
     imageHandle: "coastal-essentials",
+    useCollectionImage: true,
     to: "/collections/$handle",
     params: { handle: "coastal-essentials" },
   },
@@ -58,14 +84,38 @@ export function ShopByCategorySection() {
 
 function CategoryTileCard({ tile }: { tile: CategoryTile }) {
   const { data: rail } = useQuery(collectionRailQueryOptions(tile.imageHandle, 1));
-  const { data: hero } = useQuery(collectionHeroImageQueryOptions(tile.imageHandle));
+  const { data: hero } = useQuery(
+    collectionHeroImageQueryOptions(tile.imageHandle),
+  );
 
-  const leadImg = rail?.[0]?.node.images?.edges?.[0]?.node;
-  const src = leadImg?.url ?? hero?.url ?? null;
-  const alt = leadImg?.altText ?? hero?.altText ?? tile.label;
+  const leadImg = rail?.[0]?.node.images?.edges?.[0]?.node ?? null;
+
+  // Apply per-tile fallback chain.
+  const primary = tile.useCollectionImage ? hero ?? null : null;
+  const secondary = leadImg;
+  const src = primary?.url ?? secondary?.url ?? null;
+  const alt =
+    primary?.altText ?? secondary?.altText ?? tile.label;
+
+  // Surface silent image failures to the console once both queries resolve.
+  useEffect(() => {
+    if (rail === undefined || hero === undefined) return; // still loading
+    if (!src) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `[ShopByCategory] Tile "${tile.label}" fell through to noir fallback. ` +
+          `Checked collection "${tile.imageHandle}" (hero=${
+            hero ? "present" : "null"
+          }, leadProduct=${leadImg ? "present" : "null"}).`,
+      );
+    }
+  }, [rail, hero, src, leadImg, tile.label, tile.imageHandle]);
 
   const inner = (
-    <div className="relative w-full bg-black" style={{ aspectRatio: "3 / 4" }}>
+    <div
+      className="relative w-full bg-luxury-dark"
+      style={{ aspectRatio: "3 / 4" }}
+    >
       {src ? (
         <img
           src={src}
@@ -76,29 +126,37 @@ function CategoryTileCard({ tile }: { tile: CategoryTile }) {
           decoding="async"
         />
       ) : (
-        <div className="absolute inset-0 bg-canvas/5" aria-hidden="true" />
+        // Final fallback: noir-panel block with ivory label centered.
+        <div
+          className="absolute inset-0 grid place-items-center bg-luxury-zinc"
+          aria-hidden="true"
+        >
+          <span className="text-[10px] uppercase tracking-[0.4em] text-ivory/70">
+            {tile.label}
+          </span>
+        </div>
       )}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.25) 55%, rgba(0,0,0,0) 100%)",
+            "linear-gradient(to top, rgba(5,5,5,0.82) 0%, rgba(5,5,5,0.28) 55%, rgba(5,5,5,0) 100%)",
         }}
         aria-hidden="true"
       />
       <div className="absolute inset-x-0 bottom-0 px-6 py-7 flex items-end justify-between gap-4">
-        <h3 className="text-[11px] md:text-[12px] uppercase tracking-[0.32em] text-canvas">
+        <h3 className="text-[11px] md:text-[12px] uppercase tracking-[0.32em] text-ivory">
           {tile.label}
         </h3>
         <ArrowUpRight
-          className="w-4 h-4 text-canvas/80 group-hover:text-bronze transition-colors"
+          className="w-4 h-4 text-ivory/80 group-hover:text-gold transition-colors"
           strokeWidth={1.25}
         />
       </div>
     </div>
   );
 
-  const className = "group relative block bg-ink overflow-hidden";
+  const className = "group relative block bg-luxury-dark overflow-hidden";
 
   if (tile.params) {
     return (
@@ -113,7 +171,11 @@ function CategoryTileCard({ tile }: { tile: CategoryTile }) {
     );
   }
   return (
-    <Link to={tile.to as "/men" | "/women"} className={className} aria-label={tile.label}>
+    <Link
+      to={tile.to as "/men" | "/women"}
+      className={className}
+      aria-label={tile.label}
+    >
       {inner}
     </Link>
   );
