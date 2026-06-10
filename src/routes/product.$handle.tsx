@@ -167,8 +167,8 @@ export const Route = createFileRoute("/product/$handle")({
 
     // Bundle-aware title/description: when a stylist-curated or AI-curated
     // "Shop the Look" is present, pivot the meta to surface companion brands —
-    // these phrases double as long-tail SEO targets ("Loro Piana sweater
-    // styled with Brunello Cucinelli trousers") and rich-snippet bait.
+    // these phrases double as long-tail SEO targets (generic phrase like "fine cashmere sweater
+    // styled with tailored trousers") and rich-snippet bait.
     const companions = loaderData?.lookCompanions ?? [];
     const lookSource = loaderData?.lookSource ?? "none";
     const companionBrands = Array.from(
@@ -634,7 +634,7 @@ const LAYERING_COPY: Record<LayeringKey, {
     eyebrow: "The Turtleneck",
     tagline: "Fine-gauge wools and cashmeres — the most architectural neckline in a man's wardrobe.",
     piece: "The turtleneck draws the eye upward and reframes the shoulder. The pieces in this edit are knitted in fine-gauge merino, cashmere, or wool-silk — sized close through the body, with a collar tall enough to fold once at the throat.",
-    craft: "Spun from Cariaggi and Loro Piana yarns in Italy, with shoulders that are linked rather than stitched — a finishing technique that flattens the seam to a single thread of yarn. The collar is double-knitted for weight and recovery.",
+    craft: "Spun from Cariaggi and Cariaggi-grade yarns in Italy, with shoulders that are linked rather than stitched — a finishing technique that flattens the seam to a single thread of yarn. The collar is double-knitted for weight and recovery.",
     styling: "Under a tailored jacket in place of a shirt and tie, or under a leather coat with raw denim. The most chronologically reliable silhouette in modern menswear.",
   },
   sweatshirt: {
