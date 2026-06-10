@@ -910,8 +910,7 @@ const BRANDS_OF_THE_MOMENT: { label: string; vendor: string; handle: string; alt
   { label: "Giorgio Armani", vendor: "giorgio-armani", handle: "brand-giorgio-armani", alt: "Giorgio Armani menswear", src: brandGiorgioArmani },
   { label: "Tom Ford", vendor: "tom-ford", handle: "brand-tom-ford", alt: "Tom Ford menswear", src: brandTomFord },
   { label: "Saint Laurent", vendor: "saint-laurent", handle: "brand-saint-laurent", alt: "Saint Laurent menswear", src: brandSaintLaurent },
-  { label: "Dolce & Gabbana", vendor: "dolce-gabbana", handle: "brand-dolce-gabbana", alt: "Dolce & Gabbana menswear", src: brandTomFord },
-  { label: "Bottega Veneta", vendor: "bottega-veneta", handle: "brand-bottega-veneta", alt: "Bottega Veneta menswear", src: brandBottegaVeneta },
+  { label: "Dolce & Gabbana", vendor: "dolce-gabbana", handle: "brand-dolce-gabbana", alt: "Dolce & Gabbana — Palace of Roman", src: brandDolceGabbanaMen },
 ];
 
 function BrandsOfTheMoment() {
