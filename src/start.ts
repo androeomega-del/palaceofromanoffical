@@ -79,10 +79,12 @@ const htmlCacheMiddleware = createMiddleware().server(async ({ next }) => {
           "cache-control",
           "public, s-maxage=300, stale-while-revalidate=86400",
         );
-        // Vary on cookie so a future authenticated variant never poisons
-        // the anonymous cache entry. Browsers still revalidate the
-        // document on navigation thanks to s-maxage being CDN-scoped.
-        response.headers.set("vary", "Cookie, Accept-Encoding");
+        // IMPORTANT: do NOT Vary on Cookie. Shopify analytics cookies
+        // (_shopify_y, _shopify_s, _y, _s, _cmp_a, etc.) are set on
+        // virtually every visitor, which would make each request a
+        // unique cache key and guarantee 100% cache misses at the edge.
+        // Per-user surfaces are already excluded via isPrivatePath().
+        response.headers.set("vary", "Accept-Encoding");
       } else {
         response.headers.set(
           "cache-control",
