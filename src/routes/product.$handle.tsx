@@ -1301,8 +1301,9 @@ function ProductView({
                 <span>Capsule Stylist</span>
               </button>
 
-
+              {selectedVariant && !selectedVariant.availableForSale && (
                 <>
+
                   {/* Vault Release overlay — shown when the variant is in the
                       visitor's (still unverified) cart and goes 0-stock. */}
                   {useCartStore.getState().items.some((i) => i.variantId === selectedVariant.id) ? (
