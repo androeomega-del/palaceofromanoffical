@@ -1083,7 +1083,7 @@ function ProductView({
                 return (
                   <div
                     key={img.url || i}
-                    className={`bg-[var(--studio-canvas)] overflow-hidden ${ratioClass}`}
+                    className={`pdp-noir-frame overflow-hidden ${ratioClass} ${i === 0 ? "pdp-noir-reveal" : ""}`}
                   >
                     {img.url && (
                       <button
