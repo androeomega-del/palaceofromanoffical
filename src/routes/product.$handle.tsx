@@ -25,6 +25,8 @@ import { useRecentlyViewedStore } from "@/stores/recently-viewed-store";
 import { useInteractionStore } from "@/stores/interaction-store";
 import { Loader2, Minus, Plus, ShieldCheck, Truck, RotateCcw, Lock, ChevronLeft, ChevronRight, Sparkles, Luggage } from "lucide-react";
 import { useVacationTrunkStore } from "@/stores/vacation-trunk-store";
+import { useCapsuleStylistStore } from "@/stores/capsule-stylist-store";
+import CapsuleStylistDrawer from "@/components/capsule-stylist/capsule-stylist-drawer";
 import { computeScarcitySignal } from "@/lib/scarcity-signal";
 import { toast } from "sonner";
 import { ProductCard } from "@/components/product-card";
@@ -1274,9 +1276,34 @@ function ProductView({
                 Save Edit to Vacation Stylist
               </button>
 
+              {/* Capsule Stylist trigger — noir-pill cue into the After Dark
+                  layer. Opens an overlay drawer; does NOT replace add-to-bag. */}
+              <button
+                type="button"
+                onClick={() => {
+                  if (!selectedVariant) {
+                    toast.error("Please select a size first.");
+                    return;
+                  }
+                  useCapsuleStylistStore.getState().open({
+                    product,
+                    variantId: selectedVariant.id,
+                    variantTitle: selectedVariant.title,
+                    price: selectedVariant.price,
+                    selectedOptions: selectedVariant.selectedOptions ?? [],
+                  });
+                }}
+                className="mt-3 w-full h-12 inline-flex items-center justify-center gap-2 text-[10.5px] uppercase tracking-[0.32em] bg-[#050505] text-white border border-[#d4af37]/60 hover:border-[#d4af37] transition-colors"
+              >
+                <Sparkles className="w-3.5 h-3.5" strokeWidth={1.5} />
+                <span className="font-serif italic normal-case tracking-normal text-[14px] mr-1">Complete the look</span>
+                <span className="text-[#d4af37]">·</span>
+                <span>Capsule Stylist</span>
+              </button>
 
               {selectedVariant && !selectedVariant.availableForSale && (
                 <>
+
                   {/* Vault Release overlay — shown when the variant is in the
                       visitor's (still unverified) cart and goes 0-stock. */}
                   {useCartStore.getState().items.some((i) => i.variantId === selectedVariant.id) ? (
@@ -1637,6 +1664,10 @@ function ProductView({
         {/* ===== Recently Viewed — shopper's own browsing history ===== */}
         <RecentlyViewedRail excludeHandle={product.handle} />
       </div>
+
+      {/* Capsule Stylist overlay drawer — opened from the PDP trigger above. */}
+      <CapsuleStylistDrawer />
+
 
       {/* Sticky mobile Add-to-Bag — appears once inline ATC is scrolled past */}
       <div
