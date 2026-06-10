@@ -411,24 +411,24 @@ function EditorialTile({ handle, title }: { handle: string; title: string }) {
 }
 
 function WomenswearBlock() {
-  const { data } = useQuery(collectionRailQueryOptions("womens-dresses", 8));
-  const lead = data?.[0]?.node.images?.edges?.[0]?.node;
-
-
+  // Hand-picked hero image — "Black Polyamide Cocktail Dress" from the
+  // womens-dresses collection. Matches the "Dresses that end evenings"
+  // headline thematically; the first product in the collection is a
+  // casual dress, so we don't auto-pick lead from the rail.
+  const leadUrl =
+    "https://cdn.shopify.com/s/files/1/0785/1940/2645/files/10928006.jpg?v=1781030504";
 
   return (
     <section className="relative w-full bg-black overflow-hidden">
       <div className="relative w-full" style={{ aspectRatio: "16 / 9", minHeight: "62vh" }}>
-        {lead && (
-          <img
-            src={lead.url}
-            alt={lead.altText ?? "Womenswear — silk and evening light"}
-            className="absolute inset-0 w-full h-full object-cover"
-            style={{ filter: "brightness(0.72) contrast(1.05) saturate(0.95)" }}
-            loading="lazy"
-            decoding="async"
-          />
-        )}
+        <img
+          src={leadUrl}
+          alt="Black cocktail dress — Palace of Roman womenswear"
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ filter: "brightness(0.72) contrast(1.05) saturate(0.95)" }}
+          loading="lazy"
+          decoding="async"
+        />
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
