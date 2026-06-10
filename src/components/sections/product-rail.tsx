@@ -126,7 +126,7 @@ export function ProductRail({
                   key={p.node.id}
                   className="shrink-0 basis-[72%] snap-start md:basis-auto md:shrink"
                 >
-                  <ProductCard product={p} surface={surface} position={i} />
+                  <ProductCard product={p} surface={surface} position={i} variant={dark ? "noir" : "default"} />
                 </div>
               ))}
         </div>

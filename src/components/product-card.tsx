@@ -22,6 +22,7 @@ export function ProductCard({
   suppressBadges = [],
   surface,
   position,
+  variant = "default",
 }: {
   product: ShopifyProduct;
   /**
@@ -36,7 +37,16 @@ export function ProductCard({
   surface?: string;
   /** 0-indexed slot within the surface. */
   position?: number;
+  /**
+   * Visual variant. "default" = ivory boutique palette (PLP, search, brand
+   * pages, etc.). "noir" = After Dark skin — luxury-dark frame, white CTA,
+   * gold/amber accents, serif italic "View" cue on hover. Opt-in only —
+   * passed from rails marked tone="dark" on the noir homepage. All
+   * behaviour (analytics, cart, wishlist, quick-add) is identical.
+   */
+  variant?: "default" | "noir";
 }) {
+  const noir = variant === "noir";
   const p = product.node;
   const img = p.images?.edges?.[0]?.node;
   const img2 = p.images?.edges?.[1]?.node;
@@ -333,7 +343,7 @@ export function ProductCard({
       onMouseEnter={onCardEnter}
       onMouseLeave={onCardLeave}
     >
-      <div className="w-full aspect-[4/5] bg-secondary relative overflow-hidden mb-3 isolate">
+      <div className={`w-full ${noir ? "aspect-[3/4] bg-luxury-zinc border border-luxury-border" : "aspect-[4/5] bg-secondary"} relative overflow-hidden mb-3 isolate`}>
         {img && !imgError && (
           <img
             src={cdnImage(img.url, { width: 700 })}
@@ -346,7 +356,7 @@ export function ProductCard({
             fetchPriority={isAboveFold ? "high" : undefined}
             decoding="async"
             onError={() => setImgError(true)}
-            className="absolute inset-0 w-full h-full object-contain p-4 transition-opacity duration-500 group-hover:opacity-0"
+            className={`absolute inset-0 w-full h-full ${noir ? "object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105" : "object-contain p-4 transition-opacity duration-500 group-hover:opacity-0"}`}
           />
         )}
         {(!img || imgError) && (
@@ -374,7 +384,7 @@ export function ProductCard({
             loading="lazy"
             decoding="async"
             onError={() => setImg2Error(true)}
-            className="absolute inset-0 w-full h-full object-contain p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+            className={`absolute inset-0 w-full h-full ${noir ? "object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-700" : "object-contain p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500"}`}
           />
         ) : (
           img && !imgError && (
@@ -424,6 +434,28 @@ export function ProductCard({
             />
           )}
 
+        {/* Noir-only — bottom gradient scrim + serif italic "View" cue. */}
+        {noir && (
+          <>
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 z-[3] opacity-90"
+              style={{
+                background:
+                  "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.35) 55%, rgba(0,0,0,0) 100%)",
+              }}
+            />
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 z-[4] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+            >
+              <span className="font-serif italic text-white text-[20px] tracking-tight">View</span>
+            </div>
+          </>
+        )}
+
+
+
         {/* Badge priority — Farfetch-style restraint:
             Sold Out → Sale % off → New Season.
             Scarcity / Markdown / New In chips removed per brand direction;
@@ -463,16 +495,17 @@ export function ProductCard({
             onClick={onToggleWishlist}
             aria-label={wishlisted ? "Remove from wishlist" : "Save to wishlist"}
             aria-pressed={wishlisted}
-            className="w-9 h-9 grid place-items-center bg-canvas/85 backdrop-blur-sm hover:bg-canvas transition-colors group/heart"
+            className={`w-9 h-9 grid place-items-center backdrop-blur-sm transition-colors group/heart ${noir ? "bg-luxury-dark/70 hover:bg-luxury-dark z-[5]" : "bg-canvas/85 hover:bg-canvas"}`}
           >
             <Heart
               className={`w-4 h-4 transition-all duration-300 ${
                 wishlisted
-                  ? "fill-bronze stroke-bronze scale-110"
-                  : "stroke-ink group-hover/heart:stroke-bronze"
+                  ? (noir ? "fill-luxury-gold stroke-luxury-gold scale-110" : "fill-bronze stroke-bronze scale-110")
+                  : (noir ? "stroke-white group-hover/heart:stroke-luxury-gold" : "stroke-ink group-hover/heart:stroke-bronze")
               }`}
               strokeWidth={1.5}
             />
+
           </button>
           {/* Quick-View — desktop hover only. Opens the size/variant sheet
               without navigating away. Mobile already has the inline reveal CTA. */}
@@ -486,7 +519,7 @@ export function ProductCard({
             }}
             aria-label="Quick view"
             title="Quick view"
-            className="hidden md:grid w-9 h-9 place-items-center bg-canvas/85 backdrop-blur-sm hover:bg-ink hover:text-canvas transition-all opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 duration-300"
+            className={`hidden md:grid w-9 h-9 place-items-center backdrop-blur-sm transition-all opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 duration-300 ${noir ? "bg-luxury-dark/70 text-white hover:bg-luxury-gold hover:text-luxury-dark z-[5]" : "bg-canvas/85 hover:bg-ink hover:text-canvas"}`}
           >
             <Eye className="w-4 h-4" strokeWidth={1.5} />
           </button>
@@ -520,7 +553,7 @@ export function ProductCard({
               disabled={soldOut || (!hasChoices && adding)}
               aria-label={addLabel}
               aria-busy={!hasChoices && adding}
-              className="flex-1 h-11 bg-ink text-canvas hover:bg-bronze transition-colors duration-300 text-[10px] uppercase tracking-[0.25em] font-medium inline-flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
+              className={`flex-1 h-11 transition-colors duration-300 text-[10px] uppercase tracking-[0.25em] font-medium inline-flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed ${noir ? "bg-white text-luxury-dark hover:bg-luxury-gold z-[5]" : "bg-ink text-canvas hover:bg-bronze"}`}
             >
               {!hasChoices && adding ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -538,7 +571,7 @@ export function ProductCard({
                 disabled={buyingNow || (!hasChoices && adding)}
                 aria-label="Buy Now"
                 title="Buy Now"
-                className="h-11 px-3 bg-bronze text-canvas hover:bg-ink transition-colors duration-300 text-[10px] uppercase tracking-[0.25em] font-medium inline-flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
+                className={`h-11 px-3 transition-colors duration-300 text-[10px] uppercase tracking-[0.25em] font-medium inline-flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed ${noir ? "bg-luxury-gold text-luxury-dark hover:bg-white z-[5]" : "bg-bronze text-canvas hover:bg-ink"}`}
               >
                 {buyingNow ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -661,8 +694,8 @@ export function ProductCard({
 
 
       </div>
-      <p className="text-[10px] uppercase tracking-[0.18em] mb-1.5 text-muted-foreground">{p.vendor}</p>
-      <h3 className="text-[13px] md:text-sm font-medium leading-snug line-clamp-2 text-balance group-hover:underline underline-offset-4 decoration-ink/30">{formatLuxuryTitle(p.title, p.vendor)}</h3>
+      <p className={`text-[10px] uppercase tracking-[0.18em] mb-1.5 ${noir ? "text-luxury-text-muted" : "text-muted-foreground"}`}>{p.vendor}</p>
+      <h3 className={`font-medium leading-snug line-clamp-2 text-balance group-hover:underline underline-offset-4 ${noir ? "font-serif text-[15px] md:text-[16px] text-white decoration-luxury-gold/50" : "text-[13px] md:text-sm decoration-ink/30"}`}>{formatLuxuryTitle(p.title, p.vendor)}</h3>
       <div className="flex items-baseline gap-2.5 mt-2">
         <PriceTag money={price} className="text-sm" />
       </div>
