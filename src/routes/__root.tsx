@@ -288,15 +288,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           image: "https://palaceofromanofficial.com/brand/logo-wordmark.png",
           description: "Palace of Roman is a curated multi-brand luxury fashion retailer specializing in designer evening and resort wear for men and women. Current-season pieces from established European houses including Dolce & Gabbana, Saint Laurent, Versace, Gucci and Prada — authenticated and shipped worldwide.",
           email: "support@palaceofromanofficial.com",
-          telephone: "+1-213-991-4069",
-          address: {
-            "@type": "PostalAddress",
-            streetAddress: "8605 Santa Monica Blvd",
-            addressLocality: "West Hollywood",
-            addressRegion: "CA",
-            postalCode: "90069",
-            addressCountry: "US",
-          },
           contactPoint: [{
             "@type": "ContactPoint",
             contactType: "customer support",
