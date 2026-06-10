@@ -187,7 +187,10 @@ export const Route = createFileRoute("/collections/$handle")({
       // treat it as a transient error and render the safe shell below
       // (NOT a 404), so Google never caches a Soft 404 from a cold edge.
       withTimeout(
-        fetchCollection(params.handle, 1).then(
+        (typeof window === "undefined"
+          ? cached(`collection-meta:${params.handle}`, () => fetchCollection(params.handle, 1), 60_000)
+          : fetchCollection(params.handle, 1)
+        ).then(
           (r) => ({ ok: true as const, value: r }),
           () => ({ ok: false as const, value: null }),
         ),
