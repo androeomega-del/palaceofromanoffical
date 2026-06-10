@@ -97,7 +97,6 @@ const H1_BASELINE_DEBT = new Set<string>([
   "shipping-returns.tsx",
   "terms.tsx",
   "trends.dolce-gabbana-icons.tsx",
-  "trends.pucci-eyewear.tsx",
   "trends.tom-ford-essentials.tsx",
 ]);
 

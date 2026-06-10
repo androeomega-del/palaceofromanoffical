@@ -119,7 +119,7 @@ export const TIER_5_NICHE_HARD_LUXURY = make([
   "Mackage",
   "Barbour",
   "Canali",
-  "Loro Piana",
+  
   "Mulberry",
   "Kate Spade",
   "MCM",

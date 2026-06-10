@@ -156,7 +156,7 @@ const E = {
     href: "/journal/style/the-cashmere-field-guide",
     kicker: "Field Guide",
     title: "The cashmere field guide",
-    dek: "Grades, ply counts, and how to tell a piece you'll keep from one you'll regret. With Loro Piana and Cucinelli as the reference.",
+    dek: "Grades, ply counts, and how to tell a piece you'll keep from one you'll regret. With Brunello Cucinelli and Tom Ford as the reference.",
   },
   sunglasses: {
     href: "/journal/style/the-investment-sunglasses-edit",
@@ -212,12 +212,6 @@ const E = {
     title: "The month, in seven pieces",
     dek: "What's quietly defining the season — across menswear, womenswear and accessories.",
   },
-  pucci: {
-    href: "/trends/pucci-eyewear",
-    kicker: "Trend",
-    title: "Pucci Eyewear",
-    dek: "The Italian house that turned print into eyewear architecture — colour, curve, and unmistakable attitude.",
-  },
   tomFord: {
     href: "/trends/tom-ford-essentials",
     kicker: "Trend",
@@ -250,7 +244,7 @@ export function editorialLinksForCollection(handle: string): EditorialLink[] {
     "designer-belts": ["spotLeather", "leatherCare", "madeIn"],
     "designer-crossbody-bags": ["bagVault", "leatherCare", "prada"],
     "designer-mens-shirts": ["mens", "shoreline", "resort"],
-    "designer-sunglasses": ["sunglasses", "pucci", "tomFord"],
+    "designer-sunglasses": ["sunglasses", "tomFord", "dgIcons"],
     "italian-leather-handbags": ["bagVault", "spotLeather", "leatherCare"],
     "italian-leather-loafers": ["spotLeather", "leatherCare", "madeIn"],
     "italian-leather-wallets": ["spotLeather", "leatherCare", "madeIn"],
@@ -258,7 +252,7 @@ export function editorialLinksForCollection(handle: string): EditorialLink[] {
     "silk-scarves": ["resort", "shoreline", "womens"],
     bags: ["bagVault", "leatherCare", "prada"],
     shoes: ["sneakers", "spotLeather", "madeIn"],
-    sunglasses: ["sunglasses", "pucci", "tomFord"],
+    sunglasses: ["sunglasses", "tomFord", "dgIcons"],
     accessories: ["bagVault", "leatherCare", "spotLeather"],
     // Brand-specific pages — link to the house's own editorial / trends
     versace: ["versace", "newEvening", "mens"],

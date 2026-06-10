@@ -61,7 +61,7 @@ function Page() {
           <p>
             Four words carry more pricing power in luxury than almost any other phrase on a
             label: <em>Made in Italy</em>. They sit on the spine of a Bottega wallet, the inner
-            lining of a Loro Piana jacket, the underside of a Tod's loafer. They are also, more
+            lining of a Brunello Cucinelli jacket, the underside of a Tod's loafer. They are also, more
             than buyers realise, a regulated legal claim with a specific definition and a
             specific enforcement body behind it.
           </p>

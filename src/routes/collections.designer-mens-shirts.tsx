@@ -78,7 +78,7 @@ function Page() {
             The shirts below come from the houses we trust most for body cut and cloth quality: Versace and Versace Jeans
             for sharper, more contemporary lines; Jil Sander for the minimal architecture; Roberto Cavalli for the
             classical Italian dress shirt; Thom Browne for the proportionally short, schoolboy cut; and a rotation of
-            Prada and Loro Piana pieces as the seasons turn.
+            Prada and Brunello Cucinelli pieces as the seasons turn.
           </p>
           <h2>What to look for in a shirt</h2>
           <p>

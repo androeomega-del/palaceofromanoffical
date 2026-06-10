@@ -120,7 +120,7 @@ export function SiteFooter() {
             <Link to="/preloved/$condition" params={{ condition: "excellent" }} className="text-sm text-muted-foreground hover:text-ink transition-colors">Excellent Condition</Link>
             <Link to="/trends/tom-ford-essentials" className="text-sm text-muted-foreground hover:text-ink transition-colors">Tom Ford Essentials</Link>
             <Link to="/trends/dolce-gabbana-icons" className="text-sm text-muted-foreground hover:text-ink transition-colors">Dolce &amp; Gabbana Icons</Link>
-            <Link to="/trends/pucci-eyewear" className="text-sm text-muted-foreground hover:text-ink transition-colors">Pucci Eyewear</Link>
+            
             <Link to="/women/ss26" className="text-sm text-muted-foreground hover:text-ink transition-colors">Women SS26</Link>
             <Link to="/men/ss26" className="text-sm text-muted-foreground hover:text-ink transition-colors">Men SS26</Link>
             <Link to="/limited-finds" className="text-sm text-muted-foreground hover:text-ink transition-colors">Limited Finds</Link>

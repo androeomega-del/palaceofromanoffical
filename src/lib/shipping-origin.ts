@@ -26,8 +26,8 @@ export type ShippingOrigin = {
   city?: string;
 };
 
-// Italian warehouse — covers the bulk of the BG luxury catalogue. French,
-// Italian, British, and American maisons all dropship from BG's Italian
+// Italian warehouse — covers the bulk of the luxury catalogue. French,
+// Italian, British, and American maisons all ship from the Italian
 // distribution centre unless explicitly noted below.
 const IT: ShippingOrigin = { country: "Italy", countryCode: "IT", city: "Milano" };
 const SE: ShippingOrigin = { country: "Sweden", countryCode: "SE", city: "Jönköping" };

@@ -113,7 +113,7 @@ function Page() {
           <h3>The rise of quiet luxury</h3>
           <p>
             The other shift, accelerated by the post-2022 macro mood, is what the trade press calls "quiet
-            luxury" — Brunello Cucinelli cashmere, The Row tailoring, Loro Piana cashmere coats, Hermès
+            luxury" — Brunello Cucinelli cashmere, The Row tailoring, Hermès
             leather goods worn without monogram. The codes are recognisable to people who know the houses and
             invisible to people who don't. Our edit reflects that dual register: the Versace, Dolce &amp;
             Gabbana, and Gucci pieces for the moments that ask to be seen; the Cucinelli, Bottega Veneta, and
@@ -167,7 +167,7 @@ function Page() {
           <p>
             The most interesting innovation in luxury right now isn't on the catwalk — it's in the tanneries
             and mills. Italian leather houses have moved aggressively toward chrome-free and metal-free
-            tanning over the last decade; Cucinelli, Loro Piana and Zegna publish detailed traceability data
+            tanning over the last decade; Cucinelli, Brioni and Zegna publish detailed traceability data
             on their cashmere supply chains; recycled-nylon (ECONYL) and certified-organic cottons appear in
             collections from Prada, Gucci and Stella McCartney. Trade reporting from BoF and the
             <em> Vogue Business</em> sustainability index tracks the progress and the gaps honestly. We

@@ -172,7 +172,7 @@ export const COMPARISONS: Record<Comparison["slug"], Comparison> = {
     rows: [
       { label: "Model", them: "Inventory-holding e-tailer, owned stock", us: "Curated boutique network — partner-stocked", edge: "even" },
       { label: "Brand mix", them: "Contemporary, streetwear, avant-garde lean", us: "Italian and European luxury houses", edge: "even" },
-      { label: "Brand breadth", them: "500+ brands", us: "Focused edit, dozens of houses", edge: "them" },
+      { label: "Brand breadth", them: "Hundreds of brands", us: "Focused edit, dozens of houses", edge: "them" },
       { label: "Shipping origin", them: "Montréal, Canada", us: "European authorised partners", edge: "even" },
       { label: "Delivery to US", them: "1–3 business days express", us: "3–6 business days express", edge: "them" },
       { label: "Delivery to EU", them: "3–5 business days from Canada", us: "1–3 business days from EU partners", edge: "us" },

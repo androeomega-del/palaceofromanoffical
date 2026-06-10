@@ -17,7 +17,7 @@ const FAQS: CityFAQ[] = [
   { q: "Are pieces authenticated?", a: "Every order is new, sealed, and sourced through our global network of authorised boutiques and distributors. Brand packaging, serials, and country-of-origin marks arrive intact." },
   { q: "Delivery time to the Bay Area?", a: "Most SF Bay Area orders arrive in 4–7 business days via express courier, tracked and insured. Complimentary on orders over $250 and duty-paid in the US." },
   { q: "Returns?", a: "14-day returns on any unworn piece with tags. Courier collection from your address with no restocking fees." },
-  { q: "What suits the Bay Area wardrobe?", a: "Bay Area clients lean heavily into Brunello Cucinelli cashmere, Loro Piana knits, The Row's quiet tailoring, and Bottega Veneta leather. See the Cucinelli Edit and the Cashmere Field Guide for starting points." },
+  { q: "What suits the Bay Area wardrobe?", a: "Bay Area clients lean heavily into Brunello Cucinelli cashmere, The Row's quiet tailoring, and Bottega Veneta leather. See the Cucinelli Edit and the Cashmere Field Guide for starting points." },
   { q: "Concierge?", a: "Yes — message the concierge for sourcing a specific piece, sizing, or styling. Replies within 24 hours, Monday to Saturday." },
 ];
 
