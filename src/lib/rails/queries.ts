@@ -123,6 +123,8 @@ export const collectionRailQueryOptions = (handle: string, first = 8) => {
         return res?.edges ?? [];
       }),
     staleTime: 10 * 60_000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 };
 

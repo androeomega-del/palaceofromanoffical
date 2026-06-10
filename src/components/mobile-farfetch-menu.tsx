@@ -33,6 +33,9 @@ import {
 import { getShopifyMenu } from "@/lib/menu-source.functions";
 import { buildDepartmentsFromShopifyMenu } from "@/lib/megamenu-source";
 import { useCustomerStore } from "@/stores/customer-store";
+import { useConciergeStore } from "@/stores/concierge-store";
+import { Sparkles } from "lucide-react";
+
 
 type Tab = "women" | "men";
 
@@ -201,6 +204,24 @@ export function MobileFarfetchMenu({ onClose }: { onClose: () => void }) {
           Palace of Roman
         </Link>
       </Header>
+
+      {/* Pinned: Concierge entry, all routes */}
+      <button
+        type="button"
+        onClick={() => {
+          useConciergeStore.getState().setOpen(true);
+          closeAll();
+        }}
+        className="flex items-center justify-between px-5 py-4 border-b border-ink/10 text-left"
+      >
+        <span className="inline-flex items-center gap-2.5 text-[12px] uppercase tracking-[0.28em] text-ink">
+          <Sparkles className="w-3.5 h-3.5 text-bronze" strokeWidth={1.5} />
+          Concierge
+        </span>
+        <ChevronRight className="w-4 h-4 text-ink/40" strokeWidth={1.25} />
+      </button>
+
+
 
       {/* Tabs */}
       <div className="px-5 pt-2">

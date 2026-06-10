@@ -15,6 +15,8 @@ import { Link } from "@tanstack/react-router";
 import { Heart, Search, User, ShoppingBag, Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useCartStore } from "@/stores/cart-store";
+import { useConciergeStore } from "@/stores/concierge-store";
+
 import { CartDrawer } from "@/components/cart-drawer";
 import { ReducedMotionToggle } from "@/components/reduced-motion-toggle";
 import {
@@ -157,12 +159,20 @@ export function SiteHeader() {
 
           {/* Right: utility cluster */}
           <div className="flex items-center gap-3 sm:gap-5 md:gap-6 justify-self-end">
+            <button
+              type="button"
+              onClick={() => useConciergeStore.getState().setOpen(true)}
+              className="hidden md:inline text-[11px] uppercase tracking-[0.25em] text-bronze hover:text-ink transition-colors"
+            >
+              Concierge
+            </button>
             <Link
               to="/style-quiz"
               className="hidden xl:inline text-[11px] uppercase tracking-[0.25em] text-bronze hover:text-ink transition-colors"
             >
               Style Quiz
             </Link>
+
             <div className="hidden xl:flex items-center gap-6">
               <DeliverToButton />
               <HeaderCountrySelector />

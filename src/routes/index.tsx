@@ -15,23 +15,35 @@ import heroImage from "@/assets/home-hero.jpg";
 import { readMetaAbBucket } from "@/lib/meta-ab.functions";
 import { seoMetaForBucket, type MetaBucket } from "@/lib/meta-ab";
 import { collectionRailQueryOptions } from "@/lib/rails/queries";
+import { collectionHeroImageQueryOptions } from "@/lib/collection-hero-image";
 
-const HOME_TITLE = "Palace of Roman | Men's Luxury Resort & Coastal Fashion";
+const HOME_TITLE = "Palace of Roman | Designer Evening & Resort Fashion";
 const HOME_DESC =
-  "Curated luxury resort wear for men — linen, swim, and coastal tailoring from Dolce & Gabbana, Pucci, Loro Piana and more. New, current-season, shipped worldwide from Europe.";
+  "Luxury fashion for after dark — silk, evening tailoring, swim, and resort pieces from Dolce & Gabbana, Saint Laurent, Versace and more. New, current-season, shipped worldwide from Europe.";
+
 
 export const Route = createFileRoute("/")({
   loader: async ({ context }): Promise<{ abBucket: MetaBucket }> => {
     const { bucket } = await readMetaAbBucket();
-    // Prime homepage collection rails so cards render on first paint instead
-    // of waiting on post-hydration client fetches. Fire-and-forget so SSR is
-    // never blocked on Shopify latency.
-    void context.queryClient.prefetchQuery(
-      collectionRailQueryOptions("the-riviera-edit", 8),
-    );
-    void context.queryClient.prefetchQuery(
-      collectionRailQueryOptions("coastal-essentials", 8),
-    );
+    // Prime homepage collection rails + editorial-split lead images so the
+    // first paint is consistent between SSR and client hydration. We AWAIT
+    // every query the homepage subscribes to — fire-and-forget prefetches
+    // caused React #418 hydration mismatches because the rail components
+    // conditionally render based on `isLoading`/`data.length`.
+    await Promise.all([
+      ...["the-riviera-edit", "coastal-essentials", "womens-dresses", "new-arrivals", "suits", "mens-shirts"].map(
+        (handle) =>
+          context.queryClient
+            .ensureQueryData(collectionRailQueryOptions(handle, 8))
+            .catch((err) => console.error(`[home loader] rail ${handle} prefetch failed:`, err)),
+      ),
+      ...["new-arrivals", "suits", "mens-shirts"].map((handle) =>
+        context.queryClient
+          .ensureQueryData(collectionHeroImageQueryOptions(handle))
+          .catch((err) => console.error(`[home loader] tile hero ${handle} prefetch failed:`, err)),
+      ),
+    ]);
+
     return { abBucket: bucket };
   },
   head: ({ loaderData }) => {
