@@ -107,6 +107,76 @@ function canonicalHostRedirect(request: Request): Response | null {
   return Response.redirect(url.toString(), 301);
 }
 
+const PUBLIC_HTML_CACHE_PREFIXES = [
+  "/product",
+  "/collections",
+  "/brand",
+  "/editorial",
+  "/journal",
+];
+
+const PRIVATE_PATH_PREFIXES = [
+  "/account",
+  "/admin",
+  "/api",
+  "/cart",
+  "/auth",
+  "/authentication",
+  "/checkout",
+  "/_serverFn",
+];
+
+function matchesPathPrefix(pathname: string, prefix: string): boolean {
+  return pathname === prefix || pathname.startsWith(`${prefix}/`);
+}
+
+function isPublicHtmlCachePath(pathname: string): boolean {
+  return pathname === "/" || PUBLIC_HTML_CACHE_PREFIXES.some((p) => matchesPathPrefix(pathname, p));
+}
+
+function isPrivatePath(pathname: string): boolean {
+  return PRIVATE_PATH_PREFIXES.some((p) => matchesPathPrefix(pathname, p));
+}
+
+function withoutCookieVary(value: string | null): string | null {
+  if (!value) return null;
+  const kept = value
+    .split(",")
+    .map((part) => part.trim())
+    .filter((part) => part && part.toLowerCase() !== "cookie");
+  return kept.length > 0 ? kept.join(", ") : null;
+}
+
+function applyFinalHtmlCacheHeaders(request: Request, response: Response): Response {
+  const contentType = response.headers.get("content-type") ?? "";
+  if (!contentType.includes("text/html")) return response;
+
+  const url = new URL(request.url);
+  const headers = new Headers(response.headers);
+  const isPublicCacheable =
+    request.method === "GET" &&
+    response.status === 200 &&
+    isPublicHtmlCachePath(url.pathname) &&
+    !isPrivatePath(url.pathname);
+
+  if (isPublicCacheable) {
+    headers.set("cache-control", "public, s-maxage=300, stale-while-revalidate=86400");
+    headers.delete("pragma");
+    headers.delete("expires");
+    headers.set("vary", withoutCookieVary(headers.get("vary")) ?? "Accept-Encoding");
+  } else if (isPrivatePath(url.pathname)) {
+    headers.set("cache-control", "no-store, no-cache, must-revalidate");
+    headers.set("pragma", "no-cache");
+    headers.set("expires", "0");
+  }
+
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
@@ -117,7 +187,8 @@ export default {
       if (redirect) return redirect;
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
-      return await normalizeCatastrophicSsrResponse(response);
+      const normalized = await normalizeCatastrophicSsrResponse(response);
+      return applyFinalHtmlCacheHeaders(request, normalized);
     } catch (error) {
       console.error(error);
       return brandedErrorResponse();
