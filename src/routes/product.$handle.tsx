@@ -980,7 +980,7 @@ function ProductView({
 
 
   return (
-    <div className="studio obsidian luxury min-h-screen">
+    <div className="studio obsidian luxury pdp-noir min-h-screen">
       {/* Breadcrumb — SSR; mirrors the BreadcrumbList JSON-LD in head() */}
       <div className="px-6 pt-10">
         <div className="max-w-screen-2xl mx-auto">
