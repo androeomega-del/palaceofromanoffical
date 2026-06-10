@@ -8,11 +8,9 @@ import {
 import { useWishlistStore } from "@/stores/wishlist-store";
 import { useRecentlyViewedStore } from "@/stores/recently-viewed-store";
 import { useInteractionStore } from "@/stores/interaction-store";
-import { useConciergeStore } from "@/stores/concierge-store";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice } from "@/lib/shopify";
 import { brandFromSlug } from "@/lib/brand-heritage";
-
 
 type PageContext = {
   pageType: "home" | "product" | "brand" | "collection" | "shop" | "other";
@@ -55,10 +53,8 @@ function usePageContext(): PageContext {
  * right now plus their wishlist + recently-viewed signals.
  */
 export function ConciergeWidget() {
-  const open = useConciergeStore((s) => s.open);
-  const setOpen = useConciergeStore((s) => s.setOpen);
+  const [open, setOpen] = useState(false);
   const [seenOnce, setSeenOnce] = useState(false);
-
   // Luxury-tier behaviour: never overlap hero copy or PDP sticky CTAs. Stay
   // hidden until the visitor has scrolled past one viewport (signal of intent
   // to browse) and, on product pages, never compete with the add-to-bag bar.

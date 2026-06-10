@@ -50,12 +50,6 @@ export interface ProductRailProps {
    * every rail preset so cross-surface analytics stay consistent from day 1.
    */
   surface: string;
-  /** Suppress the eyebrow + title header. Use when the rail follows an
-   *  editorial split block that already provides the section heading. */
-  headless?: boolean;
-  /** Visual tone. "dark" inverts background + text for noir layouts. */
-  tone?: "light" | "dark";
-
 }
 
 export function ProductRail({
@@ -68,8 +62,6 @@ export function ProductRail({
   skeletonAspect = "3/4",
   hideWhenEmpty = true,
   surface,
-  headless = false,
-  tone = "light",
 }: ProductRailProps) {
   const { data, isLoading } = useQuery(queryOptions);
   const railRef = useRailImpression(surface, data?.[0]?.node.handle);
@@ -79,35 +71,21 @@ export function ProductRail({
   const gridCols = columns === 3 ? "lg:grid-cols-3" : "lg:grid-cols-4";
   const skeletonCount = columns;
 
-  const dark = tone === "dark";
-  const sectionTone = dark
-    ? "bg-ink text-canvas [&_.text-ink]:!text-canvas [&_.text-muted-foreground]:!text-canvas/60 [&_.text-bronze-deep]:!text-bronze"
-    : "bg-canvas";
-  const headerTitleColor = dark ? "text-canvas" : "text-ink";
-  const headerEyebrowColor = dark ? "text-bronze" : "text-bronze-deep";
-  const ctaClass = dark
-    ? "inline-flex items-center h-tap-target px-7 border border-canvas/60 text-canvas text-cta-lg uppercase hover:bg-canvas hover:text-ink transition-colors"
-    : "inline-flex items-center h-tap-target px-7 border border-ink text-ink text-cta-lg uppercase hover:bg-ink hover:text-canvas transition-colors";
-  const skeletonBg = dark ? "bg-canvas/5" : "bg-ink/5";
-
   return (
     <section
       ref={railRef as React.RefObject<HTMLElement>}
       data-rail-surface={surface}
-      data-tone={tone}
-      className={`py-section-sm md:py-16 ${sectionTone}`}
+      className="py-section-sm md:py-16 bg-canvas"
     >
       <div className="max-w-screen-2xl mx-auto px-5 md:px-10">
-        {!headless && (
-          <header className="mb-8">
-            <p className={`text-eyebrow uppercase ${headerEyebrowColor}`}>
-              {eyebrow}
-            </p>
-            <h2 className={`mt-tight font-serif text-subhead-md md:text-subhead-lg tracking-subhead-open ${headerTitleColor}`}>
-              {title}
-            </h2>
-          </header>
-        )}
+        <header className="mb-8">
+          <p className="text-eyebrow uppercase text-bronze-deep">
+            {eyebrow}
+          </p>
+          <h2 className="mt-tight font-serif text-subhead-md md:text-subhead-lg tracking-subhead-open text-ink">
+            {title}
+          </h2>
+        </header>
 
         <div
           className={`flex gap-x-3 overflow-x-auto snap-x snap-mandatory pb-2 -mx-5 px-5 md:mx-0 md:px-0 md:pb-0 md:overflow-visible md:snap-none md:grid md:grid-cols-2 ${gridCols} md:gap-x-5 md:gap-y-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden`}
@@ -116,7 +94,7 @@ export function ProductRail({
             ? Array.from({ length: skeletonCount }).map((_, i) => (
                 <div
                   key={i}
-                  className={`${skeletonBg} animate-pulse shrink-0 basis-[72%] snap-start md:basis-auto md:shrink`}
+                  className="bg-ink/5 animate-pulse shrink-0 basis-[72%] snap-start md:basis-auto md:shrink"
                   style={{ aspectRatio: skeletonAspect.replace("/", " / ") }}
                   aria-hidden="true"
                 />
@@ -132,7 +110,10 @@ export function ProductRail({
         </div>
 
         <div className="mt-10 flex justify-center">
-          <a href={ctaTo} className={ctaClass}>
+          <a
+            href={ctaTo}
+            className="inline-flex items-center h-tap-target px-7 border border-ink text-ink text-cta-lg uppercase hover:bg-ink hover:text-canvas transition-colors"
+          >
             {ctaLabel}
           </a>
         </div>
@@ -140,4 +121,3 @@ export function ProductRail({
     </section>
   );
 }
-
