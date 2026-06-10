@@ -694,8 +694,8 @@ export function ProductCard({
 
 
       </div>
-      <p className="text-[10px] uppercase tracking-[0.18em] mb-1.5 text-muted-foreground">{p.vendor}</p>
-      <h3 className="text-[13px] md:text-sm font-medium leading-snug line-clamp-2 text-balance group-hover:underline underline-offset-4 decoration-ink/30">{formatLuxuryTitle(p.title, p.vendor)}</h3>
+      <p className={`text-[10px] uppercase tracking-[0.18em] mb-1.5 ${noir ? "text-luxury-text-muted" : "text-muted-foreground"}`}>{p.vendor}</p>
+      <h3 className={`font-medium leading-snug line-clamp-2 text-balance group-hover:underline underline-offset-4 ${noir ? "font-serif text-[15px] md:text-[16px] text-white decoration-luxury-gold/50" : "text-[13px] md:text-sm decoration-ink/30"}`}>{formatLuxuryTitle(p.title, p.vendor)}</h3>
       <div className="flex items-baseline gap-2.5 mt-2">
         <PriceTag money={price} className="text-sm" />
       </div>
