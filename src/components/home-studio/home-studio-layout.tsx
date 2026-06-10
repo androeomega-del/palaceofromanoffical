@@ -24,7 +24,6 @@ import { collectionRailQueryOptions } from "@/lib/rails/queries";
 import { collectionHeroImageQueryOptions } from "@/lib/collection-hero-image";
 import { Skeleton } from "@/components/ui/skeleton";
 import { vendorSlug } from "@/lib/nav-config";
-import heroPoster from "@/assets/home-hero.jpg";
 import heroVideo from "@/assets/hero-cinematic.mp4.asset.json";
 
 interface HomeStudioLayoutProps {
@@ -68,7 +67,6 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
         <div className="relative w-full" style={{ aspectRatio: "16 / 9", minHeight: "78vh" }}>
           <video
             src={heroVideo.url}
-            poster={heroPoster}
             autoPlay
             muted
             loop
