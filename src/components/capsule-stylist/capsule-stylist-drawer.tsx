@@ -214,7 +214,7 @@ export default function CapsuleStylistDrawer() {
           product: { node: seed.product },
           variantId: seed.variantId,
           variantTitle: seed.variantTitle,
-          price: seed.product.priceRange?.minVariantPrice ?? { amount: "0", currencyCode: "USD" },
+          price: seed.price,
           quantity: 1,
           selectedOptions: seed.selectedOptions,
         });
