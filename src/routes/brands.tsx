@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { routeHead, absoluteUrl, SITE_NAME } from "@/lib/seo";
 import { img } from "@/lib/editorial-library";
-import { VERIFIED_LIVE_BRANDS, vendorSlug } from "@/lib/nav-config";
+import { VERIFIED_LIVE_BRANDS, brandCollectionHandle } from "@/lib/nav-config";
 
 const BRANDS_TITLE = "Brands — Palace of Roman";
 const BRANDS_DESC =
