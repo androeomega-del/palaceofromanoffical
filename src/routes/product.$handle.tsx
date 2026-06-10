@@ -25,6 +25,8 @@ import { useRecentlyViewedStore } from "@/stores/recently-viewed-store";
 import { useInteractionStore } from "@/stores/interaction-store";
 import { Loader2, Minus, Plus, ShieldCheck, Truck, RotateCcw, Lock, ChevronLeft, ChevronRight, Sparkles, Luggage } from "lucide-react";
 import { useVacationTrunkStore } from "@/stores/vacation-trunk-store";
+import { useCapsuleStylistStore } from "@/stores/capsule-stylist-store";
+import CapsuleStylistDrawer from "@/components/capsule-stylist/capsule-stylist-drawer";
 import { computeScarcitySignal } from "@/lib/scarcity-signal";
 import { toast } from "sonner";
 import { ProductCard } from "@/components/product-card";
