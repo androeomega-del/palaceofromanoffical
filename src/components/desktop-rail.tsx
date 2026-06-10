@@ -486,7 +486,7 @@ function BrandsPanel({
     staleTime: 10 * 60_000,
     refetchOnWindowFocus: false,
   });
-  const img = feature?.products?.[0]?.images?.[0];
+  const img = feature?.image ?? feature?.products?.edges?.[0]?.node?.images?.edges?.[0]?.node ?? null;
 
   return (
     <PanelShell
