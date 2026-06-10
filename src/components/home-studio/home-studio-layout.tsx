@@ -17,6 +17,8 @@ import { ArrowUpRight } from "lucide-react";
 import { useChromeStore } from "@/stores/chrome-store";
 import { useConciergeStore } from "@/stores/concierge-store";
 import { PalaceHeader } from "./palace-header";
+import { ShopByCategorySection } from "./shop-by-category";
+import { HomeNewsletterStrip } from "./home-newsletter-strip";
 import { ProductRail } from "@/components/sections/product-rail";
 import { collectionRailQueryOptions } from "@/lib/rails/queries";
 import { collectionHeroImageQueryOptions } from "@/lib/collection-hero-image";
@@ -136,6 +138,9 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
           </div>
         </div>
       </section>
+
+      {/* ───────────── Section 1.5 — Shop by Category ───────────── */}
+      <ShopByCategorySection />
 
       {/* ───────────── Section 2 — Brand line ───────────── */}
       <section className="border-y border-canvas/10 bg-ink">
@@ -281,6 +286,9 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
           </ul>
         </div>
       </section>
+
+      {/* ───────────── Section 10 — Newsletter strip ───────────── */}
+      <HomeNewsletterStrip />
 
       {isStandalone && (
         <footer className="px-6 md:px-14 py-10 border-t border-canvas/10 flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-ink">
