@@ -306,7 +306,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
             "Fendi", "Burberry", "Brunello Cucinelli", "Tom Ford", "Givenchy", "Chloé",
             "Ferragamo", "Jacquemus", "Balmain", "Alexander McQueen", "Maison Margiela",
             "Off-White", "Moschino", "Jimmy Choo", "Kenzo", "Moncler", "Valentino",
-            "Bottega Veneta",
           ],
           sameAs: [
             "https://www.instagram.com/palaceofroman/",
