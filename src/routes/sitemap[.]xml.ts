@@ -86,16 +86,10 @@ const STATIC_ROUTES: Array<{
   { path: "/journal/style/the-investment-sunglasses-edit", changefreq: "monthly", priority: "0.7" },
   { path: "/journal/style/luxury-sneakers-as-modern-tailoring", changefreq: "monthly", priority: "0.7" },
   { path: "/journal/style/the-cashmere-field-guide", changefreq: "monthly", priority: "0.7" },
-  { path: "/collections/italian-leather-wallets", changefreq: "weekly", priority: "0.8" },
-  { path: "/collections/italian-leather-loafers", changefreq: "weekly", priority: "0.8" },
-  { path: "/collections/designer-mens-shirts", changefreq: "weekly", priority: "0.8" },
-  { path: "/collections/italian-leather-handbags", changefreq: "weekly", priority: "0.8" },
-  { path: "/collections/designer-sunglasses", changefreq: "weekly", priority: "0.8" },
-  { path: "/collections/luxury-sneakers", changefreq: "weekly", priority: "0.8" },
-  { path: "/collections/designer-belts", changefreq: "weekly", priority: "0.8" },
-  { path: "/collections/cashmere-sweaters", changefreq: "weekly", priority: "0.8" },
-  { path: "/collections/silk-scarves", changefreq: "weekly", priority: "0.8" },
-  { path: "/collections/designer-crossbody-bags", changefreq: "weekly", priority: "0.8" },
+  // Dynamic Shopify collections are appended below (only those with
+  // productCount > 0). Hardcoded /collections/* entries removed
+  // 2026-06-10 — handles deleted in the Shopify cleanup pass.
+
   { path: "/maison", changefreq: "monthly", priority: "0.7" },
   { path: "/maison/brunello-cucinelli", changefreq: "monthly", priority: "0.8" },
   { path: "/maison/prada", changefreq: "monthly", priority: "0.8" },

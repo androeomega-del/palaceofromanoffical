@@ -20,27 +20,23 @@
  */
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronRight, ChevronLeft, X } from "lucide-react";
+import { ChevronRight, ChevronLeft, X, Sparkles } from "lucide-react";
 import { useMemo, useState } from "react";
-import { fetchCollections, fetchVendorIndex } from "@/lib/shopify";
+import { fetchVendorIndex } from "@/lib/shopify";
 import {
-  buildDepartments,
   buildBrandList,
   groupBrandsForMenu,
   vendorSlug,
-  type MegaDepartment,
+  navForDept,
+  type NavNode,
 } from "@/lib/nav-config";
-import { getShopifyMenu } from "@/lib/menu-source.functions";
-import { buildDepartmentsFromShopifyMenu } from "@/lib/megamenu-source";
 import { useCustomerStore } from "@/stores/customer-store";
 import { useConciergeStore } from "@/stores/concierge-store";
-import { Sparkles } from "lucide-react";
-
 
 type Tab = "women" | "men";
 
 type Drill =
-  | { kind: "column"; heading: string; items: { handle?: string; to?: string; label: string }[] }
+  | { kind: "group"; node: NavNode }
   | { kind: "brands"; items: { vendor: string }[] }
   | null;
 
@@ -48,16 +44,6 @@ export function MobileFarfetchMenu({ onClose }: { onClose: () => void }) {
   const [tab, setTab] = useState<Tab>("women");
   const [drill, setDrill] = useState<Drill>(null);
 
-  const { data: liveCollections } = useQuery({
-    queryKey: ["collections-all"],
-    queryFn: () => fetchCollections(500),
-    staleTime: 5 * 60_000,
-  });
-  const { data: menuSource } = useQuery({
-    queryKey: ["shopify-main-menu"],
-    queryFn: () => getShopifyMenu(),
-    staleTime: 10 * 60_000,
-  });
   const { data: brands } = useQuery({
     queryKey: ["nav-brand-index"],
     queryFn: () => fetchVendorIndex(),
@@ -65,42 +51,7 @@ export function MobileFarfetchMenu({ onClose }: { onClose: () => void }) {
     select: (rows) => buildBrandList(rows),
   });
 
-  const liveHandles = useMemo(
-    () => (liveCollections ? new Set(liveCollections.map((c) => c.handle)) : null),
-    [liveCollections],
-  );
-
-  const departments: MegaDepartment[] = useMemo(() => {
-    const built = buildDepartments(liveCollections ?? []);
-    const filtered = liveHandles
-      ? built.filter((d) => liveHandles.has(d.rootHandle))
-      : built;
-    const shopify = menuSource?.tree
-      ? buildDepartmentsFromShopifyMenu(menuSource.tree, filtered, liveHandles)
-      : null;
-    return shopify ?? filtered;
-  }, [liveCollections, liveHandles, menuSource]);
-
-  const activeDept = useMemo(
-    () => departments.find((d) => d.key === tab) ?? departments[0],
-    [departments, tab],
-  );
-
-  // Sale / New In handle resolution against live catalog — skip rows if absent.
-  const saleHandle = useMemo(() => {
-    if (!liveHandles) return null;
-    for (const h of [`${tab}-sale`, `sale-${tab}`, "sale"]) {
-      if (liveHandles.has(h)) return h;
-    }
-    return null;
-  }, [liveHandles, tab]);
-  const newInHandle = useMemo(() => {
-    if (!liveHandles) return "new-arrivals";
-    for (const h of [`${tab}-new-arrivals`, `new-arrivals-${tab}`, "new-arrivals"]) {
-      if (liveHandles.has(h)) return h;
-    }
-    return null;
-  }, [liveHandles, tab]);
+  const navItems = useMemo(() => navForDept(tab), [tab]);
 
   const brandGroups = useMemo(() => groupBrandsForMenu(brands ?? []), [brands]);
   const flatBrands = useMemo(
@@ -129,38 +80,41 @@ export function MobileFarfetchMenu({ onClose }: { onClose: () => void }) {
         </Header>
         <div className="px-5 pt-4 pb-2">
           <p className="text-[11px] uppercase tracking-[0.3em] text-bronze">
-            {activeDept?.label ?? ""}
+            {tab === "women" ? "Women" : "Men"}
           </p>
           <h2 className="mt-1 font-serif text-[22px] tracking-[0.04em] text-ink">
-            {drill.kind === "brands" ? "Brands" : drill.heading}
+            {drill.kind === "brands" ? "Brands" : drill.node.label}
           </h2>
         </div>
         <ul className="flex-1 overflow-y-auto px-5 pb-6 divide-y divide-ink/10">
-          {drill.kind === "column" &&
-            drill.items.map((it) => (
-              <li key={it.to ?? it.handle ?? it.label}>
-                {it.to ? (
-                  <Link
-                    to={it.to}
-                    onClick={closeAll}
-                    className="flex items-center justify-between py-4 text-[15px] text-ink"
-                  >
-                    <span>{it.label}</span>
-                    <ChevronRight className="w-4 h-4 text-ink/40" strokeWidth={1.5} />
-                  </Link>
-                ) : (
-                  <Link
-                    to="/collections/$handle"
-                    params={{ handle: it.handle! }}
-                    onClick={closeAll}
-                    className="flex items-center justify-between py-4 text-[15px] text-ink"
-                  >
-                    <span>{it.label}</span>
-                    <ChevronRight className="w-4 h-4 text-ink/40" strokeWidth={1.5} />
-                  </Link>
-                )}
+          {drill.kind === "group" && (
+            <>
+              <li>
+                <Link
+                  to={drill.node.to}
+                  onClick={closeAll}
+                  className="flex items-center justify-between py-4 text-[15px] text-bronze-deep"
+                  data-nav-item={`All ${drill.node.label}`}
+                >
+                  <span>All {drill.node.label}</span>
+                  <ChevronRight className="w-4 h-4 text-ink/40" strokeWidth={1.5} />
+                </Link>
               </li>
-            ))}
+              {drill.node.children!.map((c) => (
+                <li key={c.to}>
+                  <Link
+                    to={c.to}
+                    onClick={closeAll}
+                    className="flex items-center justify-between py-4 pl-4 text-[15px] text-ink"
+                    data-nav-item={c.label}
+                  >
+                    <span>{c.label}</span>
+                    <ChevronRight className="w-4 h-4 text-ink/40" strokeWidth={1.5} />
+                  </Link>
+                </li>
+              ))}
+            </>
+          )}
           {drill.kind === "brands" &&
             drill.items.map((b) => (
               <li key={b.vendor}>
@@ -205,7 +159,6 @@ export function MobileFarfetchMenu({ onClose }: { onClose: () => void }) {
         </Link>
       </Header>
 
-      {/* Pinned: Concierge entry, all routes */}
       <button
         type="button"
         onClick={() => {
@@ -221,15 +174,13 @@ export function MobileFarfetchMenu({ onClose }: { onClose: () => void }) {
         <ChevronRight className="w-4 h-4 text-ink/40" strokeWidth={1.25} />
       </button>
 
-
-
       {/* Tabs */}
       <div className="px-5 pt-2">
         <div className="flex items-stretch gap-7 border-b border-ink/10">
           {(["women", "men"] as Tab[]).map((t) => {
             const active = tab === t;
             return (
-            <button
+              <button
                 key={t}
                 type="button"
                 onClick={() => setTab(t)}
@@ -252,59 +203,58 @@ export function MobileFarfetchMenu({ onClose }: { onClose: () => void }) {
 
       {/* Rows */}
       <ul className="flex-1 overflow-y-auto px-5 divide-y divide-ink/10">
-        {activeDept && (
-          <Row
-            label={tab === "women" ? "The Women's Edit" : "The Men's Edit"}
-            to={tab === "men" ? "/men" : tab === "women" ? "/women" : `/collections/${activeDept.rootHandle}`}
-            onClose={closeAll}
-            muted
-          />
-        )}
-        {saleHandle && (
-          <Row
-            label="Sale"
-            to={`/collections/${saleHandle}`}
-            onClose={closeAll}
-            accent
-          />
-        )}
-        {newInHandle && (
-          <Row
-            label="New In"
-            to={`/collections/${newInHandle}`}
-            onClose={closeAll}
-          />
-        )}
-        <Row label="Vacation" to="/vacation-stylist" onClose={closeAll} />
         <li>
-          <button
-            type="button"
-            onClick={() =>
-              setDrill({ kind: "brands", items: flatBrands })
-            }
-            className="w-full flex items-center justify-between py-4 text-[15px] text-ink"
+          <Link
+            to={tab === "men" ? "/men" : "/women"}
+            onClick={closeAll}
+            className="flex items-center justify-between py-4 text-[14px] text-bronze-deep"
           >
-            <span>Brands</span>
+            <span>{tab === "women" ? "The Women's Edit" : "The Men's Edit"}</span>
             <ChevronRight className="w-4 h-4 text-ink/40" strokeWidth={1.5} />
-          </button>
+          </Link>
         </li>
-        {activeDept?.columns.map((col) => {
-          const items = liveHandles
-            ? col.items.filter((it) => !it.handle || liveHandles.has(it.handle))
-            : col.items;
-          if (items.length === 0) return null;
+        {navItems.map((item) => {
+          if (item.label === "Brands") {
+            return (
+              <li key="brands">
+                <button
+                  type="button"
+                  onClick={() => setDrill({ kind: "brands", items: flatBrands })}
+                  data-nav-item="Brands"
+                  className="w-full flex items-center justify-between py-4 text-[15px] text-ink"
+                >
+                  <span>Brands</span>
+                  <ChevronRight className="w-4 h-4 text-ink/40" strokeWidth={1.5} />
+                </button>
+              </li>
+            );
+          }
+          if (item.children && item.children.length > 0) {
+            return (
+              <li key={item.label}>
+                <button
+                  type="button"
+                  onClick={() => setDrill({ kind: "group", node: item })}
+                  data-nav-item={item.label}
+                  className="w-full flex items-center justify-between py-4 text-[15px] text-ink"
+                >
+                  <span>{item.label}</span>
+                  <ChevronRight className="w-4 h-4 text-ink/40" strokeWidth={1.5} />
+                </button>
+              </li>
+            );
+          }
           return (
-            <li key={col.heading}>
-              <button
-                type="button"
-                onClick={() =>
-                  setDrill({ kind: "column", heading: col.heading, items })
-                }
-                className="w-full flex items-center justify-between py-4 text-[15px] text-ink"
+            <li key={item.label}>
+              <Link
+                to={item.to}
+                onClick={closeAll}
+                data-nav-item={item.label}
+                className="flex items-center justify-between py-4 text-[15px] text-ink"
               >
-                <span>{col.heading}</span>
+                <span>{item.label}</span>
                 <ChevronRight className="w-4 h-4 text-ink/40" strokeWidth={1.5} />
-              </button>
+              </Link>
             </li>
           );
         })}
@@ -314,6 +264,7 @@ export function MobileFarfetchMenu({ onClose }: { onClose: () => void }) {
     </Shell>
   );
 }
+
 
 /* ───────────────────────── Subcomponents ───────────────────────── */
 

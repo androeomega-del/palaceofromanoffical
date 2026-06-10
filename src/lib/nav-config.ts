@@ -198,6 +198,84 @@ export function vendorSlug(name: string): string {
   return name.toLowerCase().replace(/\s+/g, "-");
 }
 
+/**
+ * Vendor display name → Shopify collection handle slug (proper).
+ * Strips diacritics, collapses non-alphanumerics to hyphens.
+ * "Dolce & Gabbana" → "dolce-gabbana", "Chloé" → "chloe".
+ */
+export function brandCollectionHandle(name: string): string {
+  return name
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
+// -----------------------------------------------------------------------------
+// Static primary navigation — per-department, verified handles only.
+// Top-level rail items render flat; items with `children` render a dropdown.
+// Used by both DesktopCategoryRail and MobileFarfetchMenu.
+// -----------------------------------------------------------------------------
+
+export type NavLeaf = { label: string; to: string };
+export type NavNode = NavLeaf & { children?: NavLeaf[] };
+
+export const NAV_MEN: NavNode[] = [
+  { label: "New In", to: "/collections/new-arrivals" },
+  { label: "Vacation", to: "/vacation-stylist" },
+  { label: "Brands", to: "/brands" },
+  {
+    label: "Apparel",
+    to: "/collections/mens-clothing",
+    children: [
+      { label: "Shirts", to: "/collections/mens-shirts" },
+      { label: "Polos", to: "/collections/mens-polos" },
+      { label: "T-Shirts", to: "/collections/mens-t-shirts" },
+      { label: "Tailoring", to: "/collections/suits" },
+    ],
+  },
+  {
+    label: "Coastal",
+    to: "/collections/the-riviera-edit",
+    children: [
+      { label: "The Riviera Edit", to: "/collections/the-riviera-edit" },
+      { label: "Coastal Essentials", to: "/collections/coastal-essentials" },
+    ],
+  },
+  {
+    label: "Shoes",
+    to: "/collections/mens-shoes",
+    children: [
+      { label: "Sneakers", to: "/collections/mens-sneakers" },
+      { label: "Loafers", to: "/collections/mens-loafers" },
+    ],
+  },
+  { label: "Carry", to: "/collections/mens-bags" },
+  { label: "Accessories", to: "/collections/mens-accessories" },
+];
+
+export const NAV_WOMEN: NavNode[] = [
+  { label: "New In", to: "/collections/new-arrivals" },
+  { label: "Vacation", to: "/vacation-stylist" },
+  { label: "Brands", to: "/brands" },
+  {
+    label: "Apparel",
+    to: "/collections/womens-clothing",
+    children: [
+      { label: "Dresses", to: "/collections/womens-dresses" },
+      { label: "Swim", to: "/collections/womens-swim" },
+    ],
+  },
+  { label: "Shoes", to: "/collections/womens-shoes" },
+  { label: "Carry", to: "/collections/womens-bags" },
+  { label: "Fine Accessories", to: "/collections/womens-accessories" },
+];
+
+export function navForDept(dept: "men" | "women"): NavNode[] {
+  return dept === "men" ? NAV_MEN : NAV_WOMEN;
+}
+
 export type HeroBrand = {
   vendor: string;
   eyebrow: string;

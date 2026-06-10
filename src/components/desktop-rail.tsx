@@ -22,16 +22,13 @@ import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { fetchCollections, fetchVendorIndex, type ShopifyCollection } from "@/lib/shopify";
 import {
-  buildDepartments,
   buildBrandList,
   groupBrandsForMenu,
   vendorSlug,
   HERO_BRANDS,
-  type MegaDepartment,
-  type MegaColumn,
+  navForDept,
+  type NavNode,
 } from "@/lib/nav-config";
-import { getShopifyMenu } from "@/lib/menu-source.functions";
-import { buildDepartmentsFromShopifyMenu } from "@/lib/megamenu-source";
 import { useDeptStore, type Dept } from "@/stores/dept-store";
 
 /* ────────────────────────── public component ────────────────────────── */
@@ -41,15 +38,11 @@ export function DesktopCategoryRail() {
   const [openKey, setOpenKey] = useState<string | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Brands megamenu still pulls live vendor counts for hero tiles.
   const { data: liveCollections } = useQuery({
     queryKey: ["collections-all"],
     queryFn: () => fetchCollections(500),
     staleTime: 5 * 60_000,
-  });
-  const { data: menuSource } = useQuery({
-    queryKey: ["shopify-main-menu"],
-    queryFn: () => getShopifyMenu(),
-    staleTime: 10 * 60_000,
   });
   const { data: brands } = useQuery({
     queryKey: ["nav-brand-index"],
@@ -58,41 +51,7 @@ export function DesktopCategoryRail() {
     select: (rows) => buildBrandList(rows),
   });
 
-  const liveHandles = useMemo(
-    () => (liveCollections ? new Set(liveCollections.map((c) => c.handle)) : null),
-    [liveCollections],
-  );
-
-  const departments: MegaDepartment[] = useMemo(() => {
-    const built = buildDepartments(liveCollections ?? []);
-    const filtered = liveHandles
-      ? built.filter((d) => liveHandles.has(d.rootHandle))
-      : built;
-    const shopify = menuSource?.tree
-      ? buildDepartmentsFromShopifyMenu(menuSource.tree, filtered, liveHandles)
-      : null;
-    return shopify ?? filtered;
-  }, [liveCollections, liveHandles, menuSource]);
-
-  const activeDept = useMemo(
-    () => departments.find((d) => d.key === dept) ?? departments[0],
-    [departments, dept],
-  );
-
-  const saleHandle = useMemo(() => {
-    if (!liveHandles) return null;
-    for (const h of [`${dept}-sale`, `sale-${dept}`, "sale"]) {
-      if (liveHandles.has(h)) return h;
-    }
-    return null;
-  }, [liveHandles, dept]);
-  const newInHandle = useMemo(() => {
-    if (!liveHandles) return "new-arrivals";
-    for (const h of [`${dept}-new-arrivals`, `new-arrivals-${dept}`, "new-arrivals"]) {
-      if (liveHandles.has(h)) return h;
-    }
-    return null;
-  }, [liveHandles, dept]);
+  const items: NavNode[] = useMemo(() => navForDept(dept), [dept]);
 
   const openNow = useCallback((key: string) => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
@@ -103,10 +62,8 @@ export function DesktopCategoryRail() {
     closeTimer.current = setTimeout(() => setOpenKey(null), 120);
   }, []);
 
-  // Reset open key when dept switches.
   useEffect(() => setOpenKey(null), [dept]);
 
-  // Escape closes any open panel.
   useEffect(() => {
     if (!openKey) return;
     const onKey = (e: KeyboardEvent) => {
@@ -116,88 +73,93 @@ export function DesktopCategoryRail() {
     return () => window.removeEventListener("keydown", onKey);
   }, [openKey]);
 
-  if (!activeDept) {
-    // No deps loaded yet — render an invisible skeleton so the row keeps height.
-    return <div className="h-12" aria-hidden="true" />;
-  }
-
-  // Filter columns to live items so we never render empty rail items.
-  const liveColumns: MegaColumn[] = activeDept.columns
-    .map((col) => ({
-      heading: col.heading,
-      items: liveHandles
-        ? col.items.filter((it) => !it.handle || liveHandles.has(it.handle))
-        : col.items,
-    }))
-    .filter((col) => col.items.length > 0);
-
   return (
-    <div
-      className="relative"
-      onMouseLeave={scheduleClose}
-    >
+    <div className="relative" onMouseLeave={scheduleClose}>
       <nav
-        aria-label={`${activeDept.label} categories`}
+        aria-label={`${dept === "men" ? "Men" : "Women"} categories`}
         className="flex items-center gap-7 text-[12px] tracking-[0.02em] text-ink"
       >
-        {saleHandle && (
-          <RailLink
-            label="Sale"
-            to={`/collections/${saleHandle}`}
-            accent
-          />
-        )}
-        {newInHandle && (
-          <RailLink label="New In" to={`/collections/${newInHandle}`} />
-        )}
-        <RailLink label="Vacation" to="/vacation-stylist" />
-
-        <RailTrigger
-          label="Brands"
-          to="/brands"
-          isOpen={openKey === "brands"}
-          onOpen={() => openNow("brands")}
-          onClose={() => setOpenKey(null)}
-        >
-          <BrandsPanel
-            brands={brands ?? []}
-            liveCollections={liveCollections ?? []}
-            onMouseEnter={() => openNow("brands")}
-            onMouseLeave={scheduleClose}
-          />
-        </RailTrigger>
-
-        {liveColumns.map((col) => {
-          // Prefer a column-specific collection if it exists in the live catalog
-          // (e.g. "women-clothing"); otherwise fall back to the dept root so the
-          // click always lands somewhere shoppable.
-          const slug = col.heading.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-          const candidate = `${activeDept.key}-${slug}`;
-          const colHandle =
-            liveHandles && liveHandles.has(candidate) ? candidate : activeDept.rootHandle;
-          return (
-            <RailTrigger
-              key={col.heading}
-              label={col.heading}
-              to={`/collections/${colHandle}`}
-              isOpen={openKey === col.heading}
-              onOpen={() => openNow(col.heading)}
-              onClose={() => setOpenKey(null)}
-            >
-              <CategoryPanel
-                column={col}
-                dept={activeDept}
-                liveCollections={liveCollections ?? []}
-                onMouseEnter={() => openNow(col.heading)}
-                onMouseLeave={scheduleClose}
-              />
-            </RailTrigger>
-          );
+        {items.map((item) => {
+          if (item.label === "Brands") {
+            return (
+              <RailTrigger
+                key="brands"
+                label="Brands"
+                to="/brands"
+                isOpen={openKey === "brands"}
+                onOpen={() => openNow("brands")}
+                onClose={() => setOpenKey(null)}
+              >
+                <BrandsPanel
+                  brands={brands ?? []}
+                  liveCollections={liveCollections ?? []}
+                  onMouseEnter={() => openNow("brands")}
+                  onMouseLeave={scheduleClose}
+                />
+              </RailTrigger>
+            );
+          }
+          if (item.children && item.children.length > 0) {
+            return (
+              <RailTrigger
+                key={item.label}
+                label={item.label}
+                to={item.to}
+                isOpen={openKey === item.label}
+                onOpen={() => openNow(item.label)}
+                onClose={() => setOpenKey(null)}
+              >
+                <SimpleDropdown
+                  parent={item}
+                  onMouseEnter={() => openNow(item.label)}
+                  onMouseLeave={scheduleClose}
+                />
+              </RailTrigger>
+            );
+          }
+          return <RailLink key={item.label} label={item.label} to={item.to} />;
         })}
       </nav>
     </div>
   );
 }
+
+/* ────────────────────────── simple dropdown ────────────────────────── */
+
+function SimpleDropdown({
+  parent,
+  onMouseEnter,
+  onMouseLeave,
+}: {
+  parent: NavNode;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
+}) {
+  return (
+    <div
+      role="region"
+      aria-label={`${parent.label} navigation`}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      className="absolute left-0 top-full z-40 mt-0 min-w-[220px] bg-canvas border border-ink/10 shadow-[0_24px_60px_-30px_rgba(0,0,0,0.18)]"
+    >
+      <ul className="flex flex-col py-3">
+        {parent.children!.map((c) => (
+          <li key={c.to}>
+            <a
+              href={c.to}
+              className="block px-5 py-2 text-[13px] font-light text-ink/80 hover:text-ink hover:bg-ink/[0.03] transition-colors"
+              data-nav-item={c.label}
+            >
+              {c.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 
 /* ────────────────────────── primitives ────────────────────────── */
 
@@ -259,98 +221,8 @@ function RailTrigger({
   );
 }
 
-/* ────────────────────────── Category panel ────────────────────────── */
+/* CategoryPanel removed — dropdowns now use SimpleDropdown. */
 
-function CategoryPanel({
-  column,
-  dept,
-  liveCollections,
-  onMouseEnter,
-  onMouseLeave,
-}: {
-  column: MegaColumn;
-  dept: MegaDepartment;
-  liveCollections: ShopifyCollection[];
-  onMouseEnter: () => void;
-  onMouseLeave: () => void;
-}) {
-  const featureImg = liveCollections.find(
-    (c) => c.handle === dept.feature.handle,
-  )?.image;
-  // Split the column items into 3 visual columns for breathing room.
-  const chunks = chunk(column.items, Math.ceil(column.items.length / 3));
-
-  return (
-    <div
-      role="region"
-      aria-label={`${column.heading} navigation`}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      className="fixed left-0 right-0 top-[calc(var(--header-row1)+var(--header-row2))] z-40 bg-canvas border-t border-ink/10 shadow-[0_40px_80px_-40px_rgba(0,0,0,0.12)]"
-    >
-      <div className="max-w-screen-2xl mx-auto px-12 py-12 grid grid-cols-[1fr_minmax(320px,28%)] gap-16">
-        <div>
-          <p className="font-serif italic text-[14px] tracking-[0.04em] text-bronze pb-3 border-b border-ink/15 mb-6">
-            {dept.label} · {column.heading}
-          </p>
-          <div className="grid grid-cols-3 gap-x-12 gap-y-2">
-            {chunks.map((c, i) => (
-              <ul key={i} className="flex flex-col gap-2.5">
-                {c.map((it) => (
-                  <li key={it.to ?? it.handle ?? it.label}>
-                    {it.to ? (
-                      <Link
-                        to={it.to}
-                        className="text-[13px] font-light text-ink/75 hover:text-ink transition-colors inline-block normal-case tracking-normal leading-relaxed"
-                      >
-                        {it.label}
-                      </Link>
-                    ) : (
-                      <Link
-                        to="/collections/$handle"
-                        params={{ handle: it.handle! }}
-                        className="text-[13px] font-light text-ink/75 hover:text-ink transition-colors inline-block normal-case tracking-normal leading-relaxed"
-                      >
-                        {it.label}
-                      </Link>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            ))}
-          </div>
-        </div>
-
-        <Link
-          to="/collections/$handle"
-          params={{ handle: dept.feature.handle }}
-          className="group relative block aspect-[4/5] overflow-hidden bg-muted"
-        >
-          {featureImg && (
-            <img
-              src={featureImg.url}
-              alt={featureImg.altText ?? `${dept.feature.title} — ${dept.label}`}
-              loading="lazy"
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
-            />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/20 to-transparent" />
-          <div className="absolute inset-x-0 bottom-0 p-8">
-            <p className="text-[10px] uppercase tracking-[0.4em] text-canvas/75 mb-3">
-              {dept.feature.eyebrow}
-            </p>
-            <p className="font-serif text-[26px] leading-[1.15] text-canvas text-balance">
-              {dept.feature.title}
-            </p>
-            <span className="mt-5 inline-block text-[10px] uppercase tracking-[0.35em] text-canvas/90 border-b border-canvas/40 pb-1">
-              Discover
-            </span>
-          </div>
-        </Link>
-      </div>
-    </div>
-  );
-}
 
 /* ────────────────────────── Brands panel ────────────────────────── */
 
@@ -522,11 +394,3 @@ export function DepartmentTabs() {
   );
 }
 
-/* ────────────────────────── utils ────────────────────────── */
-
-function chunk<T>(arr: T[], size: number): T[][] {
-  if (size <= 0) return [arr];
-  const out: T[][] = [];
-  for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
-  return out;
-}
