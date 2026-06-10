@@ -19,10 +19,7 @@ import { useConciergeStore } from "@/stores/concierge-store";
 
 import { CartDrawer } from "@/components/cart-drawer";
 import { ReducedMotionToggle } from "@/components/reduced-motion-toggle";
-import {
-  DesktopCategoryRail,
-  DepartmentTabs,
-} from "@/components/desktop-rail";
+import { DesktopCategoryRail } from "@/components/desktop-rail";
 import { MobileFarfetchMenu } from "@/components/mobile-farfetch-menu";
 import { SearchOverlay } from "@/components/search-overlay";
 import { DeliverToButton } from "@/components/deliver-to-button";
