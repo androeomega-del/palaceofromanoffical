@@ -19,6 +19,7 @@ import { pickCollectionMeta, seoMetaForBucket, type MetaBucket } from "@/lib/met
 import { useMetaAb } from "@/hooks/use-meta-ab";
 import { absoluteUrl, SITE_URL } from "@/lib/seo";
 import { withTimeout } from "@/lib/with-timeout";
+import { cached } from "@/lib/server-cache";
 import { collectionSeo } from "@/lib/collection-seo";
 import {
   CatalogFilters,
