@@ -67,9 +67,9 @@ export function ShopByCategorySection() {
   return (
     <section className="bg-ink border-t border-canvas/10">
       <div className="max-w-screen-2xl mx-auto px-6 md:px-14 pt-16 md:pt-24 pb-2">
-        <p className="text-[10px] md:text-[11px] uppercase tracking-[0.45em] text-bronze">
+        <h2 className="text-[10px] md:text-[11px] font-sans font-normal uppercase tracking-[0.45em] text-bronze">
           Shop by Category
-        </p>
+        </h2>
       </div>
       <div className="max-w-screen-2xl mx-auto px-6 md:px-14 py-8 md:py-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-canvas/10">

@@ -220,7 +220,10 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
       </section>
 
       {/* ───────────── Section 6 — Three editorial tiles ───────────── */}
-      <section className="bg-ink">
+      <section className="bg-ink" aria-labelledby="home-editorial-tiles-heading">
+        <h2 id="home-editorial-tiles-heading" className="sr-only">
+          Editorial edits
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-canvas/10">
           {TILES.map((t) => (
             <EditorialTile key={t.handle} handle={t.handle} title={t.title} />
