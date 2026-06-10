@@ -7,12 +7,13 @@
  * via the live Storefront API. Closing the drawer wipes seed context.
  */
 import { create } from "zustand";
-import type { ShopifyProductNode } from "@/lib/shopify";
+import type { Money, ShopifyProductNode } from "@/lib/shopify";
 
 export interface CapsuleSeed {
   product: ShopifyProductNode;
   variantId: string;
   variantTitle: string;
+  price: Money;
   selectedOptions: Array<{ name: string; value: string }>;
 }
 
