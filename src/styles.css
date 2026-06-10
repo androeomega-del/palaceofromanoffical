@@ -38,6 +38,22 @@
   --color-ring: var(--ring);
   --color-sea: var(--sea);
 
+  /* ──────────────────────────────────────────────────────────────────────
+     Luxury noir tokens (Step A — Tokens-only, nothing consumes these yet).
+     Scoped "after dark" palette used by the homepage, Capsule Stylist,
+     PDP and cart drawer. PLP / brand / journal / city / account stay on
+     the ivory palette above. Header/footer will adopt noir-neutral chrome
+     in a later step. Do NOT remap the global --canvas / --ink tokens to
+     these values — that would flip the entire site. Consume explicitly
+     via `bg-luxury-dark`, `text-luxury-text-muted`, etc.
+     ────────────────────────────────────────────────────────────────────── */
+  --color-luxury-dark: #050505;
+  --color-luxury-zinc: #111111;
+  --color-luxury-border: #1c1c1c;
+  --color-luxury-text-muted: #a1a1aa;
+  --color-luxury-gold: #d4af37;
+  --color-luxury-amber: #f59e0b;
+
   --font-serif: "Cormorant Garamond", ui-serif, Georgia, serif;
   --font-sans: "Karla", ui-sans-serif, system-ui, sans-serif;
 
