@@ -47,12 +47,28 @@
      these values — that would flip the entire site. Consume explicitly
      via `bg-luxury-dark`, `text-luxury-text-muted`, etc.
      ────────────────────────────────────────────────────────────────────── */
-  --color-luxury-dark: #050505;
-  --color-luxury-zinc: #111111;
-  --color-luxury-border: #1c1c1c;
-  --color-luxury-text-muted: #a1a1aa;
-  --color-luxury-gold: #d4af37;
-  --color-luxury-amber: #f59e0b;
+  /* Final palette (color-application pass). The legacy `luxury-*` names
+     are kept for back-compat — existing consumers automatically inherit
+     the new aged-gold + deeper-noir values. */
+  --color-chrome: #0A0A0B;          /* global header/footer ground */
+  --color-ivory: #F4F1EA;           /* light ground + text on dark */
+  --color-ivory-ink: #1A1A1A;
+  --color-ivory-line: #E0DACE;
+  --color-ivory-muted: #67625A;
+  --color-noir: #050505;            /* editorial ground (deeper than chrome) */
+  --color-noir-panel: #111113;      /* glass panel base */
+  --color-noir-line: #1C1C1E;
+  --color-noir-muted: #A1A19A;
+  --color-gold: #C8A24C;            /* aged gold — single shared accent */
+  --color-gold-glow: #8A6D2F;       /* warm glow behind glass, ≤12% opacity */
+
+  /* Back-compat aliases (do not consume directly in new code) */
+  --color-luxury-dark: var(--color-noir);
+  --color-luxury-zinc: var(--color-noir-panel);
+  --color-luxury-border: var(--color-noir-line);
+  --color-luxury-text-muted: var(--color-noir-muted);
+  --color-luxury-gold: var(--color-gold);
+  --color-luxury-amber: var(--color-gold);
 
   --font-serif: "Cormorant Garamond", ui-serif, Georgia, serif;
   --font-sans: "Karla", ui-sans-serif, system-ui, sans-serif;
