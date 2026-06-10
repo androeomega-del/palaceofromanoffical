@@ -495,16 +495,17 @@ export function ProductCard({
             onClick={onToggleWishlist}
             aria-label={wishlisted ? "Remove from wishlist" : "Save to wishlist"}
             aria-pressed={wishlisted}
-            className="w-9 h-9 grid place-items-center bg-canvas/85 backdrop-blur-sm hover:bg-canvas transition-colors group/heart"
+            className={`w-9 h-9 grid place-items-center backdrop-blur-sm transition-colors group/heart ${noir ? "bg-luxury-dark/70 hover:bg-luxury-dark z-[5]" : "bg-canvas/85 hover:bg-canvas"}`}
           >
             <Heart
               className={`w-4 h-4 transition-all duration-300 ${
                 wishlisted
-                  ? "fill-bronze stroke-bronze scale-110"
-                  : "stroke-ink group-hover/heart:stroke-bronze"
+                  ? (noir ? "fill-luxury-gold stroke-luxury-gold scale-110" : "fill-bronze stroke-bronze scale-110")
+                  : (noir ? "stroke-white group-hover/heart:stroke-luxury-gold" : "stroke-ink group-hover/heart:stroke-bronze")
               }`}
               strokeWidth={1.5}
             />
+
           </button>
           {/* Quick-View — desktop hover only. Opens the size/variant sheet
               without navigating away. Mobile already has the inline reveal CTA. */}
