@@ -222,7 +222,6 @@ export type NavLeaf = { label: string; to: string };
 export type NavNode = NavLeaf & { children?: NavLeaf[] };
 
 export const NAV_MEN: NavNode[] = [
-  { label: "New In", to: "/collections/new-arrivals" },
   { label: "Vacation", to: "/vacation-stylist" },
   { label: "Brands", to: "/brands" },
   {
@@ -233,14 +232,10 @@ export const NAV_MEN: NavNode[] = [
       { label: "Polos", to: "/collections/mens-polos" },
       { label: "T-Shirts", to: "/collections/mens-t-shirts" },
       { label: "Tailoring", to: "/collections/suits" },
-    ],
-  },
-  {
-    label: "Coastal",
-    to: "/collections/the-riviera-edit",
-    children: [
-      { label: "The Riviera Edit", to: "/collections/the-riviera-edit" },
-      { label: "Coastal Essentials", to: "/collections/coastal-essentials" },
+      { label: "Pants", to: "/collections/mens-pants" },
+      { label: "Shorts", to: "/collections/mens-shorts" },
+      { label: "Swim", to: "/collections/coastal-essentials" },
+      { label: "All Menswear", to: "/collections/mens-clothing" },
     ],
   },
   {
@@ -249,14 +244,32 @@ export const NAV_MEN: NavNode[] = [
     children: [
       { label: "Sneakers", to: "/collections/mens-sneakers" },
       { label: "Loafers", to: "/collections/mens-loafers" },
+      { label: "All Shoes", to: "/collections/mens-shoes" },
     ],
   },
-  { label: "Carry", to: "/collections/mens-bags" },
-  { label: "Accessories", to: "/collections/mens-accessories" },
+  {
+    label: "Carry & Accessories",
+    to: "/collections/mens-accessories",
+    children: [
+      { label: "Bags", to: "/collections/mens-bags" },
+      { label: "Belts", to: "/collections/belts" },
+      { label: "Wallets", to: "/collections/wallets" },
+      { label: "Sunglasses", to: "/collections/mens-accessories" },
+      { label: "All Accessories", to: "/collections/mens-accessories" },
+    ],
+  },
+  {
+    label: "Edits & New",
+    to: "/collections/new-arrivals",
+    children: [
+      { label: "The Riviera Edit", to: "/collections/the-riviera-edit" },
+      { label: "Coastal Essentials", to: "/collections/coastal-essentials" },
+      { label: "New In", to: "/collections/new-arrivals" },
+    ],
+  },
 ];
 
 export const NAV_WOMEN: NavNode[] = [
-  { label: "New In", to: "/collections/new-arrivals" },
   { label: "Vacation", to: "/vacation-stylist" },
   { label: "Brands", to: "/brands" },
   {
@@ -265,11 +278,13 @@ export const NAV_WOMEN: NavNode[] = [
     children: [
       { label: "Dresses", to: "/collections/womens-dresses" },
       { label: "Swim", to: "/collections/womens-swim" },
+      { label: "All Womenswear", to: "/collections/womens-clothing" },
     ],
   },
   { label: "Shoes", to: "/collections/womens-shoes" },
-  { label: "Carry", to: "/collections/womens-bags" },
+  { label: "Bags", to: "/collections/womens-bags" },
   { label: "Fine Accessories", to: "/collections/womens-accessories" },
+  { label: "New In", to: "/collections/new-arrivals" },
 ];
 
 export function navForDept(dept: "men" | "women"): NavNode[] {

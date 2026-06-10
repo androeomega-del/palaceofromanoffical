@@ -1,68 +1,190 @@
 /**
- * Desktop category rail (row 2 of the Farfetch-style header).
+ * Desktop top-level hover mega menu — Mr Porter / SSENSE pattern.
  *
- * Renders, for the active department, a horizontal list of rail items:
+ *   MEN · WOMEN · BRANDS · VACATION
  *
- *   Sale · New In · Vacation · Brands · {dept.columns[].heading...}
+ * - MEN, WOMEN, BRANDS each open a full-bleed dark "After Dark" panel on
+ *   hover (with a ~120 ms intent delay; closes after a short grace).
+ * - VACATION is a click-through to /vacation-stylist; no dropdown.
+ * - No SALE item (no sale collection exists in the catalog).
  *
- * Hover/focus behaviour:
- *   - Sale / New In / Vacation: plain link, no panel.
- *   - Brands: full-bleed megamenu panel — alphabetical brand list + 2 hero
- *     tiles (D&G + Pucci) sourced from `HERO_BRANDS`.
- *   - Each department column (Clothing, Shoes, Bags, …): panel listing the
- *     column's live sub-collections + that department's editorial feature
- *     tile on the right.
+ * Verified-live Shopify handles only. Every link in the panels resolves to
+ * an existing collection page; if a link in this file ever returns 404 it
+ * should be removed here, not silently substituted at runtime.
  *
- * Voice: ink/canvas/bronze. Sale rendered in bronze (PoR's red-equivalent).
- * Only live Shopify handles are linked; rail items whose target/column is
- * empty for the active dept are skipped — never a broken link.
+ * Keyboard: top items are focusable, Enter/Space opens, Escape closes.
+ * Mouse: hover opens after the intent delay, mouse-leave closes after a
+ * short grace so diagonal travel into the panel doesn't dismiss it.
+ *
+ * Editorial image slot (rightmost column) is sourced from a featured
+ * collection per panel; renders nothing if the query has no products yet.
  */
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { fetchCollections, fetchVendorIndex, type ShopifyCollection } from "@/lib/shopify";
+import { fetchCollection } from "@/lib/shopify";
 import {
-  buildBrandList,
-  groupBrandsForMenu,
-  vendorSlug,
-  HERO_BRANDS,
-  navForDept,
-  type NavNode,
+  VERIFIED_LIVE_BRANDS,
+  brandCollectionHandle,
+  isAllowedLuxuryBrand,
 } from "@/lib/nav-config";
-import { useDeptStore, type Dept } from "@/stores/dept-store";
 
-/* ────────────────────────── public component ────────────────────────── */
+/* ────────────────────────── panel data ────────────────────────── */
+
+type PanelLink = { label: string; to: string };
+type PanelColumn = { heading: string; items: PanelLink[] };
+type Panel = {
+  key: "men" | "women" | "brands";
+  label: string;
+  to: string;
+  columns: PanelColumn[];
+  /** Shopify collection handle whose first product image becomes the editorial tile. */
+  featureHandle: string;
+  featureEyebrow: string;
+  featureTitle: string;
+  featureTo: string;
+};
+
+const MEN_PANEL: Panel = {
+  key: "men",
+  label: "Men",
+  to: "/men",
+  columns: [
+    {
+      heading: "Apparel",
+      items: [
+        { label: "Shirts", to: "/collections/mens-shirts" },
+        { label: "Polos", to: "/collections/mens-polos" },
+        { label: "T-Shirts", to: "/collections/mens-t-shirts" },
+        { label: "Tailoring", to: "/collections/suits" },
+        { label: "Pants", to: "/collections/mens-pants" },
+        { label: "Shorts", to: "/collections/mens-shorts" },
+        { label: "Swim", to: "/collections/coastal-essentials" },
+        { label: "All Menswear", to: "/collections/mens-clothing" },
+      ],
+    },
+    {
+      heading: "Shoes",
+      items: [
+        { label: "Sneakers", to: "/collections/mens-sneakers" },
+        { label: "Loafers", to: "/collections/mens-loafers" },
+        { label: "All Shoes", to: "/collections/mens-shoes" },
+      ],
+    },
+    {
+      heading: "Carry & Accessories",
+      items: [
+        { label: "Bags", to: "/collections/mens-bags" },
+        { label: "Belts", to: "/collections/belts" },
+        { label: "Wallets", to: "/collections/wallets" },
+        { label: "Sunglasses", to: "/collections/mens-accessories" },
+        { label: "All Accessories", to: "/collections/mens-accessories" },
+      ],
+    },
+    {
+      heading: "Edits & New",
+      items: [
+        { label: "The Riviera Edit", to: "/collections/the-riviera-edit" },
+        { label: "Coastal Essentials", to: "/collections/coastal-essentials" },
+        { label: "New In", to: "/collections/new-arrivals" },
+      ],
+    },
+  ],
+  featureHandle: "the-riviera-edit",
+  featureEyebrow: "The Riviera Edit",
+  featureTitle: "Sharp lines, quiet codes.",
+  featureTo: "/collections/the-riviera-edit",
+};
+
+const WOMEN_PANEL: Panel = {
+  key: "women",
+  label: "Women",
+  to: "/women",
+  columns: [
+    {
+      heading: "Apparel",
+      items: [
+        { label: "Dresses", to: "/collections/womens-dresses" },
+        { label: "Swim", to: "/collections/womens-swim" },
+        { label: "All Womenswear", to: "/collections/womens-clothing" },
+      ],
+    },
+    {
+      heading: "Shoes",
+      items: [{ label: "All Shoes", to: "/collections/womens-shoes" }],
+    },
+    {
+      heading: "Carry",
+      items: [{ label: "Bags", to: "/collections/womens-bags" }],
+    },
+    {
+      heading: "Fine Accessories",
+      items: [{ label: "All Accessories", to: "/collections/womens-accessories" }],
+    },
+    {
+      heading: "New",
+      items: [{ label: "New In", to: "/collections/new-arrivals" }],
+    },
+  ],
+  featureHandle: "womens-dresses",
+  featureEyebrow: "The Evening Edit",
+  featureTitle: "A study in considered dressing.",
+  featureTo: "/collections/womens-clothing",
+};
+
+const FEATURED_BRANDS = [
+  "Brunello Cucinelli",
+  "Dolce & Gabbana",
+  "Saint Laurent",
+  "Versace",
+  "Balenciaga",
+  "Gucci",
+  "Fendi",
+  "Prada",
+  "Burberry",
+  "Tom Ford",
+  "Givenchy",
+  "Chloé",
+];
+
+const ALL_BRANDS_TAIL = [
+  "Ferragamo",
+  "Jacquemus",
+  "Balmain",
+  "Alexander McQueen",
+  "Maison Margiela",
+  "Off-White",
+  "Moschino",
+  "Jimmy Choo",
+  "Kenzo",
+  "Moncler",
+  "Valentino",
+];
+
+/* ────────────────────────── component ────────────────────────── */
+
+type Key = "men" | "women" | "brands";
 
 export function DesktopCategoryRail() {
-  const dept = useDeptStore((s) => s.dept);
-  const [openKey, setOpenKey] = useState<string | null>(null);
+  const [openKey, setOpenKey] = useState<Key | null>(null);
+  const openTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Brands megamenu still pulls live vendor counts for hero tiles.
-  const { data: liveCollections } = useQuery({
-    queryKey: ["collections-all"],
-    queryFn: () => fetchCollections(500),
-    staleTime: 5 * 60_000,
-  });
-  const { data: brands } = useQuery({
-    queryKey: ["nav-brand-index"],
-    queryFn: () => fetchVendorIndex(),
-    staleTime: 10 * 60_000,
-    select: (rows) => buildBrandList(rows),
-  });
-
-  const items: NavNode[] = useMemo(() => navForDept(dept), [dept]);
-
-  const openNow = useCallback((key: string) => {
+  const scheduleOpen = useCallback((k: Key) => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
-    setOpenKey(key);
+    if (openTimer.current) clearTimeout(openTimer.current);
+    openTimer.current = setTimeout(() => setOpenKey(k), 120);
+  }, []);
+  const openNow = useCallback((k: Key) => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    if (openTimer.current) clearTimeout(openTimer.current);
+    setOpenKey(k);
   }, []);
   const scheduleClose = useCallback(() => {
+    if (openTimer.current) clearTimeout(openTimer.current);
     if (closeTimer.current) clearTimeout(closeTimer.current);
-    closeTimer.current = setTimeout(() => setOpenKey(null), 120);
+    closeTimer.current = setTimeout(() => setOpenKey(null), 140);
   }, []);
-
-  useEffect(() => setOpenKey(null), [dept]);
 
   useEffect(() => {
     if (!openKey) return;
@@ -73,85 +195,361 @@ export function DesktopCategoryRail() {
     return () => window.removeEventListener("keydown", onKey);
   }, [openKey]);
 
+  const items: Array<{ key: Key | "vacation"; label: string; to: string }> =
+    useMemo(
+      () => [
+        { key: "men", label: "Men", to: "/men" },
+        { key: "women", label: "Women", to: "/women" },
+        { key: "brands", label: "Brands", to: "/brands" },
+        { key: "vacation", label: "Vacation", to: "/vacation-stylist" },
+      ],
+      [],
+    );
+
   return (
     <div className="relative" onMouseLeave={scheduleClose}>
       <nav
-        aria-label={`${dept === "men" ? "Men" : "Women"} categories`}
-        className="flex items-center gap-7 text-[12px] tracking-[0.02em] text-ink"
+        aria-label="Primary"
+        className="flex items-center gap-9 text-[12px] uppercase tracking-[0.28em] text-ink"
       >
-        {items.map((item) => {
-          if (item.label === "Brands") {
+        {items.map((it) => {
+          if (it.key === "vacation") {
             return (
-              <RailTrigger
-                key="brands"
-                label="Brands"
-                to="/brands"
-                isOpen={openKey === "brands"}
-                onOpen={() => openNow("brands")}
-                onClose={() => setOpenKey(null)}
+              <Link
+                key="vacation"
+                to={it.to}
+                onMouseEnter={() => {
+                  if (openTimer.current) clearTimeout(openTimer.current);
+                  scheduleClose();
+                }}
+                className="whitespace-nowrap py-3 transition-colors text-ink hover:text-bronze"
+                data-nav-item="Vacation"
+                data-surface="mega_menu"
               >
-                <BrandsPanel
-                  brands={brands ?? []}
-                  liveCollections={liveCollections ?? []}
-                  onMouseEnter={() => openNow("brands")}
-                  onMouseLeave={scheduleClose}
-                />
-              </RailTrigger>
+                {it.label}
+              </Link>
             );
           }
-          if (item.children && item.children.length > 0) {
-            return (
-              <RailTrigger
-                key={item.label}
-                label={item.label}
-                to={item.to}
-                isOpen={openKey === item.label}
-                onOpen={() => openNow(item.label)}
-                onClose={() => setOpenKey(null)}
+          const k = it.key as Key;
+          const isOpen = openKey === k;
+          return (
+            <div
+              key={k}
+              className="relative"
+              onMouseEnter={() => scheduleOpen(k)}
+              onFocus={() => openNow(k)}
+            >
+              <a
+                href={it.to}
+                aria-haspopup="true"
+                aria-expanded={isOpen}
+                onClick={() => setOpenKey(null)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    openNow(k);
+                  }
+                }}
+                className={`whitespace-nowrap py-3 transition-colors ${
+                  isOpen ? "text-bronze" : "text-ink hover:text-bronze"
+                }`}
+                data-nav-item={it.label}
+                data-surface="mega_menu"
               >
-                <SimpleDropdown
-                  parent={item}
-                  onMouseEnter={() => openNow(item.label)}
-                  onMouseLeave={scheduleClose}
-                />
-              </RailTrigger>
-            );
-          }
-          return <RailLink key={item.label} label={item.label} to={item.to} />;
+                {it.label}
+              </a>
+            </div>
+          );
         })}
       </nav>
+
+      {openKey === "men" && (
+        <CategoryPanel
+          panel={MEN_PANEL}
+          onMouseEnter={() => openNow("men")}
+          onMouseLeave={scheduleClose}
+        />
+      )}
+      {openKey === "women" && (
+        <CategoryPanel
+          panel={WOMEN_PANEL}
+          onMouseEnter={() => openNow("women")}
+          onMouseLeave={scheduleClose}
+        />
+      )}
+      {openKey === "brands" && (
+        <BrandsPanel
+          onMouseEnter={() => openNow("brands")}
+          onMouseLeave={scheduleClose}
+        />
+      )}
     </div>
   );
 }
 
-/* ────────────────────────── simple dropdown ────────────────────────── */
+/* ────────────────────────── panels ────────────────────────── */
 
-function SimpleDropdown({
-  parent,
+function PanelShell({
+  ariaLabel,
   onMouseEnter,
   onMouseLeave,
+  children,
 }: {
-  parent: NavNode;
+  ariaLabel: string;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
+  children: React.ReactNode;
 }) {
   return (
     <div
       role="region"
-      aria-label={`${parent.label} navigation`}
+      aria-label={ariaLabel}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      className="absolute left-0 top-full z-40 mt-0 min-w-[220px] bg-canvas border border-ink/10 shadow-[0_24px_60px_-30px_rgba(0,0,0,0.18)]"
+      className="fixed left-0 right-0 top-[calc(var(--header-row1)+var(--header-row2))] z-40 border-t border-white/5 shadow-[0_40px_80px_-40px_rgba(0,0,0,0.6)]"
+      style={{ background: "#0A0A0A", color: "#F4F1EC" }}
     >
-      <ul className="flex flex-col py-3">
-        {parent.children!.map((c) => (
-          <li key={c.to}>
-            <a
-              href={c.to}
-              className="block px-5 py-2 text-[13px] font-light text-ink/80 hover:text-ink hover:bg-ink/[0.03] transition-colors"
-              data-nav-item={c.label}
+      <div className="max-w-screen-2xl mx-auto px-12 py-12">{children}</div>
+    </div>
+  );
+}
+
+function CategoryPanel({
+  panel,
+  onMouseEnter,
+  onMouseLeave,
+}: {
+  panel: Panel;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
+}) {
+  const { data: feature } = useQuery({
+    queryKey: ["mega-feature", panel.featureHandle],
+    queryFn: () => fetchCollection(panel.featureHandle, 1),
+    staleTime: 10 * 60_000,
+    refetchOnWindowFocus: false,
+  });
+  const img = feature?.image ?? feature?.products?.edges?.[0]?.node?.images?.edges?.[0]?.node ?? null;
+
+  return (
+    <PanelShell
+      ariaLabel={`${panel.label} navigation`}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
+      <div className="grid grid-cols-[repeat(4,minmax(0,1fr))_minmax(280px,22%)] gap-12">
+        {panel.columns.map((col) => (
+          <div key={col.heading} className="flex flex-col gap-5">
+            <p
+              className="text-[10px] uppercase tracking-[0.32em]"
+              style={{ color: "rgba(212,175,108,0.85)" }}
             >
-              {c.label}
+              {col.heading}
+            </p>
+            <ul className="flex flex-col gap-3">
+              {col.items.map((item) => (
+                <li key={item.to}>
+                  <a
+                    href={item.to}
+                    className="text-[13px] font-light tracking-[0.01em] transition-colors"
+                    style={{ color: "rgba(244,241,236,0.82)" }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.color = "rgba(212,175,108,1)")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.color = "rgba(244,241,236,0.82)")
+                    }
+                    data-nav-item={item.label}
+                    data-surface="mega_menu"
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+
+        {/* pad to fill 4 slots when fewer columns */}
+        {Array.from({ length: Math.max(0, 4 - panel.columns.length) }).map(
+          (_, i) => (
+            <div key={`pad-${i}`} aria-hidden="true" />
+          ),
+        )}
+
+        <FeatureTile
+          imgUrl={img?.url}
+          imgAlt={img?.altText ?? panel.featureTitle}
+          eyebrow={panel.featureEyebrow}
+          title={panel.featureTitle}
+          to={panel.featureTo}
+        />
+      </div>
+    </PanelShell>
+  );
+}
+
+function FeatureTile({
+  imgUrl,
+  imgAlt,
+  eyebrow,
+  title,
+  to,
+}: {
+  imgUrl?: string;
+  imgAlt: string;
+  eyebrow: string;
+  title: string;
+  to: string;
+}) {
+  if (!imgUrl) {
+    return (
+      <a
+        href={to}
+        className="group relative flex flex-col justify-end aspect-[4/5] p-5 border border-white/10 transition-colors"
+        style={{ background: "#111" }}
+      >
+        <p
+          className="text-[10px] uppercase tracking-[0.32em] mb-2"
+          style={{ color: "rgba(212,175,108,0.9)" }}
+        >
+          {eyebrow}
+        </p>
+        <p
+          className="font-serif text-[19px] leading-[1.2] text-balance"
+          style={{ color: "#F4F1EC" }}
+        >
+          {title}
+        </p>
+      </a>
+    );
+  }
+  return (
+    <a
+      href={to}
+      className="group relative block aspect-[4/5] overflow-hidden"
+      style={{ background: "#111" }}
+    >
+      <img
+        src={imgUrl}
+        alt={imgAlt}
+        loading="lazy"
+        className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 p-5">
+        <p
+          className="text-[10px] uppercase tracking-[0.32em] mb-2"
+          style={{ color: "rgba(212,175,108,0.95)" }}
+        >
+          {eyebrow}
+        </p>
+        <p
+          className="font-serif text-[19px] leading-[1.2] text-balance"
+          style={{ color: "#F4F1EC" }}
+        >
+          {title}
+        </p>
+      </div>
+    </a>
+  );
+}
+
+function BrandsPanel({
+  onMouseEnter,
+  onMouseLeave,
+}: {
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
+}) {
+  // Source the brand list from the verified-live allowlist so this stays
+  // in sync with the /brands index. We only render brands explicitly named
+  // in the spec AND present in VERIFIED_LIVE_BRANDS.
+  const featured = useMemo(
+    () =>
+      FEATURED_BRANDS.filter(isAllowedLuxuryBrand).filter((b) =>
+        VERIFIED_LIVE_BRANDS.includes(b),
+      ),
+    [],
+  );
+  const all = useMemo(
+    () =>
+      ALL_BRANDS_TAIL.filter(isAllowedLuxuryBrand).filter((b) =>
+        VERIFIED_LIVE_BRANDS.includes(b),
+      ),
+    [],
+  );
+
+  const { data: feature } = useQuery({
+    queryKey: ["mega-feature", "brand-dolce-gabbana"],
+    queryFn: () => fetchCollection("dolce-gabbana", 1),
+    staleTime: 10 * 60_000,
+    refetchOnWindowFocus: false,
+  });
+  const img = feature?.image ?? feature?.products?.edges?.[0]?.node?.images?.edges?.[0]?.node ?? null;
+
+  return (
+    <PanelShell
+      ariaLabel="Brands navigation"
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
+      <div className="grid grid-cols-[1fr_1fr_minmax(280px,22%)] gap-12">
+        <BrandColumn heading="Featured Brands" brands={featured} />
+        <BrandColumn heading="All Brands" brands={all} />
+        <FeatureTile
+          imgUrl={img?.url}
+          imgAlt={img?.altText ?? "Dolce & Gabbana"}
+          eyebrow="House Spotlight"
+          title="Dolce & Gabbana"
+          to={`/collections/${brandCollectionHandle("Dolce & Gabbana")}`}
+        />
+      </div>
+      <div className="mt-8 pt-6 border-t border-white/10 flex justify-end">
+        <Link
+          to="/brands"
+          className="text-[11px] uppercase tracking-[0.32em]"
+          style={{ color: "rgba(212,175,108,1)" }}
+        >
+          View the house directory →
+        </Link>
+      </div>
+    </PanelShell>
+  );
+}
+
+function BrandColumn({
+  heading,
+  brands,
+}: {
+  heading: string;
+  brands: string[];
+}) {
+  return (
+    <div className="flex flex-col gap-5">
+      <p
+        className="text-[10px] uppercase tracking-[0.32em]"
+        style={{ color: "rgba(212,175,108,0.85)" }}
+      >
+        {heading}
+      </p>
+      <ul className="grid grid-cols-2 gap-x-8 gap-y-3">
+        {brands.map((b) => (
+          <li key={b}>
+            <a
+              href={`/collections/${brandCollectionHandle(b)}`}
+              className="text-[13px] font-light transition-colors"
+              style={{ color: "rgba(244,241,236,0.82)" }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.color = "rgba(212,175,108,1)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.color = "rgba(244,241,236,0.82)")
+              }
+              data-nav-item={b}
+              data-surface="mega_menu"
+            >
+              {b}
             </a>
           </li>
         ))}
@@ -160,237 +558,13 @@ function SimpleDropdown({
   );
 }
 
-
-/* ────────────────────────── primitives ────────────────────────── */
-
-function RailLink({
-  label,
-  to,
-  accent,
-}: {
-  label: string;
-  to: string;
-  accent?: boolean;
-}) {
-  return (
-    <a
-      href={to}
-      className={`whitespace-nowrap py-3 transition-colors ${
-        accent ? "text-bronze hover:text-ink" : "text-ink hover:text-bronze"
-      }`}
-    >
-      {label}
-    </a>
-  );
-}
-
-function RailTrigger({
-  label,
-  to,
-  isOpen,
-  onOpen,
-  onClose,
-  children,
-}: {
-  label: string;
-  to: string;
-  isOpen: boolean;
-  onOpen: () => void;
-  onClose: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <div
-      className="relative"
-      onMouseEnter={onOpen}
-      onFocus={onOpen}
-    >
-      <a
-        href={to}
-        aria-haspopup="true"
-        aria-expanded={isOpen}
-        onClick={() => onClose()}
-        className={`whitespace-nowrap py-3 transition-colors ${
-          isOpen ? "text-bronze" : "text-ink hover:text-bronze"
-        }`}
-      >
-        {label}
-      </a>
-      {isOpen && children}
-    </div>
-  );
-}
-
-/* CategoryPanel removed — dropdowns now use SimpleDropdown. */
-
-
-/* ────────────────────────── Brands panel ────────────────────────── */
-
-function BrandsPanel({
-  brands,
-  liveCollections,
-  onMouseEnter,
-  onMouseLeave,
-}: {
-  brands: ReturnType<typeof buildBrandList>;
-  liveCollections: ShopifyCollection[];
-  onMouseEnter: () => void;
-  onMouseLeave: () => void;
-}) {
-  const grouped = groupBrandsForMenu(brands);
-  const liveVendors = useMemo(
-    () => new Set(brands.map((b) => b.vendor.toLowerCase())),
-    [brands],
-  );
-  // Only render hero tiles for brands actually in the catalog.
-  const heroTiles = HERO_BRANDS.filter((h) =>
-    liveVendors.has(h.vendor.toLowerCase()),
-  );
-  const heroImg = (vendor: string) => {
-    const slug = vendorSlug(vendor);
-    return (
-      liveCollections.find((c) => c.handle === `brand-${slug}`)?.image ??
-      liveCollections.find((c) => c.handle === "best-selling-brands")?.image
-    );
-  };
-
-  return (
-    <div
-      role="region"
-      aria-label="Brands navigation"
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      className="fixed left-0 right-0 top-[calc(var(--header-row1)+var(--header-row2))] z-40 bg-canvas border-t border-ink/10 shadow-[0_40px_80px_-40px_rgba(0,0,0,0.12)]"
-    >
-      <div className="max-w-screen-2xl mx-auto px-12 py-12 grid grid-cols-[1fr_minmax(360px,32%)] gap-16">
-        <div>
-          <div className="flex items-baseline justify-between pb-3 mb-6 border-b border-ink/15">
-            <p className="font-serif italic text-[14px] tracking-[0.04em] text-bronze">
-              The House Directory
-            </p>
-            <Link
-              to="/brands"
-              className="text-[11px] uppercase tracking-[0.3em] text-ink hover:text-bronze"
-            >
-              View all →
-            </Link>
-          </div>
-          <div
-            className="grid gap-x-12 gap-y-2"
-            style={{
-              gridTemplateColumns: `repeat(${Math.max(grouped.length, 1)}, minmax(0, 1fr))`,
-            }}
-          >
-            {grouped.length === 0 ? (
-              <p className="text-[12px] font-light italic text-muted-foreground">
-                Loading houses…
-              </p>
-            ) : (
-              grouped.map((col) => (
-                <div key={col.heading} className="flex flex-col gap-3">
-                  <p className="text-[10px] uppercase tracking-[0.3em] text-ink/45">
-                    {col.heading}
-                  </p>
-                  <ul className="flex flex-col gap-2">
-                    {col.items.map((b) => (
-                      <li key={b.vendor}>
-                        <Link
-                          to="/brand/$vendor"
-                          params={{ vendor: vendorSlug(b.vendor) }}
-                          className="text-[13px] font-light text-ink/75 hover:text-ink transition-colors inline-block normal-case tracking-normal leading-relaxed"
-                        >
-                          {b.vendor}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-5">
-          {heroTiles.map((h) => {
-            const img = heroImg(h.vendor);
-            return (
-              <a
-                key={h.vendor}
-                href={h.to}
-                className="group relative block aspect-[3/4] overflow-hidden bg-muted"
-              >
-                {img && (
-                  <img
-                    src={img.url}
-                    alt={img.altText ?? h.title}
-                    loading="lazy"
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
-                  />
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/25 to-transparent" />
-                <div className="absolute inset-x-0 bottom-0 p-5">
-                  <p className="text-[9px] uppercase tracking-[0.35em] text-canvas/75 mb-2">
-                    {h.eyebrow}
-                  </p>
-                  <p className="font-serif text-[19px] leading-[1.15] text-canvas text-balance">
-                    {h.title}
-                  </p>
-                </div>
-              </a>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ────────────────────────── tab strip ────────────────────────── */
+/* ────────────────────────── department tabs (legacy export) ────────────────────────── */
 
 /**
- * Department tab strip rendered at the top-left of row 1 in the header.
- * Width is intentionally compact so it sits beside the centered logo.
+ * Kept as a no-op export so legacy imports don't break. The new top-level
+ * mega rail surfaces Men/Women directly, so the standalone dept tab strip
+ * is no longer mounted in the header.
  */
 export function DepartmentTabs() {
-  const dept = useDeptStore((s) => s.dept);
-  const setDept = useDeptStore((s) => s.setDept);
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const TABS: { key: Dept; label: string; to: string }[] = [
-    { key: "women", label: "Women", to: "/women" },
-    { key: "men", label: "Men", to: "/men" },
-  ];
-  // Prefer URL as source of truth on dept landing pages so the underline
-  // is correct on first paint (the dept store hydrates in useEffect).
-  const urlDept: Dept | null = pathname.startsWith("/men")
-    ? "men"
-    : pathname.startsWith("/women")
-      ? "women"
-      : null;
-  const effective: Dept = urlDept ?? dept;
-  return (
-    <div className="flex items-stretch gap-6">
-      {TABS.map((t) => {
-        const active = effective === t.key;
-        return (
-          <Link
-            key={t.key}
-            to={t.to}
-            onClick={() => setDept(t.key)}
-            className={`relative py-2 text-[11px] uppercase tracking-[0.3em] transition-colors ${
-              active ? "text-ink" : "text-ink/45 hover:text-ink"
-            }`}
-          >
-            {t.label}
-            {active && (
-              <span
-                aria-hidden="true"
-                className="absolute left-0 right-0 -bottom-[2px] h-px bg-ink"
-              />
-            )}
-          </Link>
-        );
-      })}
-    </div>
-  );
+  return null;
 }
-

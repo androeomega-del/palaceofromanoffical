@@ -19,10 +19,7 @@ import { useConciergeStore } from "@/stores/concierge-store";
 
 import { CartDrawer } from "@/components/cart-drawer";
 import { ReducedMotionToggle } from "@/components/reduced-motion-toggle";
-import {
-  DesktopCategoryRail,
-  DepartmentTabs,
-} from "@/components/desktop-rail";
+import { DesktopCategoryRail } from "@/components/desktop-rail";
 import { MobileFarfetchMenu } from "@/components/mobile-farfetch-menu";
 import { SearchOverlay } from "@/components/search-overlay";
 import { DeliverToButton } from "@/components/deliver-to-button";
@@ -134,9 +131,8 @@ export function SiteHeader() {
             >
               <Menu className="w-5 h-5" strokeWidth={1.25} />
             </button>
-            <div className="hidden lg:flex">
-              <DepartmentTabs />
-            </div>
+            <div className="hidden lg:flex" />
+
           </div>
 
           {/* Center: serif wordmark */}
