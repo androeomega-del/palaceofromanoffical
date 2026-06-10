@@ -1665,6 +1665,10 @@ function ProductView({
         <RecentlyViewedRail excludeHandle={product.handle} />
       </div>
 
+      {/* Capsule Stylist overlay drawer — opened from the PDP trigger above. */}
+      <CapsuleStylistDrawer />
+
+
       {/* Sticky mobile Add-to-Bag — appears once inline ATC is scrolled past */}
       <div
         className={`fixed inset-x-0 bottom-0 z-40 border-t border-[var(--studio-rule)] bg-[var(--studio-bg)]/95 backdrop-blur-md shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.18)] motion-reduce:transition-none transition-[transform,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
