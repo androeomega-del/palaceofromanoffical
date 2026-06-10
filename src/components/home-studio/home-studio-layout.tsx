@@ -62,81 +62,80 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
     <div className="w-full bg-ink text-canvas">
       {isStandalone && <PalaceHeader onOpenConcierge={openConcierge} />}
 
-      {/* ───────────── Section 1 — Hero (video) ───────────── */}
-      <section className="relative w-full overflow-hidden" style={{ contain: "layout", backgroundColor: "#050505" }}>
-        <div className="relative w-full" style={{ aspectRatio: "16 / 9", minHeight: "78vh", backgroundColor: "#050505" }}>
-          <video
-            src={heroVideo.url}
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            className="absolute inset-0 w-full h-full object-cover"
-            style={{ backgroundColor: "#050505" }}
-            aria-hidden="true"
-          />
-          {/* Noir overlay: deepest at the text edge (bottom-left). */}
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background:
-                "linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.45) 40%, rgba(0,0,0,0.15) 75%, rgba(0,0,0,0.05) 100%)",
-            }}
-            aria-hidden="true"
-          />
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background:
-                "linear-gradient(to right, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0) 100%)",
-            }}
-            aria-hidden="true"
-          />
+      {/* ───────────── Section 1 — Hero (video, wet-gloss noir) ───────────── */}
+      <section
+        className="hero-noir relative w-full overflow-hidden"
+        style={{ height: "100svh", minHeight: "640px", contain: "layout" }}
+      >
+        <video
+          src={heroVideo.url}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          className="hero-noir-video absolute inset-0 w-full h-full object-cover"
+          style={{ backgroundColor: "#050506", zIndex: 0 }}
+          aria-hidden="true"
+        />
+        {/* Cinematic grade stack */}
+        <div className="hero-noir-grade-base" aria-hidden="true" />
+        <div className="hero-noir-grade-bottom" aria-hidden="true" />
+        <div className="hero-noir-grade-top" aria-hidden="true" />
+        <div className="hero-noir-grade-edge" aria-hidden="true" />
+        <div className="hero-noir-grain" aria-hidden="true" />
 
-          <div className="absolute inset-x-0 bottom-0 px-6 md:px-14 pb-12 md:pb-24">
-            <div className="max-w-screen-2xl mx-auto">
-              <div className="max-w-3xl text-canvas">
-                <h1 className="font-serif font-light tracking-[-0.015em] text-balance text-[12vw] md:text-[5.5vw] leading-[0.95]">
-                  Dress for <em className="italic">after</em> dark.
-                </h1>
-                <p className="mt-6 md:mt-8 max-w-xl text-base md:text-lg leading-relaxed font-light text-canvas/85">
-                  Silk that catches candlelight, linen undone by evening —
-                  Dolce &amp; Gabbana, Saint Laurent, Versace, and the maisons
-                  that understand desire. New, current-season, shipped
-                  worldwide from Europe.
-                </p>
-                <div className="mt-8 md:mt-10 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
-                  <Link
-                    to="/men"
-                    className="inline-flex items-center justify-center gap-3 px-7 py-3 bg-canvas text-ink text-[11px] uppercase tracking-[0.32em] transition-opacity hover:opacity-90"
-                  >
-                    Shop Menswear
-                    <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={1.25} />
-                  </Link>
-                  <Link
-                    to="/women"
-                    className="inline-flex items-center justify-center gap-3 px-7 py-3 border border-canvas/70 text-canvas text-[11px] uppercase tracking-[0.32em] transition-colors hover:bg-canvas hover:text-ink"
-                  >
-                    Shop Womenswear
-                    <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={1.25} />
-                  </Link>
-                </div>
-                <div className="mt-5">
-                  <button
-                    type="button"
-                    onClick={openConcierge}
-                    className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.28em] text-canvas/80 hover:text-canvas transition-colors"
-                  >
-                    Or begin with the Concierge
-                    <ArrowUpRight className="w-3 h-3" strokeWidth={1.25} />
-                  </button>
-                </div>
+        <div
+          className="absolute inset-x-0 bottom-0 px-6 md:px-20 pb-14 md:pb-[88px]"
+          style={{ zIndex: 20 }}
+        >
+          <div className="max-w-screen-2xl mx-auto">
+            <div className="max-w-[720px] mx-auto md:mx-0 text-center md:text-left">
+              <h1
+                className="hero-noir-title hero-noir-rise-1 font-serif text-balance"
+                style={{ fontSize: "clamp(37.9px, 5.4vw, 67.3px)" }}
+              >
+                Dress for <em className="italic">after</em> dark.
+              </h1>
+              <p
+                className="hero-noir-rise-2 mt-6 font-light text-[14px] md:text-[15px] leading-[1.65] mx-auto md:mx-0"
+                style={{ color: "#D8D6CE", letterSpacing: "0.01em", maxWidth: "52ch" }}
+              >
+                Silk that catches candlelight, linen undone by evening —
+                Dolce &amp; Gabbana, Saint Laurent, Versace, and the maisons
+                that understand desire. New, current-season, shipped
+                worldwide from Europe.
+              </p>
+              <div className="hero-noir-rise-3 mt-9 flex flex-col sm:flex-row sm:items-center gap-4">
+                <Link
+                  to="/men"
+                  className="hero-noir-cta-primary inline-flex items-center justify-center text-[13px] uppercase"
+                  style={{ height: "54px", paddingInline: "40px" }}
+                >
+                  Shop Menswear
+                </Link>
+                <Link
+                  to="/women"
+                  className="hero-noir-cta-ghost inline-flex items-center justify-center text-[13px] uppercase"
+                  style={{ height: "54px", paddingInline: "40px", letterSpacing: "0.22em", fontWeight: 600 }}
+                >
+                  Shop Womenswear
+                </Link>
+              </div>
+              <div className="hero-noir-rise-3 mt-6">
+                <button
+                  type="button"
+                  onClick={openConcierge}
+                  className="hero-noir-tertiary inline-flex items-center gap-2 text-[12px] uppercase"
+                >
+                  Or begin with the Concierge <span className="arrow">→</span>
+                </button>
               </div>
             </div>
           </div>
         </div>
       </section>
+
 
       {/* ───────────── Section 1.5 — Shop by Category ───────────── */}
       <ShopByCategorySection />
