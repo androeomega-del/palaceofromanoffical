@@ -63,8 +63,8 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
       {isStandalone && <PalaceHeader onOpenConcierge={openConcierge} />}
 
       {/* ───────────── Section 1 — Hero (video) ───────────── */}
-      <section className="relative w-full overflow-hidden bg-ink" style={{ contain: "layout" }}>
-        <div className="relative w-full" style={{ aspectRatio: "16 / 9", minHeight: "78vh" }}>
+      <section className="relative w-full overflow-hidden" style={{ contain: "layout", backgroundColor: "#050505" }}>
+        <div className="relative w-full" style={{ aspectRatio: "16 / 9", minHeight: "78vh", backgroundColor: "#050505" }}>
           <video
             src={heroVideo.url}
             autoPlay
@@ -73,6 +73,7 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
             playsInline
             preload="metadata"
             className="absolute inset-0 w-full h-full object-cover"
+            style={{ backgroundColor: "#050505" }}
             aria-hidden="true"
           />
           {/* Noir overlay: deepest at the text edge (bottom-left). */}
