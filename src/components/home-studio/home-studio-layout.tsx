@@ -319,24 +319,35 @@ function EditorialSplit({
   ctaLabel: string;
   ctaTo: string;
 }) {
-  const { data } = useQuery(collectionRailQueryOptions(handle, 8));
-  const lead = data?.[0]?.node.images?.edges?.[0]?.node;
-
+  const { data: hero } = useQuery(collectionHeroImageQueryOptions(handle));
+  const { data: rail } = useQuery(collectionRailQueryOptions(handle, 8));
+  const leadProduct = rail?.[0]?.node.images?.edges?.[0]?.node ?? null;
+  const src = hero?.url ?? leadProduct?.url ?? null;
+  const alt = hero?.altText ?? leadProduct?.altText ?? headline;
 
   return (
     <section className="bg-ink">
       <div className="grid grid-cols-1 md:grid-cols-12">
-        <div className="md:col-span-7 relative bg-black">
+        <div className="md:col-span-7 relative bg-noir-panel">
           <div className="relative w-full" style={{ aspectRatio: "4 / 5" }}>
-            {lead && (
+            {src ? (
               <img
-                src={lead.url}
-                alt={lead.altText ?? headline}
+                src={src}
+                alt={alt}
                 className="absolute inset-0 w-full h-full object-cover"
                 style={{ filter: "brightness(0.78) contrast(1.05) saturate(0.95)" }}
                 loading="lazy"
                 decoding="async"
               />
+            ) : (
+              <div
+                className="absolute inset-0 grid place-items-end justify-start p-8 bg-noir-panel"
+                aria-hidden="true"
+              >
+                <span className="text-[10px] uppercase tracking-[0.4em] text-canvas/50">
+                  {eyebrow}
+                </span>
+              </div>
             )}
             <div
               className="absolute inset-0 pointer-events-none"
@@ -383,7 +394,7 @@ function EditorialTile({ handle, title }: { handle: string; title: string }) {
       className="group relative block bg-ink overflow-hidden"
       aria-label={title}
     >
-      <div className="relative w-full bg-black" style={{ aspectRatio: "3 / 4" }}>
+      <div className="relative w-full bg-noir-panel" style={{ aspectRatio: "3 / 4" }}>
         {hero?.url ? (
           <img
             src={hero.url}
@@ -392,9 +403,19 @@ function EditorialTile({ handle, title }: { handle: string; title: string }) {
             style={{ filter: "brightness(0.72) contrast(1.05) saturate(0.95)" }}
             loading="lazy"
             decoding="async"
+            onError={(e) => {
+              (e.currentTarget as HTMLImageElement).style.display = "none";
+            }}
           />
         ) : (
-          <Skeleton className="absolute inset-0 w-full h-full !rounded-none bg-canvas/5" />
+          <div
+            className="absolute inset-0 grid place-items-end justify-start p-6 bg-noir-panel"
+            aria-hidden="true"
+          >
+            <span className="text-[10px] uppercase tracking-[0.4em] text-canvas/50">
+              {title}
+            </span>
+          </div>
         )}
 
         <div
@@ -417,24 +438,37 @@ function EditorialTile({ handle, title }: { handle: string; title: string }) {
 }
 
 function WomenswearBlock() {
-  // Hand-picked hero image — "Black Polyamide Cocktail Dress" from the
-  // womens-dresses collection. Matches the "Dresses that end evenings"
-  // headline thematically; the first product in the collection is a
-  // casual dress, so we don't auto-pick lead from the rail.
-  const leadUrl =
-    "https://cdn.shopify.com/s/files/1/0785/1940/2645/files/10928006.jpg?v=1781030504";
+  // Source the hero from the live `womens-dresses` collection. The query
+  // already returns collection.image → first product's featuredImage, so
+  // we only need the noir-panel fallback for the case where both are null.
+  const { data: hero } = useQuery(
+    collectionHeroImageQueryOptions("womens-dresses"),
+  );
+  const src = hero?.url ?? null;
+  const alt = hero?.altText ?? "Palace of Roman womenswear — evening dresses";
 
   return (
-    <section className="relative w-full bg-black overflow-hidden">
+    <section className="relative w-full bg-noir-panel overflow-hidden">
       <div className="relative w-full" style={{ aspectRatio: "16 / 9", minHeight: "62vh" }}>
-        <img
-          src={leadUrl}
-          alt="Black cocktail dress — Palace of Roman womenswear"
-          className="absolute inset-0 w-full h-full object-cover"
-          style={{ filter: "brightness(0.72) contrast(1.05) saturate(0.95)" }}
-          loading="lazy"
-          decoding="async"
-        />
+        {src ? (
+          <img
+            src={src}
+            alt={alt}
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ filter: "brightness(0.72) contrast(1.05) saturate(0.95)" }}
+            loading="lazy"
+            decoding="async"
+          />
+        ) : (
+          <div
+            className="absolute inset-0 grid place-items-end justify-start p-8 bg-noir-panel"
+            aria-hidden="true"
+          >
+            <span className="text-[10px] uppercase tracking-[0.4em] text-canvas/50">
+              Womenswear
+            </span>
+          </div>
+        )}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
