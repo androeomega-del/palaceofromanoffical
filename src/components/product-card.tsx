@@ -356,7 +356,7 @@ export function ProductCard({
             fetchPriority={isAboveFold ? "high" : undefined}
             decoding="async"
             onError={() => setImgError(true)}
-            className="absolute inset-0 w-full h-full object-contain p-4 transition-opacity duration-500 group-hover:opacity-0"
+            className={`absolute inset-0 w-full h-full ${noir ? "object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105" : "object-contain p-4 transition-opacity duration-500 group-hover:opacity-0"}`}
           />
         )}
         {(!img || imgError) && (
