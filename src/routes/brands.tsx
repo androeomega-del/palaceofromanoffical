@@ -43,7 +43,7 @@ export const Route = createFileRoute("/brands")({
               item: {
                 "@type": "Brand",
                 name,
-                url: absoluteUrl(`/collections/${vendorSlug(name)}`),
+                url: absoluteUrl(`/collections/${brandCollectionHandle(name)}`),
               },
             })),
           }),
@@ -85,7 +85,7 @@ function BrandsPage() {
             <li key={name}>
               <Link
                 to="/collections/$handle"
-                params={{ handle: vendorSlug(name) }}
+                params={{ handle: brandCollectionHandle(name) }}
                 className="block border-b border-ink/5 py-3 text-sm text-ink hover:text-bronze transition-colors"
               >
                 {name}
