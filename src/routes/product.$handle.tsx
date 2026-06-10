@@ -1125,20 +1125,20 @@ function ProductView({
           )}
 
           {/* ===== Info column ===== */}
-          <div className="lg:col-span-5 lg:sticky lg:top-24 lg:self-start space-y-7 md:space-y-8">
+          <div className="lg:col-span-5 lg:sticky lg:top-24 lg:self-start space-y-7 md:space-y-8 pdp-noir-reveal-delay">
             <header className="space-y-4">
               <Link
                 to="/collections/$handle"
                 params={{ handle: vendorHandle }}
-                className="inline-block text-[10px] uppercase tracking-[0.3em] font-semibold text-[var(--studio-bronze)] hover:text-[var(--studio-ink)] transition-colors"
+                className="inline-block text-[11px] uppercase tracking-[0.32em] font-medium text-[#A1A19A] hover:text-[var(--studio-ink)] transition-colors"
               >
                 {product.vendor}
               </Link>
-              <h1 className="font-serif text-4xl md:text-5xl lg:text-[3.4rem] leading-[1.05] tracking-tight text-balance">
+              <h1 className="pdp-noir-title font-serif text-[28.4px] md:text-[37.9px] lg:text-[37.9px]">
                 {formatLuxuryTitle(product.title, product.vendor)}
               </h1>
               <div className="flex items-baseline gap-4 pt-1">
-                <span className="font-serif text-3xl font-light">{formatPrice(currentPrice)}</span>
+                <span className="text-[21.3px] tracking-[0.04em] text-[#F4F1EA] font-normal">{formatPrice(currentPrice)}</span>
                 {off > 0 && (
                   <span className="text-sm italic text-[var(--studio-bronze)] line-through decoration-[var(--studio-bronze)]/30">
                     {formatPrice(compareAt!)}
@@ -1148,14 +1148,15 @@ function ProductView({
               <p className="text-[10px] uppercase tracking-[0.25em] text-[var(--studio-muted)] font-medium">
                 {marketTaxNote(market)} · Express global delivery
               </p>
-              <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] uppercase tracking-[0.2em] text-[var(--studio-bronze)] font-semibold pt-1">
+              <p className="pdp-noir-gold flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] uppercase tracking-[0.2em] font-semibold pt-1">
                 <span>100% Authentic</span>
-                <span className="opacity-30">·</span>
+                <span className="opacity-50">·</span>
                 <span>New &amp; Sealed</span>
-                <span className="opacity-30">·</span>
+                <span className="opacity-50">·</span>
                 <span>14-Day Returns</span>
               </p>
             </header>
+
 
             {/* Variant selectors + CTA */}
             <div
