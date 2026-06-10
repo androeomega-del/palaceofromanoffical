@@ -35,10 +35,24 @@ const PRIVATE_PATH_PREFIXES = [
   "/_serverFn",
 ];
 
+const PUBLIC_HTML_CACHE_PREFIXES = [
+  "/product",
+  "/collections",
+  "/brand",
+  "/editorial",
+  "/journal",
+];
+
+function matchesPathPrefix(pathname: string, prefix: string): boolean {
+  return pathname === prefix || pathname.startsWith(`${prefix}/`);
+}
+
+function isPublicHtmlCachePath(pathname: string): boolean {
+  return pathname === "/" || PUBLIC_HTML_CACHE_PREFIXES.some((p) => matchesPathPrefix(pathname, p));
+}
+
 function isPrivatePath(pathname: string): boolean {
-  return PRIVATE_PATH_PREFIXES.some(
-    (p) => pathname === p || pathname.startsWith(`${p}/`),
-  );
+  return PRIVATE_PATH_PREFIXES.some((p) => matchesPathPrefix(pathname, p));
 }
 
 // HTML response cache policy.
@@ -72,6 +86,7 @@ const htmlCacheMiddleware = createMiddleware().server(async ({ next }) => {
       const cacheable =
         method === "GET" &&
         response.status === 200 &&
+        isPublicHtmlCachePath(pathname) &&
         !isPrivatePath(pathname);
 
       if (cacheable) {
@@ -79,6 +94,8 @@ const htmlCacheMiddleware = createMiddleware().server(async ({ next }) => {
           "cache-control",
           "public, s-maxage=300, stale-while-revalidate=86400",
         );
+        response.headers.delete("pragma");
+        response.headers.delete("expires");
         // IMPORTANT: do NOT Vary on Cookie. Shopify analytics cookies
         // (_shopify_y, _shopify_s, _y, _s, _cmp_a, etc.) are set on
         // virtually every visitor, which would make each request a
