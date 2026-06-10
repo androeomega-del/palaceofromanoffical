@@ -77,7 +77,7 @@ const STATIC_ROUTES: Array<{
   { path: "/edits/charter-capsule", changefreq: "monthly", priority: "0.6" },
   { path: "/trends/tom-ford-essentials", changefreq: "monthly", priority: "0.6" },
   { path: "/trends/dolce-gabbana-icons", changefreq: "monthly", priority: "0.6" },
-  { path: "/trends/pucci-eyewear", changefreq: "monthly", priority: "0.6" },
+  
   { path: "/campaign/mens-swim", changefreq: "weekly", priority: "0.7" },
   { path: "/journal/craftsmanship/spot-real-italian-leather", changefreq: "monthly", priority: "0.7" },
   { path: "/journal/craftsmanship/made-in-italy-vs-designed-in-italy", changefreq: "monthly", priority: "0.7" },

@@ -77,7 +77,7 @@ const COLLECTION_RECIPES: Record<string, Recipe> = {
       description: "{{description}}",
     },
     {
-      title: "Cashmere Sweaters — Loro Piana, Cucinelli & More | Palace of Roman",
+      title: "Cashmere Sweaters — Cucinelli, Tom Ford & More | Palace of Roman",
       description:
         "The cashmere edit — investment knitwear from the houses that define the category. Grades, ply counts and fits explained in our field guide.",
     },

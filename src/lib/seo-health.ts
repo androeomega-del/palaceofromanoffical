@@ -4,9 +4,9 @@
 export const HOMEPAGE_URL = "https://palaceofromanofficial.com/";
 
 export const EXPECTED = {
-  title: "Palace of Roman — Curated Luxury Fashion",
+  title: "Palace of Roman | Designer Evening & Resort Fashion",
   description:
-    "Curated luxury fashion from Gucci, Prada, Saint Laurent, Armani and 500+ designer houses. 100% authentic, shipped worldwide.",
+    "Luxury fashion for after dark — silk, evening tailoring, swim, and resort pieces from Dolce & Gabbana, Saint Laurent, Versace and more. Shipped worldwide.",
   canonical: "https://palaceofromanofficial.com/",
   ogType: "website",
   ogUrl: "https://palaceofromanofficial.com/",

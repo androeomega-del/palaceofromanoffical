@@ -1,4 +1,4 @@
-// Conservative delivery-window estimator for the BG dropship model.
+// Conservative delivery-window estimator for the partner-distribution model.
 //
 // Inputs:
 //   - origin: the BG warehouse country (IT / SE / DE)

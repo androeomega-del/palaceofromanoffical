@@ -286,7 +286,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           url: "https://palaceofromanofficial.com",
           logo: "https://palaceofromanofficial.com/brand/logo-wordmark.png",
           image: "https://palaceofromanofficial.com/brand/logo-wordmark.png",
-          description: "Curated multi-brand luxury fashion retailer offering premium designer clothing, shoes, accessories and jewelry from 500+ houses including Gucci, Prada, Armani and Versace. Ships worldwide.",
+          description: "Palace of Roman is a curated multi-brand luxury fashion retailer specializing in designer evening and resort wear for men and women. Current-season pieces from established European houses including Dolce & Gabbana, Saint Laurent, Versace, Gucci and Prada — authenticated and shipped worldwide.",
           email: "support@palaceofromanofficial.com",
           telephone: "+1-213-991-4069",
           address: {
@@ -312,10 +312,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           paymentAccepted: ["Visa", "Mastercard", "American Express", "Apple Pay", "Google Pay", "Shop Pay", "Klarna"],
           currenciesAccepted: "USD",
           knowsAbout: [
-            "Gucci", "Prada", "Louis Vuitton", "Chanel", "Hermès", "Dior", "Saint Laurent",
-            "Bottega Veneta", "Fendi", "Valentino", "Versace", "Balenciaga", "Loewe", "Givenchy",
-            "Burberry", "Off-White", "Moncler", "Stone Island", "Brunello Cucinelli", "Loro Piana",
-            "Tom Ford", "Maison Margiela", "Jacquemus", "Ami", "Acne Studios",
+            "Dolce & Gabbana", "Saint Laurent", "Versace", "Gucci", "Prada", "Balenciaga",
+            "Fendi", "Burberry", "Brunello Cucinelli", "Tom Ford", "Givenchy", "Chloé",
+            "Ferragamo", "Jacquemus", "Balmain", "Alexander McQueen", "Maison Margiela",
+            "Off-White", "Moschino", "Jimmy Choo", "Kenzo", "Moncler", "Valentino",
+            "Bottega Veneta",
           ],
           sameAs: [
             "https://www.instagram.com/palaceofroman/",

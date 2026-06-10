@@ -1,60 +1,19 @@
 # Palace of Roman
 
-> Curated multi-brand luxury fashion retailer offering premium designer clothing, shoes, accessories and jewelry from 500+ houses including Gucci, Prada, Calvin Klein, Armani and Versace. Ships worldwide.
+> Palace of Roman is a curated multi-brand luxury fashion retailer specializing in designer evening and resort wear for men and women. We offer current-season clothing, shoes, bags, and accessories from established European houses, sourced through authorized distribution and shipped worldwide.
 
-Palace of Roman is an online luxury fashion boutique. Pieces are sourced through our network of authorised boutiques and distributors around the world — every item is 100% authentic, shipped sealed from a partner location, with full tracking and import duties handled on the customer's behalf.
+## What we sell
+- Designer clothing, shoes, bags, and accessories for men and women
+- Focus: evening, occasion, and resort wear — silk, tailoring, swim, leather
+- Brands with live inventory include Dolce & Gabbana, Saint Laurent, Versace, Gucci, Prada, Balenciaga, Fendi, Burberry, Brunello Cucinelli, Tom Ford, Givenchy, Chloé, Ferragamo, Jacquemus, Balmain, Alexander McQueen, Maison Margiela, Off-White, Moschino, Jimmy Choo, Kenzo, Moncler, and Valentino, among others
+- All items new, current or recent season, authenticated, in original packaging
 
-The store carries women's and men's clothing, footwear, bags, accessories and fine jewelry across runway, ready-to-wear and seasonal-sale segments. Prices are in USD; shipping is global; returns are accepted within 14 days of delivery on full-priced merchandise.
+## Shipping & service
+- Ships worldwide, expedited from Europe
+- AI concierge available site-wide for styling and selection help
 
-## Pages
-
-- [Home](https://palaceofromanofficial.com/): Seasonal hero edit, new arrivals, featured maisons, editorial.
-- [Shop all](https://palaceofromanofficial.com/shop): Full catalogue with filters (brand, category, size, color, price).
-- [Women's clothing](https://palaceofromanofficial.com/collections/womens-clothing): Dresses, tailoring and ready-to-wear.
-- [Women's shoes](https://palaceofromanofficial.com/collections/womens-shoes): Heels, boots and sandals.
-- [Men's clothing](https://palaceofromanofficial.com/collections/mens-clothing): Tailoring and considered staples.
-- [Men's shoes](https://palaceofromanofficial.com/collections/mens-shoes): Designer footwear.
-
-- [All collections](https://palaceofromanofficial.com/collections): Browse every curated edit.
-- [All designers](https://palaceofromanofficial.com/brands): Index of every maison stocked.
-
-## Editorial
-
-- [Journal](https://palaceofromanofficial.com/journal): Long-form editorial and house notes.
-- [May 2026 — Quiet authority](https://palaceofromanofficial.com/editorial/may-2026): Tailoring and footwear edit.
-- [Resort 2026](https://palaceofromanofficial.com/editorial/resort-2026): Resort edit.
-- [The new evening](https://palaceofromanofficial.com/editorial/the-new-evening): Evening edit.
-
-## Policies & info
-
-- [About](https://palaceofromanofficial.com/about): Who Palace of Roman is and how the boutique operates.
-- [Authentication](https://palaceofromanofficial.com/authentication): Sourcing and 100% authenticity guarantee.
-- [Shipping & returns](https://palaceofromanofficial.com/shipping-returns): Worldwide DHL/FedEx, 14-day returns.
-- [Contact](https://palaceofromanofficial.com/contact): Email concierge for sourcing, sizing and styling.
-- [FAQ](https://palaceofromanofficial.com/faq): Common questions on orders, sizing and delivery.
-
-## Optional
-
-- [Privacy](https://palaceofromanofficial.com/privacy)
-- [Terms](https://palaceofromanofficial.com/terms)
-
-## Maisons stocked
-
-Palace of Roman regularly stocks pieces from (non-exhaustive): Gucci, Prada, Louis Vuitton, Chanel, Hermès, Dior, Saint Laurent, Bottega Veneta, Fendi, Valentino, Versace, Balenciaga, Loewe, Givenchy, Burberry, Off-White, Moncler, Stone Island, Brunello Cucinelli, Loro Piana, Tom Ford, Maison Margiela, Jacquemus, Ami, Acne Studios, Celine, Coach, Etro, Marni, Isabel Marant.
-
-## Authenticity
-
-Every piece sold by Palace of Roman is sourced through a network of authorised boutiques and distributors around the world. Items ship with original packaging, brand tags and any accompanying documentation. Each order is backed by a 90-day authenticity guarantee — if a piece is ever proven inauthentic, the full purchase price is refunded.
-
-## Shipping & returns
-
-- Worldwide express shipping via DHL or FedEx, fully tracked.
-- Handling: 1–2 business days. Transit: 3–7 business days to most destinations.
-- Free shipping on orders over USD 250; flat USD 45 otherwise.
-- Returns: unworn pieces with original tags accepted within 14 days of delivery. Returns are free worldwide.
-- Import duties on international orders are pre-paid where possible (DDP) — see the shipping page for country specifics.
-
-## Pricing & currency
-
-All prices on Palace of Roman are displayed and charged in US Dollars (USD).
-
+## Links
+- Homepage: https://palaceofromanofficial.com
+- Menswear: https://palaceofromanofficial.com/men
+- Womenswear: https://palaceofromanofficial.com/women
+- Brands: https://palaceofromanofficial.com/brands
