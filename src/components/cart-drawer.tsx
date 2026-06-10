@@ -110,7 +110,7 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
                       </div>
                       <div className="flex-1 min-w-0 flex flex-col">
                         <p className="text-[10px] uppercase tracking-widest text-bronze">{item.product.node.vendor}</p>
-                        <h4 className="text-sm font-medium leading-snug mt-1 line-clamp-2">{item.product.node.title}</h4>
+                        <h4 className="text-sm font-serif leading-snug mt-1 line-clamp-2">{item.product.node.title}</h4>
                         <p className="text-[11px] text-muted-foreground mt-1">
                           {item.selectedOptions.map((o: any) => o.value).join(" · ")}
                         </p>
