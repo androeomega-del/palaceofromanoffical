@@ -33,6 +33,7 @@ import editorialAccessoriesHero from "@/assets/editorial-accessories-hero.jpg";
 import editorialTravelSupermodel from "@/assets/editorial-travel-supermodel.jpg";
 import brandVersace from "@/assets/brand-versace.jpg";
 import brandDolceGabbana from "@/assets/brand-dolce-gabbana.jpg";
+import brandDolceGabbanaMen from "@/assets/brand-dolce-gabbana-men.jpg";
 import brandGucci from "@/assets/brand-gucci.jpg";
 import brandPrada from "@/assets/brand-prada.jpg";
 import brandBrunelloCucinelli from "@/assets/brand-brunello-cucinelli.jpg";
