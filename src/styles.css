@@ -573,3 +573,96 @@
   .pdp-noir-reveal, .pdp-noir-reveal-delay { animation: none; }
 }
 
+/* =========================================================================
+   HERO — Wet-Gloss Noir (matches PDP)
+   Scope: `.hero-noir` wrapper on the homepage hero section only.
+   ========================================================================= */
+.hero-noir { position: relative; background-color: #050506; }
+.hero-noir-grade-base,
+.hero-noir-grade-bottom,
+.hero-noir-grade-top,
+.hero-noir-grade-edge,
+.hero-noir-grain { position: absolute; inset: 0; pointer-events: none; }
+.hero-noir-grade-base   { background: rgba(5,5,6,0.42); z-index: 10; }
+.hero-noir-grade-bottom { background: linear-gradient(0deg, #050506 0%, rgba(5,5,6,0.6) 28%, transparent 60%); z-index: 11; }
+.hero-noir-grade-top    { background: linear-gradient(180deg, rgba(5,5,6,0.5) 0%, transparent 22%); z-index: 12; }
+.hero-noir-grade-edge   { background: radial-gradient(ellipse 120% 100% at 50% 45%, transparent 55%, rgba(5,5,6,0.55) 100%); z-index: 13; }
+.hero-noir-grain {
+  z-index: 15;
+  opacity: 0.02;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+.hero-noir-title {
+  background: linear-gradient(180deg, #FFFFFF 0%, #F4F1EA 45%, #CFC9BC 100%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.55);
+  letter-spacing: -0.015em;
+  line-height: 1.02;
+  font-weight: 500;
+  animation: hero-noir-sheen 9s ease-in-out infinite;
+}
+@keyframes hero-noir-sheen {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.92; }
+}
+
+.hero-noir-cta-primary {
+  position: relative; overflow: hidden;
+  background: #F4F1EA; color: #0B0B0D;
+  letter-spacing: 0.22em; font-weight: 600;
+  transition: background 300ms cubic-bezier(0.16,1,0.3,1),
+              transform 200ms cubic-bezier(0.16,1,0.3,1);
+}
+.hero-noir-cta-primary::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.6) 50%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform 700ms cubic-bezier(0.16,1,0.3,1);
+  pointer-events: none;
+}
+.hero-noir-cta-primary:hover { background: #FFFFFF; }
+.hero-noir-cta-primary:hover::after { transform: translateX(120%); }
+.hero-noir-cta-primary:active { transform: scale(0.99); }
+
+.hero-noir-cta-ghost {
+  border: 1px solid rgba(244,241,234,0.45);
+  color: #F4F1EA;
+  background: transparent;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: border-color 240ms cubic-bezier(0.16,1,0.3,1),
+              background 240ms cubic-bezier(0.16,1,0.3,1);
+}
+.hero-noir-cta-ghost:hover {
+  border-color: #F4F1EA;
+  background: rgba(244,241,234,0.06);
+}
+
+.hero-noir-tertiary { color: #A1A19A; letter-spacing: 0.12em; transition: color 220ms cubic-bezier(0.16,1,0.3,1); }
+.hero-noir-tertiary .arrow { display: inline-block; transition: transform 220ms cubic-bezier(0.16,1,0.3,1); }
+.hero-noir-tertiary:hover { color: #C8A24C; }
+.hero-noir-tertiary:hover .arrow { transform: translateX(4px); }
+
+@keyframes hero-noir-rise {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes hero-noir-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.hero-noir-video      { animation: hero-noir-fade 600ms cubic-bezier(0.16,1,0.3,1) both; }
+.hero-noir-rise-1     { animation: hero-noir-rise 1100ms cubic-bezier(0.16,1,0.3,1) 0ms both; }
+.hero-noir-rise-2     { animation: hero-noir-rise 1100ms cubic-bezier(0.16,1,0.3,1) 90ms both; }
+.hero-noir-rise-3     { animation: hero-noir-rise 1100ms cubic-bezier(0.16,1,0.3,1) 160ms both; }
+@media (prefers-reduced-motion: reduce) {
+  .hero-noir-video,
+  .hero-noir-rise-1,
+  .hero-noir-rise-2,
+  .hero-noir-rise-3,
+  .hero-noir-title { animation: none; }
+}
+
