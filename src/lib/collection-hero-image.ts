@@ -5,6 +5,7 @@
  */
 import { queryOptions } from "@tanstack/react-query";
 import { storefrontApiRequest } from "@/lib/shopify";
+import { cached } from "@/lib/server-cache";
 
 export type CollectionHeroImage = {
   url: string;
@@ -51,7 +52,10 @@ export async function fetchCollectionHeroImage(handle: string): Promise<Collecti
 export const collectionHeroImageQueryOptions = (handle: string) =>
   queryOptions({
     queryKey: ["collection-hero-image", handle] as const,
-    queryFn: () => fetchCollectionHeroImage(handle),
+    queryFn: () =>
+      typeof window === "undefined"
+        ? cached(`collection-hero-image:${handle}`, () => fetchCollectionHeroImage(handle), 10 * 60_000)
+        : fetchCollectionHeroImage(handle),
     staleTime: 10 * 60_000,
     refetchOnWindowFocus: false,
     refetchOnMount: false,

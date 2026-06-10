@@ -97,30 +97,48 @@ export const Route = createFileRoute("/product/$handle")({
     // the runtime logic in <ProductView/> so the rendered bundle and the
     // indexed bundle never disagree.
     const manualNodes = p.lookReferences?.references?.nodes ?? [];
-    let lookCompanions = manualNodes.slice(0, 4);
-    let lookSource: "manual" | "auto" | "none" = manualNodes.length ? "manual" : "none";
-    if (lookCompanions.length === 0) {
-      try {
-        const recs = await fetchProductRecommendations(p.id, "COMPLEMENTARY");
-        let pool = recs ?? [];
-        const anchorCat = classifyLookCategory(p);
-        if (pool.length < 3) {
-          const backfill = await fetchProducts({
-            first: 24,
-            sortKey: "BEST_SELLING",
-            query: `${categoryQueryFragment(COMPLEMENTARY_MAP[anchorCat])} -vendor:"${(p.vendor || "").replace(/"/g, "")}"`.trim(),
-          });
-          pool = [...pool, ...backfill.map((e) => e.node)];
+    const productTags = ((p as { tags?: string[] }).tags ?? []).filter(Boolean);
+
+    // Resolve look companions (SEO bundle) and context links (internal
+    // cross-link matrix) in parallel — they don't depend on each other.
+    const [{ lookCompanions, lookSource }, contextLinks] = await Promise.all([
+      (async (): Promise<{
+        lookCompanions: typeof manualNodes;
+        lookSource: "manual" | "auto" | "none";
+      }> => {
+        if (manualNodes.length) {
+          return { lookCompanions: manualNodes.slice(0, 4), lookSource: "manual" };
         }
-        const picked = pickCompanions(pool, p, 3);
-        if (picked.length >= 2) {
-          lookCompanions = picked;
-          lookSource = "auto";
+        try {
+          const recs = await fetchProductRecommendations(p.id, "COMPLEMENTARY");
+          let pool = recs ?? [];
+          const anchorCat = classifyLookCategory(p);
+          if (pool.length < 3) {
+            const backfill = await fetchProducts({
+              first: 24,
+              sortKey: "BEST_SELLING",
+              query: `${categoryQueryFragment(COMPLEMENTARY_MAP[anchorCat])} -vendor:"${(p.vendor || "").replace(/"/g, "")}"`.trim(),
+            });
+            pool = [...pool, ...backfill.map((e) => e.node)];
+          }
+          const picked = pickCompanions(pool, p, 3);
+          if (picked.length >= 2) {
+            return { lookCompanions: picked, lookSource: "auto" };
+          }
+        } catch {
+          // SEO enrichment is best-effort; never block the PDP render.
         }
-      } catch {
-        // SEO enrichment is best-effort; never block the PDP render.
-      }
-    }
+        return { lookCompanions: [], lookSource: "none" };
+      })(),
+      getPdpContextLinks({
+        data: {
+          productType: p.productType || "",
+          vendor: p.vendor || "",
+          tags: productTags,
+          title: p.title || "",
+        },
+      }).catch((): PdpContextLinks => ({ destinations: [], vendor: null })),
+    ]);
 
     // Parallel, best-effort prefetch of the two client-side rails so their
     // first paint is hydration-instant. Failures degrade silently — the
@@ -135,18 +153,6 @@ export const Route = createFileRoute("/product/$handle")({
         .prefetchQuery(productAutoLookRecsQueryOptions(p.id))
         .catch(() => null),
     ]);
-
-    // Internal cross-link matrix — resolved server-side so the contextual
-    // text links are present in the initial HTML payload (SEO + zero CLS).
-    const productTags = ((p as { tags?: string[] }).tags ?? []).filter(Boolean);
-    const contextLinks: PdpContextLinks = await getPdpContextLinks({
-      data: {
-        productType: p.productType || "",
-        vendor: p.vendor || "",
-        tags: productTags,
-        title: p.title || "",
-      },
-    }).catch(() => ({ destinations: [], vendor: null }));
 
     return { product: p, lookCompanions, lookSource, contextLinks };
   },
