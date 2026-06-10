@@ -553,7 +553,7 @@ export function ProductCard({
               disabled={soldOut || (!hasChoices && adding)}
               aria-label={addLabel}
               aria-busy={!hasChoices && adding}
-              className="flex-1 h-11 bg-ink text-canvas hover:bg-bronze transition-colors duration-300 text-[10px] uppercase tracking-[0.25em] font-medium inline-flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
+              className={`flex-1 h-11 transition-colors duration-300 text-[10px] uppercase tracking-[0.25em] font-medium inline-flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed ${noir ? "bg-white text-luxury-dark hover:bg-luxury-gold z-[5]" : "bg-ink text-canvas hover:bg-bronze"}`}
             >
               {!hasChoices && adding ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
