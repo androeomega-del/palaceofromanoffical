@@ -39,7 +39,6 @@ import brandBrunelloCucinelli from "@/assets/brand-brunello-cucinelli.jpg";
 import brandGiorgioArmani from "@/assets/brand-giorgio-armani.jpg";
 import brandTomFord from "@/assets/brand-tom-ford.jpg";
 import brandSaintLaurent from "@/assets/brand-saint-laurent.jpg";
-import brandLoroPiana from "@/assets/brand-loro-piana.jpg";
 import brandBottegaVeneta from "@/assets/brand-bottega-veneta.jpg";
 
 export const Route = createFileRoute("/men/")({

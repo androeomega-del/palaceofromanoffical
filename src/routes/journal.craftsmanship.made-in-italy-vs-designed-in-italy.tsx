@@ -64,7 +64,7 @@ function Page() {
           <p>
             Customs enforces this. Misrepresenting origin is a fraud offence in Italy with real consequences; the
             Guardia di Finanza seizes counterfeit-origin goods every week. When a brand prints <em>Made in Italy</em> on
-            a Ferragamo loafer or a Loro Piana sweater, they are committing to that chain of work.
+            a Ferragamo loafer or a Brunello Cucinelli sweater, they are committing to that chain of work.
           </p>
 
           <h2>"Designed in Italy" means almost nothing</h2>

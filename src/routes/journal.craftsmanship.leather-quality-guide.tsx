@@ -128,7 +128,7 @@ function Page() {
 
           <h2>Why this is actually a value argument</h2>
           <p>
-            A well-made full-grain Italian wallet from a maison like Bottega Veneta, Loro Piana, or a serious
+            A well-made full-grain Italian wallet from a maison like Bottega Veneta, Tom Ford, or a serious
             small-batch workshop costs in the region of three to seven hundred dollars and is engineered to last
             fifteen to twenty years in daily use. Across that life it patinas, the corners darken, the fold-line
             softens to your pocket. A high-street wallet at one-tenth the price is almost always corrected-grain or

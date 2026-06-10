@@ -30,7 +30,7 @@ export const CANONICAL_COLLECTION_HANDLE: Record<string, string> = {
   "brand-saint-laurent": "saint-laurent",
   "brand-tom-ford": "tom-ford",
   "brand-versace": "versace",
-  // No Loro Piana collection on Storefront — fall back to the curated
+  // Fallback for any unmapped vendor — use the curated
   // quiet-luxury edit so the tile never lands on an empty page.
   "brand-loro-piana": "best-selling-brands",
   // Misnamed nav handles → live Storefront slugs.

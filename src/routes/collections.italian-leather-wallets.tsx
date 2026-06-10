@@ -12,7 +12,7 @@ const PATH = "/collections/italian-leather-wallets";
 const H1 = "Italian Leather Wallets";
 const TITLE = `${H1} — Designer Bifold & Card Holders`;
 const DESC =
-  "Italian leather wallets from Ferragamo, Prada, Bottega Veneta, Loro Piana and Ralph Lauren. 100% authentic, shipped from Europe, no markdown noise.";
+  "Italian leather wallets from Ferragamo, Prada, Bottega Veneta, Tom Ford and Ralph Lauren. 100% authentic, shipped from Europe, no markdown noise.";
 
 const FAQS: LandingFAQ[] = [
   {
@@ -78,7 +78,7 @@ function Page() {
           <h2>The houses represented here</h2>
           <p>
             The edit below draws from the maisons our distribution partners work with most closely — Ferragamo,
-            Bottega Veneta, Prada, Loro Piana, Ralph Lauren, and a rotation of seasonal pieces from smaller Florentine
+            Bottega Veneta, Prada, Tom Ford, Ralph Lauren, and a rotation of seasonal pieces from smaller Florentine
             and Milanese ateliers. Materials lean toward vegetable-tanned vacchetta, glazed calf, and the saffiano cross-hatch
             that Prada turned into a signature in the late seventies.
           </p>
