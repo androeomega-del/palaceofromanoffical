@@ -22,7 +22,7 @@ import { HomeNewsletterStrip } from "./home-newsletter-strip";
 import { ProductRail } from "@/components/sections/product-rail";
 import { collectionRailQueryOptions } from "@/lib/rails/queries";
 import { collectionHeroImageQueryOptions } from "@/lib/collection-hero-image";
-import { Skeleton } from "@/components/ui/skeleton";
+
 import { vendorSlug } from "@/lib/nav-config";
 import heroVideo from "@/assets/hero-cinematic.mp4.asset.json";
 
