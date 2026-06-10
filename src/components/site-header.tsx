@@ -95,7 +95,7 @@ export function SiteHeader() {
   return (
     <>
       {announceOpen && (
-        <div className="relative w-full bg-ink text-canvas text-[10px] py-2.5 uppercase tracking-[0.28em] text-center border-b border-ink/10">
+        <div className="relative w-full bg-chrome text-ivory text-[10px] py-2.5 uppercase tracking-[0.28em] text-center border-b border-ivory/10">
           <span className="inline-flex items-center gap-2">
             Subscribe for updates on new arrivals, exclusive collection drops, and boutique releases
           </span>
@@ -103,14 +103,14 @@ export function SiteHeader() {
             type="button"
             aria-label="Dismiss announcement"
             onClick={dismissAnnounce}
-            className="absolute right-3 top-1/2 -translate-y-1/2 inline-flex items-center justify-center w-7 h-7 text-canvas/70 hover:text-bronze transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 inline-flex items-center justify-center w-7 h-7 text-ivory/70 hover:text-gold transition-colors"
           >
             <X className="w-3.5 h-3.5" strokeWidth={1.5} />
           </button>
         </div>
       )}
       <header
-        className="sticky top-0 z-50 bg-canvas/95 backdrop-blur-md border-b border-ink/10"
+        className="sticky top-0 z-50 bg-chrome/95 text-ivory backdrop-blur-md border-b border-ivory/10"
         style={
           {
             // Used by megamenu panels to anchor below the header.
@@ -127,7 +127,7 @@ export function SiteHeader() {
               type="button"
               aria-label="Open menu"
               onClick={() => setMobileOpen(true)}
-              className="lg:hidden hover:text-bronze transition-colors inline-flex items-center justify-center w-9 h-9 -ml-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze focus-visible:ring-offset-2 focus-visible:ring-offset-canvas rounded-sm"
+              className="lg:hidden text-ivory hover:text-gold transition-colors inline-flex items-center justify-center w-9 h-9 -ml-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-chrome rounded-sm"
             >
               <Menu className="w-5 h-5" strokeWidth={1.25} />
             </button>
@@ -139,14 +139,14 @@ export function SiteHeader() {
           <Link
             to="/"
             aria-label="Palace of Roman — home"
-            className="justify-self-center leading-none inline-flex items-center"
+            className="justify-self-center leading-none inline-flex items-center text-ivory hover:text-gold transition-colors"
           >
             <img
               src={prMonogram}
               alt="Palace of Roman"
               width={36}
               height={36}
-              className="lg:hidden h-9 w-9 object-contain"
+              className="lg:hidden h-9 w-9 object-contain invert"
             />
             <span className="hidden lg:inline text-[17px] sm:text-xl md:text-2xl font-serif tracking-[0.14em] md:tracking-[0.18em] uppercase whitespace-nowrap">
               Palace of Roman
@@ -154,17 +154,17 @@ export function SiteHeader() {
           </Link>
 
           {/* Right: utility cluster */}
-          <div className="flex items-center gap-3 sm:gap-5 md:gap-6 justify-self-end">
+          <div className="flex items-center gap-3 sm:gap-5 md:gap-6 justify-self-end text-ivory">
             <button
               type="button"
               onClick={() => useConciergeStore.getState().setOpen(true)}
-              className="hidden md:inline text-[11px] uppercase tracking-[0.25em] text-bronze hover:text-ink transition-colors"
+              className="hidden md:inline text-[11px] uppercase tracking-[0.25em] text-gold hover:text-ivory transition-colors"
             >
               Concierge
             </button>
             <Link
               to="/style-quiz"
-              className="hidden xl:inline text-[11px] uppercase tracking-[0.25em] text-bronze hover:text-ink transition-colors"
+              className="hidden xl:inline text-[11px] uppercase tracking-[0.25em] text-gold hover:text-ivory transition-colors"
             >
               Style Quiz
             </Link>
@@ -178,7 +178,7 @@ export function SiteHeader() {
             <button
               aria-label="Search"
               onClick={() => setSearchOpen(true)}
-              className="lg:hidden hover:text-bronze transition-colors inline-flex items-center justify-center w-5 h-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze focus-visible:ring-offset-2 focus-visible:ring-offset-canvas rounded-sm"
+              className="lg:hidden text-ivory hover:text-gold transition-colors inline-flex items-center justify-center w-5 h-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-chrome rounded-sm"
             >
               <Search className="w-4 h-4" strokeWidth={1.25} />
             </button>
@@ -189,20 +189,20 @@ export function SiteHeader() {
                 const token = useCustomerStore.getState().getValidToken();
                 window.location.href = token ? "/account" : "/account/login";
               }}
-              className="hover:text-bronze transition-colors hidden sm:inline-flex items-center justify-center w-5 h-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze focus-visible:ring-offset-2 focus-visible:ring-offset-canvas rounded-sm"
+              className="text-ivory hover:text-gold transition-colors hidden sm:inline-flex items-center justify-center w-5 h-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-chrome rounded-sm"
             >
               <User className="w-4 h-4" strokeWidth={1.25} />
             </button>
             <button
               aria-label={`Cart (${totalItems})`}
               onClick={() => setCartOpen(true)}
-              className="relative hover:text-bronze transition-colors inline-flex items-center justify-center w-5 h-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze focus-visible:ring-offset-2 focus-visible:ring-offset-canvas rounded-sm"
+              className="relative text-ivory hover:text-gold transition-colors inline-flex items-center justify-center w-5 h-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-chrome rounded-sm"
             >
               <ShoppingBag className="w-4 h-4" strokeWidth={1.25} />
               {totalItems > 0 && (
                 <span
                   key={popKey}
-                  className="por-badge-pop absolute -top-1.5 -right-2 min-w-[16px] h-[16px] px-1 grid place-items-center bg-bronze text-canvas text-[9px] font-semibold tabular-nums leading-none rounded-full"
+                  className="por-badge-pop absolute -top-1.5 -right-2 min-w-[16px] h-[16px] px-1 grid place-items-center bg-gold text-chrome text-[9px] font-semibold tabular-nums leading-none rounded-full"
                 >
                   {totalItems > 99 ? "99+" : totalItems}
                 </span>
@@ -212,13 +212,13 @@ export function SiteHeader() {
         </div>
 
         {/* ───── Row 2: category rail + inline search (lg+ only) ───── */}
-        <div className="hidden lg:block border-t border-ink/5">
+        <div className="hidden lg:block border-t border-ivory/10">
           <div className="max-w-screen-2xl mx-auto px-10 h-12 flex items-center justify-between gap-8">
             <DesktopCategoryRail />
             <button
               type="button"
               onClick={() => setSearchOpen(true)}
-              className="group flex items-center gap-2.5 text-[12px] text-ink/55 hover:text-ink transition-colors w-[260px] xl:w-[320px] h-9 px-3 border-b border-ink/15 hover:border-ink/40"
+              className="group flex items-center gap-2.5 text-[12px] text-ivory/55 hover:text-ivory transition-colors w-[260px] xl:w-[320px] h-9 px-3 border-b border-ivory/20 hover:border-gold/60"
               aria-label="Open search"
             >
               <Search className="w-3.5 h-3.5" strokeWidth={1.5} />
