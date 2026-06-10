@@ -5,6 +5,7 @@
  */
 import { queryOptions } from "@tanstack/react-query";
 import { storefrontApiRequest } from "@/lib/shopify";
+import { cached } from "@/lib/server-cache";
 
 export type CollectionHeroImage = {
   url: string;
