@@ -1224,7 +1224,7 @@ function ProductView({
                 <button
                   onClick={handleAdd}
                   aria-busy={isLoading}
-                  className="w-full h-16 bg-[var(--studio-ink)] text-[var(--studio-bg)] hover:bg-[var(--studio-bronze)] transition-colors duration-700 text-[11px] uppercase tracking-[0.3em] font-semibold inline-flex items-center justify-center gap-2 shadow-lg"
+                  className="pdp-noir-cta w-full h-14 text-[14px] uppercase inline-flex items-center justify-center gap-2"
                 >
                   {isLoading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
