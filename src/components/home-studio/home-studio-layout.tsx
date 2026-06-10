@@ -95,11 +95,11 @@ export function HomeStudioLayout({ variant = "embedded" }: HomeStudioLayoutProps
 
           <div className="absolute inset-x-0 bottom-0 px-6 md:px-14 pb-12 md:pb-24">
             <div className="max-w-screen-2xl mx-auto">
-              <div className="max-w-3xl text-canvas">
-                <h1 className="font-serif font-light tracking-[-0.015em] text-balance text-[12vw] md:text-[5.5vw] leading-[0.95]">
+              <div className="max-w-3xl" style={{ color: "#F4F1EC" }}>
+                <h1 className="font-serif font-light tracking-[-0.015em] text-balance text-[12vw] md:text-[5.5vw] leading-[0.95]" style={{ color: "#F4F1EC" }}>
                   Dress for <em className="italic">after</em> dark.
                 </h1>
-                <p className="mt-6 md:mt-8 max-w-xl text-base md:text-lg leading-relaxed font-light text-canvas/85">
+                <p className="mt-6 md:mt-8 max-w-xl text-base md:text-lg leading-relaxed font-light" style={{ color: "rgba(244,241,236,0.9)" }}>
                   Silk that catches candlelight, linen undone by evening —
                   Dolce &amp; Gabbana, Saint Laurent, Versace, and the maisons
                   that understand desire. New, current-season, shipped
