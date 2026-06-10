@@ -980,7 +980,7 @@ function ProductView({
 
 
   return (
-    <div className="studio obsidian min-h-screen">
+    <div className="studio obsidian luxury min-h-screen">
       {/* Breadcrumb — SSR; mirrors the BreadcrumbList JSON-LD in head() */}
       <div className="px-6 pt-10">
         <div className="max-w-screen-2xl mx-auto">
@@ -1536,7 +1536,7 @@ function ProductView({
             </div>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
               {related.map((e) => (
-                <ProductCard key={e.node.id} product={e} />
+                <ProductCard key={e.node.id} product={e} variant="noir" />
               ))}
             </div>
           </section>
@@ -1984,7 +1984,7 @@ function StyleItWithRail({ items }: { items: Awaited<ReturnType<typeof fetchProd
             data-rail-item
             className="snap-start flex-shrink-0 w-[68%] sm:w-[42%] md:w-[28%] lg:w-[22%]"
           >
-            <ProductCard product={e} />
+            <ProductCard product={e} variant="noir" />
           </div>
         ))}
       </div>
