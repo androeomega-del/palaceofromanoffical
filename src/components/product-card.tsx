@@ -343,7 +343,7 @@ export function ProductCard({
       onMouseEnter={onCardEnter}
       onMouseLeave={onCardLeave}
     >
-      <div className="w-full aspect-[4/5] bg-secondary relative overflow-hidden mb-3 isolate">
+      <div className={`w-full ${noir ? "aspect-[3/4] bg-luxury-zinc border border-luxury-border" : "aspect-[4/5] bg-secondary"} relative overflow-hidden mb-3 isolate`}>
         {img && !imgError && (
           <img
             src={cdnImage(img.url, { width: 700 })}
