@@ -113,8 +113,8 @@ function CategoryTileCard({ tile }: { tile: CategoryTile }) {
 
   const inner = (
     <div
-      className="relative w-full bg-luxury-dark"
-      style={{ aspectRatio: "3 / 4" }}
+      className="relative w-full bg-noir-panel"
+      style={{ aspectRatio: "4 / 5" }}
     >
       {src ? (
         <img
@@ -124,14 +124,17 @@ function CategoryTileCard({ tile }: { tile: CategoryTile }) {
           style={{ filter: "brightness(0.72) contrast(1.05) saturate(0.95)" }}
           loading="lazy"
           decoding="async"
+          onError={(e) => {
+            (e.currentTarget as HTMLImageElement).style.display = "none";
+          }}
         />
       ) : (
-        // Final fallback: noir-panel block with ivory label centered.
+        // Final fallback: noir-panel block with ivory label.
         <div
-          className="absolute inset-0 grid place-items-center bg-luxury-zinc"
+          className="absolute inset-0 grid place-items-end justify-start p-6 bg-noir-panel"
           aria-hidden="true"
         >
-          <span className="text-[10px] uppercase tracking-[0.4em] text-ivory/70">
+          <span className="text-[10px] uppercase tracking-[0.4em] text-canvas/50">
             {tile.label}
           </span>
         </div>
