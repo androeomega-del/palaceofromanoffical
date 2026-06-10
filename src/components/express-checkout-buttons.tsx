@@ -83,7 +83,7 @@ export function ExpressCheckoutButtons({ onCheckout }: ExpressCheckoutButtonsPro
         <button
           type="button"
           onClick={() => handleExpress("apple_pay")}
-          className="flex items-center justify-center h-10 rounded-md bg-black text-white hover:bg-black/90 active:bg-black/80 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
+          className="flex items-center justify-center h-10 rounded-md bg-black text-white border border-white/20 hover:bg-black/90 active:bg-black/80 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
           aria-label="Check out with Apple Pay"
         >
           <ApplePayLogo className="h-3.5 w-auto" />
