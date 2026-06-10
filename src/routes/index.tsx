@@ -30,14 +30,22 @@ export const Route = createFileRoute("/")({
     // every query the homepage subscribes to — fire-and-forget prefetches
     // caused React #418 hydration mismatches because the rail components
     // conditionally render based on `isLoading`/`data.length`.
+    const homeCollectionHandles = ["the-riviera-edit", "coastal-essentials", "womens-dresses", "new-arrivals", "suits", "mens-shirts"];
+    const categoryTileHandles = ["the-riviera-edit", "coastal-essentials", "womens-dresses"];
+
     await Promise.all([
-      ...["the-riviera-edit", "coastal-essentials", "womens-dresses", "new-arrivals", "suits", "mens-shirts"].map(
+      ...homeCollectionHandles.map(
         (handle) =>
           context.queryClient
             .ensureQueryData(collectionRailQueryOptions(handle, 8))
             .catch((err) => console.error(`[home loader] rail ${handle} prefetch failed:`, err)),
       ),
-      ...["new-arrivals", "suits", "mens-shirts"].map((handle) =>
+      ...categoryTileHandles.map((handle) =>
+        context.queryClient
+          .ensureQueryData(collectionRailQueryOptions(handle, 1))
+          .catch((err) => console.error(`[home loader] category tile rail ${handle} prefetch failed:`, err)),
+      ),
+      ...[...new Set([...categoryTileHandles, "new-arrivals", "suits", "mens-shirts"])].map((handle) =>
         context.queryClient
           .ensureQueryData(collectionHeroImageQueryOptions(handle))
           .catch((err) => console.error(`[home loader] tile hero ${handle} prefetch failed:`, err)),
