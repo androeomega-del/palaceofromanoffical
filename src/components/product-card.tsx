@@ -571,7 +571,7 @@ export function ProductCard({
                 disabled={buyingNow || (!hasChoices && adding)}
                 aria-label="Buy Now"
                 title="Buy Now"
-                className="h-11 px-3 bg-bronze text-canvas hover:bg-ink transition-colors duration-300 text-[10px] uppercase tracking-[0.25em] font-medium inline-flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
+                className={`h-11 px-3 transition-colors duration-300 text-[10px] uppercase tracking-[0.25em] font-medium inline-flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed ${noir ? "bg-luxury-gold text-luxury-dark hover:bg-white z-[5]" : "bg-bronze text-canvas hover:bg-ink"}`}
               >
                 {buyingNow ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
