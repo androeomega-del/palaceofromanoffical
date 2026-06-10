@@ -22,16 +22,13 @@ import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { fetchCollections, fetchVendorIndex, type ShopifyCollection } from "@/lib/shopify";
 import {
-  buildDepartments,
   buildBrandList,
   groupBrandsForMenu,
   vendorSlug,
   HERO_BRANDS,
-  type MegaDepartment,
-  type MegaColumn,
+  navForDept,
+  type NavNode,
 } from "@/lib/nav-config";
-import { getShopifyMenu } from "@/lib/menu-source.functions";
-import { buildDepartmentsFromShopifyMenu } from "@/lib/megamenu-source";
 import { useDeptStore, type Dept } from "@/stores/dept-store";
 
 /* ────────────────────────── public component ────────────────────────── */
@@ -41,15 +38,11 @@ export function DesktopCategoryRail() {
   const [openKey, setOpenKey] = useState<string | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Brands megamenu still pulls live vendor counts for hero tiles.
   const { data: liveCollections } = useQuery({
     queryKey: ["collections-all"],
     queryFn: () => fetchCollections(500),
     staleTime: 5 * 60_000,
-  });
-  const { data: menuSource } = useQuery({
-    queryKey: ["shopify-main-menu"],
-    queryFn: () => getShopifyMenu(),
-    staleTime: 10 * 60_000,
   });
   const { data: brands } = useQuery({
     queryKey: ["nav-brand-index"],
@@ -58,41 +51,7 @@ export function DesktopCategoryRail() {
     select: (rows) => buildBrandList(rows),
   });
 
-  const liveHandles = useMemo(
-    () => (liveCollections ? new Set(liveCollections.map((c) => c.handle)) : null),
-    [liveCollections],
-  );
-
-  const departments: MegaDepartment[] = useMemo(() => {
-    const built = buildDepartments(liveCollections ?? []);
-    const filtered = liveHandles
-      ? built.filter((d) => liveHandles.has(d.rootHandle))
-      : built;
-    const shopify = menuSource?.tree
-      ? buildDepartmentsFromShopifyMenu(menuSource.tree, filtered, liveHandles)
-      : null;
-    return shopify ?? filtered;
-  }, [liveCollections, liveHandles, menuSource]);
-
-  const activeDept = useMemo(
-    () => departments.find((d) => d.key === dept) ?? departments[0],
-    [departments, dept],
-  );
-
-  const saleHandle = useMemo(() => {
-    if (!liveHandles) return null;
-    for (const h of [`${dept}-sale`, `sale-${dept}`, "sale"]) {
-      if (liveHandles.has(h)) return h;
-    }
-    return null;
-  }, [liveHandles, dept]);
-  const newInHandle = useMemo(() => {
-    if (!liveHandles) return "new-arrivals";
-    for (const h of [`${dept}-new-arrivals`, `new-arrivals-${dept}`, "new-arrivals"]) {
-      if (liveHandles.has(h)) return h;
-    }
-    return null;
-  }, [liveHandles, dept]);
+  const items: NavNode[] = useMemo(() => navForDept(dept), [dept]);
 
   const openNow = useCallback((key: string) => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
@@ -103,10 +62,8 @@ export function DesktopCategoryRail() {
     closeTimer.current = setTimeout(() => setOpenKey(null), 120);
   }, []);
 
-  // Reset open key when dept switches.
   useEffect(() => setOpenKey(null), [dept]);
 
-  // Escape closes any open panel.
   useEffect(() => {
     if (!openKey) return;
     const onKey = (e: KeyboardEvent) => {
@@ -116,88 +73,93 @@ export function DesktopCategoryRail() {
     return () => window.removeEventListener("keydown", onKey);
   }, [openKey]);
 
-  if (!activeDept) {
-    // No deps loaded yet — render an invisible skeleton so the row keeps height.
-    return <div className="h-12" aria-hidden="true" />;
-  }
-
-  // Filter columns to live items so we never render empty rail items.
-  const liveColumns: MegaColumn[] = activeDept.columns
-    .map((col) => ({
-      heading: col.heading,
-      items: liveHandles
-        ? col.items.filter((it) => !it.handle || liveHandles.has(it.handle))
-        : col.items,
-    }))
-    .filter((col) => col.items.length > 0);
-
   return (
-    <div
-      className="relative"
-      onMouseLeave={scheduleClose}
-    >
+    <div className="relative" onMouseLeave={scheduleClose}>
       <nav
-        aria-label={`${activeDept.label} categories`}
+        aria-label={`${dept === "men" ? "Men" : "Women"} categories`}
         className="flex items-center gap-7 text-[12px] tracking-[0.02em] text-ink"
       >
-        {saleHandle && (
-          <RailLink
-            label="Sale"
-            to={`/collections/${saleHandle}`}
-            accent
-          />
-        )}
-        {newInHandle && (
-          <RailLink label="New In" to={`/collections/${newInHandle}`} />
-        )}
-        <RailLink label="Vacation" to="/vacation-stylist" />
-
-        <RailTrigger
-          label="Brands"
-          to="/brands"
-          isOpen={openKey === "brands"}
-          onOpen={() => openNow("brands")}
-          onClose={() => setOpenKey(null)}
-        >
-          <BrandsPanel
-            brands={brands ?? []}
-            liveCollections={liveCollections ?? []}
-            onMouseEnter={() => openNow("brands")}
-            onMouseLeave={scheduleClose}
-          />
-        </RailTrigger>
-
-        {liveColumns.map((col) => {
-          // Prefer a column-specific collection if it exists in the live catalog
-          // (e.g. "women-clothing"); otherwise fall back to the dept root so the
-          // click always lands somewhere shoppable.
-          const slug = col.heading.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-          const candidate = `${activeDept.key}-${slug}`;
-          const colHandle =
-            liveHandles && liveHandles.has(candidate) ? candidate : activeDept.rootHandle;
-          return (
-            <RailTrigger
-              key={col.heading}
-              label={col.heading}
-              to={`/collections/${colHandle}`}
-              isOpen={openKey === col.heading}
-              onOpen={() => openNow(col.heading)}
-              onClose={() => setOpenKey(null)}
-            >
-              <CategoryPanel
-                column={col}
-                dept={activeDept}
-                liveCollections={liveCollections ?? []}
-                onMouseEnter={() => openNow(col.heading)}
-                onMouseLeave={scheduleClose}
-              />
-            </RailTrigger>
-          );
+        {items.map((item) => {
+          if (item.label === "Brands") {
+            return (
+              <RailTrigger
+                key="brands"
+                label="Brands"
+                to="/brands"
+                isOpen={openKey === "brands"}
+                onOpen={() => openNow("brands")}
+                onClose={() => setOpenKey(null)}
+              >
+                <BrandsPanel
+                  brands={brands ?? []}
+                  liveCollections={liveCollections ?? []}
+                  onMouseEnter={() => openNow("brands")}
+                  onMouseLeave={scheduleClose}
+                />
+              </RailTrigger>
+            );
+          }
+          if (item.children && item.children.length > 0) {
+            return (
+              <RailTrigger
+                key={item.label}
+                label={item.label}
+                to={item.to}
+                isOpen={openKey === item.label}
+                onOpen={() => openNow(item.label)}
+                onClose={() => setOpenKey(null)}
+              >
+                <SimpleDropdown
+                  parent={item}
+                  onMouseEnter={() => openNow(item.label)}
+                  onMouseLeave={scheduleClose}
+                />
+              </RailTrigger>
+            );
+          }
+          return <RailLink key={item.label} label={item.label} to={item.to} />;
         })}
       </nav>
     </div>
   );
 }
+
+/* ────────────────────────── simple dropdown ────────────────────────── */
+
+function SimpleDropdown({
+  parent,
+  onMouseEnter,
+  onMouseLeave,
+}: {
+  parent: NavNode;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
+}) {
+  return (
+    <div
+      role="region"
+      aria-label={`${parent.label} navigation`}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      className="absolute left-0 top-full z-40 mt-0 min-w-[220px] bg-canvas border border-ink/10 shadow-[0_24px_60px_-30px_rgba(0,0,0,0.18)]"
+    >
+      <ul className="flex flex-col py-3">
+        {parent.children!.map((c) => (
+          <li key={c.to}>
+            <a
+              href={c.to}
+              className="block px-5 py-2 text-[13px] font-light text-ink/80 hover:text-ink hover:bg-ink/[0.03] transition-colors"
+              data-nav-item={c.label}
+            >
+              {c.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 
 /* ────────────────────────── primitives ────────────────────────── */
 
