@@ -22,6 +22,7 @@ export function ProductCard({
   suppressBadges = [],
   surface,
   position,
+  variant = "default",
 }: {
   product: ShopifyProduct;
   /**
@@ -36,7 +37,16 @@ export function ProductCard({
   surface?: string;
   /** 0-indexed slot within the surface. */
   position?: number;
+  /**
+   * Visual variant. "default" = ivory boutique palette (PLP, search, brand
+   * pages, etc.). "noir" = After Dark skin — luxury-dark frame, white CTA,
+   * gold/amber accents, serif italic "View" cue on hover. Opt-in only —
+   * passed from rails marked tone="dark" on the noir homepage. All
+   * behaviour (analytics, cart, wishlist, quick-add) is identical.
+   */
+  variant?: "default" | "noir";
 }) {
+  const noir = variant === "noir";
   const p = product.node;
   const img = p.images?.edges?.[0]?.node;
   const img2 = p.images?.edges?.[1]?.node;
