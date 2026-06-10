@@ -131,9 +131,8 @@ export function SiteHeader() {
             >
               <Menu className="w-5 h-5" strokeWidth={1.25} />
             </button>
-            <div className="hidden lg:flex">
-              <DepartmentTabs />
-            </div>
+            <div className="hidden lg:flex" />
+
           </div>
 
           {/* Center: serif wordmark */}
