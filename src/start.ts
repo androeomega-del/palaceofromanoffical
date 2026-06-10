@@ -1,4 +1,5 @@
 import { createStart, createMiddleware } from "@tanstack/react-start";
+import { getRequest } from "@tanstack/react-start/server";
 
 import { renderErrorPage } from "./lib/error-page";
 import { attachSupabaseAuth } from "@/integrations/supabase/auth-attacher";
@@ -21,21 +22,75 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
   }
 });
 
-// Cache-busting for the HTML entry: ensure browsers always revalidate the
-// document shell so they pick up the latest hashed JS/CSS chunks after a
-// redeploy. Hashed assets under /assets/* keep their immutable long cache.
+// Paths that MUST never be cached — they're per-user, write surfaces, or
+// API endpoints whose response varies by auth/cookie state.
+const PRIVATE_PATH_PREFIXES = [
+  "/account",
+  "/admin",
+  "/api",
+  "/cart",
+  "/auth",
+  "/authentication",
+  "/checkout",
+  "/_serverFn",
+];
+
+function isPrivatePath(pathname: string): boolean {
+  return PRIVATE_PATH_PREFIXES.some(
+    (p) => pathname === p || pathname.startsWith(`${p}/`),
+  );
+}
+
+// HTML response cache policy.
+//
+// Public boutique surfaces (homepage, PLPs, PDPs, brand pages, editorials,
+// journal, etc.) are identical for every visitor — cart and account state
+// are client-side, hydrated after the shell. We serve those from the CDN
+// edge with a 5-minute fresh window + 24h stale-while-revalidate so warm
+// TTFB collapses from ~1.5s to <100ms while a background refresh keeps
+// the catalog snapshot current.
+//
+// Authenticated / per-user surfaces (account, admin, cart, auth, api,
+// server-function RPCs) stay no-store — caching those would leak session
+// state across visitors.
 const htmlCacheMiddleware = createMiddleware().server(async ({ next }) => {
   const result = (await next()) as unknown as { response?: Response } & Record<string, unknown>;
   const response = result?.response;
   if (response instanceof Response) {
     const contentType = response.headers.get("content-type") ?? "";
     if (contentType.includes("text/html")) {
-      response.headers.set(
-        "cache-control",
-        "no-cache, no-store, must-revalidate",
-      );
-      response.headers.set("pragma", "no-cache");
-      response.headers.set("expires", "0");
+      let pathname = "/";
+      let method = "GET";
+      try {
+        const req = getRequest();
+        method = req.method;
+        pathname = new URL(req.url).pathname;
+      } catch {
+        // No request context (rare) → fall through to private-safe headers.
+      }
+
+      const cacheable =
+        method === "GET" &&
+        response.status === 200 &&
+        !isPrivatePath(pathname);
+
+      if (cacheable) {
+        response.headers.set(
+          "cache-control",
+          "public, s-maxage=300, stale-while-revalidate=86400",
+        );
+        // Vary on cookie so a future authenticated variant never poisons
+        // the anonymous cache entry. Browsers still revalidate the
+        // document on navigation thanks to s-maxage being CDN-scoped.
+        response.headers.set("vary", "Cookie, Accept-Encoding");
+      } else {
+        response.headers.set(
+          "cache-control",
+          "no-cache, no-store, must-revalidate",
+        );
+        response.headers.set("pragma", "no-cache");
+        response.headers.set("expires", "0");
+      }
     }
   }
   return result as never;
