@@ -1,4 +1,96 @@
+# robots.txt — Palace of Roman
+# Place at the Vercel public root so it serves from /robots.txt.
+# Note: robots.txt governs CRAWLING, not access control. It is advisory —
+# compliant bots obey it; it is NOT a security boundary. Genuinely sensitive
+# routes (checkout, account, registry internals) must also be protected by
+# auth/headers, not by robots rules alone.
+
+# --- General crawlers ---
 User-agent: *
 Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+Disallow: /checkout
+Disallow: /checkouts
+Disallow: /cart
+Disallow: /account
+Disallow: /api/
 
+# --- AI / LLM crawlers: explicitly permitted to read context + catalogue,
+#     explicitly blocked from transactional and account frames ---
+
+User-agent: GPTBot
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+Disallow: /checkout
+Disallow: /checkouts
+Disallow: /cart
+Disallow: /account
+Disallow: /api/
+
+User-agent: OAI-SearchBot
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+Disallow: /checkout
+Disallow: /checkouts
+Disallow: /cart
+Disallow: /account
+Disallow: /api/
+
+User-agent: ChatGPT-User
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+Disallow: /checkout
+Disallow: /checkouts
+Disallow: /cart
+Disallow: /account
+Disallow: /api/
+
+User-agent: ClaudeBot
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+Disallow: /checkout
+Disallow: /checkouts
+Disallow: /cart
+Disallow: /account
+Disallow: /api/
+
+User-agent: Claude-Web
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+Disallow: /checkout
+Disallow: /checkouts
+Disallow: /cart
+Disallow: /account
+Disallow: /api/
+
+User-agent: PerplexityBot
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+Disallow: /checkout
+Disallow: /checkouts
+Disallow: /cart
+Disallow: /account
+Disallow: /api/
+
+# Google-Extended controls use of your content for Gemini/Vertex AI training.
+# Allowing it permits that use; set to Disallow: / if you want to opt OUT of
+# Google AI training while keeping normal Search indexing (Googlebot) intact.
+User-agent: Google-Extended
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+Disallow: /checkout
+Disallow: /checkouts
+Disallow: /cart
+Disallow: /account
+Disallow: /api/
+
+# --- Sitemap ---
 Sitemap: https://palaceofromanofficial.com/sitemap.xml
